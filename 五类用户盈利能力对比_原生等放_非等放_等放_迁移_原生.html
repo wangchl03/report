@@ -47,11 +47,7 @@ pre.code{background:#1f2937;border:1px solid #374151;border-radius:8px;padding:1
 @media(max-width:768px){.chart-grid,.summary-grid{grid-template-columns:1fr}}
 </style>
 </head>
-<body>
-<script>
-(function(){if(document.cookie.indexOf('auth=bcb15f821479b4d5772bd0ca866c00ad5f926e3580720659cc80d39c9d09802a')===-1){document.body.innerHTML='<div style="display:flex;align-items:center;justify-content:center;height:100vh;background:#0f1932;color:#6a7fa0;font-family:sans-serif"><div style="text-align:center"><h2 style="color:#fff;margin-bottom:12px">请先登录</h2><p>访问 <a href="index.html" style="color:#3c8ce6">首页</a> 输入密码</p></div></div>';}})();
-</script>
-<div class="container">
+<body><div class="container">
 
 <h1>五类用户盈利能力对比分析报告</h1>
 <p class="subtitle">2025.01 ~ 2026.05 注册 · 全量用户 · 含利润贡献、放款占比、分阶段拆解</p>
@@ -269,6 +265,51 @@ pre.code{background:#1f2937;border:1px solid #374151;border-radius:8px;padding:1
 
 <div class="chart-grid">
 <div class="chart-card full"><h4>"只借1次" vs "多次借款" 盈利率对比</h4><div class="chart-wrap"><canvas id="c_single_vs_multi"></canvas></div></div>
+</div>
+
+<!-- ====== 三之二、循环贷影响分析 ====== -->
+<h2>三之二、循环贷影响分析</h2>
+<p>循环贷的核心判定条件：<b>借款时用户处于在途状态</b>（上一笔订单还款进度≥50%且尚未结清）。首贷永远不是循环贷，最早从第2笔开始出现。循环贷的 Trade-off：通过降低转化门槛提高放款量，但可能带来连带逾期（1个劣质用户逾期2笔）。</p>
+
+<h3>3.2a 五类用户 × 循环贷/非循环贷 盈利率对比</h3>
+<div style="overflow-x:auto">
+<table>
+<tr><th>类别</th><th>循环贷订单</th><th>循环贷利润</th><th>循环贷盈利率</th><th>非循环贷订单</th><th>非循环贷利润</th><th>非循环贷盈利率</th><th>循环贷利润占比</th></tr>
+<tr><td><b style="color:#3b82f6">原生等放</b></td><td>157,100</td><td class="pos">+7242万</td><td class="pos">10.64%</td><td>457,763</td><td class="pos">+9599万</td><td class="pos">9.95%</td><td>43.0%</td></tr>
+<tr><td><b style="color:#10b981">非等放</b></td><td>35,984</td><td class="pos">+2896万</td><td class="pos">23.32%</td><td>148,302</td><td class="pos">+6109万</td><td class="pos">26.16%</td><td>32.2%</td></tr>
+<tr><td><b style="color:#60a5fa">等放</b></td><td>135,578</td><td class="pos">+4511万</td><td class="pos">7.55%</td><td>365,973</td><td class="pos">+3698万</td><td class="pos">4.65%</td><td>54.9%</td></tr>
+<tr><td><b style="color:#f59e0b">迁移</b></td><td>21,522</td><td class="pos">+2731万</td><td class="pos">32.79%</td><td>91,790</td><td class="pos">+5900万</td><td class="pos">34.75%</td><td>31.6%</td></tr>
+<tr><td><b style="color:#ef4444">原生非等放</b></td><td>14,462</td><td class="pos">+165万</td><td class="pos">4.04%</td><td>56,512</td><td class="pos">+208万</td><td class="pos">3.27%</td><td>44.2%</td></tr>
+</table>
+</div>
+
+<div class="insight-box blue">
+<strong>反直觉发现：等放用户的循环贷盈利率（7.55%）高于非循环贷（4.65%）。</strong><br>
+这说明循环贷的"还款过半"筛选机制起了关键作用——能在还款50%后支用的用户，已经证明了一定的还款能力和意愿，风险反而低于"结清后重新走审批"的普通复借用户。循环贷并非一定降低盈利率，在等放这种大基数用户群中，它反而起到了<b>正向筛选</b>的作用。
+</div>
+
+<div class="chart-grid">
+<div class="chart-card full"><h4>循环贷 vs 非循环贷 盈利率对比</h4><div class="chart-wrap"><canvas id="c_cycle_profit"></canvas></div></div>
+<div class="chart-card full"><h4>各阶段循环贷订单占比</h4><div class="chart-wrap"><canvas id="c_cycle_ratio"></canvas></div></div>
+</div>
+
+<h3>3.2b 各阶段循环贷占比</h3>
+<p>循环贷占比 = 该阶段循环贷订单数 / 该阶段总订单数。首贷循环贷占比为0（首贷不可能是循环贷），从第2次开始出现。</p>
+<div style="overflow-x:auto">
+<table>
+<tr><th></th><th>第2次放款 循环贷占比</th><th>第3次放款 循环贷占比</th><th>第4次+放款 循环贷占比</th><th>整体循环贷占比</th></tr>
+<tr><td><b style="color:#60a5fa">等放</b></td><td>29.4%</td><td>47.3%</td><td>53.5%</td><td>27.0%</td></tr>
+<tr><td><b style="color:#f59e0b">迁移</b></td><td>18.0%</td><td>28.5%</td><td>33.0%</td><td>19.0%</td></tr>
+<tr><td><b style="color:#ef4444">原生非等放</b></td><td>23.3%</td><td>36.5%</td><td>42.4%</td><td>20.4%</td></tr>
+</table>
+</div>
+
+<div class="insight-box">
+<strong>循环贷的推进逻辑：</strong>等放用户在第2次放款时循环贷占比29.4%，到第4次+攀升到53.5%——说明循环贷资格是逐步放开的，与"优质用户早开通、中等用户晚开通、最差用户永不开通"的规则一致。迁移用户循环贷占比最低（整体19.0%），因为迁移用户被风控标记过，开通循环贷的门槛更高。
+</div>
+
+<div class="insight-box green">
+<strong>核心发现：</strong>循环贷在等放用户中的表现推翻了"循环贷=牺牲盈利率换放款量"的简单判断。等放循环贷7.55%盈利率高于非循环贷4.65%，说明<b>循环贷的筛选机制（还款≥50%）强于非循环贷的审批机制</b>，至少在等放群体中是如此。本质原因是：还款过半才给循环贷 = 用户已经用实际行动证明了自己的还款意愿，这个信号比风控模型评分更可靠。
 </div>
 
 <!-- ====== 四、结论 ====== -->
@@ -676,6 +717,40 @@ new Chart(document.getElementById('c_stage_profit'), {
 new Chart(document.getElementById('c_stage_remit'), {
   type: 'bar', data: { labels: CATS, datasets: DS.map(function(n){ return { label:n, data: CATS.map(function(c){ return SEQM[n][c].remit_wan; }), backgroundColor:DL[n], borderRadius:4, borderWidth:0 }; }) },
   options: { responsive:true, maintainAspectRatio:false, plugins: { legend:{labels:{color:'#d1d5db'}}, tooltip: { backgroundColor:'#374151', callbacks:{label:function(c){return c.dataset.label+': '+(c.raw).toLocaleString()+' 万';}} } }, scales: { x: { stacked:true, grid:{color:'#374151'}, ticks:{color:'#9ca3af'} }, y: { stacked:true, grid:{color:'#374151'}, ticks:{color:'#9ca3af',callback:function(v){return v+' 万';}} } } }
+});
+
+// ===== 循环贷图表 =====
+// 循环贷 vs 非循环贷 盈利率对比
+new Chart(document.getElementById('c_cycle_profit'), {
+  type: 'bar', data: {
+    labels: ['原生等放','非等放','等放','迁移','原生非等放'],
+    datasets: [
+      { label: '循环贷盈利率', data: [10.64, 23.32, 7.55, 32.79, 4.04], backgroundColor: '#3b82f6', borderRadius: 8, borderWidth: 0, unit: '%' },
+      { label: '非循环贷盈利率', data: [9.95, 26.16, 4.65, 34.75, 3.27], backgroundColor: '#6b7280', borderRadius: 8, borderWidth: 0, unit: '%' }
+    ]
+  },
+  options: {
+    responsive: true, maintainAspectRatio: false,
+    plugins: { legend: { labels: { color: '#d1d5db' } }, tooltip: { backgroundColor: '#374151', callbacks: { label: function(c) { return c.dataset.label + ': ' + c.raw.toFixed(2) + '%'; } } } },
+    scales: { x: { grid: { color: '#374151' }, ticks: { color: '#9ca3af' } }, y: { grid: { color: '#374151' }, ticks: { color: '#9ca3af', callback: function(v) { return v + '%'; } } } }
+  }
+});
+
+// 各阶段循环贷订单占比
+new Chart(document.getElementById('c_cycle_ratio'), {
+  type: 'bar', data: {
+    labels: ['第2次放款','第3次放款','第4次+放款'],
+    datasets: [
+      { label: '等放', data: [29.4, 47.3, 53.5], backgroundColor: '#60a5fa', borderRadius: 8, borderWidth: 0 },
+      { label: '迁移', data: [18.0, 28.5, 33.0], backgroundColor: '#f59e0b', borderRadius: 8, borderWidth: 0 },
+      { label: '原生非等放', data: [23.3, 36.5, 42.4], backgroundColor: '#ef4444', borderRadius: 8, borderWidth: 0 }
+    ]
+  },
+  options: {
+    responsive: true, maintainAspectRatio: false,
+    plugins: { legend: { labels: { color: '#d1d5db' } }, tooltip: { backgroundColor: '#374151', callbacks: { label: function(c) { return c.dataset.label + ': ' + c.raw.toFixed(1) + '%'; } } } },
+    scales: { x: { grid: { color: '#374151' }, ticks: { color: '#9ca3af' } }, y: { beginAtZero: true, grid: { color: '#374151' }, ticks: { color: '#9ca3af', callback: function(v) { return v + '%'; } }, max: 60 } }
+  }
 });
 </script>
 </body></html>
