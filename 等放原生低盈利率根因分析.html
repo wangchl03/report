@@ -6,203 +6,240 @@
 <title>等放 & 原生非等放 — 低盈利率根因分析</title>
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
 <style>
-*{margin:0;padding:0;box-sizing:border-box}
-body{font-family:-apple-system,BlinkMacSystemFont,'PingFang SC',sans-serif;background:#f0f2f5;color:#1a1a2e;padding:40px 24px}
-.container{max-width:1200px;margin:0 auto}
-h1{text-align:center;font-size:28px;font-weight:800;margin-bottom:6px;color:#0f0f23}
-.subtitle{text-align:center;font-size:14px;color:#999;margin-bottom:36px}
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'PingFang SC', sans-serif;
+    background: #111827;
+    color: #e5e7eb;
+    padding: 40px 24px;
+  }
+  .container { max-width: 1200px; margin: 0 auto; }
+  h1 { text-align: center; font-size: 28px; font-weight: 800; margin-bottom: 6px; color: #f9fafb; }
+  .subtitle { text-align: center; font-size: 14px; color: #9ca3af; margin-bottom: 36px; }
 
-.section{margin-bottom:40px}
-.section h2{font-size:20px;font-weight:700;color:#222;border-left:4px solid #f39c12;padding-left:12px;margin-bottom:16px}
-.section h3{font-size:16px;font-weight:600;color:#444;margin:24px 0 12px}
-.section p{font-size:14px;line-height:1.8;color:#555;margin-bottom:12px}
+  .section { margin-bottom: 40px; }
+  .section h2 { font-size: 20px; font-weight: 700; color: #f3f4f6; border-left: 4px solid #f59e0b; padding-left: 12px; margin-bottom: 16px; }
+  .section p { font-size: 14px; line-height: 1.8; color: #d1d5db; margin-bottom: 12px; }
 
-.insight-box{background:linear-gradient(135deg,#fff9e6,#fff3cd);border:1px solid #ffc107;border-radius:10px;padding:18px 22px;margin:16px 0}
-.insight-box.red{background:linear-gradient(135deg,#ffeaea,#ffd4d4);border-color:#e74c3c}
-.insight-box.green{background:linear-gradient(135deg,#eaffea,#d4ffd4);border-color:#2ecc71}
-.insight-box strong{color:#e67e00}
-.insight-box.red strong{color:#c0392b}
-.insight-box.green strong{color:#27ae60}
+  .insight-box { background: rgba(251,191,36,.10); border: 1px solid rgba(251,191,36,.25); border-radius: 10px; padding: 18px 22px; margin: 16px 0; }
+  .insight-box.red { background: rgba(239,68,68,.10); border-color: rgba(239,68,68,.25); }
+  .insight-box.green { background: rgba(16,185,129,.10); border-color: rgba(16,185,129,.25); }
+  .insight-box strong { color: #fbbf24; }
+  .insight-box.red strong { color: #f87171; }
+  .insight-box.green strong { color: #34d399; }
 
-.legend{display:flex;gap:32px;justify-content:center;margin-bottom:28px;flex-wrap:wrap}
-.legend-item{display:flex;align-items:center;gap:8px;font-size:14px;font-weight:500;color:#555}
-.legend-dot{width:14px;height:14px;border-radius:4px;flex-shrink:0}
+  .legend { display: flex; gap: 32px; justify-content: center; margin-bottom: 28px; flex-wrap: wrap; }
+  .legend-item { display: flex; align-items: center; gap: 8px; font-size: 14px; font-weight: 500; color: #d1d5db; }
+  .legend-dot { width: 14px; height: 14px; border-radius: 4px; flex-shrink: 0; }
 
-.chart-grid{display:grid;grid-template-columns:1fr 1fr;gap:24px;margin-bottom:24px}
-.chart-card{background:#fff;border-radius:14px;padding:22px;box-shadow:0 2px 8px rgba(0,0,0,.04)}
-.chart-card.full{grid-column:1/-1}
-.chart-card h4{font-size:14px;font-weight:600;color:#333;margin-bottom:14px}
-.chart-wrap{position:relative;height:300px}
-.chart-wrap.tall{height:400px}
+  .chart-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; margin-bottom: 24px; }
+  .chart-card { background: #1f2937; border-radius: 14px; padding: 22px; box-shadow: 0 2px 12px rgba(0,0,0,.25); }
+  .chart-card h4 { font-size: 14px; font-weight: 600; color: #e5e7eb; margin-bottom: 14px; }
+  .chart-wrap { position: relative; height: 300px; }
 
-table{width:100%;border-collapse:collapse;font-size:13px;margin:12px 0}
-table th{background:#f8f9fa;padding:10px 14px;text-align:right;font-weight:600;color:#555;border-bottom:2px solid #e9ecef}
-table td{padding:10px 14px;text-align:right;border-bottom:1px solid #f0f0f0}
-table th:first-child,table td:first-child{text-align:left}
-.neg{color:#e74c3c;font-weight:600}
-.pos{color:#27ae60;font-weight:600}
+  table { width: 100%; border-collapse: collapse; font-size: 13px; margin: 12px 0; }
+  table th { background: #374151; padding: 10px 14px; text-align: right; font-weight: 600; color: #d1d5db; border-bottom: 2px solid #4b5563; }
+  table td { padding: 10px 14px; text-align: right; border-bottom: 1px solid #374151; color: #e5e7eb; }
+  table th:first-child, table td:first-child { text-align: left; }
+  .neg { color: #f87171; font-weight: 700; }
+  .pos { color: #34d399; font-weight: 700; }
 
-.summary-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:32px}
-.sum-card{background:#fff;border-radius:14px;padding:22px;text-align:center;box-shadow:0 2px 8px rgba(0,0,0,.04)}
-.sum-card .big{font-size:36px;font-weight:800;margin:8px 0}
+  .summary-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-bottom: 32px; }
+  .sum-card { background: #1f2937; border-radius: 14px; padding: 22px; text-align: center; box-shadow: 0 2px 12px rgba(0,0,0,.25); }
+  .sum-card .big { font-size: 36px; font-weight: 800; margin: 8px 0; }
 
-@media(max-width:768px){.chart-grid{grid-template-columns:1fr}.summary-grid{grid-template-columns:1fr}}
+  @media (max-width: 768px) {
+    .chart-grid { grid-template-columns: 1fr; }
+    .summary-grid { grid-template-columns: 1fr; }
+  }
 </style>
 </head>
-<body><div class="container">
+<body>
+<div class="container">
 
 <h1>等放 & 原生非等放 — 低盈利率根因分析</h1>
 <p class="subtitle">2025.01 ~ 2026.05 注册 · 全量用户 · 为什么这两类用户不赚钱？卡点在哪里？</p>
 
 <div class="legend">
-<div class="legend-item"><span class="legend-dot" style="background:#3498db"></span> 等放用户</div>
-<div class="legend-item"><span class="legend-dot" style="background:#e74c3c"></span> 原生非等放</div>
-<div class="legend-item"><span class="legend-dot" style="background:#f39c12"></span> 迁移用户（对照组）</div>
+  <div class="legend-item"><span class="legend-dot" style="background:#3b82f6"></span> 等放用户</div>
+  <div class="legend-item"><span class="legend-dot" style="background:#ef4444"></span> 原生非等放</div>
+  <div class="legend-item"><span class="legend-dot" style="background:#f59e0b"></span> 迁移用户（对照组）</div>
 </div>
 
-<!-- ===== 核心结论卡片 ===== -->
+<!-- 核心结论卡片 -->
 <div class="summary-grid">
-<div class="sum-card">
-  <div style="color:#888;font-size:13px">等放用户 首贷</div>
-  <div class="big" style="color:#e74c3c">−2.1%</div>
-  <div style="color:#888;font-size:12px">首贷 s8 率 <b style="color:#e74c3c">43.5%</b> · 每笔亏 32 元</div>
-</div>
-<div class="sum-card">
-  <div style="color:#888;font-size:13px">原生非等放 首贷</div>
-  <div class="big" style="color:#e74c3c">−3.8%</div>
-  <div style="color:#888;font-size:12px">首贷 s8 率 <b style="color:#e74c3c">40.9%</b> · 每笔亏 29 元</div>
-</div>
-<div class="sum-card">
-  <div style="color:#888;font-size:13px">迁移用户 首贷</div>
-  <div class="big" style="color:#27ae60">+49.4%</div>
-  <div style="color:#888;font-size:12px">首贷 s8 率 <b style="color:#27ae60">0.4%</b> · 每笔赚 605 元</div>
-</div>
-</div>
-
-<!-- ===== 第一章 ===== -->
-<div class="section"><h2>一、核心卡点：首贷 s8 率 40%+，第一笔就大面积亏钱</h2>
-
-<p>等放和原生非等放用户的<b>首贷不良率都超过 40%</b>，首贷盈利率为负。迁移用户的首贷不良率仅 0.4%——因为他们在被归类为"迁移用户"之前，已经经历过逾期→还清→被拒→再申请，首贷质量极高。</p>
-
-<div class="insight-box red">
-<strong>核心发现：</strong>等放首贷 194,478 笔，s8 率 43.5%，首贷亏损 618 万元；原生首贷 28,963 笔，s8 率 40.9%，首贷亏损 83 万元。两者合计首贷亏损 <strong>700 万元</strong>。对比迁移用户首贷赚了 <strong>2,126 万元</strong>。等放和原生不是"赚得少"，而是在用后面多次借款的利润填补首贷的天坑。
+  <div class="sum-card">
+    <div style="color:#9ca3af;font-size:13px">等放用户 首贷</div>
+    <div class="big" style="color:#ef4444">&minus;2.1%</div>
+    <div style="color:#9ca3af;font-size:12px">首贷 s8 率 <b style="color:#f87171">43.5%</b> &middot; 每笔亏 32 元</div>
+  </div>
+  <div class="sum-card">
+    <div style="color:#9ca3af;font-size:13px">原生非等放 首贷</div>
+    <div class="big" style="color:#ef4444">&minus;3.8%</div>
+    <div style="color:#9ca3af;font-size:12px">首贷 s8 率 <b style="color:#f87171">40.9%</b> &middot; 每笔亏 29 元</div>
+  </div>
+  <div class="sum-card">
+    <div style="color:#9ca3af;font-size:13px">迁移用户 首贷</div>
+    <div class="big" style="color:#10b981">+49.4%</div>
+    <div style="color:#9ca3af;font-size:12px">首贷 s8 率 <b style="color:#34d399">0.4%</b> &middot; 每笔赚 605 元</div>
+  </div>
 </div>
 
-<div class="chart-grid">
-<div class="chart-card"><h4>各阶段 s8 率对比</h4><div class="chart-wrap"><canvas id="c_s8"></canvas></div></div>
-<div class="chart-card"><h4>各阶段盈利率对比</h4><div class="chart-wrap"><canvas id="c_profit"></canvas></div></div>
-</div>
-</div>
+<!-- 第一章 -->
+<div class="section">
+  <h2>一、核心卡点：首贷 s8 率 40%+，第一笔就大面积亏钱</h2>
+  <p>等放和原生非等放用户的<b>首贷不良率都超过 40%</b>，首贷盈利率为负。迁移用户的首贷不良率仅 0.4%——因为他们在被归类为"迁移用户"之前，已经经历过逾期 &rarr; 还清 &rarr; 被拒 &rarr; 再申请，首贷质量极高。</p>
 
-<!-- ===== 第二章 ===== -->
-<div class="section"><h2>二、好消息：多次借款后情况迅速好转</h2>
+  <div class="insight-box red">
+    <strong>核心发现：</strong>等放首贷 194,478 笔，s8 率 43.5%，首贷亏损 618 万元；原生首贷 28,963 笔，s8 率 40.9%，首贷亏损 83 万元。两者合计首贷亏损 <strong>700 万元</strong>。对比迁移用户首贷赚了 <strong>2,126 万元</strong>。等放和原生不是"赚得少"，而是在用后面多次借款的利润填补首贷的天坑。
+  </div>
 
-<p>如果把首贷扛过去，第 2 次放款开始盈利转正。到了第 4 次以后，等放盈利率达到 <b>+10.5%</b>，原生 <b>+5.5%</b>。s8 率也在逐步下降（等放从 43.5% → 32.9%，原生从 40.9% → 30.0%）。</p>
-
-<div class="insight-box green">
-<strong>关键洞察：</strong>只要用户能活过首贷、进入复借，盈利模型就会从"巨亏"转为"稳定赚钱"。等放第 4 次+放款 13.9 万笔、件均 4,867 元、盈利率 +10.5%。迁移用户从首贷就开始赚，各阶段盈利率均 >27%。等放和原生的问题是：<strong>太多用户的首贷质量太差，还没进入"赚钱区间"就变成不良了</strong>。
-</div>
-
-<div class="chart-grid">
-<div class="chart-card"><h4>件均放款额随借款次数变化</div><div class="chart-wrap"><canvas id="c_remit"></canvas></div></div>
-<div class="chart-card"><h4>放款笔数分布</div><div class="chart-wrap"><canvas id="c_n"></canvas></div></div>
-</div>
+  <div class="chart-grid">
+    <div class="chart-card"><h4>各阶段 s8 率对比</h4><div class="chart-wrap"><canvas id="c_s8"></canvas></div></div>
+    <div class="chart-card"><h4>各阶段盈利率对比</h4><div class="chart-wrap"><canvas id="c_profit"></canvas></div></div>
+  </div>
 </div>
 
-<!-- ===== 第三章 ===== -->
-<div class="section"><h2>三、"只借一次就坏"用户是最大亏损源</h2>
+<!-- 第二章 -->
+<div class="section">
+  <h2>二、好消息：多次借款后情况迅速好转</h2>
+  <p>如果把首贷扛过去，第 2 次放款开始盈利转正。到了第 4 次以后，等放盈利率达到 <b style="color:#34d399">+10.5%</b>，原生 <b style="color:#34d399">+5.5%</b>。s8 率也在逐步下降（等放从 43.5% &rarr; 32.9%，原生从 40.9% &rarr; 30.0%）。</p>
 
-<div style="max-width:860px">
+  <div class="insight-box green">
+    <strong>关键洞察：</strong>只要用户能活过首贷、进入复借，盈利模型就会从"巨亏"转为"稳定赚钱"。等放第 4 次+放款 13.9 万笔、件均 4,867 元、盈利率 +10.5%。迁移用户从首贷就开始赚，各阶段盈利率均 &gt; 27%。等放和原生的问题是：<strong>太多用户的首贷质量太差，还没进入"赚钱区间"就变成不良了</strong>。
+  </div>
 
-<p>把用户按生命周期总放款次数分组：</p>
-
-<table>
-<tr><th>用户类型</th><th>只借 1 次占比</th><th>仅 1 次盈利率</th><th>多次盈利率</th><th>整体盈利率</th></tr>
-<tr><td>等放</td><td>47.4%</td><td class="neg">−61.3%</td><td class="pos">+12.9%</td><td class="pos">6.02%</td></tr>
-<tr><td>原生</td><td>~50%</td><td class="neg">−61.5%</td><td class="pos">+11.2%</td><td class="pos">3.74%</td></tr>
-<tr><td>迁移</td><td>~19%</td><td class="pos">+54.0%</td><td class="pos">+33.7%</td><td class="pos">34.71%</td></tr>
-</table>
+  <div class="chart-grid">
+    <div class="chart-card"><h4>件均放款额随借款次数变化</h4><div class="chart-wrap"><canvas id="c_remit"></canvas></div></div>
+    <div class="chart-card"><h4>放款笔数分布</h4><div class="chart-wrap"><canvas id="c_n"></canvas></div></div>
+  </div>
 </div>
 
-<p>等放用户中，<b>92,254 人（47.4%）只借过 1 次就结束了</b>，这批人的盈利率是 −61.3%——几乎等于本金的 60% 没收回来。而借了多次的 10.2 万人盈利率 +12.9%，是赚钱的。如果不解决首贷质量问题，等放的 6% 盈利率天花板很难突破。</p>
+<!-- 第三章 -->
+<div class="section">
+  <h2>三、"只借一次就坏"用户是最大亏损源</h2>
 
-<div class="insight-box">
-<strong>原生非等放的困境更特殊：</strong>他们首笔就被拒过，首贷额度也更低（件均 778 元 vs 等放 1,489 元），说明风控在一开始就对他们不信任。但即便如此，首贷 s8 率 40.9% 说明风控的"不信任"并没有准确筛掉不良用户——不让借大额，但小额照样能坏。
-</div>
-</div>
+  <div style="max-width:860px">
+    <p>把用户按生命周期总放款次数分组：</p>
+    <table>
+      <tr><th>用户类型</th><th>只借 1 次占比</th><th>仅 1 次盈利率</th><th>多次盈利率</th><th>整体盈利率</th></tr>
+      <tr><td>等放</td><td>47.4%</td><td class="neg">&minus;61.3%</td><td class="pos">+12.9%</td><td class="pos">6.02%</td></tr>
+      <tr><td>原生</td><td>~50%</td><td class="neg">&minus;61.5%</td><td class="pos">+11.2%</td><td class="pos">3.74%</td></tr>
+      <tr><td>迁移</td><td>~19%</td><td class="pos">+54.0%</td><td class="pos">+33.7%</td><td class="pos">34.71%</td></tr>
+    </table>
 
-<!-- ===== 第四章 ===== -->
-<div class="section"><h2>四、三段式用户对比：差距从第一笔就出现了</h2>
+    <p>等放用户中，<b style="color:#f9fafb">92,254 人（47.4%）只借过 1 次就结束了</b>，这批人的盈利率是 &minus;61.3%——几乎等于本金的 60% 没收回来。而借了多次的 10.2 万人盈利率 +12.9%，是赚钱的。如果不解决首贷质量问题，等放的 6% 盈利率天花板很难突破。</p>
 
-<table>
-<tr><th></th><th style="color:#3498db">等放</th><th style="color:#e74c3c">原生</th><th style="color:#f39c12">迁移</th></tr>
-<tr><td>首贷 s8 率</td><td class="neg">43.5%</td><td class="neg">40.9%</td><td class="pos">0.4%</td></tr>
-<tr><td>首贷 s7 率</td><td>56.1%</td><td>57.0%</td><td>99.6%</td></tr>
-<tr><td>首贷盈利率</td><td class="neg">−2.1%</td><td class="neg">−3.8%</td><td class="pos">+49.4%</td></tr>
-<tr><td>首贷件均放款</td><td>1,489 元</td><td>778 元</td><td>1,225 元</td></tr>
-<tr><td>首贷平均期限</td><td>16 天</td><td>17 天</td><td>15 天</td></tr>
-<tr><td>只借 1 次占比</td><td>47.4%</td><td>~50%</td><td>~19%</td></tr>
-<tr><td>第 4 次+ s8 率</td><td>32.9%</td><td>30.0%</td><td>18.2%</td></tr>
-<tr><td>第 4 次+盈利率</td><td class="pos">+10.5%</td><td class="pos">+5.5%</td><td class="pos">+27.5%</td></tr>
-<tr><td><b>整体盈利率</b></td><td class="pos"><b>6.02%</b></td><td class="pos"><b>3.74%</b></td><td class="pos"><b>34.71%</b></td></tr>
-</table>
+    <div class="insight-box">
+      <strong>原生非等放的困境更特殊：</strong>他们首笔就被拒过，首贷额度也更低（件均 778 元 vs 等放 1,489 元），说明风控在一开始就对他们不信任。但即便如此，首贷 s8 率 40.9% 说明风控的"不信任"并没有准确筛掉不良用户——不让借大额，但小额照样能坏。
+    </div>
+  </div>
 </div>
 
-<!-- ===== 第五章 ===== -->
-<div class="section"><h2>五、结论：两道卡点</h2>
+<!-- 第四章 -->
+<div class="section">
+  <h2>四、三段式用户对比：差距从第一笔就出现了</h2>
 
-<div class="insight-box red">
-<strong>卡点 1 — 首贷质量：</strong>等放和原生 40%+ 的首贷不良率是致命伤。等放首贷 19.4 万人中 8.5 万人最终 s8，直接亏损 618 万元。更重要的是，高首贷 s8 率导致近半数用户"借一次就坏"，彻底失去了进入"复借盈利区"的机会。
+  <div style="max-width:860px">
+    <table>
+      <tr><th></th><th style="color:#60a5fa">等放</th><th style="color:#f87171">原生</th><th style="color:#fbbf24">迁移</th></tr>
+      <tr><td>首贷 s8 率</td><td class="neg">43.5%</td><td class="neg">40.9%</td><td class="pos">0.4%</td></tr>
+      <tr><td>首贷 s7 率</td><td>56.1%</td><td>57.0%</td><td>99.6%</td></tr>
+      <tr><td>首贷盈利率</td><td class="neg">&minus;2.1%</td><td class="neg">&minus;3.8%</td><td class="pos">+49.4%</td></tr>
+      <tr><td>首贷件均放款</td><td>1,489 元</td><td>778 元</td><td>1,225 元</td></tr>
+      <tr><td>首贷平均期限</td><td>16 天</td><td>17 天</td><td>15 天</td></tr>
+      <tr><td>只借 1 次占比</td><td>47.4%</td><td>~50%</td><td>~19%</td></tr>
+      <tr><td>第 4 次+ s8 率</td><td>32.9%</td><td>30.0%</td><td>18.2%</td></tr>
+      <tr><td>第 4 次+盈利率</td><td class="pos">+10.5%</td><td class="pos">+5.5%</td><td class="pos">+27.5%</td></tr>
+      <tr><td><b>整体盈利率</b></td><td class="pos"><b>6.02%</b></td><td class="pos"><b>3.74%</b></td><td class="pos"><b>34.71%</b></td></tr>
+    </table>
+  </div>
 </div>
 
-<div class="insight-box">
-<strong>卡点 2 — 用户留存：</strong>等放 47.4% 的用户只借了 1 次（大多因为首贷就坏了），这些人的盈利率 −61.3%。如果能把首贷 s8 率从 43.5% 降到哪怕 30%，这 1.3 万用户从 s8 转为 s7，不仅首贷扭亏，他们还能进入第 2 次借款（盈利率 +4.8%）、第 3 次（+4.5%），用户终身价值会翻数倍。
-</div>
+<!-- 第五章 -->
+<div class="section">
+  <h2>五、结论：两道卡点</h2>
 
-<div class="insight-box green">
-<strong>行动的杠杆点：</strong>首贷风控。迁移用户证明了一个事实：如果首贷质量足够好（s8<1%），整个用户生命周期的盈利会非常可观。等放和原生的核心差异并不在于"用户本质"有好坏，而在于<b>首贷时点上是否做了有效的风险筛选</b>。迁移用户之所以优质，是因为他们经历过逾期→恢复→被拒→再申请这一串"自然筛选"才进入首贷，而等放用户是没有任何筛选直接借的。
-</div>
+  <div class="insight-box red">
+    <strong>卡点 1 — 首贷质量：</strong>等放和原生 40%+ 的首贷不良率是致命伤。等放首贷 19.4 万人中 8.5 万人最终 s8，直接亏损 618 万元。更重要的是，高首贷 s8 率导致近半数用户"借一次就坏"，彻底失去了进入"复借盈利区"的机会。
+  </div>
 
+  <div class="insight-box">
+    <strong>卡点 2 — 用户留存：</strong>等放 47.4% 的用户只借了 1 次（大多因为首贷就坏了），这些人的盈利率 &minus;61.3%。如果能把首贷 s8 率从 43.5% 降到哪怕 30%，这 1.3 万用户从 s8 转为 s7，不仅首贷扭亏，他们还能进入第 2 次借款（盈利率 +4.8%）、第 3 次（+4.5%），用户终身价值会翻数倍。
+  </div>
+
+  <div class="insight-box green">
+    <strong>行动的杠杆点：</strong>首贷风控。迁移用户证明了一个事实：如果首贷质量足够好（s8 &lt; 1%），整个用户生命周期的盈利会非常可观。等放和原生的核心差异并不在于"用户本质"有好坏，而在于<b>首贷时点上是否做了有效的风险筛选</b>。迁移用户之所以优质，是因为他们经历过逾期 &rarr; 恢复 &rarr; 被拒 &rarr; 再申请这一串"自然筛选"才进入首贷，而等放用户是没有任何筛选直接借的。
+  </div>
 </div>
 
 </div>
 
 <script>
 var cats = ["首贷", "第2次放款", "第3次放款", "第4次+放款"];
-var cols = ' + json.dumps(colors) + ';
+var blue   = '#3b82f6';  // 等放
+var red    = '#ef4444';  // 原生
+var yellow = '#f59e0b';  // 迁移
 
-function bar(id, title, datasets) {
+// 暗色主题全局配置
+Chart.defaults.color = '#9ca3af';
+Chart.defaults.borderColor = 'transparent';
+Chart.defaults.plugins.legend.labels.color = '#d1d5db';
+
+function bar(id, datasets) {
   new Chart(document.getElementById(id), {
-    type:'bar', data:{labels:cats, datasets:datasets},
-    options:{responsive:true,maintainAspectRatio:false,
-      plugins:{tooltip:{callbacks:{label:function(c){return c.dataset.label+': '+c.raw+(c.dataset.unit||'');}}}},
-      scales:{y:{beginAtZero:true,ticks:{callback:function(v){return v+(datasets[0].unit||'');}}}}
+    type: 'bar',
+    data: { labels: cats, datasets: datasets },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        tooltip: {
+          backgroundColor: '#374151',
+          titleColor: '#f9fafb',
+          bodyColor: '#e5e7eb',
+          callbacks: {
+            label: function(c) {
+              return c.dataset.label + ': ' + c.raw.toLocaleString() + (c.dataset.unit || '');
+            }
+          }
+        }
+      },
+      scales: {
+        x: { grid: { color: '#374151' }, ticks: { color: '#9ca3af' } },
+        y: {
+          beginAtZero: true,
+          grid: { color: '#374151' },
+          ticks: { color: '#9ca3af', callback: function(v) { return v + (datasets[0].unit || ''); } }
+        }
+      }
     }
   });
 }
 
-bar('c_s8','s8率',[
-  {label:'等放',data:[43.5, 39.0, 38.0, 32.9],backgroundColor:cols['等放']+'88',borderRadius:8,borderWidth:0,unit:'%'},
-  {label:'原生',data:[40.9, 33.4, 32.0, 30.0],backgroundColor:cols['原生']+'88',borderRadius:8,borderWidth:0,unit:'%'},
-  {label:'迁移',data:[0.4, 9.6, 13.5, 18.2],backgroundColor:cols['迁移']+'88',borderRadius:8,borderWidth:0,unit:'%'}
+bar('c_s8', [
+  { label: '等放', data: [43.5, 39.0, 38.0, 32.9], backgroundColor: blue, borderRadius: 8, borderWidth: 0, unit: '%' },
+  { label: '原生', data: [40.9, 33.4, 32.0, 30.0], backgroundColor: red, borderRadius: 8, borderWidth: 0, unit: '%' },
+  { label: '迁移', data: [0.4, 9.6, 13.5, 18.2], backgroundColor: yellow, borderRadius: 8, borderWidth: 0, unit: '%' }
 ]);
 
-bar('c_profit','盈利率',[
-  {label:'等放',data:[-2.1, 4.8, 4.5, 10.5],backgroundColor:cols['等放']+'88',borderRadius:8,borderWidth:0,unit:'%'},
-  {label:'原生',data:[-3.8, 6.5, 6.0, 5.5],backgroundColor:cols['原生']+'88',borderRadius:8,borderWidth:0,unit:'%'},
-  {label:'迁移',data:[49.4, 41.8, 36.7, 27.5],backgroundColor:cols['迁移']+'88',borderRadius:8,borderWidth:0,unit:'%'}
+bar('c_profit', [
+  { label: '等放', data: [-2.1, 4.8, 4.5, 10.5], backgroundColor: blue, borderRadius: 8, borderWidth: 0, unit: '%' },
+  { label: '原生', data: [-3.8, 6.5, 6.0, 5.5], backgroundColor: red, borderRadius: 8, borderWidth: 0, unit: '%' },
+  { label: '迁移', data: [49.4, 41.8, 36.7, 27.5], backgroundColor: yellow, borderRadius: 8, borderWidth: 0, unit: '%' }
 ]);
 
-bar('c_remit','件均放款额',[
-  {label:'等放',data:[1489, 2269, 2933, 4867],backgroundColor:cols['等放']+'88',borderRadius:8,borderWidth:0,unit:' 元'},
-  {label:'原生',data:[778, 1165, 1598, 2768],backgroundColor:cols['原生']+'88',borderRadius:8,borderWidth:0,unit:' 元'},
-  {label:'迁移',data:[1225, 1646, 1979, 3619],backgroundColor:cols['迁移']+'88',borderRadius:8,borderWidth:0,unit:' 元'}
+bar('c_remit', [
+  { label: '等放', data: [1489, 2269, 2933, 4867], backgroundColor: blue, borderRadius: 8, borderWidth: 0, unit: ' 元' },
+  { label: '原生', data: [778, 1165, 1598, 2768], backgroundColor: red, borderRadius: 8, borderWidth: 0, unit: ' 元' },
+  { label: '迁移', data: [1225, 1646, 1979, 3619], backgroundColor: yellow, borderRadius: 8, borderWidth: 0, unit: ' 元' }
 ]);
 
-bar('c_n','放款笔数',[
-  {label:'等放',data:[194478, 102224, 65113, 139639],backgroundColor:cols['等放']+'88',borderRadius:8,borderWidth:0,unit:''},
-  {label:'原生',data:[28963, 14609, 8953, 18290],backgroundColor:cols['原生']+'88',borderRadius:8,borderWidth:0,unit:''},
-  {label:'迁移',data:[35131, 23658, 15872, 38543],backgroundColor:cols['迁移']+'88',borderRadius:8,borderWidth:0,unit:''}
+bar('c_n', [
+  { label: '等放', data: [194478, 102224, 65113, 139639], backgroundColor: blue, borderRadius: 8, borderWidth: 0, unit: '' },
+  { label: '原生', data: [28963, 14609, 8953, 18290], backgroundColor: red, borderRadius: 8, borderWidth: 0, unit: '' },
+  { label: '迁移', data: [35131, 23658, 15872, 38543], backgroundColor: yellow, borderRadius: 8, borderWidth: 0, unit: '' }
 ]);
 </script>
-</body></html>
+</body>
+</html>
