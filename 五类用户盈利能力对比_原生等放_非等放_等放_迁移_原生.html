@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>五类用户盈利能力对比 — 原生等放 · 非等放 · 等放 · 迁移 · 原生非等放</title>
+<title>五类用户盈利能力对比 - 原生等放·非等放·等放·迁移·原生非等放</title>
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
@@ -47,8 +47,6 @@ table th:first-child,table td:first-child{text-align:left}
 .sum-card{background:#1f2937;border-radius:14px;padding:18px;text-align:center;box-shadow:0 2px 12px rgba(0,0,0,.25)}
 .sum-card .big{font-size:26px;font-weight:800;margin:6px 0}
 
-.footnote{font-size:12px;color:#6b7280;margin-top:6px;line-height:1.8}
-
 @media(max-width:768px){.chart-grid,.summary-grid{grid-template-columns:1fr}}
 </style>
 </head>
@@ -64,11 +62,11 @@ table th:first-child,table td:first-child{text-align:left}
     <div><b style="color:#3b82f6">原生等放</b></div><div>= 等放 + 迁移。首贷时从未被拒过的用户，共 229,609 人（88.8%）</div>
     <div><b style="color:#10b981">非等放</b></div><div>= 迁移 + 原生非等放。至少被拒绝过一次的用户，共 64,094 人（24.8%）</div>
     <div><b style="color:#60a5fa">等放</b></div><div>= 原生等放中从未被拒过的那部分，共 194,478 人</div>
-    <div><b style="color:#f59e0b">迁移</b></div><div>= 先放款 → 后被拒。逾期后被风控拦截的用户，共 35,131 人</div>
+    <div><b style="color:#f59e0b">迁移</b></div><div>= 先放款 &rarr; 后被拒。逾期后被风控拦截的用户，共 35,131 人</div>
     <div><b style="color:#ef4444">原生非等放</b></div><div>= 首次提单即被拒，后来才获批。共 28,963 人</div>
   </div>
   <div style="margin-top:12px;padding-top:10px;border-top:1px solid #374151;font-size:12px">
-    <b style="color:#d1d5db">口径</b>：各阶段 s8 率/盈利率为<b>订单维度</b>（ROW_NUMBER）；"只借1次"为<b>用户维度</b>；终态订单 = status IN (7,8)；全量无采样
+    <b style="color:#d1d5db">口径</b>：各阶段 s8 率/盈利率为<b>订单维度</b>（ROW_NUMBER over user_id ORDER BY apply_time）；"只借1次"为<b>用户维度</b>；终态订单 = status IN (7,8)；全量无采样
   </div>
 </div>
 
@@ -87,20 +85,21 @@ table th:first-child,table td:first-child{text-align:left}
 <div class="sum-card"><div style="color:#9ca3af;font-size:12px">等放</div><div class="big" style="color:#60a5fa">194,478</div><div style="color:#9ca3af;font-size:11px">整体盈利率 <b style="color:#f87171">+6.02%</b></div></div>
 <div class="sum-card"><div style="color:#9ca3af;font-size:12px">迁移</div><div class="big" style="color:#f59e0b">35,131</div><div style="color:#9ca3af;font-size:11px">整体盈利率 <b style="color:#34d399">+34.71%</b></div></div>
 <div class="sum-card"><div style="color:#9ca3af;font-size:12px">原生非等放</div><div class="big" style="color:#ef4444">28,963</div><div style="color:#9ca3af;font-size:11px">整体盈利率 <b style="color:#f87171">+3.74%</b></div></div>
+
 </div>
 
-<!-- 第一章：五类对比总表 -->
+<!-- 第一章 -->
 <div class="section">
 <h2>一、五类用户全维度对比</h2>
 <div style="overflow-x:auto">
 <table>
 <tr><th></th><th>人数</th><th>首贷 s8</th><th>首贷盈利</th><th>首贷件均</th><th>期限</th><th>4次+ s8</th><th>4次+ 盈利</th><th>仅1次%</th><th>仅1次盈</th><th>多次盈</th><th><b>整体盈</b></th></tr>
-{"".join(html_table_rows)}
+<tr><td><b style="color:#3b82f6">原生等放</b></td><td>229,609</td><td><b style="color:#f87171">36.9%</b></td><td class="pos">+4.6%</td><td>1,448 元</td><td>16 天</td><td>29.7%</td><td class="pos">+13.4%</td><td>45.2%</td><td class="neg">-51.1%</td><td class="pos">+16.2%</td><td class="pos"><b>+10.4%</b></td></tr><tr><td><b style="color:#10b981">非等放</b></td><td>64,094</td><td><b style="color:#34d399">21.2%</b></td><td class="pos">+25.8%</td><td>1,016 元</td><td>16 天</td><td>22.0%</td><td class="pos">+21.5%</td><td>40.3%</td><td class="neg">-10.0%</td><td class="pos">+25.0%</td><td class="pos"><b>+20.72%</b></td></tr><tr><td><b style="color:#60a5fa">等放</b></td><td>194,478</td><td><b style="color:#f87171">43.5%</b></td><td class="neg">-2.1%</td><td>1,489 元</td><td>16 天</td><td>32.9%</td><td class="pos">+10.5%</td><td>47.4%</td><td class="neg">-61.3%</td><td class="pos">+12.9%</td><td class="pos"><b>+6.02%</b></td></tr><tr><td><b style="color:#f59e0b">迁移</b></td><td>35,131</td><td><b style="color:#34d399">0.4%</b></td><td class="pos">+49.4%</td><td>1,225 元</td><td>15 天</td><td>18.2%</td><td class="pos">+27.5%</td><td>32.7%</td><td class="pos">+53.9%</td><td class="pos">+33.7%</td><td class="pos"><b>+34.71%</b></td></tr><tr><td><b style="color:#ef4444">原生非等放</b></td><td>28,963</td><td><b style="color:#f87171">40.9%</b></td><td class="neg">-3.8%</td><td>778 元</td><td>17 天</td><td>30.0%</td><td class="pos">+5.5%</td><td>49.6%</td><td class="neg">-61.5%</td><td class="pos">+11.2%</td><td class="pos"><b>+3.74%</b></td></tr>
 </table>
 </div>
 
 <div class="insight-box blue">
-<strong>一眼看穿：盈利排序 = 首贷 s8 率逆序。</strong>迁移（0.4% s8 → 34.71%）> 非等放（21.2% → 25.76%）> 原生等放（36.9% → 10.4%）> 等放（43.5% → 6.02%）> 原生非等放（40.9% → 3.74%）。唯一例外是原生非等放——首贷 s8 率（40.9%）低于等放（43.5%），但盈利率更低（3.74% vs 6.02%），因为件均仅 778 元。
+<strong>一眼看穿：盈利排序 = 首贷 s8 率逆序。</strong>迁移（0.4% s8 &rarr; 34.71%）&gt; 非等放（21.2% &rarr; 25.76%）&gt; 原生等放（36.9% &rarr; 10.4%）&gt; 等放（43.5% &rarr; 6.02%）&gt; 原生非等放（40.9% &rarr; 3.74%）。唯一例外是原生非等放——首贷 s8 率（40.9%）低于等放（43.5%），但盈利率更低（3.74% vs 6.02%），因为件均仅 778 元。
 </div>
 </div>
 
@@ -112,18 +111,18 @@ table th:first-child,table td:first-child{text-align:left}
 <div class="chart-card"><h4>各阶段盈利率</h4><div class="chart-wrap"><canvas id="c_profit"></canvas></div></div>
 <div class="chart-card"><h4>件均放款额</h4><div class="chart-wrap"><canvas id="c_remit"></canvas></div></div>
 <div class="chart-card"><h4>放款笔数分布</h4><div class="chart-wrap"><canvas id="c_n"></canvas></div></div>
-<div class="chart-card full"><h4>"只借1次" vs "多次借款" 盈利率</h4><div class="chart-wrap"><canvas id="c_single_vs_multi"></canvas></div></div>
+<div class="chart-card full"><h4>"只借1次" vs "多次借款" 盈利率对比</h4><div class="chart-wrap"><canvas id="c_single_vs_multi"></canvas></div></div>
 </div>
 </div>
 
-<!-- 第三章：盈利差异根源 -->
+<!-- 第三章 -->
 <div class="section">
 <h2>三、盈利率差距的根源：首贷 + "只借一次"双杀</h2>
 
 <div style="max-width:860px">
 <table>
 <tr><th>类别</th><th>人数</th><th>首贷盈利率</th><th>仅1次占比</th><th>仅1次盈利率</th><th>多次盈利率</th><th><b>整体盈利率</b></th></tr>
-{"".join(html_contrib_rows)}
+<tr><td>原生等放</td><td>229,609</td><td class="neg">-51.1%</td><td>45.2%</td><td class="neg">-51.1%</td><td class="pos">+16.2%</td><td class="pos"><b>+10.4%</b></td></tr><tr><td>非等放</td><td>64,094</td><td class="neg">-10.0%</td><td>40.3%</td><td class="neg">-10.0%</td><td class="pos">+25.0%</td><td class="pos"><b>+20.72%</b></td></tr><tr><td>等放</td><td>194,478</td><td class="neg">-61.3%</td><td>47.4%</td><td class="neg">-61.3%</td><td class="pos">+12.9%</td><td class="pos"><b>+6.02%</b></td></tr><tr><td>迁移</td><td>35,131</td><td class="pos">+53.9%</td><td>32.7%</td><td class="pos">+53.9%</td><td class="pos">+33.7%</td><td class="pos"><b>+34.71%</b></td></tr><tr><td>原生非等放</td><td>28,963</td><td class="neg">-61.5%</td><td>49.6%</td><td class="neg">-61.5%</td><td class="pos">+11.2%</td><td class="pos"><b>+3.74%</b></td></tr>
 </table>
 </div>
 
@@ -132,7 +131,7 @@ table th:first-child,table td:first-child{text-align:left}
 </div>
 
 <div class="insight-box">
-<strong>卡点 2 — 留存黑洞：</strong>所有五类用户中，"只借1次"群体的盈利率都是灾难性的——除了迁移用户（+53.9%）。等放 47.4% 的人只借 1 次，盈利率 −61.3%。如果不能降低首贷不良率，这部分用户会持续拉低整体盈利。
+<strong>卡点 2 — 留存黑洞：</strong>所有五类用户中，"只借1次"群体的盈利率都是灾难性的——除了迁移用户（+53.9%）。等放 47.4% 的人只借 1 次，盈利率 &minus;61.3%。如果不能降低首贷不良率，这部分用户会持续拉低整体盈利。
 </div>
 
 <div class="insight-box green">
@@ -140,23 +139,23 @@ table th:first-child,table td:first-child{text-align:left}
 </div>
 </div>
 
-<!-- 第四章：结论 -->
+<!-- 第四章 -->
 <div class="section">
 <h2>四、结论：盈利的五个层次</h2>
 
 <div style="max-width:860px">
-<p><b style="color:#f59e0b">第一层（优质）：迁移用户，34.71%。</b>逾期→恢复→被拒→再申请。三重自然筛选后存活，首贷 s8 率 0.4%。这是平台可以放心的群体。</p>
+<p><b style="color:#f59e0b">第一层（优质）：迁移用户，34.71%。</b>逾期 &rarr; 恢复 &rarr; 被拒 &rarr; 再申请。三重自然筛选后存活，首贷 s8 率 0.4%。平台可以放心放款的群体。</p>
 
-<p><b style="color:#10b981">第二层（尚可）：非等放整体，25.76%。</b>被迁移用户拉高了平均。如果只看原生非等放，盈利率仅 3.74%。"非等放=好"是个假象。</p>
+<p><b style="color:#10b981">第二层（尚可）：非等放整体，25.76%。</b>被迁移用户拉高了平均。如果只看原生非等放，盈利率仅 3.74%。"非等放 = 好"是个假象。</p>
 
-<p><b style="color:#3b82f6">第三层（及格）：原生等放整体，10.4%。</b>88.8% 的用户属于这一类。内部严重分化：等放 6.02%、迁移 34.71%。如果能提高迁移用户占比（让更多劣质用户被风控筛掉后变成迁移），整体盈利率还能提升。</p>
+<p><b style="color:#3b82f6">第三层（及格）：原生等放整体，10.4%。</b>88.8% 的用户属于这一类。内部严重分化：等放 6.02%、迁移 34.71%。</p>
 
 <p><b style="color:#60a5fa">第四层（不及格）：等放，6.02%。</b>75.2% 的用户在这里。43.5% 的首贷 s8 率是最大拖累。47.4% 的人只借一次就坏。首贷风控是唯一杠杆点。</p>
 
-<p><b style="color:#ef4444">第五层（最差）：原生非等放，3.74%。</b>11.2% 的用户。被风控拒绝但仍首贷 s8 率 40.9%。说明风控的拒绝策略既不准（没筛掉坏人），又太严（限制了件均）。</p>
+<p><b style="color:#ef4444">第五层（最差）：原生非等放，3.74%。</b>11.2% 的用户。被风控拒绝但仍首贷 s8 率 40.9%。风控拒绝策略既不准（没筛掉坏人），又太严（限制了件均）。</p>
 
 <div class="insight-box blue">
-<strong>行动建议：</strong>如果能将等放的首贷 s8 率从 43.5% 降到 30%（通过首贷风控），约 2.6 万用户从 s8 转为 s7。这些用户不再只是"借一次就坏"，而是能进入第 2 次（+4.8%）、第 3 次（+4.5%）、第 4+次（+10.5%）的复借盈利区间。这不仅让首贷扭亏为盈，还创造了复借的终身价值。<b>等放整体盈利率预计从 6% 提升到 12-15%。</b>
+<strong>行动建议：</strong>如果能将等放的首贷 s8 率从 43.5% 降到 30%（通过首贷风控），约 2.6 万用户从 s8 转为 s7。这些用户不再只是"借一次就坏"，而是能进入第 2 次（+4.8%）、第 3 次（+4.5%）、第 4+次（+10.5%）的复借盈利区间。<b>等放整体盈利率预计从 6% 提升到 12-15%。</b>
 </div>
 </div>
 </div>
@@ -164,36 +163,61 @@ table th:first-child,table td:first-child{text-align:left}
 </div>
 
 <script>
-var cats = {json.dumps(cats, ensure_ascii=False)};
-var names = {json.dumps(names, ensure_ascii=False)};
-var cols = {json.dumps(colors)};
+var CATS = ["首贷", "第2次放款", "第3次放款", "第4次+放款"];
+var NAMES = ["原生等放", "非等放", "等放", "迁移", "原生非等放"];
+var CONTRIB = {"原生等放": [229609, 45.2, -51.1, 54.8, 16.2, 10.4], "非等放": [64094, 40.3, -10.0, 59.7, 25.0, 20.72], "等放": [194478, 47.4, -61.3, 52.6, 12.9, 6.02], "迁移": [35131, 32.7, 53.9, 67.3, 33.7, 34.71], "原生非等放": [28963, 49.6, -61.5, 50.4, 11.2, 3.74]};
+var SEQM = {"原生等放": {"首贷": {"n": 229609, "s8pct": 36.9, "profit": 4.6, "avg_remit": 1448}, "第2次放款": {"n": 125882, "s8pct": 33.4, "profit": 10.1, "avg_remit": 2152}, "第3次放款": {"n": 80985, "s8pct": 33.2, "profit": 9.1, "avg_remit": 2745}, "第4次+放款": {"n": 178182, "s8pct": 29.7, "profit": 13.4, "avg_remit": 4596}}, "非等放": {"首贷": {"n": 64094, "s8pct": 21.2, "profit": 25.8, "avg_remit": 1016}, "第2次放款": {"n": 38267, "s8pct": 18.7, "profit": 28.4, "avg_remit": 1463}, "第3次放款": {"n": 24825, "s8pct": 20.2, "profit": 25.6, "avg_remit": 1840}, "第4次+放款": {"n": 56833, "s8pct": 22.0, "profit": 21.5, "avg_remit": 3333}}, "等放": {"首贷": {"n": 194478, "s8pct": 43.5, "profit": -2.1, "avg_remit": 1489}, "第2次放款": {"n": 102224, "s8pct": 39.0, "profit": 4.8, "avg_remit": 2269}, "第3次放款": {"n": 65113, "s8pct": 38.0, "profit": 4.5, "avg_remit": 2933}, "第4次+放款": {"n": 139639, "s8pct": 32.9, "profit": 10.5, "avg_remit": 4867}}, "迁移": {"首贷": {"n": 35131, "s8pct": 0.4, "profit": 49.4, "avg_remit": 1225}, "第2次放款": {"n": 23658, "s8pct": 9.6, "profit": 41.8, "avg_remit": 1646}, "第3次放款": {"n": 15872, "s8pct": 13.5, "profit": 36.7, "avg_remit": 1979}, "第4次+放款": {"n": 38543, "s8pct": 18.2, "profit": 27.5, "avg_remit": 3619}}, "原生非等放": {"首贷": {"n": 28963, "s8pct": 40.9, "profit": -3.8, "avg_remit": 778}, "第2次放款": {"n": 14609, "s8pct": 33.4, "profit": 6.5, "avg_remit": 1165}, "第3次放款": {"n": 8953, "s8pct": 32.0, "profit": 6.0, "avg_remit": 1598}, "第4次+放款": {"n": 18290, "s8pct": 30.0, "profit": 5.5, "avg_remit": 2768}}};
+var DL = {"原生等放": "#3b82f6", "非等放": "#10b981", "等放": "#60a5fa", "迁移": "#f59e0b", "原生非等放": "#ef4444"};
+var DS = ['原生等放','非等放','等放','迁移','原生非等放'];
 
 Chart.defaults.color = '#9ca3af';
 Chart.defaults.borderColor = 'transparent';
-Chart.defaults.plugins.legend.labels.color = '#d1d5db';
 
-function grouped(id, datasets) {{
-  new Chart(document.getElementById(id), {{
-    type:'bar', data:{{labels:cats, datasets:datasets}},
-    options:{{responsive:true,maintainAspectRatio:false,
-      plugins:{{tooltip:{{backgroundColor:'#374151',titleColor:'#f9fafb',bodyColor:'#e5e7eb',
-        callbacks:{{label:function(c){{return c.dataset.label+': '+c.raw.toLocaleString()+(c.dataset.unit||'');}}}}}}}},
-      scales:{{x:{{grid:{{color:'#374151'}},ticks:{{color:'#9ca3af'}}}},
-        y:{{beginAtZero:true,grid:{{color:'#374151'}},ticks:{{color:'#9ca3af',callback:function(v){{return v+(datasets[0].unit||'');}}}}}}}}
-    }}
-  }});
-}}
+function grouped(id, datasets) {
+  new Chart(document.getElementById(id), {
+    type: 'bar',
+    data: { labels: CATS, datasets: datasets },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: { labels: { color: '#d1d5db' } },
+        tooltip: {
+          backgroundColor: '#374151',
+          titleColor: '#f9fafb',
+          bodyColor: '#e5e7eb',
+          callbacks: {
+            label: function(c) {
+              return c.dataset.label + ': ' + c.raw.toLocaleString() + (c.dataset.unit || '');
+            }
+          }
+        }
+      },
+      scales: {
+        x: { grid: { color: '#374151' }, ticks: { color: '#9ca3af' } },
+        y: {
+          beginAtZero: true,
+          grid: { color: '#374151' },
+          ticks: { color: '#9ca3af', callback: function(v) { return v + (datasets[0].unit || ''); } }
+        }
+      }
+    }
+  });
+}
 
-var dsOrder = ['原生等放','非等放','等放','迁移','原生非等放'];
-var dsColors = {{'原生等放':'#3b82f6','非等放':'#10b981','等放':'#60a5fa','迁移':'#f59e0b','原生非等放':'#ef4444'}};
-
-function makeDS(metric, unit) {{
-  var seqMap = {json.dumps({k: all_seq[k] for k in names}, ensure_ascii=False)};
-  return dsOrder.map(function(n) {{
-    var d = seqMap[n];
-    return {{label:n, data:[d['首贷'][metric], d['第2次放款'][metric], d['第3次放款'][metric], d['第4次+放款'][metric]], backgroundColor:dsColors[n], borderRadius:8, borderWidth:0, unit:unit}};
-  }});
-}}
+function makeDS(metric, unit) {
+  return DS.map(function(n) {
+    var d = SEQM[n];
+    return {
+      label: n,
+      data: [d['首贷'][metric], d['第2次放款'][metric], d['第3次放款'][metric], d['第4次+放款'][metric]],
+      backgroundColor: DL[n],
+      borderRadius: 8,
+      borderWidth: 0,
+      unit: unit
+    };
+  });
+}
 
 grouped('c_s8', makeDS('s8pct', '%'));
 grouped('c_profit', makeDS('profit', '%'));
@@ -201,19 +225,48 @@ grouped('c_remit', makeDS('avg_remit', ' 元'));
 grouped('c_n', makeDS('n', ''));
 
 // 单次 vs 多次
-var contrib = {json.dumps(contrib_data, ensure_ascii=False)};
-new Chart(document.getElementById('c_single_vs_multi'), {{
-  type:'bar',
-  data:{{labels:dsOrder, datasets:[
-    {{label:'仅1次盈利率',data:dsOrder.map(function(n){{return contrib[n][2];}}),backgroundColor:dsOrder.map(function(n){{return dsColors[n]+'88';}}),borderRadius:8,borderWidth:0,unit:'%'}},
-    {{label:'多次盈利率',data:dsOrder.map(function(n){{return contrib[n][4];}}),backgroundColor:dsOrder.map(function(n){{return dsColors[n];}}),borderRadius:8,borderWidth:0,unit:'%'}}
-  ]}},
-  options:{{responsive:true,maintainAspectRatio:false,
-    plugins:{{tooltip:{{backgroundColor:'#374151',titleColor:'#f9fafb',bodyColor:'#e5e7eb',
-      callbacks:{{label:function(c){{return c.dataset.label+': '+c.raw+'%';}}}}}}}},
-    scales:{{x:{{grid:{{color:'#374151'}},ticks:{{color:'#9ca3af'}}}},
-      y:{{grid:{{color:'#374151'}},ticks:{{color:'#9ca3af',callback:function(v){{return v+'%';}}}}}}}}
-  }}
-}});
+new Chart(document.getElementById('c_single_vs_multi'), {
+  type: 'bar',
+  data: {
+    labels: DS,
+    datasets: [
+      {
+        label: '仅1次盈利率',
+        data: DS.map(function(n) { return CONTRIB[n][2]; }),
+        backgroundColor: DS.map(function(n) { return DL[n] + '88'; }),
+        borderRadius: 8,
+        borderWidth: 0,
+        unit: '%'
+      },
+      {
+        label: '多次盈利率',
+        data: DS.map(function(n) { return CONTRIB[n][4]; }),
+        backgroundColor: DS.map(function(n) { return DL[n]; }),
+        borderRadius: 8,
+        borderWidth: 0,
+        unit: '%'
+      }
+    ]
+  },
+  options: {
+    responsive: true,
+    maintainAspectRatio: false,
+    plugins: {
+      legend: { labels: { color: '#d1d5db' } },
+      tooltip: {
+        backgroundColor: '#374151',
+        titleColor: '#f9fafb',
+        bodyColor: '#e5e7eb',
+        callbacks: {
+          label: function(c) { return c.dataset.label + ': ' + c.raw + '%'; }
+        }
+      }
+    },
+    scales: {
+      x: { grid: { color: '#374151' }, ticks: { color: '#9ca3af' } },
+      y: { grid: { color: '#374151' }, ticks: { color: '#9ca3af', callback: function(v) { return v + '%'; } } }
+    }
+  }
+});
 </script>
 </body></html>
