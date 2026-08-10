@@ -1,0 +1,418 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>等放用户 vs 非等放用户 — 深度对比分析报告</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:#0f1932;color:#b4c3dc;font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei",sans-serif;line-height:1.8}
+.container{max-width:960px;margin:0 auto;padding:40px 20px}
+.cover{text-align:center;padding:80px 0 60px}
+.cover hr{width:200px;height:2px;background:#3c8ce6;border:none;margin:0 auto}
+.cover h1{font-size:30px;color:#fff;margin:30px 0 16px;font-weight:700;letter-spacing:2px}
+.cover .subtitle{font-size:14px;color:#8a9bc0;margin-bottom:6px}
+.cover .subtitle .highlight{color:#f0a050;font-weight:600}
+.section-title{display:flex;align-items:center;gap:12px;margin:50px 0 24px}
+.section-title .bar{width:4px;height:24px;background:#3c8ce6;border-radius:2px}
+.section-title h2{font-size:20px;color:#fff;font-weight:700}
+.section-sub{font-size:13px;color:#6a7fa0;margin-bottom:20px}
+.kpi-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:24px}
+.kpi-card{background:#1a2640;border-radius:10px;padding:24px 20px;text-align:center;border:1px solid #2a3a5c}
+.kpi-card .label{font-size:13px;color:#6a7fa0;margin-bottom:8px}
+.kpi-card .value{font-size:28px;font-weight:700;color:#fff;margin-bottom:4px}
+.kpi-card .value.green{color:#4ecdc4}
+.kpi-card .value.red{color:#e05555}
+.kpi-card .value.orange{color:#f0a050}
+.kpi-card .sub{font-size:12px;color:#6a7fa0}
+.insight-box{background:#1a2640;border-left:4px solid #3c8ce6;border-radius:8px;padding:20px 24px;margin:24px 0}
+.insight-box .insight-label{font-size:12px;color:#3c8ce6;font-weight:600;margin-bottom:6px;text-transform:uppercase;letter-spacing:1px}
+.insight-box p{font-size:14px;color:#c8d4e6;line-height:1.8}
+.warn-box{background:#1a2640;border-left:4px solid #e05555;border-radius:8px;padding:20px 24px;margin:24px 0}
+.warn-box .warn-label{font-size:12px;color:#e05555;font-weight:600;margin-bottom:6px;text-transform:uppercase;letter-spacing:1px}
+.warn-box p{font-size:14px;color:#c8d4e6;line-height:1.8}
+table{width:100%;border-collapse:collapse;margin:20px 0;font-size:13px}
+thead th{background:#1a2640;color:#a0b8d8;font-weight:600;padding:12px 14px;text-align:center;border-bottom:2px solid #2a3a5c;font-size:12px}
+thead th:first-child{text-align:left}
+tbody td{padding:10px 14px;text-align:center;border-bottom:1px solid #1a2640}
+tbody td:first-child{text-align:left;color:#c8d4e6;font-weight:500}
+tbody tr:hover{background:#1a2640}
+.tag{display:inline-block;padding:2px 8px;border-radius:4px;font-size:11px;font-weight:600}
+.tag-green{background:#1a4030;color:#4ecdc4}
+.tag-red{background:#401a1a;color:#e05555}
+.tag-blue{background:#1a2a40;color:#3c8ce6}
+.chart-wrap{background:#1a2640;border-radius:10px;padding:24px;margin:20px 0;border:1px solid #2a3a5c}
+.chart-wrap .chart-title{font-size:14px;color:#fff;font-weight:600;margin-bottom:16px}
+.chart-wrap canvas{width:100%;height:320px}
+.conclusion{background:linear-gradient(135deg,#1a2640,#1a2a40);border-radius:12px;padding:32px;margin:40px 0;border:1px solid #2a3a5c}
+.conclusion h3{color:#fff;font-size:18px;margin-bottom:20px}
+.conclusion ul{margin-left:20px}
+.conclusion li{color:#c8d4e6;font-size:14px;margin-bottom:10px;line-height:1.8}
+.output-label{font-size:12px;color:#6a7fa0;margin-top:6px}
+.arrow-up{color:#e05555}
+.arrow-down{color:#4ecdc4}
+</style>
+</head>
+<body>
+<div class="container">
+
+<!-- 封面 -->
+<div class="cover">
+  <hr>
+  <h1>等放用户 vs 非等放用户<br>深度对比分析报告</h1>
+  <p class="subtitle">基于 2024.01 ~ 2026.05 注册用户全量数据</p>
+  <p class="subtitle">等放定义：<span class="highlight">提单次数 = 放款次数</span>（每次提单都成功放款）</p>
+  <p class="subtitle">非等放定义：<span class="highlight">提单次数 > 放款次数</span>（至少一次提单被拒/放弃）</p>
+  <p class="output-label">口径：盈利率排除 status=5（在途），仅统计 status=7/8 终态订单</p>
+</div>
+
+<!-- 核心发现 -->
+<div class="warn-box">
+  <div class="warn-label">核心发现：等放 ≠ 优质</div>
+  <p>等放用户每次提单都成功放款，直觉上应是"优质用户"。但数据显示：<strong>等放用户的逾期率远高于非等放用户（87.0% vs 55.4%），盈利率远低于非等放用户（5.42% vs 22.07%）</strong>。等放不是优势，是风控门槛过低的信号——用户一申请就放，没有经过被拒筛选，导致低质量用户大量涌入。</p>
+</div>
+
+<!-- 汇总 KPI -->
+<div class="section-title"><div class="bar"></div><h2>一、整体规模与结构</h2></div>
+<p class="section-sub">数据范围：2024.01 ~ 2026.05 注册 · 1,802,820 提单用户 · 334,668 首贷用户</p>
+
+<div class="kpi-grid">
+  <div class="kpi-card">
+    <div class="label">总提单用户</div>
+    <div class="value">180.3万</div>
+    <div class="sub">2024.01~2026.05注册</div>
+  </div>
+  <div class="kpi-card">
+    <div class="label">首贷用户</div>
+    <div class="value green">33.5万</div>
+    <div class="sub">首贷率 18.6%</div>
+  </div>
+  <div class="kpi-card">
+    <div class="label">等放用户占首贷比</div>
+    <div class="value orange">73.4%</div>
+    <div class="sub">24.6万等放 · 8.9万非等放</div>
+  </div>
+</div>
+
+<table>
+  <thead>
+    <tr>
+      <th>指标</th><th>全量首贷用户</th><th>等放用户</th><th>非等放用户</th><th>差异</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>用户数</td>
+      <td>334,668</td>
+      <td>245,698</td>
+      <td>88,970</td>
+      <td>等放是非等的 2.76 倍</td>
+    </tr>
+    <tr>
+      <td>人均放款次数</td>
+      <td>2.71</td>
+      <td>2.63</td>
+      <td>2.91</td>
+      <td><span class="arrow-up">非等 +0.28</span></td>
+    </tr>
+    <tr>
+      <td>件均申请额</td>
+      <td>2,570</td>
+      <td>2,789</td>
+      <td>2,025</td>
+      <td><span class="arrow-up">等放高 +764</span></td>
+    </tr>
+    <tr>
+      <td>额度使用率</td>
+      <td>88.26%</td>
+      <td>88.38%</td>
+      <td>87.86%</td>
+      <td>基本持平</td>
+    </tr>
+  </tbody>
+</table>
+
+<!-- 二、逾期风险对比 -->
+<div class="section-title"><div class="bar"></div><h2>二、逾期风险对比</h2></div>
+<p class="section-sub">等放用户的逾期表现全面劣于非等放用户，差异显著</p>
+
+<div class="kpi-grid">
+  <div class="kpi-card">
+    <div class="label">用户级 od>0 占比</div>
+    <div class="value red">等放 89.8%</div>
+    <div class="sub">非等放 74.8% · 差距 +15.0pp</div>
+  </div>
+  <div class="kpi-card">
+    <div class="label">用户级 status=8 占比</div>
+    <div class="value red">等放 87.0%</div>
+    <div class="sub">非等放 55.4% · 差距 +31.6pp</div>
+  </div>
+  <div class="kpi-card">
+    <div class="label">订单级 status=8 占比</div>
+    <div class="value red">等放 38.8%</div>
+    <div class="sub">非等放 21.6% · 差距 +17.2pp</div>
+  </div>
+</div>
+
+<table>
+  <thead>
+    <tr>
+      <th>逾期指标</th><th>全量</th><th>等放</th><th>非等放</th><th>差距（等-非）</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>用户级 od>0（曾逾期用户）</td><td>85.8%</td><td><span class="tag tag-red">89.8%</span></td><td><span class="tag tag-green">74.8%</span></td><td><span class="arrow-up">+15.0 pp</span></td>
+    </tr>
+    <tr>
+      <td>用户级 status=8（曾不良）</td><td>78.6%</td><td><span class="tag tag-red">87.0%</span></td><td><span class="tag tag-green">55.4%</span></td><td><span class="arrow-up">+31.6 pp</span></td>
+    </tr>
+    <tr>
+      <td>用户级分期逾期</td><td>91.4%</td><td><span class="tag tag-red">92.8%</span></td><td><span class="tag tag-green">87.7%</span></td><td><span class="arrow-up">+5.1 pp</span></td>
+    </tr>
+    <tr>
+      <td>订单级 od>0</td><td>38.6%</td><td><span class="tag tag-red">41.5%</span></td><td><span class="tag tag-green">31.3%</span></td><td><span class="arrow-up">+10.2 pp</span></td>
+    </tr>
+    <tr>
+      <td>订单级 status=8</td><td>33.9%</td><td><span class="tag tag-red">38.8%</span></td><td><span class="tag tag-green">21.6%</span></td><td><span class="arrow-up">+17.2 pp</span></td>
+    </tr>
+    <tr>
+      <td>订单级分期逾期</td><td>46.0%</td><td><span class="tag tag-red">46.9%</span></td><td><span class="tag tag-green">43.8%</span></td><td><span class="arrow-up">+3.1 pp</span></td>
+    </tr>
+    <tr>
+      <td>人均逾期订单数</td><td>1.04</td><td>1.09</td><td>0.91</td><td><span class="arrow-up">+0.18</span></td>
+    </tr>
+    <tr>
+      <td>人均分期逾期订单数</td><td>1.25</td><td>1.23</td><td>1.27</td><td>−0.04（基本持平）</td>
+    </tr>
+  </tbody>
+</table>
+
+<div class="chart-wrap">
+  <div class="chart-title">用户级 status=8 订单占比趋势（按注册月）</div>
+  <canvas id="chartStatus8"></canvas>
+</div>
+
+<div class="insight-box">
+  <div class="insight-label">分析</div>
+  <p>等放用户的<strong>用户级 status=8 占比（87.0%）</strong>比非等放用户（55.4%）高出 31.6 个百分点。这意味着等放用户中，每 10 个人就有近 9 个最终产生不良记录，而非等放用户"只有"5.5 个。从趋势图看，两类用户的 gap 从 2024 年初开始持续存在，等放用户的 s8 率始终维持在高位（80%~95%），而非等放用户在 2025 年后稳定下降（从 70% 降至 40% 左右），说明非等放用户的质量在持续改善。</p>
+</div>
+
+<!-- 三、盈利对比 -->
+<div class="section-title"><div class="bar"></div><h2>三、盈利与回款对比</h2></div>
+
+<div class="kpi-grid">
+  <div class="kpi-card">
+    <div class="label">整体盈利率</div>
+    <div class="value green">等放 5.42%</div>
+    <div class="sub">非等放 22.07% · 差距 −16.65pp</div>
+  </div>
+  <div class="kpi-card">
+    <div class="label">逾期回款率</div>
+    <div class="value orange">等放 35.95%</div>
+    <div class="sub">非等放 32.35% · 差距 +3.60pp</div>
+  </div>
+  <div class="kpi-card">
+    <div class="label">件均申请额</div>
+    <div class="value">等放 2,789</div>
+    <div class="sub">非等放 2,025 · 差距 +764</div>
+  </div>
+</div>
+
+<table>
+  <thead>
+    <tr>
+      <th>盈利指标</th><th>全量</th><th>等放</th><th>非等放</th><th>差距</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>盈利率（终态订单）</td><td>9.16%</td><td><span class="tag tag-red">5.42%</span></td><td><span class="tag tag-green">22.07%</span></td><td><span class="arrow-down">−16.65 pp</span></td>
+    </tr>
+    <tr>
+      <td>逾期回款率</td><td>35.42%</td><td><span class="tag tag-green">35.95%</span></td><td><span class="tag tag-red">32.35%</span></td><td><span class="arrow-up">+3.60 pp</span></td>
+    </tr>
+    <tr>
+      <td>额度使用率</td><td>88.26%</td><td>88.38%</td><td>87.86%</td><td>+0.52 pp</td>
+    </tr>
+    <tr>
+      <td>件均申请额</td><td>2,570</td><td><span class="tag tag-red">2,789</span></td><td><span class="tag tag-green">2,025</span></td><td><span class="arrow-up">+764</span></td>
+    </tr>
+  </tbody>
+</table>
+
+<div class="chart-wrap">
+  <div class="chart-title">盈利率趋势对比（按注册月）</div>
+  <canvas id="chartProfit"></canvas>
+</div>
+
+<div class="insight-box">
+  <div class="insight-label">分析</div>
+  <p><strong>等放用户盈利率仅 5.42%，非等放用户高达 22.07%，差距 16.65 个百分点。</strong>原因很直接：等放用户逾期率高（38.8% 订单不良），虽然回款率略高（35.95% vs 32.35%），但不良订单的放款本金损失远超过回款补偿。从趋势图看，非等放用户的盈利率在 2025 年后持续上升（从 15% 涨至 32%+），而等放用户始终在 1%~9% 区间波动——两类用户的盈利差距在持续<strong>扩大</strong>。</p>
+</div>
+
+<!-- 四、月度趋势 -->
+<div class="section-title"><div class="bar"></div><h2>四、月度演变趋势</h2></div>
+
+<div class="chart-wrap">
+  <div class="chart-title">等放占首贷比趋势（按注册月）</div>
+  <canvas id="chartEqRatio"></canvas>
+</div>
+
+<div class="chart-wrap">
+  <div class="chart-title">人均放款次数趋势</div>
+  <canvas id="chartAvgLoan"></canvas>
+</div>
+
+<div class="insight-box">
+  <div class="insight-label">趋势解读</div>
+  <p><strong>等放占首贷比持续上升：</strong>从 2024 年初的 59.9% 一路上升至 2026 年 5 月的 82.7%，增长了 22.8 个百分点。这意味着<strong>越来越多的新用户是"申请即放款"</strong>，风控门槛似乎在降低。与此同时，等放用户的盈利率并未同步改善（长期在 1%~9%），而订单级 status=8 占比保持高位（38%~43%）。非等放用户虽然人数比例下降，但人均放款次数更高（2.91 vs 2.63），说明留下的非等放用户是经过筛选的活跃优质用户。</p>
+</div>
+
+<!-- 五、结论与建议 -->
+<div class="conclusion">
+  <h3>结论与建议</h3>
+  <ol>
+    <li><strong>等放不是优质标签，而是风控缺失的信号。</strong>等放用户（每次提单都放款）的 status=8 不良率比非等放用户高 31.6 个百分点，盈利率低 16.65 个百分点。一申请就放意味着漏过大量高风险用户。</li>
+    <li><strong>被拒筛选有显著正向效果。</strong>非等放用户虽然经历了被拒的"挫折"，但留下的用户质量更高：逾期率更低、盈利率更高、更活跃（人均放款次数更多）。被拒机制起到了质量过滤的作用。</li>
+    <li><strong>等放占比持续升高是危险信号。</strong>从 60% 升至 83%，说明风控拦截率在下降。如果这是有意的"扩张策略"，需要同步监控对应的盈利率和不良率变化。</li>
+    <li><strong>建议 1：检查首次提单的通过率合理性。</strong>当前等放占比过高，建议对首贷用户的首次提单增加更严格的风控规则，适当提高拒批率。</li>
+    <li><strong>建议 2：对等放用户做分层运营。</strong>将等放用户按是否逾期拆分为"优质等放"和"劣质等放"，对劣质等放提升风控门槛，对优质等放给予额度/费率优惠。</li>
+    <li><strong>建议 3：建立等放占比监控看板。</strong>将等放占比、等放盈利率、等放 status=8 率作为核心风控指标，设置预警阈值。</li>
+  </ol>
+</div>
+
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.min.js"></script>
+<script>
+// 数据
+var months = [];
+var eqRatio = [], eqStat8 = [], neqStat8 = [];
+var eqProfit = [], neqProfit = [];
+var eqAvgLoan = [], neqAvgLoan = [];
+
+// 按月数据（从SQL输出提取）
+var rawData = [
+  ["2024-01",59.9,93.1,74.1,1.20,12.16,2.69,2.94],
+  ["2024-02",63.8,92.6,71.7,2.42,11.84,2.72,2.83],
+  ["2024-03",65.9,92.9,69.6,1.50,9.28,2.54,2.74],
+  ["2024-04",65.0,92.7,68.8,1.71,11.10,2.68,2.66],
+  ["2024-05",67.0,91.2,68.5,4.68,15.68,3.02,3.05],
+  ["2024-06",68.4,92.8,67.4,0.07,16.26,2.82,3.09],
+  ["2024-07",66.7,91.8,63.0,2.97,13.51,2.79,3.00],
+  ["2024-08",68.3,93.3,69.6,4.08,10.10,2.67,2.91],
+  ["2024-09",67.2,92.9,68.6,2.53,15.27,2.78,3.16],
+  ["2024-10",65.4,91.2,66.6,4.96,15.22,3.04,3.19],
+  ["2024-11",68.3,90.6,67.2,5.19,14.99,3.12,3.19],
+  ["2024-12",75.2,93.1,58.3,3.52,19.28,2.79,3.19],
+  ["2025-01",71.7,92.3,63.1,2.52,20.11,2.77,3.34],
+  ["2025-02",72.4,92.0,62.2,2.81,19.73,2.97,3.31],
+  ["2025-03",68.8,91.3,63.5,4.10,20.66,2.87,3.13],
+  ["2025-04",65.6,89.9,60.5,8.23,20.68,2.86,3.06],
+  ["2025-05",68.1,88.6,60.1,9.22,23.89,2.91,3.20],
+  ["2025-06",72.0,89.4,54.4,7.16,25.20,2.70,3.03],
+  ["2025-07",71.8,89.7,54.1,4.03,25.22,2.47,2.99],
+  ["2025-08",71.9,88.5,54.3,6.18,24.13,2.59,3.00],
+  ["2025-09",72.8,87.7,53.0,6.15,24.92,2.59,3.04],
+  ["2025-10",72.5,86.1,47.1,9.04,26.49,2.81,2.99],
+  ["2025-11",75.1,85.3,47.3,8.22,28.75,2.78,2.96],
+  ["2025-12",78.3,87.5,46.2,4.78,30.21,2.54,2.74],
+  ["2026-01",77.4,85.9,46.0,6.57,29.59,2.58,2.77],
+  ["2026-02",78.6,83.9,42.7,6.15,31.73,2.46,2.72],
+  ["2026-03",78.9,81.3,41.6,6.65,32.46,2.40,2.52],
+  ["2026-04",80.2,80.0,38.8,5.97,33.12,2.35,2.29],
+  ["2026-05",82.7,77.0,41.3,5.07,32.28,2.26,2.20],
+];
+rawData.forEach(function(r) {
+  months.push(r[0].substring(2)); // 24-01, 24-02, ...
+  eqRatio.push(r[1]);
+  eqStat8.push(r[2]);
+  neqStat8.push(r[3]);
+  eqProfit.push(r[4]);
+  neqProfit.push(r[5]);
+  eqAvgLoan.push(r[6]);
+  neqAvgLoan.push(r[7]);
+});
+
+// Chart 1: status=8 用户占比趋势
+new Chart(document.getElementById('chartStatus8'), {
+  type: 'line',
+  data: {
+    labels: months,
+    datasets: [
+      { label: '等放用户 status=8 占比', data: eqStat8, borderColor: '#e05555', backgroundColor: 'rgba(224,85,85,0.1)', tension: 0.3, fill: true, pointRadius: 1 },
+      { label: '非等放用户 status=8 占比', data: neqStat8, borderColor: '#4ecdc4', backgroundColor: 'rgba(78,205,196,0.1)', tension: 0.3, fill: true, pointRadius: 1 }
+    ]
+  },
+  options: {
+    responsive: true,
+    plugins: { legend: { labels: { color: '#a0b8d8', font: { size: 12 } } } },
+    scales: {
+      x: { ticks: { color: '#6a7fa0', font: { size: 10 }, maxTicksLimit: 14 } },
+      y: { ticks: { color: '#6a7fa0', callback: v => v + '%', font: { size: 10 } }, min: 30, max: 100 }
+    }
+  }
+});
+
+// Chart 2: 盈利率趋势
+new Chart(document.getElementById('chartProfit'), {
+  type: 'line',
+  data: {
+    labels: months,
+    datasets: [
+      { label: '等放盈利率', data: eqProfit, borderColor: '#e05555', backgroundColor: 'rgba(224,85,85,0.1)', tension: 0.3, fill: true, pointRadius: 1 },
+      { label: '非等放盈利率', data: neqProfit, borderColor: '#4ecdc4', backgroundColor: 'rgba(78,205,196,0.1)', tension: 0.3, fill: true, pointRadius: 1 }
+    ]
+  },
+  options: {
+    responsive: true,
+    plugins: { legend: { labels: { color: '#a0b8d8', font: { size: 12 } } } },
+    scales: {
+      x: { ticks: { color: '#6a7fa0', font: { size: 10 }, maxTicksLimit: 14 } },
+      y: { ticks: { color: '#6a7fa0', callback: v => v + '%', font: { size: 10 } }, min: -5, max: 40 }
+    }
+  }
+});
+
+// Chart 3: 等放占首贷比
+new Chart(document.getElementById('chartEqRatio'), {
+  type: 'line',
+  data: {
+    labels: months,
+    datasets: [
+      { label: '等放用户占首贷比', data: eqRatio, borderColor: '#f0a050', backgroundColor: 'rgba(240,160,80,0.1)', tension: 0.3, fill: true, pointRadius: 1, borderWidth: 2 }
+    ]
+  },
+  options: {
+    responsive: true,
+    plugins: { legend: { labels: { color: '#a0b8d8', font: { size: 12 } } } },
+    scales: {
+      x: { ticks: { color: '#6a7fa0', font: { size: 10 }, maxTicksLimit: 14 } },
+      y: { ticks: { color: '#6a7fa0', callback: v => v + '%', font: { size: 10 } }, min: 50, max: 90 }
+    }
+  }
+});
+
+// Chart 4: 人均放款次数
+new Chart(document.getElementById('chartAvgLoan'), {
+  type: 'line',
+  data: {
+    labels: months,
+    datasets: [
+      { label: '等放人均放款', data: eqAvgLoan, borderColor: '#e05555', backgroundColor: 'rgba(224,85,85,0.1)', tension: 0.3, fill: true, pointRadius: 1 },
+      { label: '非等放人均放款', data: neqAvgLoan, borderColor: '#4ecdc4', backgroundColor: 'rgba(78,205,196,0.1)', tension: 0.3, fill: true, pointRadius: 1 }
+    ]
+  },
+  options: {
+    responsive: true,
+    plugins: { legend: { labels: { color: '#a0b8d8', font: { size: 12 } } } },
+    scales: {
+      x: { ticks: { color: '#6a7fa0', font: { size: 10 }, maxTicksLimit: 14 } },
+      y: { ticks: { color: '#6a7fa0', font: { size: 10 } }, min: 2.0, max: 3.5 }
+    }
+  }
+});
+</script>
+</body>
+</html>
