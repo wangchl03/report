@@ -4,153 +4,193 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>等放 · 非等放 · 原生非等放 · 迁移用户 — 四方对比</title>
-<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"><</script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
 <style>
-*{margin:0;padding:0;box-sizing:border-box}
-body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#f0f2f5;color:#1a1a2e;padding:32px 20px}
-.container{max-width:1200px;margin:0 auto}
-h1{text-align:center;font-size:26px;margin-bottom:6px;color:#0f0f23}
-.subtitle{text-align:center;font-size:13px;color:#888;margin-bottom:40px}
-.kpi-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:32px}
-.kpi-card{background:white;border-radius:12px;padding:20px;text-align:center;box-shadow:0 1px 4px rgba(0,0,0,.06)}
-.kpi-label{font-size:12px;color:#888;margin-bottom:6px}
-.kpi-value{font-size:28px;font-weight:700}
-.kpi-sub{font-size:11px;color:#aaa;margin-top:4px}
-.kpi-0 .kpi-value{color:#3498db}
-.kpi-1 .kpi-value{color:#2ecc71}
-.kpi-2 .kpi-value{color:#e74c3c}
-.kpi-3 .kpi-value{color:#f39c12}
-.chart-grid{display:grid;grid-template-columns:1fr 1fr;gap:24px;margin-bottom:24px}
-.chart-card{background:white;border-radius:12px;padding:20px;box-shadow:0 1px 4px rgba(0,0,0,.06)}
-.chart-card.full{grid-column:1/-1}
-.chart-title{font-size:15px;font-weight:600;margin-bottom:14px;color:#333}
-.chart-wrap{position:relative;height:320px}
-.chart-wrap.tall{height:380px}
-@media(max-width:768px){.kpi-grid{grid-template-columns:1fr 1fr}.chart-grid{grid-template-columns:1fr}}
-.footer{text-align:center;font-size:11px;color:#aaa;margin-top:40px}
-.legend{display:flex;gap:20px;justify-content:center;margin-bottom:24px;flex-wrap:wrap}
-.legend-item{display:flex;align-items:center;gap:6px;font-size:13px}
-.legend-dot{width:12px;height:12px;border-radius:3px}
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', sans-serif; background: #f0f2f5; color: #1a1a2e; padding: 40px 24px; }
+  .container { max-width: 1200px; margin: 0 auto; }
+  h1 { text-align: center; font-size: 28px; font-weight: 700; margin-bottom: 8px; color: #0f0f23; }
+  .subtitle { text-align: center; font-size: 14px; color: #999; margin-bottom: 32px; }
+
+  /* 四色说明条 */
+  .legend { display: flex; gap: 32px; justify-content: center; margin-bottom: 36px; flex-wrap: wrap; }
+  .legend-item { display: flex; align-items: center; gap: 8px; font-size: 14px; font-weight: 500; color: #555; }
+  .legend-dot { width: 14px; height: 14px; border-radius: 4px; flex-shrink: 0; }
+
+  /* KPI 卡片 */
+  .kpi-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 36px; }
+  .kpi-card { background: #fff; border-radius: 14px; padding: 24px 16px; text-align: center; box-shadow: 0 2px 8px rgba(0,0,0,.04); transition: transform .15s; }
+  .kpi-card:hover { transform: translateY(-2px); box-shadow: 0 4px 16px rgba(0,0,0,.08); }
+  .kpi-card .label { font-size: 13px; color: #999; margin-bottom: 8px; }
+  .kpi-card .value { font-size: 30px; font-weight: 800; letter-spacing: -0.5px; margin-bottom: 4px; }
+  .kpi-card .sub { font-size: 12px; }
+  .kpi-0 .value { color: #3498db; }  .kpi-0 .sub { color: #3498db; }
+  .kpi-1 .value { color: #2ecc71; }  .kpi-1 .sub { color: #2ecc71; }
+  .kpi-2 .value { color: #e74c3c; }  .kpi-2 .sub { color: #e74c3c; }
+  .kpi-3 .value { color: #f39c12; }  .kpi-3 .sub { color: #f39c12; }
+
+  /* 图表网格 */
+  .chart-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; margin-bottom: 24px; }
+  .chart-card { background: #fff; border-radius: 14px; padding: 24px; box-shadow: 0 2px 8px rgba(0,0,0,.04); }
+  .chart-card.full { grid-column: 1 / -1; }
+  .chart-card h3 { font-size: 15px; font-weight: 600; color: #333; margin-bottom: 16px; }
+  .chart-wrap { position: relative; height: 300px; }
+  .chart-wrap.tall { height: 400px; }
+
+  /* 脚注 */
+  .footer { text-align: center; font-size: 12px; color: #bbb; margin-top: 48px; line-height: 1.8; }
+
+  @media (max-width: 768px) {
+    .kpi-grid { grid-template-columns: 1fr 1fr; }
+    .chart-grid { grid-template-columns: 1fr; }
+    h1 { font-size: 22px; }
+  }
 </style>
 </head>
 <body>
 <div class="container">
-<h1>等放 · 非等放 · 原生非等放 · 迁移用户</h1>
-<p class="subtitle">数据范围：2025.01 ~ 2026.05 注册用户 | 全量 | 四类用户盈利与逾期风险对比</p>
 
+<h1>等放 · 非等放整体 · 原生非等放 · 迁移用户</h1>
+<p class="subtitle">数据范围：2025.01 ~ 2026.05 注册 · 全量用户 · 盈利与逾期风险四维对比</p>
+
+<!-- 四色图例 -->
 <div class="legend">
-<div class="legend-item"><div class="legend-dot" style="background:#3498db"></div></div>等放用户</div>
-<div class="legend-item"><div class="legend-dot" style="background:#2ecc71"></div></div>非等放整体</div>
-<div class="legend-item"><div class="legend-dot" style="background:#e74c3c"></div></div>原生非等放</div>
-<div class="legend-item"><div class="legend-dot" style="background:#f39c12"></div></div>迁移用户</div>
+  <div class="legend-item"><span class="legend-dot" style="background:#3498db"></span> 等放用户</div>
+  <div class="legend-item"><span class="legend-dot" style="background:#2ecc71"></span> 非等放整体</div>
+  <div class="legend-item"><span class="legend-dot" style="background:#e74c3c"></span> 原生非等放</div>
+  <div class="legend-item"><span class="legend-dot" style="background:#f39c12"></span> 迁移用户</div>
 </div>
 
+<!-- KPI 卡片 -->
 <div class="kpi-grid">
-<div class="kpi-card kpi-0"><div class="kpi-label">等放用户</div><div class="kpi-value">194,478</div><div class="kpi-sub">盈利率 6.02%</div></div>
-<div class="kpi-card kpi-1"><div class="kpi-label">非等放整体</div><div class="kpi-value">64,094</div><div class="kpi-sub">盈利率 25.76%</div></div>
-<div class="kpi-card kpi-2"><div class="kpi-label">原生非等放</div><div class="kpi-value">28,963</div><div class="kpi-sub">盈利率 3.74%</div></div>
-<div class="kpi-card kpi-3"><div class="kpi-label">迁移用户</div><div class="kpi-value">35,131</div><div class="kpi-sub">盈利率 34.71%</div></div>
-
+  <div class="kpi-card kpi-0">
+    <div class="label">等放用户</div>
+    <div class="value" id="v0">--</div>
+    <div class="sub">盈利率 <b>6.02%</b></div>
+  </div>
+  <div class="kpi-card kpi-1">
+    <div class="label">非等放整体</div>
+    <div class="value" id="v1">--</div>
+    <div class="sub">盈利率 <b>25.76%</b></div>
+  </div>
+  <div class="kpi-card kpi-2">
+    <div class="label">原生非等放</div>
+    <div class="value" id="v2">--</div>
+    <div class="sub">盈利率 <b>3.74%</b></div>
+  </div>
+  <div class="kpi-card kpi-3">
+    <div class="label">迁移用户</div>
+    <div class="value" id="v3">--</div>
+    <div class="sub">盈利率 <b>34.71%</b></div>
+  </div>
 </div>
 
+<!-- 图表 -->
 <div class="chart-grid">
-  <div class="chart-card"><div class="chart-title">盈利率对比</div><div class="chart-wrap"><canvas id="c_profit"></canvas></canvas></div></div>
-  <div class="chart-card"><div class="chart-title">用户级逾期率对比</div><div class="chart-wrap"><canvas id="c_user_od_s8"></canvas></canvas></div></div>
-  <div class="chart-card"><div class="chart-title">od&gt;0 − s8 差值（逾期恢复率）</div><div class="chart-wrap"><canvas id="c_od_s8_diff"></canvas></canvas></div></div>
-  <div class="chart-card"><div class="chart-title">订单级逾期率对比</div><div class="chart-wrap"><canvas id="c_order_od_s8"></canvas></canvas></div></div>
-  <div class="chart-card"><div class="chart-title">逾期回款率对比</div><div class="chart-wrap"><canvas id="c_recovery"></canvas></canvas></div></div>
-  <div class="chart-card"><div class="chart-title">件均放款额对比</div><div class="chart-wrap"><canvas id="c_avg_remit"></canvas></canvas></div></div>
-  <div class="chart-card full"><div class="chart-title">综合雷达：盈利率 · 回款率 · 恢复率 · 件均</div><div class="chart-wrap tall"><canvas id="c_radar"></canvas></canvas></div></div>
+  <div class="chart-card"><h3>盈利率对比</h3><div class="chart-wrap"><canvas id="c_profit"></canvas></div></div>
+  <div class="chart-card"><h3>用户级逾期率对比（od&gt;0 vs s8）</h3><div class="chart-wrap"><canvas id="c_user_od_s8"></canvas></div></div>
+  <div class="chart-card"><h3>od&gt;0 &minus; s8 差值（逾期恢复率）</h3><div class="chart-wrap"><canvas id="c_od_s8_diff"></canvas></div></div>
+  <div class="chart-card"><h3>订单级逾期率对比</h3><div class="chart-wrap"><canvas id="c_order_od_s8"></canvas></div></div>
+  <div class="chart-card"><h3>逾期回款率对比</h3><div class="chart-wrap"><canvas id="c_recovery"></canvas></div></div>
+  <div class="chart-card"><h3>件均放款额对比</h3><div class="chart-wrap"><canvas id="c_avg_remit"></canvas></div></div>
+  <div class="chart-card full"><h3>综合雷达：盈利率 · 回款率 · 恢复率 · 件均放款额</h3><div class="chart-wrap tall"><canvas id="c_radar"></canvas></div></div>
 </div>
 
-<p class="footer">等放用户 = 从未被拒（提单=放款） · 非等放 = 至少被拒过一次 · 原生非等放 = 首笔即被拒 · 迁移用户 = 先放过款后被拒（逾期恢复+被拒再申）</p>
+<p class="footer">
+  <b>等放用户</b>：从未被拒（提单 = 放款）&emsp;|&emsp;
+  <b>非等放用户</b>：至少被拒过一次（提单 &gt; 放款）&emsp;|&emsp;
+  <b>原生非等放</b>：首笔申请即被拒&emsp;|&emsp;
+  <b>迁移用户</b>：先有过放款，后才被拒（逾期恢复 &rarr; 被拒 &rarr; 再申请）
+</p>
+
 </div>
 
 <script>
-var DATA = {"categories": ["等放用户", "非等放整体", "原生非等放", "迁移用户"], "user_count": [194478, 64094, 28963, 35131], "od_user_pct": [88.5, 71.6, 82.4, 62.7], "s8_user_pct": [85.6, 50.7, 76.9, 29.1], "od_s8_diff": [2.9, 20.9, 5.5, 33.6], "od_order_pct": [41.7, 30.2, 39.5, 24.4], "s8_order_pct": [38.9, 19.9, 35.4, 10.2], "profit_rate": [6.02, 25.76, 3.74, 34.71], "recovery_rate": [36.08, 32.36, 28.82, 36.2], "avg_remit": [2776.0, 1942, 1475, 2233]};
+var names   = ['等放用户', '非等放整体', '原生非等放', '迁移用户'];
+var users   = [194478,   64094,    28963,    35131];
+var profit  = [6.02,     25.76,    3.74,     34.71];
+var odU     = [91.7,     71.6,     82.4,     62.7];
+var s8U     = [89.6,     50.7,     76.9,     29.1];
+var odMinusS8_U = [2.1,  20.9,     5.5,      33.6];
+var odOrd   = [46.5,     30.2,     39.5,     24.4];
+var s8Ord   = [42.6,     19.9,     35.4,     10.2];
+var recov   = [21.78,    32.36,    28.82,    36.20];
+var avgRemit = [1373,    1942,     1475,     2233];
+var colors  = ['#3498db', '#2ecc71', '#e74c3c', '#f39c12'];
 
-var colors = ['#3498db', '#2ecc71', '#e74c3c', '#f39c12'];
-var labels = DATA.categories;
+// 填入 KPI
+['v0','v1','v2','v3'].forEach(function(id, i) {
+  document.getElementById(id).textContent = users[i].toLocaleString();
+});
 
-function makeBar(id, label, values, yLabel) {
-    yLabel = yLabel || '';
-    new Chart(document.getElementById(id), {
-        type: 'bar',
-        data: {
-            labels: labels,
-            datasets: [{label: label, data: values, backgroundColor: colors, borderRadius: 6, borderWidth: 0}]
-        },
-        options: {
-            responsive: true, maintainAspectRatio: false,
-            plugins: {legend: {display: false}},
-            scales: {y: {beginAtZero: true, ticks: {callback: function(v) { return v + yLabel; }}}}
-        }
-    });
+// 柱状图工具
+function bar(id, label, data, unit) {
+  unit = unit || '';
+  new Chart(document.getElementById(id), {
+    type: 'bar',
+    data: { labels: names, datasets: [{ label: label, data: data, backgroundColor: colors, borderRadius: 8, borderWidth: 0 }] },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      plugins: { legend: { display: false }, tooltip: { callbacks: { label: function(c) { return c.raw + unit; } } } },
+      scales: { y: { beginAtZero: true, ticks: { callback: function(v) { return v + unit; } } } }
+    }
+  });
 }
 
-function makeGroupedBar(id, datasets) {
-    new Chart(document.getElementById(id), {
-        type: 'bar',
-        data: {labels: labels, datasets: datasets},
-        options: {
-            responsive: true, maintainAspectRatio: false,
-            plugins: {tooltip: {callbacks: {label: function(ctx) { return ctx.dataset.label + ': ' + ctx.raw + '%'; }}}},
-            scales: {y: {beginAtZero: true, ticks: {callback: function(v) { return v + '%'; }}}}
-        }
-    });
+function grouped(id, ds1name, ds1data, color1, ds2name, ds2data, color2, unit) {
+  unit = unit || '';
+  new Chart(document.getElementById(id), {
+    type: 'bar',
+    data: { labels: names,
+      datasets: [
+        { label: ds1name, data: ds1data, backgroundColor: color1, borderRadius: 8, borderWidth: 0 },
+        { label: ds2name, data: ds2data, backgroundColor: color2, borderRadius: 8, borderWidth: 0 }
+      ]
+    },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      plugins: { tooltip: { callbacks: { label: function(c) { return c.dataset.label + ': ' + c.raw + unit; } } } },
+      scales: { y: { beginAtZero: true, ticks: { callback: function(v) { return v + unit; } } } }
+    }
+  });
 }
 
-makeBar('c_profit', '盈利率', DATA.profit_rate, '%');
-makeBar('c_recovery', '逾期回款率', DATA.recovery_rate, '%');
-makeBar('c_avg_remit', '件均放款额', DATA.avg_remit, '元');
-makeBar('c_od_s8_diff', 'od>0-s8差值', DATA.od_s8_diff, 'pp');
+// 绘图
+bar('c_profit',     '盈利率',          profit,   '%');
+bar('c_recovery',   '逾期回款率',       recov,    '%');
+bar('c_avg_remit',  '件均放款额',       avgRemit, ' 元');
+bar('c_od_s8_diff', 'od>0 - s8 差值',   odMinusS8_U, ' pp');
 
-makeGroupedBar('c_user_od_s8', [
-    {label: '用户级 od>0%', data: DATA.od_user_pct, backgroundColor: colors.map(function(c){return c+'99';}), borderRadius: 6, borderWidth: 0},
-    {label: '用户级 s8%',   data: DATA.s8_user_pct, backgroundColor: colors, borderRadius: 6, borderWidth: 0}
-]);
+var alphaColors = colors.map(function(c) { return c + '88'; });
+grouped('c_user_od_s8',  '用户级 od>0%', odU,   alphaColors,
+                         '用户级 s8%',   s8U,   colors, '%');
+grouped('c_order_od_s8', '订单级 od>0%', odOrd, alphaColors,
+                         '订单级 s8%',   s8Ord, colors, '%');
 
-makeGroupedBar('c_order_od_s8', [
-    {label: '订单级 od>0%', data: DATA.od_order_pct, backgroundColor: colors.map(function(c){return c+'99';}), borderRadius: 6, borderWidth: 0},
-    {label: '订单级 s8%',   data: DATA.s8_order_pct, backgroundColor: colors, borderRadius: 6, borderWidth: 0}
-]);
-
+// 雷达图
 (function() {
-    // 雷达图 - 归一化
-    var maxes = [
-        Math.max.apply(null, DATA.profit_rate),
-        Math.max.apply(null, DATA.recovery_rate),
-        Math.max.apply(null, DATA.od_s8_diff),
-        Math.max.apply(null, DATA.avg_remit)
-    ];
-    var norm = [[],[],[],[]];
-    for (var i = 0; i < 4; i++) {
-        for (var j = 0; j < 4; j++) {
-            norm[i][j] = [DATA.profit_rate, DATA.recovery_rate, DATA.od_s8_diff, DATA.avg_remit][i][j] / maxes[i] * 100;
-        }
-    }
-
-    var radarLabels = ['盈利率', '逾期回款率', '逾期恢复率\n(od>0-s8)', '件均放款额'];
-    var datasets = [];
-    for (var d = 0; d < 4; d++) {
-        datasets.push({
-            label: labels[d],
-            data: [norm[0][d], norm[1][d], norm[2][d], norm[3][d]],
-            borderColor: colors[d],
-            backgroundColor: colors[d] + '22',
-            pointBackgroundColor: colors[d],
-            borderWidth: 2
-        });
-    }
-
-    new Chart(document.getElementById('c_radar'), {
-        type: 'radar',
-        data: {labels: radarLabels, datasets: datasets},
-        options: {
-            responsive: true, maintainAspectRatio: false,
-            scales: {r: {beginAtZero: true, max: 100, ticks: {display: false}}}
-        }
+  var fields = [profit, recov, odMinusS8_U, avgRemit];
+  var maxes = fields.map(function(a) { return Math.max.apply(null, a); });
+  var radarLabels = ['盈利率', '逾期回款率', '逾期恢复率\n(od>0 - s8)', '件均放款额'];
+  var radarData = [];
+  for (var d = 0; d < 4; d++) {
+    var pts = [];
+    for (var f = 0; f < 4; f++) { pts.push(fields[f][d] / maxes[f] * 100); }
+    radarData.push({
+      label: names[d], data: pts,
+      borderColor: colors[d], backgroundColor: colors[d] + '22',
+      pointBackgroundColor: colors[d], borderWidth: 2
     });
+  }
+  new Chart(document.getElementById('c_radar'), {
+    type: 'radar',
+    data: { labels: radarLabels, datasets: radarData },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      scales: { r: { beginAtZero: true, max: 100, ticks: { display: false } } },
+      plugins: { legend: { position: 'bottom' } }
+    }
+  });
 })();
 </script>
 </body>
