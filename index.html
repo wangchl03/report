@@ -34,7 +34,7 @@ async function unlock() {
   if (!input) return;
   const hash = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(input));
   const hex = Array.from(new Uint8Array(hash)).map(b=>b.toString(16).padStart(2,'0')).join('');
-  const valid = 'b2078f003bebe2217947b7bb45556a8612ba12d7341f1fcf31873bcebe75995f';
+  const valid = 'bcb15f821479b4d5772bd0ca866c00ad5f926e3580720659cc80d39c9d09802a';
   if (hex === valid) {
     document.cookie = 'auth=' + hex + ';path=/;max-age=86400;samesite=lax';
     // 跳转到真正的内容页（隐藏页面）
