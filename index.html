@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>内部报告 - 验证密码</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:#0f1932;color:#b4c3dc;font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei",sans-serif}
+.login-wrapper{display:flex;align-items:center;justify-content:center;min-height:100vh}
+.login-box{text-align:center;padding:60px 40px}
+.login-box h2{color:#fff;font-size:24px;margin-bottom:8px;font-weight:600}
+.login-box p{color:#6a7fa0;font-size:14px;margin-bottom:30px}
+.login-box input{width:260px;padding:12px 16px;border:1px solid #2a3a5c;border-radius:6px;background:#1a2640;color:#fff;font-size:15px;outline:none;transition:border .2s}
+.login-box input:focus{border-color:#3c8ce6}
+.login-box button{margin-top:16px;width:260px;padding:12px;border:none;border-radius:6px;background:#3c8ce6;color:#fff;font-size:15px;cursor:pointer;font-weight:600;transition:background .2s}
+.login-box button:hover{background:#2f74c2}
+.error{color:#e05555;font-size:13px;margin-top:12px;display:none}
+</style>
+</head>
+<body>
+<div class="login-wrapper">
+  <div class="login-box">
+    <h2>内部运营报告</h2>
+    <p>请输入访问密码</p>
+    <input type="password" id="pwd" placeholder="输入密码" onkeydown="if(event.key==='Enter')unlock()">
+    <br><button onclick="unlock()">确 认</button>
+    <p class="error" id="err">密码错误，请重试</p>
+  </div>
+</div>
+<script>
+async function unlock() {
+  const input = document.getElementById('pwd').value.trim();
+  if (!input) return;
+  const hash = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(input));
+  const hex = Array.from(new Uint8Array(hash)).map(b=>b.toString(16).padStart(2,'0')).join('');
+  const valid = 'b2078f003bebe2217947b7bb45556a8612ba12d7341f1fcf31873bcebe75995f';
+  if (hex === valid) {
+    document.cookie = 'auth=' + hex + ';path=/;max-age=86400;samesite=lax';
+    // 跳转到真正的内容页（隐藏页面）
+    location.href = 'report.html';
+  } else {
+    document.getElementById('err').style.display = 'block';
+  }
+}
+</script>
+</body>
+</html>

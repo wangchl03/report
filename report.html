@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>回归用户全生命周期运营方案（间隔>5天）</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:#0f1932;color:#b4c3dc;font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei",sans-serif;line-height:1.8}
+.container{max-width:920px;margin:0 auto;padding:40px 20px}
+/* 封面 */
+.cover{text-align:center;padding:80px 0 60px}
+.cover hr{width:200px;height:2px;background:#3c8ce6;border:none;margin:0 auto}
+.cover h1{font-size:32px;color:#fff;margin:30px 0 20px;font-weight:700;letter-spacing:2px}
+.cover .subtitle{font-size:15px;color:#8a9bc0;margin-bottom:8px}
+.cover .hl-box{background:#131d35;border-radius:10px;padding:24px 30px;margin:40px auto 0;max-width:620px;text-align:left}
+.cover .hl-box .hl-title{text-align:center;color:#fff;font-size:15px;margin-bottom:16px;font-weight:600}
+.cover .hl-box li{color:#8a9bc0;font-size:13px;line-height:2.3;margin-left:20px}
+/* 目录 */
+.toc{background:#131d35;border-radius:10px;padding:24px 30px;margin:30px 0}
+.toc h3{color:#fff;font-size:17px;margin-bottom:14px}
+.toc ol{padding-left:24px}
+.toc li{color:#8a9bc0;font-size:13px;line-height:2.2}
+.toc a{color:#5b9ef5;text-decoration:none}
+.toc a:hover{text-decoration:underline}
+/* 章节 */
+.section{margin-top:50px}
+.section-center{max-width:888px;margin-left:auto;margin-right:auto;padding:0 16px}
+.section-title{display:flex;align-items:center;gap:12px;margin-bottom:6px}
+.section-title .bar{width:4px;height:28px;background:#3c8ce6;border-radius:2px;flex-shrink:0}
+.section-title h2{font-size:22px;color:#fff;font-weight:700}
+.section-sub{font-size:13px;color:#6a7fa0;margin-left:16px;margin-bottom:28px}
+.sub-title{font-size:16px;color:#5b9ef5;margin:32px 0 14px;font-weight:600;padding-left:16px;border-left:3px solid #3c8ce6}
+.body-text{font-size:13px;color:#8a9bc0;margin-bottom:12px;padding:0 16px}
+.bullet{font-size:13px;color:#8a9bc0;margin-bottom:5px;padding-left:32px;position:relative}
+.bullet::before{content:"·";position:absolute;left:16px;color:#3c8ce6;font-weight:bold}
+/* 表格 */
+.table-wrap{overflow-x:auto;margin:16px 0 24px;padding:0 16px}
+table{width:100%;border-collapse:collapse;font-size:13px;min-width:600px;max-width:888px}
+thead th{background:#3c8ce6;color:#fff;padding:10px 8px;text-align:center;font-weight:600;white-space:nowrap}
+tbody td{padding:9px 8px;text-align:center;border-bottom:1px solid #1a2a4a;color:#d0d8e8}
+tbody tr:nth-child(even){background:#131d35}
+tbody tr:nth-child(odd){background:#0f1932}
+tbody tr:hover{background:#1a2f55}
+.table-note{font-size:11px;color:#5a7299;margin-top:-16px;margin-bottom:16px;padding-left:16px}
+/* 洞察/高亮框 */
+.insight-box{background:#131d35;border-left:4px solid #f0a030;padding:14px 18px;margin:18px 16px;border-radius:0 6px 6px 0}
+.insight-box .label{color:#f0a030;font-size:12px;font-weight:700;margin-bottom:4px}
+.insight-box p,.highlight-box p{color:#c8d4e8;font-size:13px;line-height:1.7}
+.highlight-box{background:#131d35;border-left:4px solid #50c878;padding:14px 18px;margin:18px 16px;border-radius:0 6px 6px 0}
+.highlight-box .label{color:#50c878;font-size:12px;font-weight:700;margin-bottom:4px}
+/* 条形图 */
+.bar-chart{margin:16px 0 24px;padding:0 16px}
+.bar-chart .chart-title{font-size:14px;color:#fff;margin-bottom:12px;font-weight:600}
+.bar-row{display:flex;align-items:center;margin-bottom:6px}
+.bar-label{width:80px;text-align:right;font-size:12px;color:#8a9bc0;padding-right:10px;flex-shrink:0}
+.bar-track{flex:1;max-width:500px;height:18px;background:#131d35;border-radius:3px;overflow:hidden}
+.bar-fill{height:100%;border-radius:3px}
+.bar-val{width:60px;font-size:12px;color:#fff;padding-left:10px;flex-shrink:0}
+hr.divider{border:none;border-top:1px solid #1a2a4a;margin:40px 0}
+/* KPI */
+.kpi-row{display:flex;gap:16px;flex-wrap:wrap;margin:24px 0;padding:0 16px}
+.kpi-card{flex:1;min-width:170px;background:#131d35;border-radius:10px;padding:20px;text-align:center}
+.kpi-card .val{font-size:28px;color:#fff;font-weight:700}
+.kpi-card .lbl{font-size:12px;color:#6a7fa0;margin-top:6px}
+/* 时间线 */
+.timeline{position:relative;padding-left:24px;margin:20px 0}
+.timeline::before{content:"";position:absolute;left:8px;top:0;bottom:0;width:2px;background:#1a2a4a}
+.timeline-item{position:relative;margin-bottom:24px;padding-left:20px}
+.timeline-item::before{content:"";position:absolute;left:-20px;top:4px;width:12px;height:12px;background:#3c8ce6;border-radius:50%;border:2px solid #0f1932}
+.timeline-item .phase{color:#fff;font-size:14px;font-weight:600}
+.timeline-item .time{color:#5b9ef5;font-size:12px;margin-bottom:4px}
+.timeline-item .desc{color:#8a9bc0;font-size:13px}
+.no-padding{padding:0 !important}
+/* 待填入数据标记 */
+.data-pending{background:#1a2a4a;border:1px dashed #5a7299;padding:12px 16px;margin:16px 0;border-radius:6px;color:#5a7299;font-size:12px;text-align:center}
+.data-pending .sql-hint{font-size:11px;color:#6a7fa0;margin-top:4px;font-family:monospace}
+@media(max-width:768px){.container{padding:20px 12px}.cover h1{font-size:24px}table{font-size:11px}.kpi-card{min-width:130px}}
+</style>
+</head>
+<body>
+<div class="container">
+
+<!-- 封面 -->
+<div class="cover">
+  <hr>
+  <h1>回归用户全生命周期运营方案</h1>
+  <p class="subtitle">基于 398 万笔订单数据的实证分析 · 流失间隔阈值 &gt; 5天</p>
+  <p class="subtitle">数据范围：全量历史订单 &nbsp;|&nbsp; 分析时间：2026年7月 &nbsp;|&nbsp; 阈值口径：&gt;5天</p>
+  <hr style="margin-top:20px">
+  <div class="hl-box">
+    <p class="hl-title">报告要点（>5天阈值）</p>
+    <ul>
+      <li>95,131 名有 5 天以上"流失"的用户，回归率 66.7%</li>
+      <li>5天以上流失用户贡献公司绝大部分利润，回归后利润占比 38%</li>
+      <li>首笔回归用户盈利率 16.1%，后续维持 16.0%</li>
+    </ul>
+  </div>
+</div>
+
+<hr class="divider">
+
+<!-- 目录 -->
+<div class="toc">
+  <h3>目录</h3>
+  <ol>
+    <li><a href="#s1">用户流失画像 —— 不同间隔阈值的用户群体分层分析</a></li>
+    <li><a href="#s2">回归行为深度分析 —— 回归后的借贷行为、盈利表现与风险特征</a></li>
+    <li><a href="#s3">利润贡献全景分析 —— 流失用户的盈利贡献在全量订单中的占比</a></li>
+  </ol>
+</div>
+
+<!-- ==================== 第一章 ==================== -->
+<div class="section" id="s1">
+  <div class="section-title"><div class="bar"></div><h2>一、用户流失画像</h2></div>
+  <p class="section-sub">基于不同间隔阈值的用户群体分层分析 · 主口径：&gt;5天</p>
+
+  <p class="body-text">核心定义：用户一笔已结清放款到下一笔提单的间隔天数 &gt; 5天，即为"流失"。5天阈值能更早识别潜在流失风险，覆盖更多用户群体，是更灵敏的流失监测口径。</p>
+
+  <p class="sub-title">1.1 不同间隔阈值的用户规模与回归率</p>
+
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>间隔阈值</th><th>用户数</th><th>回归提单用户</th><th>回归用户占比</th><th>流失前总盈利占比</th><th>流失前盈利占比</th><th>回归后盈利占比</th><th>回归首笔盈利率</th><th>回归后总盈利率</th></tr></thead>
+      <tbody>
+        <tr style="background:#1a2f55"><td><strong>5天</strong></td><td><strong>95,131</strong></td><td><strong>63,487</strong></td><td><strong>66.7%</strong></td><td><strong>86.8%</strong></td><td><strong>62%</strong></td><td><strong>38%</strong></td><td style="color:#50c878"><strong>16.1%</strong></td><td style="color:#50c878"><strong>16.0%</strong></td></tr>
+        <tr><td>7天</td><td>86,775</td><td>54,923</td><td>63.3%</td><td>81.4%</td><td>65.1%</td><td>34.9%</td><td style="color:#50c878">16.3%</td><td style="color:#50c878">16.2%</td></tr>
+        <tr><td>15天</td><td>69,260</td><td>37,233</td><td>53.8%</td><td>73.2%</td><td>69.9%</td><td>30.1%</td><td style="color:#50c878">15.3%</td><td style="color:#50c878">16.7%</td></tr>
+        <tr><td>30天</td><td>54,673</td><td>23,857</td><td>43.6%</td><td>62.9%</td><td>75.7%</td><td>24.3%</td><td style="color:#50c878">12.7%</td><td style="color:#50c878">16.9%</td></tr>
+        <tr><td>60天</td><td>41,433</td><td>13,584</td><td>32.8%</td><td>49.4%</td><td>82.0%</td><td>18.0%</td><td style="color:#50c878">10.5%</td><td style="color:#50c878">17.0%</td></tr>
+        <tr><td>90天</td><td>33,979</td><td>9,070</td><td>26.7%</td><td>39.9%</td><td>85.3%</td><td>14.7%</td><td style="color:#50c878">8.7%</td><td style="color:#50c878">17.4%</td></tr>
+        <tr><td>120天</td><td>28,898</td><td>6,340</td><td>21.9%</td><td>33.4%</td><td>88.9%</td><td>11.1%</td><td style="color:#50c878">6.1%</td><td style="color:#50c878">16.7%</td></tr>
+        <tr><td>150天</td><td>24,976</td><td>4,661</td><td>18.7%</td><td>28.3%</td><td>91.3%</td><td>8.7%</td><td style="color:#50c878">3.5%</td><td style="color:#50c878">15.7%</td></tr>
+        <tr><td>180天</td><td>21,679</td><td>3,562</td><td>16.4%</td><td>24.4%</td><td>93.5%</td><td>6.5%</td><td style="color:#50c878">1.2%</td><td style="color:#50c878">14.6%</td></tr>
+        <tr><td>360天</td><td>11,537</td><td>968</td><td>8.4%</td><td>10.8%</td><td>97.7%</td><td>2.3%</td><td style="color:#f0a030">-3.2%</td><td style="color:#50c878">13.1%</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p class="table-note">** 盈利率 = SUM(repaid_amt − remit_amt) / SUM(remit_amt)，排除 status=5(在途)，仅统计 status=7/8 订单。首笔=回归后第一笔，所有=回归后全部</p>
+
+  <div class="bar-chart">
+    <p class="chart-title">各阈值回归用户占比趋势</p>
+    <div class="bar-row"><div class="bar-label">5天</div><div class="bar-track"><div class="bar-fill" style="width:100%;background:#50c878"></div></div><div class="bar-val">66.7%</div></div>
+    <div class="bar-row"><div class="bar-label">7天</div><div class="bar-track"><div class="bar-fill" style="width:94%;background:#3c8ce6"></div></div><div class="bar-val">63.3%</div></div>
+    <div class="bar-row"><div class="bar-label">15天</div><div class="bar-track"><div class="bar-fill" style="width:80%;background:#5b9ef5"></div></div><div class="bar-val">53.8%</div></div>
+    <div class="bar-row"><div class="bar-label">30天</div><div class="bar-track"><div class="bar-fill" style="width:65%;background:#3c8ce6"></div></div><div class="bar-val">43.6%</div></div>
+    <div class="bar-row"><div class="bar-label">60天</div><div class="bar-track"><div class="bar-fill" style="width:49%;background:#5b9ef5"></div></div><div class="bar-val">32.8%</div></div>
+    <div class="bar-row"><div class="bar-label">90天</div><div class="bar-track"><div class="bar-fill" style="width:40%;background:#3c8ce6"></div></div><div class="bar-val">26.7%</div></div>
+    <div class="bar-row"><div class="bar-label">180天</div><div class="bar-track"><div class="bar-fill" style="width:25%;background:#5b9ef5"></div></div><div class="bar-val">16.4%</div></div>
+    <div class="bar-row"><div class="bar-label">360天</div><div class="bar-track"><div class="bar-fill" style="width:13%;background:#5b9ef5"></div></div><div class="bar-val">8.4%</div></div>
+  </div>
+
+  <div class="insight-box">
+    <p class="label">Key Insight</p>
+    <p>5天阈值下，回归占比为 <strong>66.7%</strong>，有 33.3% 的用户会永久流失。回归首笔盈利率 16.1%，说明流失5天后又回归的用户盈利能力很强。</p>
+    <p style="margin-top:8px"><strong>盈利率趋势:</strong> 5天阈值回归首笔盈利率 16.1%，随着间隔天数增加盈利率逐步下降：90天阈值 8.7%、180天 1.2%、360天盈亏为负 (-3.2%)。间隔越短回归的用户，不仅回归概率高，而且盈利能力强——<strong>5天内回归的用户首笔盈利率是 90天+用户的近 2倍</strong>。</p>
+  </div>
+
+  <p class="sub-title">1.2 按流失位置分层的用户结构（>5天阈值）</p>
+  <p class="body-text">流失位置 = 用户在第几笔放款后首次出现 &gt;5天间隔。位置越小，意味着用户在借贷初期就流失；位置越大，说明用户已经建立了较深的借贷习惯后才流失。</p>
+
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>流失位置</th><th>用户数</th><th>用户占比</th><th>又提单占比</th><th>人均放款量</th><th>首笔盈利率</th><th>回归后盈利率</th><th>首笔风险水平</th></tr></thead>
+      <tbody>
+        <tr><td>1</td><td>53,189</td><td>58.7%</td><td>63.0%</td><td>3.0</td><td style="color:#50c878">11.1%</td><td style="color:#50c878">13.2%</td><td>较低</td></tr>
+        <tr><td>2</td><td>17,599</td><td>19.4%</td><td>67.8%</td><td>3.2</td><td style="color:#50c878">14.3%</td><td style="color:#50c878">14.9%</td><td>较高</td></tr>
+        <tr><td>3</td><td>8,366</td><td>9.2%</td><td>70.6%</td><td>3.4</td><td style="color:#50c878">20.3%</td><td style="color:#50c878">16.5%</td><td>较高</td></tr>
+        <tr><td>4</td><td>4,487</td><td>5.0%</td><td>73.8%</td><td>3.7</td><td style="color:#50c878">20.1%</td><td style="color:#50c878">18.4%</td><td>一般</td></tr>
+        <tr><td>5</td><td>2,578</td><td>2.8%</td><td>76.4%</td><td>3.8</td><td style="color:#50c878">22.4%</td><td style="color:#50c878">19.5%</td><td>较低</td></tr>
+        <tr><td>6-10</td><td>3,618</td><td>4.0%</td><td>77.0%</td><td>4.3</td><td style="color:#50c878">27.3%</td><td style="color:#50c878">21.0%</td><td>低</td></tr>
+        <tr><td>10+</td><td>722</td><td>0.8%</td><td>80.7%</td><td>3.9</td><td style="color:#50c878">27.1%</td><td style="color:#50c878">26.1%</td><td>低</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p class="table-note">* 6-10列为位置6-10笔的加权汇总。人均放款量 = 总放款后(含首笔) / 又放款用户数。</p>
+
+  <div class="bar-chart">
+    <p class="chart-title">各位置又提单占比</p>
+    <div class="bar-row"><div class="bar-label">位置1</div><div class="bar-track"><div class="bar-fill" style="width:78%;background:#f0a030"></div></div><div class="bar-val">63.0%</div></div>
+    <div class="bar-row"><div class="bar-label">位置2</div><div class="bar-track"><div class="bar-fill" style="width:84%;background:#5b9ef5"></div></div><div class="bar-val">67.8%</div></div>
+    <div class="bar-row"><div class="bar-label">位置3</div><div class="bar-track"><div class="bar-fill" style="width:88%;background:#3c8ce6"></div></div><div class="bar-val">70.6%</div></div>
+    <div class="bar-row"><div class="bar-label">位置4</div><div class="bar-track"><div class="bar-fill" style="width:92%;background:#5b9ef5"></div></div><div class="bar-val">73.8%</div></div>
+    <div class="bar-row"><div class="bar-label">位置5</div><div class="bar-track"><div class="bar-fill" style="width:95%;background:#3c8ce6"></div></div><div class="bar-val">76.4%</div></div>
+    <div class="bar-row"><div class="bar-label">6-10</div><div class="bar-track"><div class="bar-fill" style="width:96%;background:#50c878"></div></div><div class="bar-val">77.0%</div></div>
+    <div class="bar-row"><div class="bar-label">10+</div><div class="bar-track"><div class="bar-fill" style="width:100%;background:#50c878"></div></div><div class="bar-val">80.7%</div></div>
+  </div>
+
+  <div class="insight-box">
+    <p class="label">Key Insight</p>
+    <p>位置 1 流失用户占 <strong>58.7%</strong>（90,559 人中的 53,189 人），是最大的群体，但回归率最低 (63.0%)。这些用户大多只借了 1 笔就离开，尚未建立借贷习惯。而位置 3+ 的用户回归率显著提升至 70%+，首笔盈利率从 11.1% 跃升至 20%+——说明"3 笔以上"用户忠诚度和盈利能力都明显更高。将 5 天作为流失阈值后，更多"新用户"被纳入流失范畴，位置 1 占比高于更宽松的阈值。</p>
+  </div>
+</div>
+
+<!-- ==================== 第二章 ==================== -->
+<div class="section" id="s2">
+  <div class="section-title"><div class="bar"></div><h2>二、回归行为深度分析</h2></div>
+  <p class="section-sub">回归后的借贷行为、盈利表现与风险特征 · 5天阈值</p>
+
+  <p class="sub-title">2.1 回归后的生命周期结构</p>
+  <p class="body-text">回归后生命周期 = 回归首笔提单日 至 最后一笔放款的结清日/到期日。5天阈值下共有 90,559 名流失用户，其中 51,921 人（57.3%）成功回归并至少有一笔放款。</p>
+
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>指标</th><th>数值</th><th>说明</th></tr></thead>
+      <tbody>
+        <tr><td>流失用户总数</td><td>90,559 人</td><td>至少一次出现 >5天间隔的用户</td></tr>
+        <tr><td>又提单用户数</td><td>60,053 人 (66.3%)</td><td>回归后至少有一笔提单</td></tr>
+        <tr><td>又放款用户数</td><td>51,921 人 (57.3%)</td><td>回归后至少有一笔成功放款</td></tr>
+        <tr><td>回归后人均提单量</td><td>3.8 笔</td><td>回归后提单总数 / 又提单用户数</td></tr>
+        <tr><td>回归后人均放款量</td><td>3.2 笔</td><td>回归后放款总数 / 又放款用户数</td></tr>
+        <tr><td>回归首笔额度使用率</td><td>80.5%</td><td>回归后第一笔放款的额度使用率</td></tr>
+        <tr><td>回归后总体额度使用率</td><td>80.0%</td><td>回归后所有放款的额度使用率</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="insight-box">
+    <p class="label">Key Insight</p>
+    <p>5天阈值下回归率 <strong>66.3%</strong>（又提单）和 <strong>57.3%</strong>（又放款），人均回归后放款 3.2 笔，说明回归用户有持续借款需求。额度使用率维持在 80% 左右，低于平均值6个百分点，说明回归用户对产品的依赖度还有提升的空间。</p>
+  </div>
+
+  <p class="sub-title">2.2 回归后放款顺序分析（订单维度，>5天阈值）</p>
+  <p class="body-text">以回归后的放款顺序编号（第1笔、第2笔……），分析每一笔放款的盈利和风险变化。一个用户有 N 笔回归后放款，就在 N 个分组中各占 1 个位置。</p>
+
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>放款顺序</th><th>用户数</th><th>盈利率</th><th>风险水平</th></tr></thead>
+      <tbody>
+        <tr><td>第1笔</td><td>55,233</td><td style="color:#50c878">16.08%</td><td>一般</td></tr>
+        <tr><td>第2笔</td><td>35,678</td><td style="color:#50c878">15.71%</td><td>一般</td></tr>
+        <tr><td>第3笔</td><td>24,520</td><td style="color:#50c878">14.13%</td><td>一般</td></tr>
+        <tr><td>第4笔</td><td>16,959</td><td style="color:#50c878">12.92%</td><td>一般</td></tr>
+        <tr><td>第5笔</td><td>11,767</td><td style="color:#50c878">13.24%</td><td>一般</td></tr>
+        <tr><td>第6笔</td><td>8,440</td><td style="color:#50c878">13.57%</td><td>较低</td></tr>
+        <tr><td>第7笔</td><td>6,099</td><td style="color:#50c878">14.85%</td><td>较低</td></tr>
+        <tr><td>第8笔</td><td>4,483</td><td style="color:#50c878">17.31%</td><td>较低</td></tr>
+        <tr><td>第9笔</td><td>3,322</td><td style="color:#50c878">18.63%</td><td>低</td></tr>
+        <tr><td>第10笔</td><td>2,522</td><td style="color:#50c878">18.94%</td><td>低</td></tr>
+        <tr><td>10笔以上</td><td>9,608</td><td style="color:#50c878">20.76%</td><td>优秀</td></tr>
+        <tr style="background:#1a2f55"><td><strong>总计</strong></td><td><strong>55,233</strong></td><td style="color:#50c878"><strong>16.02%</strong></td><td><strong>一般</strong></td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p class="table-note">* 一个用户有N笔回归后放款，就在1-N各占1个位置，所以各列用户数之和>总计用户数。盈利率排除 status=5 在途订单。风险水平：优秀(<25%)、低(25-27%)、较低(27-30%)、一般(30-32%)、较高(>32%)。</p>
+
+  <div class="bar-chart">
+    <p class="chart-title">回归后逐笔盈利率变化（5天阈值）</p>
+    <div class="bar-row"><div class="bar-label">第1笔</div><div class="bar-track"><div class="bar-fill" style="width:77%;background:#50c878"></div></div><div class="bar-val">16.08%</div></div>
+    <div class="bar-row"><div class="bar-label">第2笔</div><div class="bar-track"><div class="bar-fill" style="width:76%;background:#50c878"></div></div><div class="bar-val">15.71%</div></div>
+    <div class="bar-row"><div class="bar-label">第3笔</div><div class="bar-track"><div class="bar-fill" style="width:68%;background:#5b9ef5"></div></div><div class="bar-val">14.13%</div></div>
+    <div class="bar-row"><div class="bar-label">第4笔</div><div class="bar-track"><div class="bar-fill" style="width:62%;background:#f0a030"></div></div><div class="bar-val">12.92%</div></div>
+    <div class="bar-row"><div class="bar-label">第8笔</div><div class="bar-track"><div class="bar-fill" style="width:83%;background:#50c878"></div></div><div class="bar-val">17.31%</div></div>
+    <div class="bar-row"><div class="bar-label">10笔+</div><div class="bar-track"><div class="bar-fill" style="width:100%;background:#50c878"></div></div><div class="bar-val">20.76%</div></div>
+  </div>
+
+  <div class="insight-box">
+    <p class="label">Key Insight</p>
+    <p>首笔盈利率 <strong>16.08%</strong>，第 4 笔探底至 12.92%，第 8 笔后回升至 17%+，10 笔以上 20.76%。风险水平从首笔的"一般"逐步降至 10 笔以上的"优秀"。回归后盈利率呈"先降后升"的 U 型——中段（第3-6笔）是风险爬坡期，存活下来的用户在第8笔+展现出更强的盈利能力。</p>
+  </div>
+  </div>
+</div>
+
+<!-- ==================== 第三章 ==================== -->
+<div class="section section-center" id="s3">
+  <div class="section-title"><div class="bar"></div><h2>三、利润贡献全景分析</h2></div>
+  <p class="section-sub">流失用户的盈利贡献在全量订单中的占比 · >5天阈值</p>
+
+  <div class="kpi-row">
+    <div class="kpi-card"><div class="val">95,131</div><div class="lbl">5天以上流失用户数</div></div>
+    <div class="kpi-card"><div class="val">86.8%</div><div class="lbl">流失前覆盖公司总盈利占比</div></div>
+    <div class="kpi-card"><div class="val">66.7%</div><div class="lbl">流失用户回归占比</div></div>
+    <div class="kpi-card"><div class="val">38%</div><div class="lbl">回归后盈利占总利润</div></div>
+  </div>
+
+  <p class="sub-title">3.1 不同间隔阈值用户的盈利拆解</p>
+
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>间隔阈值</th><th>用户数</th><th>流失前总盈利占比</th><th>流失前盈利占比</th><th>回归后盈利占比</th></tr></thead>
+      <tbody>
+        <tr style="background:#1a2f55"><td><strong>5天</strong></td><td><strong>95,131</strong></td><td><strong>86.8%</strong></td><td><strong>62%</strong></td><td><strong>38%</strong></td></tr>
+        <tr><td>30天</td><td>54,673</td><td>62.9%</td><td>75.7%</td><td>24.3%</td></tr>
+        <tr><td>60天</td><td>41,433</td><td>49.4%</td><td>82.0%</td><td>18.0%</td></tr>
+        <tr><td>90天</td><td>33,979</td><td>39.9%</td><td>85.3%</td><td>14.7%</td></tr>
+        <tr><td>120天</td><td>28,898</td><td>33.4%</td><td>88.9%</td><td>11.1%</td></tr>
+        <tr><td>150天</td><td>24,976</td><td>28.3%</td><td>91.3%</td><td>8.7%</td></tr>
+        <tr><td>180天</td><td>21,679</td><td>24.4%</td><td>93.5%</td><td>6.5%</td></tr>
+        <tr><td>360天</td><td>11,537</td><td>10.8%</td><td>97.7%</td><td>2.3%</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="insight-box">
+    <p class="label">Key Insight</p>
+    <p>5天阈值下，回归后利润占用户总利润 <strong>38%</strong>。这意味着用户每 100 元利润中有 38 元来自"又回归"后的订单。5天阈值因为覆盖面广（95,131 人），回归后贡献的利润规模也很大。</p>
+  </div>
+
+  <p class="sub-title">3.2 回归用户与公司总利润的关系</p>
+  <p class="body-text">5天阈值下，95,131 名用户在出现流失间隔前，贡献了公司 86.8% 的总盈利。这说明高价值用户更容易在某个阶段出现 >5天的间隔期，但也意味着这些用户的回归价值极高。</p>
+
+  <div class="highlight-box">
+    <p class="label">核心结论</p>
+    <p>5天阈值覆盖 95,131 名用户，回归后利润占比 38%。<strong>降低流失判断门槛至 5天，能更早识别风险用户并在高召回期介入，从而显著放大回归后利润贡献</strong>。</p>
+  </div>
+</div>
+
+</div>
+</body>
+</html>
