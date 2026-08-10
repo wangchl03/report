@@ -16,7 +16,6 @@ body{background:#0f1932;color:#b4c3dc;font-family:-apple-system,BlinkMacSystemFo
 .login-box button{margin-top:16px;width:260px;padding:12px;border:none;border-radius:6px;background:#3c8ce6;color:#fff;font-size:15px;cursor:pointer;font-weight:600;transition:background .2s}
 .login-box button:hover{background:#2f74c2}
 .error{color:#e05555;font-size:13px;margin-top:12px;display:none}
-/* 报告列表 */
 .reports{display:none;max-width:700px;margin:60px auto;padding:40px 24px}
 .reports h2{color:#fff;font-size:22px;margin-bottom:12px}
 .reports .sub{color:#6a7fa0;font-size:13px;margin-bottom:30px}
@@ -32,68 +31,42 @@ body{background:#0f1932;color:#b4c3dc;font-family:-apple-system,BlinkMacSystemFo
 </style>
 </head>
 <body>
-
-<!-- 登录界面 -->
 <div class="login-wrapper" id="loginPage">
   <div class="login-box">
     <h2>内部运营报告</h2>
     <p>请输入访问密码</p>
-    <input type="password" id="pwd" placeholder="输入密码" onkeydown="if(event.key==='Enter')unlock()">
+    <input type="password" id="pwd" placeholder="输入密码" onkeydown="if(event.key===&apos;Enter&apos;)unlock()">
     <br><button onclick="unlock()">确 认</button>
     <p class="error" id="err">密码错误，请重试</p>
   </div>
 </div>
-
-<!-- 报告列表 -->
 <div class="reports" id="reportsPage">
   <h2>可用报告列表</h2>
   <p class="sub">密码验证通过，以下报告可以访问</p>
-
   <div class="report-card">
     <h3><a href="五类用户盈利能力对比_原生等放_非等放_等放_迁移_原生.html">五类用户盈利能力对比分析报告</a></h3>
     <p class="desc">2025.01~2026.05 全量用户 · 五类用户（原生等放/非等放/等放/迁移/原生非等放）的盈利能力对比，含利润贡献占比、放款金额占比、分阶段拆解</p>
     <span class="tag">2026-08</span>
   </div>
-
   <div class="report-card">
     <h3><a href="等放原生低盈利率根因分析.html">等放 & 原生非等放 — 低盈利率根因分析</a></h3>
     <p class="desc">深度分析等放用户和原生非等放用户盈利率低的根本原因，含首贷质量、留存黑洞、风控策略等维度</p>
     <span class="tag">2026-08</span>
   </div>
-
   <button class="logout-btn" onclick="logout()">退出登录</button>
 </div>
-
 <script>
-const VALID_HASH = 'bcb15f821479b4d5772bd0ca866c00ad5f926e3580720659cc80d39c9d09802a';
-
-async function unlock() {
-  const input = document.getElementById('pwd').value.trim();
-  if (!input) return;
-  const hash = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(input));
-  const hex = Array.from(new Uint8Array(hash)).map(b=>b.toString(16).padStart(2,'0')).join('');
-  if (hex === VALID_HASH) {
-    document.cookie = 'auth=' + hex + ';path=/;max-age=86400;samesite=lax';
-    showReports();
-  } else {
-    document.getElementById('err').style.display = 'block';
-  }
+const VH="bcb15f821479b4d5772bd0ca866c00ad5f926e3580720659cc80d39c9d09802a";
+async function unlock(){
+var i=document.getElementById("pwd").value.trim();if(!i)return;
+var h=await crypto.subtle.digest("SHA-256",new TextEncoder().encode(i));
+var x=Array.from(new Uint8Array(h)).map(function(b){return b.toString(16).padStart(2,"0")}).join("");
+if(x===VH){document.cookie="auth="+x+";path=/;max-age=86400;samesite=lax";show()}
+else{document.getElementById("err").style.display="block"}
 }
-
-function showReports() {
-  document.getElementById('loginPage').style.display = 'none';
-  document.getElementById('reportsPage').style.display = 'block';
-}
-
-function logout() {
-  document.cookie = 'auth=;path=/;max-age=0';
-  location.reload();
-}
-
-// 已登录则直接显示报告列表
-if (document.cookie.indexOf('auth=' + VALID_HASH) !== -1) {
-  showReports();
-}
+function show(){document.getElementById("loginPage").style.display="none";document.getElementById("reportsPage").style.display="block"}
+function logout(){document.cookie="auth=;path=/;max-age=0";location.reload()}
+if(document.cookie.indexOf("auth="+VH)!==-1)show();
 </script>
 </body>
 </html>
