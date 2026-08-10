@@ -1,0 +1,432 @@
+<!-- ===========================================================================
+  五类用户盈利能力对比报告 -- 前端 HTML 模板
+  使用前请用 Python 脚本填充所有 {{PLACEHOLDER}} 变量
+  或使用 gen_five_final.py 自动生成完整报告
+  依赖: Chart.js 4.4.0 CDN
+  =========================================================================== -->
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>五类用户盈利能力对比分析报告</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<style>
+*{{margin:0;padding:0;box-sizing:border-box}}
+body{{font-family:-apple-system,BlinkMacSystemFont,'PingFang SC',sans-serif;background:#111827;color:#e5e7eb;padding:40px 24px}}
+.container{{max-width:1200px;margin:0 auto}}
+h1{{text-align:center;font-size:28px;font-weight:800;margin-bottom:6px;color:#f9fafb}}
+.subtitle{{text-align:center;font-size:14px;color:#9ca3af;margin-bottom:36px}}
+h2{{font-size:20px;font-weight:700;color:#f3f4f6;border-left:4px solid #f59e0b;padding-left:12px;margin:40px 0 16px}}
+h3{{font-size:16px;font-weight:600;color:#e5e7eb;margin:24px 0 12px}}
+p{{font-size:14px;line-height:1.8;color:#d1d5db;margin-bottom:12px}}
+.insight-box{{background:rgba(251,191,36,.10);border:1px solid rgba(251,191,36,.25);border-radius:10px;padding:18px 22px;margin:16px 0}}
+.insight-box.red{{background:rgba(239,68,68,.10);border-color:rgba(239,68,68,.25)}}
+.insight-box.green{{background:rgba(16,185,129,.10);border-color:rgba(16,185,129,.25)}}
+.insight-box.blue{{background:rgba(59,130,246,.10);border-color:rgba(59,130,246,.25)}}
+.insight-box strong{{color:#fbbf24}}
+.insight-box.red strong{{color:#f87171}}
+.insight-box.green strong{{color:#34d399}}
+.insight-box.blue strong{{color:#60a5fa}}
+.legend{{display:flex;gap:22px;justify-content:center;margin-bottom:28px;flex-wrap:wrap}}
+.legend-item{{display:flex;align-items:center;gap:8px;font-size:13px;font-weight:500;color:#d1d5db}}
+.legend-dot{{width:14px;height:14px;border-radius:4px;flex-shrink:0}}
+.chart-grid{{display:grid;grid-template-columns:1fr 1fr;gap:24px;margin-bottom:24px}}
+.chart-card{{background:#1f2937;border-radius:14px;padding:22px;box-shadow:0 2px 12px rgba(0,0,0,.25)}}
+.chart-card.full{{grid-column:1/-1}}
+.chart-card h4{{font-size:14px;font-weight:600;color:#e5e7eb;margin-bottom:14px}}
+.chart-wrap{{position:relative;height:320px}}
+.chart-wrap.tall{{height:400px}}
+table{{width:100%;border-collapse:collapse;font-size:12px;margin:12px 0}}
+table th{{background:#374151;padding:8px 10px;text-align:right;font-weight:600;color:#d1d5db;border-bottom:2px solid #4b5563}}
+table td{{padding:8px 10px;text-align:right;border-bottom:1px solid #374151;color:#e5e7eb}}
+table th:first-child,table td:first-child{{text-align:left}}
+.neg{{color:#f87171;font-weight:700}}
+.pos{{color:#34d399;font-weight:700}}
+.summary-grid{{display:grid;grid-template-columns:repeat(5,1fr);gap:12px;margin-bottom:32px}}
+.sum-card{{background:#1f2937;border-radius:14px;padding:18px;text-align:center;box-shadow:0 2px 12px rgba(0,0,0,.25)}}
+.sum-card .big{{font-size:26px;font-weight:800;margin:6px 0}}
+pre.code{{background:#1f2937;border:1px solid #374151;border-radius:8px;padding:16px;overflow-x:auto;font-size:12px;line-height:1.6;color:#a5b4c2;max-height:600px;overflow-y:auto;white-space:pre-wrap;word-break:break-all}}
+.glossary-grid{{display:grid;grid-template-columns:1fr 2fr 4fr;gap:1px;background:#374151;border-radius:10px;overflow:hidden;margin:16px 0;font-size:13px}}
+.glossary-grid div{{padding:10px 14px;background:#1f2937}}
+.glossary-grid .gh{{background:#374151;font-weight:700;color:#e5e7eb}}
+@media(max-width:768px){{.chart-grid,.summary-grid{{grid-template-columns:1fr}}}}
+</style>
+</head>
+<body><div class="container">
+
+<h1>五类用户盈利能力对比分析报告</h1>
+<p class="subtitle">2025.01 ~ 2026.05 注册 · 全量用户 · 含利润贡献、放款占比、分阶段拆解</p>
+
+<div style="max-width:860px;margin:0 auto 36px;background:#1f2937;border:1px solid #374151;border-radius:10px;padding:20px 24px;font-size:13px;line-height:2.2;color:#9ca3af">
+  <div style="font-weight:700;color:#e5e7eb;margin-bottom:10px;font-size:14px">用户分类逻辑（五类框架）</div>
+  <div style="display:grid;grid-template-columns:auto 1fr;gap:4px 16px">
+    <div><b style="color:#3b82f6">原生等放</b></div><div>= 等放 + 迁移。首贷时从未被拒过的用户，共 229,609 人（88.8%）</div>
+    <div><b style="color:#10b981">非等放</b></div><div>= 迁移 + 原生非等放。至少被拒绝过一次的用户，共 64,094 人（24.8%）</div>
+    <div><b style="color:#60a5fa">等放</b></div><div>= 原生等放中从未被拒过的那部分（提单=放款），共 194,478 人</div>
+    <div><b style="color:#f59e0b">迁移</b></div><div>= 先放款 &rarr; 后被拒。逾期后被风控拦截的用户，共 35,131 人</div>
+    <div><b style="color:#ef4444">原生非等放</b></div><div>= 首次提单即被拒，后来才获批。共 28,963 人</div>
+  </div>
+</div>
+
+<h2>指标口径说明</h2>
+{glossary}
+
+<div class="legend">
+  <div class="legend-item"><span class="legend-dot" style="background:#3b82f6"></span>原生等放</div>
+  <div class="legend-item"><span class="legend-dot" style="background:#10b981"></span>非等放</div>
+  <div class="legend-item"><span class="legend-dot" style="background:#60a5fa"></span>等放</div>
+  <div class="legend-item"><span class="legend-dot" style="background:#f59e0b"></span>迁移</div>
+  <div class="legend-item"><span class="legend-dot" style="background:#ef4444"></span>原生非等放</div>
+</div>
+
+<div class="summary-grid">{kpi}</div>
+
+<!-- ====== 一、全维度对比 ====== -->
+<h2>一、五类用户全维度对比</h2>
+<div style="overflow-x:auto">
+<table>
+<tr><th></th><th>人数</th><th>首贷 s8</th><th>首贷盈利</th><th>首贷件均</th><th>期限</th><th>4次+ s8</th><th>4次+ 盈利</th><th>仅1次%</th><th>仅1次盈</th><th>多次盈</th><th>整体盈</th></tr>
+{t1}
+</table>
+</div>
+
+<div class="insight-box blue">
+<strong>核心洞察：</strong>盈利排序 = 首贷 s8 率逆序。迁移（0.4% s8 &rarr; 34.71%）&gt; 非等放（21.2% &rarr; 25.76%）&gt; 原生等放（36.9% &rarr; 10.4%）&gt; 等放（43.5% &rarr; 6.02%）&gt; 原生非等放（40.9% &rarr; 3.74%）。唯一例外是原生非等放--首贷 s8 率 40.9% 低于等放 43.5%，但盈利率更低(3.74% vs 6.02%)，因为件均仅 778 元。
+</div>
+
+<div class="chart-grid">
+<div class="chart-card"><h4>各阶段 s8 率</h4><div class="chart-wrap"><canvas id="c_s8"></canvas></div></div>
+<div class="chart-card"><h4>各阶段盈利率</h4><div class="chart-wrap"><canvas id="c_profit"></canvas></div></div>
+<div class="chart-card"><h4>件均放款额</h4><div class="chart-wrap"><canvas id="c_remit"></canvas></div></div>
+<div class="chart-card"><h4>放款笔数分布</h4><div class="chart-wrap"><canvas id="c_n"></canvas></div></div>
+</div>
+
+<!-- ====== 二、利润贡献与放款占比 ====== -->
+<h2>二、利润贡献与放款金额占比</h2>
+
+<h3>2.1 整体占比</h3>
+<p>总利润 <b style="color:#34d399">{fmtm(total_profit)}</b>，总放款 <b style="color:#60a5fa">{fmtm(total_remit)}</b>。等放虽然人数最多（75.2%），但仅贡献 {p_df}% 利润；迁移仅 35,131 人（13.6%），却贡献了 {p_mig}% 的利润。</p>
+<div style="max-width:860px">
+<table>
+<tr><th>类别</th><th>利润金额</th><th>利润金额(格式化)</th><th>放款金额</th><th>放款占比</th><th>利润占比</th></tr>
+{t2}
+</table>
+</div>
+
+<div class="chart-grid">
+<div class="chart-card"><h4>利润贡献占比（整体）</h4><div class="chart-wrap"><canvas id="c_profit_pie"></canvas></div></div>
+<div class="chart-card"><h4>放款金额占比（整体）</h4><div class="chart-wrap"><canvas id="c_remit_pie"></canvas></div></div>
+</div>
+
+<!-- ====== 2.2 分阶段拆解 ====== -->
+<h3>2.2 分阶段拆解</h3>
+<p>以下按五类用户分别展示首贷/第2次/第3次/第4次+各阶段的利润和放款金额贡献：</p>
+{t3_html}
+
+<div class="chart-grid">
+<div class="chart-card full"><h4>各阶段利润贡献堆叠（万元）</h4><div class="chart-wrap"><canvas id="c_stage_profit"></canvas></div></div>
+<div class="chart-card full"><h4>各阶段放款金额堆叠（万元）</h4><div class="chart-wrap"><canvas id="c_stage_remit"></canvas></div></div>
+</div>
+
+<!-- ====== 三、盈利差异根源 ====== -->
+<h2>三、盈利差异根源："只借一次"双杀</h2>
+<div style="max-width:860px">
+<table>
+<tr><th>类别</th><th>人数</th><th>首贷盈利率</th><th>仅1次占比</th><th>仅1次盈利率</th><th>多次盈利率</th><th>整体盈利率</th></tr>
+{t4}
+</table>
+</div>
+
+<div class="insight-box red">
+<strong>卡点 1 - 首贷质量：</strong>等放和原生非等放的首贷 s8 率都超过 40%。等放首贷亏 618 万，原生非等放首贷亏 83 万。
+</div>
+<div class="insight-box">
+<strong>卡点 2 - 留存黑洞：</strong>等放 47.4% 的人只借 1 次，盈利率 &minus;61.3%。迁移仅 32.7% 的人只借 1 次，单次盈利率 +53.9%。
+</div>
+<div class="insight-box green">
+<strong>卡点 3 - 原生非等放困境：</strong>被风控拒绝但仍首贷 s8 率 40.9%，件均仅 778 元。风控拒绝策略既不准(没筛掉坏人)，又太严(限制了件均)。
+</div>
+
+<div class="chart-grid">
+<div class="chart-card full"><h4>"只借1次" vs "多次借款" 盈利率对比</h4><div class="chart-wrap"><canvas id="c_single_vs_multi"></canvas></div></div>
+</div>
+
+<!-- ====== 四、循环贷影响分析 ====== -->
+<h2>四、循环贷影响分析</h2>
+<p>循环贷的核心判定条件：<b>借款时用户处于在途状态</b>（上一笔订单还款进度≥50%且尚未结清）。首贷永远不是循环贷，最早从第2笔开始出现。循环贷的 Trade-off：通过降低转化门槛提高放款量，但可能带来连带逾期（1个劣质用户逾期2笔）。</p>
+
+<h3>4.1 五类用户 × 循环贷/非循环贷 盈利率对比</h3>
+<div style="overflow-x:auto">
+<table>
+<tr><th>类别</th><th>循环贷订单</th><th>循环贷利润</th><th>循环贷盈利率</th><th>非循环贷订单</th><th>非循环贷利润</th><th>非循环贷盈利率</th><th>循环贷利润占比</th></tr>
+<tr><td><b style="color:#3b82f6">原生等放</b></td><td>157,100</td><td class="pos">+{fmtm(72420392)}</td><td class="pos">10.64%</td><td>457,763</td><td class="pos">+{fmtm(95986666)}</td><td class="pos">9.95%</td><td>43.0%</td></tr>
+<tr><td><b style="color:#10b981">非等放</b></td><td>35,984</td><td class="pos">+{fmtm(28961483)}</td><td class="pos">23.32%</td><td>148,302</td><td class="pos">+{fmtm(61086524)}</td><td class="pos">26.16%</td><td>32.2%</td></tr>
+<tr><td><b style="color:#60a5fa">等放</b></td><td>135,578</td><td class="pos">+{fmtm(45112178)}</td><td class="pos">7.55%</td><td>365,973</td><td class="pos">+{fmtm(36984869)}</td><td class="pos">4.65%</td><td>54.9%</td></tr>
+<tr><td><b style="color:#f59e0b">迁移</b></td><td>21,522</td><td class="pos">+{fmtm(27308215)}</td><td class="pos">32.79%</td><td>91,790</td><td class="pos">+{fmtm(59001798)}</td><td class="pos">34.75%</td><td>31.6%</td></tr>
+<tr><td><b style="color:#ef4444">原生非等放</b></td><td>14,462</td><td class="pos">+{fmtm(1653268)}</td><td class="pos">4.04%</td><td>56,512</td><td class="pos">+{fmtm(2084727)}</td><td class="pos">3.27%</td><td>44.2%</td></tr>
+</table>
+</div>
+
+<div class="insight-box blue">
+<strong>反直觉发现：等放用户的循环贷盈利率（7.55%）高于非循环贷（4.65%）。</strong><br>
+这说明循环贷的"还款过半"筛选机制起了关键作用——能在还款50%后支用的用户，已经证明了一定的还款能力和意愿，风险反而低于"结清后重新走审批"的普通复借用户。循环贷并非一定降低盈利率，在等放这种大基数用户群中，它反而起到了<b>正向筛选</b>的作用。
+</div>
+
+<div class="chart-grid">
+<div class="chart-card full"><h4>循环贷 vs 非循环贷 盈利率对比</h4><div class="chart-wrap"><canvas id="c_cycle_profit"></canvas></div></div>
+<div class="chart-card full"><h4>各阶段循环贷订单占比</h4><div class="chart-wrap"><canvas id="c_cycle_ratio"></canvas></div></div>
+</div>
+
+<h3>4.2 各阶段循环贷占比</h3>
+<p>循环贷占比 = 该阶段循环贷订单数 / 该阶段总订单数。首贷循环贷占比为0（首贷不可能是循环贷），从第2次开始出现。</p>
+<div style="overflow-x:auto">
+<table>
+<tr><th></th><th>第2次放款 循环贷占比</th><th>第3次放款 循环贷占比</th><th>第4次+放款 循环贷占比</th><th>整体循环贷占比</th></tr>
+<tr><td><b style="color:#60a5fa">等放</b></td><td>29.4%</td><td>47.3%</td><td>53.5%</td><td>27.0%</td></tr>
+<tr><td><b style="color:#f59e0b">迁移</b></td><td>18.0%</td><td>28.5%</td><td>33.0%</td><td>19.0%</td></tr>
+<tr><td><b style="color:#ef4444">原生非等放</b></td><td>23.3%</td><td>36.5%</td><td>42.4%</td><td>20.4%</td></tr>
+</table>
+</div>
+
+<div class="insight-box">
+<strong>循环贷的推进逻辑：</strong>等放用户在第2次放款时循环贷占比29.4%，到第4次+攀升到53.5%——说明循环贷资格是逐步放开的，与"优质用户早开通、中等用户晚开通、最差用户永不开通"的规则一致。迁移用户循环贷占比最低（整体19.0%），因为迁移用户被风控标记过，开通循环贷的门槛更高。
+</div>
+
+<div class="insight-box green">
+<strong>核心发现：</strong>循环贷在等放用户中的表现推翻了"循环贷=牺牲盈利率换放款量"的简单判断。等放循环贷7.55%盈利率高于非循环贷4.65%，说明<b>循环贷的筛选机制（还款≥50%）强于非循环贷的审批机制</b>，至少在等放群体中是如此。本质原因是：还款过半才给循环贷 = 用户已经用实际行动证明了自己的还款意愿，这个信号比风控模型评分更可靠。
+</div>
+
+<!-- ====== 五、结论 ====== -->
+<h2>五、结论：盈利的五个层次</h2>
+<div style="max-width:860px">
+
+<div class="insight-box green" style="margin-bottom:20px">
+<strong style="color:#f59e0b">第一层（优质）：迁移用户，盈利率 +{profit_rate['迁移']}%</strong><br>
+ 用户 {user_count['迁移']:,} 人（占比 {u_mig}%），放款占比 {r_mig}%，利润贡献 <b>{p_mig}%</b>。<br>
+<b>是谁：</b>先从等放正常还款（首贷 s8 率仅 0.4%），后因逾期被风控拦截（is_remit=0）的"被淘汰者"。<br>
+<b>为什么盈利率高：</b>三重筛选——逾期后恢复还款 → 被系统拒绝 → 仍坚持再申请。能留到最后的基本都是还款能力和意愿极强的用户。这也是"幸存者偏差"最极致的体现：只借1次的比例仅 32.7%，比等放的 47.4% 低得多，用户留存远高于其他类型。
+</div>
+
+<div class="insight-box" style="margin-bottom:20px">
+<strong style="color:#10b981">第二层（尚可）：非等放整体，盈利率 +{profit_rate['非等放']}%</strong><br>
+ 用户 {user_count['非等放']:,} 人（占比 {u_nfd}%），放款占比 {r_nfd}%，利润贡献 <b>{p_nfd}%</b>。<br>
+<b>内部两极分化严重：</b>迁移用户贡献了绝大部分利润（50.1%利润 vs 仅16.5%用户），拉高了非等放整体的盈利率。但原生非等放盈利率仅 +3.74%，放款占比仅 6.0%，是"拖后腿"的存在。非等放整体"尚可"的表象掩盖了内部结构性问题——原生非等放的件均仅 778 元，远低于迁移的 1225 元。
+</div>
+
+<div class="insight-box blue" style="margin-bottom:20px">
+<strong style="color:#3b82f6">第三层（及格）：原生等放整体，盈利率 +{profit_rate['原生等放']}%</strong><br>
+ 用户 {user_count['原生等放']:,} 人（占比 {u_ndf}%），放款占比 {r_ndf}%，利润贡献 <b>{p_ndf}%</b>。<br>
+ <b>占绝对大盘但效率不高：</b>包含 {u_ndf}% 的用户和 {r_ndf}% 的放款量，是业务的绝对主体。但整体盈利率仅 {profit_rate['原生等放']}%，意味着每放款 100 元只赚 {round(profit_rate['原生等放'])} 元。核心拖累是等放子集——占原生等放的绝大多数，但首贷 s8 率高达 43.5%，首贷阶段就亏损 618 万。
+</div>
+
+<div class="insight-box red" style="margin-bottom:20px">
+<strong style="color:#60a5fa">第四层（不及格）：等放，盈利率 +{profit_rate['等放']}%</strong><br>
+ 用户 {user_count['等放']:,} 人（占比 {u_df}%），放款占比 {r_df}%，利润贡献 <b>{p_df}%</b>。<br>
+ <b>最大的结构性问题：</b>占 {u_df}% 的用户，产生 {r_df}% 的放款，但只贡献 {p_df}% 的利润。首贷 s8 率 43.5% 是致命伤——近一半新用户在首贷就逾期，且 47.4% 的等放用户只借 1 次，单次盈利率 -61.3%。"只借一次就坏账"是等放盈利的卡点。
+</div>
+
+<div class="insight-box red" style="margin-bottom:20px">
+<strong style="color:#ef4444">第五层（最差）：原生非等放，盈利率 +{profit_rate['原生非等放']}%</strong><br>
+ 用户 {user_count['原生非等放']:,} 人（占比 {u_nat}%），放款占比 {r_nat}%，利润贡献 <b>{p_nat}%</b>。<br>
+<b>双重困境：</b>首次申请即被风控拒绝，说明本身是高风险人群。首贷 s8 率仍高达 40.9%，说明风控拒绝后仍放款的策略并未有效筛选出优质用户。同时件均仅 778 元（五类最低），进一步压缩了盈利空间。风控策略在此类用户上陷入两难——既没拦住坏人（s8率高），又限制了规模（件均低）。
+</div>
+
+<div class="insight-box blue" style="margin-top:24px">
+<strong style="color:#60a5fa">杠杆点：</strong>等放首贷 s8 率从 43.5% 降到 30%，约 2.6 万用户从 s8 转为 s7，进入复借盈利区间。预计等放整体盈利率从 {profit_rate['等放']}% 提升到 12-15%。等放占 {u_df}% 用户，其改善对整体盈利能力影响最大。
+</div>
+</div>
+
+<!-- ====== 附录 A ====== -->
+<h2>附录 A：PGSQL 查询代码</h2>
+<pre class="code">{sql_code}</pre>
+
+<!-- ====== 附录 B ====== -->
+<h2>附录 B：Python 数据提取脚本</h2>
+<pre class="code">{py_code}</pre>
+
+</div>
+
+<script>
+var CATS = {CATS_JS};
+var NAMES = {NAMES_JS};
+var CONTRIB = {CONTRIB_JS};
+var SEQM = {SEQ_JS};
+var DL = {DL_JS};
+var DS = ['原生等放','非等放','等放','迁移','原生非等放'];
+
+Chart.defaults.color = '#9ca3af';
+Chart.defaults.borderColor = 'transparent';
+
+function grouped(id, datasets) {{
+  new Chart(document.getElementById(id), {{
+    type: 'bar', data: {{ labels: CATS, datasets: datasets }},
+    options: {{
+      responsive: true, maintainAspectRatio: false,
+      plugins: {{
+        legend: {{ labels: {{ color: '#d1d5db' }} }},
+        tooltip: {{ backgroundColor: '#374151', titleColor: '#f9fafb', bodyColor: '#e5e7eb',
+          callbacks: {{ label: function(c) {{ return c.dataset.label + ': ' + c.raw.toLocaleString() + (c.dataset.unit||''); }} }} }}
+      }},
+      scales: {{
+        x: {{ grid: {{ color: '#374151' }}, ticks: {{ color: '#9ca3af' }} }},
+        y: {{ beginAtZero: true, grid: {{ color: '#374151' }}, ticks: {{ color: '#9ca3af', callback: function(v){{ return v + (datasets[0].unit||''); }} }} }}
+      }}
+    }}
+  }});
+}}
+
+function makeDS(metric, unit) {{
+  return DS.map(function(n) {{
+    return {{ label: n, data: CATS.map(function(c){{ return SEQM[n][c][metric]; }}), backgroundColor: DL[n], borderRadius: 8, borderWidth: 0, unit: unit }};
+  }});
+}}
+
+grouped('c_s8', makeDS('s8pct', '%'));
+grouped('c_profit', makeDS('profit', '%'));
+grouped('c_remit', makeDS('avg_remit', ' 元'));
+grouped('c_n', makeDS('n', ''));
+
+new Chart(document.getElementById('c_single_vs_multi'), {{
+  type: 'bar', data: {{
+    labels: DS,
+    datasets: [
+      {{ label: '仅1次盈利率', data: DS.map(function(n){{return CONTRIB[n][2];}}), backgroundColor: DS.map(function(n){{return DL[n]+'88';}}), borderRadius:8, borderWidth:0, unit:'%' }},
+      {{ label: '多次盈利率', data: DS.map(function(n){{return CONTRIB[n][4];}}), backgroundColor: DS.map(function(n){{return DL[n];}}), borderRadius:8, borderWidth:0, unit:'%' }}
+    ]
+  }},
+  options: {{
+    responsive: true, maintainAspectRatio: false,
+    plugins: {{ legend: {{ labels: {{ color: '#d1d5db' }} }}, tooltip: {{ backgroundColor: '#374151' }} }},
+    scales: {{ x: {{ grid: {{ color: '#374151' }}, ticks: {{ color: '#9ca3af' }} }}, y: {{ grid: {{ color: '#374151' }}, ticks: {{ color: '#9ca3af', callback: function(v){{return v+'%';}} }} }} }}
+  }}
+}});
+
+// 利润饼图
+new Chart(document.getElementById('c_profit_pie'), {{
+  type: 'doughnut', data: {{ labels: DS, datasets: [{{ data: [{PD}], backgroundColor: DS.map(function(n){{return DL[n];}}), borderWidth:2, borderColor:'#111827' }}] }},
+  options: {{ responsive:true, maintainAspectRatio:false,
+    plugins: {{
+      legend: {{ position:'bottom', labels:{{color:'#d1d5db',padding:16,font:{{size:12}}}} }},
+      tooltip: {{ backgroundColor:'#374151', callbacks:{{label:function(c){{return c.label+': '+c.raw.toFixed(1)+'%';}}}} }}
+    }},
+    layout: {{ padding: 8 }}
+  }},
+  plugins: [{{
+    id: 'doughnutLabels',
+    afterDraw: function(chart) {{
+      var ctx = chart.ctx;
+      var meta = chart.getDatasetMeta(0);
+      var centerX = (chart.chartArea.left + chart.chartArea.right) / 2;
+      var centerY = (chart.chartArea.top + chart.chartArea.bottom) / 2;
+      meta.data.forEach(function(el, i) {{
+        var angle = (el.startAngle + el.endAngle) / 2;
+        var r = (el.outerRadius + el.innerRadius) / 2;
+        var x = centerX + Math.cos(angle) * r;
+        var y = centerY + Math.sin(angle) * r;
+        var val = chart.data.datasets[0].data[i];
+        ctx.save();
+        ctx.fillStyle = '#f9fafb';
+        ctx.font = 'bold 13px -apple-system,BlinkMacSystemFont,sans-serif';
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        ctx.fillText(val.toFixed(1) + '%', x, y);
+        ctx.restore();
+      }});
+    }}
+  }}]
+}});
+
+// 放款饼图
+new Chart(document.getElementById('c_remit_pie'), {{
+  type: 'doughnut', data: {{ labels: DS, datasets: [{{ data: [{RD}], backgroundColor: DS.map(function(n){{return DL[n];}}), borderWidth:2, borderColor:'#111827' }}] }},
+  options: {{ responsive:true, maintainAspectRatio:false,
+    plugins: {{
+      legend: {{ position:'bottom', labels:{{color:'#d1d5db',padding:16,font:{{size:12}}}} }},
+      tooltip: {{ backgroundColor:'#374151', callbacks:{{label:function(c){{return c.label+': '+c.raw.toFixed(1)+'%';}}}} }}
+    }},
+    layout: {{ padding: 8 }}
+  }},
+  plugins: [{{
+    id: 'doughnutLabels',
+    afterDraw: function(chart) {{
+      var ctx = chart.ctx;
+      var meta = chart.getDatasetMeta(0);
+      var centerX = (chart.chartArea.left + chart.chartArea.right) / 2;
+      var centerY = (chart.chartArea.top + chart.chartArea.bottom) / 2;
+      meta.data.forEach(function(el, i) {{
+        var angle = (el.startAngle + el.endAngle) / 2;
+        var r = (el.outerRadius + el.innerRadius) / 2;
+        var x = centerX + Math.cos(angle) * r;
+        var y = centerY + Math.sin(angle) * r;
+        var val = chart.data.datasets[0].data[i];
+        ctx.save();
+        ctx.fillStyle = '#f9fafb';
+        ctx.font = 'bold 13px -apple-system,BlinkMacSystemFont,sans-serif';
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        ctx.fillText(val.toFixed(1) + '%', x, y);
+        ctx.restore();
+      }});
+    }}
+  }}]
+}});
+
+// 阶段利润堆叠
+new Chart(document.getElementById('c_stage_profit'), {{
+  type: 'bar', data: {{ labels: CATS, datasets: DS.map(function(n){{ return {{ label:n, data: CATS.map(function(c){{ return SEQM[n][c].profit_wan; }}), backgroundColor:DL[n], borderRadius:4, borderWidth:0 }}; }}) }},
+  options: {{ responsive:true, maintainAspectRatio:false, plugins: {{ legend:{{labels:{{color:'#d1d5db'}}}}, tooltip: {{ backgroundColor:'#374151', callbacks:{{label:function(c){{return c.dataset.label+': '+(c.raw).toLocaleString()+' 万';}}}} }} }}, scales: {{ x: {{ stacked:true, grid:{{color:'#374151'}}, ticks:{{color:'#9ca3af'}} }}, y: {{ stacked:true, grid:{{color:'#374151'}}, ticks:{{color:'#9ca3af',callback:function(v){{return v+' 万';}}}} }} }} }}
+}});
+
+// 阶段放款堆叠
+new Chart(document.getElementById('c_stage_remit'), {{
+  type: 'bar', data: {{ labels: CATS, datasets: DS.map(function(n){{ return {{ label:n, data: CATS.map(function(c){{ return SEQM[n][c].remit_wan; }}), backgroundColor:DL[n], borderRadius:4, borderWidth:0 }}; }}) }},
+  options: {{ responsive:true, maintainAspectRatio:false, plugins: {{ legend:{{labels:{{color:'#d1d5db'}}}}, tooltip: {{ backgroundColor:'#374151', callbacks:{{label:function(c){{return c.dataset.label+': '+(c.raw).toLocaleString()+' 万';}}}} }} }}, scales: {{ x: {{ stacked:true, grid:{{color:'#374151'}}, ticks:{{color:'#9ca3af'}} }}, y: {{ stacked:true, grid:{{color:'#374151'}}, ticks:{{color:'#9ca3af',callback:function(v){{return v+' 万';}}}} }} }} }}
+}});
+
+// ===== 循环贷图表 =====
+// 循环贷 vs 非循环贷 盈利率对比
+new Chart(document.getElementById('c_cycle_profit'), {{
+  type: 'bar', data: {{
+    labels: ['原生等放','非等放','等放','迁移','原生非等放'],
+    datasets: [
+      {{ label: '循环贷盈利率', data: [10.64, 23.32, 7.55, 32.79, 4.04], backgroundColor: '#3b82f6', borderRadius: 8, borderWidth: 0, unit: '%' }},
+      {{ label: '非循环贷盈利率', data: [9.95, 26.16, 4.65, 34.75, 3.27], backgroundColor: '#6b7280', borderRadius: 8, borderWidth: 0, unit: '%' }}
+    ]
+  }},
+  options: {{
+    responsive: true, maintainAspectRatio: false,
+    plugins: {{ legend: {{ labels: {{ color: '#d1d5db' }} }}, tooltip: {{ backgroundColor: '#374151', callbacks: {{ label: function(c) {{ return c.dataset.label + ': ' + c.raw.toFixed(2) + '%'; }} }} }} }},
+    scales: {{ x: {{ grid: {{ color: '#374151' }}, ticks: {{ color: '#9ca3af' }} }}, y: {{ grid: {{ color: '#374151' }}, ticks: {{ color: '#9ca3af', callback: function(v) {{ return v + '%'; }} }} }} }}
+  }}
+}});
+
+// 各阶段循环贷订单占比
+new Chart(document.getElementById('c_cycle_ratio'), {{
+  type: 'bar', data: {{
+    labels: ['第2次放款','第3次放款','第4次+放款'],
+    datasets: [
+      {{ label: '等放', data: [29.4, 47.3, 53.5], backgroundColor: '#60a5fa', borderRadius: 8, borderWidth: 0 }},
+      {{ label: '迁移', data: [18.0, 28.5, 33.0], backgroundColor: '#f59e0b', borderRadius: 8, borderWidth: 0 }},
+      {{ label: '原生非等放', data: [23.3, 36.5, 42.4], backgroundColor: '#ef4444', borderRadius: 8, borderWidth: 0 }}
+    ]
+  }},
+  options: {{
+    responsive: true, maintainAspectRatio: false,
+    plugins: {{ legend: {{ labels: {{ color: '#d1d5db' }} }}, tooltip: {{ backgroundColor: '#374151', callbacks: {{ label: function(c) {{ return c.dataset.label + ': ' + c.raw.toFixed(1) + '%'; }} }} }} }},
+    scales: {{ x: {{ grid: {{ color: '#374151' }}, ticks: {{ color: '#9ca3af' }} }}, y: {{ beginAtZero: true, grid: {{ color: '#374151' }}, ticks: {{ color: '#9ca3af', callback: function(v) {{ return v + '%'; }} }}, max: 60 }} }}
+  }}
+}});
+</script>
+</body></html>'''
+
+# 写入并推送
+path = '/Users/wangchuanliang/Documents/trae_projects/github_pages_repo/五类用户盈利能力对比_原生等放_非等放_等放_迁移_原生.html'
+with open(path, 'w') as f:
+    f.write(html)
+print(f"HTML: {len(html)} bytes")
+
+subprocess.run(['git', '-C', '/Users/wangchuanliang/Documents/trae_projects/github_pages_repo', 'add', '-A'], check=True)
+subprocess.run(['git', '-C', '/Users/wangchuanliang/Documents/trae_projects/github_pages_repo', 'commit', '-m', 'v4：修复图表数据+完整代码附录+2.2分阶段重构'], check=True)
+subprocess.run(['git', '-C', '/Users/wangchuanliang/Documents/trae_projects/github_pages_repo', 'push'], check=True)
+print("DONE: https://wangchl03.github.io/report/五类用户盈利能力对比_原生等放_非等放_等放_迁移_原生.html")
