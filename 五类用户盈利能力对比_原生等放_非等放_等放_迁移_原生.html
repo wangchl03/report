@@ -267,11 +267,11 @@ pre.code{background:#1f2937;border:1px solid #374151;border-radius:8px;padding:1
 <div class="chart-card full"><h4>"只借1次" vs "多次借款" 盈利率对比</h4><div class="chart-wrap"><canvas id="c_single_vs_multi"></canvas></div></div>
 </div>
 
-<!-- ====== 三之二、循环贷影响分析 ====== -->
-<h2>三之二、循环贷影响分析</h2>
+<!-- ====== 四、循环贷影响分析 ====== -->
+<h2>四、循环贷影响分析</h2>
 <p>循环贷的核心判定条件：<b>借款时用户处于在途状态</b>（上一笔订单还款进度≥50%且尚未结清）。首贷永远不是循环贷，最早从第2笔开始出现。循环贷的 Trade-off：通过降低转化门槛提高放款量，但可能带来连带逾期（1个劣质用户逾期2笔）。</p>
 
-<h3>3.2a 五类用户 × 循环贷/非循环贷 盈利率对比</h3>
+<h3>4.1 五类用户 × 循环贷/非循环贷 盈利率对比</h3>
 <div style="overflow-x:auto">
 <table>
 <tr><th>类别</th><th>循环贷订单</th><th>循环贷利润</th><th>循环贷盈利率</th><th>非循环贷订单</th><th>非循环贷利润</th><th>非循环贷盈利率</th><th>循环贷利润占比</th></tr>
@@ -293,7 +293,7 @@ pre.code{background:#1f2937;border:1px solid #374151;border-radius:8px;padding:1
 <div class="chart-card full"><h4>各阶段循环贷订单占比</h4><div class="chart-wrap"><canvas id="c_cycle_ratio"></canvas></div></div>
 </div>
 
-<h3>3.2b 各阶段循环贷占比</h3>
+<h3>4.2 各阶段循环贷占比</h3>
 <p>循环贷占比 = 该阶段循环贷订单数 / 该阶段总订单数。首贷循环贷占比为0（首贷不可能是循环贷），从第2次开始出现。</p>
 <div style="overflow-x:auto">
 <table>
@@ -312,8 +312,8 @@ pre.code{background:#1f2937;border:1px solid #374151;border-radius:8px;padding:1
 <strong>核心发现：</strong>循环贷在等放用户中的表现推翻了"循环贷=牺牲盈利率换放款量"的简单判断。等放循环贷7.55%盈利率高于非循环贷4.65%，说明<b>循环贷的筛选机制（还款≥50%）强于非循环贷的审批机制</b>，至少在等放群体中是如此。本质原因是：还款过半才给循环贷 = 用户已经用实际行动证明了自己的还款意愿，这个信号比风控模型评分更可靠。
 </div>
 
-<!-- ====== 四、结论 ====== -->
-<h2>四、结论：盈利的五个层次</h2>
+<!-- ====== 五、结论 ====== -->
+<h2>五、结论：盈利的五个层次</h2>
 <div style="max-width:860px">
 
 <div class="insight-box green" style="margin-bottom:20px">
