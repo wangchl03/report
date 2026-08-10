@@ -60,6 +60,31 @@
 <h1>等放 & 原生非等放 — 低盈利率根因分析</h1>
 <p class="subtitle">2025.01 ~ 2026.05 注册 · 全量用户 · 为什么这两类用户不赚钱？卡点在哪里？</p>
 
+<!-- 口径说明 -->
+<div style="max-width:860px;margin:0 auto 36px;background:#1f2937;border:1px solid #374151;border-radius:10px;padding:20px 24px;font-size:13px;line-height:2;color:#9ca3af">
+  <div style="font-weight:700;color:#e5e7eb;margin-bottom:10px;font-size:14px">指标口径说明</div>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:4px 24px">
+    <div><b style="color:#d1d5db">用户分类</b></div>
+    <div>等放（提单=放款）、迁移（先放后被拒）、原生非等放（先被拒后放），基于全量订单历史判定</div>
+    <div><b style="color:#d1d5db">首贷 / 第N次放款</b></div>
+    <div><b>订单维度</b>：对每个用户的放款订单按 apply_time 排序编号（ROW_NUMBER），将全部用户的第N笔放款聚合统计</div>
+    <div><b style="color:#d1d5db">放款笔数分布</b></div>
+    <div><b>订单维度</b>：各类用户的第N笔放款各有多少笔（等放首贷 194,478 笔，不是 194,478 人）</div>
+    <div><b style="color:#d1d5db">"只借1次占比"</b></div>
+    <div><b>用户维度</b>：生命周期总放款次数 = 1 的用户占该类用户的比例。等放 47.4% = 92,254 人 / 194,478 人</div>
+    <div><b style="color:#d1d5db">仅1次盈利率</b></div>
+    <div>只借过1次的那批用户（用户维度），其终态订单（status&in;7,8）的 (repaid - remit) / remit</div>
+    <div><b style="color:#d1d5db">各阶段 s8 率 / 盈利率</b></div>
+    <div><b>订单维度</b>：第N次放款中 status=8 的占比，和终态订单(repaid-remit)/remit</div>
+    <div><b style="color:#d1d5db">件均放款额</b></div>
+    <div>该阶段放款订单的 remit_amt 平均值</div>
+    <div><b style="color:#d1d5db">终态订单</b></div>
+    <div>loan_status_code IN (7, 8)，排除 status=5（在途未完结）</div>
+    <div><b style="color:#d1d5db">数据范围</b></div>
+    <div>reg_date &ge; 2025-01-01 且 &le; 2026-05-31，全量用户（无哈希采样）</div>
+  </div>
+</div>
+
 <div class="legend">
   <div class="legend-item"><span class="legend-dot" style="background:#3b82f6"></span> 等放用户</div>
   <div class="legend-item"><span class="legend-dot" style="background:#ef4444"></span> 原生非等放</div>
