@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>等放 · 非等放 · 原生非等放 · 迁移用户 — 四方对比</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"><</script>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#f0f2f5;color:#1a1a2e;padding:32px 20px}
+.container{max-width:1200px;margin:0 auto}
+h1{text-align:center;font-size:26px;margin-bottom:6px;color:#0f0f23}
+.subtitle{text-align:center;font-size:13px;color:#888;margin-bottom:40px}
+.kpi-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:32px}
+.kpi-card{background:white;border-radius:12px;padding:20px;text-align:center;box-shadow:0 1px 4px rgba(0,0,0,.06)}
+.kpi-label{font-size:12px;color:#888;margin-bottom:6px}
+.kpi-value{font-size:28px;font-weight:700}
+.kpi-sub{font-size:11px;color:#aaa;margin-top:4px}
+.kpi-0 .kpi-value{color:#3498db}
+.kpi-1 .kpi-value{color:#2ecc71}
+.kpi-2 .kpi-value{color:#e74c3c}
+.kpi-3 .kpi-value{color:#f39c12}
+.chart-grid{display:grid;grid-template-columns:1fr 1fr;gap:24px;margin-bottom:24px}
+.chart-card{background:white;border-radius:12px;padding:20px;box-shadow:0 1px 4px rgba(0,0,0,.06)}
+.chart-card.full{grid-column:1/-1}
+.chart-title{font-size:15px;font-weight:600;margin-bottom:14px;color:#333}
+.chart-wrap{position:relative;height:320px}
+.chart-wrap.tall{height:380px}
+@media(max-width:768px){.kpi-grid{grid-template-columns:1fr 1fr}.chart-grid{grid-template-columns:1fr}}
+.footer{text-align:center;font-size:11px;color:#aaa;margin-top:40px}
+.legend{display:flex;gap:20px;justify-content:center;margin-bottom:24px;flex-wrap:wrap}
+.legend-item{display:flex;align-items:center;gap:6px;font-size:13px}
+.legend-dot{width:12px;height:12px;border-radius:3px}
+</style>
+</head>
+<body>
+<div class="container">
+<h1>等放 · 非等放 · 原生非等放 · 迁移用户</h1>
+<p class="subtitle">数据范围：2025.01 ~ 2026.05 注册用户 | 全量 | 四类用户盈利与逾期风险对比</p>
+
+<div class="legend">
+<div class="legend-item"><div class="legend-dot" style="background:#3498db"></div></div>等放用户</div>
+<div class="legend-item"><div class="legend-dot" style="background:#2ecc71"></div></div>非等放整体</div>
+<div class="legend-item"><div class="legend-dot" style="background:#e74c3c"></div></div>原生非等放</div>
+<div class="legend-item"><div class="legend-dot" style="background:#f39c12"></div></div>迁移用户</div>
+</div>
+
+<div class="kpi-grid">
+<div class="kpi-card kpi-0"><div class="kpi-label">等放用户</div><div class="kpi-value">194,478</div><div class="kpi-sub">盈利率 6.02%</div></div>
+<div class="kpi-card kpi-1"><div class="kpi-label">非等放整体</div><div class="kpi-value">64,094</div><div class="kpi-sub">盈利率 25.76%</div></div>
+<div class="kpi-card kpi-2"><div class="kpi-label">原生非等放</div><div class="kpi-value">28,963</div><div class="kpi-sub">盈利率 3.74%</div></div>
+<div class="kpi-card kpi-3"><div class="kpi-label">迁移用户</div><div class="kpi-value">35,131</div><div class="kpi-sub">盈利率 34.71%</div></div>
+
+</div>
+
+<div class="chart-grid">
+  <div class="chart-card"><div class="chart-title">盈利率对比</div><div class="chart-wrap"><canvas id="c_profit"></canvas></canvas></div></div>
+  <div class="chart-card"><div class="chart-title">用户级逾期率对比</div><div class="chart-wrap"><canvas id="c_user_od_s8"></canvas></canvas></div></div>
+  <div class="chart-card"><div class="chart-title">od&gt;0 − s8 差值（逾期恢复率）</div><div class="chart-wrap"><canvas id="c_od_s8_diff"></canvas></canvas></div></div>
+  <div class="chart-card"><div class="chart-title">订单级逾期率对比</div><div class="chart-wrap"><canvas id="c_order_od_s8"></canvas></canvas></div></div>
+  <div class="chart-card"><div class="chart-title">逾期回款率对比</div><div class="chart-wrap"><canvas id="c_recovery"></canvas></canvas></div></div>
+  <div class="chart-card"><div class="chart-title">件均放款额对比</div><div class="chart-wrap"><canvas id="c_avg_remit"></canvas></canvas></div></div>
+  <div class="chart-card full"><div class="chart-title">综合雷达：盈利率 · 回款率 · 恢复率 · 件均</div><div class="chart-wrap tall"><canvas id="c_radar"></canvas></canvas></div></div>
+</div>
+
+<p class="footer">等放用户 = 从未被拒（提单=放款） · 非等放 = 至少被拒过一次 · 原生非等放 = 首笔即被拒 · 迁移用户 = 先放过款后被拒（逾期恢复+被拒再申）</p>
+</div>
+
+<script>
+var DATA = {"categories": ["等放用户", "非等放整体", "原生非等放", "迁移用户"], "user_count": [194478, 64094, 28963, 35131], "od_user_pct": [88.5, 71.6, 82.4, 62.7], "s8_user_pct": [85.6, 50.7, 76.9, 29.1], "od_s8_diff": [2.9, 20.9, 5.5, 33.6], "od_order_pct": [41.7, 30.2, 39.5, 24.4], "s8_order_pct": [38.9, 19.9, 35.4, 10.2], "profit_rate": [6.02, 25.76, 3.74, 34.71], "recovery_rate": [36.08, 32.36, 28.82, 36.2], "avg_remit": [2776.0, 1942, 1475, 2233]};
+
+var colors = ['#3498db', '#2ecc71', '#e74c3c', '#f39c12'];
+var labels = DATA.categories;
+
+function makeBar(id, label, values, yLabel) {
+    yLabel = yLabel || '';
+    new Chart(document.getElementById(id), {
+        type: 'bar',
+        data: {
+            labels: labels,
+            datasets: [{label: label, data: values, backgroundColor: colors, borderRadius: 6, borderWidth: 0}]
+        },
+        options: {
+            responsive: true, maintainAspectRatio: false,
+            plugins: {legend: {display: false}},
+            scales: {y: {beginAtZero: true, ticks: {callback: function(v) { return v + yLabel; }}}}
+        }
+    });
+}
+
+function makeGroupedBar(id, datasets) {
+    new Chart(document.getElementById(id), {
+        type: 'bar',
+        data: {labels: labels, datasets: datasets},
+        options: {
+            responsive: true, maintainAspectRatio: false,
+            plugins: {tooltip: {callbacks: {label: function(ctx) { return ctx.dataset.label + ': ' + ctx.raw + '%'; }}}},
+            scales: {y: {beginAtZero: true, ticks: {callback: function(v) { return v + '%'; }}}}
+        }
+    });
+}
+
+makeBar('c_profit', '盈利率', DATA.profit_rate, '%');
+makeBar('c_recovery', '逾期回款率', DATA.recovery_rate, '%');
+makeBar('c_avg_remit', '件均放款额', DATA.avg_remit, '元');
+makeBar('c_od_s8_diff', 'od>0-s8差值', DATA.od_s8_diff, 'pp');
+
+makeGroupedBar('c_user_od_s8', [
+    {label: '用户级 od>0%', data: DATA.od_user_pct, backgroundColor: colors.map(function(c){return c+'99';}), borderRadius: 6, borderWidth: 0},
+    {label: '用户级 s8%',   data: DATA.s8_user_pct, backgroundColor: colors, borderRadius: 6, borderWidth: 0}
+]);
+
+makeGroupedBar('c_order_od_s8', [
+    {label: '订单级 od>0%', data: DATA.od_order_pct, backgroundColor: colors.map(function(c){return c+'99';}), borderRadius: 6, borderWidth: 0},
+    {label: '订单级 s8%',   data: DATA.s8_order_pct, backgroundColor: colors, borderRadius: 6, borderWidth: 0}
+]);
+
+(function() {
+    // 雷达图 - 归一化
+    var maxes = [
+        Math.max.apply(null, DATA.profit_rate),
+        Math.max.apply(null, DATA.recovery_rate),
+        Math.max.apply(null, DATA.od_s8_diff),
+        Math.max.apply(null, DATA.avg_remit)
+    ];
+    var norm = [[],[],[],[]];
+    for (var i = 0; i < 4; i++) {
+        for (var j = 0; j < 4; j++) {
+            norm[i][j] = [DATA.profit_rate, DATA.recovery_rate, DATA.od_s8_diff, DATA.avg_remit][i][j] / maxes[i] * 100;
+        }
+    }
+
+    var radarLabels = ['盈利率', '逾期回款率', '逾期恢复率\n(od>0-s8)', '件均放款额'];
+    var datasets = [];
+    for (var d = 0; d < 4; d++) {
+        datasets.push({
+            label: labels[d],
+            data: [norm[0][d], norm[1][d], norm[2][d], norm[3][d]],
+            borderColor: colors[d],
+            backgroundColor: colors[d] + '22',
+            pointBackgroundColor: colors[d],
+            borderWidth: 2
+        });
+    }
+
+    new Chart(document.getElementById('c_radar'), {
+        type: 'radar',
+        data: {labels: radarLabels, datasets: datasets},
+        options: {
+            responsive: true, maintainAspectRatio: false,
+            scales: {r: {beginAtZero: true, max: 100, ticks: {display: false}}}
+        }
+    });
+})();
+</script>
+</body>
+</html>
