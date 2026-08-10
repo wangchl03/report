@@ -1,9 +1,3 @@
-<!-- ===========================================================================
-  五类用户盈利能力对比报告 -- 前端 HTML 模板
-  使用前请用 Python 脚本填充所有 {{PLACEHOLDER}} 变量
-  或使用 gen_five_final.py 自动生成完整报告
-  依赖: Chart.js 4.4.0 CDN
-  =========================================================================== -->
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
@@ -12,48 +6,51 @@
 <title>五类用户盈利能力对比分析报告</title>
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
 <style>
-*{{margin:0;padding:0;box-sizing:border-box}}
-body{{font-family:-apple-system,BlinkMacSystemFont,'PingFang SC',sans-serif;background:#111827;color:#e5e7eb;padding:40px 24px}}
-.container{{max-width:1200px;margin:0 auto}}
-h1{{text-align:center;font-size:28px;font-weight:800;margin-bottom:6px;color:#f9fafb}}
-.subtitle{{text-align:center;font-size:14px;color:#9ca3af;margin-bottom:36px}}
-h2{{font-size:20px;font-weight:700;color:#f3f4f6;border-left:4px solid #f59e0b;padding-left:12px;margin:40px 0 16px}}
-h3{{font-size:16px;font-weight:600;color:#e5e7eb;margin:24px 0 12px}}
-p{{font-size:14px;line-height:1.8;color:#d1d5db;margin-bottom:12px}}
-.insight-box{{background:rgba(251,191,36,.10);border:1px solid rgba(251,191,36,.25);border-radius:10px;padding:18px 22px;margin:16px 0}}
-.insight-box.red{{background:rgba(239,68,68,.10);border-color:rgba(239,68,68,.25)}}
-.insight-box.green{{background:rgba(16,185,129,.10);border-color:rgba(16,185,129,.25)}}
-.insight-box.blue{{background:rgba(59,130,246,.10);border-color:rgba(59,130,246,.25)}}
-.insight-box strong{{color:#fbbf24}}
-.insight-box.red strong{{color:#f87171}}
-.insight-box.green strong{{color:#34d399}}
-.insight-box.blue strong{{color:#60a5fa}}
-.legend{{display:flex;gap:22px;justify-content:center;margin-bottom:28px;flex-wrap:wrap}}
-.legend-item{{display:flex;align-items:center;gap:8px;font-size:13px;font-weight:500;color:#d1d5db}}
-.legend-dot{{width:14px;height:14px;border-radius:4px;flex-shrink:0}}
-.chart-grid{{display:grid;grid-template-columns:1fr 1fr;gap:24px;margin-bottom:24px}}
-.chart-card{{background:#1f2937;border-radius:14px;padding:22px;box-shadow:0 2px 12px rgba(0,0,0,.25)}}
-.chart-card.full{{grid-column:1/-1}}
-.chart-card h4{{font-size:14px;font-weight:600;color:#e5e7eb;margin-bottom:14px}}
-.chart-wrap{{position:relative;height:320px}}
-.chart-wrap.tall{{height:400px}}
-table{{width:100%;border-collapse:collapse;font-size:12px;margin:12px 0}}
-table th{{background:#374151;padding:8px 10px;text-align:right;font-weight:600;color:#d1d5db;border-bottom:2px solid #4b5563}}
-table td{{padding:8px 10px;text-align:right;border-bottom:1px solid #374151;color:#e5e7eb}}
-table th:first-child,table td:first-child{{text-align:left}}
-.neg{{color:#f87171;font-weight:700}}
-.pos{{color:#34d399;font-weight:700}}
-.summary-grid{{display:grid;grid-template-columns:repeat(5,1fr);gap:12px;margin-bottom:32px}}
-.sum-card{{background:#1f2937;border-radius:14px;padding:18px;text-align:center;box-shadow:0 2px 12px rgba(0,0,0,.25)}}
-.sum-card .big{{font-size:26px;font-weight:800;margin:6px 0}}
-pre.code{{background:#1f2937;border:1px solid #374151;border-radius:8px;padding:16px;overflow-x:auto;font-size:12px;line-height:1.6;color:#a5b4c2;max-height:600px;overflow-y:auto;white-space:pre-wrap;word-break:break-all}}
-.glossary-grid{{display:grid;grid-template-columns:1fr 2fr 4fr;gap:1px;background:#374151;border-radius:10px;overflow:hidden;margin:16px 0;font-size:13px}}
-.glossary-grid div{{padding:10px 14px;background:#1f2937}}
-.glossary-grid .gh{{background:#374151;font-weight:700;color:#e5e7eb}}
-@media(max-width:768px){{.chart-grid,.summary-grid{{grid-template-columns:1fr}}}}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:-apple-system,BlinkMacSystemFont,'PingFang SC',sans-serif;background:#111827;color:#e5e7eb;padding:40px 24px}
+.container{max-width:1200px;margin:0 auto}
+h1{text-align:center;font-size:28px;font-weight:800;margin-bottom:6px;color:#f9fafb}
+.subtitle{text-align:center;font-size:14px;color:#9ca3af;margin-bottom:36px}
+h2{font-size:20px;font-weight:700;color:#f3f4f6;border-left:4px solid #f59e0b;padding-left:12px;margin:40px 0 16px}
+h3{font-size:16px;font-weight:600;color:#e5e7eb;margin:24px 0 12px}
+p{font-size:14px;line-height:1.8;color:#d1d5db;margin-bottom:12px}
+.insight-box{background:rgba(251,191,36,.10);border:1px solid rgba(251,191,36,.25);border-radius:10px;padding:18px 22px;margin:16px 0}
+.insight-box.red{background:rgba(239,68,68,.10);border-color:rgba(239,68,68,.25)}
+.insight-box.green{background:rgba(16,185,129,.10);border-color:rgba(16,185,129,.25)}
+.insight-box.blue{background:rgba(59,130,246,.10);border-color:rgba(59,130,246,.25)}
+.insight-box strong{color:#fbbf24}
+.insight-box.red strong{color:#f87171}
+.insight-box.green strong{color:#34d399}
+.insight-box.blue strong{color:#60a5fa}
+.legend{display:flex;gap:22px;justify-content:center;margin-bottom:28px;flex-wrap:wrap}
+.legend-item{display:flex;align-items:center;gap:8px;font-size:13px;font-weight:500;color:#d1d5db}
+.legend-dot{width:14px;height:14px;border-radius:4px;flex-shrink:0}
+.chart-grid{display:grid;grid-template-columns:1fr 1fr;gap:24px;margin-bottom:24px}
+.chart-card{background:#1f2937;border-radius:14px;padding:22px;box-shadow:0 2px 12px rgba(0,0,0,.25)}
+.chart-card.full{grid-column:1/-1}
+.chart-card h4{font-size:14px;font-weight:600;color:#e5e7eb;margin-bottom:14px}
+.chart-wrap{position:relative;height:320px}
+.chart-wrap.tall{height:400px}
+table{width:100%;border-collapse:collapse;font-size:12px;margin:12px 0}
+table th{background:#374151;padding:8px 10px;text-align:right;font-weight:600;color:#d1d5db;border-bottom:2px solid #4b5563}
+table td{padding:8px 10px;text-align:right;border-bottom:1px solid #374151;color:#e5e7eb}
+table th:first-child,table td:first-child{text-align:left}
+.neg{color:#f87171;font-weight:700}
+.pos{color:#34d399;font-weight:700}
+.summary-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:12px;margin-bottom:32px}
+.sum-card{background:#1f2937;border-radius:14px;padding:18px;text-align:center;box-shadow:0 2px 12px rgba(0,0,0,.25)}
+.sum-card .big{font-size:26px;font-weight:800;margin:6px 0}
+pre.code{background:#1f2937;border:1px solid #374151;border-radius:8px;padding:16px;overflow-x:auto;font-size:12px;line-height:1.6;color:#a5b4c2;max-height:600px;overflow-y:auto;white-space:pre-wrap;word-break:break-all}
+.glossary-grid{display:grid;grid-template-columns:1fr 2fr 4fr;gap:1px;background:#374151;border-radius:10px;overflow:hidden;margin:16px 0;font-size:13px}
+.glossary-grid div{padding:10px 14px;background:#1f2937}
+.glossary-grid .gh{background:#374151;font-weight:700;color:#e5e7eb}
+@media(max-width:768px){.chart-grid,.summary-grid{grid-template-columns:1fr}}
 </style>
 </head>
 <body><div class="container">
+
+<!--  =====  数据变量注入区 =====  请用 Python 脚本替换以下占位符  ===== -->
+<div class="container">
 
 <h1>五类用户盈利能力对比分析报告</h1>
 <p class="subtitle">2025.01 ~ 2026.05 注册 · 全量用户 · 含利润贡献、放款占比、分阶段拆解</p>
@@ -70,7 +67,22 @@ pre.code{{background:#1f2937;border:1px solid #374151;border-radius:8px;padding:
 </div>
 
 <h2>指标口径说明</h2>
-{glossary}
+<div class="glossary-grid">
+  <div class="gh">指标</div><div class="gh">维度</div><div class="gh">定义与计算方式</div>
+  <div>各阶段 s8 率</div><div>订单</div><div>ROW_NUMBER() OVER user_id ORDER BY apply_time，"首贷"=seq=1。s8 率 = status=8 订单数 / 该阶段放款订单数</div>
+  <div>各阶段盈利率</div><div>订单</div><div>该阶段终态订单 (repaid &minus; remit) / remit。排除 status=5（在途）</div>
+  <div>件均放款额</div><div>订单</div><div>该阶段 remit_amt 平均值</div>
+  <div>只借1次占比</div><div>用户</div><div>总放款次数=1 的用户 / 该类总用户数</div>
+  <div>仅1次/多次盈利率</div><div>用户</div><div>按用户总放款次数分组，计算该组终态订单盈利率</div>
+  <div>整体盈利率</div><div>用户</div><div>该类所有终态订单 (repaid &minus; remit) / remit</div>
+  <div>利润贡献占比</div><div>订单</div><div>该类利润 / 全部用户总利润。利润 = 终态 repaid &minus; remit</div>
+  <div>放款金额占比</div><div>订单</div><div>该类总放款 / 全部总放款。总放款 = 所有放款 remit_amt 之和</div>
+  <div>首贷 s8 率</div><div>订单</div><div>seq=1 中 status=8 的占比</div>
+  <div>人均放款/提单</div><div>用户</div><div>该类总放款(提单) / 该类用户数</div>
+  <div>分期逾期</div><div>订单</div><div>关联 repayment_plan_v2_copy，overdue_days_period>0 的行数</div>
+  <div>终态订单</div><div>订单</div><div>status IN (7,8)，排除 status=5（在途）</div>
+  <div>数据范围</div><div>全局</div><div>reg_date 2025.01.01~2026.05.31，全量无采样</div>
+</div>
 
 <div class="legend">
   <div class="legend-item"><span class="legend-dot" style="background:#3b82f6"></span>原生等放</div>
@@ -80,14 +92,24 @@ pre.code{{background:#1f2937;border:1px solid #374151;border-radius:8px;padding:
   <div class="legend-item"><span class="legend-dot" style="background:#ef4444"></span>原生非等放</div>
 </div>
 
-<div class="summary-grid">{kpi}</div>
+<div class="summary-grid"><div class="sum-card"><div style="color:#9ca3af;font-size:12px">原生等放</div><div class="big" style="color:#3b82f6">229,609</div><div style="color:#9ca3af;font-size:11px">整体盈利率 <b style="color:#34d399">+10.4%</b></div></div>
+<div class="sum-card"><div style="color:#9ca3af;font-size:12px">非等放</div><div class="big" style="color:#10b981">64,094</div><div style="color:#9ca3af;font-size:11px">整体盈利率 <b style="color:#34d399">+20.72%</b></div></div>
+<div class="sum-card"><div style="color:#9ca3af;font-size:12px">等放</div><div class="big" style="color:#60a5fa">194,478</div><div style="color:#9ca3af;font-size:11px">整体盈利率 <b style="color:#f87171">+6.02%</b></div></div>
+<div class="sum-card"><div style="color:#9ca3af;font-size:12px">迁移</div><div class="big" style="color:#f59e0b">35,131</div><div style="color:#9ca3af;font-size:11px">整体盈利率 <b style="color:#34d399">+34.71%</b></div></div>
+<div class="sum-card"><div style="color:#9ca3af;font-size:12px">原生非等放</div><div class="big" style="color:#ef4444">28,963</div><div style="color:#9ca3af;font-size:11px">整体盈利率 <b style="color:#f87171">+3.74%</b></div></div>
+</div>
 
 <!-- ====== 一、全维度对比 ====== -->
 <h2>一、五类用户全维度对比</h2>
 <div style="overflow-x:auto">
 <table>
 <tr><th></th><th>人数</th><th>首贷 s8</th><th>首贷盈利</th><th>首贷件均</th><th>期限</th><th>4次+ s8</th><th>4次+ 盈利</th><th>仅1次%</th><th>仅1次盈</th><th>多次盈</th><th>整体盈</th></tr>
-{t1}
+<tr><td><b style="color:#3b82f6">原生等放</b></td><td>229,609</td><td><b style="color:#f87171">36.9%</b></td><td class="pos">+4.6%</td><td>1,448 元</td><td>16 天</td><td>29.7%</td><td class="pos">+13.0%</td><td>45.2%</td><td class="neg">-51.1%</td><td class="pos">+16.2%</td><td class="pos"><b>+10.4%</b></td></tr>
+<tr><td><b style="color:#10b981">非等放</b></td><td>64,094</td><td><b style="color:#34d399">21.2%</b></td><td class="pos">+25.8%</td><td>1,016 元</td><td>16 天</td><td>22.0%</td><td class="pos">+21.0%</td><td>40.3%</td><td class="neg">-10.0%</td><td class="pos">+25.0%</td><td class="pos"><b>+20.72%</b></td></tr>
+<tr><td><b style="color:#60a5fa">等放</b></td><td>194,478</td><td><b style="color:#f87171">43.5%</b></td><td class="neg">-2.1%</td><td>1,489 元</td><td>16 天</td><td>32.9%</td><td class="pos">+10.1%</td><td>47.4%</td><td class="neg">-61.3%</td><td class="pos">+12.9%</td><td class="pos"><b>+6.02%</b></td></tr>
+<tr><td><b style="color:#f59e0b">迁移</b></td><td>35,131</td><td><b style="color:#34d399">0.4%</b></td><td class="pos">+49.4%</td><td>1,225 元</td><td>15 天</td><td>18.2%</td><td class="pos">+26.7%</td><td>32.7%</td><td class="pos">+53.9%</td><td class="pos">+33.7%</td><td class="pos"><b>+34.71%</b></td></tr>
+<tr><td><b style="color:#ef4444">原生非等放</b></td><td>28,963</td><td><b style="color:#f87171">40.9%</b></td><td class="neg">-3.8%</td><td>778 元</td><td>17 天</td><td>30.0%</td><td class="pos">+5.3%</td><td>49.6%</td><td class="neg">-61.5%</td><td class="pos">+11.2%</td><td class="pos"><b>+3.74%</b></td></tr>
+
 </table>
 </div>
 
@@ -106,11 +128,17 @@ pre.code{{background:#1f2937;border:1px solid #374151;border-radius:8px;padding:
 <h2>二、利润贡献与放款金额占比</h2>
 
 <h3>2.1 整体占比</h3>
-<p>总利润 <b style="color:#34d399">{fmtm(total_profit)}</b>，总放款 <b style="color:#60a5fa">{fmtm(total_remit)}</b>。等放虽然人数最多（75.2%），但仅贡献 {p_df}% 利润；迁移仅 35,131 人（13.6%），却贡献了 {p_mig}% 的利润。</p>
+<p>总利润 <b style="color:#34d399">1.7亿</b>，总放款 <b style="color:#60a5fa">17.5亿</b>。等放虽然人数最多（75.2%），但仅贡献 47.7% 利润；迁移仅 35,131 人（13.6%），却贡献了 50.1% 的利润。</p>
 <div style="max-width:860px">
 <table>
 <tr><th>类别</th><th>利润金额</th><th>利润金额(格式化)</th><th>放款金额</th><th>放款占比</th><th>利润占比</th></tr>
-{t2}
+<tr><td><b style="color:#3b82f6">原生等放</b></td><td>1.7亿</td><td class="pos">1.7亿</td><td>16.4亿</td><td>94.0%</td><td>97.8%</td></tr>
+<tr><td><b style="color:#10b981">非等放</b></td><td>9002万</td><td class="pos">9002万</td><td>3.6亿</td><td>20.4%</td><td>52.3%</td></tr>
+<tr><td><b style="color:#60a5fa">等放</b></td><td>8210万</td><td class="pos">8210万</td><td>13.9亿</td><td>79.6%</td><td>47.7%</td></tr>
+<tr><td><b style="color:#f59e0b">迁移</b></td><td>8625万</td><td class="pos">8625万</td><td>2.5亿</td><td>14.5%</td><td>50.1%</td></tr>
+<tr><td><b style="color:#ef4444">原生非等放</b></td><td>377万</td><td class="pos">377万</td><td>1.0亿</td><td>6.0%</td><td>2.2%</td></tr>
+<tr style="border-top:2px solid #4b5563;font-weight:700"><td><b style="color:#f9fafb">总计</b></td><td>1.7亿</td><td class="pos">1.7亿</td><td>17.5亿</td><td>100.0%</td><td>100.0%</td></tr>
+
 </table>
 </div>
 
@@ -122,7 +150,92 @@ pre.code{{background:#1f2937;border:1px solid #374151;border-radius:8px;padding:
 <!-- ====== 2.2 分阶段拆解 ====== -->
 <h3>2.2 分阶段拆解</h3>
 <p>以下按五类用户分别展示首贷/第2次/第3次/第4次+各阶段的利润和放款金额贡献：</p>
-{t3_html}
+
+    <div class="insight-box">
+      <strong style="color:#3b82f6">原生等放</strong> &mdash; 
+      累计利润 <b style="color:#34d399">1.7亿</b>，放款 16.4亿，
+      利润占比 97.8%，放款占比 94.0%
+      <div style="overflow-x:auto;margin-top:8px">
+        <table>
+          <tr><th>阶段</th><th>订单数</th><th>利润</th><th>放款额</th><th>放款占比</th><th>利润占比</th></tr>
+          <tr><td>首贷</td><td>229,609</td><td class="pos">1508万</td><td>3.3亿</td><td>93.7%</td><td>105.8%</td></tr>
+<tr><td>第2次</td><td>125,882</td><td class="pos">2718万</td><td>2.7亿</td><td>94.1%</td><td>96.2%</td></tr>
+<tr><td>第3次</td><td>80,985</td><td class="pos">2000万</td><td>2.2亿</td><td>94.0%</td><td>96.0%</td></tr>
+<tr><td>第4次+</td><td>178,182</td><td class="pos">1.1亿</td><td>8.2亿</td><td>94.2%</td><td>97.5%</td></tr>
+<tr style="border-top:2px solid #4b5563;font-weight:700"><td>总计</td><td>614,658</td><td class="pos">1.7亿</td><td>16.4亿</td><td>94.0%</td><td>97.8%</td></tr>
+
+        </table>
+      </div>
+    </div>
+
+    <div class="insight-box">
+      <strong style="color:#10b981">非等放</strong> &mdash; 
+      累计利润 <b style="color:#34d399">9002万</b>，放款 3.6亿，
+      利润占比 52.3%，放款占比 20.4%
+      <div style="overflow-x:auto;margin-top:8px">
+        <table>
+          <tr><th>阶段</th><th>订单数</th><th>利润</th><th>放款额</th><th>放款占比</th><th>利润占比</th></tr>
+          <tr><td>首贷</td><td>64,094</td><td class="pos">2044万</td><td>6555万</td><td>18.5%</td><td>143.3%</td></tr>
+<tr><td>第2次</td><td>38,267</td><td class="pos">1731万</td><td>5597万</td><td>19.4%</td><td>61.3%</td></tr>
+<tr><td>第3次</td><td>24,825</td><td class="pos">1229万</td><td>4571万</td><td>19.3%</td><td>59.0%</td></tr>
+<tr><td>第4次+</td><td>56,833</td><td class="pos">3998万</td><td>1.9亿</td><td>21.9%</td><td>36.8%</td></tr>
+<tr style="border-top:2px solid #4b5563;font-weight:700"><td>总计</td><td>184,019</td><td class="pos">9002万</td><td>3.6亿</td><td>20.4%</td><td>52.3%</td></tr>
+
+        </table>
+      </div>
+    </div>
+
+    <div class="insight-box">
+      <strong style="color:#60a5fa">等放</strong> &mdash; 
+      累计利润 <b style="color:#34d399">8210万</b>，放款 13.9亿，
+      利润占比 47.7%，放款占比 79.6%
+      <div style="overflow-x:auto;margin-top:8px">
+        <table>
+          <tr><th>阶段</th><th>订单数</th><th>利润</th><th>放款额</th><th>放款占比</th><th>利润占比</th></tr>
+          <tr><td>首贷</td><td>194,478</td><td class="neg">-618万</td><td>2.9亿</td><td>81.5%</td><td>-43.3%</td></tr>
+<tr><td>第2次</td><td>102,224</td><td class="pos">1095万</td><td>2.3亿</td><td>80.6%</td><td>38.7%</td></tr>
+<tr><td>第3次</td><td>65,113</td><td class="pos">854万</td><td>1.9亿</td><td>80.7%</td><td>41.0%</td></tr>
+<tr><td>第4次+</td><td>139,639</td><td class="pos">6879万</td><td>6.8亿</td><td>78.1%</td><td>63.2%</td></tr>
+<tr style="border-top:2px solid #4b5563;font-weight:700"><td>总计</td><td>501,454</td><td class="pos">8210万</td><td>13.9亿</td><td>79.6%</td><td>47.7%</td></tr>
+
+        </table>
+      </div>
+    </div>
+
+    <div class="insight-box">
+      <strong style="color:#f59e0b">迁移</strong> &mdash; 
+      累计利润 <b style="color:#34d399">8625万</b>，放款 2.5亿，
+      利润占比 50.1%，放款占比 14.5%
+      <div style="overflow-x:auto;margin-top:8px">
+        <table>
+          <tr><th>阶段</th><th>订单数</th><th>利润</th><th>放款额</th><th>放款占比</th><th>利润占比</th></tr>
+          <tr><td>首贷</td><td>35,131</td><td class="pos">2126万</td><td>4303万</td><td>12.1%</td><td>149.1%</td></tr>
+<tr><td>第2次</td><td>23,658</td><td class="pos">1624万</td><td>3895万</td><td>13.5%</td><td>57.5%</td></tr>
+<tr><td>第3次</td><td>15,872</td><td class="pos">1146万</td><td>3140万</td><td>13.3%</td><td>55.0%</td></tr>
+<tr><td>第4次+</td><td>38,543</td><td class="pos">3729万</td><td>1.4亿</td><td>16.0%</td><td>34.3%</td></tr>
+<tr style="border-top:2px solid #4b5563;font-weight:700"><td>总计</td><td>113,204</td><td class="pos">8625万</td><td>2.5亿</td><td>14.5%</td><td>50.1%</td></tr>
+
+        </table>
+      </div>
+    </div>
+
+    <div class="insight-box">
+      <strong style="color:#ef4444">原生非等放</strong> &mdash; 
+      累计利润 <b style="color:#34d399">377万</b>，放款 1.0亿，
+      利润占比 2.2%，放款占比 6.0%
+      <div style="overflow-x:auto;margin-top:8px">
+        <table>
+          <tr><th>阶段</th><th>订单数</th><th>利润</th><th>放款额</th><th>放款占比</th><th>利润占比</th></tr>
+          <tr><td>首贷</td><td>28,963</td><td class="neg">-83万</td><td>2252万</td><td>6.3%</td><td>-5.8%</td></tr>
+<tr><td>第2次</td><td>14,609</td><td class="pos">107万</td><td>1702万</td><td>5.9%</td><td>3.8%</td></tr>
+<tr><td>第3次</td><td>8,953</td><td class="pos">84万</td><td>1431万</td><td>6.0%</td><td>4.0%</td></tr>
+<tr><td>第4次+</td><td>18,290</td><td class="pos">269万</td><td>5063万</td><td>5.8%</td><td>2.5%</td></tr>
+<tr style="border-top:2px solid #4b5563;font-weight:700"><td>总计</td><td>70,815</td><td class="pos">377万</td><td>1.0亿</td><td>6.0%</td><td>2.2%</td></tr>
+
+        </table>
+      </div>
+    </div>
+
 
 <div class="chart-grid">
 <div class="chart-card full"><h4>各阶段利润贡献堆叠（万元）</h4><div class="chart-wrap"><canvas id="c_stage_profit"></canvas></div></div>
@@ -134,7 +247,12 @@ pre.code{{background:#1f2937;border:1px solid #374151;border-radius:8px;padding:
 <div style="max-width:860px">
 <table>
 <tr><th>类别</th><th>人数</th><th>首贷盈利率</th><th>仅1次占比</th><th>仅1次盈利率</th><th>多次盈利率</th><th>整体盈利率</th></tr>
-{t4}
+<tr><td><b style="color:#3b82f6">原生等放</b></td><td>229,609</td><td class="neg">-51.1%</td><td>45.2%</td><td class="neg">-51.1%</td><td class="pos">+16.2%</td><td class="pos"><b>+10.4%</b></td></tr>
+<tr><td><b style="color:#10b981">非等放</b></td><td>64,094</td><td class="neg">-10.0%</td><td>40.3%</td><td class="neg">-10.0%</td><td class="pos">+25.0%</td><td class="pos"><b>+20.72%</b></td></tr>
+<tr><td><b style="color:#60a5fa">等放</b></td><td>194,478</td><td class="neg">-61.3%</td><td>47.4%</td><td class="neg">-61.3%</td><td class="pos">+12.9%</td><td class="pos"><b>+6.02%</b></td></tr>
+<tr><td><b style="color:#f59e0b">迁移</b></td><td>35,131</td><td class="pos">+53.9%</td><td>32.7%</td><td class="pos">+53.9%</td><td class="pos">+33.7%</td><td class="pos"><b>+34.71%</b></td></tr>
+<tr><td><b style="color:#ef4444">原生非等放</b></td><td>28,963</td><td class="neg">-61.5%</td><td>49.6%</td><td class="neg">-61.5%</td><td class="pos">+11.2%</td><td class="pos"><b>+3.74%</b></td></tr>
+
 </table>
 </div>
 
@@ -160,11 +278,11 @@ pre.code{{background:#1f2937;border:1px solid #374151;border-radius:8px;padding:
 <div style="overflow-x:auto">
 <table>
 <tr><th>类别</th><th>循环贷订单</th><th>循环贷利润</th><th>循环贷盈利率</th><th>非循环贷订单</th><th>非循环贷利润</th><th>非循环贷盈利率</th><th>循环贷利润占比</th></tr>
-<tr><td><b style="color:#3b82f6">原生等放</b></td><td>157,100</td><td class="pos">+{fmtm(72420392)}</td><td class="pos">10.64%</td><td>457,763</td><td class="pos">+{fmtm(95986666)}</td><td class="pos">9.95%</td><td>43.0%</td></tr>
-<tr><td><b style="color:#10b981">非等放</b></td><td>35,984</td><td class="pos">+{fmtm(28961483)}</td><td class="pos">23.32%</td><td>148,302</td><td class="pos">+{fmtm(61086524)}</td><td class="pos">26.16%</td><td>32.2%</td></tr>
-<tr><td><b style="color:#60a5fa">等放</b></td><td>135,578</td><td class="pos">+{fmtm(45112178)}</td><td class="pos">7.55%</td><td>365,973</td><td class="pos">+{fmtm(36984869)}</td><td class="pos">4.65%</td><td>54.9%</td></tr>
-<tr><td><b style="color:#f59e0b">迁移</b></td><td>21,522</td><td class="pos">+{fmtm(27308215)}</td><td class="pos">32.79%</td><td>91,790</td><td class="pos">+{fmtm(59001798)}</td><td class="pos">34.75%</td><td>31.6%</td></tr>
-<tr><td><b style="color:#ef4444">原生非等放</b></td><td>14,462</td><td class="pos">+{fmtm(1653268)}</td><td class="pos">4.04%</td><td>56,512</td><td class="pos">+{fmtm(2084727)}</td><td class="pos">3.27%</td><td>44.2%</td></tr>
+<tr><td><b style="color:#3b82f6">原生等放</b></td><td>157,100</td><td class="pos">+7242万</td><td class="pos">10.64%</td><td>457,763</td><td class="pos">+9599万</td><td class="pos">9.95%</td><td>43.0%</td></tr>
+<tr><td><b style="color:#10b981">非等放</b></td><td>35,984</td><td class="pos">+2896万</td><td class="pos">23.32%</td><td>148,302</td><td class="pos">+6109万</td><td class="pos">26.16%</td><td>32.2%</td></tr>
+<tr><td><b style="color:#60a5fa">等放</b></td><td>135,578</td><td class="pos">+4511万</td><td class="pos">7.55%</td><td>365,973</td><td class="pos">+3698万</td><td class="pos">4.65%</td><td>54.9%</td></tr>
+<tr><td><b style="color:#f59e0b">迁移</b></td><td>21,522</td><td class="pos">+2731万</td><td class="pos">32.79%</td><td>91,790</td><td class="pos">+5900万</td><td class="pos">34.75%</td><td>31.6%</td></tr>
+<tr><td><b style="color:#ef4444">原生非等放</b></td><td>14,462</td><td class="pos">+165万</td><td class="pos">4.04%</td><td>56,512</td><td class="pos">+208万</td><td class="pos">3.27%</td><td>44.2%</td></tr>
 </table>
 </div>
 
@@ -199,234 +317,72 @@ pre.code{{background:#1f2937;border:1px solid #374151;border-radius:8px;padding:
 
 <!-- ====== 五、结论 ====== -->
 <h2>五、结论：盈利的五个层次</h2>
-<div style="max-width:860px">
 
 <div class="insight-box green" style="margin-bottom:20px">
-<strong style="color:#f59e0b">第一层（优质）：迁移用户，盈利率 +{profit_rate['迁移']}%</strong><br>
- 用户 {user_count['迁移']:,} 人（占比 {u_mig}%），放款占比 {r_mig}%，利润贡献 <b>{p_mig}%</b>。<br>
+<strong style="color:#f59e0b">第一层（优质）：迁移用户，盈利率 +34.11%</strong><br>
+ 用户 35,131 人（占比 13.6%），放款占比 14.5%，利润贡献 <b>50.1%</b>。<br>
 <b>是谁：</b>先从等放正常还款（首贷 s8 率仅 0.4%），后因逾期被风控拦截（is_remit=0）的"被淘汰者"。<br>
 <b>为什么盈利率高：</b>三重筛选——逾期后恢复还款 → 被系统拒绝 → 仍坚持再申请。能留到最后的基本都是还款能力和意愿极强的用户。这也是"幸存者偏差"最极致的体现：只借1次的比例仅 32.7%，比等放的 47.4% 低得多，用户留存远高于其他类型。
 </div>
 
 <div class="insight-box" style="margin-bottom:20px">
-<strong style="color:#10b981">第二层（尚可）：非等放整体，盈利率 +{profit_rate['非等放']}%</strong><br>
- 用户 {user_count['非等放']:,} 人（占比 {u_nfd}%），放款占比 {r_nfd}%，利润贡献 <b>{p_nfd}%</b>。<br>
+<strong style="color:#10b981">第二层（尚可）：非等放整体，盈利率 +25.19%</strong><br>
+ 用户 64,094 人（占比 24.8%），放款占比 20.4%，利润贡献 <b>52.3%</b>。<br>
 <b>内部两极分化严重：</b>迁移用户贡献了绝大部分利润（50.1%利润 vs 仅16.5%用户），拉高了非等放整体的盈利率。但原生非等放盈利率仅 +3.74%，放款占比仅 6.0%，是"拖后腿"的存在。非等放整体"尚可"的表象掩盖了内部结构性问题——原生非等放的件均仅 778 元，远低于迁移的 1225 元。
 </div>
 
 <div class="insight-box blue" style="margin-bottom:20px">
-<strong style="color:#3b82f6">第三层（及格）：原生等放整体，盈利率 +{profit_rate['原生等放']}%</strong><br>
- 用户 {user_count['原生等放']:,} 人（占比 {u_ndf}%），放款占比 {r_ndf}%，利润贡献 <b>{p_ndf}%</b>。<br>
- <b>占绝对大盘但效率不高：</b>包含 {u_ndf}% 的用户和 {r_ndf}% 的放款量，是业务的绝对主体。但整体盈利率仅 {profit_rate['原生等放']}%，意味着每放款 100 元只赚 {round(profit_rate['原生等放'])} 元。核心拖累是等放子集——占原生等放的绝大多数，但首贷 s8 率高达 43.5%，首贷阶段就亏损 618 万。
+<strong style="color:#3b82f6">第三层（及格）：原生等放整体，盈利率 +10.24%</strong><br>
+ 用户 229,609 人（占比 88.8%），放款占比 94.0%，利润贡献 <b>97.8%</b>。<br>
+ <b>占绝对大盘但效率不高：</b>包含 88.8% 的用户和 94.0% 的放款量，是业务的绝对主体。但整体盈利率仅 10.24%，意味着每放款 100 元只赚 10 元。核心拖累是等放子集——占原生等放的绝大多数，但首贷 s8 率高达 43.5%，首贷阶段就亏损 618 万。
 </div>
 
 <div class="insight-box red" style="margin-bottom:20px">
-<strong style="color:#60a5fa">第四层（不及格）：等放，盈利率 +{profit_rate['等放']}%</strong><br>
- 用户 {user_count['等放']:,} 人（占比 {u_df}%），放款占比 {r_df}%，利润贡献 <b>{p_df}%</b>。<br>
- <b>最大的结构性问题：</b>占 {u_df}% 的用户，产生 {r_df}% 的放款，但只贡献 {p_df}% 的利润。首贷 s8 率 43.5% 是致命伤——近一半新用户在首贷就逾期，且 47.4% 的等放用户只借 1 次，单次盈利率 -61.3%。"只借一次就坏账"是等放盈利的卡点。
+<strong style="color:#60a5fa">第四层（不及格）：等放，盈利率 +5.9%</strong><br>
+ 用户 194,478 人（占比 75.2%），放款占比 79.6%，利润贡献 <b>47.7%</b>。<br>
+ <b>最大的结构性问题：</b>占 75.2% 的用户，产生 79.6% 的放款，但只贡献 47.7% 的利润。首贷 s8 率 43.5% 是致命伤——近一半新用户在首贷就逾期，且 47.4% 的等放用户只借 1 次，单次盈利率 -61.3%。"只借一次就坏账"是等放盈利的卡点。
 </div>
 
 <div class="insight-box red" style="margin-bottom:20px">
-<strong style="color:#ef4444">第五层（最差）：原生非等放，盈利率 +{profit_rate['原生非等放']}%</strong><br>
- 用户 {user_count['原生非等放']:,} 人（占比 {u_nat}%），放款占比 {r_nat}%，利润贡献 <b>{p_nat}%</b>。<br>
+<strong style="color:#ef4444">第五层（最差）：原生非等放，盈利率 +3.61%</strong><br>
+ 用户 28,963 人（占比 11.2%），放款占比 6.0%，利润贡献 <b>2.2%</b>。<br>
 <b>双重困境：</b>首次申请即被风控拒绝，说明本身是高风险人群。首贷 s8 率仍高达 40.9%，说明风控拒绝后仍放款的策略并未有效筛选出优质用户。同时件均仅 778 元（五类最低），进一步压缩了盈利空间。风控策略在此类用户上陷入两难——既没拦住坏人（s8率高），又限制了规模（件均低）。
 </div>
 
 <div class="insight-box blue" style="margin-top:24px">
-<strong style="color:#60a5fa">杠杆点：</strong>等放首贷 s8 率从 43.5% 降到 30%，约 2.6 万用户从 s8 转为 s7，进入复借盈利区间。预计等放整体盈利率从 {profit_rate['等放']}% 提升到 12-15%。等放占 {u_df}% 用户，其改善对整体盈利能力影响最大。
-</div>
-</div>
-
-<!-- ====== 附录 A ====== -->
-<h2>附录 A：PGSQL 查询代码</h2>
-<pre class="code">{sql_code}</pre>
-
-<!-- ====== 附录 B ====== -->
-<h2>附录 B：Python 数据提取脚本</h2>
-<pre class="code">{py_code}</pre>
-
+<strong style="color:#60a5fa">杠杆点：</strong>等放首贷 s8 率从 43.5% 降到 30%，约 2.6 万用户从 s8 转为 s7，进入复借盈利区间。预计等放整体盈利率从 5.9% 提升到 12-15%。等放占 75.2% 用户，其改善对整体盈利能力影响最大。
 </div>
 
-<script>
-var CATS = {CATS_JS};
-var NAMES = {NAMES_JS};
-var CONTRIB = {CONTRIB_JS};
-var SEQM = {SEQ_JS};
-var DL = {DL_JS};
-var DS = ['原生等放','非等放','等放','迁移','原生非等放'];
+<!-- ====== 附录 ====== -->
+<h2>附录：代码资源</h2>
+<p>以下代码文件托管在 GitHub Pages 同一仓库中，可直接下载查看。也可在 <a href="https://github.com/wangchl03/report" style="color:#60a5fa" target="_blank">github.com/wangchl03/report</a> 查看完整源码。</p>
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;max-width:860px">
+  <a href="五类用户分析_PGSQL.sql" style="background:#1f2937;border:1px solid #374151;border-radius:10px;padding:20px;text-decoration:none;color:#e5e7eb;display:block;transition:border-color 0.2s" onmouseover="this.style.borderColor='#60a5fa'" onmouseout="this.style.borderColor='#374151'" download>
+    <div style="font-size:18px;font-weight:700;margin-bottom:8px">PGSQL 查询代码</div>
+    <div style="font-size:13px;color:#9ca3af;line-height:1.6">五类用户分类、放款序列编号、订单级聚合的完整 CTE 查询，含循环贷关联（side_recycle_type_copy），约 200 行。</div>
+    <div style="margin-top:12px;font-size:12px;color:#60a5fa">点击下载 .sql 文件</div>
+  </a>
+  <a href="五类用户分析_Python.py" style="background:#1f2937;border:1px solid #374151;border-radius:10px;padding:20px;text-decoration:none;color:#e5e7eb;display:block;transition:border-color 0.2s" onmouseover="this.style.borderColor='#60a5fa'" onmouseout="this.style.borderColor='#374151'" download>
+    <div style="font-size:18px;font-weight:700;margin-bottom:8px">Python 数据提取脚本</div>
+    <div style="font-size:13px;color:#9ca3af;line-height:1.6">psycopg2 数据库连接、游标执行、五类用户结果聚合与打印输出，约 130 行。</div>
+    <div style="margin-top:12px;font-size:12px;color:#60a5fa">点击下载 .py 文件</div>
+  </a>
+  <a href="五类用户分析_图表脚本.js" style="background:#1f2937;border:1px solid #374151;border-radius:10px;padding:20px;text-decoration:none;color:#e5e7eb;display:block;transition:border-color 0.2s" onmouseover="this.style.borderColor='#60a5fa'" onmouseout="this.style.borderColor='#374151'" download>
+    <div style="font-size:18px;font-weight:700;margin-bottom:8px">前端图表脚本</div>
+    <div style="font-size:13px;color:#9ca3af;line-height:1.6">Chart.js 图表配置代码，含 s8 率/盈利率/件均/放款分布/饼图/堆叠图/循环贷对比等 12 张图表。</div>
+    <div style="margin-top:12px;font-size:12px;color:#60a5fa">点击下载 .js 文件</div>
+  </a>
+  <a href="五类用户分析_前端模板.html" style="background:#1f2937;border:1px solid #374151;border-radius:10px;padding:20px;text-decoration:none;color:#e5e7eb;display:block;transition:border-color 0.2s" onmouseover="this.style.borderColor='#60a5fa'" onmouseout="this.style.borderColor='#374151'" download>
+    <div style="font-size:18px;font-weight:700;margin-bottom:8px">前端 HTML 模板</div>
+    <div style="font-size:13px;color:#9ca3af;line-height:1.6">完整页面 HTML + CSS 布局模板，含深色主题样式、响应式网格、卡片组件。</div>
+    <div style="margin-top:12px;font-size:12px;color:#60a5fa">点击下载 .html 文件</div>
+  </a>
+</div>
+<p style="margin-top:16px;font-size:12px;color:#6b7280">注意：下载的代码文件中不含数据库连接密码，PGSQL 和 Python 文件中的主机/端口/账号需替换为自己的数据库配置。</p>
 
-Chart.defaults.color = '#9ca3af';
-Chart.defaults.borderColor = 'transparent';
+</div>
 
-function grouped(id, datasets) {{
-  new Chart(document.getElementById(id), {{
-    type: 'bar', data: {{ labels: CATS, datasets: datasets }},
-    options: {{
-      responsive: true, maintainAspectRatio: false,
-      plugins: {{
-        legend: {{ labels: {{ color: '#d1d5db' }} }},
-        tooltip: {{ backgroundColor: '#374151', titleColor: '#f9fafb', bodyColor: '#e5e7eb',
-          callbacks: {{ label: function(c) {{ return c.dataset.label + ': ' + c.raw.toLocaleString() + (c.dataset.unit||''); }} }} }}
-      }},
-      scales: {{
-        x: {{ grid: {{ color: '#374151' }}, ticks: {{ color: '#9ca3af' }} }},
-        y: {{ beginAtZero: true, grid: {{ color: '#374151' }}, ticks: {{ color: '#9ca3af', callback: function(v){{ return v + (datasets[0].unit||''); }} }} }}
-      }}
-    }}
-  }});
-}}
 
-function makeDS(metric, unit) {{
-  return DS.map(function(n) {{
-    return {{ label: n, data: CATS.map(function(c){{ return SEQM[n][c][metric]; }}), backgroundColor: DL[n], borderRadius: 8, borderWidth: 0, unit: unit }};
-  }});
-}}
 
-grouped('c_s8', makeDS('s8pct', '%'));
-grouped('c_profit', makeDS('profit', '%'));
-grouped('c_remit', makeDS('avg_remit', ' 元'));
-grouped('c_n', makeDS('n', ''));
-
-new Chart(document.getElementById('c_single_vs_multi'), {{
-  type: 'bar', data: {{
-    labels: DS,
-    datasets: [
-      {{ label: '仅1次盈利率', data: DS.map(function(n){{return CONTRIB[n][2];}}), backgroundColor: DS.map(function(n){{return DL[n]+'88';}}), borderRadius:8, borderWidth:0, unit:'%' }},
-      {{ label: '多次盈利率', data: DS.map(function(n){{return CONTRIB[n][4];}}), backgroundColor: DS.map(function(n){{return DL[n];}}), borderRadius:8, borderWidth:0, unit:'%' }}
-    ]
-  }},
-  options: {{
-    responsive: true, maintainAspectRatio: false,
-    plugins: {{ legend: {{ labels: {{ color: '#d1d5db' }} }}, tooltip: {{ backgroundColor: '#374151' }} }},
-    scales: {{ x: {{ grid: {{ color: '#374151' }}, ticks: {{ color: '#9ca3af' }} }}, y: {{ grid: {{ color: '#374151' }}, ticks: {{ color: '#9ca3af', callback: function(v){{return v+'%';}} }} }} }}
-  }}
-}});
-
-// 利润饼图
-new Chart(document.getElementById('c_profit_pie'), {{
-  type: 'doughnut', data: {{ labels: DS, datasets: [{{ data: [{PD}], backgroundColor: DS.map(function(n){{return DL[n];}}), borderWidth:2, borderColor:'#111827' }}] }},
-  options: {{ responsive:true, maintainAspectRatio:false,
-    plugins: {{
-      legend: {{ position:'bottom', labels:{{color:'#d1d5db',padding:16,font:{{size:12}}}} }},
-      tooltip: {{ backgroundColor:'#374151', callbacks:{{label:function(c){{return c.label+': '+c.raw.toFixed(1)+'%';}}}} }}
-    }},
-    layout: {{ padding: 8 }}
-  }},
-  plugins: [{{
-    id: 'doughnutLabels',
-    afterDraw: function(chart) {{
-      var ctx = chart.ctx;
-      var meta = chart.getDatasetMeta(0);
-      var centerX = (chart.chartArea.left + chart.chartArea.right) / 2;
-      var centerY = (chart.chartArea.top + chart.chartArea.bottom) / 2;
-      meta.data.forEach(function(el, i) {{
-        var angle = (el.startAngle + el.endAngle) / 2;
-        var r = (el.outerRadius + el.innerRadius) / 2;
-        var x = centerX + Math.cos(angle) * r;
-        var y = centerY + Math.sin(angle) * r;
-        var val = chart.data.datasets[0].data[i];
-        ctx.save();
-        ctx.fillStyle = '#f9fafb';
-        ctx.font = 'bold 13px -apple-system,BlinkMacSystemFont,sans-serif';
-        ctx.textAlign = 'center';
-        ctx.textBaseline = 'middle';
-        ctx.fillText(val.toFixed(1) + '%', x, y);
-        ctx.restore();
-      }});
-    }}
-  }}]
-}});
-
-// 放款饼图
-new Chart(document.getElementById('c_remit_pie'), {{
-  type: 'doughnut', data: {{ labels: DS, datasets: [{{ data: [{RD}], backgroundColor: DS.map(function(n){{return DL[n];}}), borderWidth:2, borderColor:'#111827' }}] }},
-  options: {{ responsive:true, maintainAspectRatio:false,
-    plugins: {{
-      legend: {{ position:'bottom', labels:{{color:'#d1d5db',padding:16,font:{{size:12}}}} }},
-      tooltip: {{ backgroundColor:'#374151', callbacks:{{label:function(c){{return c.label+': '+c.raw.toFixed(1)+'%';}}}} }}
-    }},
-    layout: {{ padding: 8 }}
-  }},
-  plugins: [{{
-    id: 'doughnutLabels',
-    afterDraw: function(chart) {{
-      var ctx = chart.ctx;
-      var meta = chart.getDatasetMeta(0);
-      var centerX = (chart.chartArea.left + chart.chartArea.right) / 2;
-      var centerY = (chart.chartArea.top + chart.chartArea.bottom) / 2;
-      meta.data.forEach(function(el, i) {{
-        var angle = (el.startAngle + el.endAngle) / 2;
-        var r = (el.outerRadius + el.innerRadius) / 2;
-        var x = centerX + Math.cos(angle) * r;
-        var y = centerY + Math.sin(angle) * r;
-        var val = chart.data.datasets[0].data[i];
-        ctx.save();
-        ctx.fillStyle = '#f9fafb';
-        ctx.font = 'bold 13px -apple-system,BlinkMacSystemFont,sans-serif';
-        ctx.textAlign = 'center';
-        ctx.textBaseline = 'middle';
-        ctx.fillText(val.toFixed(1) + '%', x, y);
-        ctx.restore();
-      }});
-    }}
-  }}]
-}});
-
-// 阶段利润堆叠
-new Chart(document.getElementById('c_stage_profit'), {{
-  type: 'bar', data: {{ labels: CATS, datasets: DS.map(function(n){{ return {{ label:n, data: CATS.map(function(c){{ return SEQM[n][c].profit_wan; }}), backgroundColor:DL[n], borderRadius:4, borderWidth:0 }}; }}) }},
-  options: {{ responsive:true, maintainAspectRatio:false, plugins: {{ legend:{{labels:{{color:'#d1d5db'}}}}, tooltip: {{ backgroundColor:'#374151', callbacks:{{label:function(c){{return c.dataset.label+': '+(c.raw).toLocaleString()+' 万';}}}} }} }}, scales: {{ x: {{ stacked:true, grid:{{color:'#374151'}}, ticks:{{color:'#9ca3af'}} }}, y: {{ stacked:true, grid:{{color:'#374151'}}, ticks:{{color:'#9ca3af',callback:function(v){{return v+' 万';}}}} }} }} }}
-}});
-
-// 阶段放款堆叠
-new Chart(document.getElementById('c_stage_remit'), {{
-  type: 'bar', data: {{ labels: CATS, datasets: DS.map(function(n){{ return {{ label:n, data: CATS.map(function(c){{ return SEQM[n][c].remit_wan; }}), backgroundColor:DL[n], borderRadius:4, borderWidth:0 }}; }}) }},
-  options: {{ responsive:true, maintainAspectRatio:false, plugins: {{ legend:{{labels:{{color:'#d1d5db'}}}}, tooltip: {{ backgroundColor:'#374151', callbacks:{{label:function(c){{return c.dataset.label+': '+(c.raw).toLocaleString()+' 万';}}}} }} }}, scales: {{ x: {{ stacked:true, grid:{{color:'#374151'}}, ticks:{{color:'#9ca3af'}} }}, y: {{ stacked:true, grid:{{color:'#374151'}}, ticks:{{color:'#9ca3af',callback:function(v){{return v+' 万';}}}} }} }} }}
-}});
-
-// ===== 循环贷图表 =====
-// 循环贷 vs 非循环贷 盈利率对比
-new Chart(document.getElementById('c_cycle_profit'), {{
-  type: 'bar', data: {{
-    labels: ['原生等放','非等放','等放','迁移','原生非等放'],
-    datasets: [
-      {{ label: '循环贷盈利率', data: [10.64, 23.32, 7.55, 32.79, 4.04], backgroundColor: '#3b82f6', borderRadius: 8, borderWidth: 0, unit: '%' }},
-      {{ label: '非循环贷盈利率', data: [9.95, 26.16, 4.65, 34.75, 3.27], backgroundColor: '#6b7280', borderRadius: 8, borderWidth: 0, unit: '%' }}
-    ]
-  }},
-  options: {{
-    responsive: true, maintainAspectRatio: false,
-    plugins: {{ legend: {{ labels: {{ color: '#d1d5db' }} }}, tooltip: {{ backgroundColor: '#374151', callbacks: {{ label: function(c) {{ return c.dataset.label + ': ' + c.raw.toFixed(2) + '%'; }} }} }} }},
-    scales: {{ x: {{ grid: {{ color: '#374151' }}, ticks: {{ color: '#9ca3af' }} }}, y: {{ grid: {{ color: '#374151' }}, ticks: {{ color: '#9ca3af', callback: function(v) {{ return v + '%'; }} }} }} }}
-  }}
-}});
-
-// 各阶段循环贷订单占比
-new Chart(document.getElementById('c_cycle_ratio'), {{
-  type: 'bar', data: {{
-    labels: ['第2次放款','第3次放款','第4次+放款'],
-    datasets: [
-      {{ label: '等放', data: [29.4, 47.3, 53.5], backgroundColor: '#60a5fa', borderRadius: 8, borderWidth: 0 }},
-      {{ label: '迁移', data: [18.0, 28.5, 33.0], backgroundColor: '#f59e0b', borderRadius: 8, borderWidth: 0 }},
-      {{ label: '原生非等放', data: [23.3, 36.5, 42.4], backgroundColor: '#ef4444', borderRadius: 8, borderWidth: 0 }}
-    ]
-  }},
-  options: {{
-    responsive: true, maintainAspectRatio: false,
-    plugins: {{ legend: {{ labels: {{ color: '#d1d5db' }} }}, tooltip: {{ backgroundColor: '#374151', callbacks: {{ label: function(c) {{ return c.dataset.label + ': ' + c.raw.toFixed(1) + '%'; }} }} }} }},
-    scales: {{ x: {{ grid: {{ color: '#374151' }}, ticks: {{ color: '#9ca3af' }} }}, y: {{ beginAtZero: true, grid: {{ color: '#374151' }}, ticks: {{ color: '#9ca3af', callback: function(v) {{ return v + '%'; }} }}, max: 60 }} }}
-  }}
-}});
-</script>
-</body></html>'''
-
-# 写入并推送
-path = '/Users/wangchuanliang/Documents/trae_projects/github_pages_repo/五类用户盈利能力对比_原生等放_非等放_等放_迁移_原生.html'
-with open(path, 'w') as f:
-    f.write(html)
-print(f"HTML: {len(html)} bytes")
-
-subprocess.run(['git', '-C', '/Users/wangchuanliang/Documents/trae_projects/github_pages_repo', 'add', '-A'], check=True)
-subprocess.run(['git', '-C', '/Users/wangchuanliang/Documents/trae_projects/github_pages_repo', 'commit', '-m', 'v4：修复图表数据+完整代码附录+2.2分阶段重构'], check=True)
-subprocess.run(['git', '-C', '/Users/wangchuanliang/Documents/trae_projects/github_pages_repo', 'push'], check=True)
-print("DONE: https://wangchl03.github.io/report/五类用户盈利能力对比_原生等放_非等放_等放_迁移_原生.html")
+<script src="五类用户分析_图表脚本.js"></script>
+</div></body></html>
