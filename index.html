@@ -16,10 +16,25 @@ body{background:#0f1932;color:#b4c3dc;font-family:-apple-system,BlinkMacSystemFo
 .login-box button{margin-top:16px;width:260px;padding:12px;border:none;border-radius:6px;background:#3c8ce6;color:#fff;font-size:15px;cursor:pointer;font-weight:600;transition:background .2s}
 .login-box button:hover{background:#2f74c2}
 .error{color:#e05555;font-size:13px;margin-top:12px;display:none}
+/* 报告列表 */
+.reports{display:none;max-width:700px;margin:60px auto;padding:40px 24px}
+.reports h2{color:#fff;font-size:22px;margin-bottom:12px}
+.reports .sub{color:#6a7fa0;font-size:13px;margin-bottom:30px}
+.report-card{background:#131d35;border:1px solid #1a2a4a;border-radius:10px;padding:22px 24px;margin-bottom:16px;transition:border .2s}
+.report-card:hover{border-color:#3c8ce6}
+.report-card h3{color:#fff;font-size:16px;margin-bottom:6px}
+.report-card h3 a{color:#fff;text-decoration:none}
+.report-card h3 a:hover{color:#3c8ce6}
+.report-card .desc{color:#8a9bc0;font-size:13px;line-height:1.6}
+.report-card .tag{display:inline-block;background:#1a2a4a;color:#5b9ef5;font-size:11px;padding:2px 8px;border-radius:4px;margin-top:8px}
+.logout-btn{margin-top:30px;padding:8px 20px;border:1px solid #2a3a5c;border-radius:6px;background:transparent;color:#6a7fa0;font-size:13px;cursor:pointer}
+.logout-btn:hover{color:#e05555;border-color:#e05555}
 </style>
 </head>
 <body>
-<div class="login-wrapper">
+
+<!-- 登录界面 -->
+<div class="login-wrapper" id="loginPage">
   <div class="login-box">
     <h2>内部运营报告</h2>
     <p>请输入访问密码</p>
@@ -28,20 +43,56 @@ body{background:#0f1932;color:#b4c3dc;font-family:-apple-system,BlinkMacSystemFo
     <p class="error" id="err">密码错误，请重试</p>
   </div>
 </div>
+
+<!-- 报告列表 -->
+<div class="reports" id="reportsPage">
+  <h2>可用报告列表</h2>
+  <p class="sub">密码验证通过，以下报告可以访问</p>
+
+  <div class="report-card">
+    <h3><a href="五类用户盈利能力对比_原生等放_非等放_等放_迁移_原生.html">五类用户盈利能力对比分析报告</a></h3>
+    <p class="desc">2025.01~2026.05 全量用户 · 五类用户（原生等放/非等放/等放/迁移/原生非等放）的盈利能力对比，含利润贡献占比、放款金额占比、分阶段拆解</p>
+    <span class="tag">2026-08</span>
+  </div>
+
+  <div class="report-card">
+    <h3><a href="等放原生低盈利率根因分析.html">等放 & 原生非等放 — 低盈利率根因分析</a></h3>
+    <p class="desc">深度分析等放用户和原生非等放用户盈利率低的根本原因，含首贷质量、留存黑洞、风控策略等维度</p>
+    <span class="tag">2026-08</span>
+  </div>
+
+  <button class="logout-btn" onclick="logout()">退出登录</button>
+</div>
+
 <script>
+const VALID_HASH = 'bcb15f821479b4d5772bd0ca866c00ad5f926e3580720659cc80d39c9d09802a';
+
 async function unlock() {
   const input = document.getElementById('pwd').value.trim();
   if (!input) return;
   const hash = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(input));
   const hex = Array.from(new Uint8Array(hash)).map(b=>b.toString(16).padStart(2,'0')).join('');
-  const valid = 'bcb15f821479b4d5772bd0ca866c00ad5f926e3580720659cc80d39c9d09802a';
-  if (hex === valid) {
+  if (hex === VALID_HASH) {
     document.cookie = 'auth=' + hex + ';path=/;max-age=86400;samesite=lax';
-    // 跳转到真正的内容页（隐藏页面）
-    location.href = 'report.html';
+    showReports();
   } else {
     document.getElementById('err').style.display = 'block';
   }
+}
+
+function showReports() {
+  document.getElementById('loginPage').style.display = 'none';
+  document.getElementById('reportsPage').style.display = 'block';
+}
+
+function logout() {
+  document.cookie = 'auth=;path=/;max-age=0';
+  location.reload();
+}
+
+// 已登录则直接显示报告列表
+if (document.cookie.indexOf('auth=' + VALID_HASH) !== -1) {
+  showReports();
 }
 </script>
 </body>
