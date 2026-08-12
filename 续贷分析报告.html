@@ -1,0 +1,589 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>续贷额度使用率 vs 通过率 — 完整分析报告</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;700;900&family=DM+Mono:wght@400;500&display=swap');
+
+:root {
+  --bg: #0a0e17;
+  --card: #111827;
+  --border: #1e293b;
+  --text: #e2e8f0;
+  --muted: #94a3b8;
+  --accent: #38bdf8;
+  --accent2: #f472b6;
+  --green: #34d399;
+  --red: #f87171;
+  --orange: #fb923c;
+  --yellow: #fbbf24;
+  --revolving: #38bdf8;
+  --non-revolving: #f472b6;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+  font-family: 'Noto Sans SC', sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  line-height: 1.6;
+  min-height: 100vh;
+}
+
+body::before {
+  content: '';
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: radial-gradient(ellipse at 20% 20%, rgba(56,189,248,0.06) 0%, transparent 60%),
+              radial-gradient(ellipse at 80% 60%, rgba(244,114,182,0.04) 0%, transparent 60%);
+  pointer-events: none;
+}
+
+.container { max-width: 1280px; margin: 0 auto; padding: 0 24px; }
+
+header {
+  padding: 60px 0 40px;
+  border-bottom: 1px solid var(--border);
+  text-align: center;
+}
+
+header h1 {
+  font-size: 2.5rem;
+  font-weight: 900;
+  background: linear-gradient(135deg, var(--accent), var(--accent2));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  margin-bottom: 8px;
+}
+
+header p {
+  color: var(--muted);
+  font-size: 0.95rem;
+  font-family: 'DM Mono', monospace;
+}
+
+.stats-row {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 16px;
+  padding: 40px 0;
+}
+
+.stat-card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 24px;
+  transition: transform 0.2s, border-color 0.2s;
+}
+
+.stat-card:hover { transform: translateY(-2px); border-color: var(--accent); }
+
+.stat-label { font-size: 0.8rem; color: var(--muted); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 4px; }
+.stat-value { font-size: 1.8rem; font-weight: 700; font-family: 'DM Mono', monospace; }
+.stat-sub { font-size: 0.78rem; color: var(--muted); margin-top: 4px; }
+
+section { padding: 48px 0; border-bottom: 1px solid var(--border); }
+section:last-child { border-bottom: none; }
+
+.section-title {
+  font-size: 1.5rem;
+  font-weight: 700;
+  margin-bottom: 24px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.section-title::before {
+  content: '';
+  width: 4px; height: 28px;
+  background: linear-gradient(180deg, var(--accent), var(--accent2));
+  border-radius: 2px;
+}
+
+.insight-box {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 28px 32px;
+  margin-bottom: 24px;
+}
+
+.insight-box h3 {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: var(--accent);
+  margin-bottom: 12px;
+}
+
+.insight-box p { color: var(--muted); font-size: 0.92rem; }
+.insight-box .highlight { color: var(--accent2); font-weight: 600; }
+.insight-box .highlight-green { color: var(--green); font-weight: 600; }
+.insight-box .highlight-red { color: var(--red); font-weight: 600; }
+
+.charts-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(580px, 1fr));
+  gap: 24px;
+}
+
+.chart-box {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 24px;
+}
+
+.chart-box h3 {
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--text);
+  margin-bottom: 16px;
+}
+
+.chart-box canvas { max-height: 380px; }
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.88rem;
+}
+
+thead th {
+  text-align: left;
+  padding: 12px 16px;
+  background: var(--card);
+  border-bottom: 2px solid var(--border);
+  font-weight: 600;
+  color: var(--muted);
+  font-size: 0.78rem;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+
+tbody td {
+  padding: 10px 16px;
+  border-bottom: 1px solid var(--border);
+  font-family: 'DM Mono', monospace;
+}
+
+tbody tr:hover { background: rgba(56,189,248,0.04); }
+
+.tag { display: inline-block; padding: 2px 10px; border-radius: 12px; font-size: 0.72rem; font-weight: 600; font-family: 'Noto Sans SC', sans-serif; }
+.tag-revolving { background: rgba(56,189,248,0.15); color: var(--revolving); }
+.tag-non-revolving { background: rgba(244,114,182,0.15); color: var(--non-revolving); }
+.tag-green { background: rgba(52,211,153,0.15); color: var(--green); }
+.tag-red { background: rgba(248,113,113,0.15); color: var(--red); }
+.tag-orange { background: rgba(251,146,60,0.15); color: var(--orange); }
+
+.conclusion-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(360px, 1fr));
+  gap: 16px;
+}
+
+.conclusion-card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 24px;
+}
+
+.conclusion-card .num {
+  width: 32px; height: 32px;
+  background: var(--accent);
+  color: var(--bg);
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-weight: 700; font-size: 0.85rem;
+  margin-bottom: 12px;
+}
+
+.conclusion-card h4 { font-size: 1rem; margin-bottom: 8px; }
+.conclusion-card p { font-size: 0.85rem; color: var(--muted); }
+
+footer {
+  text-align: center;
+  padding: 40px 0;
+  color: var(--muted);
+  font-size: 0.78rem;
+  font-family: 'DM Mono', monospace;
+}
+
+@media (max-width: 640px) {
+  header h1 { font-size: 1.6rem; }
+  .charts-grid { grid-template-columns: 1fr; }
+  .stats-row { grid-template-columns: repeat(2, 1fr); }
+}
+</style>
+</head>
+<body>
+
+<div class="container">
+  <header>
+    <h1>续贷额度使用率 vs 通过率 分析报告</h1>
+    <p>2025-01-01 ~ 昨天 &nbsp;|&nbsp; loan_type = reloan &nbsp;|&nbsp; 循环贷 vs 非循环贷 对比</p>
+  </header>
+
+  <!-- Key Stats -->
+  <div class="stats-row">
+    <div class="stat-card">
+      <div class="stat-label">续贷总提单</div>
+      <div class="stat-value">684,650</div>
+      <div class="stat-sub">loan_type = reloan</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">循环贷整体通过率</div>
+      <div class="stat-value" style="color:var(--green)">97.3%</div>
+      <div class="stat-sub">200,590 笔订单</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">非循环贷整体通过率</div>
+      <div class="stat-value" style="color:var(--red)">59.9%</div>
+      <div class="stat-sub">484,060 笔订单</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">95-100% 用满额度占比</div>
+      <div class="stat-value" style="color:var(--orange)">42.1%</div>
+      <div class="stat-sub">288,519 笔 / 风险最高区间</div>
+    </div>
+  </div>
+
+  <!-- Section 1: Overview -->
+  <section>
+    <div class="section-title">一、总览：循环贷 vs 非循环贷 通过率对比</div>
+
+    <div class="charts-grid">
+      <div class="chart-box">
+        <h3>各额度使用率区间通过率 — 循环贷</h3>
+        <canvas id="chartRevolving"></canvas>
+      </div>
+      <div class="chart-box">
+        <h3>各额度使用率区间通过率 — 非循环贷</h3>
+        <canvas id="chartNonRevolving"></canvas>
+      </div>
+    </div>
+
+    <div class="charts-grid" style="margin-top:24px;">
+      <div class="chart-box">
+        <h3>订单量分布 — 循环贷 vs 非循环贷</h3>
+        <canvas id="chartVolume"></canvas>
+      </div>
+      <div class="chart-box">
+        <h3>通过率对比总览</h3>
+        <canvas id="chartCompare"></canvas>
+      </div>
+    </div>
+
+    <div class="insight-box" style="margin-top:24px;">
+      <h3>核心发现：循环贷不受额度使用率影响，非循环贷敏感度极高</h3>
+      <p>循环贷所有区间的通过率都在 <span class="highlight-green">96-98%</span>，额度用多少几乎不影响审批。非循环贷在 95-100%（用满额度）区间通过率暴跌至 <span class="highlight-red">51.1%</span>，比整体 59.9% 还低 8.8 个百分点。非循环贷中 <span class="highlight">50.1%</span> 的订单（242,518 笔）踩在 95-100% 这个坑里。</p>
+    </div>
+  </section>
+
+  <!-- Section 2: Detailed Table -->
+  <section>
+    <div class="section-title">二、详细数据表</div>
+
+    <div class="charts-grid">
+      <div class="chart-box" style="grid-column: 1/-1;">
+        <h3>循环贷 — 各区间明细</h3>
+        <table>
+          <thead>
+            <tr><th>额度使用率</th><th>提单数</th><th>放款数</th><th>通过率</th><th>标签</th></tr>
+          </thead>
+          <tbody id="tbRevolving"></tbody>
+        </table>
+        <p style="margin-top:12px; font-size:0.82rem; color:var(--muted);">合计: 200,590 笔 | 整体通过率: 97.3% | <span class="tag tag-revolving">循环贷</span></p>
+      </div>
+    </div>
+
+    <div class="charts-grid" style="margin-top:16px;">
+      <div class="chart-box" style="grid-column: 1/-1;">
+        <h3>非循环贷 — 各区间明细</h3>
+        <table>
+          <thead>
+            <tr><th>额度使用率</th><th>提单数</th><th>放款数</th><th>通过率</th><th>标签</th></tr>
+          </thead>
+          <tbody id="tbNonRevolving"></tbody>
+        </table>
+        <p style="margin-top:12px; font-size:0.82rem; color:var(--muted);">合计: 484,060 笔 | 整体通过率: 59.9% | <span class="tag tag-non-revolving">非循环贷</span></p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Section 3: Key Finding Detail -->
+  <section>
+    <div class="section-title">三、"用满额度"问题深度分析</div>
+
+    <div class="charts-grid">
+      <div class="chart-box">
+        <h3>95-100% 区间：循环贷 vs 非循环贷 通过率</h3>
+        <canvas id="chartMaxOut"></canvas>
+      </div>
+      <div class="chart-box">
+        <h3>非循环贷：订单量 vs 通过率 的剪刀差</h3>
+        <canvas id="chartScissor"></canvas>
+      </div>
+    </div>
+
+    <div class="insight-box" style="margin-top:24px;">
+      <h3>为什么非循环贷"用满额度"通过率这么低？</h3>
+      <p>非循环贷（固定额度产品）中，用户用满获额额度意味着已经达到了风控给予的信用上限。系统判断此时继续放款风险较高。而循环贷是动态额度，用满的是当前可借额度而非总信用上限，风控视角不同。数据上：<br/>
+      非循环贷 95-100% 区间 → <span class="highlight-red">242,518 笔 / 51.1%</span><br/>
+      循环贷 95-100% 区间 → <span class="highlight-green">46,001 笔 / 97.8%</span><br/>
+      同一使用率水平，通过率差距高达 <span class="highlight">46.7 个百分点</span>。</p>
+    </div>
+  </section>
+
+  <!-- Section 4: Conclusions -->
+  <section>
+    <div class="section-title">四、结论与建议</div>
+    <div class="conclusion-grid">
+      <div class="conclusion-card">
+        <div class="num">1</div>
+        <h4>循环贷是"安全区"</h4>
+        <p>200,590 笔续贷订单，整体通过率 97.3%，无论额度使用率高低，几乎都能通过。续贷用户应优先引导至循环贷产品。</p>
+      </div>
+      <div class="conclusion-card">
+        <div class="num">2</div>
+        <h4>非循环贷的 95-100% 陷阱</h4>
+        <p>非循环贷 50.1% 的订单集中在用满额度区间，但通过率只有 51.1%。应引导用户借"少于全额"的金额，提升通过率。</p>
+      </div>
+      <div class="conclusion-card">
+        <div class="num">3</div>
+        <h4>80-95% 是高通过率窗口</h4>
+        <p>非循环贷最佳区间在 80-95%，通过率 76-80%。如果用户在申请页面上看到建议额度（如 80-90%），通过率有望提升 5-10 个百分点。</p>
+      </div>
+      <div class="conclusion-card">
+        <div class="num">4</div>
+        <h4>产品差异远大于额度因素</h4>
+        <p>循环贷 97.3% vs 非循环贷 59.9%，产品类型造成的通过率差异（37.4pp）远大于额度使用率差异（非循环贷内最大仅 29.1pp）。产品定位才是核心变量。</p>
+      </div>
+    </div>
+  </section>
+
+  <footer>
+    数据来源: order_loan_f_v2_copy + side_recycle_type_copy + order_vir_f_copy &nbsp;|&nbsp; 时间范围: 2025-01-01 ~ 昨天 &nbsp;|&nbsp; 仅 loan_type = reloan
+  </footer>
+</div>
+
+<script>
+// ============ DATA ============
+const revolving = [
+  {range:'0-50%', cnt:4348, funded:4216, rate:97.0},
+  {range:'50-80%', cnt:47664, funded:46166, rate:96.9},
+  {range:'80-90%', cnt:4436, funded:4345, rate:98.0},
+  {range:'90-95%', cnt:676, funded:654, rate:96.8},
+  {range:'95-100%', cnt:46001, funded:44971, rate:97.8},
+  {range:'100-110%', cnt:78015, funded:75831, rate:97.2},
+  {range:'110%+', cnt:19450, funded:19074, rate:98.1},
+];
+const nonRevolving = [
+  {range:'无获额数据', cnt:2, funded:0, rate:0},
+  {range:'0-50%', cnt:18452, funded:14032, rate:76.0},
+  {range:'50-80%', cnt:57818, funded:42377, rate:73.3},
+  {range:'80-90%', cnt:7615, funded:5798, rate:76.1},
+  {range:'90-95%', cnt:1411, funded:1132, rate:80.2},
+  {range:'95-100%', cnt:242518, funded:124054, rate:51.1},
+  {range:'100-110%', cnt:83598, funded:57785, rate:69.1},
+  {range:'110%+', cnt:72646, funded:44797, rate:61.7},
+];
+
+const commonOpts = {
+  responsive: true,
+  maintainAspectRatio: true,
+  plugins: {
+    legend: { display: false },
+  },
+  scales: {
+    y: { beginAtZero: false, min: 40, max: 100, ticks: { callback: v=>v+'%', color:'#94a3b8' }, grid: { color:'#1e293b' } },
+    x: { ticks: { color:'#94a3b8', font:{size:11} }, grid: { display: false } }
+  }
+};
+
+// Chart 1: revolving
+new Chart(document.getElementById('chartRevolving'), {
+  type: 'bar',
+  data: {
+    labels: revolving.map(d=>d.range),
+    datasets: [{
+      label: '通过率%',
+      data: revolving.map(d=>d.rate),
+      backgroundColor: revolving.map(()=>'rgba(56,189,248,0.7)'),
+      borderColor: revolving.map(()=>'rgba(56,189,248,1)'),
+      borderWidth: 1,
+      borderRadius: 6,
+    }]
+  },
+  options: {
+    ...commonOpts,
+    plugins: {
+      ...commonOpts.plugins,
+      tooltip: { callbacks: { label: ctx => `通过率: ${ctx.raw}%` } }
+    }
+  }
+});
+
+// Chart 2: non-revolving
+new Chart(document.getElementById('chartNonRevolving'), {
+  type: 'bar',
+  data: {
+    labels: nonRevolving.filter(d=>d.range!=='无获额数据').map(d=>d.range),
+    datasets: [{
+      label: '通过率%',
+      data: nonRevolving.filter(d=>d.range!=='无获额数据').map(d=>d.rate),
+      backgroundColor: nonRevolving.filter(d=>d.range!=='无获额数据').map(d=>d.range==='95-100%'?'rgba(248,113,113,0.8)':'rgba(244,114,182,0.5)'),
+      borderColor: nonRevolving.filter(d=>d.range!=='无获额数据').map(d=>d.range==='95-100%'?'rgba(248,113,113,1)':'rgba(244,114,182,0.8)'),
+      borderWidth: 1,
+      borderRadius: 6,
+    }]
+  },
+  options: {
+    ...commonOpts,
+    plugins: {
+      ...commonOpts.plugins,
+      tooltip: { callbacks: { label: ctx => `通过率: ${ctx.raw}%` } }
+    }
+  }
+});
+
+// Chart 3: volume comparison
+new Chart(document.getElementById('chartVolume'), {
+  type: 'bar',
+  data: {
+    labels: revolving.map(d=>d.range),
+    datasets: [
+      { label:'循环贷', data: revolving.map(d=>d.cnt), backgroundColor:'rgba(56,189,248,0.6)', borderColor:'rgba(56,189,248,1)', borderWidth:1, borderRadius:6 },
+      { label:'非循环贷', data: nonRevolving.filter(d=>d.range!=='无获额数据').map(d=>d.cnt), backgroundColor:'rgba(244,114,182,0.5)', borderColor:'rgba(244,114,182,0.9)', borderWidth:1, borderRadius:6 },
+    ]
+  },
+  options: {
+    responsive: true,
+    plugins: {
+      legend: { labels: { color:'#94a3b8', font:{size:12} }, position:'top' },
+      tooltip: { callbacks: { label: ctx => `${ctx.dataset.label}: ${ctx.raw.toLocaleString()}笔` } }
+    },
+    scales: {
+      y: { ticks: { color:'#94a3b8', callback: v=>v>=1000?(v/1000)+'k':v }, grid: { color:'#1e293b' } },
+      x: { ticks: { color:'#94a3b8', font:{size:11} }, grid: { display: false } }
+    }
+  }
+});
+
+// Chart 4: side-by-side comparison
+const rangesCommon = ['0-50%','50-80%','80-90%','90-95%','95-100%','100-110%','110%+'];
+const revRates = rangesCommon.map(r=> revolving.find(d=>d.range===r)?.rate || 0);
+const nonRates = rangesCommon.map(r=> nonRevolving.find(d=>d.range===r)?.rate || 0);
+
+new Chart(document.getElementById('chartCompare'), {
+  type: 'bar',
+  data: {
+    labels: rangesCommon,
+    datasets: [
+      { label:'循环贷', data: revRates, backgroundColor:'rgba(56,189,248,0.7)', borderColor:'rgba(56,189,248,1)', borderWidth:1, borderRadius:6 },
+      { label:'非循环贷', data: nonRates, backgroundColor:'rgba(244,114,182,0.5)', borderColor:'rgba(244,114,182,0.9)', borderWidth:1, borderRadius:6 },
+    ]
+  },
+  options: {
+    responsive: true,
+    plugins: {
+      legend: { labels: { color:'#94a3b8', font:{size:12} }, position:'top' },
+      tooltip: { callbacks: { label: ctx => `${ctx.dataset.label}: ${ctx.raw}%` } }
+    },
+    scales: {
+      y: { beginAtZero: false, min: 0, max: 100, ticks: { color:'#94a3b8', callback: v=>v+'%' }, grid: { color:'#1e293b' } },
+      x: { ticks: { color:'#94a3b8', font:{size:11} }, grid: { display: false } }
+    }
+  }
+});
+
+// Chart 5: max out comparison
+new Chart(document.getElementById('chartMaxOut'), {
+  type: 'bar',
+  data: {
+    labels: ['循环贷', '非循环贷'],
+    datasets: [
+      { label:'订单数', data:[46001, 242518], backgroundColor:'rgba(100,116,139,0.5)', borderColor:'#64748b', borderWidth:1, borderRadius:6, yAxisID:'y1' },
+      { label:'通过率%', data:[97.8, 51.1], backgroundColor:['rgba(52,211,153,0.7)','rgba(248,113,113,0.7)'], borderColor:['rgba(52,211,153,1)','rgba(248,113,113,1)'], borderWidth:1, borderRadius:6, yAxisID:'y' },
+    ]
+  },
+  options: {
+    responsive: true,
+    plugins: {
+      legend: { labels: { color:'#94a3b8', font:{size:12} }, position:'top' },
+      tooltip: { callbacks: { label: function(ctx) {
+        if (ctx.datasetIndex===1) return '通过率: '+ctx.raw+'%';
+        else return '订单数: '+ctx.raw.toLocaleString()+'笔';
+      }}}
+    },
+    scales: {
+      y: { type:'linear', position:'left', beginAtZero:false, min:0, max:100, ticks:{color:'#94a3b8', callback:v=>v+'%'}, grid:{color:'#1e293b'} },
+      y1: { type:'linear', position:'right', beginAtZero:true, ticks:{color:'#64748b', callback:v=>v>=1000?(v/1000)+'k':v}, grid:{display:false} },
+      x: { ticks:{color:'#94a3b8', font:{size:13}} }
+    }
+  }
+});
+
+// Chart 6: scissor - non-revolving volume vs pass rate (dual-axis line)
+const nrData = nonRevolving.filter(d=>d.range!=='无获额数据');
+new Chart(document.getElementById('chartScissor'), {
+  type: 'line',
+  data: {
+    labels: nrData.map(d=>d.range),
+    datasets: [
+      { label:'订单量', data:nrData.map(d=>d.cnt), borderColor:'rgba(244,114,182,1)', backgroundColor:'rgba(244,114,182,0.15)', borderWidth:2.5, pointRadius:6, pointBackgroundColor:'rgba(244,114,182,1)', yAxisID:'y1', tension:0.3, fill:false },
+      { label:'通过率%', data:nrData.map(d=>d.rate), borderColor:'rgba(56,189,248,1)', backgroundColor:'rgba(56,189,248,0.1)', borderWidth:3, pointRadius:6, pointBackgroundColor:'rgba(56,189,248,1)', yAxisID:'y', tension:0.3, fill:false },
+    ]
+  },
+  options: {
+    responsive: true,
+    plugins: {
+      legend: { labels: { color:'#94a3b8' }, position:'top' },
+      tooltip: { callbacks: { label: function(ctx) {
+        if (ctx.datasetIndex===0) return '订单量: '+ctx.raw.toLocaleString()+'笔';
+        else return '通过率: '+ctx.raw+'%';
+      }}}
+    },
+    scales: {
+      y: { type:'linear', position:'left', beginAtZero:false, min:40, max:90, ticks:{color:'#94a3b8', callback:v=>v+'%'}, grid:{color:'#1e293b'} },
+      y1: { type:'linear', position:'right', beginAtZero:true, ticks:{color:'#64748b', callback:v=>v>=1000?(v/1000)+'k':v}, grid:{display:false} },
+      x: { ticks:{color:'#94a3b8', font:{size:11}}, grid:{display:false} }
+    }
+  }
+});
+
+// Fill tables
+(function(){
+  const revBody = document.getElementById('tbRevolving');
+  revolving.forEach(d => {
+    revBody.innerHTML += `<tr>
+      <td>${d.range}</td><td>${d.cnt.toLocaleString()}</td><td>${d.funded.toLocaleString()}</td>
+      <td style="color:var(--green);font-weight:600">${d.rate}%</td><td><span class="tag tag-green">高通过</span></td>
+    </tr>`;
+  });
+
+  const nrBody = document.getElementById('tbNonRevolving');
+  nonRevolving.forEach(d => {
+    let tagCls, tagLabel, colorStyle = '';
+    if (d.range === '无获额数据') { tagCls = ''; tagLabel = ''; }
+    else if (d.range === '95-100%') { tagCls = 'tag-red'; tagLabel = '低通过'; colorStyle = 'color:var(--red);font-weight:600'; }
+    else if (d.rate >= 75) { tagCls = 'tag-green'; tagLabel = '正常'; }
+    else if (d.rate >= 65) { tagCls = 'tag-orange'; tagLabel = '偏低'; colorStyle = 'color:var(--orange);font-weight:600'; }
+    else { tagCls = 'tag-orange'; tagLabel = '低'; colorStyle = 'color:var(--orange);font-weight:600'; }
+    nrBody.innerHTML += `<tr>
+      <td>${d.range}</td><td>${d.cnt.toLocaleString()}</td><td>${d.funded.toLocaleString()}</td>
+      <td style="${colorStyle}">${d.rate}%</td><td>${tagCls ? `<span class="tag ${tagCls}">${tagLabel}</span>` : ''}</td>
+    </tr>`;
+  });
+})();
+</script>
+</body>
+</html>
+

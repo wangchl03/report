@@ -1,0 +1,1529 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>循环贷盈利能力分析报告</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"></script>
+<style>
+  :root {
+    --bg-primary: #0f1117;
+    --bg-secondary: #1a1d27;
+    --bg-card: #1e2130;
+    --bg-card-hover: #252839;
+    --text-primary: #e8eaed;
+    --text-secondary: #9aa0a6;
+    --text-muted: #6b7280;
+    --accent-blue: #4f8ff7;
+    --accent-green: #34c759;
+    --accent-red: #ff4757;
+    --accent-orange: #ff9f43;
+    --accent-purple: #a855f7;
+    --accent-cyan: #22d3ee;
+    --border-color: #2d3148;
+    --border-light: #363b52;
+    --shadow: 0 4px 24px rgba(0, 0, 0, 0.3);
+    --radius: 12px;
+    --radius-sm: 8px;
+  }
+
+  * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+  }
+
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "Helvetica Neue", Helvetica, Arial, sans-serif;
+    background: var(--bg-primary);
+    color: var(--text-primary);
+    line-height: 1.7;
+    min-height: 100vh;
+  }
+
+  /* Header */
+  .report-header {
+    background: linear-gradient(135deg, #1a1d27 0%, #1e2a3a 50%, #1a1d27 100%);
+    border-bottom: 1px solid var(--border-color);
+    padding: 48px 40px 36px;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .report-header::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 600px;
+    height: 2px;
+    background: linear-gradient(90deg, transparent, var(--accent-blue), var(--accent-purple), transparent);
+  }
+
+  .report-header h1 {
+    font-size: 36px;
+    font-weight: 700;
+    letter-spacing: 2px;
+    background: linear-gradient(135deg, var(--accent-blue), var(--accent-cyan));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    margin-bottom: 8px;
+  }
+
+  .report-header .subtitle {
+    font-size: 15px;
+    color: var(--text-secondary);
+    letter-spacing: 1px;
+  }
+
+  /* Container */
+  .container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 32px 24px;
+  }
+
+  /* Section */
+  .section {
+    margin-bottom: 40px;
+  }
+
+  .section-title {
+    font-size: 22px;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin-bottom: 8px;
+    padding-bottom: 12px;
+    border-bottom: 2px solid var(--border-color);
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .section-title .icon {
+    width: 36px;
+    height: 36px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+    flex-shrink: 0;
+  }
+
+  .section-desc {
+    color: var(--text-secondary);
+    font-size: 14px;
+    margin-bottom: 20px;
+    line-height: 1.8;
+  }
+
+  /* Cards */
+  .card {
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius);
+    overflow: hidden;
+    transition: all 0.2s ease;
+  }
+
+  .card:hover {
+    border-color: var(--border-light);
+    box-shadow: var(--shadow);
+  }
+
+  .card-header {
+    padding: 16px 20px;
+    border-bottom: 1px solid var(--border-color);
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--text-primary);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .card-header .dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+
+  .card-body {
+    padding: 20px;
+  }
+
+  /* Tables */
+  .table-wrapper {
+    overflow-x: auto;
+    margin: 16px 0;
+  }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 14px;
+    min-width: 600px;
+  }
+
+  table thead th {
+    background: var(--bg-secondary);
+    color: var(--text-secondary);
+    font-weight: 600;
+    padding: 12px 16px;
+    text-align: center;
+    border-bottom: 2px solid var(--border-color);
+    font-size: 13px;
+    letter-spacing: 0.5px;
+    white-space: nowrap;
+  }
+
+  table tbody td {
+    padding: 11px 16px;
+    text-align: center;
+    border-bottom: 1px solid var(--border-color);
+    color: var(--text-primary);
+  }
+
+  table tbody tr:hover {
+    background: var(--bg-card-hover);
+  }
+
+  table tbody tr:last-child td {
+    border-bottom: none;
+  }
+
+  .td-label {
+    text-align: left !important;
+    font-weight: 500;
+    color: var(--text-secondary) !important;
+  }
+
+  .val-positive {
+    color: var(--accent-green) !important;
+    font-weight: 600;
+  }
+
+  .val-negative {
+    color: var(--accent-red) !important;
+    font-weight: 600;
+  }
+
+  .val-highlight {
+    color: var(--accent-blue) !important;
+    font-weight: 600;
+  }
+
+  .val-warning {
+    color: var(--accent-orange) !important;
+    font-weight: 600;
+  }
+
+  /* Metric Cards Grid */
+  .metrics-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 16px;
+    margin-bottom: 24px;
+  }
+
+  .metric-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius);
+    padding: 20px;
+    text-align: center;
+    transition: all 0.2s ease;
+  }
+
+  .metric-card:hover {
+    border-color: var(--border-light);
+    box-shadow: var(--shadow);
+    transform: translateY(-2px);
+  }
+
+  .metric-card .metric-value {
+    font-size: 28px;
+    font-weight: 700;
+    margin: 8px 0;
+  }
+
+  .metric-card .metric-label {
+    font-size: 13px;
+    color: var(--text-secondary);
+    letter-spacing: 0.5px;
+  }
+
+  .metric-card .metric-sub {
+    font-size: 12px;
+    color: var(--text-muted);
+    margin-top: 4px;
+  }
+
+  /* Chart Containers */
+  .chart-container {
+    position: relative;
+    width: 100%;
+    margin: 0 auto;
+  }
+
+  .chart-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+  }
+
+  .chart-row-3 {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+  }
+
+  .chart-full {
+    grid-column: 1 / -1;
+  }
+
+  @media (max-width: 900px) {
+    .chart-row, .chart-row-3 {
+      grid-template-columns: 1fr;
+    }
+    .report-header h1 {
+      font-size: 26px;
+    }
+    .container {
+      padding: 20px 12px;
+    }
+  }
+
+  /* Insight Box */
+  .insight-box {
+    background: linear-gradient(135deg, rgba(79, 143, 247, 0.08), rgba(168, 85, 247, 0.08));
+    border: 1px solid rgba(79, 143, 247, 0.2);
+    border-radius: var(--radius);
+    padding: 20px 24px;
+    margin: 20px 0;
+  }
+
+  .insight-box .insight-title {
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--accent-blue);
+    margin-bottom: 12px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .insight-box ul {
+    list-style: none;
+    padding: 0;
+  }
+
+  .insight-box ul li {
+    padding: 6px 0;
+    color: var(--text-primary);
+    font-size: 14px;
+    line-height: 1.7;
+    position: relative;
+    padding-left: 20px;
+  }
+
+  .insight-box ul li::before {
+    content: '▸';
+    position: absolute;
+    left: 0;
+    color: var(--accent-blue);
+  }
+
+  /* Badge */
+  .badge {
+    display: inline-block;
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-size: 12px;
+    font-weight: 600;
+  }
+
+  .badge-green { background: rgba(52, 199, 89, 0.15); color: var(--accent-green); }
+  .badge-red { background: rgba(255, 71, 87, 0.15); color: var(--accent-red); }
+  .badge-blue { background: rgba(79, 143, 247, 0.15); color: var(--accent-blue); }
+  .badge-orange { background: rgba(255, 159, 67, 0.15); color: var(--accent-orange); }
+  .badge-purple { background: rgba(168, 85, 247, 0.15); color: var(--accent-purple); }
+
+  /* Divider */
+  .divider {
+    height: 1px;
+    background: var(--border-color);
+    margin: 32px 0;
+  }
+
+  /* Footer */
+  .report-footer {
+    text-align: center;
+    padding: 24px;
+    color: var(--text-muted);
+    font-size: 13px;
+    border-top: 1px solid var(--border-color);
+  }
+
+  /* Highlight text */
+  .highlight {
+    background: rgba(79, 143, 247, 0.12);
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-weight: 600;
+    color: var(--accent-blue);
+  }
+
+  /* Flow indicator */
+  .flow-arrow {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    flex-wrap: wrap;
+    padding: 16px;
+  }
+
+  .flow-step {
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-sm);
+    padding: 10px 16px;
+    font-size: 13px;
+    text-align: center;
+  }
+
+  .flow-arrow-sep {
+    color: var(--accent-blue);
+    font-size: 18px;
+  }
+
+  /* Definition grid */
+  .def-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 16px;
+  }
+
+  @media (max-width: 700px) {
+    .def-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  .def-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius);
+    padding: 20px;
+  }
+
+  .def-card h4 {
+    font-size: 15px;
+    margin-bottom: 10px;
+    color: var(--accent-blue);
+  }
+
+  .def-card p {
+    font-size: 13px;
+    color: var(--text-secondary);
+    line-height: 1.7;
+  }
+
+  .data-source {
+    font-size: 12px;
+    color: var(--text-muted);
+    margin-top: 4px;
+    font-style: italic;
+  }
+</style>
+</head>
+<body>
+
+<!-- ==================== HEADER ==================== -->
+<header class="report-header">
+  <h1>循环贷盈利能力分析报告</h1>
+  <p class="subtitle">分析时间：2026年7月16日 ｜ 数据周期：历史全量订单</p>
+</header>
+
+<div class="container">
+
+<!-- ==================== SECTION 1: 业务定义 ==================== -->
+<section class="section">
+  <div class="section-title">
+    <span class="icon" style="background:rgba(79,143,247,0.15);">📋</span>
+    一、循环贷业务定义与理解
+  </div>
+
+  <div class="def-grid">
+    <div class="def-card">
+      <h4>🔵 循环贷用户</h4>
+      <p>历史上至少有一笔 <span class="highlight">recycle_type=2</span> 的放款订单的用户。只要用户曾经有过一笔循环贷订单，该用户即被归类为循环贷用户。</p>
+    </div>
+    <div class="def-card">
+      <h4>🟢 循环贷订单</h4>
+      <p>用户在一笔贷款尚在还款阶段（即存在<span class="highlight">在途订单</span>）时，再次申请并成功放款的订单。核心特征：多笔贷款同时存续。</p>
+    </div>
+    <div class="def-card">
+      <h4>🟡 关键规则</h4>
+      <p>首笔贷款永远是普通贷款，最早从第2笔开始才可能成为循环贷。<span class="highlight">84%</span> 的用户在第2-3笔时开通循环贷资格。若用户结清全部贷款（无在途），再借款即为非循环贷。</p>
+    </div>
+  </div>
+
+  <div class="insight-box" style="margin-top:20px;">
+    <div class="insight-title">💡 循环贷的核心商业逻辑</div>
+    <ul>
+      <li><strong>避免流失窗口：</strong>用户还在还款阶段就给下一笔贷款，避免"结清 → 流失"的时间窗口</li>
+      <li><strong>提升复借频率：</strong>循环贷用户人均借款 5.3 笔，是非循环贷用户的 <strong>3 倍</strong></li>
+      <li><strong>用 11.6% 的利润率 × 5.3 笔 ≈ 远超 39.5% 的利润率 × 1~2 笔</strong>——量变带来质变</li>
+    </ul>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- ==================== SECTION 2: 整体对比 ==================== -->
+<section class="section">
+  <div class="section-title">
+    <span class="icon" style="background:rgba(52,199,89,0.15);">📊</span>
+    二、循环贷用户 vs 非循环贷用户 整体对比
+  </div>
+
+  <!-- Key Metrics -->
+  <div class="metrics-grid">
+    <div class="metric-card">
+      <div class="metric-label">循环贷用户总利润</div>
+      <div class="metric-value val-positive">+2.85亿</div>
+      <div class="metric-sub">89,837 人 · 人均 +¥3,169</div>
+    </div>
+    <div class="metric-card">
+      <div class="metric-label">非循环贷用户总利润</div>
+      <div class="metric-value val-negative">-0.71亿</div>
+      <div class="metric-sub">290,696 人 · 人均 -¥244</div>
+    </div>
+    <div class="metric-card">
+      <div class="metric-label">循环贷人均放款笔数</div>
+      <div class="metric-value val-highlight">5.3 笔</div>
+      <div class="metric-sub">vs 非循环贷 1.8 笔（3倍）</div>
+    </div>
+    <div class="metric-card">
+      <div class="metric-label">循环贷利润率</div>
+      <div class="metric-value val-positive">+17.5%</div>
+      <div class="metric-sub">vs 非循环贷 -8.4%</div>
+    </div>
+  </div>
+
+  <!-- Detail Table -->
+  <div class="card">
+    <div class="card-header">
+      <span class="dot" style="background:var(--accent-blue);"></span>
+      核心指标对比明细
+    </div>
+    <div class="card-body">
+      <div class="table-wrapper">
+        <table>
+          <thead>
+            <tr>
+              <th style="text-align:left;">指标</th>
+              <th>循环贷用户</th>
+              <th>非循环贷用户</th>
+              <th>差异</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td class="td-label">人数</td>
+              <td>89,837</td>
+              <td>290,696</td>
+              <td class="val-highlight">—</td>
+            </tr>
+            <tr>
+              <td class="td-label">人均放款笔数</td>
+              <td class="val-highlight">5.3</td>
+              <td>1.8</td>
+              <td class="val-positive">+3.5 笔</td>
+            </tr>
+            <tr>
+              <td class="td-label">人均放款额</td>
+              <td class="val-highlight">¥18,153</td>
+              <td>¥2,887</td>
+              <td class="val-positive">+¥15,266</td>
+            </tr>
+            <tr>
+              <td class="td-label">人均利润</td>
+              <td class="val-positive">+¥3,169</td>
+              <td class="val-negative">-¥244</td>
+              <td class="val-positive">+¥3,413</td>
+            </tr>
+            <tr>
+              <td class="td-label">利润率</td>
+              <td class="val-positive">+17.5%</td>
+              <td class="val-negative">-8.4%</td>
+              <td class="val-positive">+25.9pp</td>
+            </tr>
+            <tr>
+              <td class="td-label">笔均逾期率</td>
+              <td class="val-highlight">25.3%</td>
+              <td class="val-warning">42.2%</td>
+              <td class="val-positive">-16.9pp</td>
+            </tr>
+            <tr>
+              <td class="td-label">总利润</td>
+              <td class="val-positive">+28,469万</td>
+              <td class="val-negative">-7,090万</td>
+              <td class="val-positive">+35,559万</td>
+            </tr>
+            <tr>
+              <td class="td-label">总放款</td>
+              <td>163,084万</td>
+              <td>83,918万</td>
+              <td>+79,166万</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- Chart: Overall Comparison -->
+  <div class="chart-row" style="margin-top:20px;">
+    <div class="card">
+      <div class="card-header">
+        <span class="dot" style="background:var(--accent-green);"></span>
+        人均利润与利润率对比
+      </div>
+      <div class="card-body">
+        <div class="chart-container" style="height:320px;">
+          <canvas id="chartProfitComparison"></canvas>
+        </div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-header">
+        <span class="dot" style="background:var(--accent-purple);"></span>
+        人均放款额与笔数对比
+      </div>
+      <div class="card-body">
+        <div class="chart-container" style="height:320px;">
+          <canvas id="chartLoanComparison"></canvas>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- ==================== SECTION 3: 留存转化率 ==================== -->
+<section class="section">
+  <div class="section-title">
+    <span class="icon" style="background:rgba(255,159,67,0.15);">📈</span>
+    三、留存转化率分析
+  </div>
+  <p class="section-desc">
+    循环贷最核心的价值体现：<span class="highlight">第1→2笔留存率 98.5% vs 35.8%</span>，差距高达 +62.7pp。
+    用户在还款阶段即可获得下一笔贷款，极大降低了"结清后流失"的风险。
+    随着笔数增加，两类用户的留存率差距逐步缩小但仍保持显著优势。
+  </p>
+
+  <div class="card">
+    <div class="card-header">
+      <span class="dot" style="background:var(--accent-orange);"></span>
+      第 N 笔 → 第 N+1 笔留存转化率
+    </div>
+    <div class="card-body">
+      <div class="table-wrapper">
+        <table>
+          <thead>
+            <tr>
+              <th style="text-align:left;">转换阶段</th>
+              <th>循环贷用户</th>
+              <th>非循环贷用户</th>
+              <th>差值</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td class="td-label">1 → 2</td>
+              <td class="val-highlight">98.5%</td>
+              <td>35.8%</td>
+              <td class="val-positive">+62.7pp</td>
+            </tr>
+            <tr>
+              <td class="td-label">2 → 3</td>
+              <td class="val-highlight">83.2%</td>
+              <td>40.4%</td>
+              <td class="val-positive">+42.8pp</td>
+            </tr>
+            <tr>
+              <td class="td-label">3 → 4</td>
+              <td class="val-highlight">72.4%</td>
+              <td>46.2%</td>
+              <td class="val-positive">+26.2pp</td>
+            </tr>
+            <tr>
+              <td class="td-label">4 → 5</td>
+              <td class="val-highlight">71.7%</td>
+              <td>50.0%</td>
+              <td class="val-positive">+21.7pp</td>
+            </tr>
+            <tr>
+              <td class="td-label">5 → 6</td>
+              <td class="val-highlight">72.5%</td>
+              <td>54.7%</td>
+              <td class="val-positive">+17.8pp</td>
+            </tr>
+            <tr>
+              <td class="td-label">6 → 7</td>
+              <td class="val-highlight">72.4%</td>
+              <td>56.1%</td>
+              <td class="val-positive">+16.3pp</td>
+            </tr>
+            <tr>
+              <td class="td-label">7 → 8</td>
+              <td class="val-highlight">73.5%</td>
+              <td>58.6%</td>
+              <td class="val-positive">+14.9pp</td>
+            </tr>
+            <tr>
+              <td class="td-label">8 → 9</td>
+              <td class="val-highlight">74.0%</td>
+              <td>59.6%</td>
+              <td class="val-positive">+14.4pp</td>
+            </tr>
+            <tr>
+              <td class="td-label">9 → 10</td>
+              <td class="val-highlight">74.2%</td>
+              <td>59.0%</td>
+              <td class="val-positive">+15.2pp</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- Retention Chart -->
+  <div class="card" style="margin-top:20px;">
+    <div class="card-header">
+      <span class="dot" style="background:var(--accent-cyan);"></span>
+      留存转化率趋势对比（折线图）
+    </div>
+    <div class="card-body">
+      <div class="chart-container" style="height:380px;">
+        <canvas id="chartRetention"></canvas>
+      </div>
+    </div>
+  </div>
+
+  <div class="insight-box">
+    <div class="insight-title">🔍 关键发现</div>
+    <ul>
+      <li>循环贷用户的留存率在第1→2笔时达到 <strong>98.5%</strong> 的极高水平，此后稳定在 71%~74% 区间</li>
+      <li>非循环贷用户的留存率从 35.8% 逐步上升到 59%，说明随着复借次数增加用户粘性增强</li>
+      <li>循环贷对留存的最大贡献在 <strong>前3笔</strong>，此后"在途"效应减弱但仍有明显优势</li>
+      <li>第4笔之后留存率趋于稳定，说明核心用户群体已经筛选完毕</li>
+    </ul>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- ==================== SECTION 4: 双逾期风险 ==================== -->
+<section class="section">
+  <div class="section-title">
+    <span class="icon" style="background:rgba(255,71,87,0.15);">⚠️</span>
+    四、双逾期风险分析——循环贷的核心代价
+  </div>
+  <p class="section-desc">
+    双逾期是循环贷模式最突出的风险：用户在途同时持有 2 笔贷款，当第一笔发生逾期时，第二笔被连带拖入逾期。
+    <span class="highlight">99.8% 的双逾期至少涉及一笔循环贷</span>——没有循环贷，基本不会有双逾期。
+  </p>
+
+  <!-- Key Metrics -->
+  <div class="metrics-grid">
+    <div class="metric-card">
+      <div class="metric-label">连续2笔逾期对数</div>
+      <div class="metric-value val-negative">44,489对</div>
+      <div class="metric-sub">涉及约 41,000 名用户</div>
+    </div>
+    <div class="metric-card">
+      <div class="metric-label">笔均放款之和</div>
+      <div class="metric-value" style="color:var(--accent-orange);">¥7,971</div>
+      <div class="metric-sub">双逾期总放款 35,460万</div>
+    </div>
+    <div class="metric-card">
+      <div class="metric-label">双逾期盈利率</div>
+      <div class="metric-value val-negative">-51.3%</div>
+      <div class="metric-sub">直接损失约 1.8 亿</div>
+    </div>
+    <div class="metric-card">
+      <div class="metric-label">孤立逾期盈利率</div>
+      <div class="metric-value val-negative">-75.6%</div>
+      <div class="metric-sub">251,355 笔孤立逾期</div>
+    </div>
+  </div>
+
+  <!-- Double Default Type Distribution -->
+  <div class="chart-row" style="margin-top:20px;">
+    <div class="card">
+      <div class="card-header">
+        <span class="dot" style="background:var(--accent-red);"></span>
+        双逾期类型分布
+      </div>
+      <div class="card-body">
+        <div class="table-wrapper">
+          <table>
+            <thead>
+              <tr>
+                <th style="text-align:left;">双逾期类型</th>
+                <th>占比</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td class="td-label">双循贷（两笔均为循环贷）</td>
+                <td class="val-negative">58.0%</td>
+              </tr>
+              <tr>
+                <td class="td-label">一循一非</td>
+                <td class="val-warning">41.8%</td>
+              </tr>
+              <tr>
+                <td class="td-label">双非循贷</td>
+                <td>0.2%</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-header">
+        <span class="dot" style="background:var(--accent-orange);"></span>
+        双逾期 vs 孤立逾期 盈利率对比
+      </div>
+      <div class="card-body">
+        <div class="chart-container" style="height:280px;">
+          <canvas id="chartDoubleDefault"></canvas>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="insight-box">
+    <div class="insight-title">⚠️ 风险评估</div>
+    <ul>
+      <li>双逾期造成的直接损失约 <strong>1.8 亿元</strong>（35,460万 × 51.3%）</li>
+      <li>虽然双逾期的亏损率（-51.3%）优于孤立逾期（-75.6%），但单笔金额更大，绝对损失不可忽视</li>
+      <li><strong>58% 的双逾期是双循贷</strong>：用户在途两笔循环贷同时逾期，风险高度集中</li>
+      <li>非循环贷用户几乎不存在双逾期（仅 0.2%），这验证了"双逾期 = 循环贷的代价"这一判断</li>
+      <li>需要在循环贷开通时点加强风控，尤其是首贷逾期风险较高的用户</li>
+    </ul>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- ==================== SECTION 5: 开通前后盈利率变化 ==================== -->
+<section class="section">
+  <div class="section-title">
+    <span class="icon" style="background:rgba(168,85,247,0.15);">💰</span>
+    五、开通前后盈利率变化
+  </div>
+  <p class="section-desc">
+    循环贷用户在开通前后呈现截然不同的风险收益特征：开通前单笔利润率高但笔数少，开通后利润率降低但笔数多、放款大。
+    <span class="highlight">量变带来质变</span>——虽然开通后单笔盈利率从 39.5% 降到 11.6%，但总利润仍为正且规模大幅增长。
+  </p>
+
+  <!-- Before/After Table -->
+  <div class="card">
+    <div class="card-header">
+      <span class="dot" style="background:var(--accent-purple);"></span>
+      循环贷开通前后关键指标对比
+    </div>
+    <div class="card-body">
+      <div class="table-wrapper">
+        <table>
+          <thead>
+            <tr>
+              <th style="text-align:left;">阶段</th>
+              <th>订单数</th>
+              <th>用户数</th>
+              <th>笔均放款</th>
+              <th>盈利率</th>
+              <th>逾期率</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td class="td-label"><span class="badge badge-blue">开通前</span></td>
+              <td>166,445</td>
+              <td>89,662</td>
+              <td>¥2,051</td>
+              <td class="val-positive">+39.5%</td>
+              <td class="val-positive">9.7%</td>
+            </tr>
+            <tr>
+              <td class="td-label"><span class="badge badge-purple">开通后</span></td>
+              <td>306,093</td>
+              <td>89,837</td>
+              <td class="val-highlight">¥4,213</td>
+              <td class="val-positive">+11.6%</td>
+              <td class="val-warning">33.7%</td>
+            </tr>
+            <tr>
+              <td class="td-label"><span class="badge badge-red">从未开通</span></td>
+              <td>522,364</td>
+              <td>290,696</td>
+              <td>¥1,607</td>
+              <td class="val-negative">-8.4%</td>
+              <td class="val-negative">42.2%</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- Chart: Before/After -->
+  <div class="chart-row" style="margin-top:20px;">
+    <div class="card">
+      <div class="card-header">
+        <span class="dot" style="background:var(--accent-green);"></span>
+        各阶段盈利率对比
+      </div>
+      <div class="card-body">
+        <div class="chart-container" style="height:320px;">
+          <canvas id="chartProfitRate"></canvas>
+        </div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-header">
+        <span class="dot" style="background:var(--accent-red);"></span>
+        各阶段逾期率对比
+      </div>
+      <div class="card-body">
+        <div class="chart-container" style="height:320px;">
+          <canvas id="chartOverdueRate"></canvas>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="insight-box">
+    <div class="insight-title">📊 核心洞察</div>
+    <ul>
+      <li><strong>笔均放款翻倍：</strong>开通后笔均放款从 ¥2,051 升至 ¥4,213（+105%），说明循环贷用户有更大的资金需求</li>
+      <li><strong>逾期率飙升：</strong>开通后逾期率从 9.7% 飙升至 33.7%，这是循环贷模式最需要关注的成本</li>
+      <li><strong>利润率虽有下降但总量可观：</strong>11.6% × 高笔数 × 高单笔放款 &gt; 39.5% × 低笔数 × 低单笔放款</li>
+      <li><strong>从未开通的用户是最差的群体：</strong>-8.4% 的利润率说明这个群体本身就缺乏筛选价值</li>
+    </ul>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- ==================== SECTION 6: 开通时机 ==================== -->
+<section class="section">
+  <div class="section-title">
+    <span class="icon" style="background:rgba(34,211,238,0.15);">⏱️</span>
+    六、循环贷开通时机分布
+  </div>
+
+  <div class="chart-row">
+    <div class="card">
+      <div class="card-header">
+        <span class="dot" style="background:var(--accent-cyan);"></span>
+        用户首次开通循环贷的时机分布
+      </div>
+      <div class="card-body">
+        <div class="table-wrapper">
+          <table>
+            <thead>
+              <tr>
+                <th style="text-align:left;">开通时机</th>
+                <th>用户数</th>
+                <th>占比</th>
+                <th>累计占比</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td class="td-label">第 2 笔</td>
+                <td class="val-highlight">44,045</td>
+                <td class="val-highlight">47.2%</td>
+                <td class="val-highlight">47.2%</td>
+              </tr>
+              <tr>
+                <td class="td-label">第 3 笔</td>
+                <td>34,338</td>
+                <td>36.8%</td>
+                <td>84.0%</td>
+              </tr>
+              <tr>
+                <td class="td-label">第 4~6 笔</td>
+                <td>13,263</td>
+                <td>14.2%</td>
+                <td>98.1%</td>
+              </tr>
+              <tr>
+                <td class="td-label">第 7 笔以上</td>
+                <td>1,738</td>
+                <td>1.9%</td>
+                <td>100.0%</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-header">
+        <span class="dot" style="background:var(--accent-purple);"></span>
+        开通时机环形图
+      </div>
+      <div class="card-body">
+        <div class="chart-container" style="height:320px;">
+          <canvas id="chartTiming"></canvas>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="insight-box">
+    <div class="insight-title">🎯 时机策略建议</div>
+    <ul>
+      <li><strong>84% 的用户在第2-3笔开通循环贷</strong>，说明当前策略以"快速开放"为主</li>
+      <li>第2笔就开通的用户占 <strong>47.2%</strong>，但此时用户的逾期风险尚不明确（仅凭首贷表现）</li>
+      <li><strong>建议：</strong>首贷逾期率较高的用户（如首贷即逾期），在第2笔时应审慎开通循环贷，推迟到第3-4笔观察后再决定</li>
+      <li>对于优质用户（首贷表现好），在第2笔开通循环贷是合理的——能最大化留存和利润</li>
+    </ul>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- ==================== SECTION 7: 订单维度对比 ==================== -->
+<section class="section">
+  <div class="section-title">
+    <span class="icon" style="background:rgba(52,199,89,0.15);">📦</span>
+    附：订单维度——循环贷 vs 非循环贷
+  </div>
+  <p class="section-desc">
+    从订单级别看，循环贷订单在单笔利润率上仅略优于非循环贷（+10.3% vs +7.6%），但笔均放款是后者的 2 倍。
+    循环贷的真正价值在于"量"而非"率"。
+  </p>
+
+  <div class="card">
+    <div class="card-header">
+      <span class="dot" style="background:var(--accent-green);"></span>
+      订单级别核心指标对比
+    </div>
+    <div class="card-body">
+      <div class="table-wrapper">
+        <table>
+          <thead>
+            <tr>
+              <th style="text-align:left;">指标</th>
+              <th>循环贷订单</th>
+              <th>非循环贷订单</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td class="td-label">订单数</td>
+              <td>235,115</td>
+              <td>759,787</td>
+            </tr>
+            <tr>
+              <td class="td-label">笔均放款</td>
+              <td class="val-highlight">¥4,114</td>
+              <td>¥1,978</td>
+            </tr>
+            <tr>
+              <td class="td-label">盈利率</td>
+              <td class="val-positive">+10.3%</td>
+              <td class="val-positive">+7.6%</td>
+            </tr>
+            <tr>
+              <td class="td-label">逾期率</td>
+              <td class="val-warning">35.3%</td>
+              <td>33.8%</td>
+            </tr>
+            <tr>
+              <td class="td-label">放款总额</td>
+              <td class="val-highlight">967亿</td>
+              <td class="val-highlight">1,503亿</td>
+            </tr>
+            <tr>
+              <td class="td-label">总利润</td>
+              <td class="val-positive">9,950万</td>
+              <td class="val-positive">11,428万</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- ==================== SECTION 8: 结论与建议 ==================== -->
+<section class="section">
+  <div class="section-title">
+    <span class="icon" style="background:rgba(255,159,67,0.15);">🎯</span>
+    七、结论与建议
+  </div>
+
+  <div class="metrics-grid">
+    <div class="metric-card" style="border-color:rgba(52,199,89,0.3);">
+      <div class="metric-label">🏆 核心结论</div>
+      <div class="metric-value val-positive">循环贷 = 盈利引擎</div>
+      <div class="metric-sub">89,837人贡献 +2.85亿利润</div>
+    </div>
+    <div class="metric-card" style="border-color:rgba(255,71,87,0.3);">
+      <div class="metric-label">⚡ 核心代价</div>
+      <div class="metric-value val-negative">双逾期 -1.8亿</div>
+      <div class="metric-sub">44,489对双逾期 × -51.3%</div>
+    </div>
+    <div class="metric-card" style="border-color:rgba(79,143,247,0.3);">
+      <div class="metric-label">📊 净收益</div>
+      <div class="metric-value val-highlight">+1.05亿+</div>
+      <div class="metric-sub">利润扣除双逾期直接损失</div>
+    </div>
+  </div>
+
+  <div class="insight-box">
+    <div class="insight-title">✅ 核心结论</div>
+    <ul>
+      <li><strong>循环贷是盈利的核心引擎：</strong>89,837 个循环贷用户贡献了 +2.85 亿利润，而非循环贷用户整体亏损 -0.71 亿。没有循环贷，整体业务将陷入亏损。</li>
+      <li><strong>量变带来质变：</strong>循环贷用 11.6% 的利润率 × 5.3 笔，远超非循环贷 39.5% 的利润率 × 1~2 笔。高频复借带来的总利润远高于单笔高利润率。</li>
+      <li><strong>留存是最大的护城河：</strong>第1→2笔留存率 98.5% vs 35.8%，+62.7pp 的差距是循环贷最不可替代的价值。</li>
+      <li><strong>双逾期是必要之恶：</strong>没有循环贷就没有双逾期（99.8% 的双逾期涉及循环贷），但 1.8 亿的损失远小于循环贷带来的 2.85 亿利润。关键是控制而非消除。</li>
+    </ul>
+  </div>
+
+  <div class="insight-box" style="background:linear-gradient(135deg,rgba(255,159,67,0.08),rgba(255,71,87,0.08));border-color:rgba(255,159,67,0.2);">
+    <div class="insight-title" style="color:var(--accent-orange);">💡 优化建议</div>
+    <ul>
+      <li><strong>1. 差异化开通时机：</strong>首贷逾期风险高的用户（如首贷即逾期），推迟循环贷开通至第3-4笔，避免过早暴露双逾期风险。首贷表现良好的用户可在第2笔立即开通。</li>
+      <li><strong>2. 加强在途监测：</strong>开通循环贷后逾期率从 9.7% 飙升至 33.7%。需要在用户有在途贷款时建立实时监测机制，当首笔出现逾期迹象时及时预警并冻结后续放款。</li>
+      <li><strong>3. 控制双逾期敞口：</strong>对已在途有逾期记录的用户，严格限制新的循环贷放款，将双逾期比例从当前的规模逐步降低。</li>
+      <li><strong>4. 持续扩大循环贷覆盖：</strong>循环贷是盈利核心，应在风险可控的前提下继续扩大覆盖面。非循环贷用户整体亏损说明不覆盖只会亏更多。</li>
+      <li><strong>5. 提升复借频率：</strong>循环贷用户的笔均利润为正，每多一笔都是增量利润。通过运营手段提升复借意愿，进一步放大"量变"效应。</li>
+    </ul>
+  </div>
+</section>
+
+</div><!-- /container -->
+
+<!-- ==================== FOOTER ==================== -->
+<footer class="report-footer">
+  循环贷盈利能力分析报告 · 数据周期：历史全量订单 · 分析时间：2026年7月16日 · 内部报告仅供决策参考
+</footer>
+
+<!-- ==================== CHARTS JS ==================== -->
+<script>
+// ---- Color Palette ----
+const BLUE   = '#4f8ff7';
+const GREEN  = '#34c759';
+const RED    = '#ff4757';
+const ORANGE = '#ff9f43';
+const PURPLE = '#a855f7';
+const CYAN   = '#22d3ee';
+const BLUE_LIGHT = 'rgba(79,143,247,0.15)';
+const ORANGE_LIGHT = 'rgba(255,159,67,0.15)';
+const RED_LIGHT = 'rgba(255,71,87,0.15)';
+const GRID_COLOR = 'rgba(255,255,255,0.04)';
+const TEXT_MUTED = '#9aa0a6';
+
+Chart.defaults.color = TEXT_MUTED;
+Chart.defaults.borderColor = 'rgba(255,255,255,0.06)';
+Chart.defaults.font.family = "-apple-system, BlinkMacSystemFont, 'PingFang SC', sans-serif";
+
+// ---- Chart 1: 人均利润与利润率对比 ----
+(function() {
+  var ctx = document.getElementById('chartProfitComparison').getContext('2d');
+  new Chart(ctx, {
+    type: 'bar',
+    data: {
+      labels: ['循环贷用户', '非循环贷用户'],
+      datasets: [
+        {
+          label: '人均利润 (¥)',
+          data: [3169, -244],
+          backgroundColor: [GREEN, RED],
+          borderRadius: 6,
+          borderSkipped: false,
+          yAxisID: 'y',
+          order: 2
+        },
+        {
+          label: '利润率 (%)',
+          data: [17.5, -8.4],
+          backgroundColor: [BLUE_LIGHT, RED_LIGHT],
+          borderColor: [BLUE, RED],
+          borderWidth: 2,
+          borderRadius: 6,
+          borderSkipped: false,
+          yAxisID: 'y1',
+          order: 1
+        }
+      ]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      interaction: { mode: 'index', intersect: false },
+      plugins: {
+        legend: {
+          position: 'bottom',
+          labels: { usePointStyle: true, padding: 20, font: { size: 12 } }
+        },
+        tooltip: {
+          callbacks: {
+            label: function(ctx) {
+              if (ctx.datasetIndex === 0) return '人均利润: ¥' + ctx.raw.toLocaleString();
+              return '利润率: ' + ctx.raw.toFixed(1) + '%';
+            }
+          }
+        }
+      },
+      scales: {
+        y: {
+          type: 'linear',
+          position: 'left',
+          title: { display: true, text: '人均利润 (¥)', font: { size: 12 } },
+          grid: { color: GRID_COLOR },
+          ticks: { callback: function(v) { return '¥' + v.toLocaleString(); } }
+        },
+        y1: {
+          type: 'linear',
+          position: 'right',
+          title: { display: true, text: '利润率 (%)', font: { size: 12 } },
+          grid: { drawOnChartArea: false },
+          ticks: { callback: function(v) { return v + '%'; } }
+        }
+      }
+    }
+  });
+})();
+
+// ---- Chart 2: 人均放款额与笔数 ----
+(function() {
+  var ctx = document.getElementById('chartLoanComparison').getContext('2d');
+  new Chart(ctx, {
+    type: 'bar',
+    data: {
+      labels: ['循环贷用户', '非循环贷用户'],
+      datasets: [
+        {
+          label: '人均放款额 (¥)',
+          data: [18153, 2887],
+          backgroundColor: [PURPLE, ORANGE],
+          borderRadius: 6,
+          borderSkipped: false,
+          yAxisID: 'y',
+          order: 2
+        },
+        {
+          label: '人均放款笔数',
+          data: [5.3, 1.8],
+          backgroundColor: [BLUE_LIGHT, ORANGE_LIGHT],
+          borderColor: [BLUE, ORANGE],
+          borderWidth: 2,
+          borderRadius: 6,
+          borderSkipped: false,
+          yAxisID: 'y1',
+          order: 1
+        }
+      ]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      interaction: { mode: 'index', intersect: false },
+      plugins: {
+        legend: {
+          position: 'bottom',
+          labels: { usePointStyle: true, padding: 20, font: { size: 12 } }
+        },
+        tooltip: {
+          callbacks: {
+            label: function(ctx) {
+              if (ctx.datasetIndex === 0) return '人均放款额: ¥' + ctx.raw.toLocaleString();
+              return '人均放款笔数: ' + ctx.raw.toFixed(1) + ' 笔';
+            }
+          }
+        }
+      },
+      scales: {
+        y: {
+          type: 'linear',
+          position: 'left',
+          title: { display: true, text: '人均放款额 (¥)', font: { size: 12 } },
+          grid: { color: GRID_COLOR },
+          ticks: { callback: function(v) { return '¥' + (v/1000).toFixed(0) + 'k'; } }
+        },
+        y1: {
+          type: 'linear',
+          position: 'right',
+          title: { display: true, text: '人均笔数', font: { size: 12 } },
+          grid: { drawOnChartArea: false },
+          min: 0
+        }
+      }
+    }
+  });
+})();
+
+// ---- Chart 3: 留存转化率折线图 ----
+(function() {
+  var ctx = document.getElementById('chartRetention').getContext('2d');
+  var labels = ['1→2', '2→3', '3→4', '4→5', '5→6', '6→7', '7→8', '8→9', '9→10'];
+  var revolving = [98.5, 83.2, 72.4, 71.7, 72.5, 72.4, 73.5, 74.0, 74.2];
+  var nonRevolving = [35.8, 40.4, 46.2, 50.0, 54.7, 56.1, 58.6, 59.6, 59.0];
+  var diff = revolving.map(function(v, i) { return v - nonRevolving[i]; });
+
+  new Chart(ctx, {
+    type: 'line',
+    data: {
+      labels: labels,
+      datasets: [
+        {
+          label: '循环贷用户',
+          data: revolving,
+          borderColor: BLUE,
+          backgroundColor: 'rgba(79,143,247,0.1)',
+          fill: true,
+          tension: 0.3,
+          pointRadius: 4,
+          pointBackgroundColor: BLUE,
+          pointBorderColor: '#fff',
+          pointBorderWidth: 2,
+          borderWidth: 2.5
+        },
+        {
+          label: '非循环贷用户',
+          data: nonRevolving,
+          borderColor: ORANGE,
+          backgroundColor: 'rgba(255,159,67,0.06)',
+          fill: true,
+          tension: 0.3,
+          pointRadius: 4,
+          pointBackgroundColor: ORANGE,
+          pointBorderColor: '#fff',
+          pointBorderWidth: 2,
+          borderWidth: 2.5
+        },
+        {
+          label: '差值 (pp)',
+          data: diff,
+          borderColor: CYAN,
+          borderDash: [6, 4],
+          fill: false,
+          tension: 0.3,
+          pointRadius: 3,
+          pointBackgroundColor: CYAN,
+          borderWidth: 1.5
+        }
+      ]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      interaction: { mode: 'index', intersect: false },
+      plugins: {
+        legend: {
+          position: 'bottom',
+          labels: { usePointStyle: true, padding: 20, font: { size: 12 } }
+        },
+        tooltip: {
+          callbacks: {
+            label: function(ctx) {
+              if (ctx.datasetIndex === 2) return '差值: +' + ctx.raw.toFixed(1) + 'pp';
+              return ctx.dataset.label + ': ' + ctx.raw.toFixed(1) + '%';
+            }
+          }
+        }
+      },
+      scales: {
+        y: {
+          title: { display: true, text: '留存转化率 (%)', font: { size: 12 } },
+          grid: { color: GRID_COLOR },
+          min: 0,
+          max: 100,
+          ticks: { callback: function(v) { return v + '%'; } }
+        }
+      }
+    }
+  });
+})();
+
+// ---- Chart 4: 双逾期 vs 孤立逾期盈利率 ----
+(function() {
+  var ctx = document.getElementById('chartDoubleDefault').getContext('2d');
+  new Chart(ctx, {
+    type: 'bar',
+    data: {
+      labels: ['连续2笔逾期', '孤立逾期'],
+      datasets: [
+        {
+          label: '盈利率 (%)',
+          data: [-51.3, -75.6],
+          backgroundColor: [RED, 'rgba(255,71,87,0.5)'],
+          borderRadius: 6,
+          borderSkipped: false
+        }
+      ]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: { display: false },
+        tooltip: {
+          callbacks: {
+            label: function(ctx) { return '盈利率: ' + ctx.raw.toFixed(1) + '%'; }
+          }
+        }
+      },
+      scales: {
+        y: {
+          title: { display: true, text: '盈利率 (%)', font: { size: 12 } },
+          grid: { color: GRID_COLOR },
+          ticks: { callback: function(v) { return v + '%'; } }
+        }
+      }
+    }
+  });
+})();
+
+// ---- Chart 5: 各阶段盈利率对比 ----
+(function() {
+  var ctx = document.getElementById('chartProfitRate').getContext('2d');
+  new Chart(ctx, {
+    type: 'bar',
+    data: {
+      labels: ['开通前', '开通后', '从未开通'],
+      datasets: [
+        {
+          label: '盈利率 (%)',
+          data: [39.5, 11.6, -8.4],
+          backgroundColor: [GREEN, PURPLE, RED],
+          borderRadius: 8,
+          borderSkipped: false
+        }
+      ]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: { display: false },
+        tooltip: {
+          callbacks: {
+            label: function(ctx) { return '盈利率: ' + ctx.raw.toFixed(1) + '%'; }
+          }
+        }
+      },
+      scales: {
+        y: {
+          title: { display: true, text: '盈利率 (%)', font: { size: 12 } },
+          grid: { color: GRID_COLOR },
+          ticks: { callback: function(v) { return v + '%'; } }
+        }
+      }
+    }
+  });
+})();
+
+// ---- Chart 6: 各阶段逾期率对比 ----
+(function() {
+  var ctx = document.getElementById('chartOverdueRate').getContext('2d');
+  new Chart(ctx, {
+    type: 'bar',
+    data: {
+      labels: ['开通前', '开通后', '从未开通'],
+      datasets: [
+        {
+          label: '逾期率 (%)',
+          data: [9.7, 33.7, 42.2],
+          backgroundColor: [GREEN, ORANGE, RED],
+          borderRadius: 8,
+          borderSkipped: false
+        }
+      ]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: { display: false },
+        tooltip: {
+          callbacks: {
+            label: function(ctx) { return '逾期率: ' + ctx.raw.toFixed(1) + '%'; }
+          }
+        }
+      },
+      scales: {
+        y: {
+          title: { display: true, text: '逾期率 (%)', font: { size: 12 } },
+          grid: { color: GRID_COLOR },
+          ticks: { callback: function(v) { return v + '%'; } }
+        }
+      }
+    }
+  });
+})();
+
+// ---- Chart 7: 开通时机环形图 ----
+(function() {
+  var ctx = document.getElementById('chartTiming').getContext('2d');
+  new Chart(ctx, {
+    type: 'doughnut',
+    data: {
+      labels: ['第2笔', '第3笔', '第4~6笔', '第7笔以上'],
+      datasets: [
+        {
+          data: [47.2, 36.8, 14.2, 1.9],
+          backgroundColor: [BLUE, PURPLE, ORANGE, RED],
+          borderColor: '#1e2130',
+          borderWidth: 3,
+          hoverBorderColor: '#2d3148'
+        }
+      ]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      cutout: '55%',
+      plugins: {
+        legend: {
+          position: 'bottom',
+          labels: { usePointStyle: true, padding: 16, font: { size: 12 } }
+        },
+        tooltip: {
+          callbacks: {
+            label: function(ctx) {
+              return ctx.label + ': ' + ctx.raw.toFixed(1) + '%';
+            }
+          }
+        }
+      }
+    }
+  });
+})();
+</script>
+
+</body>
+</html>
+
