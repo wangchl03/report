@@ -1,0 +1,421 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>回归后生命周期——指标口径文档</title>
+<style>
+  :root {
+    --bg: #f8f9fb;
+    --card: #ffffff;
+    --text: #1a1a2e;
+    --sub: #5a6170;
+    --border: #e2e5ea;
+    --accent: #3b6df0;
+    --green: #10a861;
+    --orange: #f08c00;
+    --red: #e05050;
+    --tag-zaitu: #eef2ff;
+    --tag-beiju: #fff4e6;
+    --tag-wuzatu: #e8f9f0;
+  }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.7;
+    padding: 40px 0;
+  }
+  .container { max-width: 900px; margin: 0 auto; padding: 0 24px; }
+
+  h1 {
+    font-size: 28px;
+    font-weight: 700;
+    margin-bottom: 8px;
+    color: #111;
+  }
+  .subtitle {
+    color: var(--sub);
+    font-size: 15px;
+    margin-bottom: 40px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+  }
+  .subtitle .badge {
+    background: var(--accent);
+    color: #fff;
+    padding: 3px 10px;
+    border-radius: 4px;
+    font-size: 12px;
+    font-weight: 600;
+  }
+
+  .card {
+    background: var(--card);
+    border-radius: 12px;
+    padding: 28px 32px;
+    margin-bottom: 24px;
+    border: 1px solid var(--border);
+  }
+  .card h2 {
+    font-size: 20px;
+    font-weight: 700;
+    margin-bottom: 20px;
+    padding-bottom: 12px;
+    border-bottom: 2px solid var(--border);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .card h3 {
+    font-size: 16px;
+    font-weight: 600;
+    margin: 20px 0 10px;
+    color: #333;
+  }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 16px 0;
+    font-size: 14px;
+  }
+  th, td {
+    padding: 10px 14px;
+    text-align: center;
+    border: 1px solid var(--border);
+  }
+  th {
+    background: #f0f2f5;
+    font-weight: 600;
+    color: #444;
+  }
+  td:first-child, th:first-child { text-align: left; }
+  tr.total { background: #f8f9ff; font-weight: 600; }
+
+  .formula-box {
+    background: #f8f9fb;
+    border-left: 3px solid var(--accent);
+    padding: 16px 20px;
+    border-radius: 0 8px 8px 0;
+    margin: 16px 0;
+    font-family: "SF Mono", "Fira Code", "Consolas", monospace;
+    font-size: 14px;
+    line-height: 1.8;
+    white-space: pre;
+    overflow-x: auto;
+  }
+
+  .diagram {
+    background: #fafbfc;
+    border: 1px dashed var(--border);
+    border-radius: 8px;
+    padding: 20px;
+    margin: 16px 0;
+    font-family: "SF Mono", "Fira Code", "Consolas", monospace;
+    font-size: 13px;
+    line-height: 1.6;
+    white-space: pre;
+    overflow-x: auto;
+    color: #555;
+  }
+  .diagram .hl { color: var(--accent); font-weight: 600; }
+  .diagram .gs { color: var(--green); }
+  .diagram .or { color: var(--orange); }
+
+  .tag {
+    display: inline-block;
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-size: 12px;
+    font-weight: 600;
+  }
+  .tag-zaitu { background: var(--tag-zaitu); color: #3b6df0; }
+  .tag-beiju { background: var(--tag-beiju); color: #d47800; }
+  .tag-wuzatu { background: var(--tag-wuzatu); color: #0e7a45; }
+
+  .priority-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin: 12px 0;
+    font-size: 15px;
+  }
+  .priority-arrow { color: #999; font-weight: 700; }
+  .metric-block {
+    background: #fff;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 14px 18px;
+    text-align: center;
+    min-width: 120px;
+  }
+  .metric-block .num {
+    font-size: 22px;
+    font-weight: 700;
+    color: var(--accent);
+  }
+  .metric-block .label {
+    font-size: 12px;
+    color: var(--sub);
+    margin-top: 4px;
+  }
+
+  .flex-grid {
+    display: flex;
+    gap: 16px;
+    flex-wrap: wrap;
+    margin: 16px 0;
+  }
+  .flex-grid > * { flex: 1; min-width: 200px; }
+
+  .footnote {
+    font-size: 13px;
+    color: var(--sub);
+    margin-top: 8px;
+  }
+
+  .legend {
+    display: flex;
+    gap: 20px;
+    flex-wrap: wrap;
+    margin: 8px 0 16px;
+    font-size: 13px;
+  }
+  .legend-item {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .legend-swatch {
+    width: 14px; height: 14px;
+    border-radius: 3px;
+  }
+  .sw-zaitu { background: #3b6df0; }
+  .sw-beiju { background: #f08c00; }
+  .sw-wuzatu { background: #10a861; }
+
+  @media (max-width: 600px) {
+    .container { padding: 0 12px; }
+    .card { padding: 20px 16px; }
+  }
+</style>
+</head>
+<body>
+<div class="container">
+
+<h1>回归后生命周期——指标口径文档</h1>
+<div class="subtitle">
+  <span class="badge">SQL 分析</span>
+  <span>首次流失 >7天 后又回归用户</span>
+</div>
+
+<!-- 数据范围 -->
+<div class="card">
+  <h2>一、数据范围</h2>
+  <table>
+    <tr><td style="width:140px;">分析对象</td><td>首次流失（>7天间隔）后又回归的用户</td></tr>
+    <tr><td>生命周期用户</td><td>回归后至少有一笔放款，且最终状态非在途、非刚结清的回归用户</td></tr>
+    <tr><td>生命周期用户数</td><td><strong>41,021 人</strong></td></tr>
+    <tr><td>平均生命周期</td><td><strong>75.2 天</strong></td></tr>
+  </table>
+</div>
+
+<!-- 生命周期定义 -->
+<div class="card">
+  <h2>二、生命周期定义</h2>
+  <div class="diagram">
+┌────────────────────────── <span class="hl">回归后生命周期 = 75.2 天</span> ──────────────────────────┐
+│                                                                             │
+▼                                                                             ▼
+<span class="hl">回归首笔提单日</span>                                                       <span class="hl">最后一笔放款的到期日/结清日</span>
+(first_return_apply_date)                                         (MIN(repaid_date, due_date))
+  </div>
+  <table>
+    <tr><th>端点</th><th>来源</th><th>含义</th></tr>
+    <tr><td>起点</td><td><code>first_return_apply_date</code></td><td>触发流失判定间隔的那笔"下一笔提单"的申请日期</td></tr>
+    <tr><td>终点</td><td><code>MIN(repaid_date, due_date)</code></td><td>最后一笔放款取结清日和到期日中的较小值</td></tr>
+    <tr><td>终点 (status=8)</td><td><code>due_date</code></td><td>逾期未结清时，取还款计划的到期日</td></tr>
+  </table>
+</div>
+
+<!-- 在途天数 -->
+<div class="card">
+  <h2>三、在途天数 <span class="tag tag-zaitu">52.3 天</span></h2>
+
+  <h3>定义</h3>
+  <p>有放款订单（<code>is_remit = 1</code>）活跃的天数。</p>
+
+  <h3>公式（事件流法）</h3>
+  <div class="formula-box">
+订单活跃区间 = [apply_date, 结束日]
+              ↑ 含头          ↑ 含尾
+
+status = 7 (已结清)  : 结束日 = repaid_date
+status = 8 (逾期未还): 结束日 = due_date</div>
+
+  <h3>图示</h3>
+  <div class="diagram">
+
+放款订单
+  │
+  │  apply_date ◄────────── 在途 ──────────► repaid_date / due_date
+  │      │                                      │
+  │      ├─────────────── 在途天数 ──────────────┤
+  │      │      apply日和repaid日都算在内        │
+  │      │                                      │
+  ▼      ▼                                      ▼
+──┼──────╔════════════════════════════╗──────────┼──
+        ║     在途 (有活跃贷款)        ║
+        ╚════════════════════════════╝
+  </div>
+
+  <h3>并发在途订单</h3>
+  <div class="diagram">
+订单A: apply──╔═══════════╗──repaid
+              ║           ║
+订单B:        apply──╔════╬══════╗──repaid
+              ║      ║    ║      ║
+              ╚══════╩════╩══════╝
+              双重在途 ↑ 单笔在途
+                     并发
+  </div>
+  <p class="footnote">事件流法自动处理并发：有 N 笔订单活跃就算在途，全结清才停止。并发不重复计数天数。</p>
+</div>
+
+<!-- 被拒天数 -->
+<div class="card">
+  <h2>四、被拒天数 <span class="tag tag-beiju">6.3 天</span></h2>
+
+  <h3>定义</h3>
+  <p>提单被拒（<code>is_remit = 0</code>）到下一次成功放款（<code>is_remit = 1</code>）之间的等待天数。排除该期间有在途订单的时段。</p>
+
+  <h3>公式</h3>
+  <div class="formula-box">
+被拒天数 = 下次放款.apply_date - 本次被拒.apply_date
+          ↑ 含头（被拒日算入）      ↑ 不含尾（下次放款日不算入）
+  </div>
+
+  <h3>图示</h3>
+  <div class="diagram">
+被拒申请                      下次放款（成功）
+   │                              │
+   ▼                              ▼
+──┼──╔══════════════════════╗─────┼──
+     ║    被拒天数(等待审核)  ║
+     ╚══════════════════════╝
+     ▲                      ▲
+   含头                    不含尾
+  </div>
+
+  <h3>被拒期间有在途订单时</h3>
+  <div class="diagram">
+被拒申请         在途订单(还清中)     下次放款
+   │              ╔═══╗                │
+   ▼              ║   ║                ▼
+──┼──────────────╔╬═══╬╗──────────────┼──
+                 ║║   ║║
+                 ╚╩═══╩╝
+                 在途(不算被拒)
+  </div>
+  <p class="footnote">优先级：<strong>在途 > 被拒</strong>。被拒 gap 中如果存在活跃的放款订单，整段不计入被拒。</p>
+
+  <h3>连续多笔被拒</h3>
+  <div class="diagram">
+被拒A──被拒B──被拒C────────下次放款
+  │                          │
+  └──── 只取最早一笔A ───────┘
+       B和C已包含在A的gap中
+  </div>
+  <p class="footnote">按下次放款分组，每组只取最早被拒申请，避免重叠计数。</p>
+</div>
+
+<!-- 无在途天数 -->
+<div class="card">
+  <h2>五、无在途天数 <span class="tag tag-wuzatu">15.5 天</span></h2>
+
+  <h3>定义</h3>
+  <p>一笔放款结清后、到下次提单前，没有任何在途订单、也不在被拒期间的空白天数。</p>
+
+  <h3>公式</h3>
+  <div class="formula-box">
+无在途 = 下次提单.apply_date - 本次结清.repaid_date - 1
+         ↑ 不含                      ↑ 不含
+  </div>
+
+  <h3>图示</h3>
+  <div class="diagram">
+放款A结清           下次提单(可能是申请/被拒/放款)
+   │                       │
+   ▼                       ▼
+──┼───╔═══════════╗────────┼──
+      ║  无在途天数 ║
+      ╚═══════════╝
+      ▲           ▲
+   repaid日不算  apply日不算
+  </div>
+
+  <h3>排除条件</h3>
+  <table>
+    <tr><th>条件</th><th>说明</th></tr>
+    <tr><td><code>gap_days <= 0</code></td><td>偿还日和下次申请日重叠或负间隔</td></tr>
+    <tr><td><code>has_other_active = 1</code></td><td>gap 期间有其他放款订单活跃</td></tr>
+  </table>
+</div>
+
+<!-- 三者关系 -->
+<div class="card">
+  <h2>六、三者关系全景图</h2>
+
+  <div class="legend">
+    <div class="legend-item"><div class="legend-swatch sw-zaitu"></div> 在途 (有活跃贷款)</div>
+    <div class="legend-item"><div class="legend-swatch sw-beiju"></div> 被拒 (等待审核)</div>
+    <div class="legend-item"><div class="legend-swatch sw-wuzatu"></div> 无在途 (空闲等下次)</div>
+  </div>
+
+  <div class="diagram">
+时间轴 ───────────────────────────────────────────────────────────→
+        回归首笔                                               生命周期
+        提单日                                                 终点
+
+ ┌── 在途 ──┐            ┌── 在途 ──┐                    ┌─ 在途 ─┐
+ ╔══════════╗            ╔══════════╗                    ╔═════════╗
+ ║ 放款1活跃 ║            ║ 放款2活跃 ║                    ║放款3活跃 ║
+ ╚══════════╝            ╚══════════╝                    ╚═════════╝
+             ┌─无在途─┐            ┌─无在途─┐  ┌─被拒─┐
+             ╔════════╗            ╔════════╗  ╔══════╗
+             ║ 等下次  ║            ║ 等下次  ║  ║等审核 ║
+             ╚════════╝            ╚════════╝  ╚══════╝
+                                              (被拒→下次放款)
+  </div>
+
+  <h3>优先级规则</h3>
+  <div class="priority-row">
+    <div class="metric-block">
+      <div class="num" style="color:var(--accent);">在途</div>
+      <div class="label">有活跃贷款</div>
+    </div>
+    <div class="priority-arrow">></div>
+    <div class="metric-block">
+      <div class="num" style="color:var(--orange);">被拒</div>
+      <div class="label">等待审核</div>
+    </div>
+    <div class="priority-arrow">></div>
+    <div class="metric-block">
+      <div class="num" style="color:var(--green);">无在途</div>
+      <div class="label">空闲等下次</div>
+    </div>
+  </div>
+  <p class="footnote">同一时间段内，优先级高的覆盖优先级低的。</p>
+
+  <h3>互斥性验证</h3>
+  <div class="formula-box">
+在途天数(52.3) + 无在途天数(15.5) + 被拒天数(6.3) = 74.1 天
+生命周期 = 75.2 天
+差值 = +1.1 天（来自 41,021 人平均后日期边界 ±1 的累计舍入误差）
+  </div>
+</div>
+
+
