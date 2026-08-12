@@ -6,7 +6,7 @@
   <title>首次流失后用户行为分析报告</title>
   <style>
     :root{--ink:#17223b;--muted:#667085;--line:#e5eaf2;--bg:#f5f7fb;--card:#fff;--blue:#2563eb;--teal:#0f9f8f;--amber:#d97706;--red:#dc2626;--navy:#14213d}
-    *{box-sizing:border-box} body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.6 -apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei",sans-serif}
+    *{box-sizing:border-box} body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.6 -apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei",sans-serif}.locked{overflow:hidden}.locked header,.locked main{filter:blur(7px);pointer-events:none;user-select:none}.gate{position:fixed;z-index:10;inset:0;display:grid;place-items:center;background:linear-gradient(130deg,#101b36,#203b72)}.gate-box{width:min(360px,calc(100% - 40px));padding:34px 30px;background:#fff;border-radius:14px;box-shadow:0 18px 50px #0005;text-align:center}.gate-box h2{margin:0 0 8px;font-size:22px}.gate-box p{color:var(--muted);margin:0 0 20px}.gate-box input{width:100%;padding:11px 13px;border:1px solid var(--line);border-radius:8px;font-size:15px;outline:none}.gate-box input:focus{border-color:var(--blue)}.gate-box button{width:100%;margin-top:12px;padding:11px;border:0;border-radius:8px;background:var(--blue);color:#fff;font-weight:700;cursor:pointer}.gate-error{display:none;color:var(--red);font-size:13px;margin:10px 0 0}
     .hero{background:linear-gradient(130deg,#101b36,#203b72);color:#fff;padding:50px max(24px,calc((100% - 1160px)/2)) 42px}.eyebrow{color:#9ec5ff;letter-spacing:.12em;font-size:12px;font-weight:700}.hero h1{font-size:34px;line-height:1.25;margin:8px 0 10px}.hero p{max-width:780px;color:#d9e5ff;margin:0}.wrap{max-width:1160px;margin:0 auto;padding:28px 24px 60px}.notice{background:#fff8e8;border:1px solid #f5d99a;border-radius:10px;padding:12px 16px;color:#76530b;margin-bottom:22px}
     h2{font-size:21px;margin:32px 0 12px}h3{font-size:16px;margin:0 0 8px}.grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}.cards3{grid-template-columns:repeat(3,1fr)}.card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:17px;box-shadow:0 2px 10px #1d35570a}.metric{font-size:28px;font-weight:750;letter-spacing:-.04em}.label{color:var(--muted);font-size:13px}.small{color:var(--muted);font-size:13px}.split{display:grid;grid-template-columns:1.25fr .75fr;gap:18px}.insight{border-left:4px solid var(--blue)}.risk{border-left-color:var(--red)}.good{border-left-color:var(--teal)}
     table{width:100%;border-collapse:separate;border-spacing:0;background:#fff;border:1px solid var(--line);border-radius:12px;overflow:hidden;font-size:13px}th,td{padding:10px 12px;text-align:right;border-bottom:1px solid var(--line)}th{background:#f8fafc;color:#475467;font-weight:650;white-space:nowrap}th:first-child,td:first-child{text-align:left}tr:last-child td{border-bottom:0}.table-wrap{overflow:auto}.bar-row{display:grid;grid-template-columns:115px 1fr 80px;align-items:center;gap:10px;margin:11px 0}.bar{height:10px;background:#e8eef8;border-radius:99px;overflow:hidden}.bar i{display:block;height:100%;background:linear-gradient(90deg,#3978f3,#5fa7ff);border-radius:99px}.bar.red i{background:linear-gradient(90deg,#e05252,#ef8d7e)}
@@ -14,7 +14,8 @@
     @media(max-width:760px){.grid,.cards3,.split{grid-template-columns:1fr 1fr}.hero h1{font-size:27px}}@media(max-width:480px){.grid,.cards3,.split{grid-template-columns:1fr}.hero{padding:34px 20px}.wrap{padding:20px}}
   </style>
 </head>
-<body>
+<body class="locked">
+  <div class="gate" id="gate"><div class="gate-box"><h2>内部分析报告</h2><p>请输入访问密码</p><input id="password" type="password" placeholder="输入密码" autofocus><button id="unlock">进入报告</button><div id="passwordError" class="gate-error">密码错误，请重试</div></div></div>
   <header class="hero"><div class="eyebrow">CHURN &amp; RETURN ANALYSIS</div><h1>首次流失后用户行为分析报告</h1><p>以“上一笔已结清放款后，下一笔提单间隔超过 15 天”为流失定义；按首次流失发生在第几笔已结清放款后分层。</p></header>
   <main class="wrap">
     <div class="notice">数据口径提示：本报告基于已执行 SQL 的输出（70,618 名流失用户）。SQL 使用 <code>CURRENT_DATE</code> 识别永久流失、最近结清和生命周期，因此复跑日期变化会使结果随之变化。</div>
@@ -61,6 +62,21 @@
     <div class="recommend"><b>4. 审批漏斗专项拆解（P1）</b><br>针对 6,004 名“已回归提单但未放款”的用户，按拒绝码、额度、在途限制、人工取消和时效拆分；识别可通过额度策略、产品承接或流程优化恢复的部分。</div>
     <p class="footer">数据来源：<code>间隔15天以上_8.3_结果.csv</code>。报告生成时间：2026-08-12。高笔数流失位置样本量较低，指标应附置信区间或最小样本门槛后再用于决策。</p>
   </main>
+  <script>
+    (function () {
+      var hash = 'bcb15f821479b4d5772bd0ca866c00ad5f926e3580720659cc80d39c9d09802a';
+      var gate = document.getElementById('gate'), input = document.getElementById('password'), error = document.getElementById('passwordError');
+      function open() { document.body.classList.remove('locked'); gate.remove(); }
+      async function unlock() {
+        var value = input.value.trim(); if (!value) return;
+        var bytes = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(value));
+        var actual = Array.from(new Uint8Array(bytes)).map(function (b) { return b.toString(16).padStart(2, '0'); }).join('');
+        if (actual === hash) { document.cookie = 'report_auth=' + hash + ';path=/;max-age=86400;samesite=lax'; open(); }
+        else { error.style.display = 'block'; input.select(); }
+      }
+      if (document.cookie.indexOf('report_auth=' + hash) !== -1) open();
+      else { document.getElementById('unlock').addEventListener('click', unlock); input.addEventListener('keydown', function (event) { if (event.key === 'Enter') unlock(); }); }
+    }());
+  </script>
 </body>
 </html>
-
