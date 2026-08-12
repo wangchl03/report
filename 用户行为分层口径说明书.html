@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>用户行为分层口径说明书</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:#0f1932;color:#b4c3dc;font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei",sans-serif;line-height:1.8}
+.container{max-width:860px;margin:0 auto;padding:40px 20px}
+h1{font-size:22px;color:#fff;text-align:center;margin-bottom:8px}
+.subtitle{text-align:center;color:#6a7fa0;font-size:13px;margin-bottom:40px}
+.section{margin-bottom:40px}
+.section h2{font-size:17px;color:#5b9ef5;margin-bottom:14px;padding-left:14px;border-left:3px solid #3c8ce6}
+.table-wrap{overflow-x:auto;margin:12px 0 20px}
+table{width:100%;border-collapse:collapse;font-size:13px}
+thead th{background:#3c8ce6;color:#fff;padding:9px 8px;text-align:center;font-weight:600}
+tbody td{padding:9px 8px;text-align:center;border-bottom:1px solid #1a2a4a;color:#d0d8e8}
+tbody tr:nth-child(even){background:#131d35}
+tbody tr:nth-child(odd){background:#0f1932}
+.code-block{background:#0d1525;border:1px solid #1a2a4a;border-radius:6px;padding:16px 20px;margin:12px 0 20px;overflow-x:auto}
+.code-block pre{color:#a8c8f0;font-size:12px;line-height:1.6;font-family:"SF Mono","Monaco","Menlo",monospace;white-space:pre-wrap}
+.code-block .kw{color:#5b9ef5}
+.code-block .str{color:#50c878}
+.code-block .cmt{color:#5a7299}
+.note{font-size:12px;color:#6a7fa0;margin-top:-12px;margin-bottom:16px;padding-left:16px}
+td.hl{color:#50c878;font-weight:700}
+td.warn{color:#f0a030}
+@media print{body{background:#fff;color:#222;font-size:11px}.container{max-width:100%;padding:16px}h1{color:#111}.subtitle{color:#666}.section h2{color:#0066cc}.code-block{background:#f5f5f5;border-color:#ddd}.code-block pre{color:#333}thead th{background:#555;color:#fff;print-color-adjust:exact;-webkit-print-color-adjust:exact}tbody td{color:#333;border-bottom:1px solid #ccc}tbody tr:nth-child(even){background:#f9f9f9}tbody tr:nth-child(odd){background:#fff}}
+</style>
+</head>
+<body>
+<div class="container">
+
+<h1>用户行为分层口径说明书</h1>
+<p class="subtitle">基于 event_track_record 事件级埋点 · 对照组分群 · 2026年8月</p>
+
+<!-- ===== 1 ===== -->
+<div class="section">
+<h2>一、分层定义</h2>
+<div class="table-wrap">
+<table>
+<thead><tr><th>分层</th><th>SQL 条件</th><th>含义</th></tr></thead>
+<tbody>
+<tr><td><strong>沉默型</strong></td><td><code>app_starts_p1 = 0</code></td><td>一期 4 天内，APP 从未被启动</td></tr>
+<tr><td><strong>犹豫型</strong></td><td><code>app_starts_p1 > 0 AND newpage_p1 < 6</code></td><td>有 APP 活跃，但进入借款页不足 6 次</td></tr>
+<tr><td><strong>自主型</strong></td><td><code>newpage_p1 >= 6</code></td><td>进入借款页 6 次以上，有明确借款研究行为</td></tr>
+</tbody>
+</table>
+</div>
+</div>
+
+<!-- ===== 2 ===== -->
+<div class="section">
+<h2>二、指标口径</h2>
+<div class="table-wrap">
+<table>
+<thead><tr><th>变量</th><th>计算方式</th><th>数据源</th></tr></thead>
+<tbody>
+<tr><td><code>app_starts_p1</code></td><td><code>COUNT(event_type = 'app_start')</code> —— 一期 APP 启动总次数</td><td>event_track_record</td></tr>
+<tr><td><code>newpage_p1</code></td><td><code>COUNT(event_type = 'page_view_in' AND props_id IN ('Loan_newpage', 'Loan_newpage_select'))</code> —— 一期进入借款页总次数</td><td>event_track_record</td></tr>
+<tr><td>一期时间窗口</td><td>各批次发券前 4 天（0716_0721 批次 → 2026-07-17 至 2026-07-20，依此类推）</td><td>—</td></tr>
+<tr><td>提单标签</td><td>二期 7 天内 order_loan_f_v2_copy 中有提单记录</td><td>order_loan_f_v2_copy</td></tr>
+<tr><td>二期时间窗口</td><td>各批次发券后 7 天（0716_0721 批次 → 2026-07-21 至 2026-07-27）</td><td>—</td></tr>
+</tbody>
+</table>
+</div>
+<p class="note">* 进入借款页仅统计 page_view_in，不重复计入 page_view_out</p>
+</div>
+
+<!-- ===== 3 ===== -->
+<div class="section">
+<h2>三、样本范围</h2>
+<div class="table-wrap">
+<table>
+<thead><tr><th>维度</th><th>口径</th></tr></thead>
+<tbody>
+<tr><td>用户来源</td><td>四组 AB 测试表（wangchuanliang.no_apply_0716_0721_30pct 至 0719_0724_30pct）</td></tr>
+<tr><td>分组</td><td>仅对照组（ab_group = 'control'），共 657 人</td></tr>
+<tr><td>前提</td><td>用户全部订单已结清，no_apply 期间（发券前）无提单</td></tr>
+</tbody>
+</table>
+</div>
+</div>
+
+<!-- ===== 4 ===== -->
+<div class="section">
+<h2>四、分层 SQL</h2>
+<div class="code-block">
+<pre><span class="kw">WITH</span> users <span class="kw">AS</span> (
+    <span class="kw">SELECT</span> churn_user_id <span class="kw">AS</span> user_id 
+    <span class="kw">FROM</span> wangchuanliang.no_apply_0716_0721_30pct <span class="kw">WHERE</span> ab_group = <span class="str">'control'</span>
+    <span class="kw">UNION ALL</span> <span class="kw">SELECT</span> churn_user_id <span class="kw">FROM</span> wangchuanliang.no_apply_0717_0722_30pct <span class="kw">WHERE</span> ab_group = <span class="str">'control'</span>
+    <span class="kw">UNION ALL</span> <span class="kw">SELECT</span> churn_user_id <span class="kw">FROM</span> wangchuanliang.no_apply_0718_0723_30pct <span class="kw">WHERE</span> ab_group = <span class="str">'control'</span>
+    <span class="kw">UNION ALL</span> <span class="kw">SELECT</span> churn_user_id <span class="kw">FROM</span> wangchuanliang.no_apply_0719_0724_30pct <span class="kw">WHERE</span> ab_group = <span class="str">'control'</span>
+),
+p1_events <span class="kw">AS</span> (
+    <span class="kw">SELECT</span> user_id,
+           <span class="kw">COUNT</span>(<span class="kw">CASE WHEN</span> event_type = <span class="str">'app_start'</span> <span class="kw">THEN</span> 1 <span class="kw">END</span>) <span class="kw">AS</span> app_starts,
+           <span class="kw">COUNT</span>(<span class="kw">CASE WHEN</span> event_type = <span class="str">'page_view_in'</span> 
+                 <span class="kw">AND</span> props_id <span class="kw">IN</span> (<span class="str">'Loan_newpage'</span>, <span class="str">'Loan_newpage_select'</span>) <span class="kw">THEN</span> 1 <span class="kw">END</span>) <span class="kw">AS</span> newpage
+    <span class="kw">FROM</span> wangchuanliang.event_track_record
+    <span class="kw">WHERE</span> create_date <span class="kw">IN</span> (<span class="str">'2026-07-17'</span>,<span class="str">'2026-07-18'</span>,<span class="str">'2026-07-19'</span>,<span class="str">'2026-07-20'</span>,
+                          <span class="str">'2026-07-21'</span>,<span class="str">'2026-07-22'</span>,<span class="str">'2026-07-23'</span>)
+    <span class="kw">GROUP BY</span> user_id
+)
+<span class="kw">SELECT</span> u.user_id,
+       <span class="kw">CASE</span>
+           <span class="kw">WHEN</span> <span class="kw">COALESCE</span>(e.app_starts, 0) = 0 <span class="kw">THEN</span> <span class="str">'沉默型'</span>
+           <span class="kw">WHEN</span> <span class="kw">COALESCE</span>(e.newpage, 0) >= 6 <span class="kw">THEN</span> <span class="str">'自主型'</span>
+           <span class="kw">ELSE</span> <span class="str">'犹豫型'</span>
+       <span class="kw">END</span> <span class="kw">AS</span> segment
+<span class="kw">FROM</span> users u
+<span class="kw">LEFT JOIN</span> p1_events e <span class="kw">ON</span> u.user_id = e.user_id</pre>
+</div>
+</div>
+
+<!-- ===== 5 ===== -->
+<div class="section">
+<h2>五、分群统计（对照组，n=657）</h2>
+<div class="table-wrap">
+<table>
+<thead><tr><th>分层</th><th>人数</th><th>占比</th></tr></thead>
+<tbody>
+<tr><td>沉默型</td><td>97</td><td>14.8%</td></tr>
+<tr><td>犹豫型</td><td>408</td><td>62.1%</td></tr>
+<tr><td>自主型</td><td>152</td><td>23.1%</td></tr>
+</tbody>
+</table>
+</div>
+</div>
+
+<!-- ===== 6 ===== -->
+<div class="section">
+<h2>六、各批次时间窗口对照</h2>
+<div class="table-wrap">
+<table>
+<thead><tr><th>实验批次</th><th>一期窗口</th><th>二期窗口</th></tr></thead>
+<tbody>
+<tr><td>0716_0721</td><td>2026-07-17 至 2026-07-20（4天）</td><td>2026-07-21 至 2026-07-27（7天）</td></tr>
+<tr><td>0717_0722</td><td>2026-07-18 至 2026-07-21（4天）</td><td>2026-07-22 至 2026-07-28（7天）</td></tr>
+<tr><td>0718_0723</td><td>2026-07-19 至 2026-07-22（4天）</td><td>2026-07-23 至 2026-07-29（7天）</td></tr>
+<tr><td>0719_0724</td><td>2026-07-20 至 2026-07-23（4天）</td><td>2026-07-24 至 2026-07-30（7天）</td></tr>
+</tbody>
+</table>
+</div>
+</div>
+
+</div>
+</body>
+</html>
+
