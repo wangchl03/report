@@ -418,4 +418,6 @@ status = 8 (逾期未还): 结束日 = due_date</div>
   </div>
 </div>
 
-
+<script>(function(){var h="bcb15f821479b4d5772bd0ca866c00ad5f926e3580720659cc80d39c9d09802a",g=document.getElementById("password-gate"),i=document.getElementById("report-password"),e=document.getElementById("report-password-error");function o(){document.body.classList.remove("password-locked");g.remove()}async function u(){var v=i.value.trim();if(!v)return;var b=await crypto.subtle.digest("SHA-256",new TextEncoder().encode(v)),a=Array.from(new Uint8Array(b)).map(function(x){return x.toString(16).padStart(2,"0")}).join("");if(a===h){document.cookie="report_auth="+h+";path=/;max-age=86400;samesite=lax";o()}else{e.style.display="block";i.select()}}if(document.cookie.indexOf("report_auth="+h)!==-1)o();else{document.getElementById("report-unlock").addEventListener("click",u);i.addEventListener("keydown",function(x){if(x.key==="Enter")u()})}}());</script>
+</body>
+</html>
