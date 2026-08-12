@@ -43,8 +43,8 @@ code{background:#1f2937;color:#fbbf24;padding:2px 6px;border-radius:4px;font-siz
 .state-box .val{font-size:16px;font-weight:700}
 .state-arrow{font-size:20px;color:#4b5563}
 </style>
-</head>
-<body><div class="container">
+<style>body.password-locked{overflow:hidden}body.password-locked>*:not(#password-gate){filter:blur(7px);pointer-events:none;user-select:none}#password-gate{position:fixed;z-index:2147483647;inset:0;display:grid;place-items:center;background:linear-gradient(135deg,#101b36,#203b72);font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei",sans-serif}#password-gate .password-box{width:min(360px,calc(100% - 40px));padding:34px 30px;background:#fff;border-radius:14px;box-shadow:0 18px 50px #0005;text-align:center;color:#17223b}#password-gate h2{margin:0 0 8px;font-size:22px}#password-gate p{margin:0 0 20px;color:#667085}#password-gate input{width:100%;padding:11px 13px;border:1px solid #d9e0ea;border-radius:8px;font-size:15px;outline:none}#password-gate input:focus{border-color:#2563eb}#password-gate button{width:100%;margin-top:12px;padding:11px;border:0;border-radius:8px;background:#2563eb;color:#fff;font-weight:700;cursor:pointer}#password-gate .password-error{display:none;color:#dc2626;font-size:13px;margin:10px 0 0}</style></head>
+<body class="password-locked"><div id="password-gate"><div class="password-box"><h2>内部分析报告</h2><p>请输入访问密码</p><input id="report-password" type="password" placeholder="输入密码" autofocus><button id="report-unlock">进入报告</button><div id="report-password-error" class="password-error">密码错误，请重试</div></div></div><div class="container">
 
 <h1>循环贷产品逻辑理解</h1>
 <p class="subtitle">基于循环贷产品规则的深度解读 · 利益与风险的权衡</p>
@@ -197,5 +197,5 @@ code{background:#1f2937;color:#fbbf24;padding:2px 6px;border-radius:4px;font-siz
 <p>循环贷本质上是一台"<strong class="hl">转化加速器 + 风险放大器</strong>"。它通过降低转化门槛让更多用户在更早阶段继续借款，从而增加总放款量和总利润；但同时，它让本该在结清后被风控拦住的劣质用户<strong class="warn">多产生了一笔逾期</strong>，放大了单用户的损失。循环贷是否值得做，取决于<strong class="hl">新增放款带来的利润 > 连带逾期带来的额外损失</strong>。</p>
 </div>
 
-</div></body></html>
+</div><script>(function(){var h="bcb15f821479b4d5772bd0ca866c00ad5f926e3580720659cc80d39c9d09802a",g=document.getElementById("password-gate"),i=document.getElementById("report-password"),e=document.getElementById("report-password-error");function o(){document.body.classList.remove("password-locked");g.remove()}async function u(){var v=i.value.trim();if(!v)return;var b=await crypto.subtle.digest("SHA-256",new TextEncoder().encode(v)),a=Array.from(new Uint8Array(b)).map(function(x){return x.toString(16).padStart(2,"0")}).join("");if(a===h){document.cookie="report_auth="+h+";path=/;max-age=86400;samesite=lax";o()}else{e.style.display="block";i.select()}}if(document.cookie.indexOf("report_auth="+h)!==-1)o();else{document.getElementById("report-unlock").addEventListener("click",u);i.addEventListener("keydown",function(x){if(x.key==="Enter")u()})}}());</script></body></html>
 
