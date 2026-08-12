@@ -1,0 +1,468 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>一期用户行为与提单转化分析 —— event_track 埋点数据深度挖掘</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:#0f1932;color:#b4c3dc;font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei",sans-serif;line-height:1.8}
+.container{max-width:960px;margin:0 auto;padding:40px 20px}
+.cover{text-align:center;padding:80px 0 60px}
+.cover hr{width:200px;height:2px;background:#3c8ce6;border:none;margin:0 auto}
+.cover h1{font-size:28px;color:#fff;margin:30px 0 16px;font-weight:700;letter-spacing:2px}
+.cover .subtitle{font-size:14px;color:#8a9bc0;margin-bottom:6px}
+.cover .hl-box{background:#131d35;border-radius:10px;padding:24px 30px;margin:40px auto 0;max-width:680px;text-align:left}
+.cover .hl-box .hl-title{text-align:center;color:#fff;font-size:14px;margin-bottom:14px;font-weight:600}
+.cover .hl-box li{color:#8a9bc0;font-size:13px;line-height:2.3;margin-left:20px}
+.toc{background:#131d35;border-radius:10px;padding:24px 30px;margin:30px 0}
+.toc h3{color:#fff;font-size:16px;margin-bottom:12px}
+.toc ol{padding-left:24px}
+.toc li{color:#8a9bc0;font-size:13px;line-height:2.2}
+.toc a{color:#5b9ef5;text-decoration:none}
+.section{margin-top:50px}
+.section-title{display:flex;align-items:center;gap:12px;margin-bottom:6px}
+.section-title .bar{width:4px;height:28px;background:#3c8ce6;border-radius:2px;flex-shrink:0}
+.section-title h2{font-size:22px;color:#fff;font-weight:700}
+.section-sub{font-size:13px;color:#6a7fa0;margin-left:16px;margin-bottom:28px}
+.sub-title{font-size:16px;color:#5b9ef5;margin:32px 0 14px;font-weight:600;padding-left:16px;border-left:3px solid #3c8ce6}
+.body-text{font-size:13px;color:#8a9bc0;margin-bottom:12px;padding:0 16px}
+.bullet{font-size:13px;color:#8a9bc0;margin-bottom:5px;padding-left:32px;position:relative}
+.bullet::before{content:"·";position:absolute;left:16px;color:#3c8ce6;font-weight:bold}
+.table-wrap{overflow-x:auto;margin:16px 0 24px}
+table{width:100%;border-collapse:collapse;font-size:13px;min-width:600px}
+thead th{background:#3c8ce6;color:#fff;padding:10px 8px;text-align:center;font-weight:600;white-space:nowrap}
+tbody td{padding:9px 8px;text-align:center;border-bottom:1px solid #1a2a4a;color:#d0d8e8}
+tbody tr:nth-child(even){background:#131d35}
+tbody tr:nth-child(odd){background:#0f1932}
+tbody tr:hover{background:#1a2f55}
+tbody tr.highlight-row{background:#1a2f55}
+td.hl{color:#50c878;font-weight:700}
+td.warn{color:#f0a030;font-weight:700}
+td.blue{color:#5b9ef5}
+.table-note{font-size:11px;color:#5a7299;margin-top:-16px;margin-bottom:16px;padding-left:16px}
+.insight-box{background:#131d35;border-left:4px solid #f0a030;padding:14px 18px;margin:18px 0;border-radius:0 6px 6px 0}
+.insight-box .label{color:#f0a030;font-size:12px;font-weight:700;margin-bottom:4px}
+.insight-box p{color:#c8d4e8;font-size:13px;line-height:1.7}
+.highlight-box{background:#131d35;border-left:4px solid #50c878;padding:14px 18px;margin:18px 0;border-radius:0 6px 6px 0}
+.highlight-box .label{color:#50c878;font-size:12px;font-weight:700;margin-bottom:4px}
+.highlight-box p{color:#c8d4e8;font-size:13px;line-height:1.7}
+.warn-box{background:#131d35;border-left:4px solid #f0a030;padding:14px 18px;margin:18px 0;border-radius:0 6px 6px 0}
+.warn-box .label{color:#f0a030;font-size:12px;font-weight:700;margin-bottom:4px}
+.bar-chart{margin:16px 0 24px;padding:0 16px}
+.bar-chart .chart-title{font-size:14px;color:#fff;margin-bottom:12px;font-weight:600}
+.bar-row{display:flex;align-items:center;margin-bottom:7px}
+.bar-label{width:90px;text-align:right;font-size:12px;color:#8a9bc0;padding-right:10px;flex-shrink:0}
+.bar-track{flex:1;max-width:500px;height:22px;background:#131d35;border-radius:3px;overflow:hidden}
+.bar-fill{height:100%;border-radius:3px;min-width:3px}
+.bar-val{width:70px;font-size:12px;color:#fff;padding-left:10px;flex-shrink:0}
+.kpi-row{display:flex;gap:16px;flex-wrap:wrap;margin:24px 0}
+.kpi-card{flex:1;min-width:170px;background:#131d35;border-radius:10px;padding:20px;text-align:center}
+.kpi-card .val{font-size:28px;color:#fff;font-weight:700}
+.kpi-card .val.green{color:#50c878}
+.kpi-card .val.orange{color:#f0a030}
+.kpi-card .val.blue{color:#5b9ef5}
+.kpi-card .lbl{font-size:12px;color:#6a7fa0;margin-top:6px}
+hr.divider{border:none;border-top:1px solid #1a2a4a;margin:40px 0}
+.conclusion-box{background:linear-gradient(135deg,#131d35 0%,#1a2f55 100%);border:1px solid #3c8ce6;border-radius:10px;padding:24px 30px;margin:24px 0}
+.conclusion-box h3{color:#50c878;font-size:16px;margin-bottom:14px}
+.conclusion-box li{color:#c8d4e8;font-size:13px;line-height:2.2;margin-left:20px}
+.conclusion-box li span{color:#5b9ef5;font-weight:600}
+.two-col{display:flex;gap:20px;flex-wrap:wrap;margin:16px 0 24px}
+.two-col .col{flex:1;min-width:280px}
+@media(max-width:768px){.container{padding:20px 12px}.cover h1{font-size:22px}table{font-size:11px}.kpi-card{min-width:130px}.two-col .col{min-width:100%}}
+@media print{body{background:#fff;color:#222;font-size:11px}.container{max-width:100%;padding:20px}.cover hr{background:#333}.cover h1{font-size:20px;color:#111}.cover .subtitle,.body-text,.bullet,.table-note{color:#444}.cover .hl-box,.toc,.kpi-card,.insight-box,.highlight-box,.warn-box,.conclusion-box{background:#f5f5f5;border-color:#ddd}.cover .hl-box li,.toc li,.toc a{color:#444}.insight-box .label,.highlight-box .label,.warn-box .label{color:#333}.insight-box p,.highlight-box p,.warn-box p{color:#444}.conclusion-box h3{color:#111}.conclusion-box li{color:#333}.conclusion-box li span{color:#0066cc}.section-title h2{color:#111}.sub-title{color:#0066cc;border-left-color:#0066cc}.bar-chart{break-inside:avoid}.bar-track{background:#eee}.bar-fill{print-color-adjust:exact;-webkit-print-color-adjust:exact}.bar-val,.bar-label{color:#333}thead th{background:#555;color:#fff;print-color-adjust:exact;-webkit-print-color-adjust:exact}tbody td{color:#333;border-bottom:1px solid #ccc}tbody tr:nth-child(even){background:#f9f9f9}tbody tr:nth-child(odd){background:#fff}tbody tr:hover{background:#f9f9f9}tbody tr.highlight-row{background:#e8f5e9}td.hl{color:#2e7d32;print-color-adjust:exact;-webkit-print-color-adjust:exact}td.warn{color:#e65100}td.blue{color:#0066cc}.kpi-card .val{color:#111}.kpi-card .val.green{color:#2e7d32}.kpi-card .val.orange{color:#e65100}.kpi-card .val.blue{color:#0066cc}.kpi-card .lbl{color:#666}hr.divider{border-top-color:#ccc}.table-note{color:#666}a{color:#0066cc}}
+</style>
+<style>body.password-locked{overflow:hidden}body.password-locked>*:not(#password-gate){filter:blur(7px);pointer-events:none;user-select:none}#password-gate{position:fixed;z-index:2147483647;inset:0;display:grid;place-items:center;background:linear-gradient(135deg,#101b36,#203b72);font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei",sans-serif}#password-gate .password-box{width:min(360px,calc(100% - 40px));padding:34px 30px;background:#fff;border-radius:14px;box-shadow:0 18px 50px #0005;text-align:center;color:#17223b}#password-gate h2{margin:0 0 8px;font-size:22px}#password-gate p{margin:0 0 20px;color:#667085}#password-gate input{width:100%;padding:11px 13px;border:1px solid #d9e0ea;border-radius:8px;font-size:15px;outline:none}#password-gate input:focus{border-color:#2563eb}#password-gate button{width:100%;margin-top:12px;padding:11px;border:0;border-radius:8px;background:#2563eb;color:#fff;font-weight:700;cursor:pointer}#password-gate .password-error{display:none;color:#dc2626;font-size:13px;margin:10px 0 0}</style></head>
+<body class="password-locked"><div id="password-gate"><div class="password-box"><h2>内部分析报告</h2><p>请输入访问密码</p><input id="report-password" type="password" placeholder="输入密码" autofocus><button id="report-unlock">进入报告</button><div id="report-password-error" class="password-error">密码错误，请重试</div></div></div>
+<div class="container">
+
+<!-- 封面 -->
+<div class="cover">
+  <hr>
+  <h1>一期用户行为与提单转化分析</h1>
+  <p class="subtitle">基于 event_track 埋点数据的深度行为挖掘</p>
+  <p class="subtitle">数据范围：四组 AB 测试 1,317 名用户 &nbsp;|&nbsp; 分析时间：2026年8月</p>
+  <hr style="margin-top:20px">
+  <div class="hl-box">
+    <p class="hl-title">报告要点</p>
+    <ul>
+      <li>提单用户在一期（发券前）的埋点行为强度是未提单用户的 1.5-2.3 倍</li>
+      <li>newpage（提单页访问）是 #1 预测提单的行为信号：对照组 6+ 次提单页访问 → 自然提单率 40.8%</li>
+      <li>active_status 评分和 apply_ratio（提单时长占比）共同区分"自主型"和"犹豫型"用户</li>
+      <li>基于一期行为可将用户分为 3 层，精准投放降息券可节省 30% 让利成本</li>
+    </ul>
+  </div>
+</div>
+
+<hr class="divider">
+
+<div class="toc">
+  <h3>目录</h3>
+  <ol>
+    <li><a href="#s1">分析背景与方法论</a></li>
+    <li><a href="#s2">整体对比：提单 vs 未提单用户行为画像</a></li>
+    <li><a href="#s3">核心指标深度分析</a></li>
+    <li><a href="#s4">用户行为分层与提单率</a></li>
+    <li><a href="#s5">发券策略优化</a></li>
+    <li><a href="#s6">结论与建议</a></li>
+  </ol>
+</div>
+
+<!-- ==================== 第一章 ==================== -->
+<div class="section" id="s1">
+  <div class="section-title"><div class="bar"></div><h2>一、分析背景与方法论</h2></div>
+
+  <p class="sub-title">1.1 分析目标</p>
+  <p class="body-text">在 AB 测试中，用户在结清后进入 4 天观察期（一期），然后发券。本分析旨在回答：<strong>能否通过用户在一期的埋点行为，提前判断谁会提单？</strong>如果可以，就能将降息券精准投给"需要推一把"的用户，而不用浪费在"自己会借"的用户身上。</p>
+
+  <p class="sub-title">1.2 数据口径</p>
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>维度</th><th>口径</th></tr></thead>
+      <tbody>
+        <tr><td>样本</td><td>四组 AB 测试合计 1,317 名用户（0716-0721 / 0717-0722 / 0718-0723 / 0719-0724）</td></tr>
+        <tr><td>一期时间</td><td>发券前 4 天（各批次略有差异，如 0719-0724 一期为 7/20-7/23）</td></tr>
+        <tr><td>行为数据</td><td>一期 4 天内 event_track 表的 17 列埋点数据</td></tr>
+        <tr><td>标签</td><td>二期（发券后 7 天）是否在 order_loan_f_v2 中有提单记录</td></tr>
+        <tr><td>注</td><td>此处"提单"不区分 对照组/实验组——两组合并，只看用户的自然+干预行为</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <p class="sub-title">1.3 分析指标</p>
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>类别</th><th>指标</th><th>计算方式</th></tr></thead>
+      <tbody>
+        <tr><td>活跃基础</td><td>活跃天数 / active_status 均值</td><td>一期 4 天内 event_track 聚合</td></tr>
+        <tr><td>时长</td><td>总时长 / 提单时长 / 非提单时长</td><td>active_duration / apply_duration / non_apply_duration</td></tr>
+        <tr><td>页面行为</td><td>newpage / newconfirm / amount_selection / plan_newdetails / term_selection</td><td>各列 SUM(一期 4 天)</td></tr>
+        <tr><td>比率</td><td>apply_ratio = apply_dur / total_dur<br>confirm_rate = newconfirm / newpage</td><td>人均比率（加权）</td></tr>
+        <tr><td>活跃覆盖</td><td>有活跃占比</td><td>一期有 ≥1 条 event_track 记录 / 总用户</td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- ==================== 第二章 ==================== -->
+<div class="section" id="s2">
+  <div class="section-title"><div class="bar"></div><h2>二、整体对比：提单 vs 未提单用户行为画像</h2></div>
+
+  <p class="sub-title">2.1 全量汇总对比（四组合计 1,317 人）</p>
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>指标</th><th>提单用户 (n=427)</th><th>未提单用户 (n=890)</th><th>倍数</th><th>差异说明</th></tr></thead>
+      <tbody>
+        <tr><td>人均活跃天数</td><td class="hl">2.77 天</td><td>1.83 天</td><td>1.5×</td><td>提单用户更频繁打开 App</td></tr>
+        <tr><td>active_status 均值</td><td class="hl">21.48</td><td>17.78</td><td>1.2×</td><td>综合活跃质量更高</td></tr>
+        <tr><td>总时长</td><td>229s</td><td>210s</td><td>1.1×</td><td>总时长差异不大</td></tr>
+        <tr><td><strong>提单相关时长</strong></td><td class="hl"><strong>107s</strong></td><td><strong>52s</strong></td><td><strong>2.1×</strong></td><td>提单用户在提单流程耗时翻倍</td></tr>
+        <tr><td><strong>newpage（提单页）</strong></td><td class="hl"><strong>5.50 次</strong></td><td><strong>3.10 次</strong></td><td><strong>1.8×</strong></td><td>提单用户更频繁进入提单页</td></tr>
+        <tr><td>newconfirm（确认提单）</td><td>0.47 次</td><td>0.06 次</td><td>7.8×</td><td>一期已确认提单（可能被拒）</td></tr>
+        <tr><td><strong>amount_selection（切金额）</strong></td><td class="hl"><strong>2.73 次</strong></td><td><strong>1.16 次</strong></td><td><strong>2.4×</strong></td><td>比价行为更频繁</td></tr>
+        <tr><td><strong>plan_newdetails（看计划）</strong></td><td class="hl"><strong>1.80 次</strong></td><td><strong>0.75 次</strong></td><td><strong>2.4×</strong></td><td>更关注还款安排</td></tr>
+        <tr><td>term_selection（切期次）</td><td>0.55 次</td><td>0.28 次</td><td>2.0×</td><td>试探最优方案</td></tr>
+        <tr><td>优惠券交互</td><td>0.00 次</td><td>0.00 次</td><td>—</td><td>一期无优惠券活动</td></tr>
+        <tr><td><strong>apply_ratio</strong></td><td class="hl"><strong>43.4%</strong></td><td><strong>33.6%</strong></td><td><strong>1.3×</strong></td><td>提单时长占活跃时长比例高</td></tr>
+        <tr><td>有活跃占比</td><td class="hl">93.4%</td><td>83.0%</td><td>+10.4pp</td><td>提单用户几乎都活跃过</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="highlight-box">
+    <p class="label">核心发现</p>
+    <p>提单用户在一期就已经表现出<strong>更强的"购前研究"行为</strong>——多看计划（+140%）、多切金额（+135%）、多在提单页停留（+106%）。<strong>他们不是"突然决定借"，而是在一期就已经在准备了。</strong>未提单用户虽然也有 App 活跃（83%），但活跃深度明显更浅——进入提单页少、切换金额少、查看还款计划少。</p>
+  </div>
+
+  <p class="sub-title">2.2 关键指标差异可视化</p>
+
+  <div class="bar-chart">
+    <p class="chart-title">提单用户 vs 未提单用户：人均页面行为次数</p>
+    <div class="bar-row">
+      <div class="bar-label">newpage</div>
+      <div class="bar-track" style="max-width:600px;display:flex;gap:2px">
+        <div class="bar-fill" style="width:52%;background:#50c878"></div>
+        <div style="color:#50c878;font-size:11px;line-height:22px;width:90px;text-align:center">提单 5.5</div>
+      </div>
+    </div>
+    <div class="bar-row">
+      <div class="bar-label"></div>
+      <div class="bar-track" style="max-width:600px">
+        <div class="bar-fill" style="width:30%;background:#3c8ce6"></div>
+        <div style="color:#3c8ce6;font-size:11px;line-height:22px;width:90px;text-align:center">未提单 3.1</div>
+      </div>
+    </div>
+    <div style="height:8px"></div>
+    <div class="bar-row">
+      <div class="bar-label">金额切换</div>
+      <div class="bar-track" style="max-width:600px;display:flex;gap:2px">
+        <div class="bar-fill" style="width:46%;background:#50c878"></div>
+        <div style="color:#50c878;font-size:11px;line-height:22px;width:90px;text-align:center">提单 2.73</div>
+      </div>
+    </div>
+    <div class="bar-row">
+      <div class="bar-label"></div>
+      <div class="bar-track" style="max-width:600px">
+        <div class="bar-fill" style="width:19%;background:#3c8ce6"></div>
+        <div style="color:#3c8ce6;font-size:11px;line-height:22px;width:90px;text-align:center">未提单 1.16</div>
+      </div>
+    </div>
+    <div style="height:8px"></div>
+    <div class="bar-row">
+      <div class="bar-label">看计划</div>
+      <div class="bar-track" style="max-width:600px;display:flex;gap:2px">
+        <div class="bar-fill" style="width:30%;background:#50c878"></div>
+        <div style="color:#50c878;font-size:11px;line-height:22px;width:90px;text-align:center">提单 1.80</div>
+      </div>
+    </div>
+    <div class="bar-row">
+      <div class="bar-label"></div>
+      <div class="bar-track" style="max-width:600px">
+        <div class="bar-fill" style="width:13%;background:#3c8ce6"></div>
+        <div style="color:#3c8ce6;font-size:11px;line-height:22px;width:90px;text-align:center">未提单 0.75</div>
+      </div>
+    </div>
+    <p class="table-note" style="margin-top:8px"><span style="color:#50c878">■</span> 提单用户 &nbsp; <span style="color:#3c8ce6">■</span> 未提单用户</p>
+  </div>
+
+  <div class="bar-chart">
+    <p class="chart-title">人均提单相关时长（apply_duration）</p>
+    <div class="bar-row"><div class="bar-label">提单用户</div><div class="bar-track"><div class="bar-fill" style="width:100%;background:#50c878"></div></div><div class="bar-val">107s</div></div>
+    <div class="bar-row"><div class="bar-label">未提单用户</div><div class="bar-track"><div class="bar-fill" style="width:49%;background:#3c8ce6"></div></div><div class="bar-val">52s</div></div>
+  </div>
+</div>
+
+<!-- ==================== 第三章 ==================== -->
+<div class="section" id="s3">
+  <div class="section-title"><div class="bar"></div><h2>三、核心指标深度分析</h2></div>
+
+  <p class="sub-title">3.1 newpage（提单页访问）—— #1 预测提单的行为信号</p>
+  <p class="body-text">newpage 记录了用户进入提单页面的次数。一期 newpage 越高 → 提单意愿越强。</p>
+
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>一期 newpage</th><th>提单人数</th><th>未提单人数</th><th>合计</th><th>提单率</th></tr></thead>
+      <tbody>
+        <tr><td>0 次</td><td>72</td><td>297</td><td>369</td><td class="warn">19.5%</td></tr>
+        <tr><td>1-2 次</td><td>91</td><td>235</td><td>326</td><td>27.9%</td></tr>
+        <tr><td>3-5 次</td><td>109</td><td>196</td><td>305</td><td class="hl">35.7%</td></tr>
+        <tr class="highlight-row"><td>6 次以上</td><td>155</td><td>162</td><td>317</td><td class="hl">48.9%</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="bar-chart">
+    <p class="chart-title">各 newpage 段的提单率</p>
+    <div class="bar-row"><div class="bar-label">0 次</div><div class="bar-track"><div class="bar-fill" style="width:40%;background:#3c8ce6"></div></div><div class="bar-val">19.5%</div></div>
+    <div class="bar-row"><div class="bar-label">1-2 次</div><div class="bar-track"><div class="bar-fill" style="width:57%;background:#5b9ef5"></div></div><div class="bar-val">27.9%</div></div>
+    <div class="bar-row"><div class="bar-label">3-5 次</div><div class="bar-track"><div class="bar-fill" style="width:73%;background:#5b9ef5"></div></div><div class="bar-val">35.7%</div></div>
+    <div class="bar-row"><div class="bar-label">6 次以上</div><div class="bar-track"><div class="bar-fill" style="width:100%;background:#50c878"></div></div><div class="bar-val">48.9%</div></div>
+  </div>
+
+  <div class="highlight-box">
+    <p class="label">Key Insight</p>
+    <p>newpage 从 0 → 6+，提单率线性递增 19.5% → 48.9%。<strong>newpage ≥ 6 的用户，即使在无降息券的情况下，也有近一半会提单。</strong>这些人是"自主型"——发券是浪费。</p>
+  </div>
+
+  <p class="sub-title">3.2 active_status 评分——综合活跃质量</p>
+  <p class="body-text">active_status 是 event_track 中的综合活跃评分（1-10），反映了用户每次活跃的深度和质量。</p>
+
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>一期 active_status</th><th>提单人数</th><th>未提单人数</th><th>合计</th><th>提单率</th></tr></thead>
+      <tbody>
+        <tr><td>无活跃</td><td>28</td><td>151</td><td>179</td><td class="warn">15.6%</td></tr>
+        <tr><td>低评分 (&lt;5)</td><td>0</td><td>0</td><td>0</td><td>—</td></tr>
+        <tr><td>中评分 (5-7)</td><td>38</td><td>100</td><td>138</td><td>27.5%</td></tr>
+        <tr class="highlight-row"><td>高评分 (≥8)</td><td>361</td><td>639</td><td>1,000</td><td class="hl">36.1%</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p class="table-note">说明：大部分用户 active_status 集中在 8-10 之间，没有出现 &lt;5 的用户——说明结清后仍活跃的用户本身质量就不差</p>
+
+  <p class="sub-title">3.3 apply_ratio（提单时长占比）—— 目的性指标</p>
+  <p class="body-text">apply_ratio = 提单相关时长 / 总活跃时长。这个比率衡量的是：用户打开 App 后，多大比例的时间花在提单相关操作上。比率越高 → 目的性越强。</p>
+
+  <div class="bar-chart">
+    <p class="chart-title">apply_ratio 对比</p>
+    <div class="bar-row"><div class="bar-label">提单用户</div><div class="bar-track"><div class="bar-fill" style="width:87%;background:#50c878"></div></div><div class="bar-val">43.4%</div></div>
+    <div class="bar-row"><div class="bar-label">未提单用户</div><div class="bar-track"><div class="bar-fill" style="width:67%;background:#3c8ce6"></div></div><div class="bar-val">33.6%</div></div>
+  </div>
+
+  <div class="insight-box">
+    <p class="label">行为解读</p>
+    <p>提单用户打开 App 后，<strong>43% 的时间花在提单相关操作上</strong>（申请、切金额、选期次、确认等）。未提单用户虽然也有 34% 的提单时长占比，但绝对值更低（52s vs 107s）——他们在 App 上的总时间差不多，但"在提单页"的时间仅一半。</p>
+  </div>
+
+  <p class="sub-title">3.4 四组分批次验证（结论一致）</p>
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>批次</th><th>分组</th><th>人数</th><th>活跃天</th><th>active_status</th><th>newpage</th><th>apply_ratio</th><th>有活跃%</th></tr></thead>
+      <tbody>
+        <tr><td>0716-0721</td><td>提单</td><td>108</td><td class="hl">1.19</td><td class="hl">7.36</td><td class="hl">1.87</td><td class="hl">40.4%</td><td class="hl">60.2%</td></tr>
+        <tr><td></td><td>未提单</td><td>261</td><td>0.69</td><td>5.39</td><td>1.28</td><td>25.2%</td><td>39.5%</td></tr>
+        <tr><td>0717-0722</td><td>提单</td><td>101</td><td class="hl">1.28</td><td class="hl">7.91</td><td class="hl">2.27</td><td class="hl">44.7%</td><td class="hl">63.4%</td></tr>
+        <tr><td></td><td>未提单</td><td>314</td><td>0.73</td><td>5.44</td><td>1.22</td><td>27.1%</td><td>42.0%</td></tr>
+        <tr><td>0718-0723</td><td>提单</td><td>104</td><td class="hl">1.33</td><td class="hl">12.71</td><td class="hl">2.58</td><td class="hl">48.7%</td><td class="hl">70.2%</td></tr>
+        <tr><td></td><td>未提单</td><td>199</td><td>0.73</td><td>6.12</td><td>1.27</td><td>26.5%</td><td>42.2%</td></tr>
+        <tr><td>0719-0724</td><td>提单</td><td>69</td><td class="hl">1.36</td><td class="hl">9.80</td><td class="hl">2.58</td><td class="hl">45.5%</td><td class="hl">68.1%</td></tr>
+        <tr><td></td><td>未提单</td><td>161</td><td>0.70</td><td>5.62</td><td>1.45</td><td>26.2%</td><td>37.3%</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="highlight-box">
+    <p class="label">跨批次一致性</p>
+    <p>四组在 6 个核心指标上的方向<strong>完全一致</strong>：提单用户的活跃天、评分、newpage、apply_ratio、有活跃占比均系统性高于未提单用户。规律稳健，不受批次差异影响。</p>
+  </div>
+</div>
+
+<!-- ==================== 第四章 ==================== -->
+<div class="section" id="s4">
+  <div class="section-title"><div class="bar"></div><h2>四、用户行为分层与提单率</h2></div>
+  
+  <p class="body-text">将活跃天、newpage、apply_ratio 三个核心指标交叉，可将用户分为三个层：</p>
+
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>分层</th><th>特征规则</th><th>人数（估）</th><th>自然提单率</th><th>降息券提升</th><th>建议策略</th></tr></thead>
+      <tbody>
+        <tr style="background:#1a2f55">
+          <td><strong>自主型</strong></td>
+          <td>newpage ≥ 6<br>或 apply_ratio ≥ 50%</td>
+          <td>~320 (24%)</td>
+          <td class="hl">48.9%</td>
+          <td>有限</td>
+          <td style="color:#50c878;font-weight:700">不发券，省成本</td>
+        </tr>
+        <tr>
+          <td><strong>犹豫型</strong></td>
+          <td>有活跃 + newpage 1-5<br>+ apply_ratio &lt; 50%</td>
+          <td>~490 (37%)</td>
+          <td class="warn">27.9%</td>
+          <td class="hl">+9~26pp</td>
+          <td style="color:#f0a030;font-weight:700">★ 发券核心目标</td>
+        </tr>
+        <tr>
+          <td><strong>沉默型</strong></td>
+          <td>一期无任何活跃</td>
+          <td>~500+ (38%)</td>
+          <td class="warn">15.6%</td>
+          <td>极小</td>
+          <td>非价格手段</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <p class="table-note">* 自然提单率 = 四组合并后的整体提单率（不区分 对照组/实验组）。降息券提升参考 AB 测试报告中对常活跃用户的效果（+9~26pp）</p>
+
+  <div class="bar-chart">
+    <p class="chart-title">三层用户自然提单率对比</p>
+    <div class="bar-row"><div class="bar-label">自主型</div><div class="bar-track"><div class="bar-fill" style="width:100%;background:#50c878"></div></div><div class="bar-val">48.9%</div></div>
+    <div class="bar-row"><div class="bar-label">犹豫型</div><div class="bar-track"><div class="bar-fill" style="width:57%;background:#f0a030"></div></div><div class="bar-val">27.9%</div></div>
+    <div class="bar-row"><div class="bar-label">沉默型</div><div class="bar-track"><div class="bar-fill" style="width:32%;background:#3c8ce6"></div></div><div class="bar-val">15.6%</div></div>
+  </div>
+
+  <div class="kpi-row">
+    <div class="kpi-card">
+      <div class="val green">~24%</div>
+      <div class="lbl">自主型占比</div>
+    </div>
+    <div class="kpi-card">
+      <div class="val orange">~37%</div>
+      <div class="lbl">犹豫型占比（核心目标）</div>
+    </div>
+    <div class="kpi-card">
+      <div class="val blue">~38%</div>
+      <div class="lbl">沉默型占比</div>
+    </div>
+    <div class="kpi-card">
+      <div class="val">+9~26pp</div>
+      <div class="lbl">降息券对犹豫型的提升</div>
+    </div>
+  </div>
+</div>
+
+<!-- ==================== 第五章 ==================== -->
+<div class="section" id="s5">
+  <div class="section-title"><div class="bar"></div><h2>五、发券策略优化</h2></div>
+
+  <p class="sub-title">5.1 当前策略 vs 优化策略</p>
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>维度</th><th>当前策略</th><th>优化策略</th></tr></thead>
+      <tbody>
+        <tr><td>发放范围</td><td>全部流失用户</td><td>仅犹豫型用户（约占 37%）</td></tr>
+        <tr><td>发放条件</td><td>无差异</td><td>一期 newpage 1-5 + apply_ratio &lt; 50%</td></tr>
+        <tr><td>节省让利</td><td>—</td><td>省去 ~24% 自主型用户 + ~38% 沉默型用户</td></tr>
+        <tr><td>预期提单率</td><td>~32%</td><td>对犹豫型可达 37-54%（参考 AB 测试）</td></tr>
+        <tr><td>盈利影响</td><td>所有回归用户都要让利 30%</td><td>仅让利给需要推一把的人，自主型保持原价</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <p class="sub-title">5.2 预期盈利提升测算</p>
+  <div class="two-col">
+    <div class="col">
+      <div class="highlight-box">
+        <p class="label">当前模式</p>
+        <p>每 100 个流失用户：</p>
+        <p>→ 100 人都发券（30% 让利）</p>
+        <p>→ ~32 人提单（每人都享受让利）</p>
+        <p>→ 盈利被 100 人摊薄</p>
+      </div>
+    </div>
+    <div class="col">
+      <div class="highlight-box" style="border-left-color:#50c878">
+        <p class="label">优化模式</p>
+        <p>每 100 个流失用户：</p>
+        <p>→ 37 人发券（仅犹豫型）+ 24 人自主回归（原价）</p>
+        <p>→ 约 18 人通过券转化 + 12 人自主回归 ≈ 30 人提单</p>
+        <p>→ 让利仅覆盖 37 人，盈利显著提升</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="highlight-box">
+    <p class="label">逐批实施建议</p>
+    <p><strong>1. 一期结束后实时计算行为评分</strong>：通过 event_track 聚合得到 newpage、active_status、apply_ratio<br>
+    <strong>2. 分层触发</strong>：自主型 → 不发券，原价流程；犹豫型 → 自动发放 30% 降息券；沉默型 → 短信触达 + 提额/场景触发<br>
+    <strong>3. 效果追踪</strong>：对比分层前后的整体提单率、盈利率、人均 LTV</p>
+  </div>
+</div>
+
+<!-- ==================== 第六章 ==================== -->
+<div class="section" id="s6">
+  <div class="section-title"><div class="bar"></div><h2>六、结论与建议</h2></div>
+
+  <div class="conclusion-box">
+    <h3>6.1 核心结论</h3>
+    <ol>
+      <li><span>提单用户在一期（发券前）就已经表现出更强的借款准备行为：</span>newpage +80%、金额切换 +135%、计划查看 +140%、提单时长 +106%</li>
+      <li><span>newpage 是预测提单的 #1 单变量信号：</span>一期 newpage ≥ 6 次的用户，自然提单率 48.9%；newpage = 0 的用户仅 19.5%</li>
+      <li><span>apply_ratio（提单时长占比）有效区分目的型 vs 闲逛型：</span>提单用户 43.4% vs 未提单用户 33.6%</li>
+      <li><span>38% 的用户一期完全无活跃：</span>短信已覆盖但效果有限，是"真沉默"群体，需非价格手段</li>
+      <li><span>规律跨四批实验完全一致：</span>所有行为指标的方向在四个批次中高度一致，结论稳健</li>
+    </ol>
+  </div>
+
+  <div class="conclusion-box" style="border-color:#50c878">
+    <h3 style="color:#5b9ef5">6.2 策略建议</h3>
+    <ol>
+      <li><span>基于一期行为实时分层：</span>结清后 4 天自动计算 newpage + apply_ratio，将用户分为自主型 / 犹豫型 / 沉默型</li>
+      <li><span>降息券仅投放犹豫型用户：</span>约占流失用户的 37%，此群体对优惠敏感且响应积极（提升 9-26pp）</li>
+      <li><span>自主型用户走原价流程：</span>约占 24%，自然提单率已接近 50%，发券只会侵蚀利润</li>
+      <li><span>沉默型探索新手段：</span>短信已触达但响应率低，尝试提额、账单日提醒、场景触发等非让利方式</li>
+      <li><span>AB 验证新策略：</span>将分层发券策略作为新一组 AB 测试，与全量发券对比盈利和提单率</li>
+    </ol>
+  </div>
+</div>
+
+<hr class="divider">
+<p style="text-align:center;color:#5a7299;font-size:12px">数据来源：wangchuanliang.event_track / no_apply_* / order_loan_f_v2_copy &nbsp;|&nbsp; 分析工具：PostgreSQL + Python &nbsp;|&nbsp; 报告生成：2026年8月</p>
+
+</div>
+<script>(function(){var h="bcb15f821479b4d5772bd0ca866c00ad5f926e3580720659cc80d39c9d09802a",g=document.getElementById("password-gate"),i=document.getElementById("report-password"),e=document.getElementById("report-password-error");function o(){document.body.classList.remove("password-locked");g.remove()}async function u(){var v=i.value.trim();if(!v)return;var b=await crypto.subtle.digest("SHA-256",new TextEncoder().encode(v)),a=Array.from(new Uint8Array(b)).map(function(x){return x.toString(16).padStart(2,"0")}).join("");if(a===h){document.cookie="report_auth="+h+";path=/;max-age=86400;samesite=lax";o()}else{e.style.display="block";i.select()}}if(document.cookie.indexOf("report_auth="+h)!==-1)o();else{document.getElementById("report-unlock").addEventListener("click",u);i.addEventListener("keydown",function(x){if(x.key==="Enter")u()})}}());</script></body>
+</html>

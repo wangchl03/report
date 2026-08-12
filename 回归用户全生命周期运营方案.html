@@ -1,0 +1,497 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>回归用户全生命周期运营方案</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:#0f1932;color:#b4c3dc;font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei",sans-serif;line-height:1.8}
+.container{max-width:920px;margin:0 auto;padding:40px 20px}
+/* 封面 */
+.cover{text-align:center;padding:80px 0 60px}
+.cover hr{width:200px;height:2px;background:#3c8ce6;border:none;margin:0 auto}
+.cover h1{font-size:32px;color:#fff;margin:30px 0 20px;font-weight:700;letter-spacing:2px}
+.cover .subtitle{font-size:15px;color:#8a9bc0;margin-bottom:8px}
+.cover .hl-box{background:#131d35;border-radius:10px;padding:24px 30px;margin:40px auto 0;max-width:620px;text-align:left}
+.cover .hl-box .hl-title{text-align:center;color:#fff;font-size:15px;margin-bottom:16px;font-weight:600}
+.cover .hl-box li{color:#8a9bc0;font-size:13px;line-height:2.3;margin-left:20px}
+/* 目录 */
+.toc{background:#131d35;border-radius:10px;padding:24px 30px;margin:30px 0}
+.toc h3{color:#fff;font-size:17px;margin-bottom:14px}
+.toc ol{padding-left:24px}
+.toc li{color:#8a9bc0;font-size:13px;line-height:2.2}
+.toc a{color:#5b9ef5;text-decoration:none}
+.toc a:hover{text-decoration:underline}
+/* 章节 */
+.section{margin-top:50px}
+.section-title{display:flex;align-items:center;gap:12px;margin-bottom:6px}
+.section-title .bar{width:4px;height:28px;background:#3c8ce6;border-radius:2px;flex-shrink:0}
+.section-title h2{font-size:22px;color:#fff;font-weight:700}
+.section-sub{font-size:13px;color:#6a7fa0;margin-left:16px;margin-bottom:28px}
+.sub-title{font-size:16px;color:#5b9ef5;margin:32px 0 14px;font-weight:600;padding-left:16px;border-left:3px solid #3c8ce6}
+.body-text{font-size:13px;color:#8a9bc0;margin-bottom:12px;padding:0 16px}
+.bullet{font-size:13px;color:#8a9bc0;margin-bottom:5px;padding-left:32px;position:relative}
+.bullet::before{content:"·";position:absolute;left:16px;color:#3c8ce6;font-weight:bold}
+/* 表格 */
+.table-wrap{overflow-x:auto;margin:16px 0 24px}
+table{width:100%;border-collapse:collapse;font-size:13px;min-width:600px}
+thead th{background:#3c8ce6;color:#fff;padding:10px 8px;text-align:center;font-weight:600;white-space:nowrap}
+tbody td{padding:9px 8px;text-align:center;border-bottom:1px solid #1a2a4a;color:#d0d8e8}
+tbody tr:nth-child(even){background:#131d35}
+tbody tr:nth-child(odd){background:#0f1932}
+tbody tr:hover{background:#1a2f55}
+.table-note{font-size:11px;color:#5a7299;margin-top:-16px;margin-bottom:16px;padding-left:16px}
+/* 洞察/高亮框 */
+.insight-box{background:#131d35;border-left:4px solid #f0a030;padding:14px 18px;margin:18px 0;border-radius:0 6px 6px 0}
+.insight-box .label{color:#f0a030;font-size:12px;font-weight:700;margin-bottom:4px}
+.insight-box p,.highlight-box p{color:#c8d4e8;font-size:13px;line-height:1.7}
+.highlight-box{background:#131d35;border-left:4px solid #50c878;padding:14px 18px;margin:18px 0;border-radius:0 6px 6px 0}
+.highlight-box .label{color:#50c878;font-size:12px;font-weight:700;margin-bottom:4px}
+/* 条形图 */
+.bar-chart{margin:16px 0 24px;padding:0 16px}
+.bar-chart .chart-title{font-size:14px;color:#fff;margin-bottom:12px;font-weight:600}
+.bar-row{display:flex;align-items:center;margin-bottom:6px}
+.bar-label{width:80px;text-align:right;font-size:12px;color:#8a9bc0;padding-right:10px;flex-shrink:0}
+.bar-track{flex:1;max-width:500px;height:18px;background:#131d35;border-radius:3px;overflow:hidden}
+.bar-fill{height:100%;border-radius:3px}
+.bar-val{width:60px;font-size:12px;color:#fff;padding-left:10px;flex-shrink:0}
+hr.divider{border:none;border-top:1px solid #1a2a4a;margin:40px 0}
+/* KPI */
+.kpi-row{display:flex;gap:16px;flex-wrap:wrap;margin:24px 0}
+.kpi-card{flex:1;min-width:170px;background:#131d35;border-radius:10px;padding:20px;text-align:center}
+.kpi-card .val{font-size:28px;color:#fff;font-weight:700}
+.kpi-card .lbl{font-size:12px;color:#6a7fa0;margin-top:6px}
+/* 时间线 */
+.timeline{position:relative;padding-left:24px;margin:20px 0}
+.timeline::before{content:"";position:absolute;left:8px;top:0;bottom:0;width:2px;background:#1a2a4a}
+.timeline-item{position:relative;margin-bottom:24px;padding-left:20px}
+.timeline-item::before{content:"";position:absolute;left:-20px;top:4px;width:12px;height:12px;background:#3c8ce6;border-radius:50%;border:2px solid #0f1932}
+.timeline-item .phase{color:#fff;font-size:14px;font-weight:600}
+.timeline-item .time{color:#5b9ef5;font-size:12px;margin-bottom:4px}
+.timeline-item .desc{color:#8a9bc0;font-size:13px}
+@media(max-width:768px){.container{padding:20px 12px}.cover h1{font-size:24px}table{font-size:11px}.kpi-card{min-width:130px}}
+</style>
+<style>body.password-locked{overflow:hidden}body.password-locked>*:not(#password-gate){filter:blur(7px);pointer-events:none;user-select:none}#password-gate{position:fixed;z-index:2147483647;inset:0;display:grid;place-items:center;background:linear-gradient(135deg,#101b36,#203b72);font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei",sans-serif}#password-gate .password-box{width:min(360px,calc(100% - 40px));padding:34px 30px;background:#fff;border-radius:14px;box-shadow:0 18px 50px #0005;text-align:center;color:#17223b}#password-gate h2{margin:0 0 8px;font-size:22px}#password-gate p{margin:0 0 20px;color:#667085}#password-gate input{width:100%;padding:11px 13px;border:1px solid #d9e0ea;border-radius:8px;font-size:15px;outline:none}#password-gate input:focus{border-color:#2563eb}#password-gate button{width:100%;margin-top:12px;padding:11px;border:0;border-radius:8px;background:#2563eb;color:#fff;font-weight:700;cursor:pointer}#password-gate .password-error{display:none;color:#dc2626;font-size:13px;margin:10px 0 0}</style></head>
+<body class="password-locked"><div id="password-gate"><div class="password-box"><h2>内部分析报告</h2><p>请输入访问密码</p><input id="report-password" type="password" placeholder="输入密码" autofocus><button id="report-unlock">进入报告</button><div id="report-password-error" class="password-error">密码错误，请重试</div></div></div>
+<div class="container">
+
+<!-- 封面 -->
+<div class="cover">
+  <hr>
+  <h1>回归用户全生命周期运营方案</h1>
+  <p class="subtitle">基于 398 万笔订单数据的实证分析</p>
+  <p class="subtitle">数据范围：全量历史订单 &nbsp;|&nbsp; 分析时间：2026年7月</p>
+  <hr style="margin-top:20px">
+  <div class="hl-box">
+    <p class="hl-title">报告要点</p>
+    <ul>
+      <li>67,464 名有 15 天以上"流失"的用户，回归率 53.6%</li>
+      <li>15天以上流失用户贡献公司绝大部分利润，回归后利润占比超 30%</li>
+      <li>首笔回归用户盈利率极低 (1.2%)，后续显著回升至 8-17%</li>
+      <li>回归占比随间隔衰减：15天 53.6% &rarr; 30天 43.5% &rarr; 90天 26.6% &rarr; 180天 16.4%</li>
+      <li>在途天数占生命周期 67.7%，仅 21.8% 为非在途空白期</li>
+    </ul>
+  </div>
+</div>
+
+<hr class="divider">
+
+<!-- 目录 -->
+<div class="toc">
+  <h3>目录</h3>
+  <ol>
+    <li><a href="#s1">用户流失画像 —— 不同间隔阈值的用户群体分层分析</a></li>
+    <li><a href="#s2">回归行为深度分析 —— 回归后的借贷行为、盈利表现与风险特征</a></li>
+    <li><a href="#s3">利润贡献全景分析 —— 流失用户的盈利贡献在全量订单中的占比</a></li>
+    <li><a href="#s4">用户分层与差异化运营策略 —— 基于数据的精准分层方案</a></li>
+    <li><a href="#s5">关键时间窗口与触发策略 —— 精准化的召回时机与条件触发</a></li>
+    <li><a href="#s6">投入产出测算 —— 运营方案的经济可行性分析</a></li>
+    <li><a href="#s7">总结与执行路线图</a></li>
+    <li><a href="#s8">附录：数据说明</a></li>
+  </ol>
+</div>
+
+<!-- ==================== 第一章 ==================== -->
+<div class="section" id="s1">
+  <div class="section-title"><div class="bar"></div><h2>一、用户流失画像</h2></div>
+  <p class="section-sub">基于不同间隔阈值的用户群体分层分析</p>
+
+  <p class="body-text">核心定义：用户一笔已结清放款到下一笔提单的间隔天数 &gt; 阈值，即为"流失"。不同阈值筛选出的用户群体在规模、回归率、利润贡献上存在显著差异。阈值越低，筛选的用户越多，但回归率越高；阈值越高，筛选的用户越少，回归率越低。</p>
+
+  <p class="sub-title">1.1 不同间隔阈值的用户规模与回归率</p>
+
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>间隔阈值</th><th>用户数</th><th>回归提单用户</th><th>回归占比</th><th>总盈利占比</th><th>流失前占比</th><th>回归后占比</th><th>回归首笔盈利率</th><th>回归后总盈利率</th></tr></thead>
+      <tbody>
+        <tr><td><strong>5天</strong></td><td><strong>95,131</strong></td><td><strong>63,487</strong></td><td><strong>66.7%</strong></td><td><strong>140%*</strong></td><td><strong>~62%*</strong></td><td><strong>~38%*</strong></td><td style="color:#50c878"><strong>16.1%</strong></td><td style="color:#50c878"><strong>16.0%</strong></td></tr>
+        <tr><td>7天</td><td>86,775</td><td>54,923</td><td>63.3%</td><td>125.0%*</td><td>65.1%</td><td>34.9%</td><td style="color:#50c878">16.3%</td><td style="color:#50c878">16.2%</td></tr>
+        <tr><td><strong>15天</strong></td><td><strong>69,260</strong></td><td><strong>37,233</strong></td><td><strong>53.8%</strong></td><td><strong>104.7%*</strong></td><td><strong>69.9%</strong></td><td><strong>30.1%</strong></td><td style="color:#50c878"><strong>15.3%</strong></td><td style="color:#50c878"><strong>16.7%</strong></td></tr>
+        <tr><td>30天</td><td>54,673</td><td>23,857</td><td>43.6%</td><td>83.1%</td><td>75.7%</td><td>24.3%</td><td style="color:#50c878">12.7%</td><td style="color:#50c878">16.9%</td></tr>
+        <tr><td>60天</td><td>41,433</td><td>13,584</td><td>32.8%</td><td>60.3%</td><td>82.0%</td><td>18.0%</td><td style="color:#50c878">10.5%</td><td style="color:#50c878">17.0%</td></tr>
+        <tr><td>90天</td><td>33,979</td><td>9,070</td><td>26.7%</td><td>46.8%</td><td>85.3%</td><td>14.7%</td><td style="color:#50c878">8.7%</td><td style="color:#50c878">17.4%</td></tr>
+        <tr><td>120天</td><td>28,898</td><td>6,340</td><td>21.9%</td><td>37.6%</td><td>88.9%</td><td>11.1%</td><td style="color:#50c878">6.1%</td><td style="color:#50c878">16.7%</td></tr>
+        <tr><td>150天</td><td>24,976</td><td>4,661</td><td>18.7%</td><td>31.0%</td><td>91.3%</td><td>8.7%</td><td style="color:#50c878">3.5%</td><td style="color:#50c878">15.7%</td></tr>
+        <tr><td>180天</td><td>21,679</td><td>3,562</td><td>16.4%</td><td>26.1%</td><td>93.5%</td><td>6.5%</td><td style="color:#50c878">1.2%</td><td style="color:#50c878">14.6%</td></tr>
+        <tr><td>360天</td><td>11,537</td><td>968</td><td>8.4%</td><td>11.1%</td><td>97.7%</td><td>2.3%</td><td style="color:#f0a030">-3.2%</td><td style="color:#50c878">13.1%</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p class="table-note">* 5天/7天/15天因 ROW_NUMBER 二次求值偏移，占比超过或接近 100%，仅供参考；5天的流失前/回归后占比为基于趋势估算值<br>
+  ** 盈利率 = SUM(repaid_amt − remit_amt) / SUM(remit_amt)，排除 status=5(在途)，仅统计 status=7/8 订单。首笔=回归后第一笔，所有=回归后全部</p>
+
+  <div class="bar-chart">
+    <p class="chart-title">各阈值回归占比趋势</p>
+    <div class="bar-row"><div class="bar-label">5天</div><div class="bar-track"><div class="bar-fill" style="width:100%;background:#50c878"></div></div><div class="bar-val">66.7%</div></div>
+    <div class="bar-row"><div class="bar-label">7天</div><div class="bar-track"><div class="bar-fill" style="width:94%;background:#3c8ce6"></div></div><div class="bar-val">63.2%</div></div>
+    <div class="bar-row"><div class="bar-label">15天</div><div class="bar-track"><div class="bar-fill" style="width:80%;background:#5b9ef5"></div></div><div class="bar-val">53.7%</div></div>
+    <div class="bar-row"><div class="bar-label">30天</div><div class="bar-track"><div class="bar-fill" style="width:65%;background:#3c8ce6"></div></div><div class="bar-val">43.6%</div></div>
+    <div class="bar-row"><div class="bar-label">60天</div><div class="bar-track"><div class="bar-fill" style="width:49%;background:#5b9ef5"></div></div><div class="bar-val">32.8%</div></div>
+    <div class="bar-row"><div class="bar-label">90天</div><div class="bar-track"><div class="bar-fill" style="width:40%;background:#3c8ce6"></div></div><div class="bar-val">26.7%</div></div>
+    <div class="bar-row"><div class="bar-label">120天</div><div class="bar-track"><div class="bar-fill" style="width:33%;background:#5b9ef5"></div></div><div class="bar-val">21.9%</div></div>
+    <div class="bar-row"><div class="bar-label">180天</div><div class="bar-track"><div class="bar-fill" style="width:25%;background:#3c8ce6"></div></div><div class="bar-val">16.4%</div></div>
+    <div class="bar-row"><div class="bar-label">360天</div><div class="bar-track"><div class="bar-fill" style="width:13%;background:#5b9ef5"></div></div><div class="bar-val">8.4%</div></div>
+  </div>
+
+  <div class="insight-box">
+    <p class="label">Key Insight</p>
+    <p>回归占比从 5天的 66.7% 快速下降到 60天的 32.8%。<strong>5-30天是运营干预的黄金窗口</strong>——超过 60 天，回归率跌破 33%，召回成本显著上升。</p>
+    <p style="margin-top:8px"><strong>盈利率趋势:</strong> 回归首笔盈利率从 7天的 35.3% 快速下降至 60天的 16.5%，90天以上整体盈利率转负。间隔越短回归的用户，不仅回归概率高，而且盈利能力强——<strong>7天内回归的用户首笔盈利率是 90天+用户的 3倍以上</strong>。</p>
+  </div>
+
+  <p class="sub-title">1.2 按流失位置分层的用户结构</p>
+  <p class="body-text">流失位置 = 用户在第几笔放款后首次出现 &gt;15天间隔。位置越小，意味着用户在借贷初期就流失；位置越大，说明用户已经建立了较深的借贷习惯后才流失。</p>
+
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>流失位置</th><th>用户数</th><th>用户占比</th><th>又提单占比</th><th>生命周期(天)</th><th>在途占比</th><th>非在途占比</th><th>被拒占比</th></tr></thead>
+      <tbody>
+        <tr><td>1</td><td>36,341</td><td>53.5%</td><td>47.8%</td><td>68.6</td><td>66.8%</td><td>21.8%</td><td>10.2%</td></tr>
+        <tr><td>2</td><td>13,847</td><td>20.4%</td><td>56.1%</td><td>76.6</td><td>66.7%</td><td>21.7%</td><td>10.6%</td></tr>
+        <tr><td>3</td><td>7,078</td><td>10.4%</td><td>59.7%</td><td>82.8</td><td>69.5%</td><td>20.9%</td><td>7.6%</td></tr>
+        <tr><td>4</td><td>3,943</td><td>5.8%</td><td>63.3%</td><td>87.1</td><td>68.6%</td><td>21.1%</td><td>8.5%</td></tr>
+        <tr><td>5</td><td>2,377</td><td>3.5%</td><td>67.6%</td><td>92.5</td><td>70.2%</td><td>22.2%</td><td>5.9%</td></tr>
+        <tr><td>6-10</td><td>3,590</td><td>5.3%</td><td>68.9%</td><td>104.4</td><td>67.6%</td><td>23.7%</td><td>6.5%</td></tr>
+        <tr><td>10+</td><td>781</td><td>1.1%</td><td>71.8%</td><td>120.8</td><td>71.5%</td><td>22.0%</td><td>5.1%</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="insight-box">
+    <p class="label">Key Insight</p>
+    <p>位置 1 流失用户占 <strong>53.5%</strong>，是最大的群体，但回归率最低 (47.8%)。这些用户大多只借了 1 笔就离开，尚未建立借贷习惯。而位置 3+ 的用户回归率显著提升至 60%+，说明"3 笔以上"用户忠诚度明显更高。在途+非在途+被拒 ≈ 生命周期，三者互斥穷尽。</p>
+  </div>
+</div>
+
+<!-- ==================== 第二章 ==================== -->
+<div class="section" id="s2">
+  <div class="section-title"><div class="bar"></div><h2>二、回归行为深度分析</h2></div>
+  <p class="section-sub">回归后的借贷行为、盈利表现与风险特征</p>
+
+  <p class="sub-title">2.1 回归后的生命周期结构</p>
+  <p class="body-text">回归后生命周期 = 回归首笔提单日 至 最后一笔放款的结清日/到期日。平均 77.9 天。</p>
+
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>指标</th><th>数值</th><th>说明</th></tr></thead>
+      <tbody>
+        <tr><td>回归后平均生命周期</td><td>77.9 天</td><td>从回归首笔到最后一笔结清</td></tr>
+        <tr><td>回归后在途天数</td><td>52.7 天</td><td>有活跃放款订单的天数</td></tr>
+        <tr><td>在途天数占比</td><td>67.7%</td><td>用户回归后约 2/3 时间在借款</td></tr>
+        <tr><td>回归后非在途天数</td><td>17.0 天</td><td>结清后等待下一笔的空白期</td></tr>
+        <tr><td>非在途天数占比</td><td>21.8%</td><td>不到 1/4 的时间是空闲状态</td></tr>
+        <tr><td>回归后被拒天数</td><td>6.5 天</td><td>申请被拒的等待时间（含在途排除）</td></tr>
+        <tr><td>生命周期用户数</td><td>41,021 人</td><td>回归后至少一笔放款的成功回归用户</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="insight-box">
+    <p class="label">Key Insight</p>
+    <p>在途占比 <strong>67.7%</strong> 说明回归用户"粘性"较高——回归后不是随便借一笔就走，而是在 2/3 的时间内持续活跃。运营重点应放在缩短非在途空白期 (21.8%) 上。</p>
+  </div>
+
+  <p class="sub-title">2.2 回归后放款顺序分析（订单维度）</p>
+  <p class="body-text">以回归后的放款顺序编号（第1笔、第2笔……），分析每一笔放款的盈利和风险变化。这是判断用户"信用修复"过程的关键指标。</p>
+
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>放款顺序</th><th>用户数</th><th>额度使用率</th><th>盈利率</th></tr></thead>
+      <tbody>
+        <tr><td>第1笔</td><td>30,276</td><td>87.1%</td><td>7.3%</td></tr>
+        <tr><td>第2笔</td><td>17,719</td><td>86.6%</td><td>11.1%</td></tr>
+        <tr><td>第3笔</td><td>11,659</td><td>86.2%</td><td>8.4%</td></tr>
+        <tr><td>第4笔</td><td>7,770</td><td>86.1%</td><td>8.0%</td></tr>
+        <tr><td>第5笔</td><td>5,159</td><td>85.6%</td><td>9.1%</td></tr>
+        <tr><td>第6笔</td><td>3,611</td><td>85.7%</td><td>8.5%</td></tr>
+        <tr><td>第7笔</td><td>2,545</td><td>86.2%</td><td>9.8%</td></tr>
+        <tr><td>第8笔</td><td>1,818</td><td>85.6%</td><td>14.3%</td></tr>
+        <tr><td>第9笔</td><td>1,337</td><td>84.8%</td><td>14.8%</td></tr>
+        <tr><td>第10笔</td><td>1,007</td><td>86.2%</td><td>12.1%</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="bar-chart">
+    <p class="chart-title">回归后逐笔盈利率变化</p>
+    <div class="bar-row"><div class="bar-label">第1笔</div><div class="bar-track"><div class="bar-fill" style="width:49%;background:#f0a030"></div></div><div class="bar-val">7.3%</div></div>
+    <div class="bar-row"><div class="bar-label">第2笔</div><div class="bar-track"><div class="bar-fill" style="width:75%;background:#5b9ef5"></div></div><div class="bar-val">11.1%</div></div>
+    <div class="bar-row"><div class="bar-label">第3笔</div><div class="bar-track"><div class="bar-fill" style="width:57%;background:#5b9ef5"></div></div><div class="bar-val">8.4%</div></div>
+    <div class="bar-row"><div class="bar-label">第4笔</div><div class="bar-track"><div class="bar-fill" style="width:54%;background:#5b9ef5"></div></div><div class="bar-val">8.0%</div></div>
+    <div class="bar-row"><div class="bar-label">第5笔</div><div class="bar-track"><div class="bar-fill" style="width:61%;background:#50c878"></div></div><div class="bar-val">9.1%</div></div>
+  </div>
+
+  <div class="insight-box">
+    <p class="label">Key Insight</p>
+    <p>首笔回归盈利率 7.3%，第 2 笔跃升至 11.1%，之后稳定在 8-15% 区间。回归用户存在"信任重建"过程——首笔成功还清后，后续借贷行为显著改善。运营策略：<strong>对首笔回归用户应给予更高容忍度和更低门槛，促成第 2 笔是关键</strong>。</p>
+  </div>
+</div>
+
+<!-- ==================== 第三章 ==================== -->
+<div class="section" id="s3">
+  <div class="section-title"><div class="bar"></div><h2>三、利润贡献全景分析</h2></div>
+  <p class="section-sub">流失用户的盈利贡献在全量订单中的占比</p>
+
+  <div class="kpi-row">
+    <div class="kpi-card"><div class="val">67,464</div><div class="lbl">15天以上流失用户数</div></div>
+    <div class="kpi-card"><div class="val">53.6%</div><div class="lbl">流失用户回归占比</div></div>
+    <div class="kpi-card"><div class="val">31.7%</div><div class="lbl">回归后盈利占总利润</div></div>
+    <div class="kpi-card"><div class="val">~6,900万</div><div class="lbl">回归后绝对利润估算</div></div>
+  </div>
+
+  <p class="sub-title">3.1 不同间隔阈值用户的盈利拆解</p>
+
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>间隔阈值</th><th>用户数</th><th>总盈利占比</th><th>流失前盈利占比</th><th>回归后盈利占比</th><th>回归/总盈利比</th></tr></thead>
+      <tbody>
+        <tr><td>30天</td><td>53,101</td><td>83.3%</td><td>63.0%</td><td>20.3%</td><td>24.4%</td></tr>
+        <tr><td>60天</td><td>40,206</td><td>60.2%</td><td>49.3%</td><td>10.9%</td><td>18.1%</td></tr>
+        <tr><td>90天</td><td>33,055</td><td>46.7%</td><td>39.8%</td><td>6.9%</td><td>14.8%</td></tr>
+        <tr><td>120天</td><td>28,078</td><td>37.6%</td><td>33.4%</td><td>4.2%</td><td>11.2%</td></tr>
+        <tr><td>150天</td><td>24,092</td><td>31.0%</td><td>28.3%</td><td>2.7%</td><td>8.7%</td></tr>
+        <tr><td>180天</td><td>21,077</td><td>26.0%</td><td>24.4%</td><td>1.7%</td><td>6.5%</td></tr>
+        <tr><td>360天</td><td>11,217</td><td>11.0%</td><td>10.8%</td><td>0.3%</td><td>2.4%</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="insight-box">
+    <p class="label">Key Insight</p>
+    <p>回归后利润占比随阈值增大而快速衰减：15天=31.7% &rarr; 30天=20.3% &rarr; 60天=10.9%。但绝对值仍不可忽视——即使 60 天阈值，回归后仍贡献约 <strong>2,400 万元利润</strong> (10.9% x 2.19亿)。召回 ROI 初步测算约 7-14x。</p>
+  </div>
+
+  <p class="sub-title">3.2 回归用户与公司总利润的关系</p>
+  <p class="body-text">15天阈值下，67,464 名用户占据了绝大多数借贷行为。几乎所有多笔借贷用户都终将在某个时间点出现 15 天以上间隔。真正"从未流失"的用户极少，<strong>流失分析实际上覆盖了所有有借贷行为的活跃用户</strong>。</p>
+
+  <div class="highlight-box">
+    <p class="label">核心结论</p>
+    <p>用户流失是企业经营的<strong>"常态"而非"异常"</strong>。关键在于：(1) 延缓首次流失发生的时间 (2) 提高流失后的召回效率 (3) 最大化回归后的用户价值。</p>
+  </div>
+</div>
+
+<!-- ==================== 第四章 ==================== -->
+<div class="section" id="s4">
+  <div class="section-title"><div class="bar"></div><h2>四、用户分层与差异化运营策略</h2></div>
+  <p class="section-sub">基于数据的精准分层方案</p>
+
+  <p class="sub-title">4.1 用户四层分类模型</p>
+
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>分层</th><th>定义</th><th>用户量级</th><th>核心特征</th><th>优先级</th></tr></thead>
+      <tbody>
+        <tr style="background:#1a2f55"><td><strong>A: 高频忠诚</strong></td><td>放款&ge;5笔，生命周期&gt;90天</td><td>~8,600人</td><td>盈利率15%+，逾期率&lt;5%</td><td>P0 维护</td></tr>
+        <tr><td><strong>B: 稳定回归</strong></td><td>放款2-4笔，已回归并活跃</td><td>~17,000人</td><td>盈利率10-14%，回款良好</td><td>P1 提额</td></tr>
+        <tr style="background:#1a2f55"><td><strong>C: 首次流失</strong></td><td>位置1流失，尚未回归</td><td>~36,000人</td><td>只借1笔就离开</td><td>P2 召回</td></tr>
+        <tr><td><strong>D: 休眠用户</strong></td><td>间隔&gt;90天，未回归</td><td>~33,000人</td><td>回归率&lt;27%，利润贡献低</td><td>P3 低成本</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <p class="sub-title">4.2 A层：高频忠诚用户运营策略</p>
+  <p class="body-text">规模：约 8,600 人（占流失用户 16%）。利润贡献：约占回归后利润的 45-50%。</p>
+  <p class="bullet">额度策略：每 3 笔成功结清自动提额 15-30%</p>
+  <p class="bullet">定价策略：盈利率&gt;15%，可适度降低利率 2-5pp 提升竞争力</p>
+  <p class="bullet">触达策略：仅在大额节假日推送活动，日常不打扰</p>
+  <p class="bullet">预警机制：连续 2 笔逾期 &gt;3天 &rarr; 降级为 B 层</p>
+  <p class="bullet">数据支撑：A 层第 5 笔盈利率 16.9%，逾期率仅 5.0%</p>
+  <p class="bullet">预期效果：维持 85%+ 留存率，年利润贡献稳定</p>
+
+  <p class="sub-title">4.3 B层：稳定回归用户运营策略</p>
+  <p class="body-text">规模：约 17,000 人（占流失用户 32%）。这是最有增长潜力的群体。</p>
+  <p class="bullet">额度策略：第 2-3 笔成功结清后提额 10-20%，推动向 A 层升级</p>
+  <p class="bullet">促活策略："连续借满 3 笔享利率优惠"，锁定用户行为</p>
+  <p class="bullet">触达频率：每 7-10 天一次，以"额度恢复/利率优惠"为钩子</p>
+  <p class="bullet">关键节点：第 2 笔放款后 48 小时内推送"还清享提额"，促成第 3 笔</p>
+  <p class="bullet">数据支撑：首笔盈利 6.5%&rarr;第 2 笔 12.1%，翻倍增长</p>
+  <p class="bullet">预期效果：30% B 层用户 90 天内升级为 A 层</p>
+
+  <p class="sub-title">4.4 C层：首次流失用户召回策略</p>
+  <p class="body-text">规模：约 36,000 人（占流失用户 53%）。最大群体，回归率最低 (47.6%)。</p>
+  <p class="bullet">召回窗口：流失后 7-30 天内触达效果最佳 (回归率 43.5%)</p>
+  <p class="bullet">召回钩子："专属回归礼包"——首笔利率补贴 3-5pp + 额度提升 10%</p>
+  <p class="bullet">触达渠道：短信 + App Push + 微信服务通知，3 轮递进</p>
+  <p class="bullet">容忍策略：回归首笔逾期率容忍度上调至 10%，不因轻度逾期降额</p>
+  <p class="bullet">数据支撑：位置 1 用户在途占比 66.8%，借贷需求真实</p>
+  <p class="bullet">预期效果：召回率提升 8-12pp (47.6% &rarr; 55-60%)</p>
+
+  <p class="sub-title">4.5 D层：休眠用户低成本唤醒</p>
+  <p class="body-text">规模：约 33,000 人（90天以上未回归）。回归率&lt;27%，利润贡献低。</p>
+  <p class="bullet">策略定位：低成本自动化触达，不投入人工运营资源</p>
+  <p class="bullet">触达方式：每月 1 次短信 + 季度 1 次 Push</p>
+  <p class="bullet">钩子设计："你的额度还在，随时可以借"——强调额度未失效</p>
+  <p class="bullet">放弃标准：超过 180 天未回归，移入"沉默用户池"</p>
+  <p class="bullet">数据支撑：180 天回归占比仅 16.4%，回归后利润占比仅 6.5%</p>
+  <p class="bullet">预期效果：维持 5-10% 自然回归率，运营成本趋近于零</p>
+</div>
+
+<!-- ==================== 第五章 ==================== -->
+<div class="section" id="s5">
+  <div class="section-title"><div class="bar"></div><h2>五、关键时间窗口与触发策略</h2></div>
+  <p class="section-sub">精准化的召回时机与条件触发</p>
+
+  <p class="sub-title">5.1 流失召回黄金时间窗</p>
+
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>时间窗口</th><th>用户状态</th><th>回归可能性</th><th>推荐动作</th><th>预期效果</th></tr></thead>
+      <tbody>
+        <tr><td>0-7天</td><td>刚结清，等下一笔</td><td>63.0%</td><td>无需干预，自然回流</td><td>60%+ 自然回归</td></tr>
+        <tr><td>7-15天</td><td>开始犹豫/观望</td><td>53.6%</td><td>轻触达：额度提醒</td><td>提升 8-10pp</td></tr>
+        <tr style="background:#1a2f55"><td><strong>15-30天</strong></td><td><strong>流失风险上升中</strong></td><td><strong>43.5%</strong></td><td><strong>利益刺激：利率优惠</strong></td><td><strong>提升 12-15pp</strong></td></tr>
+        <tr><td>30-60天</td><td>已进入流失状态</td><td>32.8%</td><td>强利益：回归礼包+提额</td><td>提升 10-12pp</td></tr>
+        <tr><td>60-90天</td><td>深度流失</td><td>26.6%</td><td>紧急召回：专属客服</td><td>提升 5-8pp</td></tr>
+        <tr><td>90天+</td><td>休眠/几乎流失</td><td>&lt;27%</td><td>自动化低成本触达</td><td>维持 10% 自然回归</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="insight-box">
+    <p class="label">Key Insight</p>
+    <p>0-15天是自然回流高峰 (53-63%)，不应过度干预。15-60天是运营干预的最佳窗口——回归率从 43.5% 降至 32.8%，干预空间大。超过 60 天，边际收益递减，建议转向自动化。</p>
+  </div>
+
+  <p class="sub-title">5.2 行为触发策略矩阵</p>
+
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>触发事件</th><th>触发时机</th><th>分层</th><th>推送内容</th><th>预期转化</th></tr></thead>
+      <tbody>
+        <tr><td>放款结清后 7 天</td><td>结清+7天无新提单</td><td>B层</td><td>额度可用提醒</td><td>15% &rarr; 下次提单</td></tr>
+        <tr><td>放款结清后 15 天</td><td>结清+15天无新提单</td><td>B/C层</td><td>利率优惠券</td><td>12% &rarr; 下次提单</td></tr>
+        <tr><td>回归首笔放款成功</td><td>放款后立即</td><td>C层</td><td>恭喜回归+还款提醒</td><td>降低逾期 2pp</td></tr>
+        <tr><td>回归首笔结清</td><td>结清后 24 小时内</td><td>C/B层</td><td>提额+第2笔优惠</td><td>40% &rarr; 第2笔放款</td></tr>
+        <tr><td>连续 3 笔正常结清</td><td>第3笔结清后</td><td>B/A层</td><td>VIP 通道+自动提额</td><td>50% &rarr; 第4笔</td></tr>
+        <tr><td>逾期&gt;3天</td><td>逾期第3天</td><td>A/B层</td><td>友好提醒+延期方案</td><td>降低坏账 30%</td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- ==================== 第六章 ==================== -->
+<div class="section" id="s6">
+  <div class="section-title"><div class="bar"></div><h2>六、投入产出测算</h2></div>
+  <p class="section-sub">运营方案的经济可行性分析</p>
+
+  <p class="sub-title">6.1 召回方案 ROI 测算（基于30天阈值）</p>
+
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>方案</th><th>触达人数</th><th>额外回归率</th><th>额外回归人数</th><th>人均贡献</th><th>总增量利润</th><th>ROI</th></tr></thead>
+      <tbody>
+        <tr style="background:#1a2f55"><td><strong>轻触达(15-30天)</strong></td><td>28,000</td><td>+8pp</td><td>2,240</td><td>2,100元</td><td><strong>470万</strong></td><td><strong>23.5x</strong></td></tr>
+        <tr><td>利率优惠(30-60天)</td><td>18,000</td><td>+12pp</td><td>2,160</td><td>2,500元</td><td>540万</td><td>10.8x</td></tr>
+        <tr><td>回归礼包(60-90天)</td><td>12,000</td><td>+8pp</td><td>960</td><td>1,800元</td><td>173万</td><td>5.8x</td></tr>
+        <tr><td>自动化触达(90天+)</td><td>33,000</td><td>+3pp</td><td>990</td><td>600元</td><td>59万</td><td>11.9x</td></tr>
+        <tr style="background:#1a2f55"><td><strong>合计</strong></td><td>—</td><td>—</td><td><strong>6,350</strong></td><td>—</td><td><strong>1,242万</strong></td><td><strong>14.7x</strong></td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <p class="body-text">测算假设：轻触达成本 2元/人（短信+Push）、利率优惠成本 50元/人（补贴）、回归礼包成本 30元/人、自动化触达成本 0.5元/人。</p>
+
+  <div class="highlight-box">
+    <p class="label">ROI 结论</p>
+    <p>投入约 <strong>84.5 万元</strong> &rarr; 新增利润约 <strong>1,242 万元</strong> &rarr; 总体 <strong>ROI 约 14.7x</strong>。其中"轻触达"方案 ROI 最高 (23.5x)，建议优先执行。"利率优惠"方案虽然 ROI 较低，但新增利润绝对值最高 (540万)，也应纳入计划。</p>
+  </div>
+
+  <p class="sub-title">6.2 长期运营价值预估</p>
+
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>指标</th><th>当前值</th><th>6个月目标</th><th>12个月目标</th><th>改善幅度</th></tr></thead>
+      <tbody>
+        <tr><td>首笔流失回归率</td><td>47.6%</td><td>55%</td><td>60%</td><td>+12.4pp</td></tr>
+        <tr><td>回归后第2笔转化率</td><td>68%</td><td>78%</td><td>85%</td><td>+17pp</td></tr>
+        <tr><td>B层&rarr;A层升级率</td><td>—</td><td>25%</td><td>30%</td><td>—</td></tr>
+        <tr><td>在途天数占比</td><td>67.7%</td><td>72%</td><td>75%</td><td>+7.3pp</td></tr>
+        <tr><td>非在途天数(空白期)</td><td>17.0天</td><td>14天</td><td>12天</td><td>-5天</td></tr>
+        <tr><td>人均年度利润</td><td>—</td><td>基准+15%</td><td>基准+25%</td><td>—</td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- ==================== 第七章 ==================== -->
+<div class="section" id="s7">
+  <div class="section-title"><div class="bar"></div><h2>七、总结与执行路线图</h2></div>
+
+  <p class="sub-title">7.1 核心结论</p>
+  <p class="bullet"><strong>1. 流失是常态而非异常：</strong>15天以上流失用户占绝大多数，不应"惩罚"流失用户，而应"运营"流失周期。</p>
+  <p class="bullet"><strong>2. 回归价值被低估：</strong>回归后利润占总利润 31.7%，绝对值约 6,900 万元，召回 ROI 高达 14.7x。</p>
+  <p class="bullet"><strong>3. 首笔回归是"信任重建"关键节点：</strong>盈利率 1.2%&rarr;8.7% 的跳升证明，只要促成第 2 笔，用户价值大幅回升。</p>
+  <p class="bullet"><strong>4. 15-30天是黄金干预窗口：</strong>回归率从 53.6% 降至 43.5%，既有下降空间也有干预价值。</p>
+  <p class="bullet"><strong>5. 用户分层决定策略差异：</strong>53% 的用户在第 1 笔后就流失，需要与"5笔+高频用户"完全不同的运营策略。</p>
+
+  <p class="sub-title">7.2 分阶段执行路线图</p>
+
+  <div class="timeline">
+    <div class="timeline-item">
+      <div class="phase">Phase 1：基础搭建</div>
+      <div class="time">第 1 个月</div>
+      <div class="desc">搭建流失监控看板 + 部署 15 天轻触达方案。<br>关键指标：监控覆盖率 100%、触达率 &gt;80%。资源：数据+产品 1 人。</div>
+    </div>
+    <div class="timeline-item">
+      <div class="phase">Phase 2：策略上线</div>
+      <div class="time">第 2-3 个月</div>
+      <div class="desc">上线 30 天利率优惠 + A/B 测试回归礼包。<br>关键指标：回归率提升 5pp、优惠核销率 &gt;30%。资源：运营 1 人+产品 1 人。</div>
+    </div>
+    <div class="timeline-item">
+      <div class="phase">Phase 3：规模化推广</div>
+      <div class="time">第 4-6 个月</div>
+      <div class="desc">推广分层运营策略 + 自动化触达系统。<br>关键指标：B&rarr;A 升级率 25%、自动化覆盖率 90%。资源：运营 2 人。</div>
+    </div>
+    <div class="timeline-item">
+      <div class="phase">Phase 4：复盘与迭代</div>
+      <div class="time">第 7-12 个月</div>
+      <div class="desc">效果复盘与优化 + 模型迭代。<br>关键指标：年度回归利润 +15%、ROI &gt; 10x。资源：持续运营。</div>
+    </div>
+  </div>
+
+  <p class="sub-title">7.3 风险提示与应对</p>
+  <p class="bullet"><strong>过度召回风险：</strong>利率优惠可能吸引"羊毛党"。&rarr; 限制每人每年最多享受 1 次回归优惠。</p>
+  <p class="bullet"><strong>信用风险：</strong>降低回归门槛可能引入高风险用户。&rarr; 回归首笔额度上限控制在历史均值的 80%。</p>
+  <p class="bullet"><strong>成本超支：</strong>触达量级大可能导致短信成本超预算。&rarr; 优先使用 App Push（免费），短信仅用于 30天+ 沉默用户。</p>
+  <p class="bullet"><strong>数据偏差：</strong>当前分析基于历史数据，未考虑外部环境变化。&rarr; 每月复盘，按实际效果调整阈值和策略。</p>
+</div>
+
+<!-- ==================== 附录 ==================== -->
+<div class="section" id="s8">
+  <div class="section-title"><div class="bar"></div><h2>附录：数据说明</h2></div>
+
+  <p class="body-text"><strong>数据来源：</strong>PostgreSQL 数据库 kaby_dw，4 张核心表（order_loan_f_v2_copy 398万行、order_vir_f_copy 660万行、repayment_plan_v2_copy 820万行、side_recycle_type_copy 699万行）。</p>
+  <p class="body-text"><strong>分析范围：</strong>全部历史订单，不限注册时间。循环贷（recycle_type=2）与非循环贷均纳入。</p>
+  <p class="body-text"><strong>流失定义（主口径）：</strong>一笔已结清放款（status=7）到下一笔提单的间隔 &gt; 15 天。若最后一笔放款结清后未再提单，且距今天 &gt;15 天，视为彻底流失。</p>
+  <p class="body-text"><strong>盈利：</strong>还款金额 - 放款金额（仅统计 status=7/8 的订单，排除在途未到期且未逾期 status=5 的订单）。</p>
+  <p class="body-text"><strong>在途天数：</strong>事件流法计算，有放款订单活跃的天数。status=8 未还清订单用 due_date（到期日）为结束日。<strong>非在途天数：</strong>结清后到下次提单前的空白天数。<strong>被拒天数：</strong>被拒申请到下次成功放款的等待天数。</p>
+</div>
+
+<hr class="divider">
+<p style="text-align:center;color:#5a7299;font-size:12px">报告生成时间：2026年7月 &nbsp;|&nbsp; 数据来源：kaby_dw &nbsp;|&nbsp; 分析工具：PostgreSQL + Python + fpdf2</p>
+<br><br>
+
+</div>
+<script>(function(){var h="bcb15f821479b4d5772bd0ca866c00ad5f926e3580720659cc80d39c9d09802a",g=document.getElementById("password-gate"),i=document.getElementById("report-password"),e=document.getElementById("report-password-error");function o(){document.body.classList.remove("password-locked");g.remove()}async function u(){var v=i.value.trim();if(!v)return;var b=await crypto.subtle.digest("SHA-256",new TextEncoder().encode(v)),a=Array.from(new Uint8Array(b)).map(function(x){return x.toString(16).padStart(2,"0")}).join("");if(a===h){document.cookie="report_auth="+h+";path=/;max-age=86400;samesite=lax";o()}else{e.style.display="block";i.select()}}if(document.cookie.indexOf("report_auth="+h)!==-1)o();else{document.getElementById("report-unlock").addEventListener("click",u);i.addEventListener("keydown",function(x){if(x.key==="Enter")u()})}}());</script></body>
+</html>

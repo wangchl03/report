@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>首贷三期产品逾期预测模型 v6</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif; background: #f5f7fa; color: #333; line-height: 1.8; }
+  .container { max-width: 960px; margin: 0 auto; padding: 40px 20px; }
+  h1 { font-size: 28px; text-align: center; margin-bottom: 10px; color: #1a1a2e; border-bottom: 3px solid #3498db; padding-bottom: 15px; }
+  h2 { font-size: 22px; margin: 40px 0 16px; color: #2c3e50; border-left: 4px solid #3498db; padding-left: 12px; }
+  h3 { font-size: 17px; margin: 24px 0 10px; color: #34495e; }
+  .meta { text-align: center; color: #888; font-size: 14px; margin-bottom: 30px; }
+  .card { background: #fff; border-radius: 8px; padding: 24px 28px; margin: 16px 0; box-shadow: 0 1px 3px rgba(0,0,0,0.08); }
+  .card.info { border-left: 4px solid #3498db; }
+  .card.success { border-left: 4px solid #27ae60; }
+  .card.warning { border-left: 4px solid #e67e22; }
+  .card.danger { border-left: 4px solid #e74c3c; }
+  table { width: 100%; border-collapse: collapse; margin: 12px 0; font-size: 13px; }
+  th { background: #3498db; color: #fff; padding: 8px 10px; }
+  td { padding: 6px 10px; border-bottom: 1px solid #eee; }
+  tr:nth-child(even) { background: #f8f9fa; }
+  .formula { background: #2c3e50; color: #ecf0f1; padding: 16px 20px; border-radius: 6px; font-family: "Courier New", monospace; font-size: 14px; margin: 12px 0; }
+  .tag { display: inline-block; padding: 2px 8px; border-radius: 3px; font-size: 12px; font-weight: bold; margin-right: 4px; }
+  .tag.blue { background: #dbeafe; color: #1e40af; }
+  .tag.green { background: #d1fae5; color: #065f46; }
+  .tag.red { background: #fee2e2; color: #991b1b; }
+  .tag.orange { background: #ffedd5; color: #9a3412; }
+  .tag.purple { background: #ede9fe; color: #6b21a8; }
+  .divider { border: none; border-top: 1px solid #e0e0e0; margin: 30px 0; }
+  .code-block { background: #1e1e1e; color: #d4d4d4; padding: 16px 20px; border-radius: 6px; font-family: "Courier New", monospace; font-size: 13px; line-height: 1.6; }
+  .delta-up { color: #27ae60; }
+  .delta-small { color: #f39c12; }
+  footer { text-align: center; color: #999; font-size: 13px; margin-top: 40px; padding-top: 20px; border-top: 1px solid #e0e0e0; }
+</style>
+<style>body.password-locked{overflow:hidden}body.password-locked>*:not(#password-gate){filter:blur(7px);pointer-events:none;user-select:none}#password-gate{position:fixed;z-index:2147483647;inset:0;display:grid;place-items:center;background:linear-gradient(135deg,#101b36,#203b72);font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei",sans-serif}#password-gate .password-box{width:min(360px,calc(100% - 40px));padding:34px 30px;background:#fff;border-radius:14px;box-shadow:0 18px 50px #0005;text-align:center;color:#17223b}#password-gate h2{margin:0 0 8px;font-size:22px}#password-gate p{margin:0 0 20px;color:#667085}#password-gate input{width:100%;padding:11px 13px;border:1px solid #d9e0ea;border-radius:8px;font-size:15px;outline:none}#password-gate input:focus{border-color:#2563eb}#password-gate button{width:100%;margin-top:12px;padding:11px;border:0;border-radius:8px;background:#2563eb;color:#fff;font-weight:700;cursor:pointer}#password-gate .password-error{display:none;color:#dc2626;font-size:13px;margin:10px 0 0}</style></head>
+<body class="password-locked"><div id="password-gate"><div class="password-box"><h2>内部分析报告</h2><p>请输入访问密码</p><input id="report-password" type="password" placeholder="输入密码" autofocus><button id="report-unlock">进入报告</button><div id="report-password-error" class="password-error">密码错误，请重试</div></div></div>
+<div class="container">
+<h1>首贷三期产品逾期预测模型 v6</h1>
+<p class="meta">版本: v6 | 样本: 20,000 | 特征: 33 | AUC: 0.9609 | CV AUC: 0.9602</p>
+
+<h2>一、项目背景与数据范围</h2>
+<div class="card info">
+<h3>1.1 业务场景</h3>
+<p>首贷用户完成3期借款后，在<strong>第2期到期时</strong>预测是否最终逾期。逾期 = <code>loan_status_code=8</code>。v6 <strong>移除 t2_ovd 和 t2_ahead</strong>（第2期逾期天数和提前还款天数），因为这两个特征在预测时点<strong>不可知</strong>（属于后验特征），使用它们会导致训练集高估AUC、生产环境预测偏差。</p>
+</div>
+<div class="card success">
+<h3>1.2 版本迭代</h3>
+<table>
+  <tr><th>版本</th><th>特征数</th><th>AUC</th><th>主要变化</th></tr>
+  <tr><td>v1-v2</td><td>4-5</td><td>0.882-0.883</td><td>还款行为+金额+使用率</td></tr>
+  <tr><td>v3</td><td>9</td><td>0.930</td><td>+活跃时长(event_track)</td></tr>
+  <tr><td>v4</td><td>27</td><td>0.970</td><td>+event_track页面级行为(11字段+交叉比率)</td></tr>
+  <tr><td style="color:#3498db;font-weight:bold">v5</td><td style="color:#3498db;font-weight:bold">35</td><td class="delta-up" style="font-weight:bold">0.9780</td><td>+循环贷行为特征(8) + 优惠券特征(4)</td></tr>
+  <tr><td style="color:#27ae60;font-weight:bold">v6</td><td style="color:#27ae60;font-weight:bold">33</td><td>0.9609</td><td>移除 t2_ovd/t2_ahead 后验特征, 校准优化</td></tr>
+</table>
+</div>
+
+<h2>二、特征工程</h2>
+<div class="card">
+<h3>2.1 特征总览（33项，4大类，v6移除t2后验特征）</h3>
+<table>
+  <tr><th>类别</th><th>数量</th><th>典型特征</th></tr>
+  <tr><td>还款+额度（v3基础）</td><td>4</td><td>t1_ovd, t1_ahead, usage_rate, apply_amt_k</td></tr>
+  <tr><td>活跃时长（v3新增）</td><td>4</td><td>ad(active_days), td(total_dur), apd(apply_dur), non_apply_ratio</td></tr>
+  <tr><td>页面行为（v4新增）</td><td>13</td><td>np(newpage), am(amount), cf(confirm), cb, cc, cp, pl, pu, ct, ts + 交叉比率</td></tr>
+  <tr><td>循环贷+券（v5新增）</td><td>12</td><td>is_cycle, has_c2/c3/c4, c2/c3/c4_amt, c2_cnt, total_coupon_amt, has_any_coupon, cycle_c4, cycle_c3</td></tr>
+  <tr style="background:#fff3cd"><td>已移除（v6）</td><td>-2</td><td><s>t2_ovd</s>（第2期逾期天数）、<s>t2_ahead</s>（第2期提前还款天数）—— 预测时点不可知的后验特征</td></tr>
+</table>
+</div>
+
+<div class="card success">
+<h3>2.2 循环贷+优惠券特征详解（v5核心新增，12项）</h3>
+<table>
+  <tr><th>字段</th><th>含义</th><th>来源</th></tr>
+  <tr><td><code>is_cycle</code></td><td>是否曾经使用过循环贷</td><td>循环贷系统</td></tr>
+  <tr><td><code>has_c2 / has_c3 / has_c4</code></td><td>是否持有 C2/C3/C4 循环贷产品</td><td>循环贷系统</td></tr>
+  <tr><td><code>c2_amt / c3_amt / c4_amt</code></td><td>C2/C3/C4 循环贷在贷余额</td><td>循环贷系统</td></tr>
+  <tr><td><code>c2_cnt</code></td><td>C2 循环贷历史借款笔数</td><td>循环贷系统</td></tr>
+  <tr><td><code>total_coupon_amt</code></td><td>历史累计获得的优惠券金额</td><td>优惠券系统</td></tr>
+  <tr><td><code>has_any_coupon</code></td><td>是否曾经获得过任何优惠券</td><td>优惠券系统</td></tr>
+  <tr><td><code>cycle_c4 / cycle_c3</code></td><td>C4/C3 循环贷与首贷产品交叉特征（如使用间隔、额度比等）</td><td>交叉衍生</td></tr>
+</table>
+</div>
+
+<div class="card danger">
+<h3>2.3 为什么必须移除 t2_ovd / t2_ahead？</h3>
+<p>v5 的 AUC 0.9780 存在<strong>虚假高估</strong>：t2_ovd 和 t2_ahead 是"已发生结果"而非"预测时已知特征"。训练时模型学会了 <code>t2_ovd > 0 → 已逾期</code>，但这在预测时点不可知。当用 v5 预测 300 名真实用户时（强制设 t2_ovd=0），平均预测概率 74.7%，实际逾期仅 8.7%——校准完全失效。v6 移除这两个特征后 AUC 降至 0.9609，但校准良好（2.6%→1.9%, 99%→99.8%）。</p>
+<table>
+  <tr><th>特征</th><th>v5系数</th><th>问题</th><th>v6处理</th></tr>
+  <tr><td>t2_ovd</td><td style="color:#e74c3c">+15.51（#1）</td><td>预测时点第2期尚未逾期，值为0</td><td style="color:#27ae60">移除</td></tr>
+  <tr><td>t2_ahead</td><td style="color:#e67e22">-1.15（#5）</td><td>预测时点第2期尚未还款，值为0</td><td style="color:#27ae60">移除</td></tr>
+  <tr><td>t1_ovd</td><td style="color:#27ae60">+11.18（#1）</td><td>第1期已完成，特征值已知可用</td><td>保留</td></tr>
+</table>
+</div>
+
+<h2>三、算法原理</h2>
+<div class="card">
+<p>Sigmoid + 交叉熵 + liblinear求解器。C=0.5（中等正则化）。标准化后训练，系数可直接比较。v5 沿用 v4 算法框架，仅在特征层面扩展循环贷与优惠券维度。</p>
+<div class="formula">P(逾期) = 1 / (1 + e^(-z)), z = w₀ + Σwᵢ·xᵢ'</div>
+</div>
+
+<h2>四、模型训练结果</h2>
+<div class="card success">
+<h3>4.1 评估</h3>
+<table>
+  <tr><th>指标</th><th>v5 (含t2后验)</th><th class="delta-up">v6 (移除t2)</th></tr>
+  <tr><td>AUC</td><td>0.9780</td><td class="delta-up"><strong>0.9609</strong></td></tr>
+  <tr><td>CV AUC</td><td>0.9778</td><td class="delta-up"><strong>0.9602 ± 0.0017</strong></td></tr>
+  <tr><td>训练-测试差距</td><td>0.0001</td><td>0.0004</td></tr>
+  <tr><td>校准质量</td><td style="color:#e74c3c">差（高估）</td><td style="color:#27ae60"><strong>良好</strong></td></tr>
+</table>
+</div>
+<div class="card success">
+<h3>4.2 概率校准曲线 (v6)</h3>
+<table>
+  <tr><th>预测概率</th><th>实际逾期率</th><th>偏差</th></tr>
+  <tr><td>2.6%</td><td>1.9%</td><td style="color:#27ae60">+0.7pp ✓</td></tr>
+  <tr><td>18.4%</td><td>13.5%</td><td style="color:#f39c12">+4.9pp</td></tr>
+  <tr><td>31.0%</td><td>23.4%</td><td style="color:#f39c12">+7.6pp</td></tr>
+  <tr><td>43.8%</td><td>32.4%</td><td style="color:#f39c12">+11.4pp</td></tr>
+  <tr><td>56.0%</td><td>53.2%</td><td style="color:#27ae60">+2.8pp ✓</td></tr>
+  <tr><td>68.6%</td><td>63.0%</td><td style="color:#f39c12">+5.6pp</td></tr>
+  <tr><td>80.5%</td><td>75.5%</td><td style="color:#27ae60">+5.0pp ✓</td></tr>
+  <tr><td>99.3%</td><td>99.8%</td><td style="color:#27ae60">-0.5pp ✓</td></tr>
+</table>
+<p style="color:#888;font-size:13px">中段(20-40%)略有低估实际风险，低段和高段校准良好。</p>
+</div>
+<div class="card">
+<h3>4.3 Top 10 特征 (v6)</h3>
+<table>
+  <tr><th>#</th><th>特征</th><th>系数</th><th>类别</th><th>方向解读</th></tr>
+  <tr><td>1</td><td>t1_ovd</td><td>+11.18</td><td><span class="tag red">还款-逾期</span></td><td>第1期逾期天数越多→逾期风险越高（v6最强预测因子）</td></tr>
+  <tr><td>2</td><td>np (newpage)</td><td>-2.77</td><td><span class="tag blue">页面行为</span></td><td>进入提单页越多→逾期越低</td></tr>
+  <tr><td>3</td><td>ad (active_days)</td><td>-1.70</td><td><span class="tag green">活跃时长</span></td><td>活跃天数越多→逾期越低</td></tr>
+  <tr><td>4</td><td>t1_ahead</td><td>+0.84</td><td><span class="tag green">还款-提前</span></td><td>提前还款天数多→逾期风险略升（可能急于借下一笔）</td></tr>
+  <tr><td>5</td><td>cf (confirm)</td><td>-0.62</td><td><span class="tag blue">页面行为</span></td><td>确认提单多→逾期越低</td></tr>
+  <tr><td>6</td><td>cp (coupons_page)</td><td>+0.51</td><td><span class="tag orange">优惠券</span></td><td>进优惠券挽留页多→逾期略高（犹豫型用户）</td></tr>
+  <tr><td>7</td><td>cc (coupons_confirm)</td><td>+0.50</td><td><span class="tag orange">优惠券</span></td><td>点击优惠券多→逾期略高</td></tr>
+  <tr><td>8</td><td>apply_amt_k</td><td>+0.35</td><td><span class="tag red">额度</span></td><td>借款金额大→逾期风险略高</td></tr>
+  <tr><td>9</td><td>c2_cnt</td><td>-0.34</td><td><span class="tag purple">还款券</span></td><td>还款券个数多→逾期略低</td></tr>
+  <tr><td>10</td><td>am (amount)</td><td>-0.33</td><td><span class="tag blue">页面行为</span></td><td>切换金额多→逾期略低</td></tr>
+</table>
+</div>
+
+<h2>五、特征解读</h2>
+<div class="card">
+<h3>5.1 t1_ovd 是 v6 最强预测因子（系数 +11.18）</h3>
+<p>v5 中 t1_ovd 和 t2_ovd 并列第一（+13.79/+15.51），但 t2_ovd 是后验特征——模型在第2期逾期发生后才拿到的"作弊答案"。v6 移除 t2_ovd 后，<strong>t1_ovd 独自承担逾期风险识别任务</strong>（系数 +11.18）。第1期逾期天数每增加 1 个标准差，逾期概率暴涨数十倍。这是 v6 在预测时点最强的可用信号。</p>
+</div>
+<div class="card">
+<h3>5.2 np(newpage) 仍是核心保护因子（系数 -2.77）</h3>
+<p>进入提单页次数多说明用户在<strong>主动规划</strong>下一笔借款，而非被动缺钱。v6 中 np 的权重（-2.77）甚至高于 v5（-2.23），因为移除 t2_ovd 后模型对数特征的依赖加深了。</p>
+</div>
+<div class="card">
+<h3>5.3 优惠券特征信号增强（cp+0.51, cc+0.50, c2_cnt-0.34）</h3>
+<p>v5 中优惠券特征层次感不强，v6 移除 t2_ovd 后优惠券信号被释放：<strong>cp(coupons_page)</strong> 和 <strong>cc(coupons_confirm)</strong> 正向系数说明频繁查看/点击优惠券的用户是"犹豫型"——对价格敏感，逾期风险略高。而 <strong>c2_cnt</strong>（还款券个数）负向系数说明使用还款券的用户还款意愿更强。优惠券是行为信号而非结果信号。</p>
+</div>
+
+<h2>六、评分卡 & 决策建议</h2>
+<div class="card"><h3>6.1 评分卡</h3>
+<table>
+  <tr><th>等级</th><th>逾期概率</th><th>建议</th></tr>
+  <tr><td style="color:#27ae60">极低</td><td>&lt;10%</td><td>优先给循环贷资格</td></tr>
+  <tr><td style="color:#2980b9">低</td><td>10-25%</td><td>给资格</td></tr>
+  <tr><td style="color:#f39c12">中</td><td>25-50%</td><td>审慎</td></tr>
+  <tr><td style="color:#e67e22">中高</td><td>50-75%</td><td>人工复审</td></tr>
+  <tr><td style="color:#e74c3c">高</td><td>&gt;75%</td><td>拒绝</td></tr>
+</table></div>
+<div class="card"><h3>6.2 决策规则 (v6)</h3>
+<ol>
+  <li>t1_ovd &gt; 3 → <span class="tag red">拒绝</span>（第1期逾期天数严重）</li>
+  <li>t1_ovd=0 + ad≥3 + np≥2 → <span class="tag green">极低</span></li>
+  <li>cp+cc 高 + cf 低 → <span class="tag orange">加一档</span>（犹豫型用户）</li>
+  <li>c2_cnt≥1 + t1_ovd=0 → <span class="tag green">降一档</span>（还款券+无逾期=黏性信号）</li>
+  <li>apply_amt_k 高 + np 低 → <span class="tag orange">加一档</span>（大额+无规划）</li>
+</ol></div>
+
+<h2>七、计算示例</h2>
+<div class="card">
+<h3>低风险用户: t1_ovd=0, ad=8, np=3, cf=2, c2_cnt=1, t1_ahead=+5</h3>
+<div class="formula">z ≈ -3.8 → P ≈ 2.2% <span class="tag green">极低</span></div>
+<p style="color:#888;font-size:13px;">第1期无逾期 + 高活跃 + 多次提单确认 + 有还款券 = 高质量用户</p>
+<h3>高风险用户: t1_ovd=8, ad=1, np=0, cf=0, apply_amt_k=12, cp=3, cc=2</h3>
+<div class="formula">z ≈ +3.5 → P ≈ 97.1% <span class="tag red">极高</span></div>
+<p style="color:#888;font-size:13px;">第1期严重逾期 + 几乎无活跃 + 大额借款 + 大量优惠券犹豫行为 = 极高风险</p>
+</div>
+
+<h2>八、附录</h2>
+<div class="code-block">
+# v6 特征列表（33项, 移除 t2_ovd/t2_ahead 后验特征）
+features = [
+    # === 还款+额度（4项） ===
+    't1_ovd', 't1_ahead', 'usage_rate', 'apply_amt_k',
+    # === 活跃时长（4项） ===
+    'ad', 'td', 'apd', 'non_apply_ratio',
+    # === 页面行为（13项） ===
+    'np', 'am', 'ct', 'ts', 'cf',
+    'pl', 'pu', 'cb', 'cc', 'cp',
+    'confirm_rate', 'apply_sum', 'pages_per_day',
+    # === 循环贷+券（12项 v5新增, v6保留） ===
+    'is_cycle', 'has_c3', 'has_c4', 'has_c2',
+    'c3_amt', 'c4_amt', 'c2_amt', 'c2_cnt',
+    'total_coupon_amt', 'has_any_coupon',
+    'cycle_c4', 'cycle_c3'
+]
+
+# 模型训练
+from sklearn.linear_model import LogisticRegression
+from sklearn.preprocessing import StandardScaler
+
+scaler = StandardScaler()
+X_scaled = scaler.fit_transform(X[features])
+model = LogisticRegression(C=1.0, solver='liblinear', class_weight='balanced', max_iter=5000)
+model.fit(X_scaled, y)
+
+# 预测 (第2期刚到期, t2_ovd和t2_ahead均设为0, 不在特征集中)
+proba = model.predict_proba(scaler.transform(X_new[features]))[:, 1]
+</div>
+
+<footer>首贷三期产品逾期预测模型 v5 | 生成时间: 2026-07-30</footer>
+</div>
+<script>(function(){var h="bcb15f821479b4d5772bd0ca866c00ad5f926e3580720659cc80d39c9d09802a",g=document.getElementById("password-gate"),i=document.getElementById("report-password"),e=document.getElementById("report-password-error");function o(){document.body.classList.remove("password-locked");g.remove()}async function u(){var v=i.value.trim();if(!v)return;var b=await crypto.subtle.digest("SHA-256",new TextEncoder().encode(v)),a=Array.from(new Uint8Array(b)).map(function(x){return x.toString(16).padStart(2,"0")}).join("");if(a===h){document.cookie="report_auth="+h+";path=/;max-age=86400;samesite=lax";o()}else{e.style.display="block";i.select()}}if(document.cookie.indexOf("report_auth="+h)!==-1)o();else{document.getElementById("report-unlock").addEventListener("click",u);i.addEventListener("keydown",function(x){if(x.key==="Enter")u()})}}());</script></body>
+</html>

@@ -1,0 +1,834 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>首贷三期逾期预测模型 — v6 vs v8 特征权重变化详解</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,"PingFang SC","Microsoft YaHei",sans-serif;background:#f5f7fa;color:#1a1a2e;line-height:1.7}
+.container{max-width:1100px;margin:0 auto;padding:40px 24px}
+h1{font-size:28px;font-weight:700;margin-bottom:8px;color:#0f172a}
+.subtitle{font-size:14px;color:#64748b;margin-bottom:32px}
+.card{background:#fff;border-radius:12px;padding:28px 32px;margin-bottom:24px;box-shadow:0 1px 3px rgba(0,0,0,.06)}
+.card h2{font-size:18px;font-weight:600;margin-bottom:20px;color:#0f172a;padding-bottom:10px;border-bottom:2px solid #e2e8f0}
+.card h3{font-size:15px;font-weight:600;margin:20px 0 12px;color:#0f172a}
+.card h3:first-of-type{margin-top:0}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:24px}
+.grid3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px}
+.grid4{display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:16px}
+.stat-box{text-align:center;padding:20px 16px;background:#f8fafc;border-radius:10px;border:1px solid #e2e8f0}
+.stat-box .value{font-size:28px;font-weight:700;color:#2563eb}
+.stat-box .value.green{color:#16a34a}
+.stat-box .value.red{color:#dc2626}
+.stat-box .value.orange{color:#ea580c}
+.stat-box .label{font-size:12px;color:#64748b;margin-top:4px}
+table{width:100%;border-collapse:collapse;font-size:13px}
+th{background:#f1f5f9;text-align:left;padding:10px 12px;font-weight:600;color:#475569;border-bottom:2px solid #e2e8f0;white-space:nowrap}
+td{padding:10px 12px;border-bottom:1px solid #f1f5f9}
+tr:hover td{background:#f8fafc}
+.mono{font-family:'SF Mono','Fira Code','Consolas',monospace;font-size:12px}
+.tag{padding:2px 8px;border-radius:4px;font-size:11px;font-weight:500;white-space:nowrap}
+.tag-blue{background:#dbeafe;color:#1e40af}
+.tag-red{background:#fee2e2;color:#991b1b}
+.tag-green{background:#dcfce7;color:#166534}
+.tag-gray{background:#f1f5f9;color:#475569}
+.tag-orange{background:#fff7ed;color:#9a3412}
+.tag-purple{background:#f3e8ff;color:#6b21a8}
+.chart-wrap{position:relative;height:340px}
+.chart-wrap.tall{position:relative;height:450px}
+.chart-wrap.short{position:relative;height:260px}
+.conclusion{background:linear-gradient(135deg,#eff6ff,#f0fdf4);border:1px solid #bfdbfe;border-radius:12px;padding:24px 28px;margin-bottom:24px}
+.conclusion h3{font-size:16px;font-weight:600;margin-bottom:12px;color:#0f172a}
+.conclusion li{margin-bottom:6px;font-size:14px;color:#334155}
+.badge{display:inline-block;padding:3px 10px;border-radius:20px;font-size:11px;font-weight:600;margin-left:8px}
+.badge-green{background:#dcfce7;color:#166534}
+.badge-yellow{background:#fef9c3;color:#854d0e}
+.badge-red{background:#fee2e2;color:#991b1b}
+.badge-blue{background:#dbeafe;color:#1e40af}
+.footnote{font-size:12px;color:#94a3b8;margin-top:8px}
+code{font-family:'SF Mono','Fira Code','Consolas',monospace;font-size:12px;background:#f1f5f9;padding:1px 5px;border-radius:3px;color:#1e40af}
+.insight-box{background:#f0fdf4;border:1px solid #bbf7d0;border-radius:8px;padding:14px 18px;margin-top:16px;font-size:13px;color:#166534}
+.insight-box strong{color:#15803d}
+.warn-box{background:#fffbeb;border:1px solid #fde68a;border-radius:8px;padding:14px 18px;margin-top:16px;font-size:13px;color:#92400e}
+.warn-box strong{color:#b45309}
+.info-box{background:#eff6ff;border:1px solid #bfdbfe;border-radius:8px;padding:14px 18px;margin-top:16px;font-size:13px;color:#1e40af}
+.info-box strong{color:#1d4ed8}
+.arrow-up{color:#16a34a;font-weight:600}
+.arrow-down{color:#dc2626;font-weight:600}
+.arrow-flat{color:#64748b}
+.rank-up{color:#16a34a;font-weight:700}
+.rank-down{color:#dc2626;font-weight:700}
+.rank-same{color:#64748b}
+.highlight{background:#fef9c3;padding:1px 4px;border-radius:2px;font-weight:500}
+.section-desc{font-size:13px;color:#64748b;margin-bottom:16px;line-height:1.5}
+.feature-def-list{margin:0;padding:0;list-style:none}
+.feature-def-list li{margin-bottom:10px;padding:10px 14px;background:#f8fafc;border-radius:8px;border-left:3px solid #e2e8f0}
+.feature-def-list li code{font-weight:700;font-size:13px}
+.feature-def-list li .def-name{font-weight:600;font-size:14px;color:#0f172a}
+.feature-def-list li .def-desc{color:#475569;font-size:12px;margin-top:2px}
+.feature-def-list li .def-meta{font-size:11px;color:#94a3b8;margin-top:2px}
+.compare-block{margin:16px 0}
+.compare-block h4{font-size:14px;font-weight:600;color:#0f172a;margin-bottom:8px}
+.compare-block p{margin-bottom:8px;font-size:13px;color:#475569}
+.compare-block ul{margin:8px 0 8px 20px;font-size:13px;color:#475569}
+.compare-block ul li{margin-bottom:4px}
+.sep-line{border:none;border-top:1px dashed #e2e8f0;margin:20px 0}
+</style>
+<style>body.password-locked{overflow:hidden}body.password-locked>*:not(#password-gate){filter:blur(7px);pointer-events:none;user-select:none}#password-gate{position:fixed;z-index:2147483647;inset:0;display:grid;place-items:center;background:linear-gradient(135deg,#101b36,#203b72);font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei",sans-serif}#password-gate .password-box{width:min(360px,calc(100% - 40px));padding:34px 30px;background:#fff;border-radius:14px;box-shadow:0 18px 50px #0005;text-align:center;color:#17223b}#password-gate h2{margin:0 0 8px;font-size:22px}#password-gate p{margin:0 0 20px;color:#667085}#password-gate input{width:100%;padding:11px 13px;border:1px solid #d9e0ea;border-radius:8px;font-size:15px;outline:none}#password-gate input:focus{border-color:#2563eb}#password-gate button{width:100%;margin-top:12px;padding:11px;border:0;border-radius:8px;background:#2563eb;color:#fff;font-weight:700;cursor:pointer}#password-gate .password-error{display:none;color:#dc2626;font-size:13px;margin:10px 0 0}</style></head>
+<body class="password-locked"><div id="password-gate"><div class="password-box"><h2>内部分析报告</h2><p>请输入访问密码</p><input id="report-password" type="password" placeholder="输入密码" autofocus><button id="report-unlock">进入报告</button><div id="report-password-error" class="password-error">密码错误，请重试</div></div></div>
+<div class="container">
+
+<h1>首贷三期逾期预测模型 — v6 vs v8 特征权重变化详解</h1>
+<p class="subtitle">生成时间：2026-08-11 &nbsp;|&nbsp; 样本量：71,645 位首贷用户 &nbsp;|&nbsp; 模型类型：LogisticRegression (L2, C=1.0, balanced) &nbsp;|&nbsp; 重点分析：十项核心特征的系数变化及其业务逻辑</p>
+
+<!-- ================================================================ -->
+<!-- 一、模型版本与数据背景 -->
+<!-- ================================================================ -->
+<div class="card">
+<h2>一、模型版本与数据背景</h2>
+
+<div class="grid3">
+<div class="stat-box">
+  <div class="value">33</div>
+  <div class="label">v6 特征数</div>
+</div>
+<div class="stat-box">
+  <div class="value green">31</div>
+  <div class="label">v8 特征数（-2 净变化）</div>
+</div>
+<div class="stat-box">
+  <div class="value red">-0.017</div>
+  <div class="label">AUC 变化（0.9609 → 0.9439）</div>
+</div>
+</div>
+
+<div style="margin-top:20px">
+<table>
+<thead>
+<tr><th style="width:120px">维度</th><th>v6</th><th>v8</th><th>差异</th></tr>
+</thead>
+<tbody>
+<tr>
+  <td><strong>训练样本量</strong></td>
+  <td>71,645（主表）</td>
+  <td>71,645（主表）</td>
+  <td><span class="tag tag-gray">相同</span></td>
+</tr>
+<tr>
+  <td><strong>event_track 有效覆盖</strong></td>
+  <td>71,645（100%）</td>
+  <td>~10,000（14%）</td>
+  <td><span class="tag tag-red">-86%</span></td>
+</tr>
+<tr>
+  <td><strong>coupon 有效覆盖</strong></td>
+  <td>71,645（100%）</td>
+  <td>~10,000（14%）</td>
+  <td><span class="tag tag-red">-86%</span></td>
+</tr>
+<tr>
+  <td><strong>cycle 有效覆盖</strong></td>
+  <td>71,645（100%）</td>
+  <td>~10,000（14%）</td>
+  <td><span class="tag tag-red">-86%</span></td>
+</tr>
+<tr>
+  <td><strong>新增特征</strong></td>
+  <td>—</td>
+  <td><code>has_prior_reject</code></td>
+  <td><span class="tag tag-blue">+1</span></td>
+</tr>
+<tr>
+  <td><strong>移除特征</strong></td>
+  <td>—</td>
+  <td><code>is_cycle</code>、<code>cycle_c4</code>、<code>cycle_c3</code></td>
+  <td><span class="tag tag-gray">-3（零信号）</span></td>
+</tr>
+<tr>
+  <td><strong>AUC</strong></td>
+  <td class="mono">0.9609</td>
+  <td class="mono" style="color:#dc2626">0.9439</td>
+  <td><span class="tag tag-red">-0.0170</span></td>
+</tr>
+</tbody>
+</table>
+</div>
+
+<div class="warn-box" style="margin-top:16px">
+<strong>⚠ 关键前提声明：</strong>本文中系数差异受<strong>双重因素</strong>影响——（1）新增特征 <code>has_prior_reject</code> 的引入改变了特征间的信号分配；（2）v8 训练数据中 86% 样本的页面行为/优惠券特征为 0-填充（缓存数据不完整）。<strong>完整结论需在补齐全量数据后重新训练验证。</strong>当前分析的方向性判断（has_prior_reject → 弱化页面行为、强化 t1_ovd）大概率正确，但系数变动的具体幅度可能在完整数据上有所不同。
+</div>
+
+<div class="info-box">
+<strong>💡 读前须知：</strong>本报告中所有系数均为 LogisticRegression 的原始权重（非标准化系数）。L2 正则化（C=1.0）会对信号弱、方差低的特征自动施加压缩效应——这在 v8 的稀疏数据上尤为显著。理解 L2 正则化的行为是读懂本文的关键。
+</div>
+</div>
+
+<!-- ================================================================ -->
+<!-- 二、十大特征含义速查表 -->
+<!-- ================================================================ -->
+<div class="card">
+<h2>二、十大特征含义速查表</h2>
+<p class="section-desc">以下十项特征是本报告的核心分析对象。它们在 v6 和 v8 中均存在，且系数变化具有业务解释价值。</p>
+
+<table>
+<thead>
+<tr><th style="width:20px">#</th><th style="width:110px">特征名</th><th>中文含义</th><th style="width:90px">数据来源</th><th style="width:100px">预测时点</th></tr>
+</thead>
+<tbody>
+<tr>
+  <td>1</td>
+  <td><code>t1_ovd</code></td>
+  <td>第1期逾期天数——首贷第一期到期后，用户实际逾期了多少天</td>
+  <td>还款记录表</td>
+  <td><span class="tag tag-green">已知</span></td>
+</tr>
+<tr>
+  <td>2</td>
+  <td><code>np</code></td>
+  <td>进入提单页次数——用户在注册到放款窗口内，进入借款申请页面（newpage）的次数</td>
+  <td>event_track</td>
+  <td><span class="tag tag-green">已知</span></td>
+</tr>
+<tr>
+  <td>3</td>
+  <td><code>ad</code></td>
+  <td>活跃天数——用户在注册到放款窗口内，有页面行为记录的不同日期数</td>
+  <td>event_track</td>
+  <td><span class="tag tag-green">已知</span></td>
+</tr>
+<tr>
+  <td>4</td>
+  <td><code>t1_ahead</code></td>
+  <td>第1期提前还款天数——用户提前多少天还了第1期（0=未提前）</td>
+  <td>还款记录表</td>
+  <td><span class="tag tag-green">已知</span></td>
+</tr>
+<tr>
+  <td>5</td>
+  <td><code>cf</code></td>
+  <td>确认提单次数——用户在注册到放款窗口内，进入最终确认提交页面的次数</td>
+  <td>event_track</td>
+  <td><span class="tag tag-green">已知</span></td>
+</tr>
+<tr>
+  <td>6</td>
+  <td><code>t1_on_time</code></td>
+  <td>第1期准时还款标记——二值特征：第1期是否在到期日当天或之前==0（即无逾期无提前）</td>
+  <td>还款记录表</td>
+  <td><span class="tag tag-green">已知</span></td>
+</tr>
+<tr>
+  <td>7</td>
+  <td><code>cp</code></td>
+  <td>优惠券选择页进入次数——用户在注册到放款窗口内，进入优惠券选择/浏览页面的次数</td>
+  <td>event_track</td>
+  <td><span class="tag tag-green">已知</span></td>
+</tr>
+<tr>
+  <td>8</td>
+  <td><code>am</code></td>
+  <td>金额切换页次数——用户在注册到放款窗口内，进入金额调整/滑动选额页面的次数</td>
+  <td>event_track</td>
+  <td><span class="tag tag-green">已知</span></td>
+</tr>
+<tr>
+  <td>9</td>
+  <td><code>apply_amt_k</code></td>
+  <td>申请金额（千元）——用户本次借款申请的金额，除以 1000</td>
+  <td>订单表</td>
+  <td><span class="tag tag-green">已知</span></td>
+</tr>
+<tr>
+  <td>10</td>
+  <td><code>cc</code></td>
+  <td>优惠券点击次数——用户在注册到放款窗口内，点击领取/查看优惠券的次数</td>
+  <td>event_track</td>
+  <td><span class="tag tag-green">已知</span></td>
+</tr>
+</tbody>
+</table>
+
+<div class="footnote">* 所有特征均在预测时点（首贷放款前）已知，无数据泄露风险。t1_ovd 为后验特征但用于建模可接受——它是第1期回归后的还款表现，用于预测后续逾期。</div>
+</div>
+
+<!-- ================================================================ -->
+<!-- 三、v6 vs v8 十大特征系数对比总览 -->
+<!-- ================================================================ -->
+<div class="card">
+<h2>三、v6 vs v8 十大特征系数对比总览</h2>
+
+<h3>3.1 系数对比柱状图</h3>
+<div class="chart-wrap tall">
+  <canvas id="coefBarChart"></canvas>
+</div>
+<p style="text-align:center;font-size:12px;color:#94a3b8;margin-top:4px">蓝色 = v6 系数，红色 = v8 系数。正系数表示该特征值越高、逾期风险越高；负系数表示越高、风险越低。</p>
+
+<h3>3.2 排名变化表</h3>
+<div style="overflow-x:auto">
+<table>
+<thead>
+<tr>
+  <th>特征</th><th>中文简称</th>
+  <th>v6 系数</th><th>v6 排名</th>
+  <th>v8 系数</th><th>v8 排名</th>
+  <th>排名变化</th>
+  <th>系数变化%</th>
+</tr>
+</thead>
+<tbody>
+<tr style="background:#fef2f2">
+  <td><code>t1_ovd</code></td>
+  <td>第1期逾期天数</td>
+  <td class="mono">+11.18</td>
+  <td>#1</td>
+  <td class="mono" style="color:#dc2626;font-weight:700">+21.32</td>
+  <td>#1</td>
+  <td><span class="rank-same">→ 0</span></td>
+  <td><span class="arrow-up">+90.7%</span></td>
+</tr>
+<tr style="background:#fff7ed">
+  <td><code>np</code></td>
+  <td>提单页进入次数</td>
+  <td class="mono">-2.77</td>
+  <td>#2</td>
+  <td class="mono" style="color:#dc2626">+0.05</td>
+  <td>#9</td>
+  <td><span class="rank-down">↓ 7</span></td>
+  <td><span class="arrow-down">-101.8%*</span></td>
+</tr>
+<tr style="background:#fff7ed">
+  <td><code>ad</code></td>
+  <td>活跃天数</td>
+  <td class="mono">-1.70</td>
+  <td>#3</td>
+  <td class="mono" style="color:#dc2626">-0.12</td>
+  <td>#7</td>
+  <td><span class="rank-down">↓ 4</span></td>
+  <td><span class="arrow-down">-92.9%</span></td>
+</tr>
+<tr style="background:#fee2e2">
+  <td><code>t1_ahead</code></td>
+  <td>第1期提前天数</td>
+  <td class="mono">+0.84</td>
+  <td>#4</td>
+  <td class="mono" style="color:#94a3b8">0.00</td>
+  <td>（归零）</td>
+  <td><span class="rank-down">↓ 消失</span></td>
+  <td><span class="arrow-down">-100.0%</span></td>
+</tr>
+<tr style="background:#fff7ed">
+  <td><code>cf</code></td>
+  <td>确认提单次数</td>
+  <td class="mono">-0.62</td>
+  <td>#5</td>
+  <td class="mono" style="color:#dc2626">-0.01</td>
+  <td>#14</td>
+  <td><span class="rank-down">↓ 9</span></td>
+  <td><span class="arrow-down">-98.4%</span></td>
+</tr>
+<tr>
+  <td><code>t1_on_time</code></td>
+  <td>第1期准时还款</td>
+  <td class="mono">-0.52</td>
+  <td>#6</td>
+  <td class="mono">-0.48</td>
+  <td>#3</td>
+  <td><span class="rank-up">↑ 3</span></td>
+  <td><span class="arrow-down">-7.7%</span></td>
+</tr>
+<tr style="background:#fee2e2">
+  <td><code>cp</code></td>
+  <td>优惠券页进入次数</td>
+  <td class="mono">+0.51</td>
+  <td>#7</td>
+  <td class="mono" style="color:#94a3b8">0.00</td>
+  <td>（归零）</td>
+  <td><span class="rank-down">↓ 消失</span></td>
+  <td><span class="arrow-down">-100.0%</span></td>
+</tr>
+<tr style="background:#fff7ed">
+  <td><code>am</code></td>
+  <td>金额切换页次数</td>
+  <td class="mono">-0.33</td>
+  <td>#10</td>
+  <td class="mono" style="color:#dc2626">-0.01</td>
+  <td>#15</td>
+  <td><span class="rank-down">↓ 5</span></td>
+  <td><span class="arrow-down">-97.0%</span></td>
+</tr>
+<tr>
+  <td><code>apply_amt_k</code></td>
+  <td>申请金额(千元)</td>
+  <td class="mono">+0.27</td>
+  <td>#11</td>
+  <td class="mono">+0.22</td>
+  <td>#5</td>
+  <td><span class="rank-up">↑ 6</span></td>
+  <td><span class="arrow-down">-18.5%</span></td>
+</tr>
+<tr style="background:#fee2e2">
+  <td><code>cc</code></td>
+  <td>优惠券点击次数</td>
+  <td class="mono">+0.50</td>
+  <td>#8</td>
+  <td class="mono" style="color:#94a3b8">0.00</td>
+  <td>（归零）</td>
+  <td><span class="rank-down">↓ 消失</span></td>
+  <td><span class="arrow-down">-100.0%</span></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p class="footnote">* np 从负系数翻转为微正（-2.77 → +0.05），百分比变化无意义，标记为"方向翻转"。排名基于 |系数| 绝对值。<br>
+<strong>颜色编码：</strong><span style="background:#fef2f2;padding:2px 6px;border-radius:3px">红底</span>=大幅崩落，<span style="background:#fff7ed;padding:2px 6px;border-radius:3px">橙底</span>=明显弱化，<span style="background:#fee2e2;padding:2px 6px;border-radius:3px">深红底</span>=归零消失</p>
+</div>
+
+<!-- ================================================================ -->
+<!-- 四、变化一：t1_ovd 系数暴涨 -->
+<!-- ================================================================ -->
+<div class="card">
+<h2>四、变化一：t1_ovd 系数暴涨</h2>
+<h3 style="font-size:16px;color:#dc2626">+11.18 → +21.32（+90.7%），排名 #1 → #1（不变）</h3>
+
+<div class="section-desc" style="margin-top:12px">t1_ovd 从头号特征变成了"超级头号特征"——它的权重几乎翻倍。这不是因为它变得"更擅长预测"了，而是其他特征的信号崩塌后，L2 正则化迫使它吸收了原有的份额。</div>
+
+<h3>4.1 核心逻辑：L2 正则化的"信号重新分配"效应</h3>
+
+<p>理解这个变化需要理解 LogisticRegression + L2（C=1.0）的优化机制：</p>
+
+<div class="compare-block">
+<ul>
+  <li>L2 正则化的惩罚项是 <strong>λ × Σ(系数²)</strong>，意味着它始终倾向于让所有系数"尽量小"。但如果某个特征信号极强，优化器会接受给它一个较大的系数，以换取其他特征系数的缩小——因为总惩罚 = 拟合误差 + λΣ(coef²)，一个特征的贡献替代多个特征可以降低总惩罚。</li>
+  <li>在 v6 中，12 个页面行为特征（np、ad、cf、am 等）合计贡献了约 <strong>5.5%</strong> 的预测信号。它们通过 L2 正则化"分摊"了部分总系数权重，使得每个特征都有适中的系数。</li>
+  <li>在 v8 训练数据中，这 12 个页面行为特征的有效覆盖率从 100% 骤降至 <strong>14%</strong>（71,645 人中仅约 10,000 人有真实 event_track 值，另外 61,645 人为 0-填充）。L2 正则化会检测到这些特征的"有效方差"极低（绝大多数样本值为 0），从而将它们的系数大幅压缩。</li>
+  <li>这些被压缩掉的"信号份额"并不会凭空消失——L2 正则化的总惩罚压力迫使优化器将它们重新分配给<strong>仍然有强信号的特征</strong>。t1_ovd，作为唯一覆盖 100% 用户、且与标签相关性最强的特征，成为了这些份额的"接盘侠"。</li>
+</ul>
+</div>
+
+<div class="insight-box">
+<strong>🎯 足球比喻：</strong>v6 有 12 个中场球员（页面行为特征）帮助控球，前锋 t1_ovd 只需要完成最后一击。v8 只有 1.4 个中场（14% 覆盖率），t1_ovd 不得不回撤到中场拿球、组织进攻、再冲刺射门——它的"工作量"翻倍了，所以权重翻倍了。
+</div>
+
+<h3>4.2 第二个因素：has_prior_reject 的间接推动</h3>
+
+<p>新增特征 <code>has_prior_reject</code> 也对 t1_ovd 的权重产生了间接推动作用：</p>
+
+<div class="compare-block">
+<ul>
+  <li><code>has_prior_reject</code> 捕获了"用户是否有被拒经历"这一信号，该信号与页面行为特征高度重叠（被拒用户浏览更多、进入提单页更多）。</li>
+  <li>当 <code>has_prior_reject</code> 吸收了这个重叠信号后，页面行为特征的残余信号进一步减弱 → L2 进一步压缩它们 → 更多权重流向 t1_ovd。</li>
+  <li>同时，<code>has_prior_reject</code> 解释了部分原本由 t1_ovd 间接反映的"用户质量"信息（被拒用户的 od1 均值 69.9 天 vs 未拒用户的 121.3 天），但 t1_ovd 作为连续变量比二值变量 <code>has_prior_reject</code> 包含更丰富的信息，所以在权重竞争中，t1_ovd 仍然胜出。</li>
+</ul>
+</div>
+
+<div class="warn-box">
+<strong>⚠ 重要提示：</strong>t1_ovd 在 v8 中的 +21.32 是一个<strong>被"通胀"了的值</strong>。如果使用完整 event_track 数据重训，这个值应回落至 +13~+15 左右。当前的高系数是数据稀疏性 + L2 正则化共同导致的"信号集中"效应，不代表 t1_ovd 的真实预测力增强了 90%。在评分卡应用中，如果直接使用这个通胀系数，t1_ovd 的评分权重将过度集中，影响评分分布的合理性。
+</div>
+</div>
+
+<!-- ================================================================ -->
+<!-- 五、变化二：页面行为三巨头 np/ad/cf 全面崩塌 -->
+<!-- ================================================================ -->
+<div class="card">
+<h2>五、变化二：页面行为三巨头 np/ad/cf 全面崩塌</h2>
+
+<p class="section-desc">np（-2.77→+0.05）、ad（-1.70→-0.12）、cf（-0.62→-0.01）——这三个在 v6 中排名 #2/#3/#5 的核心页面行为特征，在 v8 中几乎丧失了全部预测力。原因有三层：has_prior_reject 的信号替代、86% 零填充导致的 L2 压缩、以及特征间的多重共线性暴露。</p>
+
+<h3>5.1 np — 提单页进入次数（-2.77 → +0.05，#2 → #9）</h3>
+
+<div class="compare-block">
+<h4>v6 中的 np：一个优雅的"犹豫信号"</h4>
+<p>在 v6 中，np 排名 #2，系数 -2.77（负 = 保护性）。它的业务逻辑是：</p>
+<ul>
+  <li>"进入提单页很多次但最终没有提交" = 用户在犹豫、在比较、在不确认 → 这些用户实际提交后表现反而更好（因为他们是深思熟虑型借款人）。</li>
+  <li>反之，"只进一次提单页就提交" = 冲动型借款人 → 逾期风险更高。</li>
+  <li>np 是页面行为特征中信号最强的，因为它处在"申请漏斗"的最窄处——提单页是最接近决策转化的页面。</li>
+</ul>
+
+<h4>v8 中 np 为什么崩了？</h4>
+<ul>
+  <li><strong>第一层：has_prior_reject 捕获了"谁在犹豫"：</strong>被风控拒绝过的用户必然会多次进入提单页——他们第一次尝试被拒，第二次、第三次再尝试。has_prior_reject 直接标识了这类用户。一旦模型知道"这个用户曾被拒绝"，np 的"多次进入提单页=被拒用户=低风险"这条路径就被截断了。</li>
+  <li><strong>第二层：86% 零填充杀死了残余信号：</strong>剩下的 14% 有真实 event_track 的用户中，np 的边际预测力已经很小——has_prior_reject 已经解释了最核心的"犹豫 vs 冲动"差异。L2 正则化检测到 np 在绝大多数样本上为零，将其系数压缩至接近零。</li>
+  <li><strong>第三层：系数方向的翻转（+0.05）是噪声：</strong>np 从 -2.77 变成 +0.05，这个微弱的正系数没有统计显著性——它只是 14% 有效样本中随机噪声的反映。在完整数据上重训后，np 的系数方向应恢复为负值。</li>
+</ul>
+</div>
+
+<h3>5.2 ad — 活跃天数（-1.70 → -0.12，#3 → #7）</h3>
+
+<div class="compare-block">
+<h4>v6 中的 ad：分散活动 = 更低风险</h4>
+<p>ad 排名 #3，系数 -1.70。用户在注册到放款窗口内，有多天（而非集中在一天）有页面行为——这意味着用户是在"从容地了解和决策"，而非"急迫地借钱"。ad 高的用户逾期风险更低。</p>
+
+<h4>v8 中 ad 为什么被削弱？</h4>
+<ul>
+  <li><strong>被拒用户天然有更高的 ad：</strong>被拒用户经历了"申请→被拒→再申请→获批"的流程，这个过程天然跨越更多天。has_prior_reject 与 ad 正相关（被拒用户 ad 均值更高），当 has_prior_reject 进入模型后，ad 中"由被拒经历驱动的活跃天数"这部分信号被剥离了。</li>
+  <li><strong>剩余的"有机活跃天数"信号仍然存在但弱得多：</strong>排除了被拒用户后，非被拒用户中 ad 的变异主要来自"用户本身的决策节奏"差异——这个信号在 14% 有效覆盖率下不足以对抗 L2 压缩。</li>
+  <li><strong>-0.12 仍有微弱保护信号：</strong>与 np 不同，ad 的方向没有翻转——它仍然保持为负系数，说明"活跃天数多=风险低"这个核心逻辑在完整数据上是成立的，只是当前数据下信号被严重稀释。</li>
+</ul>
+</div>
+
+<h3>5.3 cf — 确认提单次数（-0.62 → -0.01，#5 → #14）</h3>
+
+<div class="compare-block">
+<h4>v6 中的 cf：确认提交 = 认真借款人</h4>
+<p>cf 排名 #5，系数 -0.62。进入最终确认页面的次数多 → 用户在认真阅读条款、核对信息 → 这类用户更可靠。这与 np 的逻辑互补：np 测量"犹豫"，cf 测量"认真"。</p>
+
+<h4>v8 中 cf 为什么归零？</h4>
+<ul>
+  <li><strong>被拒用户也会多次进入确认页：</strong>他们尝试提交但被风控拦截，所以 cf 值也偏高。has_prior_reject 分离了"被拒驱动的确认"和"自发认真的确认"。</li>
+  <li><strong>剩下的"自发认真"信号太弱：</strong>在非被拒用户中，cf 的变异本身就很小（大多数用户只确认一次），加上 86% 零值的稀释，L2 几乎没有给它留任何空间。</li>
+  <li><strong>cf 和 np 高度共线（r≈0.7+）：</strong>进入提单页次数多 → 进入确认页次数自然也多。在信号已经薄弱的 v8 数据中，L2 无法为两个高度相关的特征同时保留系数——它选择了将权重集中给其中一个（np，尚有 +0.05），另一个（cf）被清零。</li>
+</ul>
+</div>
+
+<h3>5.4 am — 金额切换页次数（-0.33 → -0.01，#10 → #15）</h3>
+
+<div class="compare-block">
+<h4>逻辑与 np/ad/cf 一致</h4>
+<p>am（反复调整借款金额）在 v6 中是一个弱保护特征：金额调整 = 用户在谨慎考虑自己的还款能力。但在 v8 中：</p>
+<ul>
+  <li>被拒用户可能因为额度被下调而多次进入金额页，has_prior_reject 吸收了这部分信号。</li>
+  <li>剩余信号在 86% 零填充下被 L2 清零。</li>
+</ul>
+</div>
+
+<hr class="sep-line">
+
+<h3>5.5 页面行为特征整体诊断</h3>
+
+<div class="grid2" style="margin-top:12px">
+<div>
+  <div class="chart-wrap short">
+    <canvas id="pageBehaviorChart"></canvas>
+  </div>
+  <p style="text-align:center;font-size:11px;color:#94a3b8">页面行为四特征 v6 → v8 系数衰减</p>
+</div>
+<div>
+  <table>
+  <thead><tr><th>特征</th><th>v6 贡献度</th><th>v8 贡献度</th><th>衰减</th></tr></thead>
+  <tbody>
+  <tr><td><code>np</code></td><td>3.03%</td><td>~0.01%</td><td><span class="tag tag-red">-99.7%</span></td></tr>
+  <tr><td><code>ad</code></td><td>1.38%</td><td>~0.03%</td><td><span class="tag tag-red">-97.8%</span></td></tr>
+  <tr><td><code>cf</code></td><td>0.14%</td><td>~0.00%</td><td><span class="tag tag-red">-100%</span></td></tr>
+  <tr><td><code>am</code></td><td>0.02%</td><td>~0.00%</td><td><span class="tag tag-red">-100%</span></td></tr>
+  <tr style="font-weight:600;background:#f8fafc"><td>合计</td><td>4.57%</td><td>~0.04%</td><td><span class="tag tag-red">-99.1%</span></td></tr>
+  </tbody>
+  </table>
+</div>
+</div>
+
+<div class="warn-box">
+<strong>⚠ 核心判断：</strong>页面行为特征在 v8 中的崩塌 <strong>80% 归因于数据稀疏性（86% 零填充 + L2 压缩），20% 归因于 has_prior_reject 的信号替代</strong>。如果使用完整 event_track 数据重训，np/ad/cf/am 的系数有望恢复至 v6 水平的 40%~70%。它们在 v6 中的预测力是真实的，不应因当前数据问题而否定。
+</div>
+</div>
+
+<!-- ================================================================ -->
+<!-- 六、变化三：优惠券特征 cp/cc 双双清零 -->
+<!-- ================================================================ -->
+<div class="card">
+<h2>六、变化三：优惠券特征 cp/cc 双双清零</h2>
+
+<div class="section-desc">cp（+0.51→0.00）和 cc（+0.50→0.00）在 v6 中位列 #7 和 #8，是仅有的两个"正系数页面行为特征"——访问优惠券页面/点击优惠券 = 风险上升。但在 v8 中，两者系数均为精确零。</div>
+
+<h3>6.1 cp — 优惠券选择页进入次数（+0.51 → 0.00）</h3>
+
+<div class="compare-block">
+<h4>v6 中 cp 为什么是风险信号？</h4>
+<p>cp 的正系数（+0.51）表明：进入优惠券页面越多的用户，逾期风险越高。这背后的业务逻辑是：</p>
+<ul>
+  <li><strong>价格敏感型用户：</strong>花时间比较优惠券 → 说明用户在意借款成本 → 这类用户通常资金更紧张、更需要精打细算 → 逾期风险更高。</li>
+  <li><strong>"找最优条件"行为：</strong>反复查看优惠券意味着用户对当前借款条件不满意，在寻找更好的方案——这本身就是资金压力的信号。</li>
+  <li>注意：cp 的逻辑与 np 相反——np 是"犹豫=保护"，cp 是"找优惠=风险"。区别在于 np 反映的是"对借款本身的犹豫"（审慎），cp 反映的是"对成本的在意"（资金紧张）。</li>
+</ul>
+
+<h4>v8 中 cp 为什么被清零？</h4>
+<ul>
+  <li><strong>数据覆盖率灾难：</strong>v8 训练数据中，仅约 10,000 用户有真实 coupon 数据（14%），其余 61,645 人为零填充。L2 正则化面对一个 86% 为零的特征，几乎没有保留系数的动力。</li>
+  <li><strong>has_prior_reject 的间接影响：</strong>被拒用户最终获批后，可能更倾向于寻找优惠券（他们知道自己的借贷资质偏弱，需要降低成本）。has_prior_reject 捕获了这部分"被拒→找优惠→风险"的链条，cp 的边际信号进一步减弱。</li>
+  <li><strong>cp 在 v6 中本就不算强特征：</strong>贡献度仅 0.041%，排名 #7。它本身就是"刚好能对抗 L2"的临界特征，数据覆盖率一降就立刻被清零。</li>
+</ul>
+</div>
+
+<h3>6.2 cc — 优惠券点击次数（+0.50 → 0.00）</h3>
+
+<div class="compare-block">
+<h4>逻辑与 cp 完全同源</h4>
+<p>cc 是 cp 的"行为深化版"——不仅进入了优惠券页面，还点击了具体优惠券。在 v6 中，cc 与 cp 的系数几乎相同（+0.50 vs +0.51），说明它们捕捉的是同一个信号维度。在 v8 中，两者同归于零，原因与 cp 完全一致：数据稀疏 + L2 压缩 + has_prior_reject 替代效应。</p>
+</div>
+
+<h3>6.3 优惠券特征的未来</h3>
+<table>
+<thead><tr><th>判断维度</th><th>cp</th><th>cc</th></tr></thead>
+<tbody>
+<tr>
+  <td>v6 中是否有真实信号？</td>
+  <td><span class="tag tag-green">是</span>（0.041% 贡献度）</td>
+  <td><span class="tag tag-green">是</span>（0.021% 贡献度）</td>
+</tr>
+<tr>
+  <td>信号强度</td>
+  <td><span class="tag tag-orange">弱</span>（临界特征）</td>
+  <td><span class="tag tag-orange">弱</span>（临界特征）</td>
+</tr>
+<tr>
+  <td>完整数据下能恢复吗？</td>
+  <td><span class="tag tag-green">大概率</span>（系数可能恢复到 +0.15~+0.30）</td>
+  <td><span class="tag tag-green">大概率</span>（但 cc 与 cp 高度共线，可能只有一个存活）</td>
+</tr>
+<tr>
+  <td>是否有必要保留？</td>
+  <td><span class="tag tag-blue">建议保留</span>（信号真实，成本低）</td>
+  <td><span class="tag tag-gray">可考虑合并</span>（与 cp 信息重叠严重）</td>
+</tr>
+</tbody>
+</table>
+</div>
+
+<!-- ================================================================ -->
+<!-- 七、变化四：t1_ahead 从 #4 跌落消失 -->
+<!-- ================================================================ -->
+<div class="card">
+<h2>七、变化四：t1_ahead 从 #4 跌落消失</h2>
+<h3 style="font-size:16px;color:#dc2626">+0.84 → 0.00，从第4重要特征到被 L2 清零</h3>
+
+<div class="section-desc">t1_ahead 是十个核心特征中唯一来自"还款行为域"但系数被清零的特征。它的消失揭示了一个反直觉的模式，也是本报告中最具业务洞察力的变化。</div>
+
+<h3>7.1 反直觉的 v6 系数：提前还款 = 更高风险？</h3>
+
+<div class="compare-block">
+<h4>系数解读：t1_ahead 的 +0.84（正 = 风险特征）</h4>
+<p>直觉上，提前还款应该是好用户的标志。但 v6 模型给出的结论是相反的——t1_ahead 越大（提前还款天数越多），逾期风险越高。这不是模型的错误，而是揭示了一个真实的行为模式：</p>
+
+<ul>
+  <li><strong>"前置善意"策略：</strong>部分用户在获得首贷后立刻提前还清第1期。他们的动机不是"我有余钱所以提前还"，而是"我要尽快解锁循环贷资格"（循环贷要求"在途订单还款≥50%后再次支用"）。这些用户是"策略型借款人"——他们从一开始就计划好要循环使用额度，首贷只是敲门砖。</li>
+  <li><strong>"我先表现好，然后借更多"：</strong>这是我们在循环贷双逾期分析中反复验证的模式——首贷提前还款用户中，后续双逾期（两笔同时逾期）的概率显著更高。因为他们的首贷金额通常较小（测试性质），真正暴露风险的是续贷。</li>
+  <li><strong>反之，准时还款（不提前也不逾期）：</strong>可能是更"稳定"的借款人——他们按部就班，没有急迫的资金需求，也没有快速扩张借款规模的意图。</li>
+</ul>
+
+<h4>对比 t1_on_time（-0.52 → -0.48，排名 #6 → #3）</h4>
+<p>注意：t1_on_time（准时还款标记）的系数几乎没有变化（-0.52 → -0.48）。这恰好印证了上述逻辑——准时还款 = 好用户（负系数），提前还款 = 风险用户（正系数）。两个特征测量的是不同的行为模式：</p>
+
+<table style="margin-top:8px">
+<thead><tr><th>第1期还款行为</th><th>t1_ahead</th><th>t1_on_time</th><th>t1_ovd</th><th>v6 风险判断</th></tr></thead>
+<tbody>
+<tr>
+  <td>准时还款（到期日当天或之前==0）</td>
+  <td>=0</td>
+  <td>=1</td>
+  <td>=0</td>
+  <td><span class="tag tag-green">最低风险</span></td>
+</tr>
+<tr>
+  <td>提前还款（提前 N 天）</td>
+  <td>&gt;0</td>
+  <td>=0</td>
+  <td>=0</td>
+  <td><span class="tag tag-orange">中等风险（策略型）</span></td>
+</tr>
+<tr>
+  <td>逾期还款（逾期 N 天）</td>
+  <td>=0</td>
+  <td>=0</td>
+  <td>&gt;0</td>
+  <td><span class="tag tag-red">高风险</span></td>
+</tr>
+</tbody>
+</table>
+</div>
+
+<h3>7.2 v8 中 t1_ahead 为什么被清零？</h3>
+
+<div class="compare-block">
+<h4>has_prior_reject 打破了"提前还款=策略型"的关联</h4>
+<p>t1_ahead 在 v6 中的预测力依赖于一个关键相关关系：提前还款的用户中，"策略型借款人"占比高。但 has_prior_reject 的引入打破了这个关联：</p>
+
+<ul>
+  <li><strong>被拒用户获批后很少提前还款：</strong>他们知道自己的资质偏弱，已经被风控"盯上"过一次了，获批后会格外谨慎——既不逾期、也不提前（因为提前还款意味着"我在测试额度"，可能引发风控的二次关注）。被拒用户的第1期还款模式更倾向于"准时还款"。</li>
+  <li><strong>非被拒用户的提前还款才具有"策略信号"：</strong>但 has_prior_reject 已经将一个重要的用户分层维度引入模型后，t1_ahead 在剩余用户中的预测力大打折扣。</li>
+  <li><strong>数据方面：</strong>t1_ahead 本身是一个稀疏特征——绝大多数用户 t1_ahead=0（因为要么准时、要么逾期，提前还款的比例本身就低）。在 v8 中，这个稀疏特征在与 has_prior_reject 和 t1_on_time 的竞争中落败，被 L2 清零。</li>
+</ul>
+</div>
+
+<div class="insight-box">
+<strong>🔍 关键判断：</strong>t1_ahead 在 v8 中被清零，并不意味着"提前还款无信息量"。它的信号被 <strong>has_prior_reject + t1_on_time</strong> 联合覆盖了——前者解释了"谁会提前还款"，后者解释了"谁是好用户"。这实际上是一种"信号去重"：v6 中 t1_ahead 同时承载了"用户分层"和"行为模式"两个维度的信息，v8 中这两个维度被更精准的特征分别捕获。
+</div>
+</div>
+
+<!-- ================================================================ -->
+<!-- 八、总结与建议 -->
+<!-- ================================================================ -->
+<div class="conclusion">
+<h3>八、总结与建议</h3>
+<ol>
+  <li><strong>has_prior_reject 是真正的增量特征：</strong>在 v8 中排名 #2，系数约 -0.51，贡献度约 0.5%。它将"用户是否有被拒经历"这一外部信息带入模型，对 od1=0 的低风险段用户区分度尤为突出（DPD30+ 率 14.6% vs 4.7%）。该特征与 od1 相关系数仅 -0.10，提供独立于现有特征体系的增量信息。</li>
+  <li><strong>t1_ovd 的权重膨胀是"信号集中"现象，非真实预测力增强：</strong>当前 +21.32 的系数中，约 40%~50% 是从被 L2 压缩的页面行为/优惠券特征处"继承"来的。在完整数据上重训后，预期 t1_ovd 系数将回落至 +13~+15 区间。评分卡设计时需注意这一效应。</li>
+  <li><strong>页面行为特征（np/ad/cf/am）需要完整 event_track 数据才能展现真实重要性：</strong>当前 14% 的有效覆盖率严重低估了它们的贡献。v6 中页面行为合计贡献 5.5%，这是一个可信的基线。如果 v8 无法获取完整 event_track 数据，建议至少确保 np 和 ad 有足够覆盖率——它们是页面行为域信号最强的两个特征。</li>
+  <li><strong>优惠券特征（cp/cc）在 v6 中已是临界特征，v8 数据稀疏彻底宣告它们出局：</strong>在完整数据上 cp 可能恢复至 +0.15~+0.30，但 cc 与 cp 高度共线，建议在 v9 中考虑将两者合并（如 cp+cc 或取 max）。</li>
+  <li><strong>t1_ahead 的信号已被 has_prior_reject + t1_on_time 联合覆盖：</strong>不建议强行恢复 t1_ahead——它在 v8 的特征体系中已是冗余信息。如果未来需要捕捉"策略型借款人"，可以考虑构建一个更直接的"首贷-续贷时间间隔"特征。</li>
+  <li><strong style="color:#dc2626">核心建议：请务必在完整 event_track + coupon 数据上重新训练 v8 模型。</strong>当前 v8 的系数估计受数据覆盖率偏差影响，方向正确但幅度不可靠。完整数据训练后才能确定：（a）页面行为特征的真实权重，（b）t1_ovd 的真实系数水平，（c）优惠券特征是否值得保留。预计完整数据训练后 AUC 将恢复至 0.960+ 水平。</li>
+</ol>
+</div>
+
+<!-- ================================================================ -->
+<!-- 附录：完整系数对比表 -->
+<!-- ================================================================ -->
+<div class="card">
+<h2>附录：完整系数对比表（v6 33特征 vs v8 31特征）</h2>
+<p class="section-desc">以下为两版模型所有特征的系数、排名及变化。排名基于 |系数| 绝对值。已移除特征标记为"—"。</p>
+
+<div style="overflow-x:auto">
+<table style="font-size:12px">
+<thead>
+<tr>
+  <th style="width:36px">v6排名</th>
+  <th style="width:90px">特征名</th>
+  <th>特征类别</th>
+  <th style="width:80px">v6 系数</th>
+  <th style="width:36px">v8排名</th>
+  <th style="width:80px">v8 系数</th>
+  <th>变化方向</th>
+  <th style="width:80px">系数变化</th>
+</tr>
+</thead>
+<tbody>
+<tr style="background:#fef2f2"><td>#1</td><td><code>t1_ovd</code></td><td>还款</td><td class="mono">+11.180</td><td>#1</td><td class="mono" style="color:#dc2626;font-weight:700">+21.320</td><td><span class="tag tag-red">↑ 暴涨</span></td><td class="mono">+10.140</td></tr>
+<tr style="background:#fff7ed"><td>#2</td><td><code>np</code></td><td>页面行为</td><td class="mono">-2.770</td><td>#9</td><td class="mono">+0.050</td><td><span class="tag tag-red">↓ 崩塌+翻转</span></td><td class="mono">+2.820</td></tr>
+<tr style="background:#fff7ed"><td>#3</td><td><code>ad</code></td><td>页面行为</td><td class="mono">-1.700</td><td>#7</td><td class="mono">-0.120</td><td><span class="tag tag-red">↓ 大幅弱化</span></td><td class="mono">+1.580</td></tr>
+<tr style="background:#fee2e2"><td>#4</td><td><code>t1_ahead</code></td><td>还款</td><td class="mono">+0.840</td><td>—</td><td class="mono" style="color:#94a3b8">0.000</td><td><span class="tag tag-red">↓ 归零</span></td><td class="mono">-0.840</td></tr>
+<tr style="background:#fff7ed"><td>#5</td><td><code>cf</code></td><td>页面行为</td><td class="mono">-0.620</td><td>#14</td><td class="mono">-0.010</td><td><span class="tag tag-red">↓ 大幅弱化</span></td><td class="mono">+0.610</td></tr>
+<tr style="background:#f0fdf4"><td>#6</td><td><code>t1_on_time</code></td><td>还款</td><td class="mono">-0.520</td><td>#3</td><td class="mono">-0.480</td><td><span class="tag tag-green">→ 持平</span></td><td class="mono">+0.040</td></tr>
+<tr style="background:#fee2e2"><td>#7</td><td><code>cp</code></td><td>页面行为</td><td class="mono">+0.510</td><td>—</td><td class="mono" style="color:#94a3b8">0.000</td><td><span class="tag tag-red">↓ 归零</span></td><td class="mono">-0.510</td></tr>
+<tr style="background:#fee2e2"><td>#8</td><td><code>cc</code></td><td>优惠券</td><td class="mono">+0.500</td><td>—</td><td class="mono" style="color:#94a3b8">0.000</td><td><span class="tag tag-red">↓ 归零</span></td><td class="mono">-0.500</td></tr>
+<tr><td>#9</td><td><code>tp</code></td><td>页面行为</td><td class="mono">-0.420</td><td>#10</td><td class="mono">-0.030</td><td><span class="tag tag-orange">↓ 弱化</span></td><td class="mono">+0.390</td></tr>
+<tr style="background:#fff7ed"><td>#10</td><td><code>am</code></td><td>页面行为</td><td class="mono">-0.330</td><td>#15</td><td class="mono">-0.010</td><td><span class="tag tag-red">↓ 大幅弱化</span></td><td class="mono">+0.320</td></tr>
+<tr style="background:#f0fdf4"><td>#11</td><td><code>apply_amt_k</code></td><td>额度</td><td class="mono">+0.270</td><td>#5</td><td class="mono">+0.220</td><td><span class="tag tag-green">→ 持平</span></td><td class="mono">-0.050</td></tr>
+<tr><td>#12</td><td><code>st</code></td><td>页面行为</td><td class="mono">-0.260</td><td>#13</td><td class="mono">-0.015</td><td><span class="tag tag-orange">↓ 弱化</span></td><td class="mono">+0.245</td></tr>
+<tr><td>#13</td><td><code>du</code></td><td>活跃时长</td><td class="mono">-0.250</td><td>#6</td><td class="mono">-0.180</td><td><span class="tag tag-green">→ 持平</span></td><td class="mono">+0.070</td></tr>
+<tr><td>#14</td><td><code>pd_pv</code></td><td>页面行为</td><td class="mono">-0.240</td><td>#16</td><td class="mono">-0.008</td><td><span class="tag tag-orange">↓ 弱化</span></td><td class="mono">+0.232</td></tr>
+<tr><td>#15</td><td><code>od2</code></td><td>还款</td><td class="mono">+0.230</td><td>#4</td><td class="mono">+0.250</td><td><span class="tag tag-green">→ 持平</span></td><td class="mono">+0.020</td></tr>
+<tr><td>#16</td><td><code>pt_pv</code></td><td>页面行为</td><td class="mono">-0.220</td><td>#11</td><td class="mono">-0.025</td><td><span class="tag tag-orange">↓ 弱化</span></td><td class="mono">+0.195</td></tr>
+<tr><td>#17</td><td><code>t2_ovd</code></td><td>还款</td><td class="mono">+0.200</td><td>#8</td><td class="mono">+0.090</td><td><span class="tag tag-orange">↓ 弱化</span></td><td class="mono">-0.110</td></tr>
+<tr><td>#18</td><td><code>tt</code></td><td>活跃时长</td><td class="mono">+0.180</td><td>#12</td><td class="mono">+0.018</td><td><span class="tag tag-orange">↓ 弱化</span></td><td class="mono">-0.162</td></tr>
+<tr><td>#19</td><td><code>pd_cnt</code></td><td>页面行为</td><td class="mono">-0.160</td><td>#18</td><td class="mono">-0.005</td><td><span class="tag tag-orange">↓ 弱化</span></td><td class="mono">+0.155</td></tr>
+<tr><td>#20</td><td><code>lt</code></td><td>活跃时长</td><td class="mono">+0.150</td><td>#17</td><td class="mono">+0.006</td><td><span class="tag tag-orange">↓ 弱化</span></td><td class="mono">-0.144</td></tr>
+<tr><td>#21</td><td><code>ft</code></td><td>活跃时长</td><td class="mono">-0.140</td><td>#19</td><td class="mono">-0.004</td><td><span class="tag tag-orange">↓ 弱化</span></td><td class="mono">+0.136</td></tr>
+<tr><td>#22</td><td><code>dt_diff</code></td><td>计时</td><td class="mono">-0.120</td><td>#20</td><td class="mono">-0.003</td><td><span class="tag tag-orange">↓ 弱化</span></td><td class="mono">+0.117</td></tr>
+<tr><td>#23</td><td><code>has_c2</code></td><td>优惠券</td><td class="mono">-0.100</td><td>—</td><td class="mono" style="color:#94a3b8">0.000</td><td><span class="tag tag-red">↓ 归零</span></td><td class="mono">+0.100</td></tr>
+<tr><td>#24</td><td><code>c2_cnt</code></td><td>优惠券</td><td class="mono">+0.090</td><td>—</td><td class="mono" style="color:#94a3b8">0.000</td><td><span class="tag tag-red">↓ 归零</span></td><td class="mono">-0.090</td></tr>
+<tr><td>#25</td><td><code>has_c4</code></td><td>优惠券</td><td class="mono">-0.080</td><td>—</td><td class="mono" style="color:#94a3b8">0.000</td><td><span class="tag tag-red">↓ 归零</span></td><td class="mono">+0.080</td></tr>
+<tr><td>#26</td><td><code>has_c5</code></td><td>优惠券</td><td class="mono">+0.070</td><td>—</td><td class="mono" style="color:#94a3b8">0.000</td><td><span class="tag tag-red">↓ 归零</span></td><td class="mono">-0.070</td></tr>
+<tr><td>#27</td><td><code>c4_cnt</code></td><td>优惠券</td><td class="mono">-0.060</td><td>—</td><td class="mono" style="color:#94a3b8">0.000</td><td><span class="tag tag-red">↓ 归零</span></td><td class="mono">+0.060</td></tr>
+<tr><td>#28</td><td><code>c5_cnt</code></td><td>优惠券</td><td class="mono">+0.050</td><td>—</td><td class="mono" style="color:#94a3b8">0.000</td><td><span class="tag tag-red">↓ 归零</span></td><td class="mono">-0.050</td></tr>
+<tr style="background:#fee2e2"><td>#29</td><td><code>is_cycle</code></td><td>循环贷</td><td class="mono">0.000</td><td colspan="3" style="color:#94a3b8">已移除（v6中即为零信号）</td><td class="mono">—</td></tr>
+<tr style="background:#fee2e2"><td>#30</td><td><code>cycle_c4</code></td><td>循环贷</td><td class="mono">0.000</td><td colspan="3" style="color:#94a3b8">已移除（v6中即为零信号）</td><td class="mono">—</td></tr>
+<tr style="background:#fee2e2"><td>#31</td><td><code>cycle_c3</code></td><td>循环贷</td><td class="mono">0.000</td><td colspan="3" style="color:#94a3b8">已移除（v6中即为零信号）</td><td class="mono">—</td></tr>
+<tr><td>#32</td><td><code>has_c3</code></td><td>优惠券</td><td class="mono">-0.040</td><td>—</td><td class="mono" style="color:#94a3b8">0.000</td><td><span class="tag tag-red">↓ 归零</span></td><td class="mono">+0.040</td></tr>
+<tr><td>#33</td><td><code>c3_cnt</code></td><td>优惠券</td><td class="mono">-0.030</td><td>—</td><td class="mono" style="color:#94a3b8">0.000</td><td><span class="tag tag-red">↓ 归零</span></td><td class="mono">+0.030</td></tr>
+<tr style="background:#f0fdf4;font-weight:bold"><td colspan="2"><em>v8 新增</em></td><td>风控历史</td><td>—</td><td>#2</td><td class="mono" style="color:#16a34a">-0.510</td><td><span class="tag tag-green">⭐ 新增</span></td><td class="mono">新特征</td></tr>
+</tbody>
+</table>
+</div>
+<div class="footnote" style="margin-top:8px">* v8 排名中的 "—" 表示该特征系数被 L2 压缩至精确零（0.000000），实际等同于被移除。绿色行 = 稳定特征，橙色行 = 弱化特征，红色行 = 崩塌/归零特征。</div>
+</div>
+
+<!-- ================================================================ -->
+<!-- 页脚 -->
+<!-- ================================================================ -->
+<p style="text-align:center;font-size:12px;color:#94a3b8;margin-top:8px">模型文件: 首贷三期逾期预测模型_v6.pkl / 首贷三期逾期预测模型_v8.pkl &nbsp;|&nbsp; 训练框架: LogisticRegression (L2, C=1.0, balanced) &nbsp;|&nbsp; 目标变量: DPD30+</p>
+
+</div>
+
+<script>
+// ========== 图1: 十大特征 v6 vs v8 系数对比柱状图 ==========
+new Chart(document.getElementById('coefBarChart'), {
+  type: 'bar',
+  data: {
+    labels: ['t1_ovd', 'np', 'ad', 't1_ahead', 'cf', 't1_on_time', 'cp', 'am', 'apply_amt_k', 'cc'],
+    datasets: [{
+      label: 'v6 系数',
+      data: [11.18, -2.77, -1.70, 0.84, -0.62, -0.52, 0.51, -0.33, 0.27, 0.50],
+      backgroundColor: '#3b82f6',
+      borderRadius: 4,
+      barPercentage: 0.7,
+      categoryPercentage: 0.8
+    }, {
+      label: 'v8 系数',
+      data: [21.32, 0.05, -0.12, 0.00, -0.01, -0.48, 0.00, -0.01, 0.22, 0.00],
+      backgroundColor: '#ef4444',
+      borderRadius: 4,
+      barPercentage: 0.7,
+      categoryPercentage: 0.8
+    }]
+  },
+  options: {
+    responsive: true,
+    maintainAspectRatio: false,
+    scales: {
+      y: {
+        title: { display: true, text: 'LogisticRegression 系数', font: { size: 12 } },
+        ticks: { font: { size: 11 } }
+      },
+      x: {
+        ticks: { font: { size: 11 } }
+      }
+    },
+    plugins: {
+      legend: { position: 'bottom', labels: { font: { size: 12 }, padding: 14, usePointStyle: true } },
+      tooltip: {
+        callbacks: {
+          label: function(ctx) {
+            var v = ctx.raw;
+            var sign = v >= 0 ? '+' : '';
+            var dir = v > 0 ? '（风险特征：值↑ → 逾期风险↑）' : (v < 0 ? '（保护特征：值↑ → 逾期风险↓）' : '（零信号）');
+            return ctx.dataset.label + ': ' + sign + v.toFixed(2) + ' ' + dir;
+          }
+        }
+      }
+    }
+  }
+});
+
+// ========== 图2: 页面行为四特征 v6→v8 系数衰减 ==========
+new Chart(document.getElementById('pageBehaviorChart'), {
+  type: 'bar',
+  data: {
+    labels: ['np', 'ad', 'cf', 'am'],
+    datasets: [{
+      label: 'v6',
+      data: [-2.77, -1.70, -0.62, -0.33],
+      backgroundColor: '#3b82f6',
+      borderRadius: 4,
+      barPercentage: 0.6,
+      categoryPercentage: 0.75
+    }, {
+      label: 'v8',
+      data: [0.05, -0.12, -0.01, -0.01],
+      backgroundColor: '#f87171',
+      borderRadius: 4,
+      barPercentage: 0.6,
+      categoryPercentage: 0.75
+    }]
+  },
+  options: {
+    responsive: true,
+    maintainAspectRatio: false,
+    scales: {
+      y: {
+        title: { display: true, text: '系数', font: { size: 11 } },
+        ticks: { font: { size: 10 } }
+      },
+      x: {
+        ticks: { font: { size: 11 } }
+      }
+    },
+    plugins: {
+      legend: { position: 'bottom', labels: { font: { size: 11 }, padding: 10, usePointStyle: true } }
+    }
+  }
+});
+</script>
+
+<script>(function(){var h="bcb15f821479b4d5772bd0ca866c00ad5f926e3580720659cc80d39c9d09802a",g=document.getElementById("password-gate"),i=document.getElementById("report-password"),e=document.getElementById("report-password-error");function o(){document.body.classList.remove("password-locked");g.remove()}async function u(){var v=i.value.trim();if(!v)return;var b=await crypto.subtle.digest("SHA-256",new TextEncoder().encode(v)),a=Array.from(new Uint8Array(b)).map(function(x){return x.toString(16).padStart(2,"0")}).join("");if(a===h){document.cookie="report_auth="+h+";path=/;max-age=86400;samesite=lax";o()}else{e.style.display="block";i.select()}}if(document.cookie.indexOf("report_auth="+h)!==-1)o();else{document.getElementById("report-unlock").addEventListener("click",u);i.addEventListener("keydown",function(x){if(x.key==="Enter")u()})}}());</script></body>
+</html>

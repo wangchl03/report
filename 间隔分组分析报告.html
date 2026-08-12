@@ -1,0 +1,930 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>间隔分组分析报告 — 按回归间隔分组的多维度用户特征对比</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;600;700;900&display=swap" rel="stylesheet">
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body {
+  font-family: 'Noto Sans SC', -apple-system, BlinkMacSystemFont, sans-serif;
+  background-color: #0d1b2a;
+  color: #e0e6ed;
+  line-height: 1.6;
+  min-height: 100vh;
+}
+.container { max-width: 1400px; margin: 0 auto; padding: 24px 32px; }
+h1 {
+  font-size: 28px; font-weight: 700; text-align: center;
+  color: #ffffff; margin-bottom: 8px; letter-spacing: 0.5px;
+}
+.subtitle {
+  text-align: center; color: #8899aa; font-size: 14px;
+  margin-bottom: 8px; font-weight: 300;
+}
+.data-note {
+  text-align: center; color: #ffb347; font-size: 13px;
+  margin-bottom: 32px; font-weight: 400;
+  background: rgba(255,179,71,0.08); padding: 10px 20px;
+  border-radius: 8px; display: inline-block; width: 100%;
+  max-width: 800px; margin-left: auto; margin-right: auto;
+}
+
+.summary-cards {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+  margin-bottom: 32px;
+}
+.summary-card {
+  background: #132238;
+  border-radius: 12px;
+  padding: 20px 24px;
+  border: 1px solid rgba(255,255,255,0.06);
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+.summary-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(0,0,0,0.3);
+}
+.summary-card .label {
+  font-size: 12px; color: #6b8299; font-weight: 500;
+  text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 6px;
+}
+.summary-card .value {
+  font-size: 24px; font-weight: 700; color: #ffffff; margin-bottom: 4px;
+}
+.summary-card .note {
+  font-size: 12px; color: #5a7a96; font-weight: 400;
+}
+.summary-card.highlight { border-left: 3px solid #00d4aa; }
+.summary-card.warn { border-left: 3px solid #ff6b6b; }
+.summary-card.info { border-left: 3px solid #4da6ff; }
+.summary-card.accent { border-left: 3px solid #ffb347; }
+.summary-card.purple { border-left: 3px solid #a78bfa; }
+.summary-card.teal { border-left: 3px solid #2dd4bf; }
+
+.table-section { margin-bottom: 40px; }
+.table-section h2, .chart-section h2, .insights-section h2, .conclusions-section h2 {
+  font-size: 20px; font-weight: 600; color: #ffffff;
+  margin-bottom: 16px; padding-bottom: 8px;
+  border-bottom: 2px solid rgba(255,255,255,0.08);
+}
+.table-wrapper {
+  overflow-x: auto;
+  border-radius: 12px;
+  border: 1px solid rgba(255,255,255,0.06);
+}
+table {
+  width: 100%; border-collapse: collapse; background: #132238;
+  font-size: 13px;
+}
+thead th {
+  background: #1a2e48; color: #b0c4d8; font-weight: 600;
+  padding: 14px 12px; text-align: center; white-space: nowrap;
+  border-bottom: 2px solid rgba(255,255,255,0.1);
+  font-size: 12px;
+  position: sticky; top: 0;
+}
+tbody td {
+  padding: 12px; text-align: center; border-bottom: 1px solid rgba(255,255,255,0.04);
+  color: #d0dae6;
+}
+tbody tr:hover { background: rgba(255,255,255,0.03); }
+tbody tr:last-child td { border-bottom: none; }
+td:first-child { font-weight: 600; color: #ffffff; text-align: left; padding-left: 16px; }
+.col-num { text-align: right; font-variant-numeric: tabular-nums; }
+
+.chart-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 20px;
+  margin-bottom: 32px;
+}
+.chart-grid.full { grid-template-columns: 1fr; }
+.chart-card {
+  background: #132238;
+  border-radius: 12px;
+  padding: 20px 24px;
+  border: 1px solid rgba(255,255,255,0.06);
+}
+.chart-card h3 {
+  font-size: 14px; font-weight: 600; color: #b0c4d8;
+  margin-bottom: 16px; text-align: center;
+}
+.chart-card .chart-wrap {
+  position: relative; width: 100%;
+}
+.chart-card .chart-wrap canvas { width: 100% !important; }
+
+.insight-card {
+  background: #132238;
+  border-radius: 12px;
+  padding: 20px 24px;
+  margin-bottom: 16px;
+  border: 1px solid rgba(255,255,255,0.06);
+}
+.insight-card .insight-title {
+  font-size: 15px; font-weight: 700; color: #ffffff; margin-bottom: 8px;
+}
+.insight-card .insight-body {
+  font-size: 13px; color: #a0b8cc; line-height: 1.8;
+}
+.insight-card .insight-body strong { color: #00d4aa; }
+.insight-card .insight-body em { color: #ffb347; font-style: normal; }
+
+.conclusion-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 16px;
+  margin-top: 16px;
+}
+.conclusion-card {
+  background: #132238;
+  border-radius: 12px;
+  padding: 20px 24px;
+  border: 1px solid rgba(255,255,255,0.06);
+  border-top: 3px solid #00d4aa;
+}
+.conclusion-card h4 {
+  font-size: 14px; font-weight: 700; color: #ffffff; margin-bottom: 6px;
+}
+.conclusion-card p {
+  font-size: 12px; color: #8899aa; line-height: 1.6;
+}
+
+.footer {
+  text-align: center; padding: 32px 0 16px;
+  font-size: 11px; color: #4a6078;
+}
+
+@media (max-width: 900px) {
+  .summary-cards { grid-template-columns: repeat(2, 1fr); }
+  .chart-grid { grid-template-columns: 1fr; }
+}
+@media (max-width: 600px) {
+  .summary-cards { grid-template-columns: 1fr; }
+  .container { padding: 16px; }
+}
+</style>
+<style>body.password-locked{overflow:hidden}body.password-locked>*:not(#password-gate){filter:blur(7px);pointer-events:none;user-select:none}#password-gate{position:fixed;z-index:2147483647;inset:0;display:grid;place-items:center;background:linear-gradient(135deg,#101b36,#203b72);font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei",sans-serif}#password-gate .password-box{width:min(360px,calc(100% - 40px));padding:34px 30px;background:#fff;border-radius:14px;box-shadow:0 18px 50px #0005;text-align:center;color:#17223b}#password-gate h2{margin:0 0 8px;font-size:22px}#password-gate p{margin:0 0 20px;color:#667085}#password-gate input{width:100%;padding:11px 13px;border:1px solid #d9e0ea;border-radius:8px;font-size:15px;outline:none}#password-gate input:focus{border-color:#2563eb}#password-gate button{width:100%;margin-top:12px;padding:11px;border:0;border-radius:8px;background:#2563eb;color:#fff;font-weight:700;cursor:pointer}#password-gate .password-error{display:none;color:#dc2626;font-size:13px;margin:10px 0 0}</style></head>
+<body class="password-locked"><div id="password-gate"><div class="password-box"><h2>内部分析报告</h2><p>请输入访问密码</p><input id="report-password" type="password" placeholder="输入密码" autofocus><button id="report-unlock">进入报告</button><div id="report-password-error" class="password-error">密码错误，请重试</div></div></div>
+<div class="container">
+
+<h1>间隔分组分析报告</h1>
+<p class="subtitle">按回归间隔分组的多维度用户特征对比 · 分析日期：2026年7月16日</p>
+<p class="data-note">⚠ 注意：各间隔分组之间<b>并非互斥</b>——同一用户可能出现在多个间隔中。每个间隔独立查找该用户<b>首次落入该范围</b>的间隔，因此在数据表现上存在交叉。</p>
+
+<!-- Summary Cards -->
+<div class="summary-cards">
+  <div class="summary-card info">
+    <div class="label">0-7天</div>
+    <div class="value">222,355 人</div>
+    <div class="note">最大基数</div>
+  </div>
+  <div class="summary-card highlight">
+    <div class="label">16-30天</div>
+    <div class="value">盈利率 17.7%</div>
+    <div class="note">盈利率最高</div>
+  </div>
+  <div class="summary-card teal">
+    <div class="label">8-15天</div>
+    <div class="value">逾期率 22.7%</div>
+    <div class="note">首笔逾期率最低</div>
+  </div>
+  <div class="summary-card warn">
+    <div class="label">61-90天</div>
+    <div class="value">再提单率 11.7%</div>
+    <div class="note">再提单率最低</div>
+  </div>
+  <div class="summary-card purple">
+    <div class="label">8-15天</div>
+    <div class="value">盈利率 20.6%</div>
+    <div class="note">首笔放款盈利率最高</div>
+  </div>
+  <div class="summary-card accent">
+    <div class="label">0-7天</div>
+    <div class="value">循环贷占比 39.4%</div>
+    <div class="note">循环贷占比最高</div>
+  </div>
+</div>
+
+<!-- Data Table -->
+<div class="table-section">
+  <h2>完整数据表</h2>
+  <div class="table-wrapper">
+    <table>
+      <thead>
+        <tr>
+          <th>间隔</th>
+          <th>总用户</th>
+          <th>永久流失</th>
+          <th>再提单率</th>
+          <th>间隔前人均借款</th>
+          <th>再放款率</th>
+          <th>回归后人均借款</th>
+          <th>回归后逾期率</th>
+          <th>回归后循环贷占比</th>
+          <th>回归后盈利率</th>
+          <th>首笔放款盈利率</th>
+          <th>首笔逾期率</th>
+          <th>额度(前一笔→回归首笔提单)</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>0-7天</td>
+          <td class="col-num">222,355</td>
+          <td class="col-num">21,165</td>
+          <td>90.5%</td>
+          <td class="col-num">1.1</td>
+          <td>92.7%</td>
+          <td class="col-num">3.0</td>
+          <td>30.4%</td>
+          <td>39.4%</td>
+          <td>+11.8%</td>
+          <td>+11.7%</td>
+          <td>31.2%</td>
+          <td>98.6%→91.1%</td>
+        </tr>
+        <tr>
+          <td>8-15天</td>
+          <td class="col-num">57,441</td>
+          <td class="col-num">33,901</td>
+          <td>41.0%</td>
+          <td class="col-num">2.3</td>
+          <td>90.4%</td>
+          <td class="col-num">3.1</td>
+          <td>24.4%</td>
+          <td>25.2%</td>
+          <td>+16.9%</td>
+          <td>+20.6%</td>
+          <td>22.7%</td>
+          <td>85.7%→78.2%</td>
+        </tr>
+        <tr>
+          <td>16-30天</td>
+          <td class="col-num">50,760</td>
+          <td class="col-num">34,632</td>
+          <td>31.8%</td>
+          <td class="col-num">2.3</td>
+          <td>88.9%</td>
+          <td class="col-num">3.0</td>
+          <td>24.3%</td>
+          <td>25.5%</td>
+          <td>+17.7%</td>
+          <td>+20.7%</td>
+          <td>23.5%</td>
+          <td>83.9%→75.9%</td>
+        </tr>
+        <tr>
+          <td>31-60天</td>
+          <td class="col-num">46,326</td>
+          <td class="col-num">35,152</td>
+          <td>24.1%</td>
+          <td class="col-num">2.4</td>
+          <td>87.3%</td>
+          <td class="col-num">2.8</td>
+          <td>25.3%</td>
+          <td>24.7%</td>
+          <td>+17.1%</td>
+          <td>+15.9%</td>
+          <td>26.4%</td>
+          <td>82.5%→74.0%</td>
+        </tr>
+        <tr>
+          <td>61-90天</td>
+          <td class="col-num">40,626</td>
+          <td class="col-num">35,885</td>
+          <td>11.7%</td>
+          <td class="col-num">2.3</td>
+          <td>84.9%</td>
+          <td class="col-num">2.6</td>
+          <td>25.6%</td>
+          <td>24.5%</td>
+          <td>+17.3%</td>
+          <td>+14.6%</td>
+          <td>27.4%</td>
+          <td>80.4%→72.1%</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- Charts -->
+<div class="chart-section">
+  <h2>可视化分析</h2>
+
+  <!-- Chart 1: 间隔前人均借款+用户数 (Grouped Bar + dual axis) -->
+  <div class="chart-grid full">
+    <div class="chart-card">
+      <h3>图表1：间隔前人均借款与用户数分布</h3>
+      <div class="chart-wrap"><canvas id="chart1"></canvas></div>
+    </div>
+  </div>
+
+  <!-- Chart 2 & 3 -->
+  <div class="chart-grid">
+    <div class="chart-card">
+      <h3>图表2：再提单率与再放款率趋势</h3>
+      <div class="chart-wrap"><canvas id="chart2"></canvas></div>
+    </div>
+    <div class="chart-card">
+      <h3>图表3：逾期率对比（首笔 vs 回归后）</h3>
+      <div class="chart-wrap"><canvas id="chart3"></canvas></div>
+    </div>
+  </div>
+
+  <!-- Chart 4 & 5 -->
+  <div class="chart-grid">
+    <div class="chart-card">
+      <h3>图表4：盈利率全方位对比</h3>
+      <div class="chart-wrap"><canvas id="chart4"></canvas></div>
+    </div>
+    <div class="chart-card">
+      <h3>图表5：额度使用率变化</h3>
+      <div class="chart-wrap"><canvas id="chart5"></canvas></div>
+    </div>
+  </div>
+
+  <!-- Chart 6 & 7 -->
+  <div class="chart-grid">
+    <div class="chart-card">
+      <h3>图表6：回归后人均借款与循环贷占比</h3>
+      <div class="chart-wrap"><canvas id="chart6"></canvas></div>
+    </div>
+    <div class="chart-card">
+      <h3>图表7：回归后逾期率 vs 盈利率</h3>
+      <div class="chart-wrap"><canvas id="chart7"></canvas></div>
+    </div>
+  </div>
+</div>
+
+<!-- Insights -->
+<div class="insights-section">
+  <h2>数据洞察</h2>
+
+  <div class="insight-card">
+    <div class="insight-title">洞察1：0-7天秒回用户 — 量最大但质最差，循环贷是关键</div>
+    <div class="insight-body">
+      222,355人（占绝对多数），间隔前仅借 <strong>1.1次</strong> 就秒回。回归后逾期率最高（<strong>30.4%</strong>），盈利率最低（<strong>+11.8%</strong>）。但循环贷占比最高（<strong>39.4%</strong>）——循环贷产品本身就鼓励"随时借随时还"。结论：0-7天用户不应视为"召回对象"，他们自己会回来。运营重点是推动他们提高额度使用率（目前从 <em>99% 降至 91%</em>）、降低逾期率。
+    </div>
+  </div>
+
+  <div class="insight-card">
+    <div class="insight-title">洞察2：间隔≥8天的用户 — 借了2-3笔才首次出现长间隔，是高质量"回头客"</div>
+    <div class="insight-body">
+      间隔前人均借款从 <strong>1.1次</strong> 跳升至 <strong>2.3-2.4次</strong>。这批用户不是"首贷后就不来了"，而是借了 2-3 次都正常，然后才出现间隔。回归后逾期率骤降至 <strong>~24%</strong>（下降约 6pp），盈利率跳升至 <strong>~17%</strong>（上升约 6pp）。结论：这是真正的"召回高价值用户"——他们不是不会回来，只是需要时间。
+    </div>
+  </div>
+
+  <div class="insight-card">
+    <div class="insight-title">洞察3：8-15天 — 召回性价比之王</div>
+    <div class="insight-body">
+      再提单率 <strong>41.0%</strong>（相对较高），回归后逾期率最低（<strong>24.4%</strong>），首笔放款盈利率最高（<strong>+20.6%</strong>）。额度使用率从 <em>86% 降至 78%</em>（降幅合理，不过度保守）。结论：最值得投入运营资源的窗口。
+    </div>
+  </div>
+
+  <div class="insight-card">
+    <div class="insight-title">洞察4：16-30天 — 盈利率顶点（+17.7%）</div>
+    <div class="insight-body">
+      整体盈利率最高，首笔放款盈利率也最高（<strong>+20.7%</strong>）。虽然再提单率降至 <strong>31.8%</strong>，但回来的用户质量极好。结论：精准触达，每条召回信息都要有明确的价值主张。
+    </div>
+  </div>
+
+  <div class="insight-card">
+    <div class="insight-title">洞察5：额度使用率持续下滑是"冷静期"效应</div>
+    <div class="insight-body">
+      间隔前额度从 <strong>98.6%</strong>（0-7天）降至 <strong>80.4%</strong>（61-90天），回归后从 <strong>91.1%</strong> 降至 <strong>72.1%</strong>。间隔越长，用户越谨慎。运营在召回时应主动推荐"小额短期"产品，匹配用户更保守的心态，再逐步引导额度提升。
+    </div>
+  </div>
+
+  <div class="insight-card">
+    <div class="insight-title">洞察6：循环贷是阻止间隔延长的护城河</div>
+    <div class="insight-body">
+      0-7天循环贷 <strong>39.4%</strong>，其余稳定在 <strong>24%-25%</strong>。秒回用户中循环贷占比高，因为循环贷产品天然适配高频短贷。长间隔用户循环贷占比骤降，说明非循环贷用户更容易"忘了回来"。推动非循环贷→循环贷升级是根本性降低长间隔的技术手段。
+    </div>
+  </div>
+
+  <div class="insight-card">
+    <div class="insight-title">洞察7：首笔放款盈利率在16-30天达到峰值（+20.7%）后逐步回落</div>
+    <div class="insight-body">
+      8-15天 = <strong>+20.6%</strong>，16-30天 = <strong>+20.7%</strong>，31-60天 = <strong>+15.9%</strong>，61-90天 = <strong>+14.6%</strong>。说明间隔太长的用户回来后的第一笔借款，利润率反而下降——可能因为借更小额、或者逾期风险回升。最佳窗口在 <strong>8-30天</strong>。
+    </div>
+  </div>
+</div>
+
+<!-- Conclusions -->
+<div class="conclusions-section">
+  <h2>结论与建议</h2>
+  <div class="conclusion-cards">
+    <div class="conclusion-card">
+      <h4>🏆 最佳召回</h4>
+      <p>8-15天：性价比最高。再提单率 41.0%，逾期率最低 22.7%，首笔盈利率 20.6%。建议投放 <strong>80% 运营资源</strong>。</p>
+    </div>
+    <div class="conclusion-card">
+      <h4>💰 利润最高</h4>
+      <p>16-30天：盈利率 17.7%，首笔放款盈利率 20.7%。虽再提单率仅 31.8%，但质量最优。建议投放 <strong>20% 精准资源</strong>。</p>
+    </div>
+    <div class="conclusion-card">
+      <h4>🎯 边际召回</h4>
+      <p>31-60天：再提单率 24.1%，盈利率 17.1% 尚可。需 ROI 精算后决定是否投入。建议仅对有明确价值信号的用户触达。</p>
+    </div>
+    <div class="conclusion-card">
+      <h4>🔔 长间隔唤醒</h4>
+      <p>61-90天：再提单率 11.7%，但回归用户盈利率仍有 17.3%。不应该放弃——每 100 个沉默 60-90 天的用户中，仍有 12 个会回来，且他们回来后创造的利润率与 8-15 天用户相当。建议以低频、低打扰的方式持续触达（如每月 1 次 Push + 短信），不投入重运营资源但保持存在感。</p>
+    </div>
+  </div>
+</div>
+
+<div class="footer">
+  间隔分组分析报告 · 数据口径：各间隔独立查找首次落入该范围的间隔（非互斥分组） · 分析日期：2026年7月16日
+</div>
+
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<script>
+(function () {
+  'use strict';
+
+  var intervals = ['0-7天', '8-15天', '16-30天', '31-60天', '61-90天'];
+
+  var totalUsers      = [222355, 57441, 50760, 46326, 40626];
+  var churnedUsers    = [21165, 33901, 34632, 35152, 35885];
+  var reapplyRate     = [90.5, 41.0, 31.8, 24.1, 11.7];
+  var preBorrowCount  = [1.1, 2.3, 2.3, 2.4, 2.3];
+  var reloanRate      = [92.7, 90.4, 88.9, 87.3, 84.9];
+  var postBorrowCount = [3.0, 3.1, 3.0, 2.8, 2.6];
+  var returnOdRate    = [30.4, 24.4, 24.3, 25.3, 25.6];
+  var revolvingRatio  = [39.4, 25.2, 25.5, 24.7, 24.5];
+  var returnProfit    = [11.8, 16.9, 17.7, 17.1, 17.3];
+  var firstLoanProfit = [11.7, 20.6, 20.7, 15.9, 14.6];
+  var firstOdRate     = [31.2, 22.7, 23.5, 26.4, 27.4];
+  var preLimitUsage   = [98.6, 85.7, 83.9, 82.5, 80.4];
+  var postLimitUsage  = [91.1, 78.2, 75.9, 74.0, 72.1];
+  var limitDelta      = [];
+  for (var i = 0; i < preLimitUsage.length; i++) {
+    limitDelta.push(parseFloat((preLimitUsage[i] - postLimitUsage[i]).toFixed(1)));
+  }
+
+  var darkTooltipBg = 'rgba(13,27,42,0.95)';
+  var darkLegendColor = '#8899aa';
+  var gridColor = 'rgba(255,255,255,0.06)';
+  var tickColor = '#5a7a96';
+
+  function baseOptions() {
+    return {
+      responsive: true,
+      maintainAspectRatio: true,
+      aspectRatio: 2,
+      plugins: {
+        legend: {
+          labels: { color: darkLegendColor, font: { size: 11 }, padding: 16, usePointStyle: true, pointStyleWidth: 8 }
+        },
+        tooltip: {
+          backgroundColor: darkTooltipBg,
+          titleColor: '#ffffff',
+          bodyColor: '#b0c4d8',
+          borderColor: 'rgba(255,255,255,0.1)',
+          borderWidth: 1,
+          padding: 12,
+          titleFont: { size: 12 },
+          bodyFont: { size: 11 }
+        }
+      },
+      scales: {
+        x: { ticks: { color: tickColor, font: { size: 11 } }, grid: { color: gridColor, drawBorder: false } },
+        y: { ticks: { color: tickColor, font: { size: 11 } }, grid: { color: gridColor, drawBorder: false }, beginAtZero: true }
+      }
+    };
+  }
+
+  // Chart 1: 间隔前人均借款+用户数 (Grouped Bar with dual axis)
+  (function () {
+    var el = document.getElementById('chart1');
+    if (!el) return;
+    new Chart(el, {
+      type: 'bar',
+      data: {
+        labels: intervals,
+        datasets: [
+          {
+            label: '间隔前人均借款',
+            data: preBorrowCount,
+            backgroundColor: 'rgba(77,166,255,0.75)',
+            borderColor: '#4da6ff',
+            borderWidth: 1,
+            borderRadius: 4,
+            yAxisID: 'y',
+            order: 2
+          },
+          {
+            label: '总用户数',
+            data: totalUsers,
+            backgroundColor: 'rgba(135,206,250,0.55)',
+            borderColor: '#87cefa',
+            borderWidth: 1,
+            borderRadius: 4,
+            yAxisID: 'y1',
+            order: 1
+          }
+        ]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: true,
+        aspectRatio: 2.5,
+        plugins: {
+          legend: {
+            labels: { color: darkLegendColor, font: { size: 11 }, padding: 16, usePointStyle: true, pointStyleWidth: 8 }
+          },
+          tooltip: {
+            backgroundColor: darkTooltipBg,
+            titleColor: '#ffffff',
+            bodyColor: '#b0c4d8',
+            borderColor: 'rgba(255,255,255,0.1)',
+            borderWidth: 1,
+            padding: 12,
+            callbacks: {
+              label: function (ctx) {
+                if (ctx.datasetIndex === 0) return '间隔前人均借款: ' + ctx.raw.toFixed(1) + ' 次';
+                return '总用户数: ' + ctx.raw.toLocaleString() + ' 人';
+              }
+            }
+          }
+        },
+        scales: {
+          x: { ticks: { color: tickColor, font: { size: 11 } }, grid: { color: gridColor, drawBorder: false } },
+          y: {
+            type: 'linear',
+            position: 'left',
+            ticks: { color: '#4da6ff', font: { size: 11 }, stepSize: 0.5 },
+            grid: { color: gridColor, drawBorder: false },
+            title: { display: true, text: '人均借款次数', color: '#4da6ff', font: { size: 11 } },
+            min: 0,
+            max: 3.5
+          },
+          y1: {
+            type: 'linear',
+            position: 'right',
+            ticks: { color: '#87cefa', font: { size: 11 }, callback: function (v) { return v >= 1000 ? (v / 1000).toFixed(0) + 'k' : v; } },
+            grid: { drawOnChartArea: false },
+            title: { display: true, text: '用户数', color: '#87cefa', font: { size: 11 } },
+            min: 0
+          }
+        }
+      }
+    });
+  })();
+
+  // Chart 2: 再提单率+再放款率 (Dual Line)
+  (function () {
+    var el = document.getElementById('chart2');
+    if (!el) return;
+    new Chart(el, {
+      type: 'line',
+      data: {
+        labels: intervals,
+        datasets: [
+          {
+            label: '再提单率',
+            data: reapplyRate,
+            borderColor: '#4da6ff',
+            backgroundColor: 'rgba(77,166,255,0.1)',
+            borderWidth: 2.5,
+            pointRadius: 5,
+            pointBackgroundColor: '#4da6ff',
+            pointBorderColor: '#0d1b2a',
+            pointBorderWidth: 2,
+            tension: 0.3,
+            fill: false
+          },
+          {
+            label: '再放款率',
+            data: reloanRate,
+            borderColor: '#00d4aa',
+            backgroundColor: 'rgba(0,212,170,0.1)',
+            borderWidth: 2.5,
+            pointRadius: 5,
+            pointBackgroundColor: '#00d4aa',
+            pointBorderColor: '#0d1b2a',
+            pointBorderWidth: 2,
+            tension: 0.3,
+            fill: false
+          }
+        ]
+      },
+      options: Object.assign({}, baseOptions(), {
+        scales: {
+          x: { ticks: { color: tickColor, font: { size: 11 } }, grid: { color: gridColor, drawBorder: false } },
+          y: {
+            min: 0, max: 100,
+            ticks: { color: tickColor, font: { size: 11 }, callback: function (v) { return v + '%'; }, stepSize: 10 },
+            grid: { color: gridColor, drawBorder: false },
+            title: { display: true, text: '比率 (%)', color: tickColor, font: { size: 11 } }
+          }
+        }
+      })
+    });
+  })();
+
+  // Chart 3: 逾期率对比 (Grouped Bar)
+  (function () {
+    var el = document.getElementById('chart3');
+    if (!el) return;
+    new Chart(el, {
+      type: 'bar',
+      data: {
+        labels: intervals,
+        datasets: [
+          {
+            label: '首笔逾期率',
+            data: firstOdRate,
+            backgroundColor: 'rgba(255,107,107,0.75)',
+            borderColor: '#ff6b6b',
+            borderWidth: 1,
+            borderRadius: 4
+          },
+          {
+            label: '回归后逾期率',
+            data: returnOdRate,
+            backgroundColor: 'rgba(255,179,71,0.75)',
+            borderColor: '#ffb347',
+            borderWidth: 1,
+            borderRadius: 4
+          }
+        ]
+      },
+      options: Object.assign({}, baseOptions(), {
+        scales: {
+          x: { ticks: { color: tickColor, font: { size: 11 } }, grid: { color: gridColor, drawBorder: false } },
+          y: {
+            min: 18, max: 34,
+            ticks: { color: tickColor, font: { size: 11 }, callback: function (v) { return v + '%'; }, stepSize: 2 },
+            grid: { color: gridColor, drawBorder: false },
+            title: { display: true, text: '逾期率 (%)', color: tickColor, font: { size: 11 } }
+          }
+        }
+      })
+    });
+  })();
+
+  // Chart 4: 盈利率全方位 (Grouped Bar)
+  (function () {
+    var el = document.getElementById('chart4');
+    if (!el) return;
+    new Chart(el, {
+      type: 'bar',
+      data: {
+        labels: intervals,
+        datasets: [
+          {
+            label: '回归后盈利率',
+            data: returnProfit,
+            backgroundColor: 'rgba(0,212,170,0.75)',
+            borderColor: '#00d4aa',
+            borderWidth: 1,
+            borderRadius: 4
+          },
+          {
+            label: '首笔放款盈利率',
+            data: firstLoanProfit,
+            backgroundColor: 'rgba(45,212,191,0.75)',
+            borderColor: '#2dd4bf',
+            borderWidth: 1,
+            borderRadius: 4
+          }
+        ]
+      },
+      options: Object.assign({}, baseOptions(), {
+        scales: {
+          x: { ticks: { color: tickColor, font: { size: 11 } }, grid: { color: gridColor, drawBorder: false } },
+          y: {
+            ticks: { color: tickColor, font: { size: 11 }, callback: function (v) { return '+' + v + '%'; } },
+            grid: { color: gridColor, drawBorder: false },
+            title: { display: true, text: '盈利率 (%)', color: tickColor, font: { size: 11 } }
+          }
+        }
+      })
+    });
+  })();
+
+  // Chart 5: 额度使用率变化 (3-group Bar)
+  (function () {
+    var el = document.getElementById('chart5');
+    if (!el) return;
+    new Chart(el, {
+      type: 'bar',
+      data: {
+        labels: intervals,
+        datasets: [
+          {
+            label: '前一笔额度使用率',
+            data: preLimitUsage,
+            backgroundColor: 'rgba(77,166,255,0.65)',
+            borderColor: '#4da6ff',
+            borderWidth: 1,
+            borderRadius: 3
+          },
+          {
+            label: '回归首笔提单额度使用率',
+            data: postLimitUsage,
+            backgroundColor: 'rgba(0,212,170,0.65)',
+            borderColor: '#00d4aa',
+            borderWidth: 1,
+            borderRadius: 3
+          },
+          {
+            label: '降幅 (Δ)',
+            data: limitDelta,
+            backgroundColor: 'rgba(255,179,71,0.7)',
+            borderColor: '#ffb347',
+            borderWidth: 1,
+            borderRadius: 3
+          }
+        ]
+      },
+      options: Object.assign({}, baseOptions(), {
+        scales: {
+          x: { ticks: { color: tickColor, font: { size: 11 } }, grid: { color: gridColor, drawBorder: false } },
+          y: {
+            ticks: { color: tickColor, font: { size: 11 }, callback: function (v) { return v + '%'; } },
+            grid: { color: gridColor, drawBorder: false },
+            title: { display: true, text: '额度使用率 (%)', color: tickColor, font: { size: 11 } }
+          }
+        }
+      })
+    });
+  })();
+
+  // Chart 6: 回归后人均借款+循环贷占比 (Grouped Bar with dual axis)
+  (function () {
+    var el = document.getElementById('chart6');
+    if (!el) return;
+    new Chart(el, {
+      type: 'bar',
+      data: {
+        labels: intervals,
+        datasets: [
+          {
+            label: '回归后人均借款',
+            data: postBorrowCount,
+            backgroundColor: 'rgba(77,166,255,0.75)',
+            borderColor: '#4da6ff',
+            borderWidth: 1,
+            borderRadius: 4,
+            yAxisID: 'y',
+            order: 2
+          },
+          {
+            label: '回归后循环贷占比',
+            data: revolvingRatio,
+            backgroundColor: 'rgba(167,139,250,0.75)',
+            borderColor: '#a78bfa',
+            borderWidth: 1,
+            borderRadius: 4,
+            yAxisID: 'y1',
+            order: 1
+          }
+        ]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: true,
+        aspectRatio: 2,
+        plugins: {
+          legend: {
+            labels: { color: darkLegendColor, font: { size: 11 }, padding: 16, usePointStyle: true, pointStyleWidth: 8 }
+          },
+          tooltip: {
+            backgroundColor: darkTooltipBg,
+            titleColor: '#ffffff',
+            bodyColor: '#b0c4d8',
+            borderColor: 'rgba(255,255,255,0.1)',
+            borderWidth: 1,
+            padding: 12,
+            callbacks: {
+              label: function (ctx) {
+                if (ctx.datasetIndex === 0) return '回归后人均借款: ' + ctx.raw.toFixed(1) + ' 次';
+                return '回归后循环贷占比: ' + ctx.raw.toFixed(1) + '%';
+              }
+            }
+          }
+        },
+        scales: {
+          x: { ticks: { color: tickColor, font: { size: 11 } }, grid: { color: gridColor, drawBorder: false } },
+          y: {
+            type: 'linear',
+            position: 'left',
+            ticks: { color: '#4da6ff', font: { size: 11 }, stepSize: 0.5 },
+            grid: { color: gridColor, drawBorder: false },
+            title: { display: true, text: '人均借款次数', color: '#4da6ff', font: { size: 11 } },
+            min: 0,
+            max: 4.5
+          },
+          y1: {
+            type: 'linear',
+            position: 'right',
+            ticks: { color: '#a78bfa', font: { size: 11 }, callback: function (v) { return v + '%'; } },
+            grid: { drawOnChartArea: false },
+            title: { display: true, text: '循环贷占比 (%)', color: '#a78bfa', font: { size: 11 } },
+            min: 0,
+            max: 50
+          }
+        }
+      }
+    });
+  })();
+
+  // Chart 7: 回归后逾期率 vs 盈利率 (Bar + Line combo)
+  (function () {
+    var el = document.getElementById('chart7');
+    if (!el) return;
+    new Chart(el, {
+      type: 'bar',
+      data: {
+        labels: intervals,
+        datasets: [
+          {
+            label: '回归后逾期率',
+            data: returnOdRate,
+            backgroundColor: 'rgba(255,107,107,0.7)',
+            borderColor: '#ff6b6b',
+            borderWidth: 1,
+            borderRadius: 4,
+            yAxisID: 'y',
+            order: 2
+          },
+          {
+            label: '回归后盈利率',
+            data: returnProfit,
+            type: 'line',
+            borderColor: '#00d4aa',
+            backgroundColor: 'rgba(0,212,170,0.1)',
+            borderWidth: 2.5,
+            pointRadius: 6,
+            pointBackgroundColor: '#00d4aa',
+            pointBorderColor: '#0d1b2a',
+            pointBorderWidth: 2,
+            tension: 0.3,
+            fill: false,
+            yAxisID: 'y1',
+            order: 1
+          }
+        ]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: true,
+        aspectRatio: 2,
+        plugins: {
+          legend: {
+            labels: { color: darkLegendColor, font: { size: 11 }, padding: 16, usePointStyle: true, pointStyleWidth: 8 }
+          },
+          tooltip: {
+            backgroundColor: darkTooltipBg,
+            titleColor: '#ffffff',
+            bodyColor: '#b0c4d8',
+            borderColor: 'rgba(255,255,255,0.1)',
+            borderWidth: 1,
+            padding: 12,
+            callbacks: {
+              label: function (ctx) {
+                if (ctx.datasetIndex === 0) return '回归后逾期率: ' + ctx.raw.toFixed(1) + '%';
+                return '回归后盈利率: +' + ctx.raw.toFixed(1) + '%';
+              }
+            }
+          }
+        },
+        scales: {
+          x: { ticks: { color: tickColor, font: { size: 11 } }, grid: { color: gridColor, drawBorder: false } },
+          y: {
+            type: 'linear',
+            position: 'left',
+            min: 18,
+            max: 34,
+            ticks: { color: '#ff6b6b', font: { size: 11 }, callback: function (v) { return v + '%'; }, stepSize: 2 },
+            grid: { color: gridColor, drawBorder: false },
+            title: { display: true, text: '逾期率 (%)', color: '#ff6b6b', font: { size: 11 } }
+          },
+          y1: {
+            type: 'linear',
+            position: 'right',
+            min: 8,
+            max: 22,
+            ticks: { color: '#00d4aa', font: { size: 11 }, callback: function (v) { return '+' + v + '%'; }, stepSize: 2 },
+            grid: { drawOnChartArea: false },
+            title: { display: true, text: '盈利率 (%)', color: '#00d4aa', font: { size: 11 } }
+          }
+        }
+      }
+    });
+  })();
+
+})();
+</script>
+<script>(function(){var h="bcb15f821479b4d5772bd0ca866c00ad5f926e3580720659cc80d39c9d09802a",g=document.getElementById("password-gate"),i=document.getElementById("report-password"),e=document.getElementById("report-password-error");function o(){document.body.classList.remove("password-locked");g.remove()}async function u(){var v=i.value.trim();if(!v)return;var b=await crypto.subtle.digest("SHA-256",new TextEncoder().encode(v)),a=Array.from(new Uint8Array(b)).map(function(x){return x.toString(16).padStart(2,"0")}).join("");if(a===h){document.cookie="report_auth="+h+";path=/;max-age=86400;samesite=lax";o()}else{e.style.display="block";i.select()}}if(document.cookie.indexOf("report_auth="+h)!==-1)o();else{document.getElementById("report-unlock").addEventListener("click",u);i.addEventListener("keydown",function(x){if(x.key==="Enter")u()})}}());</script></body>
+</html>
