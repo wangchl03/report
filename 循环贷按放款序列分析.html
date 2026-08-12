@@ -1,0 +1,776 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>循环贷用户：各放款序列分析</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:#111827;color:#e5e7eb;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;line-height:1.6;padding:32px 16px}
+.container{max-width:1200px;margin:0 auto}
+h1{font-size:1.6em;margin-bottom:4px;color:#f9fafb}
+h2{font-size:1.25em;margin:32px 0 12px;padding-bottom:6px;border-bottom:1px solid #374151;color:#e5e7eb}
+h3{font-size:1.1em;margin:20px 0 8px}
+.subtitle{font-size:13px;color:#9ca3af;margin-bottom:24px}
+table{width:100%;border-collapse:collapse;margin:12px 0;font-size:13px}
+th,td{padding:8px 6px;text-align:right;border-bottom:1px solid #1f2937;white-space:nowrap}
+th{background:#1f2937;color:#9ca3af;font-weight:600;position:sticky;top:0}
+th:first-child,td:first-child{text-align:left}
+tr:hover{background:rgba(255,255,255,.03)}
+.pos{color:#34d399}
+.neg{color:#f87171}
+.chart-grid{display:grid;grid-template-columns:1fr 1fr;gap:20px;margin:20px 0}
+.chart-grid .full{grid-column:1/-1}
+.chart-card{background:#161b22;border:1px solid #30363d;border-radius:8px;padding:16px}
+.chart-card h4{margin:0 0 8px;font-size:13px;color:#9ca3af}
+.chart-wrap{position:relative;height:300px}
+.chart-wrap.tall{height:400px}
+.insight-box{background:#1a1f2e;border:1px solid #374151;border-radius:8px;padding:16px;margin:16px 0;font-size:14px;line-height:1.8}
+p{margin:8px 0;font-size:14px}
+li{margin:4px 0}
+.legend-note{font-size:12px;color:#9ca3af;margin:4px 0 16px}
+.legend-note span{margin-right:14px}
+.legend-note .dot{display:inline-block;width:10px;height:10px;border-radius:50%;margin-right:3px;vertical-align:middle}
+pre.code{display:block;background:#1f2937;border:1px solid #374151;border-radius:8px;padding:20px 24px;overflow-x:auto;font-size:12px;line-height:1.7;color:#a5b4c2;white-space:pre;word-break:normal;margin:16px 0;font-family:'SF Mono',Monaco,monospace}
+@media(max-width:768px){.chart-grid{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<div class="container">
+
+<h1>循环贷用户：按放款序列分析</h1>
+<p class="subtitle">仅限历史上至少有一笔循环贷订单的用户 | 终态订单仅保留 loan_status_code IN (7,8) | 排除 s5 在途 | 循环贷/非循环贷双维度 | 2025.01~2026.05 注册用户</p>
+
+<div class="insight-box">
+<strong>分析维度：</strong>将循环贷用户的每笔订单拆分为"循环贷订单"（recycle_type=2）和"非循环贷订单"（非循环贷，含类型 3 和未标记），分别统计逾期率和盈利率。
+<ul style="margin:8px 0 0 16px;line-height:2">
+  <li><span class="dot" style="background:#f59e0b"></span> <b>循环贷</b>：在途状态下支用的订单，门槛低、连带逾期风险高</li>
+  <li><span class="dot" style="background:#8b5cf6"></span> <b>非循环贷</b>：结清后重新申请的订单，每笔独立审批</li>
+</ul>
+</div>
+
+
+  <h3 style="color:#3b82f6">等放用户</h3>
+  <div style="overflow-x:auto">
+  <table>
+  <tr><th>放款次数</th><th>总订单</th><th>循环贷订单</th><th>循环贷占比</th><th>总逾期率</th><th>循环贷逾期率</th><th>非循环贷逾期率</th><th>总盈利率</th><th>循环贷盈利率</th><th>非循环贷盈利率</th></tr>
+  <tr>
+    <td>第1次</td>
+    <td>51,471</td>
+    <td>0</td>
+    <td>0%</td>
+    <td class="neg">11.1%</td>
+    <td class="">—</td>
+    <td class="neg">11.1%</td>
+    <td class="neg">41.3%</td>
+    <td class="">—</td>
+    <td class="neg">41.3%</td>
+  </tr>
+<tr>
+    <td>第2次</td>
+    <td>51,331</td>
+    <td>29,863</td>
+    <td>58.2%</td>
+    <td class="neg">31.4%</td>
+    <td class="neg">43.9%</td>
+    <td class="neg">14.0%</td>
+    <td class="neg">17.8%</td>
+    <td class="neg">5.5%</td>
+    <td class="neg">40.7%</td>
+  </tr>
+<tr>
+    <td>第3次</td>
+    <td>42,097</td>
+    <td>30,624</td>
+    <td>72.7%</td>
+    <td class="neg">37.1%</td>
+    <td class="neg">43.8%</td>
+    <td class="neg">19.4%</td>
+    <td class="neg">8.7%</td>
+    <td class="neg">2.4%</td>
+    <td class="neg">30.4%</td>
+  </tr>
+<tr>
+    <td>第4次</td>
+    <td>29,637</td>
+    <td>19,537</td>
+    <td>65.9%</td>
+    <td class="neg">35.9%</td>
+    <td class="neg">39.3%</td>
+    <td class="neg">29.3%</td>
+    <td class="neg">9.3%</td>
+    <td class="neg">4.8%</td>
+    <td class="neg">19.0%</td>
+  </tr>
+<tr>
+    <td>第5次</td>
+    <td>21,013</td>
+    <td>13,513</td>
+    <td>64.3%</td>
+    <td class="neg">35.1%</td>
+    <td class="neg">38.2%</td>
+    <td class="neg">29.7%</td>
+    <td class="neg">9.0%</td>
+    <td class="neg">6.2%</td>
+    <td class="neg">14.8%</td>
+  </tr>
+<tr>
+    <td>第6次</td>
+    <td>14,940</td>
+    <td>9,664</td>
+    <td>64.7%</td>
+    <td class="neg">35.0%</td>
+    <td class="neg">37.0%</td>
+    <td class="neg">31.4%</td>
+    <td class="neg">9.3%</td>
+    <td class="neg">7.3%</td>
+    <td class="neg">13.3%</td>
+  </tr>
+<tr>
+    <td>第7次</td>
+    <td>10,725</td>
+    <td>7,301</td>
+    <td>68.1%</td>
+    <td class="neg">33.0%</td>
+    <td class="neg">34.9%</td>
+    <td class="neg">28.9%</td>
+    <td class="neg">10.2%</td>
+    <td class="neg">8.2%</td>
+    <td class="neg">14.4%</td>
+  </tr>
+<tr>
+    <td>第8次</td>
+    <td>7,813</td>
+    <td>5,364</td>
+    <td>68.7%</td>
+    <td class="neg">32.4%</td>
+    <td class="neg">34.0%</td>
+    <td class="neg">28.8%</td>
+    <td class="neg">12.3%</td>
+    <td class="neg">10.7%</td>
+    <td class="neg">15.9%</td>
+  </tr>
+<tr>
+    <td>第9次</td>
+    <td>5,777</td>
+    <td>3,983</td>
+    <td>68.9%</td>
+    <td class="neg">30.7%</td>
+    <td class="neg">32.7%</td>
+    <td class="neg">26.3%</td>
+    <td class="neg">13.5%</td>
+    <td class="neg">10.6%</td>
+    <td class="neg">19.7%</td>
+  </tr>
+<tr>
+    <td>第10次</td>
+    <td>4,281</td>
+    <td>2,931</td>
+    <td>68.5%</td>
+    <td class="neg">29.7%</td>
+    <td class="neg">31.3%</td>
+    <td class="neg">26.3%</td>
+    <td class="neg">15.3%</td>
+    <td class="neg">14.2%</td>
+    <td class="neg">17.8%</td>
+  </tr>
+
+  </table>
+  </div>
+
+  <h3 style="color:#34d399">迁移用户</h3>
+  <div style="overflow-x:auto">
+  <table>
+  <tr><th>放款次数</th><th>总订单</th><th>循环贷订单</th><th>循环贷占比</th><th>总逾期率</th><th>循环贷逾期率</th><th>非循环贷逾期率</th><th>总盈利率</th><th>循环贷盈利率</th><th>非循环贷盈利率</th></tr>
+  <tr>
+    <td>第1次</td>
+    <td>8,490</td>
+    <td>0</td>
+    <td>0%</td>
+    <td class="pos">0.2%</td>
+    <td class="">—</td>
+    <td class="pos">0.2%</td>
+    <td class="neg">48.0%</td>
+    <td class="">—</td>
+    <td class="neg">48.0%</td>
+  </tr>
+<tr>
+    <td>第2次</td>
+    <td>8,487</td>
+    <td>4,255</td>
+    <td>50.1%</td>
+    <td class="pos">3.0%</td>
+    <td class="pos">3.6%</td>
+    <td class="pos">2.4%</td>
+    <td class="neg">48.1%</td>
+    <td class="neg">49.4%</td>
+    <td class="neg">46.5%</td>
+  </tr>
+<tr>
+    <td>第3次</td>
+    <td>7,413</td>
+    <td>4,516</td>
+    <td>60.9%</td>
+    <td class="pos">8.5%</td>
+    <td class="pos">7.2%</td>
+    <td class="neg">10.5%</td>
+    <td class="neg">42.5%</td>
+    <td class="neg">43.1%</td>
+    <td class="neg">41.4%</td>
+  </tr>
+<tr>
+    <td>第4次</td>
+    <td>5,865</td>
+    <td>3,026</td>
+    <td>51.6%</td>
+    <td class="neg">13.1%</td>
+    <td class="neg">11.3%</td>
+    <td class="neg">15.0%</td>
+    <td class="neg">36.7%</td>
+    <td class="neg">36.6%</td>
+    <td class="neg">36.9%</td>
+  </tr>
+<tr>
+    <td>第5次</td>
+    <td>4,536</td>
+    <td>2,207</td>
+    <td>48.7%</td>
+    <td class="neg">16.3%</td>
+    <td class="neg">15.8%</td>
+    <td class="neg">16.8%</td>
+    <td class="neg">31.2%</td>
+    <td class="neg">30.7%</td>
+    <td class="neg">31.9%</td>
+  </tr>
+<tr>
+    <td>第6次</td>
+    <td>3,374</td>
+    <td>1,543</td>
+    <td>45.7%</td>
+    <td class="neg">19.1%</td>
+    <td class="neg">19.1%</td>
+    <td class="neg">19.2%</td>
+    <td class="neg">26.8%</td>
+    <td class="neg">26.2%</td>
+    <td class="neg">27.4%</td>
+  </tr>
+<tr>
+    <td>第7次</td>
+    <td>2,522</td>
+    <td>1,233</td>
+    <td>48.9%</td>
+    <td class="neg">20.1%</td>
+    <td class="neg">20.1%</td>
+    <td class="neg">20.0%</td>
+    <td class="neg">26.8%</td>
+    <td class="neg">27.0%</td>
+    <td class="neg">26.6%</td>
+  </tr>
+<tr>
+    <td>第8次</td>
+    <td>1,929</td>
+    <td>958</td>
+    <td>49.7%</td>
+    <td class="neg">20.7%</td>
+    <td class="neg">20.8%</td>
+    <td class="neg">20.7%</td>
+    <td class="neg">23.6%</td>
+    <td class="neg">21.6%</td>
+    <td class="neg">26.0%</td>
+  </tr>
+<tr>
+    <td>第9次</td>
+    <td>1,469</td>
+    <td>741</td>
+    <td>50.4%</td>
+    <td class="neg">22.0%</td>
+    <td class="neg">23.2%</td>
+    <td class="neg">20.7%</td>
+    <td class="neg">24.5%</td>
+    <td class="neg">19.5%</td>
+    <td class="neg">30.7%</td>
+  </tr>
+<tr>
+    <td>第10次</td>
+    <td>1,109</td>
+    <td>552</td>
+    <td>49.8%</td>
+    <td class="neg">20.9%</td>
+    <td class="neg">22.1%</td>
+    <td class="neg">19.7%</td>
+    <td class="neg">26.4%</td>
+    <td class="neg">23.6%</td>
+    <td class="neg">29.6%</td>
+  </tr>
+
+  </table>
+  </div>
+
+  <h3 style="color:#f59e0b">原生非等放用户</h3>
+  <div style="overflow-x:auto">
+  <table>
+  <tr><th>放款次数</th><th>总订单</th><th>循环贷订单</th><th>循环贷占比</th><th>总逾期率</th><th>循环贷逾期率</th><th>非循环贷逾期率</th><th>总盈利率</th><th>循环贷盈利率</th><th>非循环贷盈利率</th></tr>
+  <tr>
+    <td>第1次</td>
+    <td>5,927</td>
+    <td>0</td>
+    <td>0%</td>
+    <td class="pos">10.0%</td>
+    <td class="">—</td>
+    <td class="pos">10.0%</td>
+    <td class="neg">44.3%</td>
+    <td class="">—</td>
+    <td class="neg">44.3%</td>
+  </tr>
+<tr>
+    <td>第2次</td>
+    <td>5,850</td>
+    <td>3,261</td>
+    <td>55.7%</td>
+    <td class="neg">26.1%</td>
+    <td class="neg">37.8%</td>
+    <td class="neg">11.2%</td>
+    <td class="neg">20.5%</td>
+    <td class="neg">9.7%</td>
+    <td class="neg">39.2%</td>
+  </tr>
+<tr>
+    <td>第3次</td>
+    <td>4,771</td>
+    <td>3,186</td>
+    <td>66.8%</td>
+    <td class="neg">31.5%</td>
+    <td class="neg">37.8%</td>
+    <td class="neg">19.0%</td>
+    <td class="neg">10.0%</td>
+    <td class="neg">3.8%</td>
+    <td class="neg">28.7%</td>
+  </tr>
+<tr>
+    <td>第4次</td>
+    <td>3,423</td>
+    <td>2,083</td>
+    <td>60.9%</td>
+    <td class="neg">30.4%</td>
+    <td class="neg">33.1%</td>
+    <td class="neg">26.3%</td>
+    <td class="neg">9.9%</td>
+    <td class="neg">6.4%</td>
+    <td class="neg">16.6%</td>
+  </tr>
+<tr>
+    <td>第5次</td>
+    <td>2,447</td>
+    <td>1,349</td>
+    <td>55.1%</td>
+    <td class="neg">31.1%</td>
+    <td class="neg">34.9%</td>
+    <td class="neg">26.3%</td>
+    <td class="neg">8.8%</td>
+    <td class="neg">4.6%</td>
+    <td class="neg">16.4%</td>
+  </tr>
+<tr>
+    <td>第6次</td>
+    <td>1,770</td>
+    <td>1,004</td>
+    <td>56.7%</td>
+    <td class="neg">33.3%</td>
+    <td class="neg">37.8%</td>
+    <td class="neg">27.3%</td>
+    <td class="neg">3.5%</td>
+    <td class="pos">-1.6%</td>
+    <td class="neg">12.2%</td>
+  </tr>
+<tr>
+    <td>第7次</td>
+    <td>1,261</td>
+    <td>773</td>
+    <td>61.3%</td>
+    <td class="neg">33.4%</td>
+    <td class="neg">37.3%</td>
+    <td class="neg">27.3%</td>
+    <td class="neg">2.7%</td>
+    <td class="pos">-1.5%</td>
+    <td class="neg">10.2%</td>
+  </tr>
+<tr>
+    <td>第8次</td>
+    <td>912</td>
+    <td>567</td>
+    <td>62.2%</td>
+    <td class="neg">31.6%</td>
+    <td class="neg">34.6%</td>
+    <td class="neg">26.7%</td>
+    <td class="neg">4.2%</td>
+    <td class="neg">0.3%</td>
+    <td class="neg">12.5%</td>
+  </tr>
+<tr>
+    <td>第9次</td>
+    <td>678</td>
+    <td>414</td>
+    <td>61.1%</td>
+    <td class="neg">34.2%</td>
+    <td class="neg">37.9%</td>
+    <td class="neg">28.4%</td>
+    <td class="neg">0.6%</td>
+    <td class="pos">-4.9%</td>
+    <td class="neg">12.3%</td>
+  </tr>
+<tr>
+    <td>第10次</td>
+    <td>482</td>
+    <td>310</td>
+    <td>64.3%</td>
+    <td class="neg">34.4%</td>
+    <td class="neg">37.1%</td>
+    <td class="neg">29.7%</td>
+    <td class="neg">3.7%</td>
+    <td class="pos">-1.4%</td>
+    <td class="neg">15.1%</td>
+  </tr>
+
+  </table>
+  </div>
+
+
+<h2>可视化对比</h2>
+<p class="legend-note">
+  <span><span class="dot" style="background:#ef4444"></span> 总逾期率/总盈利率</span>
+  <span><span class="dot" style="background:#f59e0b"></span> 循环贷</span>
+  <span><span class="dot" style="background:#8b5cf6"></span> 非循环贷</span>
+</p>
+
+
+<div class="chart-grid">
+<div class="chart-card full"><h4>等放 &mdash; 总逾期率 vs 循环贷逾期率 vs 非循环贷逾期率</h4><div class="chart-wrap tall"><canvas id="c_df_s8"></canvas></div></div>
+<div class="chart-card"><h4>等放 &mdash; 总盈利率 vs 循环贷盈利率 vs 非循环贷盈利率</h4><div class="chart-wrap"><canvas id="c_df_profit"></canvas></div></div>
+<div class="chart-card"><h4>等放 &mdash; 订单规模与循环贷占比</h4><div class="chart-wrap"><canvas id="c_df_vol"></canvas></div></div>
+</div>
+<div class="chart-grid">
+<div class="chart-card full"><h4>迁移 &mdash; 总逾期率 vs 循环贷逾期率 vs 非循环贷逾期率</h4><div class="chart-wrap tall"><canvas id="c_qy_s8"></canvas></div></div>
+<div class="chart-card"><h4>迁移 &mdash; 总盈利率 vs 循环贷盈利率 vs 非循环贷盈利率</h4><div class="chart-wrap"><canvas id="c_qy_profit"></canvas></div></div>
+<div class="chart-card"><h4>迁移 &mdash; 订单规模与循环贷占比</h4><div class="chart-wrap"><canvas id="c_qy_vol"></canvas></div></div>
+</div>
+<div class="chart-grid">
+<div class="chart-card full"><h4>原生非等放 &mdash; 总逾期率 vs 循环贷逾期率 vs 非循环贷逾期率</h4><div class="chart-wrap tall"><canvas id="c_ys_s8"></canvas></div></div>
+<div class="chart-card"><h4>原生非等放 &mdash; 总盈利率 vs 循环贷盈利率 vs 非循环贷盈利率</h4><div class="chart-wrap"><canvas id="c_ys_profit"></canvas></div></div>
+<div class="chart-card"><h4>原生非等放 &mdash; 订单规模与循环贷占比</h4><div class="chart-wrap"><canvas id="c_ys_vol"></canvas></div></div>
+</div>
+
+<h2>附录：完整 PGSQL 查询代码</h2>
+<pre class="code">-- ============================================================================
+-- 循环贷用户：按放款序列分析 — 完整 PGSQL 查询
+-- 维度：循环贷 vs 非循环贷 双维度（逾期率 + 盈利率）
+-- 数据源: wangchuanliang.order_loan_f_v2_copy（订单主表）
+--         wangchuanliang.side_recycle_type_copy（循环贷标签）
+-- 范围: 2025.01 ~ 2026.05 注册用户, 全量
+-- 终态口径: 仅保留 loan_status_code IN (7,8)，排除 s5（在途）
+-- 
+-- 用户分类:
+--   等放        = 从未被拒(is_remit=0 为 NULL)
+--   迁移        = 先被拒后获批(is_remit=0 MIN &lt; is_remit=1 MIN)
+--   原生非等放  = 先获批后被拒
+-- ============================================================================
+
+WITH user_type AS (
+    -- =====================================================================
+    -- Step 1: 五类用户分类
+    -- 通过 MIN(apply_time WHERE is_remit=0) 和 MIN(apply_time WHERE is_remit=1)
+    -- 的先后关系判断用户类型
+    -- =====================================================================
+    SELECT user_id,
+        CASE 
+            WHEN MIN(CASE WHEN is_remit = 0 THEN apply_time END) IS NULL THEN '等放'
+            WHEN MIN(CASE WHEN is_remit = 1 THEN apply_time END)
+               < MIN(CASE WHEN is_remit = 0 THEN apply_time END) THEN '迁移'
+            ELSE '原生非等放'
+        END AS utype
+    FROM wangchuanliang.order_loan_f_v2_copy
+    WHERE reg_date >= '2025-01-01' AND reg_date <= '2026-05-31'
+    GROUP BY user_id
+    HAVING SUM(CASE WHEN is_remit = 1 THEN 1 ELSE 0 END) > 0
+),
+cycle_user AS (
+    -- =====================================================================
+    -- Step 2: 筛选循环贷用户
+    -- 定义：生命周期中至少有一笔 recycle_type=2 订单的用户
+    -- =====================================================================
+    SELECT DISTINCT o.user_id
+    FROM wangchuanliang.order_loan_f_v2_copy o
+    JOIN wangchuanliang.side_recycle_type_copy r ON o.serial_id = r.serial_id
+    WHERE o.reg_date >= '2025-01-01' AND o.reg_date <= '2026-05-31'
+      AND o.is_remit = 1
+      AND r.recycle_type = 2
+),
+loan_seq AS (
+    -- =====================================================================
+    -- Step 3: 放款序列编号
+    -- 仅取 is_remit=1 的放款记录, 按 apply_time 排序编号
+    -- 仅关联为"循环贷用户"的 user_id
+    -- =====================================================================
+    SELECT 
+        o.user_id, ut.utype,
+        o.serial_id, o.remit_amt, o.repaid_amt, 
+        o.loan_status_code,
+        ROW_NUMBER() OVER (PARTITION BY o.user_id ORDER BY o.apply_time) AS seq
+    FROM wangchuanliang.order_loan_f_v2_copy o
+    JOIN user_type ut ON o.user_id = ut.user_id
+    WHERE o.is_remit = 1
+      AND o.reg_date >= '2025-01-01' AND o.reg_date <= '2026-05-31'
+      AND o.user_id IN (SELECT user_id FROM cycle_user)
+),
+recycle_tag AS (
+    -- =====================================================================
+    -- Step 4: 循环贷标签关联
+    -- recycle_type=2: 循环贷获额
+    -- recycle_type=3: 非循环贷获额
+    -- 未匹配: 0（可能是未标记的普通订单）
+    -- =====================================================================
+    SELECT serial_id, recycle_type
+    FROM wangchuanliang.side_recycle_type_copy
+    WHERE recycle_type IN (2, 3)
+),
+loan_tag AS (
+    -- =====================================================================
+    -- Step 5: 终态过滤 + 循环贷标记
+    -- 仅保留 loan_status_code IN (7,8)，排除 s5（在途）
+    -- =====================================================================
+    SELECT ls.*, COALESCE(rt.recycle_type, 0) AS cycle_type
+    FROM loan_seq ls
+    LEFT JOIN recycle_tag rt ON ls.serial_id = rt.serial_id
+    WHERE ls.loan_status_code IN (7, 8)       -- 排除 s5 在途, 仅保留终态
+      AND ls.seq <= 10                         -- 只取前 10 次放款
+)
+SELECT 
+    utype                                                          AS "用户类型",
+    seq                                                             AS "放款序列",
+    COUNT(*)                                                        AS "总订单数",
+    -- 循环贷
+    SUM(CASE WHEN cycle_type = 2 THEN 1 ELSE 0 END)                AS "循环贷订单数",
+    ROUND(SUM(CASE WHEN cycle_type = 2 THEN 1 ELSE 0 END) * 100.0 
+        / COUNT(*), 1)                                              AS "循环贷占比%",
+    -- 逾期率
+    SUM(CASE WHEN loan_status_code = 8 THEN 1 ELSE 0 END)          AS "逾期订单数(s8)",
+    ROUND(SUM(CASE WHEN loan_status_code = 8 THEN 1 ELSE 0 END) * 100.0 
+        / COUNT(*), 1)                                              AS "总逾期率%",
+    SUM(CASE WHEN cycle_type = 2 AND loan_status_code = 8 
+        THEN 1 ELSE 0 END)                                          AS "循环贷逾期数",
+    ROUND(CASE WHEN SUM(CASE WHEN cycle_type = 2 THEN 1 ELSE 0 END) > 0 
+        THEN SUM(CASE WHEN cycle_type = 2 AND loan_status_code = 8 THEN 1 ELSE 0 END) * 100.0 
+        / SUM(CASE WHEN cycle_type = 2 THEN 1 ELSE 0 END) 
+        ELSE NULL END, 1)                                           AS "循环贷逾期率%",
+    -- 非循环贷
+    SUM(CASE WHEN cycle_type != 2 THEN 1 ELSE 0 END)               AS "非循环贷订单数",
+    SUM(CASE WHEN cycle_type != 2 AND loan_status_code = 8 
+        THEN 1 ELSE 0 END)                                          AS "非循环贷逾期数",
+    ROUND(CASE WHEN SUM(CASE WHEN cycle_type != 2 THEN 1 ELSE 0 END) > 0 
+        THEN SUM(CASE WHEN cycle_type != 2 AND loan_status_code = 8 THEN 1 ELSE 0 END) * 100.0 
+        / SUM(CASE WHEN cycle_type != 2 THEN 1 ELSE 0 END) 
+        ELSE NULL END, 1)                                           AS "非循环贷逾期率%",
+    -- 放款/还款
+    SUM(remit_amt)                                                  AS "总放款额",
+    SUM(repaid_amt)                                                 AS "总还款额",
+    ROUND((SUM(repaid_amt) - SUM(remit_amt)) * 100.0 
+        / NULLIF(SUM(remit_amt), 0), 2)                             AS "总盈利率%",
+    -- 循环贷盈利率
+    SUM(CASE WHEN cycle_type = 2 THEN remit_amt ELSE 0 END)        AS "循环贷放款额",
+    SUM(CASE WHEN cycle_type = 2 THEN repaid_amt ELSE 0 END)       AS "循环贷还款额",
+    ROUND((SUM(CASE WHEN cycle_type = 2 THEN repaid_amt ELSE 0 END) 
+         - SUM(CASE WHEN cycle_type = 2 THEN remit_amt ELSE 0 END)) * 100.0 
+        / NULLIF(SUM(CASE WHEN cycle_type = 2 THEN remit_amt ELSE 0 END), 0), 2) AS "循环贷盈利率%",
+    -- 非循环贷盈利率
+    SUM(CASE WHEN cycle_type != 2 THEN remit_amt ELSE 0 END)       AS "非循环贷放款额",
+    SUM(CASE WHEN cycle_type != 2 THEN repaid_amt ELSE 0 END)      AS "非循环贷还款额",
+    ROUND((SUM(CASE WHEN cycle_type != 2 THEN repaid_amt ELSE 0 END) 
+         - SUM(CASE WHEN cycle_type != 2 THEN remit_amt ELSE 0 END)) * 100.0 
+        / NULLIF(SUM(CASE WHEN cycle_type != 2 THEN remit_amt ELSE 0 END), 0), 2) AS "非循环贷盈利率%"
+FROM loan_tag
+GROUP BY utype, seq
+ORDER BY utype, seq;
+</pre>
+
+</div>
+
+<script>
+
+// ===== 等放 逾期率三条线 =====
+new Chart(document.getElementById('c_df_s8'), {
+  type: 'line',
+  data: {
+    labels: ["第1次", "第2次", "第3次", "第4次", "第5次", "第6次", "第7次", "第8次", "第9次", "第10次"],
+    datasets: [
+      { label: '总逾期率%', data: [11.1, 31.4, 37.1, 35.9, 35.1, 35.0, 33.0, 32.4, 30.7, 29.7], borderColor: '#ef4444', backgroundColor: 'rgba(0,0,0,0)', borderWidth: 2, pointRadius: 5, pointBackgroundColor: '#ef4444', tension: 0.3 },
+      { label: '循环贷逾期率%', data: [0, 43.9, 43.8, 39.3, 38.2, 37.0, 34.9, 34.0, 32.7, 31.3], borderColor: '#f59e0b', backgroundColor: 'rgba(0,0,0,0)', borderWidth: 2, pointRadius: 5, pointBackgroundColor: '#f59e0b', tension: 0.3, borderDash: [5,5] },
+      { label: '非循环贷逾期率%', data: [11.1, 14.0, 19.4, 29.3, 29.7, 31.4, 28.9, 28.8, 26.3, 26.3], borderColor: '#8b5cf6', backgroundColor: 'rgba(0,0,0,0)', borderWidth: 2, pointRadius: 5, pointBackgroundColor: '#8b5cf6', tension: 0.3, borderDash: [2,4] }
+    ]
+  },
+  options: {
+    responsive: true, maintainAspectRatio: false,
+    interaction: { intersect: false, mode: 'index' },
+    plugins: { legend: { labels: { color: '#d1d5db', usePointStyle: true, padding: 16 } }, tooltip: { backgroundColor: '#1f2937', borderColor: '#374151', borderWidth: 1, callbacks: { label: function(c) { return c.dataset.label + ': ' + c.raw.toFixed(1) + '%'; } } } },
+    scales: { y: { beginAtZero: true, grid: { color: '#1f2937' }, ticks: { color: '#9ca3af', callback: function(v){return v+'%';} } }, x: { grid: { color: '#1f2937' }, ticks: { color: '#9ca3af', maxRotation: 30, font: { size: 11 } } } }
+  }
+});
+
+// ===== 等放 盈利率三条线 =====
+new Chart(document.getElementById('c_df_profit'), {
+  type: 'bar',
+  data: {
+    labels: ["第1次", "第2次", "第3次", "第4次", "第5次", "第6次", "第7次", "第8次", "第9次", "第10次"],
+    datasets: [
+      { label: '总盈利率%', data: [41.34, 17.75, 8.67, 9.32, 8.99, 9.31, 10.17, 12.3, 13.47, 15.35], backgroundColor: '#6b7280', borderRadius: 6, borderWidth: 0 },
+      { label: '循环贷盈利率%', data: [0, 5.5, 2.38, 4.85, 6.25, 7.28, 8.18, 10.72, 10.64, 14.18], backgroundColor: '#3b82f6', borderRadius: 6, borderWidth: 0 },
+      { label: '非循环贷盈利率%', data: [41.34, 40.67, 30.37, 18.96, 14.79, 13.33, 14.45, 15.89, 19.71, 17.76], backgroundColor: '#a78bfa', borderRadius: 6, borderWidth: 0 }
+    ]
+  },
+  options: {
+    responsive: true, maintainAspectRatio: false,
+    plugins: { legend: { labels: { color: '#d1d5db', usePointStyle: true, padding: 16 } }, tooltip: { backgroundColor: '#1f2937', borderColor: '#374151', borderWidth: 1, callbacks: { label: function(c) { return c.dataset.label + ': ' + c.raw.toFixed(1) + '%'; } } } },
+    scales: { y: { grid: { color: '#1f2937' }, ticks: { color: '#9ca3af', callback: function(v){return v+'%';} } }, x: { grid: { color: '#1f2937' }, ticks: { color: '#9ca3af', maxRotation: 30, font: { size: 11 } } } }
+  }
+});
+
+// ===== 等放 订单规模与循环贷占比 =====
+new Chart(document.getElementById('c_df_vol'), {
+  type: 'bar',
+  data: {
+    labels: ["第1次", "第2次", "第3次", "第4次", "第5次", "第6次", "第7次", "第8次", "第9次", "第10次"],
+    datasets: [
+      { label: '订单数', data: [51471, 51331, 42097, 29637, 21013, 14940, 10725, 7813, 5777, 4281], backgroundColor: '#60a5fa', borderRadius: 8, borderWidth: 0, yAxisID: 'y', order: 2 },
+      { label: '循环贷占比%', data: [0.0, 58.2, 72.7, 65.9, 64.3, 64.7, 68.1, 68.7, 68.9, 68.5], borderColor: '#3b82f6', backgroundColor: 'rgba(0,0,0,0)', borderWidth: 2, yAxisID: 'y1', order: 1, type: 'line', tension: 0.3, pointRadius: 5, pointBackgroundColor: '#3b82f6' }
+    ]
+  },
+  options: {
+    responsive: true, maintainAspectRatio: false,
+    plugins: { legend: { labels: { color: '#d1d5db', usePointStyle: true, padding: 16 } }, tooltip: { backgroundColor: '#1f2937', borderColor: '#374151', borderWidth: 1 } },
+    scales: {
+      y: { position: 'left', grid: { color: '#1f2937' }, ticks: { color: '#9ca3af' }, title: { display: true, text: '订单数', color: '#9ca3af' } },
+      y1: { position: 'right', grid: { display: false }, ticks: { color: '#3b82f6', callback: function(v){return v+'%';} }, title: { display: true, text: '循环贷占比', color: '#3b82f6' }, beginAtZero: true, max: 100 },
+      x: { grid: { color: '#1f2937' }, ticks: { color: '#9ca3af', maxRotation: 30, font: { size: 11 } } }
+    }
+  }
+});
+
+// ===== 迁移 逾期率三条线 =====
+new Chart(document.getElementById('c_qy_s8'), {
+  type: 'line',
+  data: {
+    labels: ["第1次", "第2次", "第3次", "第4次", "第5次", "第6次", "第7次", "第8次", "第9次", "第10次"],
+    datasets: [
+      { label: '总逾期率%', data: [0.2, 3.0, 8.5, 13.1, 16.3, 19.1, 20.1, 20.7, 22.0, 20.9], borderColor: '#ef4444', backgroundColor: 'rgba(0,0,0,0)', borderWidth: 2, pointRadius: 5, pointBackgroundColor: '#ef4444', tension: 0.3 },
+      { label: '循环贷逾期率%', data: [0, 3.6, 7.2, 11.3, 15.8, 19.1, 20.1, 20.8, 23.2, 22.1], borderColor: '#f59e0b', backgroundColor: 'rgba(0,0,0,0)', borderWidth: 2, pointRadius: 5, pointBackgroundColor: '#f59e0b', tension: 0.3, borderDash: [5,5] },
+      { label: '非循环贷逾期率%', data: [0.2, 2.4, 10.5, 15.0, 16.8, 19.2, 20.0, 20.7, 20.7, 19.7], borderColor: '#8b5cf6', backgroundColor: 'rgba(0,0,0,0)', borderWidth: 2, pointRadius: 5, pointBackgroundColor: '#8b5cf6', tension: 0.3, borderDash: [2,4] }
+    ]
+  },
+  options: {
+    responsive: true, maintainAspectRatio: false,
+    interaction: { intersect: false, mode: 'index' },
+    plugins: { legend: { labels: { color: '#d1d5db', usePointStyle: true, padding: 16 } }, tooltip: { backgroundColor: '#1f2937', borderColor: '#374151', borderWidth: 1, callbacks: { label: function(c) { return c.dataset.label + ': ' + c.raw.toFixed(1) + '%'; } } } },
+    scales: { y: { beginAtZero: true, grid: { color: '#1f2937' }, ticks: { color: '#9ca3af', callback: function(v){return v+'%';} } }, x: { grid: { color: '#1f2937' }, ticks: { color: '#9ca3af', maxRotation: 30, font: { size: 11 } } } }
+  }
+});
+
+// ===== 迁移 盈利率三条线 =====
+new Chart(document.getElementById('c_qy_profit'), {
+  type: 'bar',
+  data: {
+    labels: ["第1次", "第2次", "第3次", "第4次", "第5次", "第6次", "第7次", "第8次", "第9次", "第10次"],
+    datasets: [
+      { label: '总盈利率%', data: [47.96, 48.12, 42.55, 36.74, 31.23, 26.79, 26.81, 23.58, 24.54, 26.4], backgroundColor: '#6b7280', borderRadius: 6, borderWidth: 0 },
+      { label: '循环贷盈利率%', data: [0, 49.43, 43.12, 36.6, 30.7, 26.23, 27.04, 21.56, 19.48, 23.65], backgroundColor: '#34d399', borderRadius: 6, borderWidth: 0 },
+      { label: '非循环贷盈利率%', data: [47.96, 46.45, 41.35, 36.93, 31.89, 27.39, 26.55, 26.01, 30.69, 29.58], backgroundColor: '#a78bfa', borderRadius: 6, borderWidth: 0 }
+    ]
+  },
+  options: {
+    responsive: true, maintainAspectRatio: false,
+    plugins: { legend: { labels: { color: '#d1d5db', usePointStyle: true, padding: 16 } }, tooltip: { backgroundColor: '#1f2937', borderColor: '#374151', borderWidth: 1, callbacks: { label: function(c) { return c.dataset.label + ': ' + c.raw.toFixed(1) + '%'; } } } },
+    scales: { y: { grid: { color: '#1f2937' }, ticks: { color: '#9ca3af', callback: function(v){return v+'%';} } }, x: { grid: { color: '#1f2937' }, ticks: { color: '#9ca3af', maxRotation: 30, font: { size: 11 } } } }
+  }
+});
+
+// ===== 迁移 订单规模与循环贷占比 =====
+new Chart(document.getElementById('c_qy_vol'), {
+  type: 'bar',
+  data: {
+    labels: ["第1次", "第2次", "第3次", "第4次", "第5次", "第6次", "第7次", "第8次", "第9次", "第10次"],
+    datasets: [
+      { label: '订单数', data: [8490, 8487, 7413, 5865, 4536, 3374, 2522, 1929, 1469, 1109], backgroundColor: '#60a5fa', borderRadius: 8, borderWidth: 0, yAxisID: 'y', order: 2 },
+      { label: '循环贷占比%', data: [0.0, 50.1, 60.9, 51.6, 48.7, 45.7, 48.9, 49.7, 50.4, 49.8], borderColor: '#34d399', backgroundColor: 'rgba(0,0,0,0)', borderWidth: 2, yAxisID: 'y1', order: 1, type: 'line', tension: 0.3, pointRadius: 5, pointBackgroundColor: '#34d399' }
+    ]
+  },
+  options: {
+    responsive: true, maintainAspectRatio: false,
+    plugins: { legend: { labels: { color: '#d1d5db', usePointStyle: true, padding: 16 } }, tooltip: { backgroundColor: '#1f2937', borderColor: '#374151', borderWidth: 1 } },
+    scales: {
+      y: { position: 'left', grid: { color: '#1f2937' }, ticks: { color: '#9ca3af' }, title: { display: true, text: '订单数', color: '#9ca3af' } },
+      y1: { position: 'right', grid: { display: false }, ticks: { color: '#34d399', callback: function(v){return v+'%';} }, title: { display: true, text: '循环贷占比', color: '#34d399' }, beginAtZero: true, max: 100 },
+      x: { grid: { color: '#1f2937' }, ticks: { color: '#9ca3af', maxRotation: 30, font: { size: 11 } } }
+    }
+  }
+});
+
+// ===== 原生非等放 逾期率三条线 =====
+new Chart(document.getElementById('c_ys_s8'), {
+  type: 'line',
+  data: {
+    labels: ["第1次", "第2次", "第3次", "第4次", "第5次", "第6次", "第7次", "第8次", "第9次", "第10次"],
+    datasets: [
+      { label: '总逾期率%', data: [10.0, 26.1, 31.5, 30.4, 31.1, 33.3, 33.4, 31.6, 34.2, 34.4], borderColor: '#ef4444', backgroundColor: 'rgba(0,0,0,0)', borderWidth: 2, pointRadius: 5, pointBackgroundColor: '#ef4444', tension: 0.3 },
+      { label: '循环贷逾期率%', data: [0, 37.8, 37.8, 33.1, 34.9, 37.8, 37.3, 34.6, 37.9, 37.1], borderColor: '#f59e0b', backgroundColor: 'rgba(0,0,0,0)', borderWidth: 2, pointRadius: 5, pointBackgroundColor: '#f59e0b', tension: 0.3, borderDash: [5,5] },
+      { label: '非循环贷逾期率%', data: [10.0, 11.2, 19.0, 26.3, 26.3, 27.3, 27.3, 26.7, 28.4, 29.7], borderColor: '#8b5cf6', backgroundColor: 'rgba(0,0,0,0)', borderWidth: 2, pointRadius: 5, pointBackgroundColor: '#8b5cf6', tension: 0.3, borderDash: [2,4] }
+    ]
+  },
+  options: {
+    responsive: true, maintainAspectRatio: false,
+    interaction: { intersect: false, mode: 'index' },
+    plugins: { legend: { labels: { color: '#d1d5db', usePointStyle: true, padding: 16 } }, tooltip: { backgroundColor: '#1f2937', borderColor: '#374151', borderWidth: 1, callbacks: { label: function(c) { return c.dataset.label + ': ' + c.raw.toFixed(1) + '%'; } } } },
+    scales: { y: { beginAtZero: true, grid: { color: '#1f2937' }, ticks: { color: '#9ca3af', callback: function(v){return v+'%';} } }, x: { grid: { color: '#1f2937' }, ticks: { color: '#9ca3af', maxRotation: 30, font: { size: 11 } } } }
+  }
+});
+
+// ===== 原生非等放 盈利率三条线 =====
+new Chart(document.getElementById('c_ys_profit'), {
+  type: 'bar',
+  data: {
+    labels: ["第1次", "第2次", "第3次", "第4次", "第5次", "第6次", "第7次", "第8次", "第9次", "第10次"],
+    datasets: [
+      { label: '总盈利率%', data: [44.27, 20.5, 10.01, 9.93, 8.75, 3.55, 2.66, 4.2, 0.63, 3.67], backgroundColor: '#6b7280', borderRadius: 6, borderWidth: 0 },
+      { label: '循环贷盈利率%', data: [0, 9.71, 3.82, 6.38, 4.61, -1.56, -1.46, 0.32, -4.92, -1.35], backgroundColor: '#f59e0b', borderRadius: 6, borderWidth: 0 },
+      { label: '非循环贷盈利率%', data: [44.27, 39.24, 28.72, 16.56, 16.41, 12.15, 10.17, 12.49, 12.3, 15.08], backgroundColor: '#a78bfa', borderRadius: 6, borderWidth: 0 }
+    ]
+  },
+  options: {
+    responsive: true, maintainAspectRatio: false,
+    plugins: { legend: { labels: { color: '#d1d5db', usePointStyle: true, padding: 16 } }, tooltip: { backgroundColor: '#1f2937', borderColor: '#374151', borderWidth: 1, callbacks: { label: function(c) { return c.dataset.label + ': ' + c.raw.toFixed(1) + '%'; } } } },
+    scales: { y: { grid: { color: '#1f2937' }, ticks: { color: '#9ca3af', callback: function(v){return v+'%';} } }, x: { grid: { color: '#1f2937' }, ticks: { color: '#9ca3af', maxRotation: 30, font: { size: 11 } } } }
+  }
+});
+
+// ===== 原生非等放 订单规模与循环贷占比 =====
+new Chart(document.getElementById('c_ys_vol'), {
+  type: 'bar',
+  data: {
+    labels: ["第1次", "第2次", "第3次", "第4次", "第5次", "第6次", "第7次", "第8次", "第9次", "第10次"],
+    datasets: [
+      { label: '订单数', data: [5927, 5850, 4771, 3423, 2447, 1770, 1261, 912, 678, 482], backgroundColor: '#60a5fa', borderRadius: 8, borderWidth: 0, yAxisID: 'y', order: 2 },
+      { label: '循环贷占比%', data: [0.0, 55.7, 66.8, 60.9, 55.1, 56.7, 61.3, 62.2, 61.1, 64.3], borderColor: '#f59e0b', backgroundColor: 'rgba(0,0,0,0)', borderWidth: 2, yAxisID: 'y1', order: 1, type: 'line', tension: 0.3, pointRadius: 5, pointBackgroundColor: '#f59e0b' }
+    ]
+  },
+  options: {
+    responsive: true, maintainAspectRatio: false,
+    plugins: { legend: { labels: { color: '#d1d5db', usePointStyle: true, padding: 16 } }, tooltip: { backgroundColor: '#1f2937', borderColor: '#374151', borderWidth: 1 } },
+    scales: {
+      y: { position: 'left', grid: { color: '#1f2937' }, ticks: { color: '#9ca3af' }, title: { display: true, text: '订单数', color: '#9ca3af' } },
+      y1: { position: 'right', grid: { display: false }, ticks: { color: '#f59e0b', callback: function(v){return v+'%';} }, title: { display: true, text: '循环贷占比', color: '#f59e0b' }, beginAtZero: true, max: 100 },
+      x: { grid: { color: '#1f2937' }, ticks: { color: '#9ca3af', maxRotation: 30, font: { size: 11 } } }
+    }
+  }
+});
+
+</script>
+</body>
+</html>
+

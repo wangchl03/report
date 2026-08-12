@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>循环贷产品逻辑理解</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:#111827;color:#e5e7eb;font-family:-apple-system,BlinkMacSystemFont,'PingFang SC',sans-serif;padding:40px 24px}
+.container{max-width:900px;margin:0 auto}
+h1{text-align:center;font-size:26px;font-weight:800;color:#f9fafb;margin-bottom:8px}
+.subtitle{text-align:center;font-size:14px;color:#9ca3af;margin-bottom:36px}
+h2{font-size:19px;font-weight:700;color:#f3f4f6;border-left:4px solid #3c8ce6;padding-left:12px;margin:36px 0 14px}
+h3{font-size:15px;font-weight:600;color:#e5e7eb;margin:24px 0 10px}
+p{font-size:14px;line-height:1.9;color:#d1d5db;margin-bottom:10px}
+strong.hl{color:#5b9ef5}
+strong.warn{color:#f87171}
+strong.good{color:#34d399}
+.insight-box{background:rgba(59,130,246,.08);border:1px solid rgba(59,130,246,.2);border-radius:10px;padding:18px 22px;margin:16px 0}
+.insight-box.red{background:rgba(239,68,68,.08);border-color:rgba(239,68,68,.2)}
+.insight-box.green{background:rgba(16,185,129,.08);border-color:rgba(16,185,129,.2)}
+.insight-box.amber{background:rgba(245,158,11,.08);border-color:rgba(245,158,11,.2)}
+.insight-box strong{color:#60a5fa}
+.insight-box.red strong{color:#f87171}
+.insight-box.green strong{color:#34d399}
+.insight-box.amber strong{color:#fbbf24}
+table{width:100%;border-collapse:collapse;font-size:13px;margin:14px 0}
+table th{background:#374151;padding:8px 12px;text-align:left;font-weight:600;color:#d1d5db;border-bottom:2px solid #4b5563}
+table td{padding:8px 12px;border-bottom:1px solid #1f2937;color:#e5e7eb}
+table tr:nth-child(even) td{background:rgba(255,255,255,.02)}
+ul,ol{font-size:14px;line-height:2;color:#d1d5db;margin:10px 0 10px 20px}
+li{margin-bottom:4px}
+code{background:#1f2937;color:#fbbf24;padding:2px 6px;border-radius:4px;font-size:13px}
+.badge{display:inline-block;padding:2px 10px;border-radius:4px;font-size:11px;font-weight:600;margin-right:6px}
+.badge-blue{background:#1d4ed8;color:#93c5fd}
+.badge-red{background:#991b1b;color:#fca5a5}
+.badge-green{background:#166534;color:#86efac}
+.badge-amber{background:#92400e;color:#fcd34d}
+.formula{background:#1f2937;border:1px solid #374151;border-radius:8px;padding:14px 18px;margin:12px 0;text-align:center;font-size:15px;color:#60a5fa;font-weight:600}
+.state-machine{display:flex;align-items:center;justify-content:center;gap:16px;flex-wrap:wrap;margin:16px 0;font-size:13px}
+.state-box{background:#1f2937;border:2px solid #374151;border-radius:10px;padding:14px 20px;text-align:center;min-width:120px}
+.state-box .label{font-size:11px;color:#9ca3af;margin-bottom:4px}
+.state-box .val{font-size:16px;font-weight:700}
+.state-arrow{font-size:20px;color:#4b5563}
+</style>
+</head>
+<body><div class="container">
+
+<h1>循环贷产品逻辑理解</h1>
+<p class="subtitle">基于循环贷产品规则的深度解读 · 利益与风险的权衡</p>
+
+<!-- ===== 1 ===== -->
+<h2>一、核心定义：什么是循环贷</h2>
+
+<p>循环贷是一种<strong class="hl">允许用户在上一笔贷款尚未结清时再次支用额度</strong>的贷款产品。与非循环贷的关键区别在于<strong class="hl">是否需要等待全部结清才能再借</strong>。</p>
+
+<table>
+<tr><th>维度</th><th>非循环贷</th><th>循环贷</th></tr>
+<tr><td>借款时机</td><td>所有订单全部结清后</td><td>在途订单还款进度 ≥ 50% 时</td></tr>
+<tr><td>审批流程</td><td>每次重新走风控审批</td><td>额度内快速支用（无需重新审批）</td></tr>
+<tr><td>订单关系</td><td>串行：结清一笔再借下一笔</td><td>并行：最多同时 2 笔在途</td></tr>
+<tr><td>转化路径</td><td>结清 → 等待 → 再申请 → 放款（可能流失）</td><td>还款过半 → 立刻支用（无缝衔接）</td></tr>
+</table>
+
+<!-- ===== 2 ===== -->
+<h2>二、基础准入条件</h2>
+
+<ol>
+  <li><strong class="hl">用户资质：</strong>仅对系统评估的"优质用户"开放，非所有用户都能获得资格。</li>
+  <li><strong class="hl">前置触发点：</strong>当前一笔在途订单的<strong class="hl">还款进度达到或超过 50%</strong> 时触发。
+    <ul>
+      <li>3 期产品 → 结清第 2 期（进度 2/3 ≥ 50%）→ 触发</li>
+      <li>4 期产品 → 结清第 2 期（进度 2/4 = 50%）→ 触发</li>
+    </ul>
+  </li>
+  <li><strong class="hl">在途订单上限：</strong>同一用户最多同时持有 <strong class="warn">2 笔</strong> 在途订单。达到上限后自动冻结循环贷资格，必须先结清其中 1 笔才能再次支用。</li>
+</ol>
+
+<!-- ===== 3 ===== -->
+<h2>三、在途 vs 非在途：状态转移逻辑</h2>
+
+<div class="state-machine">
+  <div class="state-box"><div class="label">状态</div><div class="val" style="color:#fbbf24">在途</div><div style="font-size:11px;color:#9ca3af;margin-top:4px">有 ≥ 1 笔订单未结清</div></div>
+  <div class="state-arrow">⇄</div>
+  <div class="state-box"><div class="label">状态</div><div class="val" style="color:#34d399">非在途</div><div style="font-size:11px;color:#9ca3af;margin-top:4px">所有订单全部结清</div></div>
+</div>
+
+<table>
+<tr><th>当前状态</th><th>能否借循环贷？</th><th>下一笔贷款类型</th></tr>
+<tr><td>在途（在途数=1，还款≥50%）</td><td><span class="badge badge-green">能</span></td><td>循环贷订单</td></tr>
+<tr><td>在途（在途数=2）</td><td><span class="badge badge-red">不能</span></td><td>须先结清 1 笔，降至 1 笔且在途单满足还款≥50%</td></tr>
+<tr><td>非在途</td><td><span class="badge badge-red">不能</span></td><td>普通订单（非循环贷）</td></tr>
+</table>
+
+<p><strong class="hl">关键结论：</strong>循环贷的核心判定条件是"<strong class="hl">借款时用户处于在途状态</strong>"。同一笔订单，用户在在途时借就是循环贷，结清后借就是非循环贷——<strong class="hl">不是产品类型决定的，是借款时的状态决定的</strong>。</p>
+
+<!-- ===== 4 ===== -->
+<h2>四、循环贷在用户生命周期中的位置</h2>
+
+<h3>4.1 首贷永远不是循环贷</h3>
+<p>因为首贷时用户没有在途订单，所以<strong class="hl">首贷一定不是循环贷</strong>。循环贷最早从第 2 笔放款开始出现。</p>
+
+<h3>4.2 开通时机因资质而异</h3>
+<table>
+<tr><th>用户资质</th><th>循环贷资格开通时机</th><th>说明</th></tr>
+<tr><td>优质</td><td>第 2 笔订单即开通</td><td>首贷还款过半 → 立即获得循环贷资格</td></tr>
+<tr><td>中等</td><td>第 3~5 笔后才开通</td><td>需要多笔还款记录证明后逐步放开</td></tr>
+<tr><td>较差</td><td>第 6 笔+才开通</td><td>长期观察后才给予资格</td></tr>
+<tr><td>最差</td><td>永远不开通</td><td>始终只能走普通复借路径</td></tr>
+</table>
+
+<h3>4.3 循环贷用户的订单构成</h3>
+<p><strong class="hl">循环贷用户</strong> = 整个生命周期中至少有一笔循环贷订单的用户。其订单可能包含：</p>
+<ul>
+  <li><strong class="hl">非循环贷订单：</strong>首贷 + 结清后重新申请的订单</li>
+  <li><strong class="hl">循环贷订单：</strong>在途时支用的订单</li>
+</ul>
+
+<p>因此"循环贷用户"≠"只有循环贷订单的用户"——两类订单在同一个用户身上共存。</p>
+
+<!-- ===== 5 ===== -->
+<h2>五、循环贷的核心收益：降低流失、提高转化</h2>
+
+<div class="insight-box green">
+<strong>核心逻辑：结清即流失风险</strong>
+<p>当用户全部结清（非在途状态）后，再次借款需要重新走申请→审批→放款流程，存在<strong class="hl">用户流失窗口</strong>。很多用户会在结清后离开平台、转向竞品、或不再有借款需求。</p>
+</div>
+
+<h3>循环贷如何解决这个问题：</h3>
+<ol>
+  <li><strong class="good">无缝衔接：</strong>还款过半即可支用，用户无需等到全部结清，<strong class="hl">没有"等待期"，也就没有流失窗口</strong>。</li>
+  <li><strong class="good">转化率提升：</strong>在途→再支用的转化率远高于"结清→重新申请"。循环贷把"用户是否回来"的不确定性转化为"还款过半立即支用"的确定性。</li>
+  <li><strong class="good">筛选优质用户：</strong>每多借一笔，就多一次观察用户还款行为的机会。循环贷让优质用户能更快积累贷款次数，从而被系统识别为"高价值用户"，给予更高额度和更好条件。</li>
+</ol>
+
+<!-- ===== 6 ===== -->
+<h2>六、循环贷的核心风险：连带逾期</h2>
+
+<div class="insight-box red">
+<strong>最大风险：一笔逾期变两笔</strong>
+<p>如果用户在还款 50% 后借了循环贷，然后<strong class="warn">停还第一笔</strong>，第一笔逾期 + 第二笔循环贷也会连带逾期。用户在没有循环贷的情况下只会逾期 1 笔订单，但有了循环贷后会逾期 2 笔订单，损失翻倍。</p>
+</div>
+
+<h3>风险传导链：</h3>
+<ol>
+  <li>用户首贷还款至 50% → 系统给循环贷资格</li>
+  <li>用户立即支用第 2 笔（循环贷）</li>
+  <li>用户停还首贷 → 首贷逾期（s8）</li>
+  <li>第 2 笔循环贷因用户整体违约 → 连带逾期（s8）</li>
+  <li><strong class="warn">结果：1 个劣质用户产生了 2 笔逾期订单</strong></li>
+</ol>
+
+<p>这就是循环贷的<strong class="warn">"乘数效应"</strong>：不是让更多人逾期，而是让同一批逾期的人<strong class="warn">多逾期一笔</strong>。</p>
+
+<!-- ===== 7 ===== -->
+<h2>七、循环贷的盈利权衡模型</h2>
+
+<div class="formula">盈利额 = 放款金额 × 盈利率</div>
+
+<div class="insight-box amber">
+<strong>循环贷的 Trade-off：</strong>
+<p>循环贷 → 用户转化率 ↑ → 订单量 ↑ → 放款金额 ↑（<strong class="good">有利</strong>）<br>
+循环贷 → 连带逾期 ↑ → 逾期订单占比 ↑ → 盈利率 ↓（<strong class="warn">不利</strong>）</p>
+<p style="margin-top:8px">最终判断标准：<strong class="hl">放款金额的增幅 是否大于 盈利率的降幅</strong>，即盈利额是否增加。</p>
+</div>
+
+<h3>影响最终盈利的关键变量：</h3>
+
+<table>
+<tr><th>变量</th><th>方向</th><th>对盈利额的影响</th></tr>
+<tr><td>循环贷带来的新增订单量</td><td style="color:#34d399">↑</td><td>放款金额 ↑ → 盈利额 ↑</td></tr>
+<tr><td>循环贷用户的单笔件均</td><td style="color:#34d399">取决于资质</td><td>优质用户件均高 → 盈利额 ↑</td></tr>
+<tr><td>连带逾期用户占比</td><td style="color:#f87171">关键变量</td><td>每多 1 个连带逾期用户 = 多 1 笔全额损失</td></tr>
+<tr><td>连带逾期用户的在贷余额</td><td style="color:#f87171">关键变量</td><td>2 笔同时逾期 = 损失翻倍</td></tr>
+</table>
+
+<div class="insight-box red">
+<strong>最关键的指标：</strong>
+<p>在每次放款中，<strong class="warn">逾期两笔贷款的用户数量（及占比）</strong>。这类用户是循环贷的核心损失来源——如果没有循环贷，他们只逾期 1 笔；有了循环贷，他们逾期了 2 笔。这个指标直接决定了循环贷的盈利率是否被拉低到不可接受的水平。</p>
+</div>
+
+<!-- ===== 8 ===== -->
+<h2>八、循环贷的双面性总结</h2>
+
+<table>
+<tr><th>维度</th><th>正面</th><th>负面</th></tr>
+<tr><td>用户转化</td><td style="color:#34d399">在途即可支用，消灭流失窗口</td><td style="color:#f87171">劣质用户也被转化，拉低平均质量</td></tr>
+<tr><td>订单量</td><td style="color:#34d399">提高，放款金额增大</td><td>—</td></tr>
+<tr><td>逾期</td><td>—</td><td style="color:#f87171">连带逾期：1 个坏用户逾期 2 笔</td></tr>
+<tr><td>盈利率</td><td>—</td><td style="color:#f87171">下降（逾期订单占比上升）</td></tr>
+<tr><td>总盈利额</td><td style="color:#34d399">放款金额增幅 > 盈利率降幅时增加</td><td style="color:#f87171">反之减少</td></tr>
+<tr><td>用户分层</td><td style="color:#34d399">加速筛选：优质用户更快累积还款记录</td><td style="color:#f87171">劣质用户暴露更快（但代价是双倍损失）</td></tr>
+</table>
+
+<div class="insight-box">
+<strong>最终结论：</strong>
+<p>循环贷本质上是一台"<strong class="hl">转化加速器 + 风险放大器</strong>"。它通过降低转化门槛让更多用户在更早阶段继续借款，从而增加总放款量和总利润；但同时，它让本该在结清后被风控拦住的劣质用户<strong class="warn">多产生了一笔逾期</strong>，放大了单用户的损失。循环贷是否值得做，取决于<strong class="hl">新增放款带来的利润 > 连带逾期带来的额外损失</strong>。</p>
+</div>
+
+</div></body></html>
+

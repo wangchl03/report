@@ -1,0 +1,634 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>循环贷双逾期影响分析</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:-apple-system,BlinkMacSystemFont,'PingFang SC',sans-serif;background:#111827;color:#e5e7eb;padding:40px 24px}
+.container{max-width:1100px;margin:0 auto}
+h1{text-align:center;font-size:28px;font-weight:800;margin-bottom:6px;color:#f9fafb}
+.subtitle{text-align:center;font-size:14px;color:#9ca3af;margin-bottom:36px}
+h2{font-size:20px;font-weight:700;color:#f3f4f6;border-left:4px solid #f59e0b;padding-left:12px;margin:40px 0 16px}
+h3{font-size:16px;font-weight:600;color:#e5e7eb;margin:24px 0 12px}
+p{font-size:14px;line-height:1.8;color:#d1d5db;margin-bottom:12px}
+.insight-box{background:rgba(251,191,36,.10);border:1px solid rgba(251,191,36,.25);border-radius:10px;padding:18px 22px;margin:16px 0}
+.insight-box.red{background:rgba(239,68,68,.10);border-color:rgba(239,68,68,.25)}
+.insight-box.green{background:rgba(16,185,129,.10);border-color:rgba(16,185,129,.25)}
+.insight-box.blue{background:rgba(59,130,246,.10);border-color:rgba(59,130,246,.25)}
+.insight-box strong{color:#fbbf24}
+.insight-box.red strong{color:#f87171}
+.insight-box.green strong{color:#34d399}
+.insight-box.blue strong{color:#60a5fa}
+.chart-grid{display:grid;grid-template-columns:1fr 1fr;gap:24px;margin-bottom:24px}
+.chart-card{background:#1f2937;border-radius:14px;padding:22px;box-shadow:0 2px 12px rgba(0,0,0,.25)}
+.chart-card.full{grid-column:1/-1}
+.chart-card h4{font-size:14px;font-weight:600;color:#e5e7eb;margin-bottom:14px}
+.chart-wrap{position:relative;height:320px}
+.chart-wrap.tall{height:380px}
+table{width:100%;border-collapse:collapse;font-size:13px;margin:12px 0}
+table th{background:#374151;padding:10px 14px;text-align:right;font-weight:600;color:#d1d5db;border-bottom:2px solid #4b5563}
+table td{padding:10px 14px;text-align:right;border-bottom:1px solid #374151;color:#e5e7eb}
+table th:first-child,table td:first-child{text-align:left}
+.neg{color:#f87171;font-weight:700}
+.pos{color:#34d399;font-weight:700}
+.summary-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:32px}
+.sum-card{background:#1f2937;border-radius:14px;padding:18px;text-align:center;box-shadow:0 2px 12px rgba(0,0,0,.25)}
+.sum-card .big{font-size:24px;font-weight:800;margin:6px 0}
+.sum-card .label{font-size:12px;color:#9ca3af}
+.flow-box{background:#1f2937;border:1px solid #374151;border-radius:10px;padding:18px 22px;margin:16px 0;font-size:14px;line-height:2}
+.flow-box .step{display:inline-block;background:#374151;padding:6px 14px;border-radius:6px;margin:4px}
+.flow-box .arrow{color:#f59e0b;font-weight:700;margin:0 8px}
+.glossary-list{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:16px 0}
+.glossary-item{background:#1f2937;border:1px solid #374151;border-radius:8px;padding:14px 16px}
+.glossary-name{font-size:14px;font-weight:700;color:#e5e7eb;margin-bottom:6px}
+.glossary-desc{font-size:12px;line-height:1.7;color:#9ca3af}
+.glossary-sql{display:block;margin-top:8px;padding:6px 10px;background:#111827;border-radius:4px;font-size:11px;color:#6ee7b7;font-family:'SF Mono',Monaco,monospace;word-break:break-all}
+pre.code{display:block;background:#1f2937;border:1px solid #374151;border-radius:8px;padding:20px 24px;overflow-x:auto;font-size:12px;line-height:1.7;color:#a5b4c2;white-space:pre;word-break:normal;margin:16px 0;font-family:'SF Mono',Monaco,monospace}
+@media(max-width:768px){.glossary-list{grid-template-columns:1fr}.summary-grid{grid-template-columns:1fr 1fr}.chart-grid{grid-template-columns:1fr}}
+</style>
+</head>
+<body><div class="container">
+
+<h1>循环贷双逾期影响分析</h1>
+<p class="subtitle">聚焦场景：首贷 s8 &rarr; 还款过半获循环贷资格 &rarr; 第2笔循环贷 s8 &rarr; 两笔全逾期</p>
+
+<!-- ====== 场景说明 ====== -->
+<h2>一、场景定义：什么是"双逾期"</h2>
+<div class="flow-box">
+  <strong style="color:#f59e0b">发生了什么事：</strong><br>
+  <span class="step">用户首贷放款</span>
+  <span class="arrow">&rarr;</span>
+  <span class="step">还款 &ge; 50%</span>
+  <span class="arrow">&rarr;</span>
+  <span class="step">系统开通循环贷</span>
+  <span class="arrow">&rarr;</span>
+  <span class="step">用户借第2笔</span>
+  <span class="arrow">&rarr;</span>
+  <span class="step" style="background:#7f1d1d">首贷停还 &rarr; s8</span>
+  <span class="arrow">&rarr;</span>
+  <span class="step" style="background:#7f1d1d">第2笔连带 &rarr; s8</span>
+</div>
+<p>如果<strong style="color:#60a5fa">不</strong>开循环贷：用户首贷 s8 后，没有第 2 笔可借——只损失 1 笔。开了循环贷：1 个劣质用户产生 2 笔坏账。</p>
+
+<!-- ====== 指标口径说明 ====== -->
+<h2>指标口径说明</h2>
+<div class="glossary-list">
+
+<div class="glossary-item">
+  <div class="glossary-name">首贷 / 第2笔</div>
+  <div class="glossary-desc">用户维度按 apply_time 升序编号，seq=1 为首贷，seq=2 为第2笔放款</div>
+  <code class="glossary-sql">ROW_NUMBER() OVER (PARTITION BY user_id ORDER BY apply_time)</code>
+</div>
+
+<div class="glossary-item">
+  <div class="glossary-name">循环贷订单</div>
+  <div class="glossary-desc">在上一笔订单还款≥50%且未结清（在途状态）时支用的贷款。数据源：side_recycle_type_copy，recycle_type=2。注：首贷永远不是循环贷，最早从第2笔开始出现</div>
+  <code class="glossary-sql">LEFT JOIN side_recycle_type_copy WHERE recycle_type = 2</code>
+</div>
+
+<div class="glossary-item">
+  <div class="glossary-name">非循环贷订单</div>
+  <div class="glossary-desc">用户在无在途订单（全部结清）后申请的贷款，每次独立审批；或 recycle_type=3 / 无标签</div>
+  <code class="glossary-sql">recycle_type != 2</code>
+</div>
+
+<div class="glossary-item">
+  <div class="glossary-name" style="color:#f87171">s8（坏账）</div>
+  <div class="glossary-desc">loan_status_code = 8，即该订单最终结清状态为"坏账/核销"，视作终态损失</div>
+  <code class="glossary-sql">loan_status_code = 8</code>
+</div>
+
+<div class="glossary-item">
+  <div class="glossary-name">回款率</div>
+  <div class="glossary-desc">s8 订单中，实际回收款占放款金额的比例。回款率越高说明催收效果越好</div>
+  <code class="glossary-sql">s8_repaid / s8_remit × 100%</code>
+</div>
+
+<div class="glossary-item">
+  <div class="glossary-name" style="color:#ef4444">双逾期</div>
+  <div class="glossary-desc">同一个用户的第1笔和第2笔放款均终态为 s8。循环贷场景下：首贷还款过半→获资格→第2笔→两笔全坏账</div>
+  <code class="glossary-sql">seq=1 AND seq=2 均为 loan_status_code=8</code>
+</div>
+
+<div class="glossary-item">
+  <div class="glossary-name">双正常</div>
+  <div class="glossary-desc">同一个用户的第1笔和第2笔放款均正常结清（loan_status_code=7）。本次分析排除 status=5（在途）的用户</div>
+  <code class="glossary-sql">seq=1 AND seq=2 均 loan_status_code = 7</code>
+</div>
+
+<div class="glossary-item">
+  <div class="glossary-name">净损失</div>
+  <div class="glossary-desc">放款金额 - 还款金额（终态订单）。正值=亏损，负值（即还款>放款）=盈利</div>
+  <code class="glossary-sql">SUM(end_remit) - SUM(end_repaid)</code>
+</div>
+
+<div class="glossary-item">
+  <div class="glossary-name">额外损失</div>
+  <div class="glossary-desc">仅指循环贷双逾期场景下第2笔的净损失。若不开循环贷这笔放款不会发生</div>
+  <code class="glossary-sql">第2笔 s8 的 (remit_amt - repaid_amt)</code>
+</div>
+
+<div class="glossary-item">
+  <div class="glossary-name">循环贷双逾期率</div>
+  <div class="glossary-desc">有第2笔放款的循环贷用户中，首贷和第2笔均 s8 的用户占比</div>
+  <code class="glossary-sql">双s8-循环贷人数 / 有第2笔的循环贷总人数 × 100%</code>
+</div>
+
+<div class="glossary-item">
+  <div class="glossary-name">盈利率</div>
+  <div class="glossary-desc">终态订单的 (还款金额 - 放款金额) / 放款金额。正值=盈利，负值=亏损</div>
+  <code class="glossary-sql">(end_repaid - end_remit) / end_remit × 100%</code>
+</div>
+
+<div class="glossary-item">
+  <div class="glossary-name">终态订单</div>
+  <div class="glossary-desc">loan_status_code IN (7,8) 的订单，排除了 status=5（在途未结清订单）</div>
+  <code class="glossary-sql">WHERE loan_status_code IN (7,8)</code>
+</div>
+
+<div class="glossary-item">
+  <div class="glossary-name">等放用户</div>
+  <div class="glossary-desc">注册以来从未被拒绝过（is_remit=0）的用户，首次提单即放款</div>
+  <code class="glossary-sql">MIN(is_remit=0 的 apply_time) IS NULL</code>
+</div>
+
+<div class="glossary-item">
+  <div class="glossary-name">原生非等放用户</div>
+  <div class="glossary-desc">首次提单被拒绝（is_remit=0），后来才首次获批放款（is_remit=1）的用户</div>
+  <code class="glossary-sql">MIN(is_remit=0 时间) < MIN(is_remit=1 时间)</code>
+</div>
+
+</div>
+
+<!-- ====== 二、等放用户 ====== -->
+<h2>二、等放用户：双逾期造成 1,344 万额外损失</h2>
+
+<h3>2.1 整体概况</h3>
+<div class="summary-grid">
+<div class="sum-card"><div class="label">有第2笔的等放用户</div><div class="big pos" style="color:#60a5fa">101,671</div></div>
+<div class="sum-card"><div class="label">其中循环贷用户</div><div class="big pos" style="color:#f59e0b">29,848</div><div style="font-size:12px;color:#9ca3af">占 29.4%</div></div>
+<div class="sum-card"><div class="label">双逾期人数</div><div class="big neg">5,556</div><div style="font-size:12px;color:#9ca3af">循环贷内占 18.5%</div></div>
+<div class="sum-card"><div class="label">额外损失</div><div class="big neg">-1344 万</div><div style="font-size:12px;color:#9ca3af">不开循环贷可避免</div></div>
+</div>
+
+<h3>2.2 循环贷双逾期明细</h3>
+<table>
+<tr><th>指标</th><th>首贷</th><th>第2笔（循环贷）</th><th>合计</th></tr>
+<tr><td>用户数</td><td colspan="2" style="text-align:center">5,556 人</td><td style="color:#9ca3af">-</td></tr>
+<tr><td>放款金额</td><td>1289 万</td><td>1677 万</td><td>2966 万</td></tr>
+<tr><td>还款金额</td><td>1150 万</td><td>333 万</td><td>1484 万</td></tr>
+<tr><td>净损失</td><td class="neg">-139 万</td><td class="neg">-1344 万</td><td class="neg">-1483 万</td></tr>
+<tr><td>s8 回款率</td><td>89.2%</td><td class="neg">19.9%</td><td style="color:#9ca3af">-</td></tr>
+</table>
+
+<div class="insight-box red">
+<strong>核心发现：首贷回款率 89.2%，第2笔回款率仅 19.9%</strong><br>
+等放双逾期用户的首贷回款率高达 89.2%，说明他们在还款 50% 获得循环贷资格时，征信和还款意愿都还是正常的。但在支用第 2 笔之后，还款行为急剧恶化——第 2 笔几乎全额坏账（仅回收 19.9%）。<br><br>
+<b>这暗示两种可能：</b><br>
+1. 用户财务突然恶化（收入中断等外部冲击）&mdash; 无法区分<br>
+2. 用户明知自己快还不上了，趁还有循环贷资格赶紧再借一笔 &mdash; 这就是"透支逃逸"行为
+</div>
+
+<h3>2.3 循环贷正常用户对比</h3>
+<div class="summary-grid">
+<div class="sum-card"><div class="label">双正常用户数</div><div class="big pos" style="color:#34d399">16,586</div></div>
+<div class="sum-card"><div class="label">盈利金额</div><div class="big pos">+4396 万</div></div>
+<div class="sum-card"><div class="label">盈利率</div><div class="big pos">53.6%</div></div>
+<div class="sum-card"><div class="label">是双逾期人数的</div><div class="big pos" style="color:#f59e0b">3.0 倍</div></div>
+</div>
+
+<div class="insight-box green">
+<strong>Trade-off 量化：</strong>循环贷双正常用户（16,763 人）带来 +4396 万 的利润（盈利率 53.6%），是双逾期人数（5,556 人）的 3 倍，利润是双逾期损失（-1483 万）的 3 倍。<br><br>
+<b>换句话说：</b>在等放用户中，循环贷整体仍是正向的——"赚的人多"覆盖了"亏的人惨"。<b>但优化空间巨大</b>：如果能识别出那 18.5% 会双逾期的用户并关闭其循环贷资格，等放循环贷的盈利可再提升 1344 万。
+</div>
+
+<div class="chart-grid">
+<div class="chart-card full"><h4>等放第2笔用户场景分布</h4><div class="chart-wrap"><canvas id="c_df_sankey"></canvas></div></div>
+<div class="chart-card"><h4>等放循环贷首贷 vs 第2笔回款率</h4><div class="chart-wrap"><canvas id="c_df_recovery"></canvas></div></div>
+<div class="chart-card"><h4>等放双逾期 vs 双正常 人数与利润对比</h4><div class="chart-wrap"><canvas id="c_df_compare"></canvas></div></div>
+</div>
+
+<!-- ====== 三、原生非等放用户 ====== -->
+<h2>三、原生非等放用户：双逾期影响相对较小</h2>
+
+<h3>3.1 整体概况</h3>
+<div class="summary-grid">
+<div class="sum-card"><div class="label">有第2笔的用户</div><div class="big pos" style="color:#60a5fa">14,281</div></div>
+<div class="sum-card"><div class="label">其中循环贷用户</div><div class="big pos" style="color:#f59e0b">3,246</div><div style="font-size:12px;color:#9ca3af">占 22.7%</div></div>
+<div class="sum-card"><div class="label">双逾期人数</div><div class="big neg">566</div><div style="font-size:12px;color:#9ca3af">循环贷内占 16.6%</div></div>
+<div class="sum-card"><div class="label">额外损失</div><div class="big neg">-78 万</div><div style="font-size:12px;color:#9ca3af">不开循环贷可避免</div></div>
+</div>
+
+<h3>3.2 循环贷双逾期明细</h3>
+<table>
+<tr><th>指标</th><th>首贷</th><th>第2笔（循环贷）</th><th>合计</th></tr>
+<tr><td>用户数</td><td colspan="2" style="text-align:center">566 人</td><td style="color:#9ca3af">-</td></tr>
+<tr><td>放款金额</td><td>57 万</td><td>90 万</td><td>147 万</td></tr>
+<tr><td>还款金额</td><td>52 万</td><td>12 万</td><td>65 万</td></tr>
+<tr><td>净损失</td><td class="neg">-5 万</td><td class="neg">-78 万</td><td class="neg">-82 万</td></tr>
+<tr><td>s8 回款率</td><td>92.0%</td><td class="neg">13.7%</td><td style="color:#9ca3af">-</td></tr>
+</table>
+
+<div class="insight-box">
+<strong>与等放的差异：</strong>原生非等放双逾期 566 人，规模仅为等放的 1/10。但第2笔回款率更低（13.7% vs 等放 19.9%），说明原生非等放中一旦出现循环贷 double-s8，回收率更低——可能因为这类用户本身信用更差。<br><br>
+亏损绝对值（78 万）远小于等放（1,344 万），不是优化的首要目标。
+</div>
+
+<div class="chart-grid">
+<div class="chart-card full"><h4>原生非等放第2笔用户场景分布</h4><div class="chart-wrap"><canvas id="c_nf_sankey"></canvas></div></div>
+</div>
+
+<!-- ====== 四、循环贷多笔连带逾期：第2笔+第3笔均为循环贷 ====== -->
+<h2>四、循环贷多笔连带逾期：第2笔+第3笔均为循环贷</h2>
+<p>与前期分析的"第1笔+第2笔双逾期"不同，本部分聚焦于<b>第2笔和第3笔均为循环贷订单</b>的用户。这类用户已经通过循环贷体系支用了两次，如果两笔都逾期（s8），说明循环贷的筛选机制在"多轮支用"场景下存在<strong style="color:#f87171">加速崩盘</strong>的风险。</p>
+
+<h3>4.1 等放用户：双逾期率从 18.6% 飙升到 29.8%</h3>
+<div class="summary-grid">
+<div class="sum-card"><div class="label">第2第3均循环贷用户</div><div class="big pos" style="color:#60a5fa">16,080</div></div>
+<div class="sum-card"><div class="label">双逾期（两笔s8）</div><div class="big neg">4,792</div><div style="font-size:12px;color:#9ca3af">占 29.8%</div></div>
+<div class="sum-card"><div class="label">第2笔s8回款率</div><div class="big pos" style="color:#f59e0b">78.5%</div></div>
+<div class="sum-card"><div class="label">第3笔s8回款率</div><div class="big neg">30.2%</div></div>
+</div>
+
+<h3>4.2 等放三笔循环贷明细</h3>
+<table>
+<tr><th>场景</th><th>用户数</th><th>首贷放款</th><th>第2笔放款</th><th>第3笔放款</th><th>总利润</th><th>占比</th></tr>
+<tr style="background:rgba(239,68,68,.08)"><td>第2第3均s8</td><td class="neg">4,792</td><td>1141 万</td><td>1673 万</td><td>1734 万</td><td class="neg">-994 万</td><td>29.8%</td></tr>
+<tr><td>第2s8 第3正常</td><td>230</td><td>62 万</td><td>93 万</td><td>65 万</td><td class="pos">+58 万</td><td>1.4%</td></tr>
+<tr><td>第2正常 第3s8</td><td>2,587</td><td>500 万</td><td>730 万</td><td>1025 万</td><td class="pos">+287 万</td><td>16.1%</td></tr>
+<tr style="background:rgba(16,185,129,.08)"><td>双正常（均s7）</td><td class="pos">8,471</td><td>1851 万</td><td>2617 万</td><td>3005 万</td><td class="pos">+3972 万</td><td>52.7%</td></tr>
+</table>
+
+<div class="insight-box red">
+<strong style="color:#f87171">关键发现：双逾期率从 18.6% → 29.8%，回款率从 78.5% → 30.2%</strong><br>
+在"第1+第2笔"分析中，等放循环贷双逾期率为 18.6%。到了"第2+第3笔"，双逾期率飙升到 <b>29.8%</b>。<br><br>
+更关键的是回款率的陡降：第2笔 s8 回款率还有 <b>78.5%</b>（用户借第2笔时尚有还款意愿），但第3笔 s8 回款率骤降至 <b>30.2%</b>。<br><br>
+<b>这说明循环贷的劣化是加速而非线性的：</b>用户在借第2笔循环贷时还能回收 78.5%，借了第3笔后全面崩盘。这是一个强烈的信号——当一个用户在首笔循环贷（第2笔）就出现逾期时，<b>立即冻结后续循环贷资格</b>可以避免第3笔几乎全额坏账的损失。
+</div>
+
+<div class="insight-box green">
+<strong>Trade-off 量化（三笔维度）：</strong>等放双正常用户 8,471 人盈利 +3972 万，双逾期 4,792 人损失 -994 万。盈利是损失的 4.0 倍，与"第1+第2笔"的 3.0 倍持平。<br><br>
+但注意：<b>29.8% 的用户产生了几乎与那 52.7% 用户相当的亏损</b>。如果能识别出即将崩盘的 4,792 人，等放循环贷的总盈利可以从 +2978 万 提升到 +3972 万，提升 994 万。
+</div>
+
+<div class="chart-grid">
+<div class="chart-card full"><h4>等放 第2+第3笔循环贷 场景分布</h4><div class="chart-wrap"><canvas id="c_df3_sankey"></canvas></div></div>
+<div class="chart-card"><h4>等放 双逾期 第2笔 vs 第3笔回款率</h4><div class="chart-wrap"><canvas id="c_df3_recovery"></canvas></div></div>
+<div class="chart-card"><h4>等放 双正常 vs 双逾期 人数利润对比</h4><div class="chart-wrap"><canvas id="c_df3_compare"></canvas></div></div>
+</div>
+
+<h3>4.3 原生非等放用户</h3>
+<div class="summary-grid">
+<div class="sum-card"><div class="label">第2第3均循环贷</div><div class="big pos" style="color:#60a5fa">1,556</div></div>
+<div class="sum-card"><div class="label">双逾期</div><div class="big neg">396</div><div style="font-size:12px;color:#9ca3af">占 25.4%</div></div>
+<div class="sum-card"><div class="label">第3笔s8回款率</div><div class="big neg">21.6%</div></div>
+<div class="sum-card"><div class="label">总损失</div><div class="big neg">-79 万</div></div>
+</div>
+
+<div class="insight-box">
+<strong>验证了模式的一致性：</strong>原生非等放第2+第3笔双逾期率 25.4%，第3笔回款率 21.6%，与等放呈现相同的"加速崩盘"规律。虽然人数和金额远小于等放（396人 vs 4,792人），但第3笔回款率仅 21.6% 比等放的 30.2% 更低——<b>原生非等放一旦崩溃，回收更困难</b>。
+</div>
+
+<!-- ====== 五、结论 ====== -->
+<h2>五、结论与建议</h2>
+
+<div class="insight-box red">
+<strong style="color:#f87171">问题本质：</strong>循环贷双逾期是"透支逃逸"的典型表现。用户在首贷还款已出现困难信号后，利用循环贷资格"再借一笔"，导致 1 个劣质用户产生 2 笔坏账。等放中 18.5% 的循环贷用户属于这类场景，造成 1344 万 额外损失。
+</div>
+
+<div class="insight-box blue">
+<strong style="color:#60a5fa">机会：</strong>双逾期用户的首贷回款率仍高达 89.2%（等放），说明在获得循环贷资格的时点（还款 &ge; 50%），用户的行为数据尚未完全暴露风险。如果能在此时间窗口内<b>识别出"还款动机正在衰减"的信号</b>，就可以在用户崩盘前关闭循环贷资格，避免第 2 笔的损失。
+</div>
+
+<div class="insight-box green">
+<strong style="color:#34d399">建议策略：</strong><br>
+1. <b>动态评分卡</b>——在循环贷资格开通时，不仅看"已还款 50%"，还加入还款时间间隔、还款金额波动、是否临近还款日等 <b>还款质量指标</b><br>
+2. <b>阶梯额度</b>——对首次获得循环贷资格的用户，第 2 笔额度控制为首贷的 50%~70%，降低单笔损失上限<br>
+3. <b>冷静期</b>——首次获得循环贷资格后，设置 3~7 天冷静期再开放支用，过滤"冲动透支"行为<br>
+4. <b>反比控制</b>——等放循环贷双逾期率 18.5% 是明显的红线。建议将双逾期率控制在 10% 以下作为风控 KPI
+</div>
+
+<div class="insight-box">
+<strong style="color:#fbbf24">底线判断：</strong>循环贷在等放中整体仍是正向的（双正常用户利润是双逾期损失的 3 倍）。不建议因噎废食关闭循环贷，但 18.5% 的双逾期率说明<b>筛选精度有显著提升空间</b>。如果能把双逾期率从 18.5% 降到 10%，等放每年可多留存约 618 万 利润（按线性估算约 620 万）。
+<!-- ====== 附录 ====== -->
+<h2>附录：完整 PGSQL 查询代码</h2>
+<pre class="code">-- ============================================================================
+-- 循环贷双逾期影响分析 -- 完整 PGSQL 查询
+-- 数据源: wangchuanliang.order_loan_f_v2_copy (订单主表)
+--         wangchuanliang.side_recycle_type_copy (循环贷标签)
+-- 范围: 2025.01 ~ 2026.05 注册用户, 全量
+-- 口径: 双正常 = 第1笔和第2笔均 loan_status_code=7，排除任一笔为5(在途)的用户
+-- ============================================================================
+
+WITH user_type AS (
+    SELECT user_id,
+        CASE 
+            WHEN MIN(CASE WHEN is_remit = 0 THEN apply_time END) IS NULL THEN '等放'
+            WHEN MIN(CASE WHEN is_remit = 1 THEN apply_time END)
+               < MIN(CASE WHEN is_remit = 0 THEN apply_time END) THEN '迁移'
+            ELSE '原生非等放'
+        END AS utype
+    FROM wangchuanliang.order_loan_f_v2_copy
+    WHERE reg_date >= '2025-01-01' AND reg_date <= '2026-05-31'
+    GROUP BY user_id
+    HAVING SUM(CASE WHEN is_remit = 1 THEN 1 ELSE 0 END) > 0
+),
+loan_seq AS (
+    SELECT 
+        o.user_id, ut.utype,
+        o.serial_id, o.remit_amt, o.repaid_amt, 
+        o.loan_status_code, o.overdue_days, o.loan_day, o.apply_time,
+        ROW_NUMBER() OVER (PARTITION BY o.user_id ORDER BY o.apply_time) AS seq
+    FROM wangchuanliang.order_loan_f_v2_copy o
+    JOIN user_type ut ON o.user_id = ut.user_id
+    WHERE o.is_remit = 1
+      AND o.reg_date >= '2025-01-01' AND o.reg_date <= '2026-05-31'
+),
+recycle_tag AS (
+    SELECT serial_id, recycle_type
+    FROM wangchuanliang.side_recycle_type_copy
+    WHERE recycle_type IN (2, 3)
+),
+loan2_tag AS (
+    SELECT ls.user_id, ls.utype, ls.seq, ls.serial_id,
+        ls.remit_amt, ls.repaid_amt, ls.loan_status_code, ls.overdue_days,
+        COALESCE(rt.recycle_type, 0) AS cycle_type
+    FROM loan_seq ls
+    LEFT JOIN recycle_tag rt ON ls.serial_id = rt.serial_id
+    WHERE ls.seq <= 2
+),
+-- 第1笔和第2笔配对, 排除任一笔为 status=5(在途) 的用户
+pair AS (
+    SELECT 
+        l1.user_id, l1.utype,
+        l1.loan_status_code AS s1_status, l1.remit_amt AS s1_remit, l1.repaid_amt AS s1_repaid,
+        l2.loan_status_code AS s2_status, l2.remit_amt AS s2_remit, l2.repaid_amt AS s2_repaid,
+        l2.cycle_type
+    FROM loan2_tag l1
+    JOIN loan2_tag l2 ON l1.user_id = l2.user_id AND l2.seq = 2
+    WHERE l1.seq = 1
+      AND l1.loan_status_code != 5
+      AND l2.loan_status_code != 5
+)
+-- 按用户类型和场景聚合
+SELECT 
+    utype                                                              AS "用户类型",
+    CASE 
+        WHEN cycle_type = 2 AND s1_status = 8 AND s2_status = 8 
+            THEN '双s8-循环贷'
+        WHEN cycle_type = 2 AND s1_status = 8 AND s2_status != 8 
+            THEN '首贷s8-循环贷(第2笔正常)'
+        WHEN cycle_type = 2 AND s1_status != 8 AND s2_status = 8 
+            THEN '循环贷s8-首贷正常'
+        WHEN cycle_type = 2 AND s1_status = 7 AND s2_status = 7 
+            THEN '双正常-循环贷'
+        WHEN cycle_type != 2 AND s1_status = 8 AND s2_status = 8 
+            THEN '双s8-非循环贷'
+        WHEN cycle_type != 2 AND s1_status = 8 AND s2_status != 8 
+            THEN '首贷s8-非循环贷'
+        ELSE '其他'
+    END                                                                 AS "场景",
+    COUNT(*)                                                            AS "用户数",
+    SUM(s1_remit)                                                       AS "首贷放款",
+    SUM(s1_repaid)                                                      AS "首贷还款",
+    SUM(s2_remit)                                                       AS "第2笔放款",
+    SUM(s2_repaid)                                                      AS "第2笔还款",
+    SUM(CASE WHEN s1_status = 8 THEN s1_remit ELSE 0 END)              AS "首贷s8放款",
+    SUM(CASE WHEN s1_status = 8 THEN s1_repaid ELSE 0 END)             AS "首贷s8还款",
+    SUM(CASE WHEN s2_status = 8 THEN s2_remit ELSE 0 END)              AS "第2笔s8放款",
+    SUM(CASE WHEN s2_status = 8 THEN s2_repaid ELSE 0 END)             AS "第2笔s8还款",
+    (SUM(s1_repaid) + SUM(s2_repaid)) - (SUM(s1_remit) + SUM(s2_remit)) 
+                                                                        AS "总利润"
+FROM pair
+GROUP BY utype, scenario
+ORDER BY utype, scenario;
+
+
+-- ============================================================================
+-- 补充查询: 第2笔+第3笔均为循环贷 双逾期分析
+-- 聚焦第2笔和第3笔都是循环贷订单(recycle_type=2)的用户
+-- 分析两笔都s8的场景与两笔都s7的场景对比
+-- ============================================================================
+
+WITH user_type AS (
+    SELECT user_id,
+        CASE 
+            WHEN MIN(CASE WHEN is_remit = 0 THEN apply_time END) IS NULL THEN '等放'
+            WHEN MIN(CASE WHEN is_remit = 1 THEN apply_time END)
+               < MIN(CASE WHEN is_remit = 0 THEN apply_time END) THEN '迁移'
+            ELSE '原生非等放'
+        END AS utype
+    FROM wangchuanliang.order_loan_f_v2_copy
+    WHERE reg_date >= '2025-01-01' AND reg_date <= '2026-05-31'
+    GROUP BY user_id
+    HAVING SUM(CASE WHEN is_remit = 1 THEN 1 ELSE 0 END) >= 3
+),
+loan_seq AS (
+    SELECT 
+        o.user_id, ut.utype,
+        o.serial_id, o.remit_amt, o.repaid_amt, 
+        o.loan_status_code, o.overdue_days,
+        ROW_NUMBER() OVER (PARTITION BY o.user_id ORDER BY o.apply_time) AS seq
+    FROM wangchuanliang.order_loan_f_v2_copy o
+    JOIN user_type ut ON o.user_id = ut.user_id
+    WHERE o.is_remit = 1
+      AND o.reg_date >= '2025-01-01' AND o.reg_date <= '2026-05-31'
+),
+recycle_tag AS (
+    SELECT serial_id, recycle_type
+    FROM wangchuanliang.side_recycle_type_copy
+    WHERE recycle_type IN (2, 3)
+),
+loan_tag AS (
+    SELECT ls.user_id, ls.utype, ls.seq, ls.serial_id,
+        ls.remit_amt, ls.repaid_amt, ls.loan_status_code, ls.overdue_days,
+        COALESCE(rt.recycle_type, 0) AS cycle_type
+    FROM loan_seq ls
+    LEFT JOIN recycle_tag rt ON ls.serial_id = rt.serial_id
+    WHERE ls.seq IN (1, 2, 3)
+),
+-- 三笔配对, 要求第2笔和第3笔均为循环贷
+triple AS (
+    SELECT 
+        l1.user_id, l1.utype,
+        l1.loan_status_code AS s1_status, l1.remit_amt AS s1_remit, l1.repaid_amt AS s1_repaid,
+        l2.loan_status_code AS s2_status, l2.remit_amt AS s2_remit, l2.repaid_amt AS s2_repaid,
+        l3.loan_status_code AS s3_status, l3.remit_amt AS s3_remit, l3.repaid_amt AS s3_repaid
+    FROM loan_tag l1
+    JOIN loan_tag l2 ON l1.user_id = l2.user_id AND l2.seq = 2 AND l2.cycle_type = 2
+    JOIN loan_tag l3 ON l1.user_id = l3.user_id AND l3.seq = 3 AND l3.cycle_type = 2
+    WHERE l1.seq = 1
+      AND l2.loan_status_code != 5      -- 排除在途
+      AND l3.loan_status_code != 5      -- 排除在途
+)
+SELECT 
+    utype                                                              AS "用户类型",
+    CASE 
+        WHEN s2_status = 8 AND s3_status = 8 THEN '第2第3均s8'
+        WHEN s2_status = 8 AND s3_status != 8 THEN '第2s8-第3正常'
+        WHEN s2_status != 8 AND s3_status = 8 THEN '第2正常-第3s8'
+        WHEN s2_status = 7 AND s3_status = 7 THEN '第2第3均s7(双正常)'
+        ELSE '其他'
+    END                                                                 AS "场景",
+    COUNT(*)                                                            AS "用户数",
+    SUM(s1_remit)                                                       AS "首贷放款",
+    SUM(s1_repaid)                                                      AS "首贷还款",
+    SUM(s2_remit)                                                       AS "第2笔放款",
+    SUM(s2_repaid)                                                      AS "第2笔还款",
+    SUM(s3_remit)                                                       AS "第3笔放款",
+    SUM(s3_repaid)                                                      AS "第3笔还款",
+    SUM(CASE WHEN s2_status = 8 THEN s2_remit ELSE 0 END)              AS "第2笔s8放款",
+    SUM(CASE WHEN s2_status = 8 THEN s2_repaid ELSE 0 END)             AS "第2笔s8还款",
+    SUM(CASE WHEN s3_status = 8 THEN s3_remit ELSE 0 END)              AS "第3笔s8放款",
+    SUM(CASE WHEN s3_status = 8 THEN s3_repaid ELSE 0 END)             AS "第3笔s8还款",
+    (SUM(s1_repaid) + SUM(s2_repaid) + SUM(s3_repaid)) 
+    - (SUM(s1_remit) + SUM(s2_remit) + SUM(s3_remit))                  AS "总利润"
+FROM triple
+GROUP BY utype, scenario
+ORDER BY utype, scenario;
+</pre>
+
+<script>
+// ===== 等放场景分布 =====
+new Chart(document.getElementById('c_df_sankey'), {
+  type: 'bar',
+  data: {
+    labels: ['双正常-循环贷','双s8-循环贷','循环贷s8-首贷正常','首贷s8-循环贷','其他(非循环贷)'],
+    datasets: [{
+      label: '用户数',
+      data: [16586, 5556, 7545, 161, 71815],
+      backgroundColor: ['#34d399','#ef4444','#f59e0b','#60a5fa','#6b7280'],
+      borderRadius: 8, borderWidth: 0
+    }]
+  },
+  options: {
+    responsive: true, maintainAspectRatio: false,
+    plugins: { legend: { display: false }, tooltip: { backgroundColor: '#374151', callbacks: { label: function(c) { return '用户数: ' + c.raw.toLocaleString() + ' 人'; } } } },
+    scales: { y: { grid: { color: '#374151' }, ticks: { color: '#9ca3af' } }, x: { grid: { color: '#374151' }, ticks: { color: '#9ca3af', maxRotation: 0, font: { size: 10 } } } }
+  }
+});
+
+// ===== 等放回款率对比 =====
+new Chart(document.getElementById('c_df_recovery'), {
+  type: 'bar',
+  data: {
+    labels: ['首贷','第2笔(循环贷)'],
+    datasets: [{
+      label: '回款率 %',
+      data: [89.2, 19.9],
+      backgroundColor: ['#60a5fa','#ef4444'],
+      borderRadius: 8, borderWidth: 0
+    }]
+  },
+  options: {
+    responsive: true, maintainAspectRatio: false,
+    plugins: { legend: { display: false }, tooltip: { backgroundColor: '#374151', callbacks: { label: function(c) { return '回款率: ' + c.raw.toFixed(1) + '%'; } } } },
+    scales: { y: { beginAtZero: true, max: 100, grid: { color: '#374151' }, ticks: { color: '#9ca3af', callback: function(v){return v+'%';} } }, x: { grid: { color: '#374151' }, ticks: { color: '#9ca3af' } } }
+  }
+});
+
+// ===== 等放双逾期 vs 双正常 =====
+new Chart(document.getElementById('c_df_compare'), {
+  type: 'bar',
+  data: {
+    labels: ['双正常','双逾期'],
+    datasets: [
+      { label: '人数', data: [16586, 5556], backgroundColor: '#60a5fa', borderRadius: 8, borderWidth: 0, yAxisID: 'y', order: 2 },
+      { label: '利润(万)', data: [4396, -1483], backgroundColor: '#f59e0b', borderRadius: 8, borderWidth: 0, yAxisID: 'y1', order: 1 }
+    ]
+  },
+  options: {
+    responsive: true, maintainAspectRatio: false,
+    plugins: { legend: { labels: { color: '#d1d5db' } }, tooltip: { backgroundColor: '#374151' } },
+    scales: {
+      y: { position: 'left', grid: { color: '#374151' }, ticks: { color: '#9ca3af' }, title: { display: true, text: '人数', color: '#9ca3af' } },
+      y1: { position: 'right', grid: { drawOnChartArea: false }, ticks: { color: '#f59e0b', callback: function(v){return v+'万';} }, title: { display: true, text: '利润', color: '#f59e0b' } },
+      x: { grid: { color: '#374151' }, ticks: { color: '#9ca3af' } }
+    }
+  }
+});
+
+// ===== 原生非等放场景分布 =====
+new Chart(document.getElementById('c_nf_sankey'), {
+  type: 'bar',
+  data: {
+    labels: ['双正常-循环贷','双s8-循环贷','循环贷s8-首贷正常','首贷s8-循环贷','其他(非循环贷)'],
+    datasets: [{
+      label: '用户数',
+      data: [1999, 566, 657, 24, 11034],
+      backgroundColor: ['#34d399','#ef4444','#f59e0b','#60a5fa','#6b7280'],
+      borderRadius: 8, borderWidth: 0
+    }]
+  },
+  options: {
+    responsive: true, maintainAspectRatio: false,
+    plugins: { legend: { display: false }, tooltip: { backgroundColor: '#374151', callbacks: { label: function(c) { return '用户数: ' + c.raw.toLocaleString() + ' 人'; } } } },
+    scales: { y: { grid: { color: '#374151' }, ticks: { color: '#9ca3af' } }, x: { grid: { color: '#374151' }, ticks: { color: '#9ca3af', maxRotation: 0, font: { size: 10 } } } }
+  }
+});
+
+// ===== 三笔循环贷图表 =====
+// 等放第2+第3笔循环贷场景分布
+new Chart(document.getElementById('c_df3_sankey'), {
+  type: 'bar',
+  data: {
+    labels: ['双正常(均s7)','第2第3均s8','第2正常第3s8','第2s8第3正常'],
+    datasets: [{
+      label: '用户数',
+      data: [8471, 4792, 2587, 230],
+      backgroundColor: ['#34d399','#ef4444','#f59e0b','#60a5fa'],
+      borderRadius: 8, borderWidth: 0
+    }]
+  },
+  options: {
+    responsive: true, maintainAspectRatio: false,
+    plugins: { legend: { display: false }, tooltip: { backgroundColor: '#374151', callbacks: { label: function(c) { return '用户数: ' + c.raw.toLocaleString() + ' 人'; } } } },
+    scales: { y: { grid: { color: '#374151' }, ticks: { color: '#9ca3af' } }, x: { grid: { color: '#374151' }, ticks: { color: '#9ca3af', maxRotation: 0, font: { size: 11 } } } }
+  }
+});
+
+// 等放双逾期 第2笔 vs 第3笔回款率
+new Chart(document.getElementById('c_df3_recovery'), {
+  type: 'bar',
+  data: {
+    labels: ['第2笔(s8)','第3笔(s8)'],
+    datasets: [{
+      label: '回款率 %',
+      data: [78.5, 30.2],
+      backgroundColor: ['#f59e0b','#ef4444'],
+      borderRadius: 8, borderWidth: 0
+    }]
+  },
+  options: {
+    responsive: true, maintainAspectRatio: false,
+    plugins: { legend: { display: false }, tooltip: { backgroundColor: '#374151', callbacks: { label: function(c) { return '回款率: ' + c.raw.toFixed(1) + '%'; } } } },
+    scales: { y: { beginAtZero: true, max: 100, grid: { color: '#374151' }, ticks: { color: '#9ca3af', callback: function(v){return v+'%';} } }, x: { grid: { color: '#374151' }, ticks: { color: '#9ca3af' } } }
+  }
+});
+
+// 等放 双正常 vs 双逾期 人数利润对比
+new Chart(document.getElementById('c_df3_compare'), {
+  type: 'bar',
+  data: {
+    labels: ['双正常(均s7)','双逾期(均s8)'],
+    datasets: [
+      { label: '人数', data: [8471, 4792], backgroundColor: '#60a5fa', borderRadius: 8, borderWidth: 0, yAxisID: 'y', order: 2 },
+      { label: '利润(万)', data: [3972, -994], backgroundColor: '#f59e0b', borderRadius: 8, borderWidth: 0, yAxisID: 'y1', order: 1 }
+    ]
+  },
+  options: {
+    responsive: true, maintainAspectRatio: false,
+    plugins: { legend: { labels: { color: '#d1d5db' } }, tooltip: { backgroundColor: '#374151' } },
+    scales: {
+      y: { position: 'left', grid: { color: '#374151' }, ticks: { color: '#9ca3af' }, title: { display: true, text: '人数', color: '#9ca3af' } },
+      y1: { position: 'right', grid: { drawOnChartArea: false }, ticks: { color: '#f59e0b', callback: function(v){return v+'万';} }, title: { display: true, text: '利润', color: '#f59e0b' } },
+      x: { grid: { color: '#374151' }, ticks: { color: '#9ca3af' } }
+    }
+  }
+});
+</script>
+</div>
+</body></html>
