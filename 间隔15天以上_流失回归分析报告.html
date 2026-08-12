@@ -1,0 +1,66 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>首次流失后用户行为分析报告</title>
+  <style>
+    :root{--ink:#17223b;--muted:#667085;--line:#e5eaf2;--bg:#f5f7fb;--card:#fff;--blue:#2563eb;--teal:#0f9f8f;--amber:#d97706;--red:#dc2626;--navy:#14213d}
+    *{box-sizing:border-box} body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.6 -apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei",sans-serif}
+    .hero{background:linear-gradient(130deg,#101b36,#203b72);color:#fff;padding:50px max(24px,calc((100% - 1160px)/2)) 42px}.eyebrow{color:#9ec5ff;letter-spacing:.12em;font-size:12px;font-weight:700}.hero h1{font-size:34px;line-height:1.25;margin:8px 0 10px}.hero p{max-width:780px;color:#d9e5ff;margin:0}.wrap{max-width:1160px;margin:0 auto;padding:28px 24px 60px}.notice{background:#fff8e8;border:1px solid #f5d99a;border-radius:10px;padding:12px 16px;color:#76530b;margin-bottom:22px}
+    h2{font-size:21px;margin:32px 0 12px}h3{font-size:16px;margin:0 0 8px}.grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}.cards3{grid-template-columns:repeat(3,1fr)}.card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:17px;box-shadow:0 2px 10px #1d35570a}.metric{font-size:28px;font-weight:750;letter-spacing:-.04em}.label{color:var(--muted);font-size:13px}.small{color:var(--muted);font-size:13px}.split{display:grid;grid-template-columns:1.25fr .75fr;gap:18px}.insight{border-left:4px solid var(--blue)}.risk{border-left-color:var(--red)}.good{border-left-color:var(--teal)}
+    table{width:100%;border-collapse:separate;border-spacing:0;background:#fff;border:1px solid var(--line);border-radius:12px;overflow:hidden;font-size:13px}th,td{padding:10px 12px;text-align:right;border-bottom:1px solid var(--line)}th{background:#f8fafc;color:#475467;font-weight:650;white-space:nowrap}th:first-child,td:first-child{text-align:left}tr:last-child td{border-bottom:0}.table-wrap{overflow:auto}.bar-row{display:grid;grid-template-columns:115px 1fr 80px;align-items:center;gap:10px;margin:11px 0}.bar{height:10px;background:#e8eef8;border-radius:99px;overflow:hidden}.bar i{display:block;height:100%;background:linear-gradient(90deg,#3978f3,#5fa7ff);border-radius:99px}.bar.red i{background:linear-gradient(90deg,#e05252,#ef8d7e)}
+    .issue{display:grid;grid-template-columns:32px 1fr;gap:12px;padding:14px 0;border-bottom:1px solid var(--line)}.issue:last-child{border:0}.badge{width:28px;height:28px;border-radius:50%;display:grid;place-items:center;background:#fee2e2;color:#b91c1c;font-weight:700}.priority{display:inline-block;padding:2px 8px;border-radius:99px;font-size:12px;font-weight:700;background:#fee2e2;color:#b91c1c;margin-left:7px}.p2{background:#fff1cf;color:#9a6700}.recommend{padding:15px 16px;background:#f8fbff;border:1px solid #d9e9ff;border-radius:10px;margin:10px 0}.footer{margin-top:35px;color:var(--muted);font-size:12px}
+    @media(max-width:760px){.grid,.cards3,.split{grid-template-columns:1fr 1fr}.hero h1{font-size:27px}}@media(max-width:480px){.grid,.cards3,.split{grid-template-columns:1fr}.hero{padding:34px 20px}.wrap{padding:20px}}
+  </style>
+</head>
+<body>
+  <header class="hero"><div class="eyebrow">CHURN &amp; RETURN ANALYSIS</div><h1>首次流失后用户行为分析报告</h1><p>以“上一笔已结清放款后，下一笔提单间隔超过 15 天”为流失定义；按首次流失发生在第几笔已结清放款后分层。</p></header>
+  <main class="wrap">
+    <div class="notice">数据口径提示：本报告基于已执行 SQL 的输出（70,618 名流失用户）。SQL 使用 <code>CURRENT_DATE</code> 识别永久流失、最近结清和生命周期，因此复跑日期变化会使结果随之变化。</div>
+    <h2>管理摘要</h2>
+    <section class="grid">
+      <div class="card"><div class="label">首次流失用户</div><div class="metric">70,618</div><div class="small">含回归与尚未回归用户</div></div>
+      <div class="card"><div class="label">又提单用户 / 回归率</div><div class="metric">38,030 <span style="font-size:18px;color:var(--blue)">53.85%</span></div><div class="small">32,588 人至今未再次提单</div></div>
+      <div class="card"><div class="label">又放款用户 / 放款回归率</div><div class="metric">32,026 <span style="font-size:18px;color:var(--teal)">45.35%</span></div><div class="small">较提单回归少 6,004 人</div></div>
+      <div class="card"><div class="label">回归后最终逾期</div><div class="metric" style="color:var(--red)">22,022 <span style="font-size:18px">57.91%</span></div><div class="small">分母为又提单用户</div></div>
+    </section>
+
+    <section class="split"><div><h2>最重要的结论</h2><div class="card insight"><h3>流失高度集中在首贷后</h3><p>37,800 人在第 1 笔放款后首次流失，占全部流失样本 <b>53.5%</b>；前 3 笔合计占 <b>84.4%</b>。首贷后的体验、额度匹配和催回策略决定了绝大多数流失规模。</p></div><div class="card risk" style="margin-top:12px"><h3>回归并不等于恢复健康</h3><p>38,030 名回归用户中，最终逾期 22,022 人（<b>57.9%</b>），最终被拒 8,524 人（22.4%）。真正处于“最终正常结清”的仅 427 人（1.1%）。回归客群的风险与审批承接需优先治理。</p></div></div><div><h2>回归用户的最终状态</h2><div class="card"><div class="bar-row"><span>最终逾期</span><div class="bar red"><i style="width:57.91%"></i></div><b>57.9%</b></div><div class="bar-row"><span>最终被拒</span><div class="bar"><i style="width:22.41%"></i></div><b>22.4%</b></div><div class="bar-row"><span>再次流失</span><div class="bar"><i style="width:10.83%"></i></div><b>10.8%</b></div><div class="bar-row"><span>最终在途</span><div class="bar"><i style="width:7.73%"></i></div><b>7.7%</b></div><div class="bar-row"><span>正常结清</span><div class="bar"><i style="width:1.12%"></i></div><b>1.1%</b></div></div></div></section>
+
+    <h2>分层表现：流失越靠后，回归率越高，但样本显著变小</h2>
+    <div class="table-wrap"><table><thead><tr><th>首次流失位置</th><th>用户数</th><th>样本占比</th><th>又提单率</th><th>又放款率</th><th>回归后人均提单</th><th>回归后人均放款</th><th>回归后放款盈利率</th></tr></thead><tbody>
+      <tr><td>第 1 笔后</td><td>37,800</td><td>53.5%</td><td>47.95%</td><td>38.81%</td><td>3.3</td><td>2.9</td><td>14.17%</td></tr>
+      <tr><td>第 2 笔后</td><td>14,436</td><td>20.4%</td><td>56.18%</td><td>47.82%</td><td>3.5</td><td>3.0</td><td>14.34%</td></tr>
+      <tr><td>第 3 笔后</td><td>7,337</td><td>10.4%</td><td>60.07%</td><td>51.66%</td><td>3.9</td><td>3.3</td><td>16.00%</td></tr>
+      <tr><td>第 4 笔后</td><td>4,087</td><td>5.8%</td><td>63.62%</td><td>55.54%</td><td>4.0</td><td>3.4</td><td>17.96%</td></tr>
+      <tr><td>第 5 笔后</td><td>2,460</td><td>3.5%</td><td>67.60%</td><td>60.20%</td><td>4.2</td><td>3.6</td><td>17.44%</td></tr>
+      <tr><td>第 6–10 笔后</td><td>3,683</td><td>5.2%</td><td>69.13%</td><td>63.97%</td><td>4.6*</td><td>4.0*</td><td>约 18%–27%</td></tr>
+      <tr><td>第 11 笔及以后</td><td>815</td><td>1.2%</td><td>71.04%</td><td>68.22%</td><td>5.4*</td><td>4.8*</td><td>波动大</td></tr>
+    </tbody></table></div><p class="small">* 为分组内的近似水平；高笔数分层样本很小（例如第 15 笔后仅 53 人），不宜直接据此做策略判断。</p>
+
+    <h2>发现的问题与可能原因</h2>
+    <section class="card">
+      <div class="issue"><div class="badge">1</div><div><b>首贷后流失是最大漏斗断点</b><span class="priority">P0</span><br><span class="small">首贷后流失人数 37,800，且回归率仅 48.0%、放款回归率仅 38.8%，均为主要分层中最低。首贷后第 16 天起的召回、首期结清后的额度/产品匹配、拒绝原因触达，应成为增长优先级第一。</span></div></div>
+      <div class="issue"><div class="badge">2</div><div><b>回归客群的逾期存量偏高</b><span class="priority">P0</span><br><span class="small">回归用户最终逾期占 57.9%，远高于最终再次流失（10.8%）。若仅以“促回归、促放款”衡量成功，容易带来风险迁移。召回策略须和授信、贷后预警联动，并分别评估增量放款、逾期率和回款率。</span></div></div>
+      <div class="issue"><div class="badge">3</div><div><b>提单回归到放款回归存在 15.8 个百分点损失</b><span class="priority p2">P1</span><br><span class="small">又提单率 53.85%，又放款率 45.35%，中间有 6,004 名回归提单用户没有获得放款。应拆解为审核拒绝、额度不足、主动取消、在途限制等原因，避免把可转化回归需求损失在审批环节。</span></div></div>
+      <div class="issue"><div class="badge">4</div><div><b>回归后时间结构中“在途”占主导</b><span class="priority p2">P1</span><br><span class="small">纳入生命周期计算的用户平均生命周期为 77.3 天，其中平均在途 52.1 天（67.4%）、非在途 16.9 天（21.9%）、被拒 7.1 天（9.2%）。应重点关注长期在途与逾期的成因，不应仅以更短的无在途间隔作为成功指标。</span></div></div>
+    </section>
+
+    <h2>口径与实现风险：结论使用前需要验证</h2>
+    <section class="cards3 grid">
+      <div class="card"><h3>“下一笔提单”可能早于结清</h3><p class="small">SQL 用 <code>order_rn + 1</code> 找下一笔订单，而非限定提单日期晚于结清日期。若用户在结清前已提交下一笔申请，间隔可为负数，可能误判或漏判真正的结清后流失。</p></div>
+      <div class="card"><h3>被拒天数可能重复累计</h3><p class="small">被拒申请关联其后的多笔放款，再按放款分组，可能让同一被拒区间重复计入。报告中的“被拒天数”适合作为方向性指标，需修正 SQL 后再用于考核。</p></div>
+      <div class="card"><h3>状态按最后一笔订单判断</h3><p class="small">若最后一笔为被拒申请，但用户仍有在途放款，当前逻辑会判为“最终审核被拒”。建议按逾期、在途、结清、被拒设置状态优先级并做互斥校验。</p></div>
+    </section>
+
+    <h2>建议的行动方案</h2>
+    <div class="recommend"><b>1. 首贷后分层召回（P0）</b><br>围绕第 16、22、30 天建立召回触点；按首贷额度使用率、结清表现、历史拒绝和产品类型分层。目标不应只看提单率，还应看 30/60 天逾期与净回款。</div>
+    <div class="recommend"><b>2. 建立“回归质量”看板（P0）</b><br>将回归用户分为健康结清、在途、逾期、被拒、再次流失五类；同时展示提单回归率、放款回归率、回款率与逾期率，避免单一放款目标驱动风险上升。</div>
+    <div class="recommend"><b>3. 复核并固化统计口径（P1）</b><br>将观察日参数化，改为“结清后首笔提单”而非相邻订单；修复被拒区间的重复累计；为最终状态定义互斥优先级。完成后对新旧口径做差异对账。</div>
+    <div class="recommend"><b>4. 审批漏斗专项拆解（P1）</b><br>针对 6,004 名“已回归提单但未放款”的用户，按拒绝码、额度、在途限制、人工取消和时效拆分；识别可通过额度策略、产品承接或流程优化恢复的部分。</div>
+    <p class="footer">数据来源：<code>间隔15天以上_8.3_结果.csv</code>。报告生成时间：2026-08-12。高笔数流失位置样本量较低，指标应附置信区间或最小样本门槛后再用于决策。</p>
+  </main>
+</body>
+</html>
+
