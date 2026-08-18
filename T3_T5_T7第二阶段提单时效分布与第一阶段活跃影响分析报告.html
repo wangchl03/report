@@ -1,0 +1,358 @@
+<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>T3_T5_T7第二阶段提单时效分布与第一阶段活跃影响分析报告</title><style>.section-heading{display:flex;justify-content:space-between;align-items:flex-start;gap:16px}.table-badge{margin-top:4px;white-space:nowrap;border:1px solid #365a7d;background:#112b49;padding:7px 11px;border-radius:999px;font-size:12px;color:#bfe9ff}.data-panels{display:grid;grid-template-columns:1fr;gap:18px;margin-top:20px}.data-panel{overflow:hidden;border:1px solid #285174;border-radius:15px;background:#0c203a;box-shadow:0 10px 25px #02091355}.data-panel>header{min-height:82px;padding:16px 20px;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid #294d6a}.data-panel.t3{border-color:#2589a7}.data-panel.t3>header{background:linear-gradient(105deg,#0b4058,#0d203a 68%)}.data-panel.t5{border-color:#6551bb}.data-panel.t5>header{background:linear-gradient(105deg,#302760,#0d203a 68%)}.data-panel.t7{border-color:#b66c24}.data-panel.t7>header{background:linear-gradient(105deg,#563314,#0d203a 68%)}.panel-kicker{font-size:11px;letter-spacing:1.8px;color:#9ac3de}.data-panel.t3 .panel-kicker{color:#62e4ff}.data-panel.t5 .panel-kicker{color:#b8a3ff}.data-panel.t7 .panel-kicker{color:#ffc47a}.data-panel h3{margin:2px 0 0;color:#fff;font-size:18px}.panel-total{text-align:right}.panel-total span{display:block;color:#a6bdd5;font-size:12px}.panel-total b{font-size:25px;color:#fff}.data-panel.t3 .panel-total b{color:#55e2ff}.data-panel.t5 .panel-total b{color:#c5b4ff}.data-panel.t7 .panel-total b{color:#ffca85}.data-panel .table-wrap{border:0;border-radius:0}.data-panel table{min-width:970px}.data-panel th{background:#0a192c;color:#c7dff5;font-size:12px;letter-spacing:.15px}.data-panel th,.data-panel td{padding:12px 14px;border-bottom:1px solid #1a3855;text-align:right}.data-panel td:first-child,.data-panel th:first-child{text-align:left}.data-panel tbody tr:nth-child(2n){background:#0a1d34}.data-panel tbody tr:hover td{background:#173958}.data-panel.t3 tbody tr:hover td{background:#0c4057}.data-panel.t5 tbody tr:hover td{background:#302959}.data-panel.t7 tbody tr:hover td{background:#543315}.data-panel .total-row td{background:#1c4564!important;color:#f5fbff!important;font-weight:800;border-top:2px solid #65d8fa;border-bottom:0;font-size:14px}.data-panel.t5 .total-row td{background:#3a306d!important;border-top-color:#b69aff}.data-panel.t7 .total-row td{background:#653e1b!important;border-top-color:#ffc36f}@media(max-width:950px){.section-heading{display:block}.table-badge{display:inline-block;margin-top:8px}.data-panel>header{align-items:flex-start}.panel-total b{font-size:20px}}.insight span{font-size:16px!important;line-height:1.55}
+*{box-sizing:border-box}body{margin:0;background:#071426;color:#d8e6fa;font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei",sans-serif;line-height:1.55}.page{max-width:1480px;margin:auto;padding:44px 34px 80px}.hero{padding:38px 42px;background:#0a1e39;border:1px solid #23466e;border-radius:20px;box-shadow:0 18px 45px #020812}.eyebrow{color:#62ddff;letter-spacing:2px;font-size:13px}.hero h1{font-size:32px;margin:10px 0;color:#fff}.hero p{max-width:960px;color:#a9c2df}.meta{display:flex;gap:12px;flex-wrap:wrap;margin-top:20px}.meta span{background:#133052;border:1px solid #28537a;border-radius:999px;padding:6px 11px;color:#c9e7ff;font-size:13px}.metrics{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin:24px 0}.metric{background:#0d213d;border:1px solid #1b4066;border-radius:14px;padding:17px}.metric span,.metric small{display:block;color:#8eabc9;font-size:13px}.metric b{font-size:24px;color:#fff}.metric b.cyan{color:#39d7ff}.metric b.purple{color:#b49aff}.section{margin-top:35px;padding:29px;background:#0a1c34;border:1px solid #1a3a5c;border-radius:18px}.section h2{margin:0 0 8px;color:#fff;font-size:23px}.intro,.chart-note{color:#97b2cf;margin:4px 0 18px;font-size:14px}.grid-charts{display:grid;grid-template-columns:1fr 1.3fr;gap:18px}.chart-card{background:#0d223e;border:1px solid #1d4266;border-radius:15px;padding:20px;min-width:0}.chart-card h3,.mini h3{margin:0;color:#e9f4ff;font-size:17px}.chart-card.wide{margin-top:18px}.svg{display:block;width:100%;height:auto;overflow:visible}.svg text{font-family:inherit}.svg-label{fill:#dceaff;font-weight:700}.svg-value{fill:#aec6df;font-size:13px}.legend{fill:#a9c5df;font-size:13px}.axis{fill:#90adc9;font-size:12px}.grid{stroke:#244563;stroke-width:1}.tip-target{cursor:pointer;transition:opacity .2s}.tip-target:hover{opacity:.78}.heatmap{display:grid;grid-template-columns:88px repeat(6,minmax(86px,1fr));gap:7px;align-items:center}.heat-head,.heat-label{font-size:12px;color:#aac5df;text-align:center}.heat-label{text-align:left;font-size:15px;font-weight:700}.heat{border:0;border-radius:8px;min-height:54px;color:#061426;font-weight:800;font-size:15px;cursor:pointer}.multiples{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}.mini{padding:18px;border:1px solid #204766;background:#0d213b;border-radius:14px}.mini i{display:inline-block;width:10px;height:10px;border-radius:50%;margin-right:7px}.bucket-row{display:grid;grid-template-columns:72px 1fr 51px;gap:8px;align-items:center;margin:16px 0 5px}.bucket-name{color:#b6cbe0;font-size:12px}.bar-bg{border:0;background:#1c3653;height:12px;border-radius:8px;padding:0;overflow:hidden;cursor:pointer}.bar-bg span{display:block;height:100%;border-radius:8px}.bucket-row b{font-size:12px;color:#dceaff;text-align:right}.split{grid-column:2/4;display:flex;border-radius:6px;overflow:hidden;height:8px;background:#263d59}.split button{border:0;padding:0;cursor:pointer}.active-seg{background:#39d7ff}.fresh-seg{background:#a78bfa}.insight-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:15px}.insight article{padding:18px;background:#0d223e;border-left:3px solid #39d7ff;border-radius:7px}.insight article:nth-child(2n){border-color:#a78bfa}.insight span{font-size:12px;color:#6fcdf0}.insight h3{color:#fff;margin:4px 0 8px;font-size:17px}.insight p{color:#adc4de;margin:0}.insight b{color:#fff}.table-wrap{overflow:auto;border:1px solid #214664;border-radius:12px}table{border-collapse:collapse;width:100%;min-width:1030px;font-size:13px}th{background:#173657;color:#dff1ff;white-space:nowrap}th,td{padding:11px 12px;border-bottom:1px solid #1b3a59;text-align:right}td:first-child,td:nth-child(2),th:first-child,th:nth-child(2){text-align:left}tr:hover td{background:#102a48}.cyan{color:#57e0ff}.purple{color:#bdabff}details{margin-top:32px;background:#07182c;border:1px solid #254b6d;border-radius:14px}summary{padding:16px 20px;color:#fff;cursor:pointer;font-weight:700}pre{margin:0;padding:22px;overflow:auto;white-space:pre;background:#05101e;color:#c9e9ff;font:12px/1.65 ui-monospace,SFMono-Regular,Menlo,monospace;border-radius:0 0 14px 14px}code{color:#82e5ff}.tooltip{position:fixed;z-index:99;display:none;max-width:300px;white-space:pre-line;background:#f5fbff;color:#08213e;border:1px solid #68d7f5;border-radius:10px;padding:11px 13px;font-size:13px;line-height:1.55;box-shadow:0 12px 28px #0008;pointer-events:none}.foot{color:#7894b1;font-size:12px;margin:22px 3px}@media(max-width:950px){.grid-charts,.multiples,.insight-grid{grid-template-columns:1fr}.metrics{grid-template-columns:1fr}.page{padding:20px 14px}.hero,.section{padding:22px}.heatmap{overflow:auto;grid-template-columns:75px repeat(6,90px)}}
+</style></head><body><div class="page"><header class="hero"><div class="eyebrow">PHASE-2 APPLICATION TIMING × PHASE-1 APP ACTIVITY</div><h1>T3 / T5 / T7 第二阶段提单时效分布与第一阶段活跃影响分析</h1><p>观察符合“干净结清且当日获额”条件的结清事件。第一阶段从结清次日开始，T3/T5/T7 分别覆盖 3/5/7 个自然日；第二阶段从其后的次日开始。仅使用每次结清后的首次后续申请，提单日期须晚于第一阶段结束日。</p><div class="meta"><span>活跃定义：event_track 存在 active_date</span><span>结清当日不计入第一阶段</span><span>按自然日而非精确小时切分</span><span>点击图中任意色块查看数值</span></div></header><div class="metrics"><div class="metric"><span>T3 第二阶段首次提单</span><b class="cyan">22,275 人</b><small>第一阶段活跃贡献 50.60%</small></div><div class="metric"><span>T5 第二阶段首次提单</span><b class="purple">17,746 人</b><small>第一阶段活跃贡献 56.01%</small></div><div class="metric"><span>T7 第二阶段首次提单</span><b class="">14,474 人</b><small>第一阶段活跃贡献 58.88%</small></div></div><section class="section"><h2>一、第一阶段活跃对第二阶段提单的总体贡献</h2><div class="grid-charts"><div class="chart-card contribution-card"><h3>阶段二提单用户来源构成</h3><p class="chart-note">每一条代表该组全部第二阶段首次提单用户，点击色块查看数值。</p><svg class="svg" viewBox="0 0 940 310"><text x="16" y="74" class="svg-label">T3</text><rect x="96" y="52" width="760" height="34" rx="8" fill="#253655"/><rect class="tip-target" data-tip="T3｜第一阶段活跃后提单
+人数：11,272 人
+占该组第二阶段提单：50.60%" x="96" y="52" width="384.56" height="34" rx="8" fill="#39d7ff"/><rect class="tip-target" data-tip="T3｜第二阶段新增活跃后提单
+人数：11,003 人
+占该组第二阶段提单：49.40%" x="480.56" y="52" width="375.44" height="34" rx="8" fill="#a78bfa"/><text x="875" y="74" class="svg-value">22,275 人</text><text x="16" y="136" class="svg-label">T5</text><rect x="96" y="114" width="760" height="34" rx="8" fill="#253655"/><rect class="tip-target" data-tip="T5｜第一阶段活跃后提单
+人数：9,940 人
+占该组第二阶段提单：56.01%" x="96" y="114" width="425.676" height="34" rx="8" fill="#39d7ff"/><rect class="tip-target" data-tip="T5｜第二阶段新增活跃后提单
+人数：7,806 人
+占该组第二阶段提单：43.99%" x="521.6759999999999" y="114" width="334.324" height="34" rx="8" fill="#a78bfa"/><text x="875" y="136" class="svg-value">17,746 人</text><text x="16" y="198" class="svg-label">T7</text><rect x="96" y="176" width="760" height="34" rx="8" fill="#253655"/><rect class="tip-target" data-tip="T7｜第一阶段活跃后提单
+人数：8,523 人
+占该组第二阶段提单：58.88%" x="96" y="176" width="447.48800000000006" height="34" rx="8" fill="#39d7ff"/><rect class="tip-target" data-tip="T7｜第二阶段新增活跃后提单
+人数：5,951 人
+占该组第二阶段提单：41.12%" x="543.488" y="176" width="312.51199999999994" height="34" rx="8" fill="#a78bfa"/><text x="875" y="198" class="svg-value">14,474 人</text><rect x="96" y="285" width="12" height="12" rx="3" fill="#39d7ff"/><text x="115" y="296" class="legend">第一阶段活跃</text><rect x="270" y="285" width="12" height="12" rx="3" fill="#a78bfa"/><text x="289" y="296" class="legend">第二阶段新增活跃</text></svg></div><div class="chart-card timing-card"><h3>第二阶段首次提单的时段分布</h3><p class="chart-note">横轴从第二阶段开始日计起；纵轴固定为 0–30%。曲线为各时段提单人数占本组第二阶段提单人数的比例。</p><svg class="svg" viewBox="0 0 940 310"><line x1="63" y1="245" x2="905" y2="245" class="grid"/><text x="53" y="249" text-anchor="end" class="axis">0%</text><line x1="63" y1="209.5" x2="905" y2="209.5" class="grid"/><text x="53" y="213.5" text-anchor="end" class="axis">5%</text><line x1="63" y1="174" x2="905" y2="174" class="grid"/><text x="53" y="178" text-anchor="end" class="axis">10%</text><line x1="63" y1="138.5" x2="905" y2="138.5" class="grid"/><text x="53" y="142.5" text-anchor="end" class="axis">15%</text><line x1="63" y1="103" x2="905" y2="103" class="grid"/><text x="53" y="107" text-anchor="end" class="axis">20%</text><line x1="63" y1="67.5" x2="905" y2="67.5" class="grid"/><text x="53" y="71.5" text-anchor="end" class="axis">25%</text><line x1="63" y1="32" x2="905" y2="32" class="grid"/><text x="53" y="36" text-anchor="end" class="axis">30%</text><text x="63" y="272" text-anchor="middle" class="axis">1-3天</text><text x="231.4" y="272" text-anchor="middle" class="axis">4-5天</text><text x="399.8" y="272" text-anchor="middle" class="axis">6-7天</text><text x="568.2" y="272" text-anchor="middle" class="axis">8-15天</text><text x="736.6" y="272" text-anchor="middle" class="axis">16-30天</text><text x="905" y="272" text-anchor="middle" class="axis">31+</text><path d="M 63 48.472 L 231.4 153.26799999999997 L 399.8 179.183 L 568.2 104.775 L 736.6 141.837 L 905 132.465" fill="none" stroke="#39d7ff" stroke-width="3"/><circle class="tip-target" data-tip="T3｜第1-3天
+首次提单人数：6,165 人
+占本组第二阶段提单：27.68%" cx="63" cy="48.472" r="7" fill="#39d7ff"/><circle class="tip-target" data-tip="T3｜第4-5天
+首次提单人数：2,877 人
+占本组第二阶段提单：12.92%" cx="231.4" cy="153.26799999999997" r="7" fill="#39d7ff"/><circle class="tip-target" data-tip="T3｜第6-7天
+首次提单人数：2,066 人
+占本组第二阶段提单：9.27%" cx="399.8" cy="179.183" r="7" fill="#39d7ff"/><circle class="tip-target" data-tip="T3｜第8-15天
+首次提单人数：4,400 人
+占本组第二阶段提单：19.75%" cx="568.2" cy="104.775" r="7" fill="#39d7ff"/><circle class="tip-target" data-tip="T3｜第16-30天
+首次提单人数：3,237 人
+占本组第二阶段提单：14.53%" cx="736.6" cy="141.837" r="7" fill="#39d7ff"/><circle class="tip-target" data-tip="T3｜第31天及以后
+首次提单人数：3,530 人
+占本组第二阶段提单：15.85%" cx="905" cy="132.465" r="7" fill="#39d7ff"/><path d="M 63 64.447 L 231.4 162.356 L 399.8 186.993 L 568.2 102.503 L 736.6 130.122 L 905 113.579" fill="none" stroke="#9b7bff" stroke-width="3"/><circle class="tip-target" data-tip="T5｜第1-3天
+首次提单人数：4,513 人
+占本组第二阶段提单：25.43%" cx="63" cy="64.447" r="7" fill="#9b7bff"/><circle class="tip-target" data-tip="T5｜第4-5天
+首次提单人数：2,066 人
+占本组第二阶段提单：11.64%" cx="231.4" cy="162.356" r="7" fill="#9b7bff"/><circle class="tip-target" data-tip="T5｜第6-7天
+首次提单人数：1,449 人
+占本组第二阶段提单：8.17%" cx="399.8" cy="186.993" r="7" fill="#9b7bff"/><circle class="tip-target" data-tip="T5｜第8-15天
+首次提单人数：3,562 人
+占本组第二阶段提单：20.07%" cx="568.2" cy="102.503" r="7" fill="#9b7bff"/><circle class="tip-target" data-tip="T5｜第16-30天
+首次提单人数：2,872 人
+占本组第二阶段提单：16.18%" cx="736.6" cy="130.122" r="7" fill="#9b7bff"/><circle class="tip-target" data-tip="T5｜第31天及以后
+首次提单人数：3,284 人
+占本组第二阶段提单：18.51%" cx="905" cy="113.579" r="7" fill="#9b7bff"/><path d="M 63 82.76499999999999 L 231.4 173.92900000000003 L 399.8 190.969 L 568.2 96.75200000000001 L 736.6 120.821 L 905 94.76400000000001" fill="none" stroke="#ffb454" stroke-width="3"/><circle class="tip-target" data-tip="T7｜第1-3天
+首次提单人数：3,307 人
+占本组第二阶段提单：22.85%" cx="63" cy="82.76499999999999" r="7" fill="#ffb454"/><circle class="tip-target" data-tip="T7｜第4-5天
+首次提单人数：1,449 人
+占本组第二阶段提单：10.01%" cx="231.4" cy="173.92900000000003" r="7" fill="#ffb454"/><circle class="tip-target" data-tip="T7｜第6-7天
+首次提单人数：1,101 人
+占本组第二阶段提单：7.61%" cx="399.8" cy="190.969" r="7" fill="#ffb454"/><circle class="tip-target" data-tip="T7｜第8-15天
+首次提单人数：3,022 人
+占本组第二阶段提单：20.88%" cx="568.2" cy="96.75200000000001" r="7" fill="#ffb454"/><circle class="tip-target" data-tip="T7｜第16-30天
+首次提单人数：2,532 人
+占本组第二阶段提单：17.49%" cx="736.6" cy="120.821" r="7" fill="#ffb454"/><circle class="tip-target" data-tip="T7｜第31天及以后
+首次提单人数：3,063 人
+占本组第二阶段提单：21.16%" cx="905" cy="94.76400000000001" r="7" fill="#ffb454"/><text x="740" y="25" class="legend" fill="#39d7ff">● T3</text><text x="800" y="25" class="legend" fill="#9b7bff">● T5</text><text x="860" y="25" class="legend" fill="#ffb454">● T7</text></svg></div></div><div class="chart-card wide"><h3>各提单时段中：第一阶段活跃用户占比</h3><p class="chart-note">颜色越亮，表示该时段的提单用户中，越多用户在第一阶段已进入 App。</p><div class="heatmap"><div></div><div class="heat-head">第1-3天</div><div class="heat-head">第4-5天</div><div class="heat-head">第6-7天</div><div class="heat-head">第8-15天</div><div class="heat-head">第16-30天</div><div class="heat-head">第31天及以后</div><div class="heat-label">T3</div><button class="heat tip-target" style="background:rgba(57,215,255,0.68)" data-tip="T3｜第1-3天
+第一阶段活跃后提单：3,852 人
+该时段提单用户中占比：62.48%">62.5%</button><button class="heat tip-target" style="background:rgba(57,215,255,0.64)" data-tip="T3｜第4-5天
+第一阶段活跃后提单：1,637 人
+该时段提单用户中占比：56.90%">56.9%</button><button class="heat tip-target" style="background:rgba(57,215,255,0.59)" data-tip="T3｜第6-7天
+第一阶段活跃后提单：1,062 人
+该时段提单用户中占比：51.40%">51.4%</button><button class="heat tip-target" style="background:rgba(57,215,255,0.57)" data-tip="T3｜第8-15天
+第一阶段活跃后提单：2,170 人
+该时段提单用户中占比：49.32%">49.3%</button><button class="heat tip-target" style="background:rgba(57,215,255,0.51)" data-tip="T3｜第16-30天
+第一阶段活跃后提单：1,355 人
+该时段提单用户中占比：41.86%">41.9%</button><button class="heat tip-target" style="background:rgba(57,215,255,0.44)" data-tip="T3｜第31天及以后
+第一阶段活跃后提单：1,196 人
+该时段提单用户中占比：33.88%">33.9%</button><div class="heat-label">T5</div><button class="heat tip-target" style="background:rgba(57,215,255,0.74)" data-tip="T5｜第1-3天
+第一阶段活跃后提单：3,126 人
+该时段提单用户中占比：69.27%">69.3%</button><button class="heat tip-target" style="background:rgba(57,215,255,0.68)" data-tip="T5｜第4-5天
+第一阶段活跃后提单：1,274 人
+该时段提单用户中占比：61.67%">61.7%</button><button class="heat tip-target" style="background:rgba(57,215,255,0.69)" data-tip="T5｜第6-7天
+第一阶段活跃后提单：910 人
+该时段提单用户中占比：62.80%">62.8%</button><button class="heat tip-target" style="background:rgba(57,215,255,0.62)" data-tip="T5｜第8-15天
+第一阶段活跃后提单：1,966 人
+该时段提单用户中占比：55.19%">55.2%</button><button class="heat tip-target" style="background:rgba(57,215,255,0.56)" data-tip="T5｜第16-30天
+第一阶段活跃后提单：1,380 人
+该时段提单用户中占比：48.05%">48.0%</button><button class="heat tip-target" style="background:rgba(57,215,255,0.49)" data-tip="T5｜第31天及以后
+第一阶段活跃后提单：1,284 人
+该时段提单用户中占比：39.10%">39.1%</button><div class="heat-label">T7</div><button class="heat tip-target" style="background:rgba(57,215,255,0.77)" data-tip="T7｜第1-3天
+第一阶段活跃后提单：2,391 人
+该时段提单用户中占比：72.30%">72.3%</button><button class="heat tip-target" style="background:rgba(57,215,255,0.75)" data-tip="T7｜第4-5天
+第一阶段活跃后提单：1,017 人
+该时段提单用户中占比：70.19%">70.2%</button><button class="heat tip-target" style="background:rgba(57,215,255,0.68)" data-tip="T7｜第6-7天
+第一阶段活跃后提单：679 人
+该时段提单用户中占比：61.67%">61.7%</button><button class="heat tip-target" style="background:rgba(57,215,255,0.66)" data-tip="T7｜第8-15天
+第一阶段活跃后提单：1,814 人
+该时段提单用户中占比：60.03%">60.0%</button><button class="heat tip-target" style="background:rgba(57,215,255,0.60)" data-tip="T7｜第16-30天
+第一阶段活跃后提单：1,327 人
+该时段提单用户中占比：52.41%">52.4%</button><button class="heat tip-target" style="background:rgba(57,215,255,0.52)" data-tip="T7｜第31天及以后
+第一阶段活跃后提单：1,295 人
+该时段提单用户中占比：42.28%">42.3%</button></div></div></section><section class="section"><h2>二、时段明细：人数、占比与活跃构成</h2><p class="intro">每个组独立展示，避免把 T3、T5、T7 混在同一图中。上排柱体为该时段提单人数占比；下排显示其中第一阶段活跃用户与新增活跃用户的构成。</p><div class="multiples"><div class="mini"><h3><i style="background:#39d7ff"></i>T3：22,275 名第二阶段提单用户</h3><div class="bucket-row"><div class="bucket-name">第1-3天</div><button class="bar-bg tip-target" data-tip="T3｜第1-3天
+第二阶段首次提单：6,165 人
+占本组提单：27.68%"><span style="width:80.27199999999999%;background:#39d7ff"></span></button><b>27.68%</b><div class="split"><button class="tip-target active-seg" style="width:62.48%" data-tip="T3｜第1-3天｜第一阶段活跃
+提单人数：3,852 人
+占该时段：62.48%"></button><button class="tip-target fresh-seg" style="width:37.52%" data-tip="T3｜第1-3天｜第二阶段新增活跃
+提单人数：2,313 人
+占该时段：37.52%"></button></div></div><div class="bucket-row"><div class="bucket-name">第4-5天</div><button class="bar-bg tip-target" data-tip="T3｜第4-5天
+第二阶段首次提单：2,877 人
+占本组提单：12.92%"><span style="width:37.467999999999996%;background:#39d7ff"></span></button><b>12.92%</b><div class="split"><button class="tip-target active-seg" style="width:56.9%" data-tip="T3｜第4-5天｜第一阶段活跃
+提单人数：1,637 人
+占该时段：56.90%"></button><button class="tip-target fresh-seg" style="width:43.1%" data-tip="T3｜第4-5天｜第二阶段新增活跃
+提单人数：1,240 人
+占该时段：43.10%"></button></div></div><div class="bucket-row"><div class="bucket-name">第6-7天</div><button class="bar-bg tip-target" data-tip="T3｜第6-7天
+第二阶段首次提单：2,066 人
+占本组提单：9.27%"><span style="width:26.883%;background:#39d7ff"></span></button><b>9.27%</b><div class="split"><button class="tip-target active-seg" style="width:51.4%" data-tip="T3｜第6-7天｜第一阶段活跃
+提单人数：1,062 人
+占该时段：51.40%"></button><button class="tip-target fresh-seg" style="width:48.6%" data-tip="T3｜第6-7天｜第二阶段新增活跃
+提单人数：1,004 人
+占该时段：48.60%"></button></div></div><div class="bucket-row"><div class="bucket-name">第8-15天</div><button class="bar-bg tip-target" data-tip="T3｜第8-15天
+第二阶段首次提单：4,400 人
+占本组提单：19.75%"><span style="width:57.275%;background:#39d7ff"></span></button><b>19.75%</b><div class="split"><button class="tip-target active-seg" style="width:49.32%" data-tip="T3｜第8-15天｜第一阶段活跃
+提单人数：2,170 人
+占该时段：49.32%"></button><button class="tip-target fresh-seg" style="width:50.68%" data-tip="T3｜第8-15天｜第二阶段新增活跃
+提单人数：2,230 人
+占该时段：50.68%"></button></div></div><div class="bucket-row"><div class="bucket-name">第16-30天</div><button class="bar-bg tip-target" data-tip="T3｜第16-30天
+第二阶段首次提单：3,237 人
+占本组提单：14.53%"><span style="width:42.13699999999999%;background:#39d7ff"></span></button><b>14.53%</b><div class="split"><button class="tip-target active-seg" style="width:41.86%" data-tip="T3｜第16-30天｜第一阶段活跃
+提单人数：1,355 人
+占该时段：41.86%"></button><button class="tip-target fresh-seg" style="width:58.14%" data-tip="T3｜第16-30天｜第二阶段新增活跃
+提单人数：1,882 人
+占该时段：58.14%"></button></div></div><div class="bucket-row"><div class="bucket-name">第31天及以后</div><button class="bar-bg tip-target" data-tip="T3｜第31天及以后
+第二阶段首次提单：3,530 人
+占本组提单：15.85%"><span style="width:45.964999999999996%;background:#39d7ff"></span></button><b>15.85%</b><div class="split"><button class="tip-target active-seg" style="width:33.88%" data-tip="T3｜第31天及以后｜第一阶段活跃
+提单人数：1,196 人
+占该时段：33.88%"></button><button class="tip-target fresh-seg" style="width:66.12%" data-tip="T3｜第31天及以后｜第二阶段新增活跃
+提单人数：2,334 人
+占该时段：66.12%"></button></div></div></div><div class="mini"><h3><i style="background:#9b7bff"></i>T5：17,746 名第二阶段提单用户</h3><div class="bucket-row"><div class="bucket-name">第1-3天</div><button class="bar-bg tip-target" data-tip="T5｜第1-3天
+第二阶段首次提单：4,513 人
+占本组提单：25.43%"><span style="width:73.747%;background:#9b7bff"></span></button><b>25.43%</b><div class="split"><button class="tip-target active-seg" style="width:69.27%" data-tip="T5｜第1-3天｜第一阶段活跃
+提单人数：3,126 人
+占该时段：69.27%"></button><button class="tip-target fresh-seg" style="width:30.730000000000004%" data-tip="T5｜第1-3天｜第二阶段新增活跃
+提单人数：1,387 人
+占该时段：30.73%"></button></div></div><div class="bucket-row"><div class="bucket-name">第4-5天</div><button class="bar-bg tip-target" data-tip="T5｜第4-5天
+第二阶段首次提单：2,066 人
+占本组提单：11.64%"><span style="width:33.756%;background:#9b7bff"></span></button><b>11.64%</b><div class="split"><button class="tip-target active-seg" style="width:61.67%" data-tip="T5｜第4-5天｜第一阶段活跃
+提单人数：1,274 人
+占该时段：61.67%"></button><button class="tip-target fresh-seg" style="width:38.33%" data-tip="T5｜第4-5天｜第二阶段新增活跃
+提单人数：792 人
+占该时段：38.33%"></button></div></div><div class="bucket-row"><div class="bucket-name">第6-7天</div><button class="bar-bg tip-target" data-tip="T5｜第6-7天
+第二阶段首次提单：1,449 人
+占本组提单：8.17%"><span style="width:23.692999999999998%;background:#9b7bff"></span></button><b>8.17%</b><div class="split"><button class="tip-target active-seg" style="width:62.8%" data-tip="T5｜第6-7天｜第一阶段活跃
+提单人数：910 人
+占该时段：62.80%"></button><button class="tip-target fresh-seg" style="width:37.2%" data-tip="T5｜第6-7天｜第二阶段新增活跃
+提单人数：539 人
+占该时段：37.20%"></button></div></div><div class="bucket-row"><div class="bucket-name">第8-15天</div><button class="bar-bg tip-target" data-tip="T5｜第8-15天
+第二阶段首次提单：3,562 人
+占本组提单：20.07%"><span style="width:58.202999999999996%;background:#9b7bff"></span></button><b>20.07%</b><div class="split"><button class="tip-target active-seg" style="width:55.19%" data-tip="T5｜第8-15天｜第一阶段活跃
+提单人数：1,966 人
+占该时段：55.19%"></button><button class="tip-target fresh-seg" style="width:44.81%" data-tip="T5｜第8-15天｜第二阶段新增活跃
+提单人数：1,596 人
+占该时段：44.81%"></button></div></div><div class="bucket-row"><div class="bucket-name">第16-30天</div><button class="bar-bg tip-target" data-tip="T5｜第16-30天
+第二阶段首次提单：2,872 人
+占本组提单：16.18%"><span style="width:46.922%;background:#9b7bff"></span></button><b>16.18%</b><div class="split"><button class="tip-target active-seg" style="width:48.05%" data-tip="T5｜第16-30天｜第一阶段活跃
+提单人数：1,380 人
+占该时段：48.05%"></button><button class="tip-target fresh-seg" style="width:51.95%" data-tip="T5｜第16-30天｜第二阶段新增活跃
+提单人数：1,492 人
+占该时段：51.95%"></button></div></div><div class="bucket-row"><div class="bucket-name">第31天及以后</div><button class="bar-bg tip-target" data-tip="T5｜第31天及以后
+第二阶段首次提单：3,284 人
+占本组提单：18.51%"><span style="width:53.679%;background:#9b7bff"></span></button><b>18.51%</b><div class="split"><button class="tip-target active-seg" style="width:39.1%" data-tip="T5｜第31天及以后｜第一阶段活跃
+提单人数：1,284 人
+占该时段：39.10%"></button><button class="tip-target fresh-seg" style="width:60.9%" data-tip="T5｜第31天及以后｜第二阶段新增活跃
+提单人数：2,000 人
+占该时段：60.90%"></button></div></div></div><div class="mini"><h3><i style="background:#ffb454"></i>T7：14,474 名第二阶段提单用户</h3><div class="bucket-row"><div class="bucket-name">第1-3天</div><button class="bar-bg tip-target" data-tip="T7｜第1-3天
+第二阶段首次提单：3,307 人
+占本组提单：22.85%"><span style="width:66.265%;background:#ffb454"></span></button><b>22.85%</b><div class="split"><button class="tip-target active-seg" style="width:72.3%" data-tip="T7｜第1-3天｜第一阶段活跃
+提单人数：2,391 人
+占该时段：72.30%"></button><button class="tip-target fresh-seg" style="width:27.700000000000003%" data-tip="T7｜第1-3天｜第二阶段新增活跃
+提单人数：916 人
+占该时段：27.70%"></button></div></div><div class="bucket-row"><div class="bucket-name">第4-5天</div><button class="bar-bg tip-target" data-tip="T7｜第4-5天
+第二阶段首次提单：1,449 人
+占本组提单：10.01%"><span style="width:29.029%;background:#ffb454"></span></button><b>10.01%</b><div class="split"><button class="tip-target active-seg" style="width:70.19%" data-tip="T7｜第4-5天｜第一阶段活跃
+提单人数：1,017 人
+占该时段：70.19%"></button><button class="tip-target fresh-seg" style="width:29.810000000000002%" data-tip="T7｜第4-5天｜第二阶段新增活跃
+提单人数：432 人
+占该时段：29.81%"></button></div></div><div class="bucket-row"><div class="bucket-name">第6-7天</div><button class="bar-bg tip-target" data-tip="T7｜第6-7天
+第二阶段首次提单：1,101 人
+占本组提单：7.61%"><span style="width:22.069%;background:#ffb454"></span></button><b>7.61%</b><div class="split"><button class="tip-target active-seg" style="width:61.67%" data-tip="T7｜第6-7天｜第一阶段活跃
+提单人数：679 人
+占该时段：61.67%"></button><button class="tip-target fresh-seg" style="width:38.33%" data-tip="T7｜第6-7天｜第二阶段新增活跃
+提单人数：422 人
+占该时段：38.33%"></button></div></div><div class="bucket-row"><div class="bucket-name">第8-15天</div><button class="bar-bg tip-target" data-tip="T7｜第8-15天
+第二阶段首次提单：3,022 人
+占本组提单：20.88%"><span style="width:60.55199999999999%;background:#ffb454"></span></button><b>20.88%</b><div class="split"><button class="tip-target active-seg" style="width:60.03%" data-tip="T7｜第8-15天｜第一阶段活跃
+提单人数：1,814 人
+占该时段：60.03%"></button><button class="tip-target fresh-seg" style="width:39.97%" data-tip="T7｜第8-15天｜第二阶段新增活跃
+提单人数：1,208 人
+占该时段：39.97%"></button></div></div><div class="bucket-row"><div class="bucket-name">第16-30天</div><button class="bar-bg tip-target" data-tip="T7｜第16-30天
+第二阶段首次提单：2,532 人
+占本组提单：17.49%"><span style="width:50.721%;background:#ffb454"></span></button><b>17.49%</b><div class="split"><button class="tip-target active-seg" style="width:52.41%" data-tip="T7｜第16-30天｜第一阶段活跃
+提单人数：1,327 人
+占该时段：52.41%"></button><button class="tip-target fresh-seg" style="width:47.59%" data-tip="T7｜第16-30天｜第二阶段新增活跃
+提单人数：1,205 人
+占该时段：47.59%"></button></div></div><div class="bucket-row"><div class="bucket-name">第31天及以后</div><button class="bar-bg tip-target" data-tip="T7｜第31天及以后
+第二阶段首次提单：3,063 人
+占本组提单：21.16%"><span style="width:61.364%;background:#ffb454"></span></button><b>21.16%</b><div class="split"><button class="tip-target active-seg" style="width:42.28%" data-tip="T7｜第31天及以后｜第一阶段活跃
+提单人数：1,295 人
+占该时段：42.28%"></button><button class="tip-target fresh-seg" style="width:57.72%" data-tip="T7｜第31天及以后｜第二阶段新增活跃
+提单人数：1,768 人
+占该时段：57.72%"></button></div></div></div></div></section>
+<section class="section insight"><h2>三、核心结论与业务解读</h2>
+<div class="insight-grid">
+<article><span>01 / 活跃贡献随等待阈值上升</span><h3>第一阶段活跃用户贡献了更多第二阶段提单</h3><p>T3、T5、T7 中，第一阶段活跃用户分别贡献 <b>50.60%</b>（11,272 人）、<b>56.01%</b>（9,940 人）、<b>58.88%</b>（8,523 人）的第二阶段首次提单；T7 比 T3 高 <b>8.28 个百分点</b>。等待窗口越长，先进入 App 的用户在后续提单人群中的贡献越大。</p></article>
+<article><span>02 / 明显的“早提单”特征</span><h3>第一阶段活跃用户在阶段二前段更集中</h3><p>第 1–3 天时，第一阶段活跃用户占该时段提单人群的比例为 T3 <b>62.48%</b>、T5 <b>69.27%</b>、T7 <b>72.30%</b>；到第 31 天及以后则降至 <b>33.88%</b>、<b>39.10%</b>、<b>42.28%</b>。三组均下降约 <b>28–30 个百分点</b>，支持“第一阶段活跃与更早的后续提单相关”的判断。</p></article>
+<article><span>03 / 新增活跃是长尾提单的主要来源</span><h3>超过 30 天的提单以阶段二新增活跃为主</h3><p>第 31 天及以后，新增活跃用户占比为 T3 <b>66.12%</b>、T5 <b>60.90%</b>、T7 <b>57.72%</b>。这部分不是第一阶段触达已唤起的人群，较适合用阶段二的召回、消息触达或产品入口优化承接。</p></article>
+<article><span>04 / 第二阶段提单并未只发生在起始几天</span><h3>前 7 天与长尾窗口需要并行经营</h3><p>阶段二第 1–7 天的提单占比为 T3 <b>49.87%</b>、T5 <b>45.24%</b>、T7 <b>40.47%</b>；第 16 天及以后仍分别有 <b>30.38%</b>、<b>34.69%</b>、<b>38.65%</b>。尤其 T7 长尾更重，不能只把运营资源放在阶段二开始后的短窗口。</p></article>
+<article><span>05 / 口径边界</span><h3>本报告衡量“首次后续提单”的时间，不衡量频次</h3><p>每次符合条件的结清事件仅连接紧随其后的首笔申请，因此同一用户在第二阶段内的多次申请没有累计。这足以判断首次提单时点与第一阶段活跃的关联；若要验证“活跃用户是否提单更多次”，须另行统计窗口内全部 <code>apply_time</code>。</p></article>
+<article><span>06 / 可行动方向</span><h3>按阶段分层，而非用同一策略覆盖全部人群</h3><p>阶段二第 1–7 天优先服务第一阶段已活跃人群，强化额度、期限等转化动作；第 16 天后则将新增活跃用户作为主目标，评估入口曝光和唤回链路。T7 的长尾占比最高（38.65%），更值得设计延迟触达节奏。</p></article>
+</div></section><section class="section data-section"><div class="section-heading"><div><h2>四、可核对的完整数据表</h2><p class="intro">T3、T5、T7 分区展示；总计行突出显示，便于纵向阅读与核验。</p></div><span class="table-badge">分组明细 · 首次提单口径</span></div><div class="data-panels"><article class="data-panel t3"><header><div><span class="panel-kicker">T3 COHORT</span><h3>T3 第二阶段首次提单明细</h3></div><div class="panel-total"><span>第二阶段提单总人数</span><b>22,275</b></div></header><div class="table-wrap"><table><thead><tr><th>第二阶段提单时段</th><th>提单人数</th><th>占本组提单</th><th>第一阶段活跃后提单</th><th>在本时段占比</th><th>新增活跃后提单</th><th>在本时段占比</th></tr></thead><tbody><tr class=""><td>第1-3天</td><td>6,165</td><td>27.68%</td><td class="cyan">3,852</td><td>62.48%</td><td class="purple">2,313</td><td>37.52%</td></tr><tr class=""><td>第4-5天</td><td>2,877</td><td>12.92%</td><td class="cyan">1,637</td><td>56.90%</td><td class="purple">1,240</td><td>43.10%</td></tr><tr class=""><td>第6-7天</td><td>2,066</td><td>9.27%</td><td class="cyan">1,062</td><td>51.40%</td><td class="purple">1,004</td><td>48.60%</td></tr><tr class=""><td>第8-15天</td><td>4,400</td><td>19.75%</td><td class="cyan">2,170</td><td>49.32%</td><td class="purple">2,230</td><td>50.68%</td></tr><tr class=""><td>第16-30天</td><td>3,237</td><td>14.53%</td><td class="cyan">1,355</td><td>41.86%</td><td class="purple">1,882</td><td>58.14%</td></tr><tr class=""><td>第31天及以后</td><td>3,530</td><td>15.85%</td><td class="cyan">1,196</td><td>33.88%</td><td class="purple">2,334</td><td>66.12%</td></tr><tr class="total-row"><td>✦ 总计</td><td>22,275</td><td>100.00%</td><td class="cyan">11,272</td><td>50.60%</td><td class="purple">11,003</td><td>49.40%</td></tr></tbody></table></div></article><article class="data-panel t5"><header><div><span class="panel-kicker">T5 COHORT</span><h3>T5 第二阶段首次提单明细</h3></div><div class="panel-total"><span>第二阶段提单总人数</span><b>17,746</b></div></header><div class="table-wrap"><table><thead><tr><th>第二阶段提单时段</th><th>提单人数</th><th>占本组提单</th><th>第一阶段活跃后提单</th><th>在本时段占比</th><th>新增活跃后提单</th><th>在本时段占比</th></tr></thead><tbody><tr class=""><td>第1-3天</td><td>4,513</td><td>25.43%</td><td class="cyan">3,126</td><td>69.27%</td><td class="purple">1,387</td><td>30.73%</td></tr><tr class=""><td>第4-5天</td><td>2,066</td><td>11.64%</td><td class="cyan">1,274</td><td>61.67%</td><td class="purple">792</td><td>38.33%</td></tr><tr class=""><td>第6-7天</td><td>1,449</td><td>8.17%</td><td class="cyan">910</td><td>62.80%</td><td class="purple">539</td><td>37.20%</td></tr><tr class=""><td>第8-15天</td><td>3,562</td><td>20.07%</td><td class="cyan">1,966</td><td>55.19%</td><td class="purple">1,596</td><td>44.81%</td></tr><tr class=""><td>第16-30天</td><td>2,872</td><td>16.18%</td><td class="cyan">1,380</td><td>48.05%</td><td class="purple">1,492</td><td>51.95%</td></tr><tr class=""><td>第31天及以后</td><td>3,284</td><td>18.51%</td><td class="cyan">1,284</td><td>39.10%</td><td class="purple">2,000</td><td>60.90%</td></tr><tr class="total-row"><td>✦ 总计</td><td>17,746</td><td>100.00%</td><td class="cyan">9,940</td><td>56.01%</td><td class="purple">7,806</td><td>43.99%</td></tr></tbody></table></div></article><article class="data-panel t7"><header><div><span class="panel-kicker">T7 COHORT</span><h3>T7 第二阶段首次提单明细</h3></div><div class="panel-total"><span>第二阶段提单总人数</span><b>14,474</b></div></header><div class="table-wrap"><table><thead><tr><th>第二阶段提单时段</th><th>提单人数</th><th>占本组提单</th><th>第一阶段活跃后提单</th><th>在本时段占比</th><th>新增活跃后提单</th><th>在本时段占比</th></tr></thead><tbody><tr class=""><td>第1-3天</td><td>3,307</td><td>22.85%</td><td class="cyan">2,391</td><td>72.30%</td><td class="purple">916</td><td>27.70%</td></tr><tr class=""><td>第4-5天</td><td>1,449</td><td>10.01%</td><td class="cyan">1,017</td><td>70.19%</td><td class="purple">432</td><td>29.81%</td></tr><tr class=""><td>第6-7天</td><td>1,101</td><td>7.61%</td><td class="cyan">679</td><td>61.67%</td><td class="purple">422</td><td>38.33%</td></tr><tr class=""><td>第8-15天</td><td>3,022</td><td>20.88%</td><td class="cyan">1,814</td><td>60.03%</td><td class="purple">1,208</td><td>39.97%</td></tr><tr class=""><td>第16-30天</td><td>2,532</td><td>17.49%</td><td class="cyan">1,327</td><td>52.41%</td><td class="purple">1,205</td><td>47.59%</td></tr><tr class=""><td>第31天及以后</td><td>3,063</td><td>21.16%</td><td class="cyan">1,295</td><td>42.28%</td><td class="purple">1,768</td><td>57.72%</td></tr><tr class="total-row"><td>✦ 总计</td><td>14,474</td><td>100.00%</td><td class="cyan">8,523</td><td>58.88%</td><td class="purple">5,951</td><td>41.12%</td></tr></tbody></table></div></article></div></section><details><summary>附录：完整 PGSQL 查询代码（含口径注释）</summary><pre>/*
+  T3/T5/T7 第二阶段首次提单时效分布与第一阶段活跃构成。
+  活跃仅以 event_track.active_date 在第一阶段存在记录判断；不使用 active_status。
+  第二阶段相对天数：从第二阶段起点计，第 1 天=结清日 + threshold_days + 1。
+*/
+WITH
+all_orders AS (
+    SELECT user_id, serial_id, apply_time, remit_time, repaid_time, repaid_date,
+           remit_date, loan_status_code, is_remit, reg_date
+    FROM wangchuanliang.order_loan_f_v2_copy
+    WHERE reg_date BETWEEN DATE '2026-01-01' AND DATE '2026-07-15'
+      AND apply_time IS NOT NULL
+),
+all_users AS (
+    SELECT DISTINCT user_id FROM all_orders
+    WHERE is_remit = 1 AND remit_date &gt; DATE '2026-01-01'
+),
+settled_raw AS (
+    SELECT o.user_id, o.serial_id, o.repaid_date, o.repaid_time,
+           ROW_NUMBER() OVER (PARTITION BY o.user_id ORDER BY o.repaid_time, o.serial_id) AS settle_seq
+    FROM all_orders o JOIN all_users u ON u.user_id = o.user_id
+    WHERE o.is_remit = 1 AND o.loan_status_code = 7
+      AND o.repaid_time IS NOT NULL AND o.remit_time IS NOT NULL
+),
+clean_settle AS (
+    SELECT s.* FROM settled_raw s
+    WHERE NOT EXISTS (
+        SELECT 1 FROM all_orders o2
+        WHERE o2.user_id = s.user_id AND o2.serial_id &lt;&gt; s.serial_id
+          AND o2.apply_time &lt; s.repaid_time
+          AND (o2.loan_status_code IN (5, 8)
+               OR (o2.loan_status_code = 7 AND o2.repaid_time &gt; s.repaid_time))
+    )
+),
+credit_pass AS (
+    SELECT DISTINCT ON (v.user_id, v.vir_date)
+           v.user_id, v.vir_date, to_timestamp(v.vir_unix) AS vir_time
+    FROM wangchuanliang.order_vir_f_copy v
+    WHERE v.is_pass1 = 1 AND v.vir_date &gt; DATE '2026-01-01'
+    ORDER BY v.user_id, v.vir_date, to_timestamp(v.vir_unix) DESC
+),
+eligible AS (
+    SELECT cs.* FROM clean_settle cs
+    JOIN credit_pass cp ON cp.user_id = cs.user_id
+                       AND cp.vir_date = cs.repaid_date::date
+                       AND cp.vir_time &gt; cs.repaid_time
+),
+applies AS (
+    SELECT user_id, apply_time FROM all_orders
+    WHERE apply_time &gt; TIMESTAMP '2026-01-01'
+),
+merged AS (
+    SELECT user_id, repaid_time AS ts, 'settle' AS kind, settle_seq::float AS settle_seq FROM eligible
+    UNION ALL
+    SELECT user_id, apply_time, 'apply', NULL::float FROM applies
+),
+ranked AS (
+    SELECT *, ROW_NUMBER() OVER (
+        PARTITION BY user_id
+        ORDER BY ts, CASE kind WHEN 'settle' THEN 0 ELSE 1 END
+    ) AS rn
+    FROM merged
+),
+pairs AS (
+    SELECT s.user_id, s.ts AS repaid_time, s.settle_seq, a.ts AS next_apply_time
+    FROM ranked s
+    LEFT JOIN ranked a ON a.user_id = s.user_id AND a.rn = s.rn + 1 AND a.kind = 'apply'
+    WHERE s.kind = 'settle'
+),
+thresholds AS (
+    SELECT 'T3' AS cohort, 3 AS threshold_days
+    UNION ALL SELECT 'T5', 5
+    UNION ALL SELECT 'T7', 7
+),
+/* 仅保留第二阶段真实提单的首次后续提单事件。 */
+phase2_apply AS (
+    SELECT
+        t.cohort,
+        t.threshold_days,
+        p.user_id,
+        p.repaid_time::date AS repaid_date,
+        p.next_apply_time::date AS apply_date,
+        p.next_apply_time::date - (p.repaid_time::date + t.threshold_days) AS phase2_day,
+        p.repaid_time::date + 1 AS phase1_start_date,
+        p.repaid_time::date + t.threshold_days AS phase1_end_date
+    FROM pairs p
+    CROSS JOIN thresholds t
+    WHERE p.settle_seq &lt;= 10
+      AND p.next_apply_time IS NOT NULL
+      AND p.next_apply_time::date &gt; p.repaid_time::date + t.threshold_days
+),
+/* 直接关联窗口内的 event_track；避免对每笔事件执行相关子查询。 */
+phase2_labeled AS (
+    SELECT
+        p.*,
+        CASE WHEN COUNT(e.active_date) &gt; 0
+             THEN '第一阶段活跃'
+             ELSE '第二阶段新增活跃'
+        END AS activity_group
+    FROM phase2_apply p
+    LEFT JOIN wangchuanliang.event_track e
+      ON e.user_id = p.user_id
+     AND e.active_date &gt;= p.phase1_start_date
+     AND e.active_date &lt;= p.phase1_end_date
+    GROUP BY
+        p.cohort, p.threshold_days, p.user_id, p.repaid_date,
+        p.apply_date, p.phase2_day, p.phase1_start_date, p.phase1_end_date
+),
+bucketed AS (
+    SELECT *,
+        CASE
+            WHEN phase2_day BETWEEN 1 AND 3 THEN '第1-3天'
+            WHEN phase2_day BETWEEN 4 AND 5 THEN '第4-5天'
+            WHEN phase2_day BETWEEN 6 AND 7 THEN '第6-7天'
+            WHEN phase2_day BETWEEN 8 AND 15 THEN '第8-15天'
+            WHEN phase2_day BETWEEN 16 AND 30 THEN '第16-30天'
+            ELSE '第31天及以后'
+        END AS timing_bucket,
+        CASE
+            WHEN phase2_day BETWEEN 1 AND 3 THEN 1
+            WHEN phase2_day BETWEEN 4 AND 5 THEN 2
+            WHEN phase2_day BETWEEN 6 AND 7 THEN 3
+            WHEN phase2_day BETWEEN 8 AND 15 THEN 4
+            WHEN phase2_day BETWEEN 16 AND 30 THEN 5
+            ELSE 6
+        END AS bucket_order
+    FROM phase2_labeled
+)
+SELECT
+    cohort,
+    timing_bucket,
+    COUNT(*) AS phase2_apply_events,
+    ROUND(COUNT(*) * 100.0 / SUM(COUNT(*)) OVER (PARTITION BY cohort), 2) AS timing_share_pct,
+    SUM(CASE WHEN activity_group = '第一阶段活跃' THEN 1 ELSE 0 END) AS phase1_active_apply_events,
+    ROUND(SUM(CASE WHEN activity_group = '第一阶段活跃' THEN 1 ELSE 0 END) * 100.0 / COUNT(*), 2) AS phase1_active_share_pct,
+    SUM(CASE WHEN activity_group = '第二阶段新增活跃' THEN 1 ELSE 0 END) AS phase2_new_active_apply_events,
+    ROUND(SUM(CASE WHEN activity_group = '第二阶段新增活跃' THEN 1 ELSE 0 END) * 100.0 / COUNT(*), 2) AS phase2_new_active_share_pct
+FROM bucketed
+GROUP BY cohort, timing_bucket, bucket_order
+
+UNION ALL
+
+SELECT
+    cohort,
+    '总计' AS timing_bucket,
+    COUNT(*),
+    100.00,
+    SUM(CASE WHEN activity_group = '第一阶段活跃' THEN 1 ELSE 0 END),
+    ROUND(SUM(CASE WHEN activity_group = '第一阶段活跃' THEN 1 ELSE 0 END) * 100.0 / COUNT(*), 2),
+    SUM(CASE WHEN activity_group = '第二阶段新增活跃' THEN 1 ELSE 0 END),
+    ROUND(SUM(CASE WHEN activity_group = '第二阶段新增活跃' THEN 1 ELSE 0 END) * 100.0 / COUNT(*), 2)
+FROM bucketed
+GROUP BY cohort
+ORDER BY cohort, timing_bucket;
+</pre></details><p class="foot">数据说明：第二阶段新增活跃指第一阶段内没有 event_track.active_date、但在第二阶段完成首次提单的用户；提单本身意味着其在第二阶段进入 App。此定义不用于判断第一阶段活跃。</p></div><div id="tip" class="tooltip"></div><script>const tip=document.getElementById('tip');document.querySelectorAll('.tip-target').forEach(el=>el.addEventListener('click',e=>{e.stopPropagation();tip.textContent=el.dataset.tip;tip.style.display='block';const r=el.getBoundingClientRect(),tw=300;let left=Math.min(window.innerWidth-tw-12,Math.max(12,r.left+r.width/2-tw/2));let top=r.top-12;tip.style.left=left+'px';tip.style.top=(top-tip.offsetHeight<8?r.bottom+12:top-tip.offsetHeight)+'px'}));document.addEventListener('click',()=>tip.style.display='none');window.addEventListener('resize',()=>tip.style.display='none');</script></body></html>
