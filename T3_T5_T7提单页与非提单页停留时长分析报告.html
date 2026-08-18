@@ -1,0 +1,722 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>T3/T5/T7 页面行为与提单分析</title>
+<style>
+:root{
+  --bg:#0a1628;
+  --panel:#0f2038;
+  --panel2:#122a47;
+  --line:#1d3a5f;
+  --line2:#2a4a70;
+  --text:#e9f2fc;
+  --muted:#8fa8c4;
+  --muted2:#6b87a6;
+  --t3:#38d6e6;
+  --t5:#9d7bff;
+  --t7:#ffb454;
+  --green:#4fd6a0;
+  --red:#ff6b81;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--text);font:15px/1.65 -apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei",sans-serif;-webkit-font-smoothing:antialiased}
+.wrap{max-width:1200px;margin:0 auto;padding:46px 24px 72px}
+
+/* header */
+.report-header{margin-bottom:26px}
+.eyebrow{display:inline-block;font-size:11px;letter-spacing:2.5px;font-weight:700;color:var(--t3);text-transform:uppercase;margin-bottom:10px}
+.report-header h1{font-size:30px;line-height:1.3;margin:0 0 10px;font-weight:800;letter-spacing:.3px;text-align:center}
+.report-header .sub{color:var(--muted);font-size:15px;margin:0}
+
+/* panels */
+.panel{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:24px 26px;margin:18px 0;box-shadow:0 8px 24px rgba(0,0,0,.18)}
+.sec-title{display:flex;align-items:baseline;gap:12px;margin:0 0 6px;font-size:19px;font-weight:800}
+.sec-title .no{flex:none;display:inline-flex;align-items:center;justify-content:center;width:30px;height:30px;border-radius:8px;background:linear-gradient(135deg,var(--t3),#2f86e6);color:#041323;font-weight:800;font-size:15px}
+.sec-title .tag{font-size:13px;font-weight:600;color:var(--muted)}
+.sec-lead{color:var(--muted);font-size:13.5px;margin:2px 0 18px}
+
+/* method */
+.method p{color:var(--muted);margin:0;font-size:14px}
+.method code{background:#0c2038;border:1px solid var(--line);padding:1px 6px;border-radius:5px;color:var(--t3);font-size:13px}
+
+/* kpi cards */
+.kpis{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin:18px 0}
+.kpi{background:linear-gradient(160deg,var(--panel2),var(--panel));border:1px solid var(--line);border-radius:14px;padding:18px 20px;position:relative;overflow:hidden}
+.kpi::before{content:"";position:absolute;left:0;top:0;bottom:0;width:4px;background:var(--kc,var(--t3))}
+.kpi .k-label{font-size:12.5px;color:var(--muted);margin-bottom:8px}
+.kpi .k-main{font-size:23px;font-weight:800;letter-spacing:.2px}
+.kpi .k-main small{font-size:13px;color:var(--muted);font-weight:500;margin-left:6px}
+.kpi .k-rate{font-size:13px;color:var(--green);font-weight:700;margin-top:6px}
+.kpi.t3{--kc:var(--t3)}.kpi.t5{--kc:var(--t5)}.kpi.t7{--kc:var(--t7)}
+
+/* legend */
+.legend{display:flex;gap:18px;flex-wrap:wrap;font-size:12.5px;color:var(--muted);margin:14px 0 4px;padding:12px 14px;background:#0c2038;border:1px solid var(--line);border-radius:9px}
+.legend .sw{display:inline-block;width:11px;height:11px;border-radius:3px;margin-right:6px;vertical-align:-1px}
+.sw.t3{background:var(--t3)}.sw.t5{background:var(--t5)}.sw.t7{background:var(--t7)}
+
+/* sub section */
+.subsec{font-size:13.5px;font-weight:700;color:var(--t3);margin:22px 0 4px;padding-bottom:6px;border-bottom:1px dashed var(--line)}
+.subsec small{color:var(--muted);font-weight:400;margin-left:8px;font-size:12px}
+
+/* grouped bar chart */
+.groups{margin:14px 0}
+.group{display:grid;grid-template-columns:168px 1fr;gap:14px;align-items:start;padding:12px 0;border-bottom:1px solid #12263f}
+.group:last-child{border-bottom:0}
+.group-label{font-weight:700;font-size:14px;color:var(--text);padding-top:1px}
+.group-label small{display:block;font-weight:400;color:var(--muted);font-size:11.5px;margin-top:3px;line-height:1.4}
+.gbars{display:flex;flex-direction:column;gap:7px}
+.gbar{display:grid;grid-template-columns:26px 1fr 56px;gap:10px;align-items:center}
+.gbar .co{font-size:11px;font-weight:800;color:var(--muted)}
+.gbar .tr{height:15px;background:#0b1e33;border-radius:4px;overflow:hidden}
+.gbar .fl{height:100%;border-radius:4px;min-width:2px;transition:width .3s}
+.gbar .vl{font-size:12px;color:var(--text);text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}
+.fl.t3{background:linear-gradient(90deg,#2299aa,var(--t3))}
+.fl.t5{background:linear-gradient(90deg,#6d4de0,var(--t5))}
+.fl.t7{background:linear-gradient(90deg,#d3851f,var(--t7))}
+
+/* callouts */
+.call{padding:13px 16px;border-left:3px solid var(--t7);background:#102b4b;border-radius:0 8px 8px 0;margin:12px 0;font-size:14px}
+.call b{color:var(--t3)}
+.call.conclusion{border-left-color:var(--t5)}
+.call.conclusion b{color:var(--t5)}
+
+.footnote{color:var(--muted);font-size:12.5px;margin:20px 0 0}
+@media(max-width:760px){
+  .wrap{padding:28px 14px}
+  .kpis{grid-template-columns:1fr}
+  .group{grid-template-columns:1fr;gap:8px}
+  .report-header h1{font-size:24px}
+}
+</style>
+</head>
+<body>
+<main class="wrap">
+
+<header class="report-header">
+  <span class="eyebrow">Data Analysis Report</span>
+  <h1>T3 / T5 / T7 提单页与非提单页停留时长分析</h1>
+  <p class="sub">重点比较两类页面行为的覆盖量、第二阶段条件提单率与提单时效；第一阶段未提单的获额通过用户。</p>
+</header>
+
+<section class="panel method">
+  <h2 class="sec-title"><span class="no">口径</span></h2>
+  <p>T3 第一阶段 D+1～D+3、T5 D+1～D+5、T7 D+1～D+7；结清日 D0 不计入。<code>apply_duration</code> 为提单页停留秒数，<code>non_apply_duration</code> 为非提单页停留秒数，均取第一阶段累计。第二阶段提单率是剔除结清日与第一阶段提单者后，后续首次在第二阶段提单的条件提单率。</p>
+</section>
+
+<section class="kpis">
+  <div class="kpi t3"><div class="k-label">T3 可观察 / 第二阶段提单</div><div class="k-main">33,868 / 22,275</div><div class="k-rate">65.77%</div></div>
+  <div class="kpi t5"><div class="k-label">T5 可观察 / 第二阶段提单</div><div class="k-main">29,339 / 17,746</div><div class="k-rate">60.49%</div></div>
+  <div class="kpi t7"><div class="k-label">T7 可观察 / 第二阶段提单</div><div class="k-main">26,067 / 14,474</div><div class="k-rate">55.53%</div></div>
+</section>
+
+<section class="panel">
+  <h2 class="sec-title"><span class="no">一</span>页面路径对比<span class="tag">非提单页浏览是更大规模的有效信号</span></h2>
+  <p class="sec-lead">每个色块的长度表示该行为组对应指标的数值，可横向比较 T3 / T5 / T7 三个窗口。</p>
+  <div class="legend"><span><i class="sw t3"></i>T3（D+1~D+3）</span><span><i class="sw t5"></i>T5（D+1~D+5）</span><span><i class="sw t7"></i>T7（D+1~D+7）</span></div>
+
+  <div class="subsec">1.1 第二阶段提单率（按行为路径）<small>柱长 = 提单率</small></div>
+  <div class="groups">
+    <div class="group">
+      <div class="group-label">两类页面均无停留<small>覆盖 55.05% / 50.87% / 48.83%</small></div>
+      <div class="gbars">
+        <div class="gbar"><span class="co">T3</span><div class="tr"><div class="fl t3" style="width:59.16%"></div></div><span class="vl">59.16%</span></div>
+        <div class="gbar"><span class="co">T5</span><div class="tr"><div class="fl t5" style="width:52.45%"></div></div><span class="vl">52.45%</span></div>
+        <div class="gbar"><span class="co">T7</span><div class="tr"><div class="fl t7" style="width:46.89%"></div></div><span class="vl">46.89%</span></div>
+      </div>
+    </div>
+    <div class="group">
+      <div class="group-label">仅非提单页停留<small>覆盖 10.60% / 11.01% / 11.09%</small></div>
+      <div class="gbars">
+        <div class="gbar"><span class="co">T3</span><div class="tr"><div class="fl t3" style="width:76.04%"></div></div><span class="vl">76.04%</span></div>
+        <div class="gbar"><span class="co">T5</span><div class="tr"><div class="fl t5" style="width:71.07%"></div></div><span class="vl">71.07%</span></div>
+        <div class="gbar"><span class="co">T7</span><div class="tr"><div class="fl t7" style="width:67.04%"></div></div><span class="vl">67.04%</span></div>
+      </div>
+    </div>
+    <div class="group">
+      <div class="group-label">两类页面均停留<small>覆盖 34.28% / 38.06% / 40.03%</small></div>
+      <div class="gbars">
+        <div class="gbar"><span class="co">T3</span><div class="tr"><div class="fl t3" style="width:73.29%"></div></div><span class="vl">73.29%</span></div>
+        <div class="gbar"><span class="co">T5</span><div class="tr"><div class="fl t5" style="width:68.23%"></div></div><span class="vl">68.23%</span></div>
+        <div class="gbar"><span class="co">T7</span><div class="tr"><div class="fl t7" style="width:62.92%"></div></div><span class="vl">62.92%</span></div>
+      </div>
+    </div>
+    <div class="group">
+      <div class="group-label">仅提单页停留<small>样本极少（0.05%～0.07%）</small></div>
+      <div class="gbars">
+        <div class="gbar"><span class="co">T3</span><div class="tr"><div class="fl t3" style="width:52.17%"></div></div><span class="vl">52.17%</span></div>
+        <div class="gbar"><span class="co">T5</span><div class="tr"><div class="fl t5" style="width:52.94%"></div></div><span class="vl">52.94%</span></div>
+        <div class="gbar"><span class="co">T7</span><div class="tr"><div class="fl t7" style="width:53.85%"></div></div><span class="vl">53.85%</span></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="subsec">1.2 人数占比（按行为路径）<small>柱长 = 人数占比</small></div>
+  <div class="groups">
+    <div class="group">
+      <div class="group-label">两类页面均无停留<small>人数 18,638 / 14,921 / 12,724</small></div>
+      <div class="gbars">
+        <div class="gbar"><span class="co">T3</span><div class="tr"><div class="fl t3" style="width:55.05%"></div></div><span class="vl">55.05%</span></div>
+        <div class="gbar"><span class="co">T5</span><div class="tr"><div class="fl t5" style="width:50.87%"></div></div><span class="vl">50.87%</span></div>
+        <div class="gbar"><span class="co">T7</span><div class="tr"><div class="fl t7" style="width:48.83%"></div></div><span class="vl">48.83%</span></div>
+      </div>
+    </div>
+    <div class="group">
+      <div class="group-label">仅非提单页停留<small>人数 3,590 / 3,228 / 2,891</small></div>
+      <div class="gbars">
+        <div class="gbar"><span class="co">T3</span><div class="tr"><div class="fl t3" style="width:10.60%"></div></div><span class="vl">10.60%</span></div>
+        <div class="gbar"><span class="co">T5</span><div class="tr"><div class="fl t5" style="width:11.01%"></div></div><span class="vl">11.01%</span></div>
+        <div class="gbar"><span class="co">T7</span><div class="tr"><div class="fl t7" style="width:11.09%"></div></div><span class="vl">11.09%</span></div>
+      </div>
+    </div>
+    <div class="group">
+      <div class="group-label">两类页面均停留<small>人数 11,608 / 11,164 / 10,430</small></div>
+      <div class="gbars">
+        <div class="gbar"><span class="co">T3</span><div class="tr"><div class="fl t3" style="width:34.28%"></div></div><span class="vl">34.28%</span></div>
+        <div class="gbar"><span class="co">T5</span><div class="tr"><div class="fl t5" style="width:38.06%"></div></div><span class="vl">38.06%</span></div>
+        <div class="gbar"><span class="co">T7</span><div class="tr"><div class="fl t7" style="width:40.03%"></div></div><span class="vl">40.03%</span></div>
+      </div>
+    </div>
+    <div class="group">
+      <div class="group-label">仅提单页停留<small>样本极少（0.05%～0.07%）</small></div>
+      <div class="gbars">
+        <div class="gbar"><span class="co">T3</span><div class="tr"><div class="fl t3" style="width:0.07%"></div></div><span class="vl">0.07%</span></div>
+        <div class="gbar"><span class="co">T5</span><div class="tr"><div class="fl t5" style="width:0.06%"></div></div><span class="vl">0.06%</span></div>
+        <div class="gbar"><span class="co">T7</span><div class="tr"><div class="fl t7" style="width:0.05%"></div></div><span class="vl">0.05%</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="panel">
+  <h2 class="sec-title"><span class="no">二</span>提单页 vs 非提单页：时长分段与覆盖量</h2>
+  <p class="sec-lead">按页面类型与时长的分段，横向比较覆盖占比与第二阶段提单率。</p>
+  <div class="legend"><span><i class="sw t3"></i>T3（D+1~D+3）</span><span><i class="sw t5"></i>T5（D+1~D+5）</span><span><i class="sw t7"></i>T7（D+1~D+7）</span></div>
+
+  <div class="subsec">2.1 覆盖占比<small>柱长 = 人数占比</small></div>
+  <div class="groups">
+    <div class="group">
+      <div class="group-label">提单页 0 秒</div>
+      <div class="gbars">
+        <div class="gbar"><span class="co">T3</span><div class="tr"><div class="fl t3" style="width:65.61%"></div></div><span class="vl">65.61%</span></div>
+        <div class="gbar"><span class="co">T5</span><div class="tr"><div class="fl t5" style="width:61.85%"></div></div><span class="vl">61.85%</span></div>
+        <div class="gbar"><span class="co">T7</span><div class="tr"><div class="fl t7" style="width:59.91%"></div></div><span class="vl">59.91%</span></div>
+      </div>
+    </div>
+    <div class="group">
+      <div class="group-label">提单页 0–30 秒</div>
+      <div class="gbars">
+        <div class="gbar"><span class="co">T3</span><div class="tr"><div class="fl t3" style="width:14.20%"></div></div><span class="vl">14.20%</span></div>
+        <div class="gbar"><span class="co">T5</span><div class="tr"><div class="fl t5" style="width:14.88%"></div></div><span class="vl">14.88%</span></div>
+        <div class="gbar"><span class="co">T7</span><div class="tr"><div class="fl t7" style="width:14.29%"></div></div><span class="vl">14.29%</span></div>
+      </div>
+    </div>
+    <div class="group">
+      <div class="group-label">提单页 30–60 秒</div>
+      <div class="gbars">
+        <div class="gbar"><span class="co">T3</span><div class="tr"><div class="fl t3" style="width:8.30%"></div></div><span class="vl">8.30%</span></div>
+        <div class="gbar"><span class="co">T5</span><div class="tr"><div class="fl t5" style="width:8.86%"></div></div><span class="vl">8.86%</span></div>
+        <div class="gbar"><span class="co">T7</span><div class="tr"><div class="fl t7" style="width:8.96%"></div></div><span class="vl">8.96%</span></div>
+      </div>
+    </div>
+    <div class="group">
+      <div class="group-label">提单页 60–120 秒</div>
+      <div class="gbars">
+        <div class="gbar"><span class="co">T3</span><div class="tr"><div class="fl t3" style="width:6.92%"></div></div><span class="vl">6.92%</span></div>
+        <div class="gbar"><span class="co">T5</span><div class="tr"><div class="fl t5" style="width:7.92%"></div></div><span class="vl">7.92%</span></div>
+        <div class="gbar"><span class="co">T7</span><div class="tr"><div class="fl t7" style="width:8.60%"></div></div><span class="vl">8.60%</span></div>
+      </div>
+    </div>
+    <div class="group">
+      <div class="group-label">提单页 120–300 秒</div>
+      <div class="gbars">
+        <div class="gbar"><span class="co">T3</span><div class="tr"><div class="fl t3" style="width:4.18%"></div></div><span class="vl">4.18%</span></div>
+        <div class="gbar"><span class="co">T5</span><div class="tr"><div class="fl t5" style="width:5.30%"></div></div><span class="vl">5.30%</span></div>
+        <div class="gbar"><span class="co">T7</span><div class="tr"><div class="fl t7" style="width:6.42%"></div></div><span class="vl">6.42%</span></div>
+      </div>
+    </div>
+    <div class="group">
+      <div class="group-label">提单页 300–600 秒</div>
+      <div class="gbars">
+        <div class="gbar"><span class="co">T3</span><div class="tr"><div class="fl t3" style="width:0.70%"></div></div><span class="vl">0.70%</span></div>
+        <div class="gbar"><span class="co">T5</span><div class="tr"><div class="fl t5" style="width:1.00%"></div></div><span class="vl">1.00%</span></div>
+        <div class="gbar"><span class="co">T7</span><div class="tr"><div class="fl t7" style="width:1.46%"></div></div><span class="vl">1.46%</span></div>
+      </div>
+    </div>
+    <div class="group">
+      <div class="group-label">提单页 600 秒以上</div>
+      <div class="gbars">
+        <div class="gbar"><span class="co">T3</span><div class="tr"><div class="fl t3" style="width:0.09%"></div></div><span class="vl">0.09%</span></div>
+        <div class="gbar"><span class="co">T5</span><div class="tr"><div class="fl t5" style="width:0.19%"></div></div><span class="vl">0.19%</span></div>
+        <div class="gbar"><span class="co">T7</span><div class="tr"><div class="fl t7" style="width:0.35%"></div></div><span class="vl">0.35%</span></div>
+      </div>
+    </div>
+    <div class="group">
+      <div class="group-label">非提单页 0 秒</div>
+      <div class="gbars">
+        <div class="gbar"><span class="co">T3</span><div class="tr"><div class="fl t3" style="width:55.21%"></div></div><span class="vl">55.21%</span></div>
+        <div class="gbar"><span class="co">T5</span><div class="tr"><div class="fl t5" style="width:51.06%"></div></div><span class="vl">51.06%</span></div>
+        <div class="gbar"><span class="co">T7</span><div class="tr"><div class="fl t7" style="width:49.05%"></div></div><span class="vl">49.05%</span></div>
+      </div>
+    </div>
+    <div class="group">
+      <div class="group-label">非提单页 0–30 秒</div>
+      <div class="gbars">
+        <div class="gbar"><span class="co">T3</span><div class="tr"><div class="fl t3" style="width:35.66%"></div></div><span class="vl">35.66%</span></div>
+        <div class="gbar"><span class="co">T5</span><div class="tr"><div class="fl t5" style="width:37.53%"></div></div><span class="vl">37.53%</span></div>
+        <div class="gbar"><span class="co">T7</span><div class="tr"><div class="fl t7" style="width:36.36%"></div></div><span class="vl">36.36%</span></div>
+      </div>
+    </div>
+    <div class="group">
+      <div class="group-label">非提单页 30–60 秒</div>
+      <div class="gbars">
+        <div class="gbar"><span class="co">T3</span><div class="tr"><div class="fl t3" style="width:4.76%"></div></div><span class="vl">4.76%</span></div>
+        <div class="gbar"><span class="co">T5</span><div class="tr"><div class="fl t5" style="width:5.74%"></div></div><span class="vl">5.74%</span></div>
+        <div class="gbar"><span class="co">T7</span><div class="tr"><div class="fl t7" style="width:6.67%"></div></div><span class="vl">6.67%</span></div>
+      </div>
+    </div>
+    <div class="group">
+      <div class="group-label">非提单页 60–120 秒</div>
+      <div class="gbars">
+        <div class="gbar"><span class="co">T3</span><div class="tr"><div class="fl t3" style="width:2.68%"></div></div><span class="vl">2.68%</span></div>
+        <div class="gbar"><span class="co">T5</span><div class="tr"><div class="fl t5" style="width:3.36%"></div></div><span class="vl">3.36%</span></div>
+        <div class="gbar"><span class="co">T7</span><div class="tr"><div class="fl t7" style="width:4.36%"></div></div><span class="vl">4.36%</span></div>
+      </div>
+    </div>
+    <div class="group">
+      <div class="group-label">非提单页 120–300 秒</div>
+      <div class="gbars">
+        <div class="gbar"><span class="co">T3</span><div class="tr"><div class="fl t3" style="width:1.19%"></div></div><span class="vl">1.19%</span></div>
+        <div class="gbar"><span class="co">T5</span><div class="tr"><div class="fl t5" style="width:1.64%"></div></div><span class="vl">1.64%</span></div>
+        <div class="gbar"><span class="co">T7</span><div class="tr"><div class="fl t7" style="width:2.65%"></div></div><span class="vl">2.65%</span></div>
+      </div>
+    </div>
+    <div class="group">
+      <div class="group-label">非提单页 300–600 秒</div>
+      <div class="gbars">
+        <div class="gbar"><span class="co">T3</span><div class="tr"><div class="fl t3" style="width:0.26%"></div></div><span class="vl">0.26%</span></div>
+        <div class="gbar"><span class="co">T5</span><div class="tr"><div class="fl t5" style="width:0.36%"></div></div><span class="vl">0.36%</span></div>
+        <div class="gbar"><span class="co">T7</span><div class="tr"><div class="fl t7" style="width:0.53%"></div></div><span class="vl">0.53%</span></div>
+      </div>
+    </div>
+    <div class="group">
+      <div class="group-label">非提单页 600 秒以上</div>
+      <div class="gbars">
+        <div class="gbar"><span class="co">T3</span><div class="tr"><div class="fl t3" style="width:0.24%"></div></div><span class="vl">0.24%</span></div>
+        <div class="gbar"><span class="co">T5</span><div class="tr"><div class="fl t5" style="width:0.30%"></div></div><span class="vl">0.30%</span></div>
+        <div class="gbar"><span class="co">T7</span><div class="tr"><div class="fl t7" style="width:0.39%"></div></div><span class="vl">0.39%</span></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="subsec">2.2 第二阶段提单率<small>柱长 = 提单率</small></div>
+  <div class="groups">
+    <div class="group">
+      <div class="group-label">提单页 0 秒</div>
+      <div class="gbars">
+        <div class="gbar"><span class="co">T3</span><div class="tr"><div class="fl t3" style="width:61.98%"></div></div><span class="vl">61.98%</span></div>
+        <div class="gbar"><span class="co">T5</span><div class="tr"><div class="fl t5" style="width:55.82%"></div></div><span class="vl">55.82%</span></div>
+        <div class="gbar"><span class="co">T7</span><div class="tr"><div class="fl t7" style="width:50.68%"></div></div><span class="vl">50.68%</span></div>
+      </div>
+    </div>
+    <div class="group">
+      <div class="group-label">提单页 0–30 秒</div>
+      <div class="gbars">
+        <div class="gbar"><span class="co">T3</span><div class="tr"><div class="fl t3" style="width:68.04%"></div></div><span class="vl">68.04%</span></div>
+        <div class="gbar"><span class="co">T5</span><div class="tr"><div class="fl t5" style="width:62.20%"></div></div><span class="vl">62.20%</span></div>
+        <div class="gbar"><span class="co">T7</span><div class="tr"><div class="fl t7" style="width:55.49%"></div></div><span class="vl">55.49%</span></div>
+      </div>
+    </div>
+    <div class="group">
+      <div class="group-label">提单页 30–60 秒</div>
+      <div class="gbars">
+        <div class="gbar"><span class="co">T3</span><div class="tr"><div class="fl t3" style="width:74.62%"></div></div><span class="vl">74.62%</span></div>
+        <div class="gbar"><span class="co">T5</span><div class="tr"><div class="fl t5" style="width:69.67%"></div></div><span class="vl">69.67%</span></div>
+        <div class="gbar"><span class="co">T7</span><div class="tr"><div class="fl t7" style="width:63.08%"></div></div><span class="vl">63.08%</span></div>
+      </div>
+    </div>
+    <div class="group">
+      <div class="group-label">提单页 60–120 秒</div>
+      <div class="gbars">
+        <div class="gbar"><span class="co">T3</span><div class="tr"><div class="fl t3" style="width:78.36%"></div></div><span class="vl">78.36%</span></div>
+        <div class="gbar"><span class="co">T5</span><div class="tr"><div class="fl t5" style="width:72.97%"></div></div><span class="vl">72.97%</span></div>
+        <div class="gbar"><span class="co">T7</span><div class="tr"><div class="fl t7" style="width:68.35%"></div></div><span class="vl">68.35%</span></div>
+      </div>
+    </div>
+    <div class="group">
+      <div class="group-label">提单页 120–300 秒</div>
+      <div class="gbars">
+        <div class="gbar"><span class="co">T3</span><div class="tr"><div class="fl t3" style="width:81.40%"></div></div><span class="vl">81.40%</span></div>
+        <div class="gbar"><span class="co">T5</span><div class="tr"><div class="fl t5" style="width:77.08%"></div></div><span class="vl">77.08%</span></div>
+        <div class="gbar"><span class="co">T7</span><div class="tr"><div class="fl t7" style="width:72.58%"></div></div><span class="vl">72.58%</span></div>
+      </div>
+    </div>
+    <div class="group">
+      <div class="group-label">提单页 300–600 秒</div>
+      <div class="gbars">
+        <div class="gbar"><span class="co">T3</span><div class="tr"><div class="fl t3" style="width:80.17%"></div></div><span class="vl">80.17%</span></div>
+        <div class="gbar"><span class="co">T5</span><div class="tr"><div class="fl t5" style="width:75.93%"></div></div><span class="vl">75.93%</span></div>
+        <div class="gbar"><span class="co">T7</span><div class="tr"><div class="fl t7" style="width:72.40%"></div></div><span class="vl">72.40%</span></div>
+      </div>
+    </div>
+    <div class="group">
+      <div class="group-label">提单页 600 秒以上</div>
+      <div class="gbars">
+        <div class="gbar"><span class="co">T3</span><div class="tr"><div class="fl t3" style="width:75.86%"></div></div><span class="vl">75.86%</span></div>
+        <div class="gbar"><span class="co">T5</span><div class="tr"><div class="fl t5" style="width:80.36%"></div></div><span class="vl">80.36%</span></div>
+        <div class="gbar"><span class="co">T7</span><div class="tr"><div class="fl t7" style="width:76.92%"></div></div><span class="vl">76.92%</span></div>
+      </div>
+    </div>
+    <div class="group">
+      <div class="group-label">非提单页 0 秒</div>
+      <div class="gbars">
+        <div class="gbar"><span class="co">T3</span><div class="tr"><div class="fl t3" style="width:59.15%"></div></div><span class="vl">59.15%</span></div>
+        <div class="gbar"><span class="co">T5</span><div class="tr"><div class="fl t5" style="width:52.39%"></div></div><span class="vl">52.39%</span></div>
+        <div class="gbar"><span class="co">T7</span><div class="tr"><div class="fl t7" style="width:46.78%"></div></div><span class="vl">46.78%</span></div>
+      </div>
+    </div>
+    <div class="group">
+      <div class="group-label">非提单页 0–30 秒</div>
+      <div class="gbars">
+        <div class="gbar"><span class="co">T3</span><div class="tr"><div class="fl t3" style="width:73.18%"></div></div><span class="vl">73.18%</span></div>
+        <div class="gbar"><span class="co">T5</span><div class="tr"><div class="fl t5" style="width:67.84%"></div></div><span class="vl">67.84%</span></div>
+        <div class="gbar"><span class="co">T7</span><div class="tr"><div class="fl t7" style="width:62.06%"></div></div><span class="vl">62.06%</span></div>
+      </div>
+    </div>
+    <div class="group">
+      <div class="group-label">非提单页 30–60 秒</div>
+      <div class="gbars">
+        <div class="gbar"><span class="co">T3</span><div class="tr"><div class="fl t3" style="width:78.95%"></div></div><span class="vl">78.95%</span></div>
+        <div class="gbar"><span class="co">T5</span><div class="tr"><div class="fl t5" style="width:73.67%"></div></div><span class="vl">73.67%</span></div>
+        <div class="gbar"><span class="co">T7</span><div class="tr"><div class="fl t7" style="width:70.06%"></div></div><span class="vl">70.06%</span></div>
+      </div>
+    </div>
+    <div class="group">
+      <div class="group-label">非提单页 60–120 秒</div>
+      <div class="gbars">
+        <div class="gbar"><span class="co">T3</span><div class="tr"><div class="fl t3" style="width:79.87%"></div></div><span class="vl">79.87%</span></div>
+        <div class="gbar"><span class="co">T5</span><div class="tr"><div class="fl t5" style="width:77.32%"></div></div><span class="vl">77.32%</span></div>
+        <div class="gbar"><span class="co">T7</span><div class="tr"><div class="fl t7" style="width:72.27%"></div></div><span class="vl">72.27%</span></div>
+      </div>
+    </div>
+    <div class="group">
+      <div class="group-label">非提单页 120–300 秒</div>
+      <div class="gbars">
+        <div class="gbar"><span class="co">T3</span><div class="tr"><div class="fl t3" style="width:78.71%"></div></div><span class="vl">78.71%</span></div>
+        <div class="gbar"><span class="co">T5</span><div class="tr"><div class="fl t5" style="width:74.23%"></div></div><span class="vl">74.23%</span></div>
+        <div class="gbar"><span class="co">T7</span><div class="tr"><div class="fl t7" style="width:70.03%"></div></div><span class="vl">70.03%</span></div>
+      </div>
+    </div>
+    <div class="group">
+      <div class="group-label">非提单页 300–600 秒</div>
+      <div class="gbars">
+        <div class="gbar"><span class="co">T3</span><div class="tr"><div class="fl t3" style="width:76.40%"></div></div><span class="vl">76.40%</span></div>
+        <div class="gbar"><span class="co">T5</span><div class="tr"><div class="fl t5" style="width:71.03%"></div></div><span class="vl">71.03%</span></div>
+        <div class="gbar"><span class="co">T7</span><div class="tr"><div class="fl t7" style="width:67.39%"></div></div><span class="vl">67.39%</span></div>
+      </div>
+    </div>
+    <div class="group">
+      <div class="group-label">非提单页 600 秒以上</div>
+      <div class="gbars">
+        <div class="gbar"><span class="co">T3</span><div class="tr"><div class="fl t3" style="width:76.54%"></div></div><span class="vl">76.54%</span></div>
+        <div class="gbar"><span class="co">T5</span><div class="tr"><div class="fl t5" style="width:72.22%"></div></div><span class="vl">72.22%</span></div>
+        <div class="gbar"><span class="co">T7</span><div class="tr"><div class="fl t7" style="width:69.90%"></div></div><span class="vl">69.90%</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="panel">
+  <h2 class="sec-title"><span class="no">三</span>关键对比</h2>
+  <div class="call"><b>覆盖量：</b>非提单页 0–30 秒覆盖 35.66%～37.53%，远高于提单页 120–300 秒的 4.18%～6.42%。前者适合大规模识别潜在意图，后者是更小的强意图人群。</div>
+  <div class="call"><b>转化强度：</b>提单页长停留（120–300 秒）提单率较高（T3/T5/T7：81.40%/77.08%/72.58%）；非提单页 60–120 秒已达 79.87%/77.32%/72.27%，与之非常接近。300 秒以上分段样本占比不足 2%，提单率波动大，不作稳定比较。</div>
+  <div class="call"><b>行为路径：</b>仅提单页停留的样本仅 0.05%～0.07%，不能视为稳定客群。绝大部分有提单页停留者同时浏览了非提单页，用户并非直达提单页，而是先/同时经历信息浏览和决策过程。</div>
+</section>
+
+<section class="panel">
+  <h2 class="sec-title"><span class="no">四</span>结论与行动建议</h2>
+  <div class="call conclusion"><b>结论 1：非提单页浏览是独立且规模可观的强信号。</b> 仅非提单页停留的第二阶段提单率为 T3 76.04%、T5 71.07%、T7 67.04%，比两类页面均无停留高 16.88 / 18.62 / 20.15 个百分点，且覆盖约 11%。这说明额度、期次、计划等信息浏览本身反映了明确借款意图。</div>
+  <div class="call conclusion"><b>结论 2：两类页面均浏览覆盖最大、转化更快。</b> 该组覆盖 34.28% / 38.06% / 40.03%，提单率 73.29% / 68.23% / 62.92%；平均提单间隔为 14.57 / 17.98 / 21.54 天，较“仅非提单页”分别快 4.67 / 5.89 / 6.48 天。可视为更接近完成决策的用户。</div>
+  <div class="call conclusion"><b>结论 3：不要把提单页作为唯一意图判断标准。</b> 非提单页 0–30 秒已经带来 14.03～15.45 个百分点的提单率提升，且样本是提单页长停留群的约 5～9 倍。运营可先用非提单页短时浏览构建广覆盖池，再叠加提单页行为提升触达优先级。</div>
+  <div class="call"><b>实验设计标准：</b>① 两类均无停留：召回与基础提醒；② 仅非提单页：额度、期次、还款计划引导；③ 两类均停留或提单页 ≥60 秒：低频、高优先级的转化提醒；④ 后续需联合评估放款、逾期和最终盈利额的净增量，避免只优化条件提单率。</div>
+  <p class="footnote">这是行为关联，不代表延长页面停留本身会造成提单；资质、额度和触达等因素也可能同时影响行为与提单。</p>
+</section>
+
+<p class="footnote">数据来源：order_loan_f_v2_copy、order_vir_f_copy、event_track。</p>
+</main>
+
+<section class="pgsql-appendix" data-pgsql-appendix="v3"><style>.pgsql-appendix{margin:34px auto 0;max-width:1180px;padding:20px;background:#081e38;border:1px solid #2b5275;border-radius:12px;color:#eaf5ff;font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei",sans-serif}.pgsql-appendix h2{margin:0 0 6px;font-size:21px}.pgsql-appendix p{margin:0;color:#acc5da}.pgsql-appendix details{margin-top:15px}.pgsql-appendix summary{cursor:pointer;color:#46d9ea;font-weight:700}.pgsql-layout{display:grid;grid-template-columns:minmax(0,1fr) 260px;gap:14px;margin-top:14px}.pgsql-code{margin:0;padding:16px;max-height:700px;overflow:auto;white-space:pre;tab-size:4;background:#031322;border:1px solid #264d70;border-radius:8px;color:#d9ecfb;font:12px/1.6 ui-monospace,SFMono-Regular,Menlo,monospace}.pgsql-notes{padding:14px;background:#0e2b49;border:1px solid #315b7e;border-radius:8px;color:#c6d9e8;font-size:13px}.pgsql-notes h3{margin:0 0 8px;color:#66dfed;font-size:15px}.pgsql-notes ul{margin:6px 0;padding-left:18px}.pgsql-notes li{margin:7px 0}@media(max-width:760px){.pgsql-layout{grid-template-columns:1fr}.pgsql-code{white-space:pre-wrap}}</style><h2>附录：提单页与非提单页停留时长完整 PGSQL</h2><details><summary>展开完整代码与注释说明</summary><div class="pgsql-layout"><pre class="pgsql-code">/*
+  提单页 / 非提单页第一阶段停留时长与第二阶段提单
+  自然日口径：D0=结清日；T3/T5/T7 第一阶段分别为 D+1~D+3、D+1~D+5、D+1~D+7。
+*/
+WITH
+/* 1. 注册时间范围内的全部已提单订单。 */
+all_orders AS (
+    SELECT
+        user_id,
+        serial_id,
+        apply_time,
+        remit_time,
+        repaid_time,
+        repaid_date,
+        remit_date,
+        loan_status_code,
+        is_remit,
+        reg_date
+    FROM wangchuanliang.order_loan_f_v2_copy
+    WHERE reg_date &gt;= DATE &#x27;2026-01-01&#x27;
+      AND reg_date &lt;= DATE &#x27;2026-07-15&#x27;
+      AND apply_time IS NOT NULL
+),
+
+/* 2. 排除仅提单、未放款的用户。 */
+all_users AS (
+    SELECT DISTINCT user_id
+    FROM all_orders
+    WHERE is_remit = 1
+      AND remit_date &gt; DATE &#x27;2026-01-01&#x27;
+),
+
+/* 3. 正常结清订单，按用户结清时间编号。 */
+settled_raw AS (
+    SELECT
+        o.user_id,
+        o.serial_id,
+        o.repaid_date,
+        o.repaid_time,
+        ROW_NUMBER() OVER (
+            PARTITION BY o.user_id
+            ORDER BY o.repaid_time, o.serial_id
+        ) AS settle_seq
+    FROM all_orders o
+    INNER JOIN all_users u ON u.user_id = o.user_id
+    WHERE o.is_remit = 1
+      AND o.loan_status_code = 7
+      AND o.repaid_time IS NOT NULL
+      AND o.remit_time IS NOT NULL
+),
+
+/* 4. 干净结清：结清时不存在在途、坏账或尚未结清的更早订单。 */
+clean_settle AS (
+    SELECT s.*
+    FROM settled_raw s
+    WHERE NOT EXISTS (
+        SELECT 1
+        FROM all_orders o2
+        WHERE o2.user_id = s.user_id
+          AND o2.serial_id &lt;&gt; s.serial_id
+          AND o2.apply_time &lt; s.repaid_time
+          AND (
+              o2.loan_status_code IN (5, 8)
+              OR (o2.loan_status_code = 7 AND o2.repaid_time &gt; s.repaid_time)
+          )
+    )
+),
+
+/* 5. 同一用户同一获额日期只保留最晚一次通过记录。 */
+credit_pass AS (
+    SELECT DISTINCT ON (v.user_id, v.vir_date)
+        v.user_id,
+        v.vir_date,
+        to_timestamp(v.vir_unix) AS vir_time
+    FROM wangchuanliang.order_vir_f_copy v
+    WHERE v.is_pass1 = 1
+      AND v.vir_date &gt; DATE &#x27;2026-01-01&#x27;
+    ORDER BY v.user_id, v.vir_date, to_timestamp(v.vir_unix) DESC
+),
+
+/* 6. 结清当日、且结清后获额通过的事件。 */
+eligible AS (
+    SELECT cs.*
+    FROM clean_settle cs
+    INNER JOIN credit_pass cp
+        ON cp.user_id = cs.user_id
+       AND cp.vir_date = cs.repaid_date::date
+       AND cp.vir_time &gt; cs.repaid_time
+),
+
+/* 7. 构造结清/提单统一时间线。 */
+applies AS (
+    SELECT user_id, apply_time
+    FROM all_orders
+    WHERE apply_time &gt; TIMESTAMP &#x27;2026-01-01&#x27;
+),
+merged AS (
+    SELECT user_id, repaid_time AS ts, &#x27;settle&#x27; AS kind, settle_seq::float AS settle_seq
+    FROM eligible
+    UNION ALL
+    SELECT user_id, apply_time AS ts, &#x27;apply&#x27; AS kind, NULL::float AS settle_seq
+    FROM applies
+),
+ranked AS (
+    SELECT
+        *,
+        ROW_NUMBER() OVER (
+            PARTITION BY user_id
+            ORDER BY ts, CASE kind WHEN &#x27;settle&#x27; THEN 0 ELSE 1 END
+        ) AS rn
+    FROM merged
+),
+
+/* 8. 每笔结清只匹配时间线中紧邻的下一次提单。 */
+pairs AS (
+    SELECT
+        s.user_id,
+        s.ts AS repaid_time,
+        s.settle_seq,
+        a.ts AS next_apply_time
+    FROM ranked s
+    LEFT JOIN ranked a
+        ON a.user_id = s.user_id
+       AND a.rn = s.rn + 1
+       AND a.kind = &#x27;apply&#x27;
+    WHERE s.kind = &#x27;settle&#x27;
+),
+
+/* 9. 三个自然日窗口参数。 */
+thresholds AS (
+    SELECT &#x27;T3&#x27; AS cohort, 3 AS threshold_days
+    UNION ALL SELECT &#x27;T5&#x27;, 5
+    UNION ALL SELECT &#x27;T7&#x27;, 7
+),
+
+/* 10. 排除结清当天和第一阶段已提单；保留第二阶段提单或后续未提单事件。 */
+candidates AS (
+    SELECT
+        t.cohort,
+        t.threshold_days,
+        p.user_id,
+        p.repaid_time::date AS repaid_date,
+        CASE WHEN p.next_apply_time IS NULL THEN 0 ELSE 1 END AS phase2_apply,
+        CASE
+            WHEN p.next_apply_time IS NULL THEN NULL
+            ELSE p.next_apply_time::date - p.repaid_time::date
+        END AS gap_days
+    FROM pairs p
+    CROSS JOIN thresholds t
+    WHERE p.settle_seq &lt;= 10
+      AND (
+          p.next_apply_time IS NULL
+          OR p.next_apply_time::date &gt; p.repaid_time::date + t.threshold_days
+      )
+),
+
+/* 11. 汇总第一阶段内两类页面停留时长（秒）。 */
+durations AS (
+    SELECT
+        c.*,
+        COUNT(DISTINCT e.active_date) AS active_days,
+        COALESCE(SUM(e.apply_duration), 0) AS apply_duration,
+        COALESCE(SUM(e.non_apply_duration), 0) AS non_apply_duration
+    FROM candidates c
+    LEFT JOIN wangchuanliang.event_track e
+        ON e.user_id = c.user_id
+       AND e.active_date &gt; c.repaid_date
+       AND e.active_date &lt;= c.repaid_date + c.threshold_days
+    GROUP BY
+        c.cohort, c.threshold_days, c.user_id,
+        c.repaid_date, c.phase2_apply, c.gap_days
+),
+
+/* 12. 转成长表，以同一逻辑分别统计提单页和非提单页。 */
+page_duration_long AS (
+    SELECT *, &#x27;提单页停留时长&#x27; AS page_type, apply_duration AS duration
+    FROM durations
+    UNION ALL
+    SELECT *, &#x27;非提单页停留时长&#x27;, non_apply_duration
+    FROM durations
+),
+
+/* 13. 对页面停留时长分段；负值、NaN 单列为数据质量异常。 */
+bucketed AS (
+    SELECT
+        *,
+        CASE
+            WHEN duration::text = &#x27;NaN&#x27; THEN &#x27;时长缺失/NaN&#x27;
+            WHEN duration &lt; 0 THEN &#x27;负值异常&#x27;
+            WHEN duration = 0 THEN &#x27;0 秒&#x27;
+            WHEN duration &lt;= 30 THEN &#x27;0-30 秒&#x27;
+            WHEN duration &lt;= 60 THEN &#x27;30-60 秒&#x27;
+            WHEN duration &lt;= 120 THEN &#x27;60-120 秒&#x27;
+            WHEN duration &lt;= 300 THEN &#x27;120-300 秒&#x27;
+            WHEN duration &lt;= 600 THEN &#x27;300-600 秒&#x27;
+            ELSE &#x27;600 秒以上&#x27;
+        END AS duration_bucket,
+        CASE
+            WHEN duration::text = &#x27;NaN&#x27; THEN 0
+            WHEN duration &lt; 0 THEN 1
+            WHEN duration = 0 THEN 2
+            WHEN duration &lt;= 30 THEN 3
+            WHEN duration &lt;= 60 THEN 4
+            WHEN duration &lt;= 120 THEN 5
+            WHEN duration &lt;= 300 THEN 6
+            WHEN duration &lt;= 600 THEN 7
+            ELSE 8
+        END AS bucket_order
+    FROM page_duration_long
+),
+
+/* 14. 页面联合路径：用于比较“仅非提单页”和“两类页面均停留”。 */
+joint AS (
+    SELECT
+        cohort,
+        CASE
+            WHEN apply_duration &gt; 0 AND non_apply_duration &gt; 0 THEN &#x27;两类页面均停留&#x27;
+            WHEN apply_duration &gt; 0 THEN &#x27;仅提单页停留&#x27;
+            WHEN non_apply_duration &gt; 0 THEN &#x27;仅非提单页停留&#x27;
+            ELSE &#x27;两类页面均无停留&#x27;
+        END AS behavior_group,
+        COUNT(*) AS events,
+        SUM(phase2_apply) AS phase2_apply_events,
+        ROUND(SUM(phase2_apply) * 100.0 / COUNT(*), 2) AS phase2_apply_rate,
+        ROUND(AVG(CASE WHEN phase2_apply = 1 THEN gap_days END)::numeric, 2) AS avg_gap_days,
+        ROUND(AVG(apply_duration)::numeric, 1) AS avg_apply_duration,
+        ROUND(AVG(non_apply_duration)::numeric, 1) AS avg_non_apply_duration
+    FROM durations
+    GROUP BY
+        cohort,
+        CASE
+            WHEN apply_duration &gt; 0 AND non_apply_duration &gt; 0 THEN &#x27;两类页面均停留&#x27;
+            WHEN apply_duration &gt; 0 THEN &#x27;仅提单页停留&#x27;
+            WHEN non_apply_duration &gt; 0 THEN &#x27;仅非提单页停留&#x27;
+            ELSE &#x27;两类页面均无停留&#x27;
+        END
+)
+
+/* 15. 输出页面时长分段和页面联合路径两类结果。 */
+SELECT
+    &#x27;页面时长分段&#x27; AS section,
+    page_type,
+    cohort,
+    duration_bucket,
+    COUNT(*) AS events,
+    ROUND(COUNT(*) * 100.0 / SUM(COUNT(*)) OVER (PARTITION BY page_type, cohort), 2) AS share_pct,
+    SUM(phase2_apply) AS phase2_apply_events,
+    ROUND(SUM(phase2_apply) * 100.0 / COUNT(*), 2) AS phase2_apply_rate,
+    ROUND(AVG(duration)::numeric, 1) AS avg_duration_sec,
+    ROUND(AVG(CASE WHEN phase2_apply = 1 THEN gap_days END)::numeric, 2) AS avg_gap_days,
+    NULL::numeric AS avg_apply_duration,
+    NULL::numeric AS avg_non_apply_duration
+FROM bucketed
+GROUP BY page_type, cohort, duration_bucket, bucket_order
+
+UNION ALL
+
+SELECT
+    &#x27;页面联合分组&#x27; AS section,
+    NULL AS page_type,
+    cohort,
+    behavior_group AS duration_bucket,
+    events,
+    ROUND(events * 100.0 / SUM(events) OVER (PARTITION BY cohort), 2) AS share_pct,
+    phase2_apply_events,
+    phase2_apply_rate,
+    NULL::numeric AS avg_duration_sec,
+    avg_gap_days,
+    avg_apply_duration,
+    avg_non_apply_duration
+FROM joint
+ORDER BY section, cohort, duration_bucket;
+</pre><aside class="pgsql-notes"><h3>查询结构</h3><ul><li>订单基础样本</li><li>正常/干净结清筛选</li><li>同日获额通过匹配</li><li>首次后续提单匹配</li><li>自然日 T3/T5/T7 窗口划分</li><li>页面时长分段、页面联合路径</li></ul><h3>指标口径</h3><ul><li>D0 是结清日，不计入第一阶段。</li><li>页面与活跃分析以 <code>active_date</code> 判断活跃记录。</li><li>第二阶段提单率为条件提单率。</li><li>注释对应 SQL 中的 CTE 编号。</li></ul></aside></div></details></section>
+</body></html>
