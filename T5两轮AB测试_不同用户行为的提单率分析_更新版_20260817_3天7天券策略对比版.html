@@ -1,0 +1,1577 @@
+<!doctype html>
+<html lang="zh-CN">
+<meta charset="utf-8">
+<title>T5两轮 A/B 测试：不同用户行为的提单率分析（更新版）</title>
+<style>
+body{margin:0;background:#041426;color:#dceafa;font:15px/1.65 Arial,"PingFang SC"}.p{max-width:1380px;margin:auto;padding:36px 24px 80px}.hero,.s{background:#082541;border:1px solid #2d5b7f;border-radius:18px;padding:27px;margin:20px 0}.hero{text-align:center;background:#0a2b4b}h1,h2,h3{color:#fff}h1{margin:8px 0;font-size:31px}.date,.intro{color:#aec9df}.g3,.g2,.cards,.minigrid{display:grid;gap:16px}.g3{grid-template-columns:repeat(3,1fr)}.g2,.cards{grid-template-columns:repeat(2,1fr)}.box,.card,.mini-card{background:#0c2d4c;border:1px solid #37658a;border-radius:14px;padding:17px}.box b{display:block;font-size:28px;color:#68e4ff}.chart{background:#071d35;border:1px solid #315c80;border-radius:14px;padding:17px}.bar-group{margin:15px 0}.one{display:grid;grid-template-columns:130px 1fr;gap:8px;align-items:center;margin:7px 0;font-size:12px}.one i{height:18px;display:block;border-radius:5px;cursor:pointer}.cbar{background:#62ddff}.tbar{background:#bd8cff}.track{height:15px;background:#173f5c;border-radius:99px;overflow:hidden}.track i{height:100%;display:block;border-radius:99px}.a{background:#68ddff}.n{background:#ffbf70}.minigrid{grid-template-columns:repeat(4,1fr)}.mini-card h3{margin:0}.mini-card p{color:#91b2ca;font-size:11px;margin:3px 0 10px}.minis{height:155px;display:flex;gap:12px;align-items:end}.mini{flex:1;text-align:center;font-size:11px;color:#b9d0e0}.mini b{display:block}.vtrack{height:105px;background:#143c59;border-radius:6px 6px 0 0;position:relative;margin:5px 0}.vtrack i{display:block;position:absolute;bottom:0;width:100%;border-radius:5px 5px 0 0;cursor:pointer}.call{padding:15px;background:#0b3152;border-left:4px solid #69e4ff;border-radius:9px;margin:12px 0}details{margin-top:92px;border:1px solid #477fa6;border-radius:15px;background:#06182b}summary{padding:18px;font-size:18px;color:#fff;cursor:pointer}pre{margin:0 18px 22px;padding:22px;white-space:pre;overflow:auto;background:#020c17;color:#d4edff;border-radius:9px;font-size:12px}.tip{display:none;position:fixed;z-index:9;background:#f8fbff;color:#071d34;padding:10px;border-radius:8px;white-space:pre-line;box-shadow:0 8px 25px #0008;pointer-events:none}@media(max-width:850px){.g3,.g2,.cards,.minigrid{grid-template-columns:1fr}.minis{max-width:300px}}
+.subhead{margin:26px 0 4px;color:#6de1ff}.time-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:16px}.time-card{background:#092943;border:1px solid #315e81;border-radius:14px;padding:16px}.time-card h3{margin:0}.denom{margin:2px 0 12px;color:#93b5ce;font-size:12px}.time-line{display:grid;grid-template-columns:102px 1fr;gap:9px;align-items:center;margin:10px 0;font-size:12px}.time-line span{color:#c4dcec}.time-line b{color:#fff;font-size:14px}.time-line small{color:#8daec6;margin-left:5px}.time-line i{display:block;height:19px;border-radius:5px;cursor:pointer}.time-line.total i{filter:brightness(.78)}.activity-conclusion{margin-top:22px;padding:17px;background:#0a3152;border-left:4px solid #67e2ff;border-radius:9px}.activity-conclusion h3{margin:0}.activity-conclusion ul{padding-left:19px;margin-bottom:0}.activity-conclusion li{margin:9px 0}@media(max-width:850px){.time-grid{grid-template-columns:1fr}}.chart-insight{margin-top:22px;padding:17px 18px;background:#0a3152;border-left:4px solid #69e2ff;border-radius:9px}.chart-insight h3{margin:0}.chart-insight ul{padding-left:19px;margin-bottom:0}.chart-insight li{margin:9px 0}.strategy-table{margin-top:18px;border:1px solid #37658a;border-radius:14px;overflow:hidden}.strategy-head,.strategy-row{display:grid;grid-template-columns:1.05fr 2fr 1.6fr 1.7fr;gap:0}.strategy-head{background:#143d60;color:#fff}.strategy-head b,.strategy-row>*{padding:14px;border-right:1px solid #315d7f}.strategy-row{background:#092844;border-top:1px solid #2b5576}.strategy-row strong,.strategy-row>b{color:#fff}.strategy-row.strong{border-left:4px solid #ffbf71}.strategy-row.medium{border-left:4px solid #65dfff}.strategy-row.slow{border-left:4px solid #8ba7c2}.strategy-row.inactive{border-left:4px solid #ef8c96}.recall-flow,.risk-note{margin-top:16px;padding:16px;border-radius:9px}.recall-flow{background:#0b3152;border-left:4px solid #64ddff}.risk-note{background:#392635;border-left:4px solid #ff9ea3}@media(max-width:900px){.strategy-head{display:none}.strategy-row{grid-template-columns:1fr}.strategy-row>*{border-right:0;border-bottom:1px solid #315d7f}.strategy-row>b{font-size:17px}}.coupon-grid{display:grid;grid-template-columns:1fr;gap:16px}.coupon-panel{background:#092945;border:1px solid #356287;border-radius:14px;padding:17px}.coupon-panel h3{margin:0 0 12px}.coupon-line{display:grid;grid-template-columns:75px 1fr 1fr 62px;gap:8px;align-items:center;margin:9px 0;font-size:12px}.coupon-line span{display:block;height:22px;border-radius:5px;color:#071727;padding:2px 7px;white-space:nowrap;min-width:110px}.orange{background:#ffbd68}.green{background:#68dfad}.coupon-line em{color:#72e4c0;font-style:normal;font-weight:bold}.coupon-conclusion{margin-top:18px;padding:17px;background:#0a3152;border-left:4px solid #6de4bc;border-radius:9px}.coupon-conclusion h3{margin:0}.coupon-conclusion li{margin:8px 0}.coupon-strategy{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-top:18px}.coupon-strategy article{background:#0c2d4b;border:1px solid #366287;border-radius:13px;padding:17px}.coupon-strategy h3{margin:0 0 9px}@media(max-width:900px){.coupon-line{grid-template-columns:1fr}.coupon-strategy{grid-template-columns:1fr}}.early-stat-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}.early-stat{background:#0a2b48;border:1px solid #37678c;border-radius:14px;padding:17px}.early-stat span{color:#b1cde1}.early-stat b{display:block;color:#fff;font-size:29px;margin:5px 0}.batch-visual{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}.batch-card{background:#092642;border:1px solid #315d81;border-radius:13px;padding:15px}.batch-card h3{margin:0 0 10px}.batch-rate{margin:9px 0}.batch-rate span{font-size:12px;color:#c9dfef}.batch-rate i{display:block;height:15px;border-radius:5px;margin-top:4px}.batch-rate b{font-size:12px;color:#fff}.upbar{background:#68dfae}.downbar{background:#ffbc6a}.neutralbar{background:#65dcff}.baseline-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}.base-card{background:#0b2d4b;border:1px solid #37658a;border-radius:11px;padding:13px}.base-card h3{font-size:14px;margin:0}.base-card p{margin:5px 0;color:#cde0ee;font-size:12px}.base-card b{color:#fff}.method-note{padding:16px;background:#0b3152;border-left:4px solid #68e1ff;border-radius:8px;margin-top:16px}.method-note li{margin:8px 0}@media(max-width:900px){.early-stat-grid,.batch-visual,.baseline-grid{grid-template-columns:1fr}}
+.evidence-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin:18px 0}.evidence{padding:16px;border-radius:13px;border:1px solid #37658a;background:#0b2d4b}.evidence .k{display:block;color:#a8c7dc;font-size:12px}.evidence b{display:block;margin:4px 0;color:#fff;font-size:26px}.evidence.good{border-top:4px solid #69e0b0}.evidence.wait{border-top:4px solid #ffbe6d}.evidence.neutral{border-top:4px solid #65dfff}.decision-map{display:grid;grid-template-columns:1.05fr 1.45fr 1.55fr 1.65fr;overflow:hidden;border:1px solid #37658a;border-radius:14px;margin-top:18px}.decision-map>*{padding:15px;border-right:1px solid #315d7f;border-bottom:1px solid #315d7f}.decision-map .head{background:#153e60;color:#fff;font-weight:bold}.decision-map .seg{font-weight:bold;color:#fff}.decision-map .no{border-left:4px solid #ef8c96}.decision-map .low{border-left:4px solid #ffbf70}.decision-map .short{border-left:4px solid #65ddff}.decision-map .long{border-left:4px solid #6de0ae}.timeline{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-top:18px}.timeline article{position:relative;background:#092945;border:1px solid #356287;border-radius:14px;padding:16px}.timeline article:before{content:"";display:block;width:12px;height:12px;border-radius:50%;background:#6de1ff;margin-bottom:8px}.timeline h3{margin:0 0 6px}.timeline p{margin:0;color:#c4d9e9}.guardrail{margin-top:18px;padding:17px;background:#392635;border-left:4px solid #ff9ea3;border-radius:9px}.guardrail ul{margin:7px 0 0;padding-left:20px}.guardrail li{margin:8px 0}@media(max-width:900px){.evidence-grid,.timeline{grid-template-columns:1fr}.decision-map{grid-template-columns:1fr}.decision-map>*{border-right:0}}
+</style>
+<main class="p">
+<header class="hero">
+<div>REFRESHED DATA · TWO-WAVE A/B EXPERIMENT</div>
+<h1>T5两轮 A/B 测试：不同用户行为的提单率分析</h1>
+<p class="date">报告生成时间：2026年8月17日</p>
+<p class="intro">口径说明：第一阶段为结清次日起连续4天；第二阶段从召回日开始。第1–3天为快速转化，第4–7天为延迟转化。第一轮为无动作 vs 7天30%券；第二轮为3天券 vs 7天券。</p>
+</header>
+<section class="g3">
+<article class="box">第一轮：7天券 vs 无券<b>+7.46pp</b>
+<small>7天首次提单率增量</small>
+</article>
+<article class="box">第二轮：7天券 vs 3天券<b>+2.87pp</b>
+<small>7天首次提单率增量</small>
+</article>
+<article class="box">测试样本<b>2,975</b>
+<small>两轮实验合计用户数</small>
+</article>
+</section>
+<section class="s">
+<h2>一、两轮提单时效对比</h2>
+<p class="intro">点击横条查看对应提单人数与提单率。</p>
+<div class="g2">
+<article class="chart">
+<h3>第一轮：无动作 vs 7天券</h3>
+<div class="bar-group">
+<b>第1–3天</b>
+<div class="one">
+<span>对照 12.63% · 83人</span>
+<i class="cbar mark" data-tip="第一轮｜第1–3天\n对照组：83 人，12.63%" style="width:26.523000000000003%">
+</i>
+</div>
+<div class="one">
+<span>实验 18.64% · 123人</span>
+<i class="tbar mark" data-tip="第一轮｜第1–3天\n实验组：123 人，18.64%" style="width:39.144000000000005%">
+</i>
+</div>
+</div>
+<div class="bar-group">
+<b>第4–7天</b>
+<div class="one">
+<span>对照 12.64% · 83人</span>
+<i class="cbar mark" data-tip="第一轮｜第4–7天\n对照组：83 人，12.64%" style="width:26.544000000000004%">
+</i>
+</div>
+<div class="one">
+<span>实验 14.09% · 93人</span>
+<i class="tbar mark" data-tip="第一轮｜第4–7天\n实验组：93 人，14.09%" style="width:29.589000000000002%">
+</i>
+</div>
+</div>
+<div class="bar-group">
+<b>累计7天</b>
+<div class="one">
+<span>对照 25.27% · 166人</span>
+<i class="cbar mark" data-tip="第一轮｜累计7天\n对照组：166 人，25.27%" style="width:53.067%">
+</i>
+</div>
+<div class="one">
+<span>实验 32.73% · 216人</span>
+<i class="tbar mark" data-tip="第一轮｜累计7天\n实验组：216 人，32.73%" style="width:68.73299999999999%">
+</i>
+</div>
+</div>
+<p>前3天增量 <b>+6.01pp</b>；第4–7天增量 <b>+1.45pp</b>。</p>
+</article>
+<article class="chart">
+<h3>第二轮：3天券 vs 7天券</h3>
+<div class="bar-group">
+<b>第1–3天</b>
+<div class="one">
+<span>对照 18.50% · 153人</span>
+<i class="cbar mark" data-tip="第二轮｜第1–3天\n对照组：153 人，18.50%" style="width:38.85%">
+</i>
+</div>
+<div class="one">
+<span>实验 18.89% · 157人</span>
+<i class="tbar mark" data-tip="第二轮｜第1–3天\n实验组：157 人，18.89%" style="width:39.669000000000004%">
+</i>
+</div>
+</div>
+<div class="bar-group">
+<b>第4–7天</b>
+<div class="one">
+<span>对照 11.00% · 91人</span>
+<i class="cbar mark" data-tip="第二轮｜第4–7天\n对照组：91 人，11.00%" style="width:23.1%">
+</i>
+</div>
+<div class="one">
+<span>实验 13.48% · 112人</span>
+<i class="tbar mark" data-tip="第二轮｜第4–7天\n实验组：112 人，13.48%" style="width:28.308000000000003%">
+</i>
+</div>
+</div>
+<div class="bar-group">
+<b>累计7天</b>
+<div class="one">
+<span>对照 29.50% · 244人</span>
+<i class="cbar mark" data-tip="第二轮｜累计7天\n对照组：244 人，29.50%" style="width:61.95%">
+</i>
+</div>
+<div class="one">
+<span>实验 32.37% · 269人</span>
+<i class="tbar mark" data-tip="第二轮｜累计7天\n实验组：269 人，32.37%" style="width:67.977%">
+</i>
+</div>
+</div>
+<p>前3天增量 <b>+0.39pp</b>；第4–7天增量 <b>+2.48pp</b>。</p>
+</article>
+</div>
+<div class="call">
+<h3>第一轮实验结论：增量主要来自第一阶段活跃用户的快速转化</h3>
+<ul>
+<li>
+<b>整体增量：</b>7 天券组累计提单 216 人，无券组为 166 人，净增 <b>50 人</b>（提单率 +7.46pp）。</li>
+<li>
+<b>主要贡献者：</b>第一阶段活跃用户在召回后第 1–3 天提单人数由 55 人增至 87 人，净增 <b>32 人</b>，相当于整体新增提单人数的 <b>64%</b>（32 / 50）。这部分是本轮券增量的主要来源。</li>
+<li>
+<b>第 4–7 天的净增较少：</b>全量用户第 4–7 天提单人数仅由 83 人增至 93 人，净增 <b>10 人</b>，占整体新增的 <b>20%</b>。其中活跃用户增加 21 人，但未活跃用户减少 11 人，说明延迟提单的总体净增有限。</li>
+<li>
+<b>未活跃用户基本不受券影响：</b>第一阶段未活跃用户累计 7 天提单率为 19.21%（无券）与 19.40%（7 天券），仅差 <b>+0.19pp</b>；人数从 68 人变为 65 人。因此不应将降息券作为该人群的常规主动作。</li>
+</ul>
+</div>
+</section>
+<section class="s">
+<h2>二、第一阶段活跃与未活跃用户：第 1–3 天与第 4–7 天提单表现</h2>
+<p class="intro">每条横条分别展示该组用户在对应阶段的提单率；点击色条可查看人数与提单率。</p>
+<h3 class="subhead">第一阶段活跃用户</h3>
+<p class="intro">第一阶段已发生 App 活跃的用户。</p>
+<div class="time-grid">
+<article class="time-card">
+<h3>第一轮 · 第一阶段活跃 · 对照组</h3>
+<p class="denom">样本 303 人</p>
+<div class="time-line">
+<span>第1–3天<br>
+<b>18.15%</b>
+<small>55人</small>
+</span>
+<i class="tipmark" data-tip="第一轮｜第一阶段活跃｜对照组
+第1–3天：55 人，18.15%" style="width:39.022499999999994%;background:#62ddff">
+</i>
+</div>
+<div class="time-line">
+<span>第4–7天<br>
+<b>14.19%</b>
+<small>43人</small>
+</span>
+<i class="tipmark" data-tip="第一轮｜第一阶段活跃｜对照组
+第4–7天：43 人，14.19%" style="width:30.508499999999998%;background:#62ddff">
+</i>
+</div>
+<div class="time-line total">
+<span>累计7天<br>
+<b>32.34%</b>
+<small>98人</small>
+</span>
+<i class="tipmark" data-tip="第一轮｜第一阶段活跃｜对照组
+累计7天：98 人，32.34%" style="width:69.531%;background:#62ddff">
+</i>
+</div>
+</article>
+<article class="time-card">
+<h3>第一轮 · 第一阶段活跃 · 实验组</h3>
+<p class="denom">样本 325 人</p>
+<div class="time-line">
+<span>第1–3天<br>
+<b>26.77%</b>
+<small>87人</small>
+</span>
+<i class="tipmark" data-tip="第一轮｜第一阶段活跃｜实验组
+第1–3天：87 人，26.77%" style="width:57.555499999999995%;background:#bd8cff">
+</i>
+</div>
+<div class="time-line">
+<span>第4–7天<br>
+<b>19.69%</b>
+<small>64人</small>
+</span>
+<i class="tipmark" data-tip="第一轮｜第一阶段活跃｜实验组
+第4–7天：64 人，19.69%" style="width:42.3335%;background:#bd8cff">
+</i>
+</div>
+<div class="time-line total">
+<span>累计7天<br>
+<b>46.46%</b>
+<small>151人</small>
+</span>
+<i class="tipmark" data-tip="第一轮｜第一阶段活跃｜实验组
+累计7天：151 人，46.46%" style="width:99.889%;background:#bd8cff">
+</i>
+</div>
+</article>
+<article class="time-card">
+<h3>第二轮 · 第一阶段活跃 · 对照组</h3>
+<p class="denom">样本 412 人</p>
+<div class="time-line">
+<span>第1–3天<br>
+<b>24.51%</b>
+<small>101人</small>
+</span>
+<i class="tipmark" data-tip="第二轮｜第一阶段活跃｜对照组
+第1–3天：101 人，24.51%" style="width:52.6965%;background:#62ddff">
+</i>
+</div>
+<div class="time-line">
+<span>第4–7天<br>
+<b>13.83%</b>
+<small>57人</small>
+</span>
+<i class="tipmark" data-tip="第二轮｜第一阶段活跃｜对照组
+第4–7天：57 人，13.83%" style="width:29.7345%;background:#62ddff">
+</i>
+</div>
+<div class="time-line total">
+<span>累计7天<br>
+<b>38.35%</b>
+<small>158人</small>
+</span>
+<i class="tipmark" data-tip="第二轮｜第一阶段活跃｜对照组
+累计7天：158 人，38.35%" style="width:82.4525%;background:#62ddff">
+</i>
+</div>
+</article>
+<article class="time-card">
+<h3>第二轮 · 第一阶段活跃 · 实验组</h3>
+<p class="denom">样本 396 人</p>
+<div class="time-line">
+<span>第1–3天<br>
+<b>29.55%</b>
+<small>117人</small>
+</span>
+<i class="tipmark" data-tip="第二轮｜第一阶段活跃｜实验组
+第1–3天：117 人，29.55%" style="width:63.5325%;background:#bd8cff">
+</i>
+</div>
+<div class="time-line">
+<span>第4–7天<br>
+<b>16.92%</b>
+<small>67人</small>
+</span>
+<i class="tipmark" data-tip="第二轮｜第一阶段活跃｜实验组
+第4–7天：67 人，16.92%" style="width:36.378%;background:#bd8cff">
+</i>
+</div>
+<div class="time-line total">
+<span>累计7天<br>
+<b>46.46%</b>
+<small>184人</small>
+</span>
+<i class="tipmark" data-tip="第二轮｜第一阶段活跃｜实验组
+累计7天：184 人，46.46%" style="width:99.889%;background:#bd8cff">
+</i>
+</div>
+</article>
+</div>
+<h3 class="subhead">第一阶段未活跃用户</h3>
+<p class="intro">第一阶段无 active_date 记录的用户。</p>
+<div class="time-grid">
+<article class="time-card">
+<h3>第一轮 · 第一阶段未活跃 · 对照组</h3>
+<p class="denom">样本 354 人</p>
+<div class="time-line">
+<span>第1–3天<br>
+<b>7.91%</b>
+<small>28人</small>
+</span>
+<i class="tipmark" data-tip="第一轮｜第一阶段未活跃｜对照组
+第1–3天：28 人，7.91%" style="width:17.0065%;background:#62ddff">
+</i>
+</div>
+<div class="time-line">
+<span>第4–7天<br>
+<b>11.30%</b>
+<small>40人</small>
+</span>
+<i class="tipmark" data-tip="第一轮｜第一阶段未活跃｜对照组
+第4–7天：40 人，11.30%" style="width:24.295%;background:#62ddff">
+</i>
+</div>
+<div class="time-line total">
+<span>累计7天<br>
+<b>19.21%</b>
+<small>68人</small>
+</span>
+<i class="tipmark" data-tip="第一轮｜第一阶段未活跃｜对照组
+累计7天：68 人，19.21%" style="width:41.3015%;background:#62ddff">
+</i>
+</div>
+</article>
+<article class="time-card">
+<h3>第一轮 · 第一阶段未活跃 · 实验组</h3>
+<p class="denom">样本 335 人</p>
+<div class="time-line">
+<span>第1–3天<br>
+<b>10.75%</b>
+<small>36人</small>
+</span>
+<i class="tipmark" data-tip="第一轮｜第一阶段未活跃｜实验组
+第1–3天：36 人，10.75%" style="width:23.1125%;background:#bd8cff">
+</i>
+</div>
+<div class="time-line">
+<span>第4–7天<br>
+<b>8.66%</b>
+<small>29人</small>
+</span>
+<i class="tipmark" data-tip="第一轮｜第一阶段未活跃｜实验组
+第4–7天：29 人，8.66%" style="width:18.619%;background:#bd8cff">
+</i>
+</div>
+<div class="time-line total">
+<span>累计7天<br>
+<b>19.40%</b>
+<small>65人</small>
+</span>
+<i class="tipmark" data-tip="第一轮｜第一阶段未活跃｜实验组
+累计7天：65 人，19.40%" style="width:41.709999999999994%;background:#bd8cff">
+</i>
+</div>
+</article>
+<article class="time-card">
+<h3>第二轮 · 第一阶段未活跃 · 对照组</h3>
+<p class="denom">样本 415 人</p>
+<div class="time-line">
+<span>第1–3天<br>
+<b>12.53%</b>
+<small>52人</small>
+</span>
+<i class="tipmark" data-tip="第二轮｜第一阶段未活跃｜对照组
+第1–3天：52 人，12.53%" style="width:26.9395%;background:#62ddff">
+</i>
+</div>
+<div class="time-line">
+<span>第4–7天<br>
+<b>8.19%</b>
+<small>34人</small>
+</span>
+<i class="tipmark" data-tip="第二轮｜第一阶段未活跃｜对照组
+第4–7天：34 人，8.19%" style="width:17.6085%;background:#62ddff">
+</i>
+</div>
+<div class="time-line total">
+<span>累计7天<br>
+<b>20.72%</b>
+<small>86人</small>
+</span>
+<i class="tipmark" data-tip="第二轮｜第一阶段未活跃｜对照组
+累计7天：86 人，20.72%" style="width:44.547999999999995%;background:#62ddff">
+</i>
+</div>
+</article>
+<article class="time-card">
+<h3>第二轮 · 第一阶段未活跃 · 实验组</h3>
+<p class="denom">样本 435 人</p>
+<div class="time-line">
+<span>第1–3天<br>
+<b>9.20%</b>
+<small>40人</small>
+</span>
+<i class="tipmark" data-tip="第二轮｜第一阶段未活跃｜实验组
+第1–3天：40 人，9.20%" style="width:19.779999999999998%;background:#bd8cff">
+</i>
+</div>
+<div class="time-line">
+<span>第4–7天<br>
+<b>10.34%</b>
+<small>45人</small>
+</span>
+<i class="tipmark" data-tip="第二轮｜第一阶段未活跃｜实验组
+第4–7天：45 人，10.34%" style="width:22.230999999999998%;background:#bd8cff">
+</i>
+</div>
+<div class="time-line total">
+<span>累计7天<br>
+<b>19.54%</b>
+<small>85人</small>
+</span>
+<i class="tipmark" data-tip="第二轮｜第一阶段未活跃｜实验组
+累计7天：85 人，19.54%" style="width:42.010999999999996%;background:#bd8cff">
+</i>
+</div>
+</article>
+</div>
+<div class="activity-conclusion">
+<h3>分析结论</h3>
+<ul>
+<li>
+<b>第一阶段活跃用户的券效果集中在前3天：</b>第一轮实验组相对对照组，第1–3天提升 +8.62pp，第4–7天提升 +5.50pp；第二轮中，第1–3天提升 +5.04pp，第4–7天提升 +3.09pp。</li>
+<li>
+<b>未活跃用户不存在稳定的券增量：</b>第一轮第1–3天为 +2.84pp、累计7天为 +0.19pp；第二轮第1–3天为 -3.33pp、累计7天为 -1.18pp。该人群不适宜常规发券。</li>
+<li>
+<b>运营含义：</b>召回当天优先向已活跃、已有提单页或方案比较行为的用户发券；对未活跃用户先做低成本回流，待产生 App 访问后再评估是否给券。</li>
+</ul>
+</div>
+</section>
+<section class="s">
+<h2>三、第一轮活跃转化用户的行为差异</h2>
+<div class="minigrid">
+<article class="mini-card">
+<h3>活跃天数</h3>
+<p>仅比较第一阶段活跃且7天内提单用户</p>
+<div class="minis">
+<div class="mini">
+<b>C早</b>
+<div class="vtrack">
+<i class="mark" data-tip="第一轮｜活跃天数\nC早：1.96天\n转化用户：55 人" style="height:94%;background:#62ddff">
+</i>
+</div>
+<small>1.96天</small>
+</div>
+<div class="mini">
+<b>C晚</b>
+<div class="vtrack">
+<i class="mark" data-tip="第一轮｜活跃天数\nC晚：1.79天\n转化用户：43 人" style="height:86%;background:#207ba9">
+</i>
+</div>
+<small>1.79天</small>
+</div>
+<div class="mini">
+<b>T早</b>
+<div class="vtrack">
+<i class="mark" data-tip="第一轮｜活跃天数\nT早：2.08天\n转化用户：87 人" style="height:100%;background:#c090ff">
+</i>
+</div>
+<small>2.08天</small>
+</div>
+<div class="mini">
+<b>T晚</b>
+<div class="vtrack">
+<i class="mark" data-tip="第一轮｜活跃天数\nT晚：1.92天\n转化用户：64 人" style="height:92%;background:#7254c4">
+</i>
+</div>
+<small>1.92天</small>
+</div>
+</div>
+</article>
+<article class="mini-card">
+<h3>活跃度</h3>
+<p>仅比较第一阶段活跃且7天内提单用户</p>
+<div class="minis">
+<div class="mini">
+<b>C早</b>
+<div class="vtrack">
+<i class="mark" data-tip="第一轮｜活跃度\nC早：30.11\n转化用户：55 人" style="height:100%;background:#62ddff">
+</i>
+</div>
+<small>30.11</small>
+</div>
+<div class="mini">
+<b>C晚</b>
+<div class="vtrack">
+<i class="mark" data-tip="第一轮｜活跃度\nC晚：28.00\n转化用户：43 人" style="height:93%;background:#207ba9">
+</i>
+</div>
+<small>28.00</small>
+</div>
+<div class="mini">
+<b>T早</b>
+<div class="vtrack">
+<i class="mark" data-tip="第一轮｜活跃度\nT早：26.95\n转化用户：87 人" style="height:90%;background:#c090ff">
+</i>
+</div>
+<small>26.95</small>
+</div>
+<div class="mini">
+<b>T晚</b>
+<div class="vtrack">
+<i class="mark" data-tip="第一轮｜活跃度\nT晚：29.92\n转化用户：64 人" style="height:99%;background:#7254c4">
+</i>
+</div>
+<small>29.92</small>
+</div>
+</div>
+</article>
+<article class="mini-card">
+<h3>总活跃时长</h3>
+<p>仅比较第一阶段活跃且7天内提单用户</p>
+<div class="minis">
+<div class="mini">
+<b>C早</b>
+<div class="vtrack">
+<i class="mark" data-tip="第一轮｜总活跃时长\nC早：133.12秒\n转化用户：55 人" style="height:100%;background:#62ddff">
+</i>
+</div>
+<small>133.12秒</small>
+</div>
+<div class="mini">
+<b>C晚</b>
+<div class="vtrack">
+<i class="mark" data-tip="第一轮｜总活跃时长\nC晚：122.58秒\n转化用户：43 人" style="height:92%;background:#207ba9">
+</i>
+</div>
+<small>122.58秒</small>
+</div>
+<div class="mini">
+<b>T早</b>
+<div class="vtrack">
+<i class="mark" data-tip="第一轮｜总活跃时长\nT早：93.45秒\n转化用户：87 人" style="height:70%;background:#c090ff">
+</i>
+</div>
+<small>93.45秒</small>
+</div>
+<div class="mini">
+<b>T晚</b>
+<div class="vtrack">
+<i class="mark" data-tip="第一轮｜总活跃时长\nT晚：108.00秒\n转化用户：64 人" style="height:81%;background:#7254c4">
+</i>
+</div>
+<small>108.00秒</small>
+</div>
+</div>
+</article>
+<article class="mini-card">
+<h3>提单页停留</h3>
+<p>仅比较第一阶段活跃且7天内提单用户</p>
+<div class="minis">
+<div class="mini">
+<b>C早</b>
+<div class="vtrack">
+<i class="mark" data-tip="第一轮｜提单页停留\nC早：68.31秒\n转化用户：55 人" style="height:87%;background:#62ddff">
+</i>
+</div>
+<small>68.31秒</small>
+</div>
+<div class="mini">
+<b>C晚</b>
+<div class="vtrack">
+<i class="mark" data-tip="第一轮｜提单页停留\nC晚：78.77秒\n转化用户：43 人" style="height:100%;background:#207ba9">
+</i>
+</div>
+<small>78.77秒</small>
+</div>
+<div class="mini">
+<b>T早</b>
+<div class="vtrack">
+<i class="mark" data-tip="第一轮｜提单页停留\nT早：73.82秒\n转化用户：87 人" style="height:94%;background:#c090ff">
+</i>
+</div>
+<small>73.82秒</small>
+</div>
+<div class="mini">
+<b>T晚</b>
+<div class="vtrack">
+<i class="mark" data-tip="第一轮｜提单页停留\nT晚：68.69秒\n转化用户：64 人" style="height:87%;background:#7254c4">
+</i>
+</div>
+<small>68.69秒</small>
+</div>
+</div>
+</article>
+<article class="mini-card">
+<h3>非提单页停留</h3>
+<p>仅比较第一阶段活跃且7天内提单用户</p>
+<div class="minis">
+<div class="mini">
+<b>C早</b>
+<div class="vtrack">
+<i class="mark" data-tip="第一轮｜非提单页停留\nC早：64.81秒\n转化用户：55 人" style="height:100%;background:#62ddff">
+</i>
+</div>
+<small>64.81秒</small>
+</div>
+<div class="mini">
+<b>C晚</b>
+<div class="vtrack">
+<i class="mark" data-tip="第一轮｜非提单页停留\nC晚：43.81秒\n转化用户：43 人" style="height:68%;background:#207ba9">
+</i>
+</div>
+<small>43.81秒</small>
+</div>
+<div class="mini">
+<b>T早</b>
+<div class="vtrack">
+<i class="mark" data-tip="第一轮｜非提单页停留\nT早：19.63秒\n转化用户：87 人" style="height:30%;background:#c090ff">
+</i>
+</div>
+<small>19.63秒</small>
+</div>
+<div class="mini">
+<b>T晚</b>
+<div class="vtrack">
+<i class="mark" data-tip="第一轮｜非提单页停留\nT晚：39.31秒\n转化用户：64 人" style="height:61%;background:#7254c4">
+</i>
+</div>
+<small>39.31秒</small>
+</div>
+</div>
+</article>
+<article class="mini-card">
+<h3>进入提单页</h3>
+<p>仅比较第一阶段活跃且7天内提单用户</p>
+<div class="minis">
+<div class="mini">
+<b>C早</b>
+<div class="vtrack">
+<i class="mark" data-tip="第一轮｜进入提单页\nC早：1.87次\n转化用户：55 人" style="height:94%;background:#62ddff">
+</i>
+</div>
+<small>1.87次</small>
+</div>
+<div class="mini">
+<b>C晚</b>
+<div class="vtrack">
+<i class="mark" data-tip="第一轮｜进入提单页\nC晚：1.74次\n转化用户：43 人" style="height:87%;background:#207ba9">
+</i>
+</div>
+<small>1.74次</small>
+</div>
+<div class="mini">
+<b>T早</b>
+<div class="vtrack">
+<i class="mark" data-tip="第一轮｜进入提单页\nT早：1.99次\n转化用户：87 人" style="height:100%;background:#c090ff">
+</i>
+</div>
+<small>1.99次</small>
+</div>
+<div class="mini">
+<b>T晚</b>
+<div class="vtrack">
+<i class="mark" data-tip="第一轮｜进入提单页\nT晚：1.80次\n转化用户：64 人" style="height:90%;background:#7254c4">
+</i>
+</div>
+<small>1.80次</small>
+</div>
+</div>
+</article>
+<article class="mini-card">
+<h3>切换金额</h3>
+<p>仅比较第一阶段活跃且7天内提单用户</p>
+<div class="minis">
+<div class="mini">
+<b>C早</b>
+<div class="vtrack">
+<i class="mark" data-tip="第一轮｜切换金额\nC早：0.73次\n转化用户：55 人" style="height:79%;background:#62ddff">
+</i>
+</div>
+<small>0.73次</small>
+</div>
+<div class="mini">
+<b>C晚</b>
+<div class="vtrack">
+<i class="mark" data-tip="第一轮｜切换金额\nC晚：0.58次\n转化用户：43 人" style="height:63%;background:#207ba9">
+</i>
+</div>
+<small>0.58次</small>
+</div>
+<div class="mini">
+<b>T早</b>
+<div class="vtrack">
+<i class="mark" data-tip="第一轮｜切换金额\nT早：0.79次\n转化用户：87 人" style="height:86%;background:#c090ff">
+</i>
+</div>
+<small>0.79次</small>
+</div>
+<div class="mini">
+<b>T晚</b>
+<div class="vtrack">
+<i class="mark" data-tip="第一轮｜切换金额\nT晚：0.92次\n转化用户：64 人" style="height:100%;background:#7254c4">
+</i>
+</div>
+<small>0.92次</small>
+</div>
+</div>
+</article>
+<article class="mini-card">
+<h3>查看还款计划</h3>
+<p>仅比较第一阶段活跃且7天内提单用户</p>
+<div class="minis">
+<div class="mini">
+<b>C早</b>
+<div class="vtrack">
+<i class="mark" data-tip="第一轮｜查看还款计划\nC早：0.73次\n转化用户：55 人" style="height:79%;background:#62ddff">
+</i>
+</div>
+<small>0.73次</small>
+</div>
+<div class="mini">
+<b>C晚</b>
+<div class="vtrack">
+<i class="mark" data-tip="第一轮｜查看还款计划\nC晚：0.74次\n转化用户：43 人" style="height:80%;background:#207ba9">
+</i>
+</div>
+<small>0.74次</small>
+</div>
+<div class="mini">
+<b>T早</b>
+<div class="vtrack">
+<i class="mark" data-tip="第一轮｜查看还款计划\nT早：0.92次\n转化用户：87 人" style="height:100%;background:#c090ff">
+</i>
+</div>
+<small>0.92次</small>
+</div>
+<div class="mini">
+<b>T晚</b>
+<div class="vtrack">
+<i class="mark" data-tip="第一轮｜查看还款计划\nT晚：0.89次\n转化用户：64 人" style="height:97%;background:#7254c4">
+</i>
+</div>
+<small>0.89次</small>
+</div>
+</div>
+</article>
+</div>
+<div class="chart-insight">
+<h3>图表分析结论</h3>
+<ul>
+<li>
+<b>快速转化信号：</b>实验组前 3 天提单用户的平均进入提单页次数为 1.99 次、查看还款计划为 0.92 次、提单页停留为 73.82 秒；这类行为说明用户已进入具体借款方案评估，应在召回当天直接承接。</li>
+<li>
+<b>延迟转化信号：</b>第 4–7 天提单用户的平均进入提单页次数为 1.80 次、查看还款计划为 0.89 次、提单页停留为 68.69 秒。其特征不是完全无意愿，而是决策周期更长，应使用更长有效期或第 3 天二次提醒。</li>
+<li>
+<b>对照参照：</b>对照组前 3 天/第 4–7 天提单页停留分别为 68.31 秒、78.77 秒；结合图中四组差异，应将“进入提单页 + 方案比较”作为优先触发券的组合信号，而不是只按是否活跃粗放发券。</li>
+</ul>
+</div>
+</section>
+<section class="s">
+<h2>四、第二轮活跃转化用户的行为差异</h2>
+<div class="minigrid">
+<article class="mini-card">
+<h3>活跃天数</h3>
+<p>仅比较第一阶段活跃且7天内提单用户</p>
+<div class="minis">
+<div class="mini">
+<b>C早</b>
+<div class="vtrack">
+<i class="mark" data-tip="第二轮｜活跃天数\nC早：2.19天\n转化用户：101 人" style="height:100%;background:#62ddff">
+</i>
+</div>
+<small>2.19天</small>
+</div>
+<div class="mini">
+<b>C晚</b>
+<div class="vtrack">
+<i class="mark" data-tip="第二轮｜活跃天数\nC晚：1.82天\n转化用户：57 人" style="height:83%;background:#207ba9">
+</i>
+</div>
+<small>1.82天</small>
+</div>
+<div class="mini">
+<b>T早</b>
+<div class="vtrack">
+<i class="mark" data-tip="第二轮｜活跃天数\nT早：2.16天\n转化用户：117 人" style="height:99%;background:#c090ff">
+</i>
+</div>
+<small>2.16天</small>
+</div>
+<div class="mini">
+<b>T晚</b>
+<div class="vtrack">
+<i class="mark" data-tip="第二轮｜活跃天数\nT晚：1.87天\n转化用户：67 人" style="height:85%;background:#7254c4">
+</i>
+</div>
+<small>1.87天</small>
+</div>
+</div>
+</article>
+<article class="mini-card">
+<h3>活跃度</h3>
+<p>仅比较第一阶段活跃且7天内提单用户</p>
+<div class="minis">
+<div class="mini">
+<b>C早</b>
+<div class="vtrack">
+<i class="mark" data-tip="第二轮｜活跃度\nC早：32.02\n转化用户：101 人" style="height:94%;background:#62ddff">
+</i>
+</div>
+<small>32.02</small>
+</div>
+<div class="mini">
+<b>C晚</b>
+<div class="vtrack">
+<i class="mark" data-tip="第二轮｜活跃度\nC晚：24.25\n转化用户：57 人" style="height:71%;background:#207ba9">
+</i>
+</div>
+<small>24.25</small>
+</div>
+<div class="mini">
+<b>T早</b>
+<div class="vtrack">
+<i class="mark" data-tip="第二轮｜活跃度\nT早：33.95\n转化用户：117 人" style="height:100%;background:#c090ff">
+</i>
+</div>
+<small>33.95</small>
+</div>
+<div class="mini">
+<b>T晚</b>
+<div class="vtrack">
+<i class="mark" data-tip="第二轮｜活跃度\nT晚：29.91\n转化用户：67 人" style="height:88%;background:#7254c4">
+</i>
+</div>
+<small>29.91</small>
+</div>
+</div>
+</article>
+<article class="mini-card">
+<h3>总活跃时长</h3>
+<p>仅比较第一阶段活跃且7天内提单用户</p>
+<div class="minis">
+<div class="mini">
+<b>C早</b>
+<div class="vtrack">
+<i class="mark" data-tip="第二轮｜总活跃时长\nC早：145.02秒\n转化用户：101 人" style="height:100%;background:#62ddff">
+</i>
+</div>
+<small>145.02秒</small>
+</div>
+<div class="mini">
+<b>C晚</b>
+<div class="vtrack">
+<i class="mark" data-tip="第二轮｜总活跃时长\nC晚：66.81秒\n转化用户：57 人" style="height:46%;background:#207ba9">
+</i>
+</div>
+<small>66.81秒</small>
+</div>
+<div class="mini">
+<b>T早</b>
+<div class="vtrack">
+<i class="mark" data-tip="第二轮｜总活跃时长\nT早：140.74秒\n转化用户：117 人" style="height:97%;background:#c090ff">
+</i>
+</div>
+<small>140.74秒</small>
+</div>
+<div class="mini">
+<b>T晚</b>
+<div class="vtrack">
+<i class="mark" data-tip="第二轮｜总活跃时长\nT晚：105.95秒\n转化用户：67 人" style="height:73%;background:#7254c4">
+</i>
+</div>
+<small>105.95秒</small>
+</div>
+</div>
+</article>
+<article class="mini-card">
+<h3>提单页停留</h3>
+<p>仅比较第一阶段活跃且7天内提单用户</p>
+<div class="minis">
+<div class="mini">
+<b>C早</b>
+<div class="vtrack">
+<i class="mark" data-tip="第二轮｜提单页停留\nC早：96.87秒\n转化用户：101 人" style="height:100%;background:#62ddff">
+</i>
+</div>
+<small>96.87秒</small>
+</div>
+<div class="mini">
+<b>C晚</b>
+<div class="vtrack">
+<i class="mark" data-tip="第二轮｜提单页停留\nC晚：43.30秒\n转化用户：57 人" style="height:45%;background:#207ba9">
+</i>
+</div>
+<small>43.30秒</small>
+</div>
+<div class="mini">
+<b>T早</b>
+<div class="vtrack">
+<i class="mark" data-tip="第二轮｜提单页停留\nT早：82.34秒\n转化用户：117 人" style="height:85%;background:#c090ff">
+</i>
+</div>
+<small>82.34秒</small>
+</div>
+<div class="mini">
+<b>T晚</b>
+<div class="vtrack">
+<i class="mark" data-tip="第二轮｜提单页停留\nT晚：73.93秒\n转化用户：67 人" style="height:76%;background:#7254c4">
+</i>
+</div>
+<small>73.93秒</small>
+</div>
+</div>
+</article>
+<article class="mini-card">
+<h3>非提单页停留</h3>
+<p>仅比较第一阶段活跃且7天内提单用户</p>
+<div class="minis">
+<div class="mini">
+<b>C早</b>
+<div class="vtrack">
+<i class="mark" data-tip="第二轮｜非提单页停留\nC早：48.15秒\n转化用户：101 人" style="height:82%;background:#62ddff">
+</i>
+</div>
+<small>48.15秒</small>
+</div>
+<div class="mini">
+<b>C晚</b>
+<div class="vtrack">
+<i class="mark" data-tip="第二轮｜非提单页停留\nC晚：23.51秒\n转化用户：57 人" style="height:40%;background:#207ba9">
+</i>
+</div>
+<small>23.51秒</small>
+</div>
+<div class="mini">
+<b>T早</b>
+<div class="vtrack">
+<i class="mark" data-tip="第二轮｜非提单页停留\nT早：58.40秒\n转化用户：117 人" style="height:100%;background:#c090ff">
+</i>
+</div>
+<small>58.40秒</small>
+</div>
+<div class="mini">
+<b>T晚</b>
+<div class="vtrack">
+<i class="mark" data-tip="第二轮｜非提单页停留\nT晚：32.02秒\n转化用户：67 人" style="height:55%;background:#7254c4">
+</i>
+</div>
+<small>32.02秒</small>
+</div>
+</div>
+</article>
+<article class="mini-card">
+<h3>进入提单页</h3>
+<p>仅比较第一阶段活跃且7天内提单用户</p>
+<div class="minis">
+<div class="mini">
+<b>C早</b>
+<div class="vtrack">
+<i class="mark" data-tip="第二轮｜进入提单页\nC早：2.17次\n转化用户：101 人" style="height:100%;background:#62ddff">
+</i>
+</div>
+<small>2.17次</small>
+</div>
+<div class="mini">
+<b>C晚</b>
+<div class="vtrack">
+<i class="mark" data-tip="第二轮｜进入提单页\nC晚：1.68次\n转化用户：57 人" style="height:77%;background:#207ba9">
+</i>
+</div>
+<small>1.68次</small>
+</div>
+<div class="mini">
+<b>T早</b>
+<div class="vtrack">
+<i class="mark" data-tip="第二轮｜进入提单页\nT早：2.11次\n转化用户：117 人" style="height:97%;background:#c090ff">
+</i>
+</div>
+<small>2.11次</small>
+</div>
+<div class="mini">
+<b>T晚</b>
+<div class="vtrack">
+<i class="mark" data-tip="第二轮｜进入提单页\nT晚：1.79次\n转化用户：67 人" style="height:82%;background:#7254c4">
+</i>
+</div>
+<small>1.79次</small>
+</div>
+</div>
+</article>
+<article class="mini-card">
+<h3>切换金额</h3>
+<p>仅比较第一阶段活跃且7天内提单用户</p>
+<div class="minis">
+<div class="mini">
+<b>C早</b>
+<div class="vtrack">
+<i class="mark" data-tip="第二轮｜切换金额\nC早：0.56次\n转化用户：101 人" style="height:90%;background:#62ddff">
+</i>
+</div>
+<small>0.56次</small>
+</div>
+<div class="mini">
+<b>C晚</b>
+<div class="vtrack">
+<i class="mark" data-tip="第二轮｜切换金额\nC晚：0.54次\n转化用户：57 人" style="height:87%;background:#207ba9">
+</i>
+</div>
+<small>0.54次</small>
+</div>
+<div class="mini">
+<b>T早</b>
+<div class="vtrack">
+<i class="mark" data-tip="第二轮｜切换金额\nT早：0.62次\n转化用户：117 人" style="height:100%;background:#c090ff">
+</i>
+</div>
+<small>0.62次</small>
+</div>
+<div class="mini">
+<b>T晚</b>
+<div class="vtrack">
+<i class="mark" data-tip="第二轮｜切换金额\nT晚：0.61次\n转化用户：67 人" style="height:98%;background:#7254c4">
+</i>
+</div>
+<small>0.61次</small>
+</div>
+</div>
+</article>
+<article class="mini-card">
+<h3>查看还款计划</h3>
+<p>仅比较第一阶段活跃且7天内提单用户</p>
+<div class="minis">
+<div class="mini">
+<b>C早</b>
+<div class="vtrack">
+<i class="mark" data-tip="第二轮｜查看还款计划\nC早：0.83次\n转化用户：101 人" style="height:85%;background:#62ddff">
+</i>
+</div>
+<small>0.83次</small>
+</div>
+<div class="mini">
+<b>C晚</b>
+<div class="vtrack">
+<i class="mark" data-tip="第二轮｜查看还款计划\nC晚：0.70次\n转化用户：57 人" style="height:71%;background:#207ba9">
+</i>
+</div>
+<small>0.70次</small>
+</div>
+<div class="mini">
+<b>T早</b>
+<div class="vtrack">
+<i class="mark" data-tip="第二轮｜查看还款计划\nT早：0.98次\n转化用户：117 人" style="height:100%;background:#c090ff">
+</i>
+</div>
+<small>0.98次</small>
+</div>
+<div class="mini">
+<b>T晚</b>
+<div class="vtrack">
+<i class="mark" data-tip="第二轮｜查看还款计划\nT晚：0.75次\n转化用户：67 人" style="height:77%;background:#7254c4">
+</i>
+</div>
+<small>0.75次</small>
+</div>
+</div>
+</article>
+</div>
+<div class="chart-insight">
+<h3>图表分析结论</h3>
+<ul>
+<li>
+<b>快速转化信号：</b>实验组前 3 天提单用户的平均进入提单页次数为 2.11 次、查看还款计划为 0.98 次、提单页停留为 82.34 秒；这类行为说明用户已进入具体借款方案评估，应在召回当天直接承接。</li>
+<li>
+<b>延迟转化信号：</b>第 4–7 天提单用户的平均进入提单页次数为 1.79 次、查看还款计划为 0.75 次、提单页停留为 73.93 秒。其特征不是完全无意愿，而是决策周期更长，应使用更长有效期或第 3 天二次提醒。</li>
+<li>
+<b>对照参照：</b>对照组前 3 天/第 4–7 天提单页停留分别为 96.87 秒、43.30 秒；结合图中四组差异，应将“进入提单页 + 方案比较”作为优先触发券的组合信号，而不是只按是否活跃粗放发券。</li>
+</ul>
+</div>
+</section>
+<section class="s">
+<h2>五、发券召回决策框架：先判断“该不该补贴”，再决定券期限</h2>
+<p class="intro">展示逻辑改为：先用实验确认券的真实增量，再根据第一阶段行为判断用户是自然转化、快速决策、慢决策还是尚未形成需求，最后匹配无券、3 天券或 7 天券。券期限不是对所有用户统一加长，而是服务于不同的决策周期。</p>
+<h3 class="subhead">1. 先区分已被数据验证的事实与仍需验证的问题</h3>
+<div class="evidence-grid">
+<article class="evidence good">
+<span class="k">第一轮：7 天券 vs 无券</span>
+<b>+7.46pp</b>
+<span>累计 7 天首次提单率：32.73% vs 25.27%。证明“7 天 30% 券”能够提升提单。</span>
+</article>
+<article class="evidence neutral">
+<span class="k">第二轮：7 天券 vs 3 天券</span>
+<b>+2.87pp</b>
+<span>累计 7 天首次提单率：32.37% vs 29.50%。7 天券的附加价值主要来自延长承接窗口。</span>
+</article>
+<article class="evidence good">
+<span class="k">附加价值出现的位置</span>
+<b>D4–D7 +2.48pp</b>
+<span>前 3 天仅 +0.39pp；7 天券不是“更快”，而是更能承接慢决策用户。</span>
+</article>
+<article class="evidence wait">
+<span class="k">当前不能直接下的结论</span>
+<b>待补实验</b>
+<span>第二轮没有“3 天券 vs 无券”对照，因此不能仅凭本轮证明 3 天券相对无券的因果增量。</span>
+</article>
+</div>
+<h3 class="subhead">2. 可执行的人群—券期限匹配</h3>
+<p class="intro">以下阈值是本轮数据沉淀出的首版运营规则，用于小流量验证；后续应按转化、券成本和风险结果校准，而不是固化为永久阈值。</p>
+<div class="decision-map">
+<b class="head">用户层级</b>
+<b class="head">第一阶段可识别信号</b>
+<b class="head">召回动作</b>
+<b class="head">原因与控制点</b>
+<b class="seg no">未形成需求<br>不常规发券</b>
+<span>active_days = 0，即 4 天内无 active_date。</span>
+<span>先做低成本回流：消息、可用额度提示或内容触达；只有第二阶段重新进入 App/提单页后再实时分层。</span>
+<span>第二轮未活跃人群中，7 天券相对 3 天券累计为 −1.18pp（19.54% vs 20.72%），不应将优惠券作为主动作。</span>
+<b class="seg low">自然转化倾向<br>无券/低补贴</b>
+<span>newconfirm &gt; 0，或 contract_newdetails &gt; 0；或高频 newpage 且金额、期次、还款计划至少两项发生。</span>
+<span>优先提单提醒、方案确认、额度提醒；默认不发 30% 券，必要时仅小力度短期优惠。</span>
+<span>这些用户已接近完成决策，优先避免“本会提单用户”的补贴浪费；需用留出组验证其自然转化率。</span>
+<b class="seg short">快速决策但仍犹豫<br>优先 3 天券</b>
+<span>active_days ≥ 1；newpage 为 1–3 次；金额/期次/还款计划任一发生；尚无 newconfirm。</span>
+<span>召回日发 3 天 30% 券，D+2 仅提醒一次到期；不重复补券。</span>
+<span>用户已经发生具体方案比较但未确认，运营目标是以明确截止期促成快速决策；3 天方案成本和管理复杂度更低。</span>
+<b class="seg long">慢决策、需要比较窗口<br>优先 7 天券</b>
+<span>active_days ≥ 2，且 newpage ≥ 1；金额、期次、还款计划任一发生；提单页或非提单页有持续停留，但尚无 newconfirm。</span>
+<span>召回日发 7 天 30% 券；D+3 如再次进入提单页发方案提醒；D+6 发送一次到期提醒，不叠加第二张券。</span>
+<span>第二轮中 7 天券的优势集中在 D4–D7（+2.48pp），适合仍在比较金额、期次、还款计划的用户。</span>
+</div>
+<h3 class="subhead">3. 从结清到复盘的触达节奏</h3>
+<div class="timeline">
+<article>
+<h3>结清后 D+1 至 D+4</h3>
+<p>只收集 active_date、提单页进入、金额/期次/还款计划、停留时长等信号；不因单一活跃指标直接发券。</p>
+</article>
+<article>
+<h3>召回日 D0</h3>
+<p>执行四层分流：未活跃先唤醒；自然转化倾向少补贴；快速犹豫发 3 天券；慢决策发 7 天券。</p>
+</article>
+<article>
+<h3>D+3</h3>
+<p>3 天券只做一次到期提醒；7 天券仅对再次进入提单页但未确认者发送方案提醒，避免全量骚扰。</p>
+</article>
+<article>
+<h3>D+7 后</h3>
+<p>按分层比较提单率、券核销、放款、成本及风险；将“D4–D7 增量”作为 7 天券的核心效果指标。</p>
+</article>
+</div>
+<div class="guardrail">
+<b>实验与治理要求</b>
+<ul>
+<li>
+<b>3 天券是否值得发：</b>需增加“3 天券 vs 无券”的同批次随机对照，才能确认其独立增量；现有数据只能确认 7 天券优于无券，以及 7 天券在 D4–D7 优于 3 天券。</li>
+<li>
+<b>7 天券是否扩大：</b>不按全量扩大。优先投给“已活跃 + 进入提单页/方案比较 + 未确认”的慢决策人群，并保留不发券/3 天券对照组。</li>
+<li>
+<b>分层随机：</b>按活跃天数、newpage、金额/期次/计划行为分层后再随机，避免不同批次的样本构成干扰结论。</li>
+</ul>
+</div>
+</section>
+<section class="s">
+<h2>六、重点比较：3 天券与 7 天券的区别及召回策略</h2>
+<p class="intro">第二轮实验中，两组均为 30% 降息券，唯一差异是有效期：对照组为 3 天，实验组为 7 天。</p>
+<div class="coupon-grid">
+<article class="coupon-panel">
+<h3>全量用户：提单时效差异</h3>
+<div class="coupon-line">
+<b>第1–3天</b>
+<span class="orange" style="width:38.851269649334945%">3天券 18.50% · 153人</span>
+<span class="green" style="width:39.675090252707584%">7天券 18.89% · 157人</span>
+<em>+0.39pp</em>
+</div>
+<div class="coupon-line">
+<b>第4–7天</b>
+<span class="orange" style="width:23.107617896009675%">3天券 11.00% · 91人</span>
+<span class="green" style="width:28.30324909747293%">7天券 13.48% · 112人</span>
+<em>+2.47pp</em>
+</div>
+<div class="coupon-line">
+<b>累计7天</b>
+<span class="orange" style="width:61.958887545344616%">3天券 29.50% · 244人</span>
+<span class="green" style="width:67.9783393501805%">7天券 32.37% · 269人</span>
+<em>+2.87pp</em>
+</div>
+</article>
+<article class="coupon-panel">
+<h3>第一阶段活跃用户：优先比较对象</h3>
+<div class="coupon-line">
+<b>第1–3天</b>
+<span class="orange" style="width:51.48058252427185%">3天券 24.51% · 101人</span>
+<span class="green" style="width:62.045454545454554%">7天券 29.55% · 117人</span>
+<em>+5.03pp</em>
+</div>
+<div class="coupon-line">
+<b>第4–7天</b>
+<span class="orange" style="width:29.05339805825243%">3天券 13.83% · 57人</span>
+<span class="green" style="width:35.53030303030303%">7天券 16.92% · 67人</span>
+<em>+3.08pp</em>
+</div>
+<div class="coupon-line">
+<b>累计7天</b>
+<span class="orange" style="width:80.53398058252426%">3天券 38.35% · 158人</span>
+<span class="green" style="width:97.57575757575758%">7天券 46.46% · 184人</span>
+<em>+8.12pp</em>
+</div>
+</article>
+<article class="coupon-panel">
+<h3>第一阶段未活跃用户：不宜作为发券主投</h3>
+<div class="coupon-line">
+<b>第1–3天</b>
+<span class="orange" style="width:26.313253012048193%">3天券 12.53% · 52人</span>
+<span class="green" style="width:19.310344827586206%">7天券 9.20% · 40人</span>
+<em>-3.33pp</em>
+</div>
+<div class="coupon-line">
+<b>第4–7天</b>
+<span class="orange" style="width:17.204819277108435%">3天券 8.19% · 34人</span>
+<span class="green" style="width:21.724137931034484%">7天券 10.34% · 45人</span>
+<em>+2.15pp</em>
+</div>
+<div class="coupon-line">
+<b>累计7天</b>
+<span class="orange" style="width:43.51807228915663%">3天券 20.72% · 86人</span>
+<span class="green" style="width:41.03448275862069%">7天券 19.54% · 85人</span>
+<em>-1.18pp</em>
+</div>
+</article>
+</div>
+<div class="coupon-conclusion">
+<h3>关键发现</h3>
+<ul>
+<li>
+<b>7 天券的增量主要在第 4–7 天：</b>前 3 天仅提升 +0.39pp，而第 4–7 天提升 +2.47pp；累计 7 天提升 +2.87pp。</li>
+<li>
+<b>3 天券的主要受众：</b>已接近决策的强意愿活跃用户，例如已经确认提单、查看合同，或高频进入提单页且同时完成多个方案比较动作。这类用户使用短期限提醒即可，避免长期让利。</li>
+<li>
+<b>7 天券的主要受众：</b>第一阶段活跃、已进入提单页并存在金额/期次切换、查看还款计划或提单页停留，但尚未确认提单的“慢决策”用户。7 天有效期用于承接其第 4–7 天的方案比较。</li>
+<li>
+<b>未活跃用户：</b>7 天券相对 3 天券的累计差异为 -1.18pp，不应依赖券期限刺激；先通过回流触达促使其进入 App，发生提单页访问后才进入优惠池。</li>
+</ul>
+</div>
+<div class="coupon-strategy">
+<article>
+<h3>3 天券运营方案</h3>
+<p>
+<b>触发：</b>强意愿活跃用户。<br>
+<b>动作：</b>召回日发券，D+2 到期提醒一次。<br>
+<b>控制：</b>不重复补券；强自然转化用户可降级为仅提醒或低补贴。</p>
+</article>
+<article>
+<h3>7 天券运营方案</h3>
+<p>
+<b>触发：</b>活跃且存在提单页/方案比较行为、但未确认提单的用户。<br>
+<b>动作：</b>召回日发券，D+3 若再次进入提单页则发送方案提醒，D+6 到期提醒。<br>
+<b>控制：</b>不叠加第二张券，以第 4–7 天增量作为核心评估指标。</p>
+</article>
+<article>
+<h3>未活跃用户召回方案</h3>
+<p>
+<b>触发：</b>第一阶段无 active_date。<br>
+<b>动作：</b>默认不发券，先用消息、权益曝光和回流页唤醒；后续进入 App 或进入提单页时，再按实时行为转入 3 天券或 7 天券策略。</p>
+</article>
+</div>
+</section>
+<section class="s">
+<h2>七、活跃用户前 3 天提单率差异：是券期限效果还是样本波动？</h2>
+<p class="intro">该章节仅使用第二轮实验中的第一阶段活跃用户：3 天券与 7 天券的优惠力度均为 30%，区别仅在有效期。</p>
+<div class="early-stat-grid">
+<article class="early-stat">
+<span>3 天券 · 活跃用户前3天率</span>
+<b>24.51%</b>
+<small>101 / 412 人</small>
+</article>
+<article class="early-stat">
+<span>7 天券 · 活跃用户前3天率</span>
+<b>29.55%</b>
+<small>117 / 396 人</small>
+</article>
+<article class="early-stat">
+<span>观察到的差异</span>
+<b>+5.03pp</b>
+<small>双侧检验 p=0.107，未达显著</small>
+</article>
+</div>
+<div class="method-note">
+<b>核心判断：</b>虽然表面差异为 +5.03pp，但 p=0.107，高于常用显著性阈值 0.05；95% 置信区间约为 -1.1pp 至 +11.2pp。因此当前数据不能证明 7 天券在前 3 天具有稳定的额外提单效果。两类券在前 3 天同样有效、优惠力度同为 30%，该差异更可能与批次波动或活跃子样本构成有关。</div>
+<h3 class="subhead">1. 按批次拆分后，差异方向不一致</h3>
+<p class="intro">如果 7 天券存在稳定的前三天优势，各批次应大体同向；实际结果并不一致。</p>
+<div class="batch-visual">
+<article class="batch-card">
+<h3>0730_0804</h3>
+<div class="batch-rate">
+<span>3天券 25.45%</span>
+<i class="neutralbar" style="width:76%">
+</i>
+</div>
+<div class="batch-rate">
+<span>7天券 27.52%</span>
+<i class="upbar" style="width:83%">
+</i>
+</div>
+<b>差异 +2.07pp</b>
+</article>
+<article class="batch-card">
+<h3>0731_0805</h3>
+<div class="batch-rate">
+<span>3天券 17.29%</span>
+<i class="neutralbar" style="width:52%">
+</i>
+</div>
+<div class="batch-rate">
+<span>7天券 30.47%</span>
+<i class="upbar" style="width:91%">
+</i>
+</div>
+<b>差异 +13.18pp</b>
+</article>
+<article class="batch-card">
+<h3>0801_0806</h3>
+<div class="batch-rate">
+<span>3天券 33.70%</span>
+<i class="neutralbar" style="width:100%">
+</i>
+</div>
+<div class="batch-rate">
+<span>7天券 26.97%</span>
+<i class="downbar" style="width:81%">
+</i>
+</div>
+<b>差异 -6.73pp</b>
+</article>
+<article class="batch-card">
+<h3>0802_0807</h3>
+<div class="batch-rate">
+<span>3天券 24.68%</span>
+<i class="neutralbar" style="width:74%">
+</i>
+</div>
+<div class="batch-rate">
+<span>7天券 34.29%</span>
+<i class="upbar" style="width:100%">
+</i>
+</div>
+<b>差异 +9.61pp</b>
+</article>
+</div>
+<div class="method-note">
+<b>批次结论：</b>0731_0805 与 0802_0807 拉高了汇总结果，但 0801_0806 中 3 天券反而高 6.73pp。方向不稳定进一步说明，不能把总体 +5.03pp 直接归因为 7 天券的前三天效果。</div>
+<h3 class="subhead">2. 发券前活跃用户基线：没有一致的高意愿优势</h3>
+<div class="baseline-grid">
+<article class="base-card">
+<h3>活跃天数</h3>
+<p>3天券：<b>1.85天</b>
+</p>
+<p>7天券：<b>1.89天</b>
+</p>
+</article>
+<article class="base-card">
+<h3>进入提单页</h3>
+<p>3天券：<b>1.75次</b>
+</p>
+<p>7天券：<b>1.77次</b>
+</p>
+</article>
+<article class="base-card">
+<h3>查看还款计划</h3>
+<p>3天券：<b>0.59次</b>
+</p>
+<p>7天券：<b>0.66次</b>
+</p>
+</article>
+<article class="base-card">
+<h3>提单页停留</h3>
+<p>3天券：<b>58.29秒</b>
+</p>
+<p>7天券：<b>63.21秒</b>
+</p>
+</article>
+<article class="base-card">
+<h3>活跃度</h3>
+<p>3天券：<b>28.03</b>
+</p>
+<p>7天券：<b>26.66</b>
+</p>
+</article>
+<article class="base-card">
+<h3>总活跃时长</h3>
+<p>3天券：<b>145.56秒</b>
+</p>
+<p>7天券：<b>101.47秒</b>
+</p>
+</article>
+</div>
+<div class="method-note">
+<b>基线结论：</b>7 天券组在金额切换、还款计划查看与提单页停留上略高，但活跃度和总活跃时长更低；没有形成“7 天券组整体更高意愿”的一致证据。前 3 天差异不能仅用某一个基线指标解释。</div>
+<h3 class="subhead">3. 后续实验与运营建议</h3>
+<div class="method-note">
+<ul>
+<li>
+<b>不以 +5.03pp 调整前三天券策略：</b>当前应视作未显著差异，3 天券与 7 天券在前 3 天可认为效果相近。</li>
+<li>
+<b>继续以第 4–7 天增量评价 7 天券：</b>7 天券的设计价值是承接慢决策用户，而不是追求前三天超过 3 天券。</li>
+<li>
+<b>分层随机：</b>后续实验应在每个批次内，按活跃天数、进入提单页、方案比较行为等分层后再随机分配，降低活跃子样本构成差异。</li>
+</ul>
+</div>
+</section>
+<details>
+<summary>附录：完整 PGSQL</summary>
+<pre>WITH experiment_base AS (
+    SELECT
+        &#x27;第一轮&#x27; AS experiment_wave,
+        &#x27;0716_0721&#x27; AS batch,
+        DATE &#x27;2026-07-16&#x27; AS repaid_date,
+        DATE &#x27;2026-07-21&#x27; AS recall_date,
+        churn_user_id::bigint AS user_id,
+        ab_group,
+        newpage_cnt,
+        amount_selection_cnt,
+        contract_newdetails_cnt,
+        term_selection_cnt,
+        newconfirm_cnt,
+        plan_newdetails_cnt,
+        purpose_newdetails_cnt,
+        coupons_page_cnt,
+        coupons_confirm_cnt
+    FROM wangchuanliang.no_apply_0716_0721_30pct
+
+    UNION ALL
+
+    SELECT
+        &#x27;第一轮&#x27;, &#x27;0717_0722&#x27;, DATE &#x27;2026-07-17&#x27;, DATE &#x27;2026-07-22&#x27;,
+        churn_user_id::bigint, ab_group, newpage_cnt, amount_selection_cnt,
+        contract_newdetails_cnt, term_selection_cnt, newconfirm_cnt,
+        plan_newdetails_cnt, purpose_newdetails_cnt, coupons_page_cnt,
+        coupons_confirm_cnt
+    FROM wangchuanliang.no_apply_0717_0722_30pct
+
+    UNION ALL
+
+    SELECT
+        &#x27;第一轮&#x27;, &#x27;0718_0723&#x27;, DATE &#x27;2026-07-18&#x27;, DATE &#x27;2026-07-23&#x27;,
+        churn_user_id::bigint, ab_group, newpage_cnt, amount_selection_cnt,
+        contract_newdetails_cnt, term_selection_cnt, newconfirm_cnt,
+        plan_newdetails_cnt, purpose_newdetails_cnt, coupons_page_cnt,
+        coupons_confirm_cnt
+    FROM wangchuanliang.no_apply_0718_0723_30pct
+
+    UNION ALL
+
+    SELECT
+        &#x27;第一轮&#x27;, &#x27;0719_0724&#x27;, DATE &#x27;2026-07-19&#x27;, DATE &#x27;2026-07-24&#x27;,
+        churn_user_id::bigint, ab_group, newpage_cnt, amount_selection_cnt,
+        contract_newdetails_cnt, term_selection_cnt, newconfirm_cnt,
+        plan_newdetails_cnt, purpose_newdetails_cnt, coupons_page_cnt,
+        coupons_confirm_cnt
+    FROM wangchuanliang.no_apply_0719_0724_30pct
+
+    UNION ALL
+
+    SELECT
+        &#x27;第二轮&#x27;, &#x27;0730_0804&#x27;, DATE &#x27;2026-07-30&#x27;, DATE &#x27;2026-08-04&#x27;,
+        churn_user_id::bigint, ab_group, newpage_cnt, amount_selection_cnt,
+        contract_newdetails_cnt, term_selection_cnt, newconfirm_cnt,
+        plan_newdetails_cnt, purpose_newdetails_cnt, coupons_page_cnt,
+        coupons_confirm_cnt
+    FROM wangchuanliang.no_apply_0730_0804_30pct
+
+    UNION ALL
+
+    SELECT
+        &#x27;第二轮&#x27;, &#x27;0731_0805&#x27;, DATE &#x27;2026-07-31&#x27;, DATE &#x27;2026-08-05&#x27;,
+        churn_user_id::bigint, ab_group, newpage_cnt, amount_selection_cnt,
+        contract_newdetails_cnt, term_selection_cnt, newconfirm_cnt,
+        plan_newdetails_cnt, purpose_newdetails_cnt, coupons_page_cnt,
+        coupons_confirm_cnt
+    FROM wangchuanliang.no_apply_0731_0805_30pct
+
+    UNION ALL
+
+    SELECT
+        &#x27;第二轮&#x27;, &#x27;0801_0806&#x27;, DATE &#x27;2026-08-01&#x27;, DATE &#x27;2026-08-06&#x27;,
+        churn_user_id::bigint, ab_group, newpage_cnt, amount_selection_cnt,
+        contract_newdetails_cnt, term_selection_cnt, newconfirm_cnt,
+        plan_newdetails_cnt, purpose_newdetails_cnt, coupons_page_cnt,
+        coupons_confirm_cnt
+    FROM wangchuanliang.no_apply_0801_0806_30pct
+
+    UNION ALL
+
+    SELECT
+        &#x27;第二轮&#x27;, &#x27;0802_0807&#x27;, DATE &#x27;2026-08-02&#x27;, DATE &#x27;2026-08-07&#x27;,
+        churn_user_id::bigint, ab_group, newpage_cnt, amount_selection_cnt,
+        contract_newdetails_cnt, term_selection_cnt, newconfirm_cnt,
+        plan_newdetails_cnt, purpose_newdetails_cnt, coupons_page_cnt,
+        coupons_confirm_cnt
+    FROM wangchuanliang.no_apply_0802_0807_30pct
+),
+phase1_metrics AS (
+    SELECT
+        b.experiment_wave,
+        b.batch,
+        b.repaid_date,
+        b.recall_date,
+        b.user_id,
+        b.ab_group,
+        b.newpage_cnt,
+        b.amount_selection_cnt,
+        b.contract_newdetails_cnt,
+        b.term_selection_cnt,
+        b.newconfirm_cnt,
+        b.plan_newdetails_cnt,
+        b.purpose_newdetails_cnt,
+        b.coupons_page_cnt,
+        b.coupons_confirm_cnt,
+        COUNT(DISTINCT e.active_date) AS active_days_cnt,
+        COALESCE(SUM(e.active_status), 0) AS active_status,
+        COALESCE(SUM(e.active_duration), 0) AS active_duration_sec,
+        COALESCE(SUM(e.apply_duration), 0) AS apply_duration_sec,
+        COALESCE(SUM(e.non_apply_duration), 0) AS non_apply_duration_sec
+    FROM experiment_base b
+    LEFT JOIN wangchuanliang.event_track e
+        ON e.user_id = b.user_id
+        AND e.active_date &gt; b.repaid_date
+        AND e.active_date &lt; b.recall_date
+    GROUP BY
+        b.experiment_wave,
+        b.batch,
+        b.repaid_date,
+        b.recall_date,
+        b.user_id,
+        b.ab_group,
+        b.newpage_cnt,
+        b.amount_selection_cnt,
+        b.contract_newdetails_cnt,
+        b.term_selection_cnt,
+        b.newconfirm_cnt,
+        b.plan_newdetails_cnt,
+        b.purpose_newdetails_cnt,
+        b.coupons_page_cnt,
+        b.coupons_confirm_cnt
+),
+first_apply AS (
+    SELECT
+        p.*,
+        MIN(o.apply_time::date) AS first_apply_date
+    FROM phase1_metrics p
+    LEFT JOIN wangchuanliang.order_loan_f_v2_copy o
+        ON o.user_id = p.user_id
+        AND o.apply_time::date &gt;= p.recall_date
+        AND o.apply_time::date &lt;= p.recall_date + 6
+    GROUP BY
+        p.experiment_wave,
+        p.batch,
+        p.repaid_date,
+        p.recall_date,
+        p.user_id,
+        p.ab_group,
+        p.newpage_cnt,
+        p.amount_selection_cnt,
+        p.contract_newdetails_cnt,
+        p.term_selection_cnt,
+        p.newconfirm_cnt,
+        p.plan_newdetails_cnt,
+        p.purpose_newdetails_cnt,
+        p.coupons_page_cnt,
+        p.coupons_confirm_cnt,
+        p.active_days_cnt,
+        p.active_status,
+        p.active_duration_sec,
+        p.apply_duration_sec,
+        p.non_apply_duration_sec
+)
+SELECT
+    experiment_wave,
+    batch,
+    repaid_date,
+    recall_date,
+    user_id,
+    ab_group,
+    active_days_cnt,
+    active_status,
+    active_duration_sec,
+    apply_duration_sec,
+    non_apply_duration_sec,
+    newpage_cnt,
+    amount_selection_cnt,
+    contract_newdetails_cnt,
+    term_selection_cnt,
+    newconfirm_cnt,
+    plan_newdetails_cnt,
+    purpose_newdetails_cnt,
+    coupons_page_cnt,
+    coupons_confirm_cnt,
+    first_apply_date,
+    CASE WHEN first_apply_date IS NOT NULL THEN 1 ELSE 0 END AS apply_7d,
+    CASE WHEN first_apply_date &lt;= recall_date + 2 THEN 1 ELSE 0 END AS apply_3d,
+    CASE
+        WHEN first_apply_date &lt;= recall_date + 2 THEN &#x27;第1–3天&#x27;
+        WHEN first_apply_date &lt;= recall_date + 6 THEN &#x27;第4–7天&#x27;
+        ELSE &#x27;未提单&#x27;
+    END AS apply_window
+FROM first_apply
+ORDER BY
+    experiment_wave,
+    batch,
+    ab_group,
+    user_id;</pre>
+</details>
+</main>
+<div id="tip" class="tip">
+</div>
+<script>const t=document.getElementById('tip');document.querySelectorAll('.mark').forEach(x=>x.onclick=e=>{e.stopPropagation();t.textContent=x.dataset.tip;t.style.display='block';const r=x.getBoundingClientRect();t.style.left=Math.max(8,Math.min(innerWidth-280,r.left))+'px';t.style.top=(r.top-t.offsetHeight-8>8?r.top-t.offsetHeight-8:r.bottom+8)+'px'});document.onclick=()=>t.style.display='none'</script>
