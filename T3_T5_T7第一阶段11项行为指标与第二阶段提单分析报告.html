@@ -1,0 +1,2330 @@
+<!doctype html>
+<html lang="zh-CN">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>T3/T5/T7 行为指标与第二阶段提单分析</title>
+<style>:root{--bg:#071a32;--p:#0c2849;--line:#2a5477;--t:#eef8ff;--m:#aac0d5;--t3:#36d5e7;--t5:#ffb454;--t7:#a485ff}*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--t);font:15px/1.65 -apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei",sans-serif}.wrap{max-width:1280px;margin:auto;padding:42px 25px 72px}h1{margin:0 0 7px;font-size:30px}h2{margin:0;font-size:21px}h3{margin:0;font-size:17px}.sub,.note{color:var(--m)}.panel,.module,.card{border:1px solid var(--line);background:var(--p);border-radius:12px}.panel{padding:18px;margin:16px 0}.cards{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin:20px 0}.card{padding:16px}.card b{display:block;font-size:24px;color:var(--t3)}.card span{font-size:13px;color:var(--m)}.module{margin:30px 0 44px;padding:22px;background:#092440}.module header{padding-bottom:14px;margin-bottom:20px;border-bottom:1px solid #305a7c}.module header span{display:block;margin-top:5px;font-size:12px;color:#78dce9}.cohort{padding:17px 15px 20px;margin:22px 0 30px;background:#0b2a4a;border:1px solid #244e71;border-radius:10px}.cohort p{margin:5px 0 13px;color:#a9c0d4;font-size:12px}.barline{display:grid;grid-template-columns:130px 135px minmax(120px,1fr) 75px;gap:10px;align-items:center;margin:11px 0}.bucket-label{font-weight:700;font-size:13px}.share,.rate{font-size:12px;color:#c6d9e6;white-space:nowrap}.track{height:27px;background:#153a59;border-radius:4px}.bar{height:27px;min-width:3px;border:0;cursor:pointer}.bar:hover{filter:brightness(1.2)}.detail{margin-top:38px;padding-top:22px;border-top:1px dashed #55789a;overflow:auto}.detail h3{margin-bottom:13px}table{width:100%;border-collapse:collapse;font-size:13px;min-width:780px}th,td{padding:9px 7px;border-bottom:1px solid #204563;text-align:right}th:first-child,td:first-child{text-align:left}th{font-weight:500;color:#bdd0e1}.call{padding:12px 14px;margin:10px 0;border-left:3px solid var(--t5);background:#102f50;border-radius:0 6px 6px 0}.tip{display:none;position:fixed;z-index:10;max-width:310px;padding:10px 12px;background:#031322;border:1px solid #55ddea;border-radius:8px;box-shadow:0 12px 28px #0009;font-size:13px}.tip b{color:var(--t3)}details{margin-top:18px}summary{cursor:pointer;color:var(--t3);font-size:18px;font-weight:700}.sql{max-height:700px;overflow:auto;white-space:pre;margin-top:14px;padding:16px;background:#031322;border:1px solid #264d70;border-radius:8px;color:#d9ecfb;font:12px/1.6 ui-monospace,SFMono-Regular,Menlo,monospace}@media(max-width:720px){.wrap{padding:28px 12px}.cards{grid-template-columns:1fr}.module{padding:14px}.barline{grid-template-columns:85px 105px minmax(65px,1fr) 60px;gap:6px}.share,.rate{font-size:10px}.bucket-label{font-size:11px}h1{font-size:23px}}</style>
+<body>
+<main class="wrap">
+<h1>T3 / T5 / T7 第一阶段 11 项行为指标与第二阶段提单分析</h1>
+<p class="sub">报告结构：每个指标为一个模块；模块内按 T3、T5、T7 依次展开，分别观察不同次数段的用户占比与第二阶段条件提单率。</p>
+<section class="panel">
+<h2>分析口径</h2>
+<p>第一阶段：T3=D+1～D+3，T5=D+1～D+5，T7=D+1～D+7；D0 为结清日且不计入。行为次数为第一阶段累计值。分母为干净结清、同日获额通过、且结清日和第一阶段均未提单的可观察事件。</p>
+</section>
+<section class="cards">
+<div class="card">
+<span>T3 可观察事件 / 总提单率</span>
+<b>33,868 / 65.77%</b>
+</div>
+<div class="card">
+<span>T5 可观察事件 / 总提单率</span>
+<b>29,339 / 60.49%</b>
+</div>
+<div class="card">
+<span>T7 可观察事件 / 总提单率</span>
+<b>26,067 / 55.53%</b>
+</div>
+</section>
+<section class="module">
+<header>
+<h2>活跃度</h2>
+<span>模块内展示顺序：T3 → T5 → T7；同一窗口内比较不同次数段</span>
+</header>
+<div class="cohort">
+<h3 style="color:#36d5e7">T3 · 活跃度</h3>
+<p>条长为第二阶段条件提单率；中间文字为用户数和用户占比。</p>
+<div class="barline">
+<span class="bucket-label">0</span>
+<span class="share">18,595人 · 54.92%</span>
+<div class="track">
+<button class="bar" style="width:59.17%;background:#36d5e7" data-code="active_status" data-cohort="T3" data-index="0">
+</button>
+</div>
+<span class="rate">59.17%</span>
+</div>
+<div class="barline">
+<span class="bucket-label">1-10</span>
+<span class="share">4,862人 · 14.36%</span>
+<div class="track">
+<button class="bar" style="width:69.87%;background:#36d5e7" data-code="active_status" data-cohort="T3" data-index="1">
+</button>
+</div>
+<span class="rate">69.87%</span>
+</div>
+<div class="barline">
+<span class="bucket-label">11-30</span>
+<span class="share">7,598人 · 22.44%</span>
+<div class="track">
+<button class="bar" style="width:74.72%;background:#36d5e7" data-code="active_status" data-cohort="T3" data-index="2">
+</button>
+</div>
+<span class="rate">74.72%</span>
+</div>
+<div class="barline">
+<span class="bucket-label">31+</span>
+<span class="share">2,804人 · 8.28%</span>
+<div class="track">
+<button class="bar" style="width:78.39%;background:#36d5e7" data-code="active_status" data-cohort="T3" data-index="3">
+</button>
+</div>
+<span class="rate">78.39%</span>
+</div>
+</div>
+<div class="cohort">
+<h3 style="color:#ffb454">T5 · 活跃度</h3>
+<p>条长为第二阶段条件提单率；中间文字为用户数和用户占比。</p>
+<div class="barline">
+<span class="bucket-label">0</span>
+<span class="share">14,884人 · 50.75%</span>
+<div class="track">
+<button class="bar" style="width:52.45%;background:#ffb454" data-code="active_status" data-cohort="T5" data-index="0">
+</button>
+</div>
+<span class="rate">52.45%</span>
+</div>
+<div class="barline">
+<span class="bucket-label">1-10</span>
+<span class="share">4,058人 · 13.84%</span>
+<div class="track">
+<button class="bar" style="width:65.18%;background:#ffb454" data-code="active_status" data-cohort="T5" data-index="1">
+</button>
+</div>
+<span class="rate">65.18%</span>
+</div>
+<div class="barline">
+<span class="bucket-label">11-30</span>
+<span class="share">7,005人 · 23.88%</span>
+<div class="track">
+<button class="bar" style="width:68.21%;background:#ffb454" data-code="active_status" data-cohort="T5" data-index="2">
+</button>
+</div>
+<span class="rate">68.21%</span>
+</div>
+<div class="barline">
+<span class="bucket-label">31+</span>
+<span class="share">3,383人 · 11.53%</span>
+<div class="track">
+<button class="bar" style="width:74.4%;background:#ffb454" data-code="active_status" data-cohort="T5" data-index="3">
+</button>
+</div>
+<span class="rate">74.40%</span>
+</div>
+</div>
+<div class="cohort">
+<h3 style="color:#a485ff">T7 · 活跃度</h3>
+<p>条长为第二阶段条件提单率；中间文字为用户数和用户占比。</p>
+<div class="barline">
+<span class="bucket-label">0</span>
+<span class="share">12,692人 · 48.71%</span>
+<div class="track">
+<button class="bar" style="width:46.89%;background:#a485ff" data-code="active_status" data-cohort="T7" data-index="0">
+</button>
+</div>
+<span class="rate">46.89%</span>
+</div>
+<div class="barline">
+<span class="bucket-label">1-10</span>
+<span class="share">3,296人 · 12.65%</span>
+<div class="track">
+<button class="bar" style="width:59.34%;background:#a485ff" data-code="active_status" data-cohort="T7" data-index="1">
+</button>
+</div>
+<span class="rate">59.34%</span>
+</div>
+<div class="barline">
+<span class="bucket-label">11-30</span>
+<span class="share">6,377人 · 24.47%</span>
+<div class="track">
+<button class="bar" style="width:62.99%;background:#a485ff" data-code="active_status" data-cohort="T7" data-index="2">
+</button>
+</div>
+<span class="rate">62.99%</span>
+</div>
+<div class="barline">
+<span class="bucket-label">31+</span>
+<span class="share">3,693人 · 14.17%</span>
+<div class="track">
+<button class="bar" style="width:69.05%;background:#a485ff" data-code="active_status" data-cohort="T7" data-index="3">
+</button>
+</div>
+<span class="rate">69.05%</span>
+</div>
+</div>
+<div class="detail">
+<h3>横向汇总：人数占比与提单率</h3>
+<table>
+<thead>
+<tr>
+<th>次数段</th>
+<th>T3 人数（占比）</th>
+<th>T3 提单率</th>
+<th>T5 人数（占比）</th>
+<th>T5 提单率</th>
+<th>T7 人数（占比）</th>
+<th>T7 提单率</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>0</td>
+<td>18,595（54.92%）</td>
+<td>
+<b>59.17%</b>
+</td>
+<td>14,884（50.75%）</td>
+<td>
+<b>52.45%</b>
+</td>
+<td>12,692（48.71%）</td>
+<td>
+<b>46.89%</b>
+</td>
+</tr>
+<tr>
+<td>1-10</td>
+<td>4,862（14.36%）</td>
+<td>
+<b>69.87%</b>
+</td>
+<td>4,058（13.84%）</td>
+<td>
+<b>65.18%</b>
+</td>
+<td>3,296（12.65%）</td>
+<td>
+<b>59.34%</b>
+</td>
+</tr>
+<tr>
+<td>11-30</td>
+<td>7,598（22.44%）</td>
+<td>
+<b>74.72%</b>
+</td>
+<td>7,005（23.88%）</td>
+<td>
+<b>68.21%</b>
+</td>
+<td>6,377（24.47%）</td>
+<td>
+<b>62.99%</b>
+</td>
+</tr>
+<tr>
+<td>31+</td>
+<td>2,804（8.28%）</td>
+<td>
+<b>78.39%</b>
+</td>
+<td>3,383（11.53%）</td>
+<td>
+<b>74.40%</b>
+</td>
+<td>3,693（14.17%）</td>
+<td>
+<b>69.05%</b>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section class="module">
+<header>
+<h2>切换借款金额次数</h2>
+<span>模块内展示顺序：T3 → T5 → T7；同一窗口内比较不同次数段</span>
+</header>
+<div class="cohort">
+<h3 style="color:#36d5e7">T3 · 切换借款金额次数</h3>
+<p>条长为第二阶段条件提单率；中间文字为用户数和用户占比。</p>
+<div class="barline">
+<span class="bucket-label">0 次</span>
+<span class="share">28,782人 · 85.01%</span>
+<div class="track">
+<button class="bar" style="width:63.53%;background:#36d5e7" data-code="amount_selection" data-cohort="T3" data-index="0">
+</button>
+</div>
+<span class="rate">63.53%</span>
+</div>
+<div class="barline">
+<span class="bucket-label">1 次</span>
+<span class="share">1,628人 · 4.81%</span>
+<div class="track">
+<button class="bar" style="width:75.86%;background:#36d5e7" data-code="amount_selection" data-cohort="T3" data-index="1">
+</button>
+</div>
+<span class="rate">75.86%</span>
+</div>
+<div class="barline">
+<span class="bucket-label">2-3 次</span>
+<span class="share">1,944人 · 5.74%</span>
+<div class="track">
+<button class="bar" style="width:79.63%;background:#36d5e7" data-code="amount_selection" data-cohort="T3" data-index="2">
+</button>
+</div>
+<span class="rate">79.63%</span>
+</div>
+<div class="barline">
+<span class="bucket-label">4 次及以上</span>
+<span class="share">1,505人 · 4.44%</span>
+<div class="track">
+<button class="bar" style="width:80.27%;background:#36d5e7" data-code="amount_selection" data-cohort="T3" data-index="3">
+</button>
+</div>
+<span class="rate">80.27%</span>
+</div>
+</div>
+<div class="cohort">
+<h3 style="color:#ffb454">T5 · 切换借款金额次数</h3>
+<p>条长为第二阶段条件提单率；中间文字为用户数和用户占比。</p>
+<div class="barline">
+<span class="bucket-label">0 次</span>
+<span class="share">24,138人 · 82.30%</span>
+<div class="track">
+<button class="bar" style="width:57.45%;background:#ffb454" data-code="amount_selection" data-cohort="T5" data-index="0">
+</button>
+</div>
+<span class="rate">57.45%</span>
+</div>
+<div class="barline">
+<span class="bucket-label">1 次</span>
+<span class="share">1,584人 · 5.40%</span>
+<div class="track">
+<button class="bar" style="width:72.35%;background:#ffb454" data-code="amount_selection" data-cohort="T5" data-index="1">
+</button>
+</div>
+<span class="rate">72.35%</span>
+</div>
+<div class="barline">
+<span class="bucket-label">2-3 次</span>
+<span class="share">1,927人 · 6.57%</span>
+<div class="track">
+<button class="bar" style="width:75.04%;background:#ffb454" data-code="amount_selection" data-cohort="T5" data-index="2">
+</button>
+</div>
+<span class="rate">75.04%</span>
+</div>
+<div class="barline">
+<span class="bucket-label">4 次及以上</span>
+<span class="share">1,681人 · 5.73%</span>
+<div class="track">
+<button class="bar" style="width:76.5%;background:#ffb454" data-code="amount_selection" data-cohort="T5" data-index="3">
+</button>
+</div>
+<span class="rate">76.50%</span>
+</div>
+</div>
+<div class="cohort">
+<h3 style="color:#a485ff">T7 · 切换借款金额次数</h3>
+<p>条长为第二阶段条件提单率；中间文字为用户数和用户占比。</p>
+<div class="barline">
+<span class="bucket-label">0 次</span>
+<span class="share">20,967人 · 80.46%</span>
+<div class="track">
+<button class="bar" style="width:52.05%;background:#a485ff" data-code="amount_selection" data-cohort="T7" data-index="0">
+</button>
+</div>
+<span class="rate">52.05%</span>
+</div>
+<div class="barline">
+<span class="bucket-label">1 次</span>
+<span class="share">1,451人 · 5.57%</span>
+<div class="track">
+<button class="bar" style="width:66.92%;background:#a485ff" data-code="amount_selection" data-cohort="T7" data-index="1">
+</button>
+</div>
+<span class="rate">66.92%</span>
+</div>
+<div class="barline">
+<span class="bucket-label">2-3 次</span>
+<span class="share">1,716人 · 6.59%</span>
+<div class="track">
+<button class="bar" style="width:69.17%;background:#a485ff" data-code="amount_selection" data-cohort="T7" data-index="2">
+</button>
+</div>
+<span class="rate">69.17%</span>
+</div>
+<div class="barline">
+<span class="bucket-label">4 次及以上</span>
+<span class="share">1,924人 · 7.38%</span>
+<div class="track">
+<button class="bar" style="width:72.87%;background:#a485ff" data-code="amount_selection" data-cohort="T7" data-index="3">
+</button>
+</div>
+<span class="rate">72.87%</span>
+</div>
+</div>
+<div class="detail">
+<h3>横向汇总：人数占比与提单率</h3>
+<table>
+<thead>
+<tr>
+<th>次数段</th>
+<th>T3 人数（占比）</th>
+<th>T3 提单率</th>
+<th>T5 人数（占比）</th>
+<th>T5 提单率</th>
+<th>T7 人数（占比）</th>
+<th>T7 提单率</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>0 次</td>
+<td>28,782（85.01%）</td>
+<td>
+<b>63.53%</b>
+</td>
+<td>24,138（82.30%）</td>
+<td>
+<b>57.45%</b>
+</td>
+<td>20,967（80.46%）</td>
+<td>
+<b>52.05%</b>
+</td>
+</tr>
+<tr>
+<td>1 次</td>
+<td>1,628（4.81%）</td>
+<td>
+<b>75.86%</b>
+</td>
+<td>1,584（5.40%）</td>
+<td>
+<b>72.35%</b>
+</td>
+<td>1,451（5.57%）</td>
+<td>
+<b>66.92%</b>
+</td>
+</tr>
+<tr>
+<td>2-3 次</td>
+<td>1,944（5.74%）</td>
+<td>
+<b>79.63%</b>
+</td>
+<td>1,927（6.57%）</td>
+<td>
+<b>75.04%</b>
+</td>
+<td>1,716（6.59%）</td>
+<td>
+<b>69.17%</b>
+</td>
+</tr>
+<tr>
+<td>4 次及以上</td>
+<td>1,505（4.44%）</td>
+<td>
+<b>80.27%</b>
+</td>
+<td>1,681（5.73%）</td>
+<td>
+<b>76.50%</b>
+</td>
+<td>1,924（7.38%）</td>
+<td>
+<b>72.87%</b>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section class="module">
+<header>
+<h2>查看借款合同次数</h2>
+<span>模块内展示顺序：T3 → T5 → T7；同一窗口内比较不同次数段</span>
+</header>
+<div class="cohort">
+<h3 style="color:#36d5e7">T3 · 查看借款合同次数</h3>
+<p>条长为第二阶段条件提单率；中间文字为用户数和用户占比。</p>
+<div class="barline">
+<span class="bucket-label">0 次</span>
+<span class="share">33,719人 · 99.59%</span>
+<div class="track">
+<button class="bar" style="width:65.74%;background:#36d5e7" data-code="contract_newdetails" data-cohort="T3" data-index="0">
+</button>
+</div>
+<span class="rate">65.74%</span>
+</div>
+<div class="barline">
+<span class="bucket-label">1 次</span>
+<span class="share">122人 · 0.36%</span>
+<div class="track">
+<button class="bar" style="width:77.87%;background:#36d5e7" data-code="contract_newdetails" data-cohort="T3" data-index="1">
+</button>
+</div>
+<span class="rate">77.87%</span>
+</div>
+<div class="barline">
+<span class="bucket-label">2-3 次</span>
+<span class="share">15人 · 0.04%</span>
+<div class="track">
+<button class="bar" style="width:80%;background:#36d5e7" data-code="contract_newdetails" data-cohort="T3" data-index="2">
+</button>
+</div>
+<span class="rate">80.00%</span>
+</div>
+<div class="barline">
+<span class="bucket-label">4 次及以上</span>
+<span class="share">3人 · 0.01%</span>
+<div class="track">
+<button class="bar" style="width:66.67%;background:#36d5e7" data-code="contract_newdetails" data-cohort="T3" data-index="3">
+</button>
+</div>
+<span class="rate">66.67%</span>
+</div>
+</div>
+<div class="cohort">
+<h3 style="color:#ffb454">T5 · 查看借款合同次数</h3>
+<p>条长为第二阶段条件提单率；中间文字为用户数和用户占比。</p>
+<div class="barline">
+<span class="bucket-label">0 次</span>
+<span class="share">29,203人 · 99.57%</span>
+<div class="track">
+<button class="bar" style="width:60.45%;background:#ffb454" data-code="contract_newdetails" data-cohort="T5" data-index="0">
+</button>
+</div>
+<span class="rate">60.45%</span>
+</div>
+<div class="barline">
+<span class="bucket-label">1 次</span>
+<span class="share">107人 · 0.36%</span>
+<div class="track">
+<button class="bar" style="width:72.9%;background:#ffb454" data-code="contract_newdetails" data-cohort="T5" data-index="1">
+</button>
+</div>
+<span class="rate">72.90%</span>
+</div>
+<div class="barline">
+<span class="bucket-label">2-3 次</span>
+<span class="share">16人 · 0.05%</span>
+<div class="track">
+<button class="bar" style="width:68.75%;background:#ffb454" data-code="contract_newdetails" data-cohort="T5" data-index="2">
+</button>
+</div>
+<span class="rate">68.75%</span>
+</div>
+<div class="barline">
+<span class="bucket-label">4 次及以上</span>
+<span class="share">4人 · 0.01%</span>
+<div class="track">
+<button class="bar" style="width:75%;background:#ffb454" data-code="contract_newdetails" data-cohort="T5" data-index="3">
+</button>
+</div>
+<span class="rate">75.00%</span>
+</div>
+</div>
+<div class="cohort">
+<h3 style="color:#a485ff">T7 · 查看借款合同次数</h3>
+<p>条长为第二阶段条件提单率；中间文字为用户数和用户占比。</p>
+<div class="barline">
+<span class="bucket-label">0 次</span>
+<span class="share">25,933人 · 99.52%</span>
+<div class="track">
+<button class="bar" style="width:55.48%;background:#a485ff" data-code="contract_newdetails" data-cohort="T7" data-index="0">
+</button>
+</div>
+<span class="rate">55.48%</span>
+</div>
+<div class="barline">
+<span class="bucket-label">1 次</span>
+<span class="share">102人 · 0.39%</span>
+<div class="track">
+<button class="bar" style="width:67.65%;background:#a485ff" data-code="contract_newdetails" data-cohort="T7" data-index="1">
+</button>
+</div>
+<span class="rate">67.65%</span>
+</div>
+<div class="barline">
+<span class="bucket-label">2-3 次</span>
+<span class="share">18人 · 0.07%</span>
+<div class="track">
+<button class="bar" style="width:72.22%;background:#a485ff" data-code="contract_newdetails" data-cohort="T7" data-index="2">
+</button>
+</div>
+<span class="rate">72.22%</span>
+</div>
+<div class="barline">
+<span class="bucket-label">4 次及以上</span>
+<span class="share">5人 · 0.02%</span>
+<div class="track">
+<button class="bar" style="width:80%;background:#a485ff" data-code="contract_newdetails" data-cohort="T7" data-index="3">
+</button>
+</div>
+<span class="rate">80.00%</span>
+</div>
+</div>
+<div class="detail">
+<h3>横向汇总：人数占比与提单率</h3>
+<table>
+<thead>
+<tr>
+<th>次数段</th>
+<th>T3 人数（占比）</th>
+<th>T3 提单率</th>
+<th>T5 人数（占比）</th>
+<th>T5 提单率</th>
+<th>T7 人数（占比）</th>
+<th>T7 提单率</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>0 次</td>
+<td>33,719（99.59%）</td>
+<td>
+<b>65.74%</b>
+</td>
+<td>29,203（99.57%）</td>
+<td>
+<b>60.45%</b>
+</td>
+<td>25,933（99.52%）</td>
+<td>
+<b>55.48%</b>
+</td>
+</tr>
+<tr>
+<td>1 次</td>
+<td>122（0.36%）</td>
+<td>
+<b>77.87%</b>
+</td>
+<td>107（0.36%）</td>
+<td>
+<b>72.90%</b>
+</td>
+<td>102（0.39%）</td>
+<td>
+<b>67.65%</b>
+</td>
+</tr>
+<tr>
+<td>2-3 次</td>
+<td>15（0.04%）</td>
+<td>
+<b>80.00%</b>
+</td>
+<td>16（0.05%）</td>
+<td>
+<b>68.75%</b>
+</td>
+<td>18（0.07%）</td>
+<td>
+<b>72.22%</b>
+</td>
+</tr>
+<tr>
+<td>4 次及以上</td>
+<td>3（0.01%）</td>
+<td>
+<b>66.67%</b>
+</td>
+<td>4（0.01%）</td>
+<td>
+<b>75.00%</b>
+</td>
+<td>5（0.02%）</td>
+<td>
+<b>80.00%</b>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section class="module">
+<header>
+<h2>优惠券拦截关闭次数</h2>
+<span>数据质量模块：当前样本均为 0 次，无法观察梯度</span>
+</header>
+<div class="cohort">
+<h3 style="color:#36d5e7">T3 · 优惠券拦截关闭次数</h3>
+<p>条长为第二阶段条件提单率；中间文字为用户数和用户占比。</p>
+<div class="barline">
+<span class="bucket-label">0 次</span>
+<span class="share">33,859人 · 100.00%</span>
+<div class="track">
+<button class="bar" style="width:65.79%;background:#36d5e7" data-code="coupons_back" data-cohort="T3" data-index="0">
+</button>
+</div>
+<span class="rate">65.79%</span>
+</div>
+</div>
+<div class="cohort">
+<h3 style="color:#ffb454">T5 · 优惠券拦截关闭次数</h3>
+<p>条长为第二阶段条件提单率；中间文字为用户数和用户占比。</p>
+<div class="barline">
+<span class="bucket-label">0 次</span>
+<span class="share">29,330人 · 100.00%</span>
+<div class="track">
+<button class="bar" style="width:60.5%;background:#ffb454" data-code="coupons_back" data-cohort="T5" data-index="0">
+</button>
+</div>
+<span class="rate">60.50%</span>
+</div>
+</div>
+<div class="cohort">
+<h3 style="color:#a485ff">T7 · 优惠券拦截关闭次数</h3>
+<p>条长为第二阶段条件提单率；中间文字为用户数和用户占比。</p>
+<div class="barline">
+<span class="bucket-label">0 次</span>
+<span class="share">26,058人 · 100.00%</span>
+<div class="track">
+<button class="bar" style="width:55.55%;background:#a485ff" data-code="coupons_back" data-cohort="T7" data-index="0">
+</button>
+</div>
+<span class="rate">55.55%</span>
+</div>
+</div>
+<div class="detail">
+<h3>横向汇总：人数占比与提单率</h3>
+<table>
+<thead>
+<tr>
+<th>次数段</th>
+<th>T3 人数（占比）</th>
+<th>T3 提单率</th>
+<th>T5 人数（占比）</th>
+<th>T5 提单率</th>
+<th>T7 人数（占比）</th>
+<th>T7 提单率</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>0 次</td>
+<td>33,859（100.00%）</td>
+<td>
+<b>65.79%</b>
+</td>
+<td>29,330（100.00%）</td>
+<td>
+<b>60.50%</b>
+</td>
+<td>26,058（100.00%）</td>
+<td>
+<b>55.55%</b>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section class="module">
+<header>
+<h2>优惠券拦截点击次数</h2>
+<span>数据质量模块：当前样本均为 0 次，无法观察梯度</span>
+</header>
+<div class="cohort">
+<h3 style="color:#36d5e7">T3 · 优惠券拦截点击次数</h3>
+<p>条长为第二阶段条件提单率；中间文字为用户数和用户占比。</p>
+<div class="barline">
+<span class="bucket-label">0 次</span>
+<span class="share">33,859人 · 100.00%</span>
+<div class="track">
+<button class="bar" style="width:65.79%;background:#36d5e7" data-code="coupons_confirm" data-cohort="T3" data-index="0">
+</button>
+</div>
+<span class="rate">65.79%</span>
+</div>
+</div>
+<div class="cohort">
+<h3 style="color:#ffb454">T5 · 优惠券拦截点击次数</h3>
+<p>条长为第二阶段条件提单率；中间文字为用户数和用户占比。</p>
+<div class="barline">
+<span class="bucket-label">0 次</span>
+<span class="share">29,330人 · 100.00%</span>
+<div class="track">
+<button class="bar" style="width:60.5%;background:#ffb454" data-code="coupons_confirm" data-cohort="T5" data-index="0">
+</button>
+</div>
+<span class="rate">60.50%</span>
+</div>
+</div>
+<div class="cohort">
+<h3 style="color:#a485ff">T7 · 优惠券拦截点击次数</h3>
+<p>条长为第二阶段条件提单率；中间文字为用户数和用户占比。</p>
+<div class="barline">
+<span class="bucket-label">0 次</span>
+<span class="share">26,058人 · 100.00%</span>
+<div class="track">
+<button class="bar" style="width:55.55%;background:#a485ff" data-code="coupons_confirm" data-cohort="T7" data-index="0">
+</button>
+</div>
+<span class="rate">55.55%</span>
+</div>
+</div>
+<div class="detail">
+<h3>横向汇总：人数占比与提单率</h3>
+<table>
+<thead>
+<tr>
+<th>次数段</th>
+<th>T3 人数（占比）</th>
+<th>T3 提单率</th>
+<th>T5 人数（占比）</th>
+<th>T5 提单率</th>
+<th>T7 人数（占比）</th>
+<th>T7 提单率</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>0 次</td>
+<td>33,859（100.00%）</td>
+<td>
+<b>65.79%</b>
+</td>
+<td>29,330（100.00%）</td>
+<td>
+<b>60.50%</b>
+</td>
+<td>26,058（100.00%）</td>
+<td>
+<b>55.55%</b>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section class="module">
+<header>
+<h2>进入优惠券挽留页次数</h2>
+<span>数据质量模块：当前样本均为 0 次，无法观察梯度</span>
+</header>
+<div class="cohort">
+<h3 style="color:#36d5e7">T3 · 进入优惠券挽留页次数</h3>
+<p>条长为第二阶段条件提单率；中间文字为用户数和用户占比。</p>
+<div class="barline">
+<span class="bucket-label">0 次</span>
+<span class="share">33,859人 · 100.00%</span>
+<div class="track">
+<button class="bar" style="width:65.79%;background:#36d5e7" data-code="coupons_page" data-cohort="T3" data-index="0">
+</button>
+</div>
+<span class="rate">65.79%</span>
+</div>
+</div>
+<div class="cohort">
+<h3 style="color:#ffb454">T5 · 进入优惠券挽留页次数</h3>
+<p>条长为第二阶段条件提单率；中间文字为用户数和用户占比。</p>
+<div class="barline">
+<span class="bucket-label">0 次</span>
+<span class="share">29,330人 · 100.00%</span>
+<div class="track">
+<button class="bar" style="width:60.5%;background:#ffb454" data-code="coupons_page" data-cohort="T5" data-index="0">
+</button>
+</div>
+<span class="rate">60.50%</span>
+</div>
+</div>
+<div class="cohort">
+<h3 style="color:#a485ff">T7 · 进入优惠券挽留页次数</h3>
+<p>条长为第二阶段条件提单率；中间文字为用户数和用户占比。</p>
+<div class="barline">
+<span class="bucket-label">0 次</span>
+<span class="share">26,058人 · 100.00%</span>
+<div class="track">
+<button class="bar" style="width:55.55%;background:#a485ff" data-code="coupons_page" data-cohort="T7" data-index="0">
+</button>
+</div>
+<span class="rate">55.55%</span>
+</div>
+</div>
+<div class="detail">
+<h3>横向汇总：人数占比与提单率</h3>
+<table>
+<thead>
+<tr>
+<th>次数段</th>
+<th>T3 人数（占比）</th>
+<th>T3 提单率</th>
+<th>T5 人数（占比）</th>
+<th>T5 提单率</th>
+<th>T7 人数（占比）</th>
+<th>T7 提单率</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>0 次</td>
+<td>33,859（100.00%）</td>
+<td>
+<b>65.79%</b>
+</td>
+<td>29,330（100.00%）</td>
+<td>
+<b>60.50%</b>
+</td>
+<td>26,058（100.00%）</td>
+<td>
+<b>55.55%</b>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section class="module">
+<header>
+<h2>确认提单次数</h2>
+<span>模块内展示顺序：T3 → T5 → T7；同一窗口内比较不同次数段</span>
+</header>
+<div class="cohort">
+<h3 style="color:#36d5e7">T3 · 确认提单次数</h3>
+<p>条长为第二阶段条件提单率；中间文字为用户数和用户占比。</p>
+<div class="barline">
+<span class="bucket-label">0 次</span>
+<span class="share">33,358人 · 98.52%</span>
+<div class="track">
+<button class="bar" style="width:65.61%;background:#36d5e7" data-code="newconfirm" data-cohort="T3" data-index="0">
+</button>
+</div>
+<span class="rate">65.61%</span>
+</div>
+<div class="barline">
+<span class="bucket-label">1 次</span>
+<span class="share">356人 · 1.05%</span>
+<div class="track">
+<button class="bar" style="width:79.21%;background:#36d5e7" data-code="newconfirm" data-cohort="T3" data-index="1">
+</button>
+</div>
+<span class="rate">79.21%</span>
+</div>
+<div class="barline">
+<span class="bucket-label">2-3 次</span>
+<span class="share">100人 · 0.30%</span>
+<div class="track">
+<button class="bar" style="width:76%;background:#36d5e7" data-code="newconfirm" data-cohort="T3" data-index="2">
+</button>
+</div>
+<span class="rate">76.00%</span>
+</div>
+<div class="barline">
+<span class="bucket-label">4 次及以上</span>
+<span class="share">45人 · 0.13%</span>
+<div class="track">
+<button class="bar" style="width:68.89%;background:#36d5e7" data-code="newconfirm" data-cohort="T3" data-index="3">
+</button>
+</div>
+<span class="rate">68.89%</span>
+</div>
+</div>
+<div class="cohort">
+<h3 style="color:#ffb454">T5 · 确认提单次数</h3>
+<p>条长为第二阶段条件提单率；中间文字为用户数和用户占比。</p>
+<div class="barline">
+<span class="bucket-label">0 次</span>
+<span class="share">28,828人 · 98.29%</span>
+<div class="track">
+<button class="bar" style="width:60.31%;background:#ffb454" data-code="newconfirm" data-cohort="T5" data-index="0">
+</button>
+</div>
+<span class="rate">60.31%</span>
+</div>
+<div class="barline">
+<span class="bucket-label">1 次</span>
+<span class="share">346人 · 1.18%</span>
+<div class="track">
+<button class="bar" style="width:72.25%;background:#ffb454" data-code="newconfirm" data-cohort="T5" data-index="1">
+</button>
+</div>
+<span class="rate">72.25%</span>
+</div>
+<div class="barline">
+<span class="bucket-label">2-3 次</span>
+<span class="share">102人 · 0.35%</span>
+<div class="track">
+<button class="bar" style="width:74.51%;background:#ffb454" data-code="newconfirm" data-cohort="T5" data-index="2">
+</button>
+</div>
+<span class="rate">74.51%</span>
+</div>
+<div class="barline">
+<span class="bucket-label">4 次及以上</span>
+<span class="share">54人 · 0.18%</span>
+<div class="track">
+<button class="bar" style="width:62.96%;background:#ffb454" data-code="newconfirm" data-cohort="T5" data-index="3">
+</button>
+</div>
+<span class="rate">62.96%</span>
+</div>
+</div>
+<div class="cohort">
+<h3 style="color:#a485ff">T7 · 确认提单次数</h3>
+<p>条长为第二阶段条件提单率；中间文字为用户数和用户占比。</p>
+<div class="barline">
+<span class="bucket-label">0 次</span>
+<span class="share">25,577人 · 98.15%</span>
+<div class="track">
+<button class="bar" style="width:55.35%;background:#a485ff" data-code="newconfirm" data-cohort="T7" data-index="0">
+</button>
+</div>
+<span class="rate">55.35%</span>
+</div>
+<div class="barline">
+<span class="bucket-label">1 次</span>
+<span class="share">329人 · 1.26%</span>
+<div class="track">
+<button class="bar" style="width:66.57%;background:#a485ff" data-code="newconfirm" data-cohort="T7" data-index="1">
+</button>
+</div>
+<span class="rate">66.57%</span>
+</div>
+<div class="barline">
+<span class="bucket-label">2-3 次</span>
+<span class="share">95人 · 0.36%</span>
+<div class="track">
+<button class="bar" style="width:68.42%;background:#a485ff" data-code="newconfirm" data-cohort="T7" data-index="2">
+</button>
+</div>
+<span class="rate">68.42%</span>
+</div>
+<div class="barline">
+<span class="bucket-label">4 次及以上</span>
+<span class="share">57人 · 0.22%</span>
+<div class="track">
+<button class="bar" style="width:57.89%;background:#a485ff" data-code="newconfirm" data-cohort="T7" data-index="3">
+</button>
+</div>
+<span class="rate">57.89%</span>
+</div>
+</div>
+<div class="detail">
+<h3>横向汇总：人数占比与提单率</h3>
+<table>
+<thead>
+<tr>
+<th>次数段</th>
+<th>T3 人数（占比）</th>
+<th>T3 提单率</th>
+<th>T5 人数（占比）</th>
+<th>T5 提单率</th>
+<th>T7 人数（占比）</th>
+<th>T7 提单率</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>0 次</td>
+<td>33,358（98.52%）</td>
+<td>
+<b>65.61%</b>
+</td>
+<td>28,828（98.29%）</td>
+<td>
+<b>60.31%</b>
+</td>
+<td>25,577（98.15%）</td>
+<td>
+<b>55.35%</b>
+</td>
+</tr>
+<tr>
+<td>1 次</td>
+<td>356（1.05%）</td>
+<td>
+<b>79.21%</b>
+</td>
+<td>346（1.18%）</td>
+<td>
+<b>72.25%</b>
+</td>
+<td>329（1.26%）</td>
+<td>
+<b>66.57%</b>
+</td>
+</tr>
+<tr>
+<td>2-3 次</td>
+<td>100（0.30%）</td>
+<td>
+<b>76.00%</b>
+</td>
+<td>102（0.35%）</td>
+<td>
+<b>74.51%</b>
+</td>
+<td>95（0.36%）</td>
+<td>
+<b>68.42%</b>
+</td>
+</tr>
+<tr>
+<td>4 次及以上</td>
+<td>45（0.13%）</td>
+<td>
+<b>68.89%</b>
+</td>
+<td>54（0.18%）</td>
+<td>
+<b>62.96%</b>
+</td>
+<td>57（0.22%）</td>
+<td>
+<b>57.89%</b>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section class="module">
+<header>
+<h2>进入提单页次数</h2>
+<span>模块内展示顺序：T3 → T5 → T7；同一窗口内比较不同次数段</span>
+</header>
+<div class="cohort">
+<h3 style="color:#36d5e7">T3 · 进入提单页次数</h3>
+<p>条长为第二阶段条件提单率；中间文字为用户数和用户占比。</p>
+<div class="barline">
+<span class="bucket-label">0 次</span>
+<span class="share">20,523人 · 60.61%</span>
+<div class="track">
+<button class="bar" style="width:60.71%;background:#36d5e7" data-code="newpage" data-cohort="T3" data-index="0">
+</button>
+</div>
+<span class="rate">60.71%</span>
+</div>
+<div class="barline">
+<span class="bucket-label">1 次</span>
+<span class="share">4,903人 · 14.48%</span>
+<div class="track">
+<button class="bar" style="width:70.41%;background:#36d5e7" data-code="newpage" data-cohort="T3" data-index="1">
+</button>
+</div>
+<span class="rate">70.41%</span>
+</div>
+<div class="barline">
+<span class="bucket-label">2-3 次</span>
+<span class="share">4,787人 · 14.14%</span>
+<div class="track">
+<button class="bar" style="width:73.62%;background:#36d5e7" data-code="newpage" data-cohort="T3" data-index="2">
+</button>
+</div>
+<span class="rate">73.62%</span>
+</div>
+<div class="barline">
+<span class="bucket-label">4 次及以上</span>
+<span class="share">3,646人 · 10.77%</span>
+<div class="track">
+<button class="bar" style="width:77.87%;background:#36d5e7" data-code="newpage" data-cohort="T3" data-index="3">
+</button>
+</div>
+<span class="rate">77.87%</span>
+</div>
+</div>
+<div class="cohort">
+<h3 style="color:#ffb454">T5 · 进入提单页次数</h3>
+<p>条长为第二阶段条件提单率；中间文字为用户数和用户占比。</p>
+<div class="barline">
+<span class="bucket-label">0 次</span>
+<span class="share">16,634人 · 56.71%</span>
+<div class="track">
+<button class="bar" style="width:54.37%;background:#ffb454" data-code="newpage" data-cohort="T5" data-index="0">
+</button>
+</div>
+<span class="rate">54.37%</span>
+</div>
+<div class="barline">
+<span class="bucket-label">1 次</span>
+<span class="share">4,155人 · 14.17%</span>
+<div class="track">
+<button class="bar" style="width:64.91%;background:#ffb454" data-code="newpage" data-cohort="T5" data-index="1">
+</button>
+</div>
+<span class="rate">64.91%</span>
+</div>
+<div class="barline">
+<span class="bucket-label">2-3 次</span>
+<span class="share">4,281人 · 14.60%</span>
+<div class="track">
+<button class="bar" style="width:67.41%;background:#ffb454" data-code="newpage" data-cohort="T5" data-index="2">
+</button>
+</div>
+<span class="rate">67.41%</span>
+</div>
+<div class="barline">
+<span class="bucket-label">4 次及以上</span>
+<span class="share">4,260人 · 14.52%</span>
+<div class="track">
+<button class="bar" style="width:73.22%;background:#ffb454" data-code="newpage" data-cohort="T5" data-index="3">
+</button>
+</div>
+<span class="rate">73.22%</span>
+</div>
+</div>
+<div class="cohort">
+<h3 style="color:#a485ff">T7 · 进入提单页次数</h3>
+<p>条长为第二阶段条件提单率；中间文字为用户数和用户占比。</p>
+<div class="barline">
+<span class="bucket-label">0 次</span>
+<span class="share">14,316人 · 54.94%</span>
+<div class="track">
+<button class="bar" style="width:49.11%;background:#a485ff" data-code="newpage" data-cohort="T7" data-index="0">
+</button>
+</div>
+<span class="rate">49.11%</span>
+</div>
+<div class="barline">
+<span class="bucket-label">1 次</span>
+<span class="share">3,452人 · 13.25%</span>
+<div class="track">
+<button class="bar" style="width:58.86%;background:#a485ff" data-code="newpage" data-cohort="T7" data-index="1">
+</button>
+</div>
+<span class="rate">58.86%</span>
+</div>
+<div class="barline">
+<span class="bucket-label">2-3 次</span>
+<span class="share">3,875人 · 14.87%</span>
+<div class="track">
+<button class="bar" style="width:61.7%;background:#a485ff" data-code="newpage" data-cohort="T7" data-index="2">
+</button>
+</div>
+<span class="rate">61.70%</span>
+</div>
+<div class="barline">
+<span class="bucket-label">4 次及以上</span>
+<span class="share">4,415人 · 16.94%</span>
+<div class="track">
+<button class="bar" style="width:68.4%;background:#a485ff" data-code="newpage" data-cohort="T7" data-index="3">
+</button>
+</div>
+<span class="rate">68.40%</span>
+</div>
+</div>
+<div class="detail">
+<h3>横向汇总：人数占比与提单率</h3>
+<table>
+<thead>
+<tr>
+<th>次数段</th>
+<th>T3 人数（占比）</th>
+<th>T3 提单率</th>
+<th>T5 人数（占比）</th>
+<th>T5 提单率</th>
+<th>T7 人数（占比）</th>
+<th>T7 提单率</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>0 次</td>
+<td>20,523（60.61%）</td>
+<td>
+<b>60.71%</b>
+</td>
+<td>16,634（56.71%）</td>
+<td>
+<b>54.37%</b>
+</td>
+<td>14,316（54.94%）</td>
+<td>
+<b>49.11%</b>
+</td>
+</tr>
+<tr>
+<td>1 次</td>
+<td>4,903（14.48%）</td>
+<td>
+<b>70.41%</b>
+</td>
+<td>4,155（14.17%）</td>
+<td>
+<b>64.91%</b>
+</td>
+<td>3,452（13.25%）</td>
+<td>
+<b>58.86%</b>
+</td>
+</tr>
+<tr>
+<td>2-3 次</td>
+<td>4,787（14.14%）</td>
+<td>
+<b>73.62%</b>
+</td>
+<td>4,281（14.60%）</td>
+<td>
+<b>67.41%</b>
+</td>
+<td>3,875（14.87%）</td>
+<td>
+<b>61.70%</b>
+</td>
+</tr>
+<tr>
+<td>4 次及以上</td>
+<td>3,646（10.77%）</td>
+<td>
+<b>77.87%</b>
+</td>
+<td>4,260（14.52%）</td>
+<td>
+<b>73.22%</b>
+</td>
+<td>4,415（16.94%）</td>
+<td>
+<b>68.40%</b>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section class="module">
+<header>
+<h2>查看还款计划次数</h2>
+<span>模块内展示顺序：T3 → T5 → T7；同一窗口内比较不同次数段</span>
+</header>
+<div class="cohort">
+<h3 style="color:#36d5e7">T3 · 查看还款计划次数</h3>
+<p>条长为第二阶段条件提单率；中间文字为用户数和用户占比。</p>
+<div class="barline">
+<span class="bucket-label">0 次</span>
+<span class="share">27,980人 · 82.64%</span>
+<div class="track">
+<button class="bar" style="width:63.04%;background:#36d5e7" data-code="plan_newdetails" data-cohort="T3" data-index="0">
+</button>
+</div>
+<span class="rate">63.04%</span>
+</div>
+<div class="barline">
+<span class="bucket-label">1 次</span>
+<span class="share">3,157人 · 9.32%</span>
+<div class="track">
+<button class="bar" style="width:76.75%;background:#36d5e7" data-code="plan_newdetails" data-cohort="T3" data-index="1">
+</button>
+</div>
+<span class="rate">76.75%</span>
+</div>
+<div class="barline">
+<span class="bucket-label">2-3 次</span>
+<span class="share">1,875人 · 5.54%</span>
+<div class="track">
+<button class="bar" style="width:80.53%;background:#36d5e7" data-code="plan_newdetails" data-cohort="T3" data-index="2">
+</button>
+</div>
+<span class="rate">80.53%</span>
+</div>
+<div class="barline">
+<span class="bucket-label">4 次及以上</span>
+<span class="share">847人 · 2.50%</span>
+<div class="track">
+<button class="bar" style="width:83%;background:#36d5e7" data-code="plan_newdetails" data-cohort="T3" data-index="3">
+</button>
+</div>
+<span class="rate">83.00%</span>
+</div>
+</div>
+<div class="cohort">
+<h3 style="color:#ffb454">T5 · 查看还款计划次数</h3>
+<p>条长为第二阶段条件提单率；中间文字为用户数和用户占比。</p>
+<div class="barline">
+<span class="bucket-label">0 次</span>
+<span class="share">23,500人 · 80.12%</span>
+<div class="track">
+<button class="bar" style="width:57.1%;background:#ffb454" data-code="plan_newdetails" data-cohort="T5" data-index="0">
+</button>
+</div>
+<span class="rate">57.10%</span>
+</div>
+<div class="barline">
+<span class="bucket-label">1 次</span>
+<span class="share">2,884人 · 9.83%</span>
+<div class="track">
+<button class="bar" style="width:71.01%;background:#ffb454" data-code="plan_newdetails" data-cohort="T5" data-index="1">
+</button>
+</div>
+<span class="rate">71.01%</span>
+</div>
+<div class="barline">
+<span class="bucket-label">2-3 次</span>
+<span class="share">1,899人 · 6.47%</span>
+<div class="track">
+<button class="bar" style="width:75.72%;background:#ffb454" data-code="plan_newdetails" data-cohort="T5" data-index="2">
+</button>
+</div>
+<span class="rate">75.72%</span>
+</div>
+<div class="barline">
+<span class="bucket-label">4 次及以上</span>
+<span class="share">1,047人 · 3.57%</span>
+<div class="track">
+<button class="bar" style="width:80.32%;background:#ffb454" data-code="plan_newdetails" data-cohort="T5" data-index="3">
+</button>
+</div>
+<span class="rate">80.32%</span>
+</div>
+</div>
+<div class="cohort">
+<h3 style="color:#a485ff">T7 · 查看还款计划次数</h3>
+<p>条长为第二阶段条件提单率；中间文字为用户数和用户占比。</p>
+<div class="barline">
+<span class="bucket-label">0 次</span>
+<span class="share">20,408人 · 78.32%</span>
+<div class="track">
+<button class="bar" style="width:51.64%;background:#a485ff" data-code="plan_newdetails" data-cohort="T7" data-index="0">
+</button>
+</div>
+<span class="rate">51.64%</span>
+</div>
+<div class="barline">
+<span class="bucket-label">1 次</span>
+<span class="share">2,561人 · 9.83%</span>
+<div class="track">
+<button class="bar" style="width:65.68%;background:#a485ff" data-code="plan_newdetails" data-cohort="T7" data-index="1">
+</button>
+</div>
+<span class="rate">65.68%</span>
+</div>
+<div class="barline">
+<span class="bucket-label">2-3 次</span>
+<span class="share">1,840人 · 7.06%</span>
+<div class="track">
+<button class="bar" style="width:71.2%;background:#a485ff" data-code="plan_newdetails" data-cohort="T7" data-index="2">
+</button>
+</div>
+<span class="rate">71.20%</span>
+</div>
+<div class="barline">
+<span class="bucket-label">4 次及以上</span>
+<span class="share">1,249人 · 4.79%</span>
+<div class="track">
+<button class="bar" style="width:75.5%;background:#a485ff" data-code="plan_newdetails" data-cohort="T7" data-index="3">
+</button>
+</div>
+<span class="rate">75.50%</span>
+</div>
+</div>
+<div class="detail">
+<h3>横向汇总：人数占比与提单率</h3>
+<table>
+<thead>
+<tr>
+<th>次数段</th>
+<th>T3 人数（占比）</th>
+<th>T3 提单率</th>
+<th>T5 人数（占比）</th>
+<th>T5 提单率</th>
+<th>T7 人数（占比）</th>
+<th>T7 提单率</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>0 次</td>
+<td>27,980（82.64%）</td>
+<td>
+<b>63.04%</b>
+</td>
+<td>23,500（80.12%）</td>
+<td>
+<b>57.10%</b>
+</td>
+<td>20,408（78.32%）</td>
+<td>
+<b>51.64%</b>
+</td>
+</tr>
+<tr>
+<td>1 次</td>
+<td>3,157（9.32%）</td>
+<td>
+<b>76.75%</b>
+</td>
+<td>2,884（9.83%）</td>
+<td>
+<b>71.01%</b>
+</td>
+<td>2,561（9.83%）</td>
+<td>
+<b>65.68%</b>
+</td>
+</tr>
+<tr>
+<td>2-3 次</td>
+<td>1,875（5.54%）</td>
+<td>
+<b>80.53%</b>
+</td>
+<td>1,899（6.47%）</td>
+<td>
+<b>75.72%</b>
+</td>
+<td>1,840（7.06%）</td>
+<td>
+<b>71.20%</b>
+</td>
+</tr>
+<tr>
+<td>4 次及以上</td>
+<td>847（2.50%）</td>
+<td>
+<b>83.00%</b>
+</td>
+<td>1,047（3.57%）</td>
+<td>
+<b>80.32%</b>
+</td>
+<td>1,249（4.79%）</td>
+<td>
+<b>75.50%</b>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section class="module">
+<header>
+<h2>选择借款原因次数</h2>
+<span>模块内展示顺序：T3 → T5 → T7；同一窗口内比较不同次数段</span>
+</header>
+<div class="cohort">
+<h3 style="color:#36d5e7">T3 · 选择借款原因次数</h3>
+<p>条长为第二阶段条件提单率；中间文字为用户数和用户占比。</p>
+<div class="barline">
+<span class="bucket-label">0 次</span>
+<span class="share">32,283人 · 95.35%</span>
+<div class="track">
+<button class="bar" style="width:65.05%;background:#36d5e7" data-code="purpose_newdetails" data-cohort="T3" data-index="0">
+</button>
+</div>
+<span class="rate">65.05%</span>
+</div>
+<div class="barline">
+<span class="bucket-label">1 次</span>
+<span class="share">1,270人 · 3.75%</span>
+<div class="track">
+<button class="bar" style="width:80.55%;background:#36d5e7" data-code="purpose_newdetails" data-cohort="T3" data-index="1">
+</button>
+</div>
+<span class="rate">80.55%</span>
+</div>
+<div class="barline">
+<span class="bucket-label">2-3 次</span>
+<span class="share">267人 · 0.79%</span>
+<div class="track">
+<button class="bar" style="width:83.15%;background:#36d5e7" data-code="purpose_newdetails" data-cohort="T3" data-index="2">
+</button>
+</div>
+<span class="rate">83.15%</span>
+</div>
+<div class="barline">
+<span class="bucket-label">4 次及以上</span>
+<span class="share">39人 · 0.12%</span>
+<div class="track">
+<button class="bar" style="width:76.92%;background:#36d5e7" data-code="purpose_newdetails" data-cohort="T3" data-index="3">
+</button>
+</div>
+<span class="rate">76.92%</span>
+</div>
+</div>
+<div class="cohort">
+<h3 style="color:#ffb454">T5 · 选择借款原因次数</h3>
+<p>条长为第二阶段条件提单率；中间文字为用户数和用户占比。</p>
+<div class="barline">
+<span class="bucket-label">0 次</span>
+<span class="share">27,655人 · 94.29%</span>
+<div class="track">
+<button class="bar" style="width:59.55%;background:#ffb454" data-code="purpose_newdetails" data-cohort="T5" data-index="0">
+</button>
+</div>
+<span class="rate">59.55%</span>
+</div>
+<div class="barline">
+<span class="bucket-label">1 次</span>
+<span class="share">1,305人 · 4.45%</span>
+<div class="track">
+<button class="bar" style="width:75.33%;background:#ffb454" data-code="purpose_newdetails" data-cohort="T5" data-index="1">
+</button>
+</div>
+<span class="rate">75.33%</span>
+</div>
+<div class="barline">
+<span class="bucket-label">2-3 次</span>
+<span class="share">322人 · 1.10%</span>
+<div class="track">
+<button class="bar" style="width:80.43%;background:#ffb454" data-code="purpose_newdetails" data-cohort="T5" data-index="2">
+</button>
+</div>
+<span class="rate">80.43%</span>
+</div>
+<div class="barline">
+<span class="bucket-label">4 次及以上</span>
+<span class="share">48人 · 0.16%</span>
+<div class="track">
+<button class="bar" style="width:75%;background:#ffb454" data-code="purpose_newdetails" data-cohort="T5" data-index="3">
+</button>
+</div>
+<span class="rate">75.00%</span>
+</div>
+</div>
+<div class="cohort">
+<h3 style="color:#a485ff">T7 · 选择借款原因次数</h3>
+<p>条长为第二阶段条件提单率；中间文字为用户数和用户占比。</p>
+<div class="barline">
+<span class="bucket-label">0 次</span>
+<span class="share">24,408人 · 93.67%</span>
+<div class="track">
+<button class="bar" style="width:54.52%;background:#a485ff" data-code="purpose_newdetails" data-cohort="T7" data-index="0">
+</button>
+</div>
+<span class="rate">54.52%</span>
+</div>
+<div class="barline">
+<span class="bucket-label">1 次</span>
+<span class="share">1,250人 · 4.80%</span>
+<div class="track">
+<button class="bar" style="width:69.36%;background:#a485ff" data-code="purpose_newdetails" data-cohort="T7" data-index="1">
+</button>
+</div>
+<span class="rate">69.36%</span>
+</div>
+<div class="barline">
+<span class="bucket-label">2-3 次</span>
+<span class="share">348人 · 1.34%</span>
+<div class="track">
+<button class="bar" style="width:75.57%;background:#a485ff" data-code="purpose_newdetails" data-cohort="T7" data-index="2">
+</button>
+</div>
+<span class="rate">75.57%</span>
+</div>
+<div class="barline">
+<span class="bucket-label">4 次及以上</span>
+<span class="share">52人 · 0.20%</span>
+<div class="track">
+<button class="bar" style="width:69.23%;background:#a485ff" data-code="purpose_newdetails" data-cohort="T7" data-index="3">
+</button>
+</div>
+<span class="rate">69.23%</span>
+</div>
+</div>
+<div class="detail">
+<h3>横向汇总：人数占比与提单率</h3>
+<table>
+<thead>
+<tr>
+<th>次数段</th>
+<th>T3 人数（占比）</th>
+<th>T3 提单率</th>
+<th>T5 人数（占比）</th>
+<th>T5 提单率</th>
+<th>T7 人数（占比）</th>
+<th>T7 提单率</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>0 次</td>
+<td>32,283（95.35%）</td>
+<td>
+<b>65.05%</b>
+</td>
+<td>27,655（94.29%）</td>
+<td>
+<b>59.55%</b>
+</td>
+<td>24,408（93.67%）</td>
+<td>
+<b>54.52%</b>
+</td>
+</tr>
+<tr>
+<td>1 次</td>
+<td>1,270（3.75%）</td>
+<td>
+<b>80.55%</b>
+</td>
+<td>1,305（4.45%）</td>
+<td>
+<b>75.33%</b>
+</td>
+<td>1,250（4.80%）</td>
+<td>
+<b>69.36%</b>
+</td>
+</tr>
+<tr>
+<td>2-3 次</td>
+<td>267（0.79%）</td>
+<td>
+<b>83.15%</b>
+</td>
+<td>322（1.10%）</td>
+<td>
+<b>80.43%</b>
+</td>
+<td>348（1.34%）</td>
+<td>
+<b>75.57%</b>
+</td>
+</tr>
+<tr>
+<td>4 次及以上</td>
+<td>39（0.12%）</td>
+<td>
+<b>76.92%</b>
+</td>
+<td>48（0.16%）</td>
+<td>
+<b>75.00%</b>
+</td>
+<td>52（0.20%）</td>
+<td>
+<b>69.23%</b>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section class="module">
+<header>
+<h2>切换借款期次次数</h2>
+<span>模块内展示顺序：T3 → T5 → T7；同一窗口内比较不同次数段</span>
+</header>
+<div class="cohort">
+<h3 style="color:#36d5e7">T3 · 切换借款期次次数</h3>
+<p>条长为第二阶段条件提单率；中间文字为用户数和用户占比。</p>
+<div class="barline">
+<span class="bucket-label">0 次</span>
+<span class="share">31,965人 · 94.41%</span>
+<div class="track">
+<button class="bar" style="width:64.76%;background:#36d5e7" data-code="term_selection" data-cohort="T3" data-index="0">
+</button>
+</div>
+<span class="rate">64.76%</span>
+</div>
+<div class="barline">
+<span class="bucket-label">1 次</span>
+<span class="share">761人 · 2.25%</span>
+<div class="track">
+<button class="bar" style="width:80.55%;background:#36d5e7" data-code="term_selection" data-cohort="T3" data-index="1">
+</button>
+</div>
+<span class="rate">80.55%</span>
+</div>
+<div class="barline">
+<span class="bucket-label">2-3 次</span>
+<span class="share">699人 · 2.06%</span>
+<div class="track">
+<button class="bar" style="width:82.98%;background:#36d5e7" data-code="term_selection" data-cohort="T3" data-index="2">
+</button>
+</div>
+<span class="rate">82.98%</span>
+</div>
+<div class="barline">
+<span class="bucket-label">4 次及以上</span>
+<span class="share">434人 · 1.28%</span>
+<div class="track">
+<button class="bar" style="width:87.56%;background:#36d5e7" data-code="term_selection" data-cohort="T3" data-index="3">
+</button>
+</div>
+<span class="rate">87.56%</span>
+</div>
+</div>
+<div class="cohort">
+<h3 style="color:#ffb454">T5 · 切换借款期次次数</h3>
+<p>条长为第二阶段条件提单率；中间文字为用户数和用户占比。</p>
+<div class="barline">
+<span class="bucket-label">0 次</span>
+<span class="share">27,405人 · 93.44%</span>
+<div class="track">
+<button class="bar" style="width:59.18%;background:#ffb454" data-code="term_selection" data-cohort="T5" data-index="0">
+</button>
+</div>
+<span class="rate">59.18%</span>
+</div>
+<div class="barline">
+<span class="bucket-label">1 次</span>
+<span class="share">757人 · 2.58%</span>
+<div class="track">
+<button class="bar" style="width:76.75%;background:#ffb454" data-code="term_selection" data-cohort="T5" data-index="1">
+</button>
+</div>
+<span class="rate">76.75%</span>
+</div>
+<div class="barline">
+<span class="bucket-label">2-3 次</span>
+<span class="share">672人 · 2.29%</span>
+<div class="track">
+<button class="bar" style="width:78.42%;background:#ffb454" data-code="term_selection" data-cohort="T5" data-index="2">
+</button>
+</div>
+<span class="rate">78.42%</span>
+</div>
+<div class="barline">
+<span class="bucket-label">4 次及以上</span>
+<span class="share">496人 · 1.69%</span>
+<div class="track">
+<button class="bar" style="width:84.68%;background:#ffb454" data-code="term_selection" data-cohort="T5" data-index="3">
+</button>
+</div>
+<span class="rate">84.68%</span>
+</div>
+</div>
+<div class="cohort">
+<h3 style="color:#a485ff">T7 · 切换借款期次次数</h3>
+<p>条长为第二阶段条件提单率；中间文字为用户数和用户占比。</p>
+<div class="barline">
+<span class="bucket-label">0 次</span>
+<span class="share">24,127人 · 92.59%</span>
+<div class="track">
+<button class="bar" style="width:54.04%;background:#a485ff" data-code="term_selection" data-cohort="T7" data-index="0">
+</button>
+</div>
+<span class="rate">54.04%</span>
+</div>
+<div class="barline">
+<span class="bucket-label">1 次</span>
+<span class="share">705人 · 2.71%</span>
+<div class="track">
+<button class="bar" style="width:70.35%;background:#a485ff" data-code="term_selection" data-cohort="T7" data-index="1">
+</button>
+</div>
+<span class="rate">70.35%</span>
+</div>
+<div class="barline">
+<span class="bucket-label">2-3 次</span>
+<span class="share">695人 · 2.67%</span>
+<div class="track">
+<button class="bar" style="width:74.24%;background:#a485ff" data-code="term_selection" data-cohort="T7" data-index="2">
+</button>
+</div>
+<span class="rate">74.24%</span>
+</div>
+<div class="barline">
+<span class="bucket-label">4 次及以上</span>
+<span class="share">531人 · 2.04%</span>
+<div class="track">
+<button class="bar" style="width:79.66%;background:#a485ff" data-code="term_selection" data-cohort="T7" data-index="3">
+</button>
+</div>
+<span class="rate">79.66%</span>
+</div>
+</div>
+<div class="detail">
+<h3>横向汇总：人数占比与提单率</h3>
+<table>
+<thead>
+<tr>
+<th>次数段</th>
+<th>T3 人数（占比）</th>
+<th>T3 提单率</th>
+<th>T5 人数（占比）</th>
+<th>T5 提单率</th>
+<th>T7 人数（占比）</th>
+<th>T7 提单率</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>0 次</td>
+<td>31,965（94.41%）</td>
+<td>
+<b>64.76%</b>
+</td>
+<td>27,405（93.44%）</td>
+<td>
+<b>59.18%</b>
+</td>
+<td>24,127（92.59%）</td>
+<td>
+<b>54.04%</b>
+</td>
+</tr>
+<tr>
+<td>1 次</td>
+<td>761（2.25%）</td>
+<td>
+<b>80.55%</b>
+</td>
+<td>757（2.58%）</td>
+<td>
+<b>76.75%</b>
+</td>
+<td>705（2.71%）</td>
+<td>
+<b>70.35%</b>
+</td>
+</tr>
+<tr>
+<td>2-3 次</td>
+<td>699（2.06%）</td>
+<td>
+<b>82.98%</b>
+</td>
+<td>672（2.29%）</td>
+<td>
+<b>78.42%</b>
+</td>
+<td>695（2.67%）</td>
+<td>
+<b>74.24%</b>
+</td>
+</tr>
+<tr>
+<td>4 次及以上</td>
+<td>434（1.28%）</td>
+<td>
+<b>87.56%</b>
+</td>
+<td>496（1.69%）</td>
+<td>
+<b>84.68%</b>
+</td>
+<td>531（2.04%）</td>
+<td>
+<b>79.66%</b>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section class="module combo">
+<header>
+<h2>自由组合分析：决策行为组合</h2>
+<span>决策行为=期次切换、金额切换、还款计划查看；“提单页 + 三项决策行为”表示四类信号同时发生</span>
+</header>
+<div class="cohort">
+<h3 style="color:#36d5e7">T3 · 行为组合</h3>
+<div class="barline">
+<span class="bucket-label">无上述行为</span>
+<span class="share">20,522人 · 60.61%</span>
+<div class="track">
+<button class="bar" style="width:60.71%;background:#36d5e7" data-combo="T3|无上述行为">
+</button>
+</div>
+<span class="rate">60.71%</span>
+</div>
+<div class="barline">
+<span class="bucket-label">仅进入提单页</span>
+<span class="share">5,449人 · 16.09%</span>
+<div class="track">
+<button class="bar" style="width:65.98%;background:#36d5e7" data-combo="T3|仅进入提单页">
+</button>
+</div>
+<span class="rate">65.98%</span>
+</div>
+<div class="barline">
+<span class="bucket-label">单项决策行为</span>
+<span class="share">3,852人 · 11.38%</span>
+<div class="track">
+<button class="bar" style="width:77.8%;background:#36d5e7" data-combo="T3|单项决策行为">
+</button>
+</div>
+<span class="rate">77.80%</span>
+</div>
+<div class="barline">
+<span class="bucket-label">两项决策行为</span>
+<span class="share">3,110人 · 9.19%</span>
+<div class="track">
+<button class="bar" style="width:79.39%;background:#36d5e7" data-combo="T3|两项决策行为">
+</button>
+</div>
+<span class="rate">79.39%</span>
+</div>
+<div class="barline">
+<span class="bucket-label">提单页 + 三项决策行为</span>
+<span class="share">926人 · 2.73%</span>
+<div class="track">
+<button class="bar" style="width:81.53%;background:#36d5e7" data-combo="T3|提单页 + 三项决策行为">
+</button>
+</div>
+<span class="rate">81.53%</span>
+</div>
+</div>
+<div class="cohort">
+<h3 style="color:#ffb454">T5 · 行为组合</h3>
+<div class="barline">
+<span class="bucket-label">无上述行为</span>
+<span class="share">16,634人 · 56.71%</span>
+<div class="track">
+<button class="bar" style="width:54.37%;background:#ffb454" data-combo="T5|无上述行为">
+</button>
+</div>
+<span class="rate">54.37%</span>
+</div>
+<div class="barline">
+<span class="bucket-label">仅进入提单页</span>
+<span class="share">4,930人 · 16.81%</span>
+<div class="track">
+<button class="bar" style="width:59.35%;background:#ffb454" data-combo="T5|仅进入提单页">
+</button>
+</div>
+<span class="rate">59.35%</span>
+</div>
+<div class="barline">
+<span class="bucket-label">单项决策行为</span>
+<span class="share">3,599人 · 12.27%</span>
+<div class="track">
+<button class="bar" style="width:72.55%;background:#ffb454" data-combo="T5|单项决策行为">
+</button>
+</div>
+<span class="rate">72.55%</span>
+</div>
+<div class="barline">
+<span class="bucket-label">两项决策行为</span>
+<span class="share">3,153人 · 10.75%</span>
+<div class="track">
+<button class="bar" style="width:75.26%;background:#ffb454" data-combo="T5|两项决策行为">
+</button>
+</div>
+<span class="rate">75.26%</span>
+</div>
+<div class="barline">
+<span class="bucket-label">提单页 + 三项决策行为</span>
+<span class="share">1,014人 · 3.46%</span>
+<div class="track">
+<button class="bar" style="width:78.11%;background:#ffb454" data-combo="T5|提单页 + 三项决策行为">
+</button>
+</div>
+<span class="rate">78.11%</span>
+</div>
+</div>
+<div class="cohort">
+<h3 style="color:#a485ff">T7 · 行为组合</h3>
+<div class="barline">
+<span class="bucket-label">无上述行为</span>
+<span class="share">14,316人 · 54.94%</span>
+<div class="track">
+<button class="bar" style="width:49.11%;background:#a485ff" data-combo="T7|无上述行为">
+</button>
+</div>
+<span class="rate">49.11%</span>
+</div>
+<div class="barline">
+<span class="bucket-label">仅进入提单页</span>
+<span class="share">4,339人 · 16.65%</span>
+<div class="track">
+<button class="bar" style="width:53.1%;background:#a485ff" data-combo="T7|仅进入提单页">
+</button>
+</div>
+<span class="rate">53.10%</span>
+</div>
+<div class="barline">
+<span class="bucket-label">单项决策行为</span>
+<span class="share">3,230人 · 12.40%</span>
+<div class="track">
+<button class="bar" style="width:66.75%;background:#a485ff" data-combo="T7|单项决策行为">
+</button>
+</div>
+<span class="rate">66.75%</span>
+</div>
+<div class="barline">
+<span class="bucket-label">两项决策行为</span>
+<span class="share">3,077人 · 11.81%</span>
+<div class="track">
+<button class="bar" style="width:70.69%;background:#a485ff" data-combo="T7|两项决策行为">
+</button>
+</div>
+<span class="rate">70.69%</span>
+</div>
+<div class="barline">
+<span class="bucket-label">提单页 + 三项决策行为</span>
+<span class="share">1,096人 · 4.21%</span>
+<div class="track">
+<button class="bar" style="width:73.72%;background:#a485ff" data-combo="T7|提单页 + 三项决策行为">
+</button>
+</div>
+<span class="rate">73.72%</span>
+</div>
+</div>
+<div class="detail">
+<h3>组合路径横向明细</h3>
+<table>
+<thead>
+<tr>
+<th>行为组合</th>
+<th>T3 人数（占比）</th>
+<th>T3 提单率</th>
+<th>T5 人数（占比）</th>
+<th>T5 提单率</th>
+<th>T7 人数（占比）</th>
+<th>T7 提单率</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>无上述行为</td>
+<td>20,522（60.61%）</td>
+<td>
+<b>60.71%</b>
+</td>
+<td>16,634（56.71%）</td>
+<td>
+<b>54.37%</b>
+</td>
+<td>14,316（54.94%）</td>
+<td>
+<b>49.11%</b>
+</td>
+</tr>
+<tr>
+<td>仅进入提单页</td>
+<td>5,449（16.09%）</td>
+<td>
+<b>65.98%</b>
+</td>
+<td>4,930（16.81%）</td>
+<td>
+<b>59.35%</b>
+</td>
+<td>4,339（16.65%）</td>
+<td>
+<b>53.10%</b>
+</td>
+</tr>
+<tr>
+<td>单项决策行为</td>
+<td>3,852（11.38%）</td>
+<td>
+<b>77.80%</b>
+</td>
+<td>3,599（12.27%）</td>
+<td>
+<b>72.55%</b>
+</td>
+<td>3,230（12.40%）</td>
+<td>
+<b>66.75%</b>
+</td>
+</tr>
+<tr>
+<td>两项决策行为</td>
+<td>3,110（9.19%）</td>
+<td>
+<b>79.39%</b>
+</td>
+<td>3,153（10.75%）</td>
+<td>
+<b>75.26%</b>
+</td>
+<td>3,077（11.81%）</td>
+<td>
+<b>70.69%</b>
+</td>
+</tr>
+<tr>
+<td>提单页 + 三项决策行为</td>
+<td>926（2.73%）</td>
+<td>
+<b>81.53%</b>
+</td>
+<td>1,014（3.46%）</td>
+<td>
+<b>78.11%</b>
+</td>
+<td>1,096（4.21%）</td>
+<td>
+<b>73.72%</b>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section class="panel">
+<h2>综合结论：指标单独效果与组合效果</h2>
+<div class="call">
+<b>1. 期次选择是最强的单指标意图信号。</b> 4 次以上期次切换时，T3/T5/T7 提单率为 87.56% / 84.68% / 79.66%，较 0 次高 22.80 / 25.50 / 25.62pp；但覆盖仅 1.28% / 1.69% / 2.04%，适合高价值、小规模优先触达。</div>
+<div class="call">
+<b>2. 还款计划与金额切换更适合作为可规模化标签。</b> T7 中，查看还款计划 1 次以上覆盖 21.68%，提单率 65.68%~75.50%；金额切换 1 次以上覆盖 19.54%，提单率 66.92%~72.87%。它们兼具较高覆盖和显著梯度。</div>
+<div class="call">
+<b>3. 进入提单页是广覆盖但需要与决策信号叠加的行为。</b> 仅进入提单页的提单率为 T3/T5/T7 65.98%/59.35%/53.10%，只比无上述行为高 5.27/4.98/3.99pp；因此单独进入提单页并不足以代表强意图。</div>
+<div class="call">
+<b>4. 决策行为组合显著提升提单率。</b> “提单页 + 三项决策行为”提单率为 81.53%/78.11%/73.72%，较无上述行为分别高 20.82/23.74/24.61pp；覆盖为 2.73%/3.46%/4.21%。可建立“高意图”人群，但规模有限。</div>
+<div class="call">
+<b>5. 两项决策行为是覆盖与效果更均衡的运营层。</b> 覆盖 T3/T5/T7 的 9.19%/10.75%/11.81%，提单率为 79.39%/75.26%/70.69%。相比最高组合覆盖更大、提单率仅低 2~3pp，适合作为主要转化触达层。</div>
+<div class="call">
+<b>6. 时间窗口差异。</b> 相同行为组合下，T3 提单率最高、T7 最低，例如两项决策行为为 79.39%/75.26%/70.69%；但 T7 高意图组合覆盖最高（4.21%），说明延长窗口会捕捉更多持续决策行为，同时整体后续转化概率递减。</div>
+<div class="call">
+<b>7. 数据质量与策略边界。</b> 三项优惠券指标全为 0 次，应先排查埋点。所有结果是关联关系，建议将“无行为 / 单项 / 两项 / 高意图组合”做随机实验，联合评估放款金额、逾期和最终盈利额。</div>
+</section>
+<details class="panel">
+<summary>附录：完整结构化 PGSQL 代码与注释</summary>
+<pre class="sql">/*
+  T3/T5/T7 第一阶段 11 个行为指标分段与第二阶段提单表现。
+  行为数值为第一阶段累计次数；活跃判定不使用这些指标，而使用 active_date 是否有记录。
+  分母为干净结清、同日获额通过、且结清日和第一阶段未提单的可观察事件。
+*/
+WITH
+all_orders AS (
+    SELECT user_id, serial_id, apply_time, remit_time, repaid_time, repaid_date,
+           remit_date, loan_status_code, is_remit, reg_date
+    FROM wangchuanliang.order_loan_f_v2_copy
+    WHERE reg_date BETWEEN DATE '2026-01-01' AND DATE '2026-07-15'
+      AND apply_time IS NOT NULL
+),
+all_users AS (
+    SELECT DISTINCT user_id FROM all_orders
+    WHERE is_remit = 1 AND remit_date &gt; DATE '2026-01-01'
+),
+settled_raw AS (
+    SELECT o.user_id, o.serial_id, o.repaid_date, o.repaid_time,
+           ROW_NUMBER() OVER (PARTITION BY o.user_id ORDER BY o.repaid_time, o.serial_id) AS settle_seq
+    FROM all_orders o JOIN all_users u ON u.user_id = o.user_id
+    WHERE o.is_remit = 1 AND o.loan_status_code = 7
+      AND o.repaid_time IS NOT NULL AND o.remit_time IS NOT NULL
+),
+clean_settle AS (
+    SELECT s.* FROM settled_raw s
+    WHERE NOT EXISTS (
+        SELECT 1 FROM all_orders o2
+        WHERE o2.user_id = s.user_id AND o2.serial_id &lt;&gt; s.serial_id
+          AND o2.apply_time &lt; s.repaid_time
+          AND (o2.loan_status_code IN (5, 8)
+               OR (o2.loan_status_code = 7 AND o2.repaid_time &gt; s.repaid_time))
+    )
+),
+credit_pass AS (
+    SELECT DISTINCT ON (v.user_id, v.vir_date)
+           v.user_id, v.vir_date, to_timestamp(v.vir_unix) AS vir_time
+    FROM wangchuanliang.order_vir_f_copy v
+    WHERE v.is_pass1 = 1 AND v.vir_date &gt; DATE '2026-01-01'
+    ORDER BY v.user_id, v.vir_date, to_timestamp(v.vir_unix) DESC
+),
+eligible AS (
+    SELECT cs.* FROM clean_settle cs
+    JOIN credit_pass cp ON cp.user_id = cs.user_id
+                       AND cp.vir_date = cs.repaid_date::date
+                       AND cp.vir_time &gt; cs.repaid_time
+),
+applies AS (
+    SELECT user_id, apply_time FROM all_orders
+    WHERE apply_time &gt; TIMESTAMP '2026-01-01'
+),
+merged AS (
+    SELECT user_id, repaid_time AS ts, 'settle' AS kind, settle_seq::float AS settle_seq FROM eligible
+    UNION ALL
+    SELECT user_id, apply_time, 'apply', NULL::float FROM applies
+),
+ranked AS (
+    SELECT *, ROW_NUMBER() OVER (
+        PARTITION BY user_id
+        ORDER BY ts, CASE kind WHEN 'settle' THEN 0 ELSE 1 END
+    ) AS rn
+    FROM merged
+),
+pairs AS (
+    SELECT s.user_id, s.ts AS repaid_time, s.settle_seq, a.ts AS next_apply_time
+    FROM ranked s
+    LEFT JOIN ranked a ON a.user_id = s.user_id AND a.rn = s.rn + 1 AND a.kind = 'apply'
+    WHERE s.kind = 'settle'
+),
+thresholds AS (
+    SELECT 'T3' AS cohort, 3 AS threshold_days
+    UNION ALL SELECT 'T5', 5
+    UNION ALL SELECT 'T7', 7
+),
+candidates AS (
+    SELECT t.cohort, t.threshold_days, p.user_id, p.repaid_time::date AS repaid_date,
+           CASE WHEN p.next_apply_time IS NULL THEN 0 ELSE 1 END AS phase2_apply,
+           CASE WHEN p.next_apply_time IS NULL THEN NULL
+                ELSE p.next_apply_time::date - p.repaid_time::date END AS gap_days
+    FROM pairs p CROSS JOIN thresholds t
+    WHERE p.settle_seq &lt;= 10
+      AND (p.next_apply_time IS NULL
+           OR p.next_apply_time::date &gt; p.repaid_time::date + t.threshold_days)
+),
+/* 每个结清事件汇总第一阶段 11 个行为次数。 */
+behavior_metrics AS (
+    SELECT
+        c.*,
+        COALESCE(SUM(e.active_status), 0) AS active_status,
+        COALESCE(SUM(e.newpage), 0) AS newpage,
+        COALESCE(SUM(e.amount_selection), 0) AS amount_selection,
+        COALESCE(SUM(e.contract_newdetails), 0) AS contract_newdetails,
+        COALESCE(SUM(e.term_selection), 0) AS term_selection,
+        COALESCE(SUM(e.newconfirm), 0) AS newconfirm,
+        COALESCE(SUM(e.plan_newdetails), 0) AS plan_newdetails,
+        COALESCE(SUM(e.purpose_newdetails), 0) AS purpose_newdetails,
+        COALESCE(SUM(e.coupons_back), 0) AS coupons_back,
+        COALESCE(SUM(e.coupons_confirm), 0) AS coupons_confirm,
+        COALESCE(SUM(e.coupons_page), 0) AS coupons_page
+    FROM candidates c
+    LEFT JOIN wangchuanliang.event_track e
+      ON e.user_id = c.user_id
+     AND e.active_date &gt; c.repaid_date
+     AND e.active_date &lt;= c.repaid_date + c.threshold_days
+    GROUP BY c.cohort, c.threshold_days, c.user_id,
+             c.repaid_date, c.phase2_apply, c.gap_days
+),
+/* 将宽表转成长表，保证 11 个指标采用相同的分段统计逻辑。 */
+metric_long AS (
+    SELECT cohort, phase2_apply, gap_days, 'active_status' AS metric_code, '活跃度' AS metric_name, active_status::numeric AS metric_value FROM behavior_metrics
+    UNION ALL SELECT cohort, phase2_apply, gap_days, 'newpage', '进入提单页次数', newpage::numeric FROM behavior_metrics
+    UNION ALL SELECT cohort, phase2_apply, gap_days, 'amount_selection', '切换借款金额次数', amount_selection::numeric FROM behavior_metrics
+    UNION ALL SELECT cohort, phase2_apply, gap_days, 'contract_newdetails', '查看借款合同次数', contract_newdetails::numeric FROM behavior_metrics
+    UNION ALL SELECT cohort, phase2_apply, gap_days, 'term_selection', '切换借款期次次数', term_selection::numeric FROM behavior_metrics
+    UNION ALL SELECT cohort, phase2_apply, gap_days, 'newconfirm', '确认提单次数', newconfirm::numeric FROM behavior_metrics
+    UNION ALL SELECT cohort, phase2_apply, gap_days, 'plan_newdetails', '查看还款计划次数', plan_newdetails::numeric FROM behavior_metrics
+    UNION ALL SELECT cohort, phase2_apply, gap_days, 'purpose_newdetails', '选择借款原因次数', purpose_newdetails::numeric FROM behavior_metrics
+    UNION ALL SELECT cohort, phase2_apply, gap_days, 'coupons_back', '优惠券拦截关闭次数', coupons_back::numeric FROM behavior_metrics
+    UNION ALL SELECT cohort, phase2_apply, gap_days, 'coupons_confirm', '优惠券拦截点击次数', coupons_confirm::numeric FROM behavior_metrics
+    UNION ALL SELECT cohort, phase2_apply, gap_days, 'coupons_page', '进入优惠券挽留页次数', coupons_page::numeric FROM behavior_metrics
+),
+/* 次数分段：0、1、2-3、4+；active_status 按强度使用 0、1-10、11-30、31+。 */
+bucketed AS (
+    SELECT *,
+        CASE
+            WHEN metric_code = 'active_status' AND metric_value = 0 THEN '0'
+            WHEN metric_code = 'active_status' AND metric_value &lt;= 10 THEN '1-10'
+            WHEN metric_code = 'active_status' AND metric_value &lt;= 30 THEN '11-30'
+            WHEN metric_code = 'active_status' THEN '31+'
+            WHEN metric_value = 0 THEN '0 次'
+            WHEN metric_value = 1 THEN '1 次'
+            WHEN metric_value &lt;= 3 THEN '2-3 次'
+            ELSE '4 次及以上'
+        END AS value_bucket,
+        CASE
+            WHEN metric_code = 'active_status' AND metric_value = 0 THEN 1
+            WHEN metric_code = 'active_status' AND metric_value &lt;= 10 THEN 2
+            WHEN metric_code = 'active_status' AND metric_value &lt;= 30 THEN 3
+            WHEN metric_code = 'active_status' THEN 4
+            WHEN metric_value = 0 THEN 1
+            WHEN metric_value = 1 THEN 2
+            WHEN metric_value &lt;= 3 THEN 3
+            ELSE 4
+        END AS bucket_order
+    FROM metric_long
+)
+SELECT
+    metric_code,
+    metric_name,
+    cohort,
+    value_bucket,
+    COUNT(*) AS events,
+    ROUND(COUNT(*) * 100.0 / SUM(COUNT(*)) OVER (PARTITION BY metric_code, cohort), 2) AS user_share_pct,
+    SUM(phase2_apply) AS phase2_apply_events,
+    ROUND(SUM(phase2_apply) * 100.0 / COUNT(*), 2) AS phase2_apply_rate,
+    ROUND(AVG(metric_value)::numeric, 2) AS avg_metric_value,
+    ROUND(AVG(CASE WHEN phase2_apply = 1 THEN gap_days END)::numeric, 2) AS avg_gap_days
+FROM bucketed
+GROUP BY metric_code, metric_name, cohort, value_bucket, bucket_order
+ORDER BY metric_code, cohort, bucket_order;
+</pre>
+</details>
+</main>
+<div class="tip" id="tip">
+</div>
+<script>const M=[{"code":"active_status","name":"活跃度","buckets":["0","1-10","11-30","31+"],"values":{"T3":[{"events":18595,"share":54.92,"rate":59.17},{"events":4862,"share":14.36,"rate":69.87},{"events":7598,"share":22.44,"rate":74.72},{"events":2804,"share":8.28,"rate":78.39}],"T5":[{"events":14884,"share":50.75,"rate":52.45},{"events":4058,"share":13.84,"rate":65.18},{"events":7005,"share":23.88,"rate":68.21},{"events":3383,"share":11.53,"rate":74.4}],"T7":[{"events":12692,"share":48.71,"rate":46.89},{"events":3296,"share":12.65,"rate":59.34},{"events":6377,"share":24.47,"rate":62.99},{"events":3693,"share":14.17,"rate":69.05}]}},{"code":"amount_selection","name":"切换借款金额次数","buckets":["0 次","1 次","2-3 次","4 次及以上"],"values":{"T3":[{"events":28782,"share":85.01,"rate":63.53},{"events":1628,"share":4.81,"rate":75.86},{"events":1944,"share":5.74,"rate":79.63},{"events":1505,"share":4.44,"rate":80.27}],"T5":[{"events":24138,"share":82.3,"rate":57.45},{"events":1584,"share":5.4,"rate":72.35},{"events":1927,"share":6.57,"rate":75.04},{"events":1681,"share":5.73,"rate":76.5}],"T7":[{"events":20967,"share":80.46,"rate":52.05},{"events":1451,"share":5.57,"rate":66.92},{"events":1716,"share":6.59,"rate":69.17},{"events":1924,"share":7.38,"rate":72.87}]}},{"code":"contract_newdetails","name":"查看借款合同次数","buckets":["0 次","1 次","2-3 次","4 次及以上"],"values":{"T3":[{"events":33719,"share":99.59,"rate":65.74},{"events":122,"share":0.36,"rate":77.87},{"events":15,"share":0.04,"rate":80},{"events":3,"share":0.01,"rate":66.67}],"T5":[{"events":29203,"share":99.57,"rate":60.45},{"events":107,"share":0.36,"rate":72.9},{"events":16,"share":0.05,"rate":68.75},{"events":4,"share":0.01,"rate":75}],"T7":[{"events":25933,"share":99.52,"rate":55.48},{"events":102,"share":0.39,"rate":67.65},{"events":18,"share":0.07,"rate":72.22},{"events":5,"share":0.02,"rate":80}]}},{"code":"coupons_back","name":"优惠券拦截关闭次数","buckets":["0 次"],"values":{"T3":[{"events":33859,"share":100,"rate":65.79}],"T5":[{"events":29330,"share":100,"rate":60.5}],"T7":[{"events":26058,"share":100,"rate":55.55}]}},{"code":"coupons_confirm","name":"优惠券拦截点击次数","buckets":["0 次"],"values":{"T3":[{"events":33859,"share":100,"rate":65.79}],"T5":[{"events":29330,"share":100,"rate":60.5}],"T7":[{"events":26058,"share":100,"rate":55.55}]}},{"code":"coupons_page","name":"进入优惠券挽留页次数","buckets":["0 次"],"values":{"T3":[{"events":33859,"share":100,"rate":65.79}],"T5":[{"events":29330,"share":100,"rate":60.5}],"T7":[{"events":26058,"share":100,"rate":55.55}]}},{"code":"newconfirm","name":"确认提单次数","buckets":["0 次","1 次","2-3 次","4 次及以上"],"values":{"T3":[{"events":33358,"share":98.52,"rate":65.61},{"events":356,"share":1.05,"rate":79.21},{"events":100,"share":0.3,"rate":76},{"events":45,"share":0.13,"rate":68.89}],"T5":[{"events":28828,"share":98.29,"rate":60.31},{"events":346,"share":1.18,"rate":72.25},{"events":102,"share":0.35,"rate":74.51},{"events":54,"share":0.18,"rate":62.96}],"T7":[{"events":25577,"share":98.15,"rate":55.35},{"events":329,"share":1.26,"rate":66.57},{"events":95,"share":0.36,"rate":68.42},{"events":57,"share":0.22,"rate":57.89}]}},{"code":"newpage","name":"进入提单页次数","buckets":["0 次","1 次","2-3 次","4 次及以上"],"values":{"T3":[{"events":20523,"share":60.61,"rate":60.71},{"events":4903,"share":14.48,"rate":70.41},{"events":4787,"share":14.14,"rate":73.62},{"events":3646,"share":10.77,"rate":77.87}],"T5":[{"events":16634,"share":56.71,"rate":54.37},{"events":4155,"share":14.17,"rate":64.91},{"events":4281,"share":14.6,"rate":67.41},{"events":4260,"share":14.52,"rate":73.22}],"T7":[{"events":14316,"share":54.94,"rate":49.11},{"events":3452,"share":13.25,"rate":58.86},{"events":3875,"share":14.87,"rate":61.7},{"events":4415,"share":16.94,"rate":68.4}]}},{"code":"plan_newdetails","name":"查看还款计划次数","buckets":["0 次","1 次","2-3 次","4 次及以上"],"values":{"T3":[{"events":27980,"share":82.64,"rate":63.04},{"events":3157,"share":9.32,"rate":76.75},{"events":1875,"share":5.54,"rate":80.53},{"events":847,"share":2.5,"rate":83}],"T5":[{"events":23500,"share":80.12,"rate":57.1},{"events":2884,"share":9.83,"rate":71.01},{"events":1899,"share":6.47,"rate":75.72},{"events":1047,"share":3.57,"rate":80.32}],"T7":[{"events":20408,"share":78.32,"rate":51.64},{"events":2561,"share":9.83,"rate":65.68},{"events":1840,"share":7.06,"rate":71.2},{"events":1249,"share":4.79,"rate":75.5}]}},{"code":"purpose_newdetails","name":"选择借款原因次数","buckets":["0 次","1 次","2-3 次","4 次及以上"],"values":{"T3":[{"events":32283,"share":95.35,"rate":65.05},{"events":1270,"share":3.75,"rate":80.55},{"events":267,"share":0.79,"rate":83.15},{"events":39,"share":0.12,"rate":76.92}],"T5":[{"events":27655,"share":94.29,"rate":59.55},{"events":1305,"share":4.45,"rate":75.33},{"events":322,"share":1.1,"rate":80.43},{"events":48,"share":0.16,"rate":75}],"T7":[{"events":24408,"share":93.67,"rate":54.52},{"events":1250,"share":4.8,"rate":69.36},{"events":348,"share":1.34,"rate":75.57},{"events":52,"share":0.2,"rate":69.23}]}},{"code":"term_selection","name":"切换借款期次次数","buckets":["0 次","1 次","2-3 次","4 次及以上"],"values":{"T3":[{"events":31965,"share":94.41,"rate":64.76},{"events":761,"share":2.25,"rate":80.55},{"events":699,"share":2.06,"rate":82.98},{"events":434,"share":1.28,"rate":87.56}],"T5":[{"events":27405,"share":93.44,"rate":59.18},{"events":757,"share":2.58,"rate":76.75},{"events":672,"share":2.29,"rate":78.42},{"events":496,"share":1.69,"rate":84.68}],"T7":[{"events":24127,"share":92.59,"rate":54.04},{"events":705,"share":2.71,"rate":70.35},{"events":695,"share":2.67,"rate":74.24},{"events":531,"share":2.04,"rate":79.66}]}}],C=[{"cohort":"T3","name":"无上述行为","events":20522,"share":60.61,"apply":12459,"rate":60.71,"gap":23.82},{"cohort":"T3","name":"仅进入提单页","events":5449,"share":16.09,"apply":3595,"rate":65.98,"gap":15.67},{"cohort":"T3","name":"单项决策行为","events":3852,"share":11.38,"apply":2997,"rate":77.8,"gap":14.85},{"cohort":"T3","name":"两项决策行为","events":3110,"share":9.19,"apply":2469,"rate":79.39,"gap":14.05},{"cohort":"T3","name":"提单页 + 三项决策行为","events":926,"share":2.73,"apply":755,"rate":81.53,"gap":13.65},{"cohort":"T5","name":"无上述行为","events":16634,"share":56.71,"apply":9044,"rate":54.37,"gap":29.08},{"cohort":"T5","name":"仅进入提单页","events":4930,"share":16.81,"apply":2926,"rate":59.35,"gap":19.23},{"cohort":"T5","name":"单项决策行为","events":3599,"share":12.27,"apply":2611,"rate":72.55,"gap":18.63},{"cohort":"T5","name":"两项决策行为","events":3153,"share":10.75,"apply":2373,"rate":75.26,"gap":17.27},{"cohort":"T5","name":"提单页 + 三项决策行为","events":1014,"share":3.46,"apply":792,"rate":78.11,"gap":17.07},{"cohort":"T7","name":"无上述行为","events":14316,"share":54.94,"apply":7031,"rate":49.11,"gap":33.89},{"cohort":"T7","name":"仅进入提单页","events":4339,"share":16.65,"apply":2304,"rate":53.1,"gap":22.84},{"cohort":"T7","name":"单项决策行为","events":3230,"share":12.4,"apply":2156,"rate":66.75,"gap":22.22},{"cohort":"T7","name":"两项决策行为","events":3077,"share":11.81,"apply":2175,"rate":70.69,"gap":21.02},{"cohort":"T7","name":"提单页 + 三项决策行为","events":1096,"share":4.21,"apply":808,"rate":73.72,"gap":20.54}];const tip=document.querySelector('#tip');document.querySelectorAll('.bar').forEach(b=>b.onclick=e=>{e.stopPropagation();let txt='';if(b.dataset.combo){let [cohort,name]=b.dataset.combo.split('|'),r=C.find(x=>x.cohort===cohort&&x.name===name);txt='<b>'+cohort+' · '+name+'</b>
+<br>人数：<b>'+r.events.toLocaleString()+'</b>；占比：<b>'+r.share.toFixed(2)+'%</b>
+<br>第二阶段提单率：<b>'+r.rate.toFixed(2)+'%</b>
+<br>平均提单间隔：<b>'+r.gap.toFixed(2)+' 天</b>'}else{let m=M.find(x=>x.code===b.dataset.code),r=m.values[b.dataset.cohort][+b.dataset.index];txt='<b>'+b.dataset.cohort+' · '+m.name+' · '+m.buckets[+b.dataset.index]+'</b>
+<br>人数：<b>'+r.events.toLocaleString()+'</b>；占比：<b>'+r.share.toFixed(2)+'%</b>
+<br>第二阶段提单率：<b>'+r.rate.toFixed(2)+'%</b>'}tip.innerHTML=txt;tip.style.display='block';let r=b.getBoundingClientRect(),w=tip.offsetWidth,h=tip.offsetHeight,y=r.top-h-10;if(y<8)y=r.bottom+10;tip.style.left=Math.max(8,Math.min(innerWidth-w-8,r.left+r.width/2-w/2))+'px';tip.style.top=y+'px'});document.addEventListener('click',()=>tip.style.display='none');</script>
+<style>.wrap > h1{text-align:center}</style>
+</body>
+</html>
