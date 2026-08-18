@@ -1,0 +1,220 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>T3_T5_T7 降息券刺激提单策略分析报告</title>
+<style>
+*{box-sizing:border-box}body{margin:0;background:#061426;color:#d9e8f7;font:16px/1.65 -apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei",sans-serif}.page{max-width:1420px;margin:auto;padding:42px 30px 80px}.hero,.section{background:#0a203a;border:1px solid #245075;border-radius:20px;padding:34px;margin-top:26px}.hero{margin-top:0;background:radial-gradient(circle at 85% 15%,#334d8b,#0a203a 55%)}h1{font-size:34px;line-height:1.25;color:#fff;margin:8px 0}h2{font-size:24px;color:#fff;margin:0 0 8px}h3{color:#fff;margin:5px 0 8px}.eyebrow{font-size:12px;letter-spacing:2px;color:#55dfff}.sub{color:#aac5df;max-width:1050px}.tags{display:flex;gap:9px;flex-wrap:wrap}.tags span{border:1px solid #35638a;background:#133555;border-radius:99px;padding:5px 10px;font-size:12px}.metrics,.grid3,.grid2{display:grid;gap:16px}.metrics,.grid3{grid-template-columns:repeat(3,1fr)}.grid2{grid-template-columns:1fr 1fr}.card{padding:20px;border-radius:16px;background:#0d2745;border:1px solid #28547a}.card p{color:#b7cde1}.metric b{display:block;font-size:27px;color:#fff}.metric span{font-size:13px;color:#99b9d5}.metric small{color:#64dffb}.t3{border-color:#2e9fc0}.t5{border-color:#8065d5}.t7{border-color:#c88339}.t3 h3{color:#56dfff}.t5 h3{color:#bda9ff}.t7 h3{color:#ffc36e}.barrow{display:grid;grid-template-columns:120px 1fr 55px;align-items:center;gap:9px;margin:14px 0;font-size:13px}.bar{height:15px;border-radius:99px;background:#1b3b59;overflow:hidden}.bar i{display:block;height:100%;background:var(--c);border-radius:99px}.strong{color:#60e7ff}.mid{color:#c0aaff}.low{color:#ffc36b}.callout{border-left:4px solid #63dcff;padding:14px 17px;background:#102e4d;border-radius:0 12px 12px 0;color:#c6d8eb}.strategy{min-height:330px}.a{background:linear-gradient(145deg,#103955,#0b213a)}.b{background:linear-gradient(145deg,#37265d,#171a38)}.c{background:linear-gradient(145deg,#563818,#231d28)}li{margin:9px 0}.flow{display:flex;gap:12px;align-items:center;justify-content:space-between}.flow div{flex:1;text-align:center;border:1px solid #326187;background:#123454;border-radius:12px;padding:13px;color:#fff}.flow b{font-size:24px;color:#63ddff}table{width:100%;border-collapse:collapse;font-size:14px}th,td{padding:12px;border-bottom:1px solid #254764;text-align:right}th{text-align:right;background:#102f4d;color:#d8efff}td:first-child,th:first-child{text-align:left}.note{color:#9ab9d4;font-size:13px}@media(max-width:900px){.metrics,.grid3,.grid2{grid-template-columns:1fr}.flow{display:grid}.flow b{transform:rotate(90deg);justify-self:center}.page{padding:20px 14px}.hero,.section{padding:22px}}
+</style>
+</head>
+<body>
+<main class="page">
+<header class="hero">
+<div class="eyebrow">INTENT-BASED COUPON STRATEGY · PROFIT FIRST</div>
+<h1>T3 / T5 / T7 用户降息券刺激提单方案</h1>
+<p class="sub">策略目标不是最大化“发券后的提单量”，而是最大化增量净利润：不为本来会提单的用户让利，不为尚无需求的用户普惠补贴，将降息券集中用于有意愿但尚未足够坚定的人群。</p>
+<div class="tags">
+<span>第一阶段：结清次日起 T3/T5/T7 的 3/5/7 个自然日</span>
+<span>活跃：event_track 有 active_date</span>
+<span>第二阶段：首次后续提单</span>
+<span>券效果须经 A/B 实验验证</span>
+</div>
+</header>
+<div class="metrics">
+<article class="card metric">
+<span>中意愿实验覆盖比例</span>
+<b>27.47%–29.08%</b>
+<small>三组样本规模均可支持随机对照</small>
+</article>
+<article class="card metric">
+<span>中意愿较强意愿的提单率缺口</span>
+<b>10.88–12.68 pp</b>
+<small>存在可被价格激励撬动的空间</small>
+</article>
+<article class="card metric">
+<span>已活跃用户首次提单提前</span>
+<b>8.40–11.39 天</b>
+<small>相对第一阶段未活跃用户</small>
+</article>
+</div>
+<section class="section">
+<h2>一、分层原则：谁不发券，谁值得实验</h2>
+<div class="grid3">
+<article class="card strategy a">
+<div class="eyebrow">A · 强意愿</div>
+<h3>不发降息券</h3>
+<p>第一阶段已活跃，且有至少两项决策行为；或“进入提单页 + 三项决策行为”。</p>
+<ul>
+<li>提单率：T3 79.89%、T5 75.95%、T7 71.47%。</li>
+<li>这些用户已表现出明确需求和较短的提单间隔。</li>
+<li>改用非价格提醒：额度、期限、入口提醒，保护利率收益。</li>
+</ul>
+</article>
+<article class="card strategy b">
+<div class="eyebrow">B · 中意愿</div>
+<h3>降息券 A/B 实验主目标</h3>
+<p>第一阶段已活跃，且仅进入提单页，或仅发生一项决策行为；排除 A 组。</p>
+<ul>
+<li>提单率：T3 69.01%、T5 64.83%、T7 58.79%。</li>
+<li>覆盖占比：27.47%、29.08%、29.05%。</li>
+<li>行为上已有兴趣，但转化弱于强意愿层，适合验证小额降息是否带来净增量。</li>
+</ul>
+</article>
+<article class="card strategy c">
+<div class="eyebrow">C · 低意愿 / 不活跃</div>
+<h3>默认不发券</h3>
+<p>第一阶段没有 active_date，或活跃但未进入提单页、未出现决策行为。</p>
+<ul>
+<li>低意愿层提单率仍达 T3 60.71%、T5 54.37%、T7 49.11%，其中包含自然需求用户。</li>
+<li>对无需求用户发券不会创造需求；对自然需求用户发券只会减少利润。</li>
+<li>仅在用户后续进入提单页后，转入 B 组实验。</li>
+</ul>
+</article>
+</div>
+</section>
+<section class="section">
+<h2>二、数据支撑：不同行为意愿层的规模与提单率</h2>
+<p class="note">条形长度表示该组用户占比；数值为历史第二阶段首次提单率，不能视为降息券效果。</p>
+<div class="grid3">
+<article class="card t3" style="--c:#35d9ff">
+<h3>T3</h3>
+<div class="barrow">
+<span>强意愿 / 不发券</span>
+<div class="bar">
+<i style="width:33.4%">
+</i>
+</div>
+<b>11.92%</b>
+</div>
+<div class="barrow">
+<span>中意愿 / 实验</span>
+<div class="bar">
+<i style="width:76.9%">
+</i>
+</div>
+<b>27.47%</b>
+</div>
+<div class="barrow">
+<span>低意愿 / 不发券</span>
+<div class="bar">
+<i style="width:100%">
+</i>
+</div>
+<b>60.61%</b>
+</div>
+<p>
+<span class="strong">强：79.89%</span>　<span class="mid">中：69.01%</span>　<span class="low">低：60.71%</span>
+</p>
+</article>
+<article class="card t5" style="--c:#ab8cff">
+<h3>T5</h3>
+<div class="barrow">
+<span>强意愿 / 不发券</span>
+<div class="bar">
+<i style="width:48.9%">
+</i>
+</div>
+<b>14.21%</b>
+</div>
+<div class="barrow">
+<span>中意愿 / 实验</span>
+<div class="bar">
+<i style="width:100%">
+</i>
+</div>
+<b>29.08%</b>
+</div>
+<div class="barrow">
+<span>低意愿 / 不发券</span>
+<div class="bar">
+<i style="width:100%">
+</i>
+</div>
+<b>56.71%</b>
+</div>
+<p>
+<span class="strong">强：75.95%</span>　<span class="mid">中：64.83%</span>　<span class="low">低：54.37%</span>
+</p>
+</article>
+<article class="card t7" style="--c:#ffb55e">
+<h3>T7</h3>
+<div class="barrow">
+<span>强意愿 / 不发券</span>
+<div class="bar">
+<i style="width:55.1%">
+</i>
+</div>
+<b>16.02%</b>
+</div>
+<div class="barrow">
+<span>中意愿 / 实验</span>
+<div class="bar">
+<i style="width:100%">
+</i>
+</div>
+<b>29.05%</b>
+</div>
+<div class="barrow">
+<span>低意愿 / 不发券</span>
+<div class="bar">
+<i style="width:100%">
+</i>
+</div>
+<b>54.94%</b>
+</div>
+<p>
+<span class="strong">强：71.47%</span>　<span class="mid">中：58.79%</span>　<span class="low">低：49.11%</span>
+</p>
+</article>
+</div>
+</section>
+<section class="section">
+<h2>三、活跃信号：为什么不应向未活跃用户普惠发券</h2>
+<div class="grid2">
+<div class="callout">
+<h3>已活跃用户提单更早</h3>
+<p>T3 中，第一阶段已活跃用户平均首次提单间隔为 <b>15.72 天</b>，未活跃为 <b>24.12 天</b>；T5 为 <b>19.37 vs 29.45 天</b>；T7 为 <b>23.03 vs 34.42 天</b>。</p>
+<p>已活跃用户较未活跃用户分别提前 <b>8.40、10.08、11.39 天</b>。这说明 App 访问及决策行为是更强的近期需求信号。</p>
+</div>
+<div class="callout">
+<h3>可执行的券触发时点</h3>
+<p>T3 在结清后第 3 天结束时、T5 在第 5 天结束时、T7 在第 7 天结束时完成分层；仅向 B 组发出实验券。</p>
+<p>券有效期建议覆盖第二阶段前 7 天。用户在券期内发生提单页行为但未提单时，可做一次非加码提醒；不要反复加券。</p>
+</div>
+</div>
+</section>
+<section class="section">
+<h2>五、最终建议</h2>
+<table>
+<thead>
+<tr>
+<th>人群</th>
+<th>动作</th>
+<th>目标</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>强意愿、已活跃</td>
+<td>不发券；非价格提醒</td>
+<td>避免对自然转化让利</td>
+</tr>
+<tr>
+<td>中意愿、已活跃</td>
+<td>随机发降息券</td>
+<td>验证价格对犹豫用户的增量拉动</td>
+</tr>
+<tr>
+<td>低意愿或未活跃</td>
+<td>默认不发券</td>
+<td>避免无需求用户的无效补贴</td>
+</tr>
+</tbody>
+</table>
+<p class="note">重要限制：当前数据没有 experiment_id、券面额、发放/领取/使用时间、放款收入和信用损失字段。因此报告提出的是可检验的投放策略，不声称历史数据已经证明“券一定有效”。上线前必须补齐这些字段并进行随机对照。</p>
+</section>
+</main>
+<style>.hero h1{text-align:center}</style>
+</body>
+</html>
