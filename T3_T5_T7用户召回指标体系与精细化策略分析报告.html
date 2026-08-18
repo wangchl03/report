@@ -1,0 +1,333 @@
+<!doctype html>
+<html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>T3_T5_T7 用户召回指标体系与精细化策略分析报告</title>
+<style>
+:root{--bg:#061426;--panel:#0b203a;--line:#254d70;--text:#d9e9fa;--muted:#9ab8d4;--cyan:#3bdcff;--violet:#ae90ff;--amber:#ffb75d;--green:#55db9f;--red:#ff758d}*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font:16px/1.65 -apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei",sans-serif}.page{max-width:1480px;margin:auto;padding:42px 30px 84px}.hero,.section{border:1px solid var(--line);background:var(--panel);border-radius:20px;padding:32px;margin-top:26px}.hero{margin-top:0;background:radial-gradient(circle at 85% 10%,#2a4d88,#0a203b 52%,#071528)}h1{font-size:34px;line-height:1.25;color:#fff;margin:8px 0 12px}h2{font-size:24px;line-height:1.35;color:#fff;margin:0 0 8px}h3{color:#fff;margin:0 0 8px;font-size:18px}.eyebrow{font-size:12px;color:var(--cyan);letter-spacing:2px}.intro{color:var(--muted);margin:0 0 20px}.tagrow{display:flex;gap:8px;flex-wrap:wrap}.tagrow span{font-size:12px;border:1px solid #38678b;background:#133755;padding:5px 10px;border-radius:99px}.metrics,.grid3,.grid2{display:grid;gap:16px}.metrics,.grid3{grid-template-columns:repeat(3,1fr)}.grid2{grid-template-columns:1fr 1fr}.metric,.card{padding:20px;border:1px solid #285477;background:#0d2745;border-radius:16px}.metric span{display:block;color:#9bb9d4;font-size:13px}.metric b{display:block;font-size:28px;color:#fff}.metric small{color:#69dffc}.framework{display:grid;grid-template-columns:210px 1fr;gap:18px}.axis{display:flex;flex-direction:column;justify-content:space-between;padding:18px;background:#0b2948;border-radius:15px;border:1px solid #2b5a80;color:#bcd8ef;font-weight:700}.axis i{color:var(--cyan);font-style:normal;font-size:13px}.ladder{display:grid;grid-template-columns:repeat(5,1fr);gap:12px}.ladder article{min-height:188px;border-radius:15px;padding:17px;border:1px solid #2b526f;background:linear-gradient(145deg,#0f2b49,#0b1d34)}.ladder article:nth-child(1){border-color:#56708a}.ladder article:nth-child(2){border-color:#4387a8}.ladder article:nth-child(3){border-color:#6e69c1}.ladder article:nth-child(4){border-color:#a66bbd}.ladder article:nth-child(5){border-color:#d8886a}.ladder .num{display:block;font-size:27px;font-weight:800;color:#fff}.ladder small{color:#a7c0d8}.table-wrap{overflow:auto;border:1px solid #234b6c;border-radius:14px}table{width:100%;border-collapse:collapse;min-width:1000px;font-size:14px}th,td{padding:12px;border-bottom:1px solid #21435f;text-align:left;vertical-align:top}th{background:#102e4c;color:#dff2ff;white-space:nowrap}tbody tr:nth-child(even){background:#091c32}tbody tr:hover{background:#143654}.t3{color:var(--cyan)}.t5{color:var(--violet)}.t7{color:var(--amber)}.chart-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}.chart{border:1px solid #295474;background:#091f38;border-radius:15px;padding:19px}.barrow{display:grid;grid-template-columns:118px 1fr 54px;gap:8px;align-items:center;margin:14px 0;font-size:13px}.bar{height:15px;border-radius:99px;background:#193a59;overflow:hidden}.bar i{display:block;height:100%;background:var(--c);border-radius:99px}.barrow b{text-align:right;color:#fff}.legend{font-size:12px;color:#a7c4dd}.strategy{min-height:285px}.strategy .badge{color:var(--cyan);font-size:12px;letter-spacing:1px}.strategy ul{padding-left:18px;color:#c2d6e9}.strategy li{margin:8px 0}.s0{background:linear-gradient(145deg,#15314a,#0d223a);border-color:#55748f}.s1{background:linear-gradient(145deg,#123d54,#0c243b);border-color:#398baa}.s2{background:linear-gradient(145deg,#34265d,#151c3a);border-color:#7a64cf}.s3{background:linear-gradient(145deg,#523419,#211c2b);border-color:#bd7e3a}.s4{background:linear-gradient(145deg,#48213b,#21172b);border-color:#b45b86}.flow{display:flex;align-items:center;gap:12px}.flow div{flex:1;text-align:center;padding:14px;background:#143554;border:1px solid #326286;border-radius:12px;color:#fff}.flow b{font-size:24px;color:var(--cyan)}details{margin-top:25px;border:1px solid #295579;border-radius:14px;background:#07192e}summary{padding:15px 19px;color:#fff;font-weight:700;cursor:pointer}.appendix{padding:20px;color:#bfd2e5}.appendix pre{white-space:pre-wrap;background:#04101e;padding:17px;border-radius:10px;color:#bfe8ff;overflow:auto}.note{color:#92b1ce;font-size:13px}@media(max-width:950px){.page{padding:20px 14px}.hero,.section{padding:22px}.metrics,.grid3,.grid2,.chart-grid,.ladder{grid-template-columns:1fr}.framework{grid-template-columns:1fr}.axis{gap:12px}.flow{display:grid}.flow b{transform:rotate(90deg);justify-self:center}}
+</style></head><body><main class="page">
+<header class="hero"><div class="eyebrow">RECALL MEASUREMENT SYSTEM · INTENT × PRICE SENSITIVITY × PROFIT PROTECTION</div><h1>T3 / T5 / T7 用户召回指标体系与精细化策略分析</h1><p class="intro">本体系把“是否进入 App”与“是否值得用降息券”拆开判断：活跃说明存在接触机会，提单页、方案比较和确认行为说明需求与决策进度；只有处在决策犹豫区间的用户才进入降息券实验。目标是提升增量净利润，而非向所有可能提单的用户让利。</p><div class="tagrow"><span>第一阶段：结清次日起 T3/T5/T7 的 3/5/7 天</span><span>活跃：第一阶段存在 active_date</span><span>第二阶段：首次后续 apply_time</span><span>自然日口径</span></div></header>
+
+<div class="metrics"><article class="metric"><span>一级指标维度</span><b>6 类</b><small>活跃、停留、提单页、方案比较、确认、优惠券交互</small></article><article class="metric"><span>推荐运营标签</span><b>5 类</b><small>自然转化、价格犹豫、期限犹豫、金额犹豫、低意愿</small></article><article class="metric"><span>券投放原则</span><b>增量净利润</b><small>仅向“中意愿且活跃”用户做随机券实验</small></article></div>
+
+<section class="section"><h2>一、指标体系：从“有无需求”到“是否需要价格激励”</h2><p class="intro">活跃判断只使用 <code>active_date</code>。其余字段用于识别用户正处在借款路径的哪一环，并不单独证明用户价格敏感。</p><div class="framework"><div class="axis"><i>用户决策旅程</i><span>进入 App</span><span>进入提单页</span><span>比较金额 / 期次</span><span>测算还款成本</span><span>确认提单</span></div><div class="ladder"><article><span class="num">01</span><h3>活跃与频次</h3><small>active_date、活跃天数、active_status</small><p>判断是否有接触与需求信号。</p></article><article><span class="num">02</span><h3>停留与投入</h3><small>active_duration、apply_duration、non_apply_duration</small><p>区分浏览 App 与投入借款决策。</p></article><article><span class="num">03</span><h3>提单页兴趣</h3><small>newpage、newconfirm</small><p>识别进入漏斗与确认意图。</p></article><article><span class="num">04</span><h3>方案比较</h3><small>amount_selection、term_selection、plan_newdetails</small><p>识别金额、期限、月供成本的犹豫。</p></article><article><span class="num">05</span><h3>辅助行为</h3><small>contract_newdetails、purpose_newdetails、coupons_*</small><p>用于补充场景与券触达反应，不单独决定发券。</p></article></div></div></section>
+
+<section class="section"><h2>二、指标分段、标签含义与运营用途</h2><div class="table-wrap"><table><thead><tr><th>指标维度</th><th>建议分段</th><th>解释</th><th>可形成的标签</th><th>召回用途</th></tr></thead><tbody>
+<tr><td>活跃天数</td><td>0；1；2–3；≥4 天</td><td>第一阶段有多少自然日进入 App</td><td>未活跃 / 轻活跃 / 持续活跃 / 高频活跃</td><td>0 天默认不发券；2 天以上才进入精细决策判断</td></tr>
+<tr><td>active_duration</td><td>0；1–30；31–60；61–120；121–300；300+ 秒</td><td>总体投入时长</td><td>无有效停留 / 短浏览 / 深度浏览</td><td>仅和 apply_duration 联合使用，避免把非借款浏览误判为需求</td></tr>
+<tr><td>apply_duration</td><td>0；1–30；31–60；61–120；120+ 秒</td><td>在提单页停留的投入</td><td>未进提单页 / 浅浏览 / 决策犹豫 / 深度决策</td><td>31–120 秒且未确认，是券实验的优先条件之一</td></tr>
+<tr><td>non_apply_duration</td><td>0；1–60；61–180；180+ 秒</td><td>非提单页浏览</td><td>泛浏览 / 业务浏览</td><td>高而 apply_duration=0：先做入口引导，不发券</td></tr>
+<tr><td>newpage</td><td>0；1；2–3；≥4 次</td><td>进入提单页次数</td><td>未触达 / 初次兴趣 / 反复比较 / 高意向浏览</td><td>1–3 次但未确认适合实验；≥4 次多为自然转化</td></tr>
+<tr><td>amount_selection</td><td>0；1；2–3；≥4 次</td><td>切换借款金额</td><td>金额犹豫</td><td>优先金额方案、月供展示；不先给全量降息</td></tr>
+<tr><td>term_selection</td><td>0；1；2–3；≥4 次</td><td>切换借款期次</td><td>期限犹豫</td><td>优先期次或月供方案；测试期次权益</td></tr>
+<tr><td>plan_newdetails</td><td>0；1；2–3；≥4 次</td><td>查看还款计划</td><td>成本测算</td><td>与金额/期次组合后识别价格或月供顾虑</td></tr>
+<tr><td>newconfirm / contract_newdetails</td><td>0；≥1 次</td><td>确认提交 / 查看合同</td><td>接近成交</td><td>强自然转化，不发券，只做流程提醒</td></tr>
+<tr><td>purpose_newdetails、coupons_*</td><td>0；≥1 次</td><td>借款场景、历史券页和券拦截互动</td><td>场景补充 / 券反应标签</td><td>不能单独认定价格敏感；只用于实验分层和素材优化</td></tr>
+</tbody></table></div></section>
+
+<section class="section"><h2>三、五类用户标签与具体召回策略</h2><p class="intro">标签按优先级覆盖：从最接近成交的人群向低需求人群依次判断，避免用户同时落入多类策略。</p><div class="grid3">
+<article class="card strategy s0"><div class="badge">S1 · 强自然转化</div><h3>不发券，保护收益</h3><p>第一阶段活跃，且满足：<b>newconfirm&gt;0</b>；或 <b>contract_newdetails&gt;0</b>；或 <b>newpage≥4 且方案比较指数≥2</b>；或 <b>apply_duration≥120 秒且方案比较指数≥2</b>。</p><ul><li>动作：额度、期限、流程提醒；不做价格让利。</li><li>触达：第二阶段开始日一次提醒。</li><li>目的：避免补贴本来就会提单的用户。</li></ul></article>
+<article class="card strategy s1"><div class="badge">S2 · 价格犹豫型</div><h3>降息券实验主目标</h3><p>第一阶段活跃，<b>newpage=1–3</b>、<b>newconfirm=0</b>、<b>apply_duration=31–120 秒</b>，且方案比较指数为 <b>1–2</b>。</p><ul><li>动作：小额、短有效期降息券。</li><li>触达：第二阶段开始日，或再次进入提单页 30–60 分钟内。</li><li>约束：必须保留不发券对照组。</li></ul></article>
+<article class="card strategy s2"><div class="badge">S3 · 期限犹豫型</div><h3>先推期次方案</h3><p><b>term_selection≥2</b> 且 <b>plan_newdetails&gt;0</b>，但金额切换弱、未确认提单。</p><ul><li>动作：推荐更合适期次、展示月供差异。</li><li>触达：期次组合卡片或月供测算页。</li><li>券策略：对“方案引导无响应”者再测试定向券。</li></ul></article>
+<article class="card strategy s3"><div class="badge">S4 · 金额犹豫型</div><h3>先推金额方案</h3><p><b>amount_selection≥2</b>、<b>newpage&gt;0</b>、<b>newconfirm=0</b>，且期限切换不显著。</p><ul><li>动作：低月供金额、常用金额、额度解释。</li><li>触达：金额调整建议与月供预估。</li><li>券策略：金额方案无响应后，再进入小流量券实验。</li></ul></article>
+<article class="card strategy s4"><div class="badge">S5 · 低意愿 / 泛浏览</div><h3>默认不发券</h3><p><b>无 active_date</b>；或 active_duration 有值但 <b>apply_duration=0、newpage=0、方案比较指数=0</b>。</p><ul><li>动作：低频额度提醒、首页入口优化。</li><li>触达：不高频、不连续加码。</li><li>转化规则：后续进入提单页才重新打标。</li></ul></article>
+</div></section>
+
+<section class="section"><h2>四、历史数据支撑：意愿层的提单率与规模差异</h2><p class="intro">以下来自既有 T3/T5/T7 第一阶段行为组合分析。强意愿为“至少两项决策行为”或“提单页 + 三项决策行为”；中意愿为“仅进入提单页”或“单项决策行为”；低意愿为“无上述行为”。</p><div class="chart-grid">
+<article class="chart" style="--c:var(--cyan)"><h3 class="t3">T3</h3><div class="barrow"><span>强意愿</span><div class="bar"><i style="width:79.9%"></i></div><b>79.89%</b></div><div class="barrow"><span>中意愿</span><div class="bar"><i style="width:69%"></i></div><b>69.01%</b></div><div class="barrow"><span>低意愿</span><div class="bar"><i style="width:60.7%"></i></div><b>60.71%</b></div><p class="legend">中意愿占比 27.47%；强意愿占比 11.92%；低意愿占比 60.61%。</p></article>
+<article class="chart" style="--c:var(--violet)"><h3 class="t5">T5</h3><div class="barrow"><span>强意愿</span><div class="bar"><i style="width:76%"></i></div><b>75.95%</b></div><div class="barrow"><span>中意愿</span><div class="bar"><i style="width:64.8%"></i></div><b>64.83%</b></div><div class="barrow"><span>低意愿</span><div class="bar"><i style="width:54.4%"></i></div><b>54.37%</b></div><p class="legend">中意愿占比 29.08%；强意愿占比 14.21%；低意愿占比 56.71%。</p></article>
+<article class="chart" style="--c:var(--amber)"><h3 class="t7">T7</h3><div class="barrow"><span>强意愿</span><div class="bar"><i style="width:71.5%"></i></div><b>71.47%</b></div><div class="barrow"><span>中意愿</span><div class="bar"><i style="width:58.8%"></i></div><b>58.79%</b></div><div class="barrow"><span>低意愿</span><div class="bar"><i style="width:49.1%"></i></div><b>49.11%</b></div><p class="legend">中意愿占比 29.05%；强意愿占比 16.02%；低意愿占比 54.94%。</p></article>
+</div><div class="grid2" style="margin-top:18px"><div class="card"><h3>发现 1：中意愿是优先实验样本</h3><p>T3/T5/T7 中意愿用户提单率分别为 69.01%、64.83%、58.79%，比强意愿低 10.88、11.12、12.68 个百分点；同时占比约 27%–29%，兼具可撬动空间和足够的样本量。</p></div><div class="card"><h3>发现 2：低意愿并不等于不提单</h3><p>低意愿人群提单率仍为 49.11%–60.71%，说明其中存在自然需求用户。普惠发券会把这部分自然转化变成低收益订单，因此应先等待新的提单页或方案比较信号。</p></div></div></section>
+
+<section class="section"><h2>五、执行流程：每日更新标签，按事件触发触达</h2><div class="flow"><div>结清后<br><small>建立 T3/T5/T7 窗口</small></div><b>→</b><div>第一阶段结束<br><small>汇总活跃与行为指标</small></div><b>→</b><div>按优先级打 S1–S5 标签<br><small>每个结清事件独立打标</small></div><b>→</b><div>第二阶段触达<br><small>券 / 方案 / 非价格提醒</small></div><b>→</b><div>实验评估<br><small>增量净利润决定扩量</small></div></div><div class="grid3" style="margin-top:18px"><article class="card"><h3>发券触发</h3><p>仅 S2 默认进入券实验；S3、S4 先做方案引导，未转化且再次进入提单页后才进入实验池。</p></article><article class="card"><h3>频控规则</h3><p>每个用户、每个结清事件最多一次券实验；避免同一用户多笔结清事件在同一周期叠加优惠。</p></article><article class="card"><h3>实验必看指标</h3><p>提单增量率、放款额、券成本、收入、逾期率、双逾期率、单用户增量净利润。</p></article></div></section>
+
+<section class="section"><h2>六、结论与边界</h2><div class="grid2"><div class="card"><h3>可立即落地</h3><p>以 S1–S5 标签替代“所有活跃用户统一发券”。强意愿不发券；价格犹豫型进入 A/B 实验；期限和金额犹豫型先匹配方案；低意愿不发券。</p></div><div class="card"><h3>必须通过实验验证</h3><p>行为指标反映的是需求和决策进度，不等同于价格敏感。降息券是否真正带来增量提单、增量放款和正向净利润，必须用随机对照验证。</p></div></div><p class="note">建议补齐 experiment_id、分层标签、coupon_id、券面额、发放/领取/使用时间、提单、放款、收入、券成本、逾期与信用损失字段，才可持续优化每个标签的券策略。</p></section>
+
+<details><summary>附录：核心标签计算公式</summary><div class="appendix"><pre>活跃：第一阶段 COUNT(DISTINCT active_date) > 0
+
+方案比较指数 =
+  CASE WHEN amount_selection > 0 THEN 1 ELSE 0 END
++ CASE WHEN term_selection > 0 THEN 1 ELSE 0 END
++ CASE WHEN plan_newdetails > 0 THEN 1 ELSE 0 END
+
+S1 强自然转化：
+  active_day_cnt > 0
+  AND (
+       newconfirm > 0
+       OR contract_newdetails > 0
+       OR (newpage >= 4 AND 方案比较指数 >= 2)
+       OR (apply_duration >= 120 AND 方案比较指数 >= 2)
+  )
+
+S2 价格犹豫型：
+  active_day_cnt > 0
+  AND newpage BETWEEN 1 AND 3
+  AND newconfirm = 0
+  AND apply_duration BETWEEN 31 AND 120
+  AND 方案比较指数 BETWEEN 1 AND 2
+
+S3 期限犹豫型：term_selection >= 2 AND plan_newdetails > 0
+S4 金额犹豫型：amount_selection >= 2 AND newpage > 0 AND newconfirm = 0
+S5 低意愿：active_day_cnt = 0；或 apply_duration = 0、newpage = 0、方案比较指数 = 0</pre></div></details>
+<details>
+  <summary>附录：完整 PGSQL 代码（含数据范围、干净结清、获额、第一阶段行为汇总与策略标签）</summary>
+  <div class="appendix">
+    <p>以下代码输出每个“用户 × 结清事件 × T3/T5/T7 窗口”的完整指标及召回策略标签，可作为每日或批量召回名单的基础查询。</p>
+    <pre data-full-pgsql></pre>
+  </div>
+</details>
+<script>
+/* 完整 PGSQL 在生成时嵌入此处，保留为可复制的结构化查询。 */
+document.querySelector('[data-full-pgsql]').textContent = `/*
+  T3 / T5 / T7 第一阶段用户意愿分层与降息券策略标签
+
+  第一阶段：
+    T3：结清次日 ~ 结清后第 3 天
+    T5：结清次日 ~ 结清后第 5 天
+    T7：结清次日 ~ 结清后第 7 天
+
+  活跃定义：event_track 在第一阶段存在 active_date；
+  不使用 active_status > 0 判断用户是否活跃。
+*/
+WITH all_orders AS (
+    SELECT
+        user_id,
+        serial_id,
+        apply_time,
+        remit_time,
+        repaid_time,
+        repaid_date,
+        remit_date,
+        loan_status_code,
+        is_remit,
+        reg_date
+    FROM wangchuanliang.order_loan_f_v2_copy
+    WHERE reg_date BETWEEN DATE '2026-01-01' AND DATE '2026-07-15'
+      AND apply_time IS NOT NULL
+),
+
+all_users AS (
+    SELECT DISTINCT user_id
+    FROM all_orders
+    WHERE is_remit = 1
+      AND remit_date > DATE '2026-01-01'
+),
+
+settled_raw AS (
+    SELECT
+        o.user_id,
+        o.serial_id,
+        o.repaid_date,
+        o.repaid_time,
+        ROW_NUMBER() OVER (
+            PARTITION BY o.user_id
+            ORDER BY o.repaid_time, o.serial_id
+        ) AS settle_seq
+    FROM all_orders o
+    JOIN all_users u
+      ON o.user_id = u.user_id
+    WHERE o.is_remit = 1
+      AND o.loan_status_code = 7
+      AND o.repaid_time IS NOT NULL
+      AND o.remit_time IS NOT NULL
+),
+
+/* 当前订单结清时，没有其他早申请订单仍在途或异常，即干净结清。 */
+clean_settle AS (
+    SELECT s.*
+    FROM settled_raw s
+    WHERE NOT EXISTS (
+        SELECT 1
+        FROM all_orders o
+        WHERE o.user_id = s.user_id
+          AND o.serial_id <> s.serial_id
+          AND o.apply_time < s.repaid_time
+          AND (
+                o.loan_status_code IN (5, 8)
+                OR (
+                    o.loan_status_code = 7
+                    AND o.repaid_time > s.repaid_time
+                )
+          )
+    )
+),
+
+/* 结清当日、且发生在结清后的获额通过记录。 */
+credit_pass AS (
+    SELECT DISTINCT ON (v.user_id, v.vir_date)
+        v.user_id,
+        v.vir_date,
+        to_timestamp(v.vir_unix) AS vir_time
+    FROM wangchuanliang.order_vir_f_copy v
+    WHERE v.is_pass1 = 1
+      AND v.vir_date > DATE '2026-01-01'
+    ORDER BY
+        v.user_id,
+        v.vir_date,
+        to_timestamp(v.vir_unix) DESC
+),
+
+eligible_settle AS (
+    SELECT cs.*
+    FROM clean_settle cs
+    JOIN credit_pass cp
+      ON cp.user_id = cs.user_id
+     AND cp.vir_date = cs.repaid_date::date
+     AND cp.vir_time > cs.repaid_time
+),
+
+thresholds AS (
+    SELECT 'T3' AS cohort, 3 AS threshold_days
+    UNION ALL SELECT 'T5', 5
+    UNION ALL SELECT 'T7', 7
+),
+
+/* 每笔符合条件的结清事件扩展为 T3、T5、T7 三种第一阶段窗口。 */
+candidates AS (
+    SELECT
+        t.cohort,
+        t.threshold_days,
+        e.user_id,
+        e.serial_id,
+        e.settle_seq,
+        e.repaid_time,
+        e.repaid_time::date AS repaid_date,
+        e.repaid_time::date + 1 AS phase1_start_date,
+        e.repaid_time::date + t.threshold_days AS phase1_end_date,
+        e.repaid_time::date + t.threshold_days + 1 AS phase2_start_date
+    FROM eligible_settle e
+    CROSS JOIN thresholds t
+    WHERE e.settle_seq <= 10
+),
+
+/* 汇总第一阶段行为；是否活跃只由 active_day_cnt 是否大于 0 决定。 */
+phase1_behavior AS (
+    SELECT
+        c.cohort,
+        c.threshold_days,
+        c.user_id,
+        c.serial_id,
+        c.settle_seq,
+        c.repaid_time,
+        c.repaid_date,
+        c.phase1_start_date,
+        c.phase1_end_date,
+        c.phase2_start_date,
+
+        COUNT(DISTINCT e.active_date) AS active_day_cnt,
+        COALESCE(SUM(e.active_status), 0) AS active_status,
+        COALESCE(SUM(e.newpage), 0) AS newpage,
+        COALESCE(SUM(e.amount_selection), 0) AS amount_selection,
+        COALESCE(SUM(e.contract_newdetails), 0) AS contract_newdetails,
+        COALESCE(SUM(e.term_selection), 0) AS term_selection,
+        COALESCE(SUM(e.newconfirm), 0) AS newconfirm,
+        COALESCE(SUM(e.plan_newdetails), 0) AS plan_newdetails,
+        COALESCE(SUM(e.purpose_newdetails), 0) AS purpose_newdetails,
+        COALESCE(SUM(e.coupons_back), 0) AS coupons_back,
+        COALESCE(SUM(e.coupons_confirm), 0) AS coupons_confirm,
+        COALESCE(SUM(e.coupons_page), 0) AS coupons_page,
+        COALESCE(SUM(e.active_duration), 0) AS active_duration_sec,
+        COALESCE(SUM(e.apply_duration), 0) AS apply_duration_sec,
+        COALESCE(SUM(e.non_apply_duration), 0) AS non_apply_duration_sec
+    FROM candidates c
+    LEFT JOIN wangchuanliang.event_track e
+      ON e.user_id = c.user_id
+     AND e.active_date >= c.phase1_start_date
+     AND e.active_date <= c.phase1_end_date
+    GROUP BY
+        c.cohort,
+        c.threshold_days,
+        c.user_id,
+        c.serial_id,
+        c.settle_seq,
+        c.repaid_time,
+        c.repaid_date,
+        c.phase1_start_date,
+        c.phase1_end_date,
+        c.phase2_start_date
+),
+
+/* 三项决策行为：金额切换、期次切换、还款计划查看。 */
+intent_features AS (
+    SELECT
+        p.*,
+        CASE WHEN p.active_day_cnt > 0 THEN 1 ELSE 0 END AS is_phase1_active,
+        CASE WHEN p.newpage > 0 THEN 1 ELSE 0 END AS has_apply_page,
+        CASE WHEN p.amount_selection > 0 THEN 1 ELSE 0 END AS has_amount_selection,
+        CASE WHEN p.term_selection > 0 THEN 1 ELSE 0 END AS has_term_selection,
+        CASE WHEN p.plan_newdetails > 0 THEN 1 ELSE 0 END AS has_plan_view,
+        (
+            CASE WHEN p.amount_selection > 0 THEN 1 ELSE 0 END
+            + CASE WHEN p.term_selection > 0 THEN 1 ELSE 0 END
+            + CASE WHEN p.plan_newdetails > 0 THEN 1 ELSE 0 END
+        ) AS decision_action_cnt
+    FROM phase1_behavior p
+),
+
+/*
+  意愿和策略标签：
+  - 强意愿：已活跃，且至少两项决策行为；不发券。
+  - 中意愿：已活跃、未达强意愿，但有一项决策行为或进入过提单页；发券实验候选。
+  - 低意愿：未活跃，或活跃但没有提单页及决策行为；默认不发券。
+*/
+intent_segment AS (
+    SELECT
+        f.*,
+        CASE
+            WHEN f.is_phase1_active = 1
+             AND f.decision_action_cnt >= 2 THEN '强意愿'
+            WHEN f.is_phase1_active = 1
+             AND (
+                    f.decision_action_cnt = 1
+                    OR f.has_apply_page = 1
+                 ) THEN '中意愿'
+            ELSE '低意愿'
+        END AS intent_level,
+        CASE
+            WHEN f.is_phase1_active = 1
+             AND f.decision_action_cnt >= 2 THEN '不发券：强自然转化'
+            WHEN f.is_phase1_active = 1
+             AND (
+                    f.decision_action_cnt = 1
+                    OR f.has_apply_page = 1
+                 ) THEN '发券实验候选：中意愿'
+            ELSE '默认不发券：低意愿或未活跃'
+        END AS coupon_strategy
+    FROM intent_features f
+)
+
+SELECT
+    cohort,
+    user_id,
+    serial_id,
+    settle_seq,
+    repaid_date,
+    phase1_start_date,
+    phase1_end_date,
+    phase2_start_date,
+    intent_level,
+    coupon_strategy,
+    active_day_cnt,
+    is_phase1_active,
+    has_apply_page,
+    decision_action_cnt,
+    newpage,
+    amount_selection,
+    term_selection,
+    plan_newdetails,
+    active_status,
+    active_duration_sec,
+    apply_duration_sec,
+    non_apply_duration_sec,
+    contract_newdetails,
+    newconfirm,
+    purpose_newdetails,
+    coupons_back,
+    coupons_confirm,
+    coupons_page
+FROM intent_segment
+ORDER BY
+    cohort,
+    repaid_date DESC,
+    user_id;
+`;
+</script>
+</main><style>.hero h1{text-align:center}</style></body></html>
