@@ -1,0 +1,366 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>T0用户当天提单率日周月趋势分析报告</title>
+  <style>
+    :root{--bg:#061426;--panel:#0b213c;--panel2:#071a2f;--line:#294e70;--txt:#e8f3ff;--muted:#a4bed8;--cyan:#42d7ff;--blue:#5b93ff;--violet:#ae8cff;--amber:#ffb660;--green:#5bdba6;--red:#ff829a}
+    *{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--txt);font:15px/1.7 -apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei",sans-serif}.page{max-width:1450px;margin:auto;padding:42px 28px 80px}.hero,.section{background:var(--panel);border:1px solid var(--line);border-radius:18px;padding:30px;margin:24px 0}.hero{background:radial-gradient(circle at 85% 0,#2d548a,#0b213c 54%,#061426)}h1{text-align:center;font-size:33px;margin:2px 0 9px}.sub{text-align:center;color:var(--muted);max-width:960px;margin:0 auto}.tag-row{display:flex;justify-content:center;gap:9px;flex-wrap:wrap;margin:16px 0 0}.tag-row span{border:1px solid #39688a;color:#c8e7ff;padding:4px 10px;border-radius:999px;font-size:12px}.metrics{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-top:22px}.metric{background:#091d33;border:1px solid #315a7e;border-radius:13px;padding:16px}.metric span{display:block;color:var(--muted);font-size:12px}.metric b{display:block;color:#fff;font-size:27px;margin-top:3px}.metric small{color:var(--cyan)}h2{font-size:23px;margin:0 0 7px}.intro,.note{color:var(--muted);margin:0}.chart{margin-top:18px;background:var(--panel2);border:1px solid #254966;border-radius:14px;padding:16px;overflow:auto}.legend{display:flex;gap:15px;flex-wrap:wrap;margin:0 0 8px;color:#cbe2f5;font-size:12px}.legend span::before{content:"";display:inline-block;width:10px;height:10px;border-radius:50%;margin-right:5px}.legend .raw::before{background:var(--blue)}.legend .ma::before{background:var(--cyan)}.legend .bar::before{background:var(--violet)}.legend .count::before{background:var(--amber)}.svg{display:block;width:100%;min-width:780px;height:355px}.axis{stroke:#31536e;stroke-width:1}.axis-text{fill:#a8c1d8;font-size:12px}.svg-title{fill:#dceeff;font-weight:700;font-size:14px}.line-raw{fill:none;stroke:var(--blue);stroke-width:1.2;opacity:.43}.line-ma{fill:none;stroke:var(--cyan);stroke-width:2.6}.dot{stroke:#061426;stroke-width:1.5;cursor:pointer}.tooltip{display:none;position:fixed;z-index:20;pointer-events:none;white-space:pre-line;background:#020e1c;color:#fff;border:1px solid var(--cyan);border-radius:9px;padding:9px 11px;font-size:12px;line-height:1.55;box-shadow:0 12px 28px #0008}.grid2{display:grid;grid-template-columns:1fr 1fr;gap:18px}.call{border-left:4px solid var(--cyan);background:#0c2946;padding:17px;border-radius:0 10px 10px 0}.call:nth-child(2n){border-color:var(--violet)}.call h3{font-size:17px;margin:0 0 6px}.call p{color:#c4d8e9;margin:0}.call b{color:#fff}.table-wrap{overflow:auto;border:1px solid #294f6e;border-radius:12px;margin-top:18px}table{border-collapse:collapse;width:100%;min-width:800px}th,td{padding:11px 13px;border-bottom:1px solid #20425e;text-align:right}th:first-child,td:first-child{text-align:left}th{background:#113352;color:#e4f4ff}tr:hover td{background:#102b48}.partial td{background:#132b47;color:#b8d4eb}.foot{color:#89a8c5;font-size:12px;margin-top:18px}@media(max-width:900px){.metrics,.grid2{grid-template-columns:1fr 1fr}}@media(max-width:600px){.page{padding:20px 12px}.hero,.section{padding:20px}h1{font-size:26px}.metrics,.grid2{grid-template-columns:1fr}.svg{min-width:680px}}
+  .sql-details{margin-top:70px;background:#07182c;border:1px solid #254b6d;border-radius:14px}.sql-details summary{display:list-item;padding:16px 20px;color:#fff;cursor:pointer;font-weight:700;list-style:revert}.sql-details summary::-webkit-details-marker{display:inline}.sql-intro{margin:0;padding:0 22px 16px;color:#a4bed8;font-size:14px}.sql-code{margin:0;padding:22px;overflow:auto;white-space:pre;background:#05101e;color:#c9e9ff;font:12px/1.65 ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,monospace;border-radius:0 0 14px 14px}.sql-code code{color:#82e5ff}</style>
+</head>
+<body>
+  <main class="page">
+    <header class="hero">
+      <h1>T0 用户当天提单率日、周、月趋势分析报告</h1>
+      <p class="sub">统计范围：2026-01-01 至 2026-08-15。分母为干净结清后、结清当日获额通过且通过时间晚于结清时间的用户事件；分子为其中结清当日、晚于结清时间的提单用户。</p>
+      <div class="tag-row"><span>按自然日统计</span><span>周/月按每日分子、分母累计</span><span>统计单位：用户 × 干净结清事件</span><span>点击图中标记查看具体数据</span></div>
+      <div class="metrics">
+        <div class="metric"><span>整体 T0 提单率</span><b>46.46%</b><small>63,987 / 137,716</small></div>
+        <div class="metric"><span>完整月最高值</span><b>52.85%</b><small>2026 年 1 月</small></div>
+        <div class="metric"><span>1 月至 7 月变化</span><b>-11.21 pp</b><small>52.85% → 41.63%</small></div>
+        <div class="metric"><span>单日波动区间</span><b>30.4%–63.7%</b><small>2026-08-12 至 2026-01-10</small></div>
+      </div>
+    </header>
+
+    <section class="section">
+      <h2>一、日度趋势：单日波动较大，7 日均线显示持续走弱</h2>
+      <p class="intro">浅蓝线为每日 T0 提单率，青色线为 7 日移动平均，用于识别平滑后的真实趋势。</p>
+      <div class="chart"><div class="legend"><span class="raw">每日提单率</span><span class="ma">7 日移动平均</span></div><svg id="dailyChart" class="svg" viewBox="0 0 1000 355" role="img" aria-label="T0每日提单率及七日移动平均趋势"></svg></div>
+      <div class="grid2" style="margin-top:18px"><div class="call"><h3>日度数据不宜直接作为策略评价依据</h3><p>单日提单率最低为 <b>30.40%</b>（2026-08-12），最高为 <b>63.69%</b>（2026-01-10），波动幅度约 <b>33.29 个百分点</b>。应优先使用周度或 7 日均线观察趋势。</p></div><div class="call"><h3>即时自然转化在年中后走弱</h3><p>月度加权结果从 1 月的 <b>52.85%</b> 降至 7 月的 <b>41.63%</b>，下降 <b>11.21 个百分点</b>。这意味着获额后的即时转化承接效率需要重点复盘。</p></div></div>
+    </section>
+
+    <section class="section">
+      <h2>二、周度趋势：过滤日波动后，下降拐点更清晰</h2>
+      <p class="intro">柱形展示每周 T0 提单率；折线展示每周分母用户数（右轴）。首周和末周为不完整周，使用浅色提示。</p>
+      <div class="chart"><div class="legend"><span class="bar">每周 T0 提单率（左轴）</span><span class="count">每周分母用户数（右轴）</span></div><svg id="weeklyChart" class="svg" viewBox="0 0 1000 355" role="img" aria-label="T0每周提单率与分母用户数趋势"></svg></div>
+      <div class="grid2" style="margin-top:18px"><div class="call"><h3>完整周最高与最低</h3><p>完整周最高为 <b>56.74%</b>（周起始 2026-01-05），最低为 <b>39.12%</b>（周起始 2026-07-27）。完整周之间相差 <b>17.62 个百分点</b>。</p></div><div class="call"><h3>周度分母体量没有同步崩塌</h3><p>月度分母在 1–7 月保持约 <b>1.7–2.0 万</b>事件，提单率下行并非仅由样本量大幅收缩造成；后续应分解获额后页面曝光、额度匹配与用户需求变化等环节。</p></div></div>
+    </section>
+
+    <section class="section">
+      <h2>三、月度趋势：连续下滑，5–7 月需重点关注</h2>
+      <p class="intro">柱形为月度 T0 提单率；柱内数字为提单率。8 月仅统计至 8 月 15 日，作为阶段性观察，不与完整月份直接比较。</p>
+      <div class="chart"><svg id="monthlyChart" class="svg" viewBox="0 0 1000 355" role="img" aria-label="T0每月提单率趋势"></svg></div>
+      <div class="grid2" style="margin-top:18px"><div class="call"><h3>下降并非单月异常</h3><p>1 月 <b>52.85%</b>、2 月 <b>51.74%</b> 后，3 月降至 <b>46.14%</b>；4 月短暂回升至 <b>46.90%</b>，5–7 月继续由 <b>45.20%</b> 降至 <b>41.63%</b>。整体呈现趋势性下行。</p></div><div class="call"><h3>运营解读：优先复盘 T0 自然转化链路</h3><p>T0 是获额后即时转化窗口。建议按月进一步拆分“获额通过 → 进入 App → 进入提单页 → 确认提单”的漏斗，定位下行主要来自访问、页面意愿还是方案确认环节。</p></div></div>
+    </section>
+
+    <section class="section">
+      <h2>四、月度可核对数据</h2>
+      <div class="table-wrap"><table><thead><tr><th>结清月份</th><th>T0 分母用户数</th><th>T0 当天提单用户数</th><th>T0 提单率</th><th>较上月变化</th></tr></thead><tbody><tr class="">
+    <td>2026-01</td>
+    <td>16,955</td>
+    <td>8,960</td>
+    <td>52.85%</td>
+    <td>—</td>
+  </tr><tr class="">
+    <td>2026-02</td>
+    <td>19,878</td>
+    <td>10,284</td>
+    <td>51.74%</td>
+    <td>-1.11 pp</td>
+  </tr><tr class="">
+    <td>2026-03</td>
+    <td>19,581</td>
+    <td>9,034</td>
+    <td>46.14%</td>
+    <td>-5.60 pp</td>
+  </tr><tr class="">
+    <td>2026-04</td>
+    <td>17,850</td>
+    <td>8,371</td>
+    <td>46.90%</td>
+    <td>+0.76 pp</td>
+  </tr><tr class="">
+    <td>2026-05</td>
+    <td>20,269</td>
+    <td>9,162</td>
+    <td>45.20%</td>
+    <td>-1.69 pp</td>
+  </tr><tr class="">
+    <td>2026-06</td>
+    <td>18,565</td>
+    <td>8,118</td>
+    <td>43.73%</td>
+    <td>-1.47 pp</td>
+  </tr><tr class="">
+    <td>2026-07</td>
+    <td>18,093</td>
+    <td>7,533</td>
+    <td>41.63%</td>
+    <td>-2.09 pp</td>
+  </tr><tr class="partial">
+    <td>2026-08（1–15日）</td>
+    <td>6,525</td>
+    <td>2,525</td>
+    <td>38.70%</td>
+    <td>-2.94 pp</td>
+  </tr></tbody></table></div>
+      <p class="foot">口径说明：周度、月度均为各周期内每日分子相加 ÷ 每日分母相加，而非日提单率的简单平均。2026 年 8 月仅包含 1–15 日。</p>
+    </section>
+
+    <section class="section">
+      <h2>五、结论与建议</h2>
+      <div class="grid2"><div class="call"><h3>1. T0 转化率下降是主结论</h3><p>从 1 月 <b>52.85%</b> 到 7 月 <b>41.63%</b>，累计下降 <b>11.22 个百分点</b>。需将该趋势作为获额后即时转化效率的核心监测指标。</p></div><div class="call"><h3>2. 先用周/月级别判断是否改善</h3><p>日度波动可超过 <b>20 个百分点</b>，不应据此快速调整运营策略。周度连续改善、月度加权回升才构成更可靠的效果判断。</p></div><div class="call"><h3>3. 监测分母结构，避免误判</h3><p>提单率变化可能来自用户风险、额度、产品期次或渠道结构变化。后续应同步输出分母用户的历史借款次数、获额额度与产品结构，验证是否存在样本构成漂移。</p></div><div class="call"><h3>4. 将 T0 与 T1–T15 共同观察</h3><p>T0 降低未必全部等于流失，也可能部分转移为更晚提单。建议与 T1、T2–T7、T8–T15 的占比趋势联动监控，区分“时效后移”和“整体转化下降”。</p></div></div>
+    </section>
+  <details class="sql-details"><summary>附录：完整 PGSQL 查询代码（含口径注释）</summary><p class="sql-intro">以下代码完整覆盖本报告的干净结清、当日获额通过、T0 当天提单，以及按日、周、月累计统计逻辑。</p><pre class="sql-code"><code>/*
+  T0 用户当天提单率：日、周、月统计
+
+  分母：
+  1. 统计日内最后一笔干净结清；
+  2. 结清当日获额通过（is_pass1 = 1）；
+  3. 获额通过时间晚于该笔结清时间。
+
+  分子：
+  满足分母条件，且在同一自然日、晚于结清时间发生提单的用户事件。
+
+  周度、月度：
+  直接汇总每日分子、每日分母后计算提单率，不对日提单率做简单平均。
+*/
+
+WITH all_orders AS (
+    /* 订单基础表：保留干净结清和提单判断所需字段。 */
+    SELECT
+        o.user_id,
+        o.serial_id,
+        o.apply_time,
+        o.repaid_time,
+        o.repaid_date,
+        o.loan_status_code,
+        o.is_remit
+    FROM wangchuanliang.order_loan_f_v2_copy AS o
+    WHERE o.apply_time &lt; TIMESTAMP '2026-08-16 00:00:00'
+),
+
+settled_orders AS (
+    /*
+      当前已结清订单。
+      loan_status_code = 7 表示订单当前状态已结清；
+      不限制订单在结清前是否曾为逾期状态。
+    */
+    SELECT
+        o.user_id,
+        o.serial_id,
+        o.repaid_time,
+        o.repaid_date::date AS repaid_date
+    FROM all_orders AS o
+    WHERE o.is_remit = 1
+      AND o.loan_status_code = 7
+      AND o.repaid_time IS NOT NULL
+      AND o.repaid_date::date &gt;= DATE '2026-01-01'
+      AND o.repaid_date::date &lt;= DATE '2026-08-15'
+),
+
+last_settle_of_day AS (
+    /*
+      同一用户同日可能多笔结清。
+      仅取结清时间最后的一笔；repaid_time 不会相同，
+      因此不以 serial_id 作为次级排序条件。
+    */
+    SELECT DISTINCT ON (
+        s.user_id,
+        s.repaid_date
+    )
+        s.user_id,
+        s.serial_id,
+        s.repaid_time,
+        s.repaid_date
+    FROM settled_orders AS s
+    ORDER BY
+        s.user_id,
+        s.repaid_date,
+        s.repaid_time DESC
+),
+
+clean_last_settles AS (
+    /*
+      干净结清：
+      在目标订单结清的那个时刻，用户不存在其他在途订单。
+
+      其他订单当前状态为 5 或 8，说明其仍未结清；
+      其他订单当前虽为 7、但其结清时间晚于目标订单，
+      说明在目标结清时点该订单仍在途，亦应排除。
+    */
+    SELECT
+        s.user_id,
+        s.serial_id,
+        s.repaid_time,
+        s.repaid_date
+    FROM last_settle_of_day AS s
+    WHERE NOT EXISTS (
+        SELECT
+            1
+        FROM all_orders AS o2
+        WHERE o2.user_id = s.user_id
+          AND o2.serial_id &lt;&gt; s.serial_id
+          AND o2.apply_time &lt; s.repaid_time
+          AND (
+                o2.loan_status_code = 5
+             OR o2.loan_status_code = 8
+             OR (
+                    o2.loan_status_code = 7
+                AND o2.repaid_time &gt; s.repaid_time
+                )
+          )
+    )
+),
+
+credit_pass AS (
+    /* 获额通过记录；vir_unix 转为可比较的时间戳。 */
+    SELECT
+        v.user_id,
+        v.vir_date::date AS vir_date,
+        to_timestamp(v.vir_unix) AS vir_time
+    FROM wangchuanliang.order_vir_f_copy AS v
+    WHERE v.is_pass1 = 1
+      AND v.vir_date::date &gt;= DATE '2026-01-01'
+      AND v.vir_date::date &lt;= DATE '2026-08-15'
+),
+
+t0_eligible AS (
+    /*
+      T0 分母：
+      干净结清后，在结清当日获额通过，且获额通过时间晚于结清时间。
+    */
+    SELECT
+        c.user_id,
+        c.serial_id,
+        c.repaid_time,
+        c.repaid_date
+    FROM clean_last_settles AS c
+    WHERE EXISTS (
+        SELECT
+            1
+        FROM credit_pass AS cp
+        WHERE cp.user_id = c.user_id
+          AND cp.vir_date = c.repaid_date
+          AND cp.vir_time &gt; c.repaid_time
+    )
+),
+
+t0_event_result AS (
+    /*
+      每个合格“用户 × 结清日”事件标记是否当天提单。
+      仅要求提单时间晚于结清时间，且提单日期等于结清日期。
+    */
+    SELECT
+        e.user_id,
+        e.repaid_date,
+        CASE
+            WHEN EXISTS (
+                SELECT
+                    1
+                FROM all_orders AS a
+                WHERE a.user_id = e.user_id
+                  AND a.apply_time &gt; e.repaid_time
+                  AND a.apply_time::date = e.repaid_date
+            )
+            THEN 1
+            ELSE 0
+        END AS is_t0_apply
+    FROM t0_eligible AS e
+),
+
+daily_stats AS (
+    /*
+      日度统计：
+      每行均为当天 T0 分母、当天提单分子和当天提单率。
+    */
+    SELECT
+        r.repaid_date AS period_start,
+        COUNT(*) AS eligible_users,
+        SUM(r.is_t0_apply) AS apply_users
+    FROM t0_event_result AS r
+    GROUP BY
+        r.repaid_date
+),
+
+weekly_stats AS (
+    /*
+      周度统计：
+      直接累计 daily_stats 的分子和分母。
+      周起始日为周一。
+    */
+    SELECT
+        date_trunc('week', d.period_start)::date AS period_start,
+        SUM(d.eligible_users) AS eligible_users,
+        SUM(d.apply_users) AS apply_users
+    FROM daily_stats AS d
+    GROUP BY
+        date_trunc('week', d.period_start)::date
+),
+
+monthly_stats AS (
+    /*
+      月度统计：
+      直接累计 daily_stats 的分子和分母。
+    */
+    SELECT
+        date_trunc('month', d.period_start)::date AS period_start,
+        SUM(d.eligible_users) AS eligible_users,
+        SUM(d.apply_users) AS apply_users
+    FROM daily_stats AS d
+    GROUP BY
+        date_trunc('month', d.period_start)::date
+),
+
+all_grains AS (
+    /* 合并日、周、月三个粒度的统计结果。 */
+    SELECT
+        '日' AS period_type,
+        d.period_start,
+        d.eligible_users,
+        d.apply_users
+    FROM daily_stats AS d
+
+    UNION ALL
+
+    SELECT
+        '周' AS period_type,
+        w.period_start,
+        w.eligible_users,
+        w.apply_users
+    FROM weekly_stats AS w
+
+    UNION ALL
+
+    SELECT
+        '月' AS period_type,
+        m.period_start,
+        m.eligible_users,
+        m.apply_users
+    FROM monthly_stats AS m
+)
+
+SELECT
+    g.period_type AS 统计粒度,
+    g.period_start AS 结清周期起始日,
+    g.eligible_users AS T0分母用户数,
+    g.apply_users AS T0当天提单用户数,
+    ROUND(
+        g.apply_users::numeric
+        / NULLIF(g.eligible_users, 0),
+        6
+    ) AS T0提单率
+FROM all_grains AS g
+ORDER BY
+    CASE g.period_type
+        WHEN '日' THEN 1
+        WHEN '周' THEN 2
+        WHEN '月' THEN 3
+    END,
+    g.period_start;
+</code></pre></details></main>
+  <div id="tip" class="tooltip"></div>
+  <script>
+    const D={"daily":[{"date":"2026-01-01","denominator":254,"numerator":123,"rate":0.484252},{"date":"2026-01-02","denominator":623,"numerator":324,"rate":0.520064},{"date":"2026-01-03","denominator":431,"numerator":263,"rate":0.610209},{"date":"2026-01-04","denominator":317,"numerator":190,"rate":0.599369},{"date":"2026-01-05","denominator":522,"numerator":293,"rate":0.561303},{"date":"2026-01-06","denominator":381,"numerator":196,"rate":0.514436},{"date":"2026-01-07","denominator":397,"numerator":216,"rate":0.544081},{"date":"2026-01-08","denominator":461,"numerator":255,"rate":0.553145},{"date":"2026-01-09","denominator":621,"numerator":342,"rate":0.550725},{"date":"2026-01-10","denominator":493,"numerator":314,"rate":0.636917},{"date":"2026-01-11","denominator":338,"numerator":207,"rate":0.612426},{"date":"2026-01-12","denominator":563,"numerator":309,"rate":0.548845},{"date":"2026-01-13","denominator":480,"numerator":249,"rate":0.51875},{"date":"2026-01-14","denominator":586,"numerator":280,"rate":0.477816},{"date":"2026-01-15","denominator":825,"numerator":404,"rate":0.489697},{"date":"2026-01-16","denominator":735,"numerator":388,"rate":0.527891},{"date":"2026-01-17","denominator":528,"numerator":290,"rate":0.549242},{"date":"2026-01-18","denominator":395,"numerator":216,"rate":0.546835},{"date":"2026-01-19","denominator":595,"numerator":309,"rate":0.519328},{"date":"2026-01-20","denominator":549,"numerator":272,"rate":0.495446},{"date":"2026-01-21","denominator":480,"numerator":242,"rate":0.504167},{"date":"2026-01-22","denominator":570,"numerator":308,"rate":0.540351},{"date":"2026-01-23","denominator":648,"numerator":345,"rate":0.532407},{"date":"2026-01-24","denominator":482,"numerator":281,"rate":0.582988},{"date":"2026-01-25","denominator":402,"numerator":239,"rate":0.594527},{"date":"2026-01-26","denominator":643,"numerator":311,"rate":0.48367},{"date":"2026-01-27","denominator":549,"numerator":300,"rate":0.546448},{"date":"2026-01-28","denominator":576,"numerator":280,"rate":0.486111},{"date":"2026-01-29","denominator":716,"numerator":331,"rate":0.462291},{"date":"2026-01-30","denominator":1026,"numerator":456,"rate":0.444444},{"date":"2026-01-31","denominator":769,"numerator":427,"rate":0.555267},{"date":"2026-02-01","denominator":496,"numerator":271,"rate":0.546371},{"date":"2026-02-02","denominator":531,"numerator":317,"rate":0.596987},{"date":"2026-02-03","denominator":744,"numerator":362,"rate":0.486559},{"date":"2026-02-04","denominator":616,"numerator":319,"rate":0.517857},{"date":"2026-02-05","denominator":630,"numerator":324,"rate":0.514286},{"date":"2026-02-06","denominator":801,"numerator":377,"rate":0.470662},{"date":"2026-02-07","denominator":627,"numerator":350,"rate":0.558214},{"date":"2026-02-08","denominator":473,"numerator":285,"rate":0.602537},{"date":"2026-02-09","denominator":731,"numerator":386,"rate":0.528044},{"date":"2026-02-10","denominator":599,"numerator":323,"rate":0.539232},{"date":"2026-02-11","denominator":567,"numerator":282,"rate":0.497354},{"date":"2026-02-12","denominator":684,"numerator":325,"rate":0.475146},{"date":"2026-02-13","denominator":1121,"numerator":542,"rate":0.483497},{"date":"2026-02-14","denominator":742,"numerator":406,"rate":0.54717},{"date":"2026-02-15","denominator":583,"numerator":347,"rate":0.595197},{"date":"2026-02-16","denominator":872,"numerator":488,"rate":0.559633},{"date":"2026-02-17","denominator":671,"numerator":360,"rate":0.536513},{"date":"2026-02-18","denominator":622,"numerator":325,"rate":0.522508},{"date":"2026-02-19","denominator":757,"numerator":382,"rate":0.504624},{"date":"2026-02-20","denominator":925,"numerator":490,"rate":0.52973},{"date":"2026-02-21","denominator":718,"numerator":415,"rate":0.577994},{"date":"2026-02-22","denominator":475,"numerator":263,"rate":0.553684},{"date":"2026-02-23","denominator":815,"numerator":428,"rate":0.525153},{"date":"2026-02-24","denominator":610,"numerator":320,"rate":0.52459},{"date":"2026-02-25","denominator":641,"numerator":299,"rate":0.466459},{"date":"2026-02-26","denominator":751,"numerator":338,"rate":0.450067},{"date":"2026-02-27","denominator":1232,"numerator":568,"rate":0.461039},{"date":"2026-02-28","denominator":844,"numerator":392,"rate":0.464455},{"date":"2026-03-01","denominator":602,"numerator":292,"rate":0.48505},{"date":"2026-03-02","denominator":834,"numerator":420,"rate":0.503597},{"date":"2026-03-03","denominator":612,"numerator":309,"rate":0.504902},{"date":"2026-03-04","denominator":585,"numerator":260,"rate":0.444444},{"date":"2026-03-05","denominator":665,"numerator":318,"rate":0.478195},{"date":"2026-03-06","denominator":789,"numerator":351,"rate":0.444867},{"date":"2026-03-07","denominator":591,"numerator":300,"rate":0.507614},{"date":"2026-03-08","denominator":474,"numerator":246,"rate":0.518987},{"date":"2026-03-09","denominator":728,"numerator":367,"rate":0.504121},{"date":"2026-03-10","denominator":598,"numerator":283,"rate":0.473244},{"date":"2026-03-11","denominator":566,"numerator":275,"rate":0.485866},{"date":"2026-03-12","denominator":675,"numerator":259,"rate":0.383704},{"date":"2026-03-13","denominator":1043,"numerator":394,"rate":0.377756},{"date":"2026-03-14","denominator":757,"numerator":360,"rate":0.475561},{"date":"2026-03-15","denominator":506,"numerator":229,"rate":0.452569},{"date":"2026-03-16","denominator":553,"numerator":283,"rate":0.511754},{"date":"2026-03-17","denominator":631,"numerator":310,"rate":0.491284},{"date":"2026-03-18","denominator":527,"numerator":220,"rate":0.417457},{"date":"2026-03-19","denominator":575,"numerator":267,"rate":0.464348},{"date":"2026-03-20","denominator":755,"numerator":332,"rate":0.439735},{"date":"2026-03-21","denominator":542,"numerator":268,"rate":0.494465},{"date":"2026-03-22","denominator":415,"numerator":200,"rate":0.481928},{"date":"2026-03-23","denominator":579,"numerator":281,"rate":0.48532},{"date":"2026-03-24","denominator":503,"numerator":211,"rate":0.419483},{"date":"2026-03-25","denominator":504,"numerator":237,"rate":0.470238},{"date":"2026-03-26","denominator":592,"numerator":262,"rate":0.442568},{"date":"2026-03-27","denominator":785,"numerator":341,"rate":0.434395},{"date":"2026-03-28","denominator":634,"numerator":310,"rate":0.488959},{"date":"2026-03-29","denominator":472,"numerator":226,"rate":0.478814},{"date":"2026-03-30","denominator":766,"numerator":323,"rate":0.421671},{"date":"2026-03-31","denominator":723,"numerator":300,"rate":0.414938},{"date":"2026-04-01","denominator":805,"numerator":357,"rate":0.443478},{"date":"2026-04-02","denominator":588,"numerator":259,"rate":0.440476},{"date":"2026-04-03","denominator":543,"numerator":278,"rate":0.511971},{"date":"2026-04-04","denominator":514,"numerator":260,"rate":0.505837},{"date":"2026-04-05","denominator":416,"numerator":209,"rate":0.502404},{"date":"2026-04-06","denominator":644,"numerator":311,"rate":0.482919},{"date":"2026-04-07","denominator":540,"numerator":254,"rate":0.47037},{"date":"2026-04-08","denominator":501,"numerator":201,"rate":0.401198},{"date":"2026-04-09","denominator":558,"numerator":251,"rate":0.449821},{"date":"2026-04-10","denominator":700,"numerator":323,"rate":0.461429},{"date":"2026-04-11","denominator":555,"numerator":288,"rate":0.518919},{"date":"2026-04-12","denominator":410,"numerator":225,"rate":0.54878},{"date":"2026-04-13","denominator":553,"numerator":281,"rate":0.508137},{"date":"2026-04-14","denominator":589,"numerator":264,"rate":0.448217},{"date":"2026-04-15","denominator":744,"numerator":285,"rate":0.383065},{"date":"2026-04-16","denominator":667,"numerator":303,"rate":0.454273},{"date":"2026-04-17","denominator":814,"numerator":364,"rate":0.447174},{"date":"2026-04-18","denominator":588,"numerator":291,"rate":0.494898},{"date":"2026-04-19","denominator":446,"numerator":215,"rate":0.482063},{"date":"2026-04-20","denominator":640,"numerator":315,"rate":0.492188},{"date":"2026-04-21","denominator":477,"numerator":220,"rate":0.461216},{"date":"2026-04-22","denominator":513,"numerator":227,"rate":0.442495},{"date":"2026-04-23","denominator":614,"numerator":287,"rate":0.467427},{"date":"2026-04-24","denominator":746,"numerator":375,"rate":0.502681},{"date":"2026-04-25","denominator":537,"numerator":256,"rate":0.476723},{"date":"2026-04-26","denominator":419,"numerator":224,"rate":0.534606},{"date":"2026-04-27","denominator":541,"numerator":262,"rate":0.484288},{"date":"2026-04-28","denominator":582,"numerator":274,"rate":0.47079},{"date":"2026-04-29","denominator":640,"numerator":281,"rate":0.439063},{"date":"2026-04-30","denominator":966,"numerator":431,"rate":0.44617},{"date":"2026-05-01","denominator":714,"numerator":332,"rate":0.464986},{"date":"2026-05-02","denominator":635,"numerator":307,"rate":0.483465},{"date":"2026-05-03","denominator":470,"numerator":238,"rate":0.506383},{"date":"2026-05-04","denominator":660,"numerator":341,"rate":0.516667},{"date":"2026-05-05","denominator":578,"numerator":279,"rate":0.482699},{"date":"2026-05-06","denominator":543,"numerator":246,"rate":0.453039},{"date":"2026-05-07","denominator":627,"numerator":269,"rate":0.429027},{"date":"2026-05-08","denominator":806,"numerator":365,"rate":0.452854},{"date":"2026-05-09","denominator":672,"numerator":335,"rate":0.498512},{"date":"2026-05-10","denominator":430,"numerator":222,"rate":0.516279},{"date":"2026-05-11","denominator":648,"numerator":323,"rate":0.498457},{"date":"2026-05-12","denominator":520,"numerator":242,"rate":0.465385},{"date":"2026-05-13","denominator":615,"numerator":274,"rate":0.445528},{"date":"2026-05-14","denominator":803,"numerator":336,"rate":0.418431},{"date":"2026-05-15","denominator":1109,"numerator":475,"rate":0.428314},{"date":"2026-05-16","denominator":759,"numerator":378,"rate":0.498024},{"date":"2026-05-17","denominator":508,"numerator":244,"rate":0.480315},{"date":"2026-05-18","denominator":739,"numerator":358,"rate":0.484438},{"date":"2026-05-19","denominator":567,"numerator":235,"rate":0.414462},{"date":"2026-05-20","denominator":550,"numerator":235,"rate":0.427273},{"date":"2026-05-21","denominator":658,"numerator":271,"rate":0.411854},{"date":"2026-05-22","denominator":782,"numerator":346,"rate":0.442455},{"date":"2026-05-23","denominator":581,"numerator":275,"rate":0.473322},{"date":"2026-05-24","denominator":489,"numerator":245,"rate":0.501022},{"date":"2026-05-25","denominator":612,"numerator":265,"rate":0.433007},{"date":"2026-05-26","denominator":573,"numerator":242,"rate":0.422339},{"date":"2026-05-27","denominator":555,"numerator":236,"rate":0.425225},{"date":"2026-05-28","denominator":696,"numerator":274,"rate":0.393678},{"date":"2026-05-29","denominator":1119,"numerator":426,"rate":0.380697},{"date":"2026-05-30","denominator":737,"numerator":334,"rate":0.453189},{"date":"2026-05-31","denominator":514,"numerator":214,"rate":0.416342},{"date":"2026-06-01","denominator":604,"numerator":277,"rate":0.458609},{"date":"2026-06-02","denominator":580,"numerator":246,"rate":0.424138},{"date":"2026-06-03","denominator":541,"numerator":230,"rate":0.425139},{"date":"2026-06-04","denominator":579,"numerator":234,"rate":0.404145},{"date":"2026-06-05","denominator":751,"numerator":333,"rate":0.443409},{"date":"2026-06-06","denominator":571,"numerator":287,"rate":0.502627},{"date":"2026-06-07","denominator":437,"numerator":221,"rate":0.505721},{"date":"2026-06-08","denominator":568,"numerator":248,"rate":0.43662},{"date":"2026-06-09","denominator":531,"numerator":204,"rate":0.384181},{"date":"2026-06-10","denominator":564,"numerator":249,"rate":0.441489},{"date":"2026-06-11","denominator":615,"numerator":228,"rate":0.370732},{"date":"2026-06-12","denominator":860,"numerator":366,"rate":0.425581},{"date":"2026-06-13","denominator":660,"numerator":278,"rate":0.421212},{"date":"2026-06-14","denominator":498,"numerator":228,"rate":0.457831},{"date":"2026-06-15","denominator":879,"numerator":378,"rate":0.430034},{"date":"2026-06-16","denominator":636,"numerator":278,"rate":0.437107},{"date":"2026-06-17","denominator":608,"numerator":279,"rate":0.458882},{"date":"2026-06-18","denominator":587,"numerator":264,"rate":0.449744},{"date":"2026-06-19","denominator":709,"numerator":307,"rate":0.433004},{"date":"2026-06-20","denominator":652,"numerator":304,"rate":0.466258},{"date":"2026-06-21","denominator":382,"numerator":203,"rate":0.531414},{"date":"2026-06-22","denominator":610,"numerator":274,"rate":0.44918},{"date":"2026-06-23","denominator":602,"numerator":253,"rate":0.420266},{"date":"2026-06-24","denominator":505,"numerator":207,"rate":0.409901},{"date":"2026-06-25","denominator":586,"numerator":272,"rate":0.464164},{"date":"2026-06-26","denominator":825,"numerator":369,"rate":0.447273},{"date":"2026-06-27","denominator":620,"numerator":284,"rate":0.458065},{"date":"2026-06-28","denominator":448,"numerator":221,"rate":0.493304},{"date":"2026-06-29","denominator":783,"numerator":305,"rate":0.389527},{"date":"2026-06-30","denominator":774,"numerator":291,"rate":0.375969},{"date":"2026-07-01","denominator":607,"numerator":252,"rate":0.415157},{"date":"2026-07-02","denominator":743,"numerator":291,"rate":0.391655},{"date":"2026-07-03","denominator":793,"numerator":346,"rate":0.436318},{"date":"2026-07-04","denominator":596,"numerator":274,"rate":0.459732},{"date":"2026-07-05","denominator":483,"numerator":199,"rate":0.412008},{"date":"2026-07-06","denominator":582,"numerator":262,"rate":0.450172},{"date":"2026-07-07","denominator":534,"numerator":218,"rate":0.40824},{"date":"2026-07-08","denominator":487,"numerator":217,"rate":0.445585},{"date":"2026-07-09","denominator":557,"numerator":228,"rate":0.409336},{"date":"2026-07-10","denominator":731,"numerator":301,"rate":0.411765},{"date":"2026-07-11","denominator":562,"numerator":269,"rate":0.478648},{"date":"2026-07-12","denominator":431,"numerator":179,"rate":0.415313},{"date":"2026-07-13","denominator":606,"numerator":264,"rate":0.435644},{"date":"2026-07-14","denominator":613,"numerator":251,"rate":0.409462},{"date":"2026-07-15","denominator":835,"numerator":309,"rate":0.37006},{"date":"2026-07-16","denominator":640,"numerator":262,"rate":0.409375},{"date":"2026-07-17","denominator":746,"numerator":293,"rate":0.392761},{"date":"2026-07-18","denominator":581,"numerator":239,"rate":0.41136},{"date":"2026-07-19","denominator":434,"numerator":186,"rate":0.428571},{"date":"2026-07-20","denominator":633,"numerator":275,"rate":0.434439},{"date":"2026-07-21","denominator":510,"numerator":194,"rate":0.380392},{"date":"2026-07-22","denominator":509,"numerator":214,"rate":0.420432},{"date":"2026-07-23","denominator":536,"numerator":223,"rate":0.416045},{"date":"2026-07-24","denominator":684,"numerator":319,"rate":0.466374},{"date":"2026-07-25","denominator":489,"numerator":218,"rate":0.445808},{"date":"2026-07-26","denominator":387,"numerator":162,"rate":0.418605},{"date":"2026-07-27","denominator":568,"numerator":232,"rate":0.408451},{"date":"2026-07-28","denominator":507,"numerator":211,"rate":0.416174},{"date":"2026-07-29","denominator":436,"numerator":172,"rate":0.394495},{"date":"2026-07-30","denominator":605,"numerator":222,"rate":0.366942},{"date":"2026-07-31","denominator":668,"numerator":251,"rate":0.375749},{"date":"2026-08-01","denominator":474,"numerator":196,"rate":0.413502},{"date":"2026-08-02","denominator":318,"numerator":115,"rate":0.361635},{"date":"2026-08-03","denominator":435,"numerator":172,"rate":0.395402},{"date":"2026-08-04","denominator":425,"numerator":158,"rate":0.371765},{"date":"2026-08-05","denominator":384,"numerator":140,"rate":0.364583},{"date":"2026-08-06","denominator":438,"numerator":166,"rate":0.378995},{"date":"2026-08-07","denominator":509,"numerator":212,"rate":0.416503},{"date":"2026-08-08","denominator":375,"numerator":161,"rate":0.429333},{"date":"2026-08-09","denominator":336,"numerator":151,"rate":0.449405},{"date":"2026-08-10","denominator":422,"numerator":172,"rate":0.407583},{"date":"2026-08-11","denominator":408,"numerator":156,"rate":0.382353},{"date":"2026-08-12","denominator":352,"numerator":107,"rate":0.303977},{"date":"2026-08-13","denominator":467,"numerator":165,"rate":0.353319},{"date":"2026-08-14","denominator":674,"numerator":252,"rate":0.373887},{"date":"2026-08-15","denominator":508,"numerator":202,"rate":0.397638}],"weekly":[{"date":"2025-12-29","denominator":1625,"numerator":900,"rate":0.553846},{"date":"2026-01-05","denominator":3213,"numerator":1823,"rate":0.567383},{"date":"2026-01-12","denominator":4112,"numerator":2136,"rate":0.519455},{"date":"2026-01-19","denominator":3726,"numerator":1996,"rate":0.535695},{"date":"2026-01-26","denominator":4775,"numerator":2376,"rate":0.497592},{"date":"2026-02-02","denominator":4422,"numerator":2334,"rate":0.527815},{"date":"2026-02-09","denominator":5027,"numerator":2611,"rate":0.519395},{"date":"2026-02-16","denominator":5040,"numerator":2723,"rate":0.540278},{"date":"2026-02-23","denominator":5495,"numerator":2637,"rate":0.479891},{"date":"2026-03-02","denominator":4550,"numerator":2204,"rate":0.484396},{"date":"2026-03-09","denominator":4873,"numerator":2167,"rate":0.444695},{"date":"2026-03-16","denominator":3998,"numerator":1880,"rate":0.470235},{"date":"2026-03-23","denominator":4069,"numerator":1868,"rate":0.459081},{"date":"2026-03-30","denominator":4355,"numerator":1986,"rate":0.456028},{"date":"2026-04-06","denominator":3908,"numerator":1853,"rate":0.474156},{"date":"2026-04-13","denominator":4401,"numerator":2003,"rate":0.455124},{"date":"2026-04-20","denominator":3946,"numerator":1904,"rate":0.482514},{"date":"2026-04-27","denominator":4548,"numerator":2125,"rate":0.467238},{"date":"2026-05-04","denominator":4316,"numerator":2057,"rate":0.476599},{"date":"2026-05-11","denominator":4962,"numerator":2272,"rate":0.45788},{"date":"2026-05-18","denominator":4366,"numerator":1965,"rate":0.450069},{"date":"2026-05-25","denominator":4806,"numerator":1991,"rate":0.414274},{"date":"2026-06-01","denominator":4063,"numerator":1828,"rate":0.449914},{"date":"2026-06-08","denominator":4296,"numerator":1801,"rate":0.419227},{"date":"2026-06-15","denominator":4453,"numerator":2013,"rate":0.452055},{"date":"2026-06-22","denominator":4196,"numerator":1880,"rate":0.448046},{"date":"2026-06-29","denominator":4779,"numerator":1958,"rate":0.409709},{"date":"2026-07-06","denominator":3884,"numerator":1674,"rate":0.430999},{"date":"2026-07-13","denominator":4455,"numerator":1804,"rate":0.404938},{"date":"2026-07-20","denominator":3748,"numerator":1605,"rate":0.428228},{"date":"2026-07-27","denominator":3576,"numerator":1399,"rate":0.391219},{"date":"2026-08-03","denominator":2902,"numerator":1160,"rate":0.399724},{"date":"2026-08-10","denominator":2831,"numerator":1054,"rate":0.372307}],"monthly":[{"date":"2026-01-01","denominator":16955,"numerator":8960,"rate":0.528458},{"date":"2026-02-01","denominator":19878,"numerator":10284,"rate":0.517356},{"date":"2026-03-01","denominator":19581,"numerator":9034,"rate":0.461366},{"date":"2026-04-01","denominator":17850,"numerator":8371,"rate":0.468964},{"date":"2026-05-01","denominator":20269,"numerator":9162,"rate":0.45202},{"date":"2026-06-01","denominator":18565,"numerator":8118,"rate":0.437274},{"date":"2026-07-01","denominator":18093,"numerator":7533,"rate":0.416349},{"date":"2026-08-01","denominator":6525,"numerator":2525,"rate":0.386973}]};
+    const tip=document.getElementById('tip');
+    function showTip(event,text){tip.textContent=text;tip.style.display='block';tip.style.left=(event.clientX+12)+'px';tip.style.top=(event.clientY-28)+'px'}
+    function bind(svg){svg.querySelectorAll('[data-tip]').forEach(node=>{node.addEventListener('mouseenter',e=>showTip(e,node.dataset.tip));node.addEventListener('click',e=>showTip(e,node.dataset.tip));});svg.addEventListener('mouseleave',()=>tip.style.display='none')}
+    function rateAxis(v){return (v*100).toFixed(0)+'%'}
+    function daily(){const a=D.daily;const s=document.getElementById('dailyChart'),W=1000,H=355,L=60,R=24,T=22,B=48;const min=.25,max=.7;const x=i=>L+i*(W-L-R)/(a.length-1),y=v=>H-B-(v-min)/(max-min)*(H-T-B);let h='<text class="svg-title" x="60" y="16">T0 提单率（%）</text>';[.3,.4,.5,.6,.7].forEach(v=>h+='<line class="axis" x1="'+L+'" x2="'+(W-R)+'" y1="'+y(v)+'" y2="'+y(v)+'"/><text class="axis-text" x="10" y="'+(y(v)+4)+'">'+rateAxis(v)+'</text>');const ma=a.map((d,i)=>a.slice(Math.max(0,i-6),i+1).reduce((q,z)=>q+z.rate,0)/Math.min(i+1,7));h+='<path class="line-raw" d="'+a.map((d,i)=>(i?'L':'M')+x(i)+','+y(d.rate)).join('')+'"/><path class="line-ma" d="'+ma.map((v,i)=>(i?'L':'M')+x(i)+','+y(v)).join('')+'"/>';a.forEach((d,i)=>{if(i%7===0||i===a.length-1)h+='<circle class="dot" fill="#42d7ff" cx="'+x(i)+'" cy="'+y(ma[i])+'" r="3.4" data-tip="'+d.date+'\n当天提单率：'+(d.rate*100).toFixed(2)+'%\n分母：'+d.denominator.toLocaleString()+' 人\n当天提单：'+d.numerator.toLocaleString()+' 人\n7日均线：'+(ma[i]*100).toFixed(2)+'%"/>';if(i%32===0||i===a.length-1)h+='<text class="axis-text" text-anchor="middle" x="'+x(i)+'" y="'+(H-17)+'">'+d.date.slice(5)+'</text>'});s.innerHTML=h;bind(s)}
+    function weekly(){const a=D.weekly,s=document.getElementById('weeklyChart'),W=1000,H=355,L=60,R=56,T=22,B=48,rateMax=.65,countMax=Math.max(...a.map(d=>d.denominator))*1.1,slot=(W-L-R)/a.length,bw=slot*.62;const y=v=>H-B-v/rateMax*(H-T-B),yc=v=>H-B-v/countMax*(H-T-B);let h='<text class="svg-title" x="60" y="16">提单率（%）</text><text class="svg-title" x="900" y="16">分母用户数</text>';[.2,.3,.4,.5,.6].forEach(v=>h+='<line class="axis" x1="'+L+'" x2="'+(W-R)+'" y1="'+y(v)+'" y2="'+y(v)+'"/><text class="axis-text" x="10" y="'+(y(v)+4)+'">'+rateAxis(v)+'</text>');[0,2000,4000,6000].forEach(v=>h+='<text class="axis-text" x="'+(W-R+8)+'" y="'+(yc(v)+4)+'">'+(v/1000)+'k</text>');a.forEach((d,i)=>{const xx=L+i*slot+slot/2;const hh=H-B-y(d.rate);const col=(i===0||i===a.length-1)?'#526f87':'#ae8cff';h+='<rect x="'+(xx-bw/2)+'" y="'+y(d.rate)+'" width="'+bw+'" height="'+hh+'" rx="3" fill="'+col+'" data-tip="周起始：'+d.date+'\nT0提单率：'+(d.rate*100).toFixed(2)+'%\n分母：'+d.denominator.toLocaleString()+' 人\n当天提单：'+d.numerator.toLocaleString()+' 人"/>';if(i%4===0||i===a.length-1)h+='<text class="axis-text" text-anchor="middle" x="'+xx+'" y="'+(H-17)+'">'+d.date.slice(5)+'</text>'});h+='<path class="line-ma" stroke="#ffb660" d="'+a.map((d,i)=>(i?'L':'M')+(L+i*slot+slot/2)+','+yc(d.denominator)).join('')+'"/>';s.innerHTML=h;bind(s)}
+    function monthly(){const a=D.monthly,s=document.getElementById('monthlyChart'),W=1000,H=355,L=60,R=25,T=28,B=56,max=.6,slot=(W-L-R)/a.length,bw=slot*.58,y=v=>H-B-v/max*(H-T-B);let h='<text class="svg-title" x="60" y="17">T0 提单率（%）</text>';[.2,.3,.4,.5,.6].forEach(v=>h+='<line class="axis" x1="'+L+'" x2="'+(W-R)+'" y1="'+y(v)+'" y2="'+y(v)+'"/><text class="axis-text" x="10" y="'+(y(v)+4)+'">'+rateAxis(v)+'</text>');a.forEach((d,i)=>{const xx=L+i*slot+slot/2,barY=y(d.rate),height=H-B-barY,color=i===a.length-1?'#526f87':i<2?'#5bdba6':'#42d7ff';h+='<rect x="'+(xx-bw/2)+'" y="'+barY+'" width="'+bw+'" height="'+height+'" rx="7" fill="'+color+'" data-tip="'+d.date.slice(0,7)+(i===a.length-1?'（1–15日）':'')+'\nT0提单率：'+(d.rate*100).toFixed(2)+'%\n分母：'+d.denominator.toLocaleString()+' 人\n当天提单：'+d.numerator.toLocaleString()+' 人"/><text class="svg-title" text-anchor="middle" x="'+xx+'" y="'+(barY-8)+'">'+(d.rate*100).toFixed(1)+'%</text><text class="axis-text" text-anchor="middle" x="'+xx+'" y="'+(H-22)+'">'+d.date.slice(5,7)+'月</text>'});s.innerHTML=h;bind(s)}
+    daily();weekly();monthly();
+  </script>
+</body>
+</html>
