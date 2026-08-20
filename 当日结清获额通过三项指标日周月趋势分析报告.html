@@ -1,0 +1,414 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>当日结清获额通过三项指标日周月趋势分析报告</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"></script>
+  <style>
+    :root { --bg:#061829; --panel:#0b2740; --panel2:#0f3354; --line:#1e547d; --text:#e9f3ff; --muted:#9db9d4; --cyan:#38d9e6; --green:#75e0a5; --amber:#ffbf69; --purple:#a78bfa; --red:#ff8095; }
+    * { box-sizing:border-box; }
+    body { margin:0; background:linear-gradient(180deg,#061829 0%,#09233b 55%,#061829 100%); color:var(--text); font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei",sans-serif; }
+    .wrap { max-width:1440px; margin:0 auto; padding:42px 28px 72px; }
+    header { text-align:center; padding:10px 0 36px; border-bottom:1px solid var(--line); }
+    h1 { margin:0; font-size:32px; letter-spacing:.5px; }
+    .subtitle { margin:12px 0 0; color:var(--muted); font-size:15px; }
+    .scope { display:inline-block; margin-top:15px; padding:7px 12px; border:1px solid #285f86; border-radius:999px; color:#bfe8ff; font-size:13px; }
+    h2 { margin:42px 0 16px; font-size:23px; }
+    h3 { margin:0 0 8px; font-size:17px; }
+    p { color:#c3d9ed; line-height:1.8; }
+    .kpis { display:grid; grid-template-columns:repeat(3,1fr); gap:16px; margin-top:24px; }
+    .kpi { padding:20px; border:1px solid var(--line); border-radius:14px; background:linear-gradient(145deg,#0d2d49,#082238); }
+    .kpi .label { color:var(--muted); font-size:14px; min-height:42px; }
+    .kpi .value { font-size:30px; font-weight:700; margin:8px 0; }
+    .kpi .foot { color:#c6dcf0; font-size:13px; }
+    .cyan { color:var(--cyan); } .green { color:var(--green); } .amber { color:var(--amber); }
+    .grid { display:grid; grid-template-columns:1fr 1fr; gap:20px; }
+    .panel { padding:20px; border:1px solid var(--line); border-radius:14px; background:rgba(9,35,59,.9); }
+    .panel.wide { grid-column:1/-1; }
+    .chart-box { position:relative; height:350px; }
+    .wide .chart-box { height:390px; }
+    .metric-defs { display:grid; grid-template-columns:repeat(3,1fr); gap:14px; }
+    .metric { border-left:4px solid var(--cyan); padding:12px 14px; background:#0a2943; }
+    .metric:nth-child(2){border-color:var(--green)} .metric:nth-child(3){border-color:var(--amber)}
+    .metric strong { display:block; margin-bottom:5px; }
+    .findings { display:grid; grid-template-columns:repeat(3,1fr); gap:16px; }
+    .finding { padding:18px; background:#0d2e4b; border:1px solid var(--line); border-radius:12px; }
+    .finding b { display:block; font-size:18px; margin-bottom:8px; color:#fff; }
+    .table-wrap { overflow:auto; border:1px solid var(--line); border-radius:12px; }
+    table { width:100%; border-collapse:collapse; min-width:820px; }
+    th { background:#123a5c; color:#dff2ff; font-weight:600; }
+    td,th { padding:12px 14px; border-bottom:1px solid #164566; text-align:right; white-space:nowrap; }
+    td:first-child,th:first-child { text-align:left; }
+    tbody tr:last-child td { border-bottom:0; }
+    tbody tr:hover { background:#103858; }
+    details { margin-top:58px; border:1px solid #245778; background:#061725; border-radius:12px; }
+    summary { cursor:pointer; padding:18px 22px; font-weight:700; font-size:19px; color:#d8efff; list-style:none; }
+    summary::-webkit-details-marker { display:none; }
+    summary::before { content:"▾"; display:inline-block; margin-right:12px; font-size:26px; vertical-align:-2px; transition:transform .2s; }
+    details:not([open]) summary::before { transform:rotate(-90deg); }
+    pre { margin:0; padding:22px; overflow:auto; border-top:1px solid #245778; color:#cfe6f8; font:13px/1.65 ui-monospace,SFMono-Regular,Menlo,Consolas,monospace; white-space:pre; }
+    .note { color:var(--muted); font-size:13px; }
+    @media(max-width:800px){ .wrap{padding:28px 14px 56px}.kpis,.grid,.metric-defs,.findings{grid-template-columns:1fr}.panel.wide{grid-column:auto}h1{font-size:25px}.chart-box,.wide .chart-box{height:315px} }
+  </style>
+</head>
+<body>
+  <main class="wrap">
+    <header>
+      <h1>当日结清获额通过三项指标日周月趋势分析报告</h1>
+      <p class="subtitle">报告生成时间：2026年8月20日</p>
+      <span class="scope">数据范围：2026年1月1日—2026年8月15日 · 周/月为每日用户数直接累加</span>
+    </header>
+
+    <section>
+      <h2>一、指标口径与总体规模</h2>
+      <div class="metric-defs">
+        <div class="metric"><strong>不限制条件获额通过</strong><span>当日结清，结清后当天获额通过；不要求干净结清。</span></div>
+        <div class="metric"><strong>干净结清获额通过</strong><span>取当日最后一笔结清订单，且结清时点无其他在途订单。</span></div>
+        <div class="metric"><strong>获额后可提单</strong><span>获额订单关联循环贷类型，recycle_type 为 2 或 3。</span></div>
+      </div>
+      <div class="kpis">
+        <div class="kpi"><div class="label">不限制条件：结清后当日获额通过</div><div class="value cyan">200,854</div><div class="foot">日均 885 用户日</div></div>
+        <div class="kpi"><div class="label">当日干净结清后获额通过</div><div class="value green">137,716</div><div class="foot">占不限制条件 68.57%</div></div>
+        <div class="kpi"><div class="label">结清后当日获额通过且可提单</div><div class="value amber">193,232</div><div class="foot">占不限制条件 96.21%</div></div>
+      </div>
+    </section>
+
+    <section>
+      <h2>二、日度变化趋势</h2>
+      <div class="grid"><article class="panel wide"><h3>每日用户数：三项指标同步走势</h3><p class="note">点击或悬停曲线可查看对应日期的具体人数。</p><div class="chart-box"><canvas id="dailyChart"></canvas></div></article></div>
+    </section>
+
+    <section>
+      <h2>三、周度变化趋势</h2>
+      <div class="grid"><article class="panel wide"><h3>每周累计用户数</h3><p class="note">以周一为周起始日，数值为该周每日用户数直接相加。</p><div class="chart-box"><canvas id="weeklyChart"></canvas></div></article></div>
+    </section>
+
+    <section>
+      <h2>四、月度变化趋势与结构变化</h2>
+      <div class="grid">
+        <article class="panel"><h3>月度累计用户数对比</h3><div class="chart-box"><canvas id="monthlyChart"></canvas></div></article>
+        <article class="panel"><h3>月度结构占比</h3><p class="note">分母均为“不限制条件获额通过用户数”。8月仅统计1—15日，不与完整月份直接比较。</p><div class="chart-box"><canvas id="shareChart"></canvas></div></article>
+      </div>
+    </section>
+
+    <section>
+      <h2>五、核心结论</h2>
+      <div class="findings">
+        <article class="finding"><b>整体获额通过用户池扩大</b><p>完整月份比较，1月不限制条件获额通过用户为 23,881，7月为 28,901，增加 21.02%。说明结清后当日获额通过的人群规模整体上升。</p></article>
+        <article class="finding"><b>干净结清占比持续下行</b><p>干净结清占比从1月的 71.00% 降至7月的 62.60%，下降 8.39 个百分点。新增获额通过用户更多来自结清时仍存在订单关联的用户。</p></article>
+        <article class="finding"><b>可提单资格覆盖率仍高但走弱</b><p>可提单用户累计占比为 96.21%；完整月份中，2月达到 97.21%，7月为 94.63%，下降 2.59 个百分点。需要持续监测 recycle_type=1 的占比变化。</p></article>
+      </div>
+    </section>
+
+    <section>
+      <h2>六、月度可核对数据</h2>
+      <div class="table-wrap"><table><thead><tr><th>结清月份</th><th>不限制条件获额通过</th><th>干净结清获额通过</th><th>干净结清占比</th><th>获额通过且可提单</th><th>可提单占比</th></tr></thead><tbody>
+  <tr>
+    <td>2026-01</td>
+    <td>23,881</td>
+    <td>16,955</td>
+    <td>71.00%</td>
+    <td>23,103</td>
+    <td>96.74%</td>
+  </tr>
+  <tr>
+    <td>2026-02</td>
+    <td>27,208</td>
+    <td>19,878</td>
+    <td>73.06%</td>
+    <td>26,450</td>
+    <td>97.21%</td>
+  </tr>
+  <tr>
+    <td>2026-03</td>
+    <td>26,478</td>
+    <td>19,581</td>
+    <td>73.95%</td>
+    <td>25,822</td>
+    <td>97.52%</td>
+  </tr>
+  <tr>
+    <td>2026-04</td>
+    <td>25,348</td>
+    <td>17,850</td>
+    <td>70.42%</td>
+    <td>24,539</td>
+    <td>96.81%</td>
+  </tr>
+  <tr>
+    <td>2026-05</td>
+    <td>29,510</td>
+    <td>20,269</td>
+    <td>68.69%</td>
+    <td>28,540</td>
+    <td>96.71%</td>
+  </tr>
+  <tr>
+    <td>2026-06</td>
+    <td>28,615</td>
+    <td>18,565</td>
+    <td>64.88%</td>
+    <td>27,249</td>
+    <td>95.23%</td>
+  </tr>
+  <tr>
+    <td>2026-07</td>
+    <td>28,901</td>
+    <td>18,093</td>
+    <td>62.60%</td>
+    <td>27,348</td>
+    <td>94.63%</td>
+  </tr>
+  <tr>
+    <td>2026-08（1–15日）</td>
+    <td>10,913</td>
+    <td>6,525</td>
+    <td>59.79%</td>
+    <td>10,181</td>
+    <td>93.29%</td>
+  </tr></tbody></table></div>
+      <p class="note">说明：人数为用户×结清日。若同一用户在不同日期结清并满足条件，会分别计入对应日期。</p>
+    </section>
+
+    <details>
+      <summary>附录：PGSQL 查询代码</summary>
+      <pre>/*
+口径说明：
+1. eligible_users：不限制干净结清；结清后当天获额通过。
+2. clean_eligible_users：沿用此前 T0 分析的干净结清口径；结清后当天获额通过。
+3. eligible_can_apply_users：不限制干净结清；获额订单 recycle_type 为 2 或 3。
+*/
+
+WITH all_orders AS (
+    SELECT
+        o.user_id,
+        o.serial_id,
+        o.apply_time,
+        o.repaid_time,
+        o.repaid_date,
+        o.loan_status_code,
+        o.is_remit
+    FROM wangchuanliang.order_loan_f_v2_copy AS o
+    WHERE o.apply_time &lt; TIMESTAMP '2026-08-16 00:00:00'
+),
+
+settled_orders AS (
+    SELECT
+        o.user_id,
+        o.serial_id,
+        o.repaid_time,
+        o.repaid_date::date AS repaid_date
+    FROM all_orders AS o
+    WHERE o.is_remit = 1
+      AND o.repaid_time IS NOT NULL
+      AND o.repaid_date &gt;= DATE '2026-01-01'
+      AND o.repaid_date &lt;= DATE '2026-08-15'
+),
+
+credit_pass AS (
+    SELECT
+        v.user_id,
+        v.serial_id,
+        v.vir_date::date AS vir_date,
+        to_timestamp(v.vir_unix) AS vir_time
+    FROM wangchuanliang.order_vir_f_copy AS v
+    WHERE v.is_pass1 = 1
+      AND v.vir_date &gt;= DATE '2026-01-01'
+      AND v.vir_date &lt;= DATE '2026-08-15'
+),
+
+eligible_user_days AS (
+    SELECT DISTINCT
+        s.user_id,
+        s.repaid_date
+    FROM settled_orders AS s
+    INNER JOIN credit_pass AS cp
+        ON cp.user_id = s.user_id
+       AND cp.vir_date = s.repaid_date
+       AND cp.vir_time &gt; s.repaid_time
+),
+
+eligible_daily AS (
+    SELECT
+        e.repaid_date,
+        COUNT(DISTINCT e.user_id) AS eligible_users
+    FROM eligible_user_days AS e
+    GROUP BY
+        e.repaid_date
+),
+
+clean_settled_orders AS (
+    SELECT
+        o.user_id,
+        o.serial_id,
+        o.repaid_time,
+        o.repaid_date::date AS repaid_date
+    FROM all_orders AS o
+    WHERE o.is_remit = 1
+      AND o.loan_status_code = 7
+      AND o.repaid_time IS NOT NULL
+      AND o.repaid_date &gt;= DATE '2026-01-01'
+      AND o.repaid_date &lt;= DATE '2026-08-15'
+),
+
+last_settle_of_day AS (
+    SELECT DISTINCT ON (
+        s.user_id,
+        s.repaid_date
+    )
+        s.user_id,
+        s.serial_id,
+        s.repaid_time,
+        s.repaid_date
+    FROM clean_settled_orders AS s
+    ORDER BY
+        s.user_id,
+        s.repaid_date,
+        s.repaid_time DESC
+),
+
+clean_last_settles AS (
+    SELECT
+        s.user_id,
+        s.serial_id,
+        s.repaid_time,
+        s.repaid_date
+    FROM last_settle_of_day AS s
+    WHERE NOT EXISTS (
+        SELECT
+            1
+        FROM all_orders AS o2
+        WHERE o2.user_id = s.user_id
+          AND o2.serial_id &lt;&gt; s.serial_id
+          AND o2.apply_time &lt; s.repaid_time
+          AND (
+                o2.loan_status_code = 5
+             OR o2.loan_status_code = 8
+             OR (
+                    o2.loan_status_code = 7
+                AND o2.repaid_time &gt; s.repaid_time
+                )
+          )
+    )
+),
+
+clean_t0_eligible AS (
+    SELECT
+        c.user_id,
+        c.repaid_time,
+        c.repaid_date
+    FROM clean_last_settles AS c
+    WHERE EXISTS (
+        SELECT
+            1
+        FROM credit_pass AS cp
+        WHERE cp.user_id = c.user_id
+          AND cp.vir_date = c.repaid_date
+          AND cp.vir_time &gt; c.repaid_time
+    )
+),
+
+clean_t0_by_user_date AS (
+    SELECT
+        t.user_id,
+        t.repaid_date,
+        MIN(a.apply_time) AS first_apply_time_t0
+    FROM clean_t0_eligible AS t
+    LEFT JOIN all_orders AS a
+        ON a.user_id = t.user_id
+       AND a.apply_time &gt; t.repaid_time
+       AND a.apply_time::date = t.repaid_date
+    GROUP BY
+        t.user_id,
+        t.repaid_date
+),
+
+clean_eligible_daily AS (
+    SELECT
+        t.repaid_date,
+        COUNT(DISTINCT t.user_id) AS clean_eligible_users
+    FROM clean_t0_by_user_date AS t
+    GROUP BY
+        t.repaid_date
+),
+
+can_apply_credit_passes AS (
+    SELECT
+        cp.user_id,
+        cp.vir_date,
+        cp.vir_time
+    FROM credit_pass AS cp
+    INNER JOIN wangchuanliang.side_recycle_type_copy AS r
+        ON r.serial_id = cp.serial_id
+    WHERE r.recycle_type IN (
+        2,
+        3
+    )
+),
+
+eligible_can_apply_user_days AS (
+    SELECT DISTINCT
+        s.user_id,
+        s.repaid_date
+    FROM settled_orders AS s
+    INNER JOIN can_apply_credit_passes AS cp
+        ON cp.user_id = s.user_id
+       AND cp.vir_date = s.repaid_date
+       AND cp.vir_time &gt; s.repaid_time
+),
+
+eligible_can_apply_daily AS (
+    SELECT
+        e.repaid_date,
+        COUNT(DISTINCT e.user_id) AS eligible_can_apply_users
+    FROM eligible_can_apply_user_days AS e
+    GROUP BY
+        e.repaid_date
+),
+
+date_range AS (
+    SELECT
+        generate_series(
+            DATE '2026-01-01',
+            DATE '2026-08-15',
+            INTERVAL '1 day'
+        )::date AS repaid_date
+)
+
+SELECT
+    d.repaid_date,
+    COALESCE(e.eligible_users, 0) AS eligible_users,
+    COALESCE(c.clean_eligible_users, 0) AS clean_eligible_users,
+    COALESCE(a.eligible_can_apply_users, 0) AS eligible_can_apply_users
+FROM date_range AS d
+LEFT JOIN eligible_daily AS e
+    ON e.repaid_date = d.repaid_date
+LEFT JOIN clean_eligible_daily AS c
+    ON c.repaid_date = d.repaid_date
+LEFT JOIN eligible_can_apply_daily AS a
+    ON a.repaid_date = d.repaid_date
+ORDER BY
+    d.repaid_date;
+</pre>
+    </details>
+  </main>
+  <script>
+    const daily = [{"date":"2026-01-01","eligible":361,"clean":254,"canApply":346},{"date":"2026-01-02","eligible":903,"clean":623,"canApply":871},{"date":"2026-01-03","eligible":620,"clean":431,"canApply":590},{"date":"2026-01-04","eligible":470,"clean":317,"canApply":450},{"date":"2026-01-05","eligible":789,"clean":522,"canApply":746},{"date":"2026-01-06","eligible":588,"clean":381,"canApply":561},{"date":"2026-01-07","eligible":587,"clean":397,"canApply":565},{"date":"2026-01-08","eligible":683,"clean":461,"canApply":658},{"date":"2026-01-09","eligible":854,"clean":621,"canApply":819},{"date":"2026-01-10","eligible":700,"clean":493,"canApply":682},{"date":"2026-01-11","eligible":506,"clean":338,"canApply":489},{"date":"2026-01-12","eligible":806,"clean":563,"canApply":773},{"date":"2026-01-13","eligible":665,"clean":480,"canApply":643},{"date":"2026-01-14","eligible":776,"clean":586,"canApply":757},{"date":"2026-01-15","eligible":1109,"clean":825,"canApply":1079},{"date":"2026-01-16","eligible":1010,"clean":735,"canApply":970},{"date":"2026-01-17","eligible":741,"clean":528,"canApply":721},{"date":"2026-01-18","eligible":581,"clean":395,"canApply":559},{"date":"2026-01-19","eligible":901,"clean":595,"canApply":874},{"date":"2026-01-20","eligible":754,"clean":549,"canApply":736},{"date":"2026-01-21","eligible":667,"clean":480,"canApply":651},{"date":"2026-01-22","eligible":785,"clean":570,"canApply":759},{"date":"2026-01-23","eligible":900,"clean":648,"canApply":872},{"date":"2026-01-24","eligible":703,"clean":482,"canApply":676},{"date":"2026-01-25","eligible":589,"clean":402,"canApply":560},{"date":"2026-01-26","eligible":904,"clean":643,"canApply":882},{"date":"2026-01-27","eligible":760,"clean":549,"canApply":738},{"date":"2026-01-28","eligible":821,"clean":576,"canApply":793},{"date":"2026-01-29","eligible":977,"clean":716,"canApply":962},{"date":"2026-01-30","eligible":1350,"clean":1026,"canApply":1320},{"date":"2026-01-31","eligible":1021,"clean":769,"canApply":1001},{"date":"2026-02-01","eligible":673,"clean":496,"canApply":660},{"date":"2026-02-02","eligible":736,"clean":531,"canApply":723},{"date":"2026-02-03","eligible":1061,"clean":744,"canApply":1032},{"date":"2026-02-04","eligible":867,"clean":616,"canApply":837},{"date":"2026-02-05","eligible":898,"clean":630,"canApply":865},{"date":"2026-02-06","eligible":1064,"clean":801,"canApply":1036},{"date":"2026-02-07","eligible":885,"clean":627,"canApply":857},{"date":"2026-02-08","eligible":695,"clean":473,"canApply":677},{"date":"2026-02-09","eligible":1042,"clean":731,"canApply":1017},{"date":"2026-02-10","eligible":831,"clean":599,"canApply":804},{"date":"2026-02-11","eligible":820,"clean":567,"canApply":794},{"date":"2026-02-12","eligible":910,"clean":684,"canApply":884},{"date":"2026-02-13","eligible":1453,"clean":1121,"canApply":1423},{"date":"2026-02-14","eligible":1002,"clean":742,"canApply":970},{"date":"2026-02-15","eligible":822,"clean":583,"canApply":794},{"date":"2026-02-16","eligible":1209,"clean":872,"canApply":1175},{"date":"2026-02-17","eligible":930,"clean":671,"canApply":894},{"date":"2026-02-18","eligible":870,"clean":622,"canApply":841},{"date":"2026-02-19","eligible":1000,"clean":757,"canApply":980},{"date":"2026-02-20","eligible":1248,"clean":925,"canApply":1216},{"date":"2026-02-21","eligible":978,"clean":718,"canApply":955},{"date":"2026-02-22","eligible":647,"clean":475,"canApply":622},{"date":"2026-02-23","eligible":1099,"clean":815,"canApply":1082},{"date":"2026-02-24","eligible":844,"clean":610,"canApply":815},{"date":"2026-02-25","eligible":900,"clean":641,"canApply":875},{"date":"2026-02-26","eligible":996,"clean":751,"canApply":962},{"date":"2026-02-27","eligible":1619,"clean":1232,"canApply":1576},{"date":"2026-02-28","eligible":1109,"clean":844,"canApply":1084},{"date":"2026-03-01","eligible":809,"clean":602,"canApply":797},{"date":"2026-03-02","eligible":1133,"clean":834,"canApply":1096},{"date":"2026-03-03","eligible":822,"clean":612,"canApply":798},{"date":"2026-03-04","eligible":812,"clean":585,"canApply":790},{"date":"2026-03-05","eligible":886,"clean":665,"canApply":864},{"date":"2026-03-06","eligible":1039,"clean":789,"canApply":1015},{"date":"2026-03-07","eligible":791,"clean":591,"canApply":770},{"date":"2026-03-08","eligible":641,"clean":474,"canApply":620},{"date":"2026-03-09","eligible":1041,"clean":728,"canApply":1003},{"date":"2026-03-10","eligible":844,"clean":598,"canApply":809},{"date":"2026-03-11","eligible":764,"clean":566,"canApply":743},{"date":"2026-03-12","eligible":915,"clean":675,"canApply":888},{"date":"2026-03-13","eligible":1341,"clean":1043,"canApply":1313},{"date":"2026-03-14","eligible":985,"clean":757,"canApply":973},{"date":"2026-03-15","eligible":676,"clean":506,"canApply":660},{"date":"2026-03-16","eligible":767,"clean":553,"canApply":737},{"date":"2026-03-17","eligible":867,"clean":631,"canApply":852},{"date":"2026-03-18","eligible":727,"clean":527,"canApply":708},{"date":"2026-03-19","eligible":757,"clean":575,"canApply":740},{"date":"2026-03-20","eligible":1014,"clean":755,"canApply":988},{"date":"2026-03-21","eligible":737,"clean":542,"canApply":717},{"date":"2026-03-22","eligible":584,"clean":415,"canApply":571},{"date":"2026-03-23","eligible":835,"clean":579,"canApply":818},{"date":"2026-03-24","eligible":699,"clean":503,"canApply":682},{"date":"2026-03-25","eligible":684,"clean":504,"canApply":671},{"date":"2026-03-26","eligible":793,"clean":592,"canApply":778},{"date":"2026-03-27","eligible":1069,"clean":785,"canApply":1046},{"date":"2026-03-28","eligible":821,"clean":634,"canApply":806},{"date":"2026-03-29","eligible":628,"clean":472,"canApply":612},{"date":"2026-03-30","eligible":1045,"clean":766,"canApply":1023},{"date":"2026-03-31","eligible":952,"clean":723,"canApply":934},{"date":"2026-04-01","eligible":1090,"clean":805,"canApply":1073},{"date":"2026-04-02","eligible":803,"clean":588,"canApply":787},{"date":"2026-04-03","eligible":747,"clean":543,"canApply":737},{"date":"2026-04-04","eligible":704,"clean":514,"canApply":689},{"date":"2026-04-05","eligible":572,"clean":416,"canApply":562},{"date":"2026-04-06","eligible":875,"clean":644,"canApply":854},{"date":"2026-04-07","eligible":741,"clean":540,"canApply":731},{"date":"2026-04-08","eligible":738,"clean":501,"canApply":709},{"date":"2026-04-09","eligible":832,"clean":558,"canApply":807},{"date":"2026-04-10","eligible":1007,"clean":700,"canApply":951},{"date":"2026-04-11","eligible":803,"clean":555,"canApply":765},{"date":"2026-04-12","eligible":612,"clean":410,"canApply":585},{"date":"2026-04-13","eligible":816,"clean":553,"canApply":787},{"date":"2026-04-14","eligible":852,"clean":589,"canApply":820},{"date":"2026-04-15","eligible":1040,"clean":744,"canApply":990},{"date":"2026-04-16","eligible":957,"clean":667,"canApply":910},{"date":"2026-04-17","eligible":1065,"clean":814,"canApply":1028},{"date":"2026-04-18","eligible":829,"clean":588,"canApply":807},{"date":"2026-04-19","eligible":668,"clean":446,"canApply":641},{"date":"2026-04-20","eligible":902,"clean":640,"canApply":868},{"date":"2026-04-21","eligible":699,"clean":477,"canApply":667},{"date":"2026-04-22","eligible":748,"clean":513,"canApply":723},{"date":"2026-04-23","eligible":858,"clean":614,"canApply":839},{"date":"2026-04-24","eligible":1048,"clean":746,"canApply":1016},{"date":"2026-04-25","eligible":807,"clean":537,"canApply":785},{"date":"2026-04-26","eligible":635,"clean":419,"canApply":614},{"date":"2026-04-27","eligible":818,"clean":541,"canApply":786},{"date":"2026-04-28","eligible":835,"clean":582,"canApply":815},{"date":"2026-04-29","eligible":934,"clean":640,"canApply":904},{"date":"2026-04-30","eligible":1313,"clean":966,"canApply":1289},{"date":"2026-05-01","eligible":1025,"clean":714,"canApply":1001},{"date":"2026-05-02","eligible":916,"clean":635,"canApply":886},{"date":"2026-05-03","eligible":694,"clean":470,"canApply":675},{"date":"2026-05-04","eligible":966,"clean":660,"canApply":943},{"date":"2026-05-05","eligible":841,"clean":578,"canApply":813},{"date":"2026-05-06","eligible":782,"clean":543,"canApply":761},{"date":"2026-05-07","eligible":887,"clean":627,"canApply":857},{"date":"2026-05-08","eligible":1159,"clean":806,"canApply":1128},{"date":"2026-05-09","eligible":954,"clean":672,"canApply":934},{"date":"2026-05-10","eligible":650,"clean":430,"canApply":629},{"date":"2026-05-11","eligible":924,"clean":648,"canApply":892},{"date":"2026-05-12","eligible":815,"clean":520,"canApply":792},{"date":"2026-05-13","eligible":878,"clean":615,"canApply":855},{"date":"2026-05-14","eligible":1113,"clean":803,"canApply":1081},{"date":"2026-05-15","eligible":1532,"clean":1109,"canApply":1483},{"date":"2026-05-16","eligible":1071,"clean":759,"canApply":1049},{"date":"2026-05-17","eligible":764,"clean":508,"canApply":736},{"date":"2026-05-18","eligible":1033,"clean":739,"canApply":1004},{"date":"2026-05-19","eligible":881,"clean":567,"canApply":854},{"date":"2026-05-20","eligible":828,"clean":550,"canApply":799},{"date":"2026-05-21","eligible":971,"clean":658,"canApply":932},{"date":"2026-05-22","eligible":1142,"clean":782,"canApply":1106},{"date":"2026-05-23","eligible":917,"clean":581,"canApply":871},{"date":"2026-05-24","eligible":755,"clean":489,"canApply":726},{"date":"2026-05-25","eligible":926,"clean":612,"canApply":877},{"date":"2026-05-26","eligible":825,"clean":573,"canApply":791},{"date":"2026-05-27","eligible":836,"clean":555,"canApply":801},{"date":"2026-05-28","eligible":1017,"clean":696,"canApply":978},{"date":"2026-05-29","eligible":1564,"clean":1119,"canApply":1517},{"date":"2026-05-30","eligible":1061,"clean":737,"canApply":1021},{"date":"2026-05-31","eligible":783,"clean":514,"canApply":748},{"date":"2026-06-01","eligible":930,"clean":604,"canApply":891},{"date":"2026-06-02","eligible":847,"clean":580,"canApply":809},{"date":"2026-06-03","eligible":796,"clean":541,"canApply":771},{"date":"2026-06-04","eligible":884,"clean":579,"canApply":841},{"date":"2026-06-05","eligible":1096,"clean":751,"canApply":1056},{"date":"2026-06-06","eligible":875,"clean":571,"canApply":833},{"date":"2026-06-07","eligible":687,"clean":437,"canApply":664},{"date":"2026-06-08","eligible":903,"clean":568,"canApply":866},{"date":"2026-06-09","eligible":832,"clean":531,"canApply":791},{"date":"2026-06-10","eligible":850,"clean":564,"canApply":816},{"date":"2026-06-11","eligible":954,"clean":615,"canApply":903},{"date":"2026-06-12","eligible":1276,"clean":860,"canApply":1224},{"date":"2026-06-13","eligible":1010,"clean":660,"canApply":973},{"date":"2026-06-14","eligible":809,"clean":498,"canApply":774},{"date":"2026-06-15","eligible":1327,"clean":879,"canApply":1251},{"date":"2026-06-16","eligible":956,"clean":636,"canApply":910},{"date":"2026-06-17","eligible":914,"clean":608,"canApply":871},{"date":"2026-06-18","eligible":944,"clean":587,"canApply":900},{"date":"2026-06-19","eligible":1127,"clean":709,"canApply":1074},{"date":"2026-06-20","eligible":990,"clean":652,"canApply":955},{"date":"2026-06-21","eligible":614,"clean":382,"canApply":585},{"date":"2026-06-22","eligible":984,"clean":610,"canApply":941},{"date":"2026-06-23","eligible":927,"clean":602,"canApply":884},{"date":"2026-06-24","eligible":817,"clean":505,"canApply":761},{"date":"2026-06-25","eligible":930,"clean":586,"canApply":886},{"date":"2026-06-26","eligible":1266,"clean":825,"canApply":1181},{"date":"2026-06-27","eligible":986,"clean":620,"canApply":936},{"date":"2026-06-28","eligible":736,"clean":448,"canApply":696},{"date":"2026-06-29","eligible":1175,"clean":783,"canApply":1102},{"date":"2026-06-30","eligible":1173,"clean":774,"canApply":1104},{"date":"2026-07-01","eligible":966,"clean":607,"canApply":910},{"date":"2026-07-02","eligible":1129,"clean":743,"canApply":1075},{"date":"2026-07-03","eligible":1254,"clean":793,"canApply":1195},{"date":"2026-07-04","eligible":956,"clean":596,"canApply":911},{"date":"2026-07-05","eligible":767,"clean":483,"canApply":735},{"date":"2026-07-06","eligible":948,"clean":582,"canApply":895},{"date":"2026-07-07","eligible":858,"clean":534,"canApply":817},{"date":"2026-07-08","eligible":773,"clean":487,"canApply":733},{"date":"2026-07-09","eligible":869,"clean":557,"canApply":828},{"date":"2026-07-10","eligible":1193,"clean":731,"canApply":1133},{"date":"2026-07-11","eligible":910,"clean":562,"canApply":863},{"date":"2026-07-12","eligible":680,"clean":431,"canApply":653},{"date":"2026-07-13","eligible":978,"clean":606,"canApply":922},{"date":"2026-07-14","eligible":950,"clean":613,"canApply":906},{"date":"2026-07-15","eligible":1265,"clean":835,"canApply":1193},{"date":"2026-07-16","eligible":1051,"clean":640,"canApply":993},{"date":"2026-07-17","eligible":1175,"clean":746,"canApply":1117},{"date":"2026-07-18","eligible":951,"clean":581,"canApply":911},{"date":"2026-07-19","eligible":711,"clean":434,"canApply":667},{"date":"2026-07-20","eligible":1028,"clean":633,"canApply":963},{"date":"2026-07-21","eligible":837,"clean":510,"canApply":797},{"date":"2026-07-22","eligible":835,"clean":509,"canApply":788},{"date":"2026-07-23","eligible":882,"clean":536,"canApply":839},{"date":"2026-07-24","eligible":1077,"clean":684,"canApply":1008},{"date":"2026-07-25","eligible":793,"clean":489,"canApply":745},{"date":"2026-07-26","eligible":646,"clean":387,"canApply":617},{"date":"2026-07-27","eligible":913,"clean":568,"canApply":856},{"date":"2026-07-28","eligible":797,"clean":507,"canApply":746},{"date":"2026-07-29","eligible":761,"clean":436,"canApply":710},{"date":"2026-07-30","eligible":937,"clean":605,"canApply":879},{"date":"2026-07-31","eligible":1011,"clean":668,"canApply":943},{"date":"2026-08-01","eligible":787,"clean":474,"canApply":733},{"date":"2026-08-02","eligible":548,"clean":318,"canApply":514},{"date":"2026-08-03","eligible":752,"clean":435,"canApply":694},{"date":"2026-08-04","eligible":701,"clean":425,"canApply":649},{"date":"2026-08-05","eligible":635,"clean":384,"canApply":582},{"date":"2026-08-06","eligible":721,"clean":438,"canApply":679},{"date":"2026-08-07","eligible":833,"clean":509,"canApply":780},{"date":"2026-08-08","eligible":657,"clean":375,"canApply":608},{"date":"2026-08-09","eligible":574,"clean":336,"canApply":532},{"date":"2026-08-10","eligible":726,"clean":422,"canApply":668},{"date":"2026-08-11","eligible":703,"clean":408,"canApply":655},{"date":"2026-08-12","eligible":621,"clean":352,"canApply":577},{"date":"2026-08-13","eligible":748,"clean":467,"canApply":708},{"date":"2026-08-14","eligible":1100,"clean":674,"canApply":1039},{"date":"2026-08-15","eligible":807,"clean":508,"canApply":763}];
+    const weekly = [{"period":"2025-12-29","eligible":2354,"clean":1625,"canApply":2257},{"period":"2026-01-05","eligible":4707,"clean":3213,"canApply":4520},{"period":"2026-01-12","eligible":5688,"clean":4112,"canApply":5502},{"period":"2026-01-19","eligible":5299,"clean":3726,"canApply":5128},{"period":"2026-01-26","eligible":6506,"clean":4775,"canApply":6356},{"period":"2026-02-02","eligible":6206,"clean":4422,"canApply":6027},{"period":"2026-02-09","eligible":6880,"clean":5027,"canApply":6686},{"period":"2026-02-16","eligible":6882,"clean":5040,"canApply":6683},{"period":"2026-02-23","eligible":7376,"clean":5495,"canApply":7191},{"period":"2026-03-02","eligible":6124,"clean":4550,"canApply":5953},{"period":"2026-03-09","eligible":6566,"clean":4873,"canApply":6389},{"period":"2026-03-16","eligible":5453,"clean":3998,"canApply":5313},{"period":"2026-03-23","eligible":5529,"clean":4069,"canApply":5413},{"period":"2026-03-30","eligible":5913,"clean":4355,"canApply":5805},{"period":"2026-04-06","eligible":5608,"clean":3908,"canApply":5402},{"period":"2026-04-13","eligible":6227,"clean":4401,"canApply":5983},{"period":"2026-04-20","eligible":5697,"clean":3946,"canApply":5512},{"period":"2026-04-27","eligible":6535,"clean":4548,"canApply":6356},{"period":"2026-05-04","eligible":6239,"clean":4316,"canApply":6065},{"period":"2026-05-11","eligible":7097,"clean":4962,"canApply":6888},{"period":"2026-05-18","eligible":6527,"clean":4366,"canApply":6292},{"period":"2026-05-25","eligible":7012,"clean":4806,"canApply":6733},{"period":"2026-06-01","eligible":6115,"clean":4063,"canApply":5865},{"period":"2026-06-08","eligible":6634,"clean":4296,"canApply":6347},{"period":"2026-06-15","eligible":6872,"clean":4453,"canApply":6546},{"period":"2026-06-22","eligible":6646,"clean":4196,"canApply":6285},{"period":"2026-06-29","eligible":7420,"clean":4779,"canApply":7032},{"period":"2026-07-06","eligible":6231,"clean":3884,"canApply":5922},{"period":"2026-07-13","eligible":7081,"clean":4455,"canApply":6709},{"period":"2026-07-20","eligible":6098,"clean":3748,"canApply":5757},{"period":"2026-07-27","eligible":5754,"clean":3576,"canApply":5381},{"period":"2026-08-03","eligible":4873,"clean":2902,"canApply":4524},{"period":"2026-08-10","eligible":4705,"clean":2831,"canApply":4410}];
+    const monthly = [{"period":"2026-01","eligible":23881,"clean":16955,"canApply":23103},{"period":"2026-02","eligible":27208,"clean":19878,"canApply":26450},{"period":"2026-03","eligible":26478,"clean":19581,"canApply":25822},{"period":"2026-04","eligible":25348,"clean":17850,"canApply":24539},{"period":"2026-05","eligible":29510,"clean":20269,"canApply":28540},{"period":"2026-06","eligible":28615,"clean":18565,"canApply":27249},{"period":"2026-07","eligible":28901,"clean":18093,"canApply":27348},{"period":"2026-08","eligible":10913,"clean":6525,"canApply":10181}];
+    const palette = { cyan:'#38d9e6', green:'#75e0a5', amber:'#ffbf69', grid:'rgba(157,185,212,.18)', text:'#cfe6f8' };
+    const common = {
+      responsive:true, maintainAspectRatio:false,
+      interaction:{ mode:'index', intersect:false },
+      plugins:{ legend:{ labels:{ color:palette.text, usePointStyle:true, padding:18 } }, tooltip:{ enabled:true, backgroundColor:'#02111d', titleColor:'#fff', bodyColor:'#dceeff', borderColor:'#2a628a', borderWidth:1, padding:12, callbacks:{ label:(ctx)=> ' ' + ctx.dataset.label + '：' + new Intl.NumberFormat('zh-CN').format(ctx.parsed.y) + ' 人' } } },
+      scales:{ x:{ ticks:{ color:'#a8c2d8', maxTicksLimit:12 }, grid:{ color:'rgba(157,185,212,.08)' } }, y:{ beginAtZero:true, ticks:{ color:'#a8c2d8', callback:(v)=> new Intl.NumberFormat('zh-CN',{notation:'compact'}).format(v) }, grid:{ color:palette.grid } } }
+    };
+    function dataset(label, data, color) { return { label, data, borderColor:color, backgroundColor:color + '33', borderWidth:2.3, pointRadius:0, pointHoverRadius:4, tension:.28, fill:false }; }
+    new Chart(document.getElementById('dailyChart'), { type:'line', data:{ labels:daily.map(d=>d.date), datasets:[dataset('不限制条件获额通过',daily.map(d=>d.eligible),palette.cyan),dataset('干净结清获额通过',daily.map(d=>d.clean),palette.green),dataset('获额通过且可提单',daily.map(d=>d.canApply),palette.amber)] }, options:common });
+    new Chart(document.getElementById('weeklyChart'), { type:'line', data:{ labels:weekly.map(d=>d.period), datasets:[dataset('不限制条件获额通过',weekly.map(d=>d.eligible),palette.cyan),dataset('干净结清获额通过',weekly.map(d=>d.clean),palette.green),dataset('获额通过且可提单',weekly.map(d=>d.canApply),palette.amber)] }, options:common });
+    new Chart(document.getElementById('monthlyChart'), { type:'bar', data:{ labels:monthly.map(d=>d.period), datasets:[{label:'不限制条件获额通过',data:monthly.map(d=>d.eligible),backgroundColor:palette.cyan},{label:'干净结清获额通过',data:monthly.map(d=>d.clean),backgroundColor:palette.green},{label:'获额通过且可提单',data:monthly.map(d=>d.canApply),backgroundColor:palette.amber}] }, options:{...common, scales:{...common.scales,x:{...common.scales.x,stacked:false},y:{...common.scales.y,stacked:false}}} });
+    new Chart(document.getElementById('shareChart'), { type:'line', data:{ labels:monthly.map(d=>d.period), datasets:[{label:'干净结清占比',data:monthly.map(d=>d.clean/d.eligible*100),borderColor:palette.green,backgroundColor:palette.green,pointRadius:4,pointHoverRadius:6,tension:.25},{label:'可提单占比',data:monthly.map(d=>d.canApply/d.eligible*100),borderColor:palette.amber,backgroundColor:palette.amber,pointRadius:4,pointHoverRadius:6,tension:.25}] }, options:{...common, plugins:{...common.plugins,tooltip:{...common.plugins.tooltip,callbacks:{label:(ctx)=> ' '+ctx.dataset.label+'：'+ctx.parsed.y.toFixed(2)+'%'}}}, scales:{x:common.scales.x,y:{min:50,max:100,ticks:{color:'#a8c2d8',callback:(v)=>v+'%'},grid:{color:palette.grid}}}} });
+  </script>
+</body>
+</html>
