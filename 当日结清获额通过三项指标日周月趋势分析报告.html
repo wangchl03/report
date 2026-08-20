@@ -29,6 +29,9 @@
     .chart-box { position:relative; height:350px; }
     .wide .chart-box { height:390px; }
     .metric-defs { display:grid; grid-template-columns:repeat(3,1fr); gap:14px; }
+    .month-data { margin-top:18px; border-top:1px solid #1c4f71; padding-top:12px; }
+    .month-data-row { display:grid; grid-template-columns:1.2fr 1fr 1fr 1fr; gap:8px; padding:7px 3px; border-bottom:1px solid rgba(44,103,141,.36); font-size:13px; text-align:right; }
+    .month-data-row span { text-align:left; color:#bdd4e7; } .month-data-row.head { color:#a7c4da; font-weight:600; }
     .metric { border-left:4px solid var(--cyan); padding:12px 14px; background:#0a2943; }
     .metric:nth-child(2){border-color:var(--green)} .metric:nth-child(3){border-color:var(--amber)}
     .metric strong { display:block; margin-bottom:5px; }
@@ -87,7 +90,55 @@
     <section>
       <h2>四、月度变化趋势与结构变化</h2>
       <div class="grid">
-        <article class="panel"><h3>月度累计用户数对比</h3><div class="chart-box"><canvas id="monthlyChart"></canvas></div></article>
+        <article class="panel"><h3>月度累计用户数对比</h3><div class="chart-box"><canvas id="monthlyChart"></canvas></div><div class="month-data"><div class="month-data-row head"><span>结清月份</span><span>不限制</span><span>干净结清</span><span>可提单</span></div>
+  <div class="month-data-row">
+    <span>2026-01</span>
+    <b class="cyan">23,881</b>
+    <b class="green">16,955</b>
+    <b class="amber">23,103</b>
+  </div>
+  <div class="month-data-row">
+    <span>2026-02</span>
+    <b class="cyan">27,208</b>
+    <b class="green">19,878</b>
+    <b class="amber">26,450</b>
+  </div>
+  <div class="month-data-row">
+    <span>2026-03</span>
+    <b class="cyan">26,478</b>
+    <b class="green">19,581</b>
+    <b class="amber">25,822</b>
+  </div>
+  <div class="month-data-row">
+    <span>2026-04</span>
+    <b class="cyan">25,348</b>
+    <b class="green">17,850</b>
+    <b class="amber">24,539</b>
+  </div>
+  <div class="month-data-row">
+    <span>2026-05</span>
+    <b class="cyan">29,510</b>
+    <b class="green">20,269</b>
+    <b class="amber">28,540</b>
+  </div>
+  <div class="month-data-row">
+    <span>2026-06</span>
+    <b class="cyan">28,615</b>
+    <b class="green">18,565</b>
+    <b class="amber">27,249</b>
+  </div>
+  <div class="month-data-row">
+    <span>2026-07</span>
+    <b class="cyan">28,901</b>
+    <b class="green">18,093</b>
+    <b class="amber">27,348</b>
+  </div>
+  <div class="month-data-row">
+    <span>2026-08（1–15日）</span>
+    <b class="cyan">10,913</b>
+    <b class="green">6,525</b>
+    <b class="amber">10,181</b>
+  </div></div></article>
         <article class="panel"><h3>月度结构占比</h3><p class="note">分母均为“不限制条件获额通过用户数”。8月仅统计1—15日，不与完整月份直接比较。</p><div class="chart-box"><canvas id="shareChart"></canvas></div></article>
       </div>
     </section>
