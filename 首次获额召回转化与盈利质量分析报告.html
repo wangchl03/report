@@ -1,0 +1,508 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>首次获额召回转化与盈利质量分析报告</title>
+<style>
+  :root{--bg:#0b1423;--panel:#142943;--panel2:#11223a;--line:#285778;--text:#eaf5ff;--muted:#95a9bd;--blue:#4f9cff;--cyan:#55c7de;--green:#69d9a6;--amber:#ffbd68;--red:#ff7883;--purple:#b28dff}
+  *{box-sizing:border-box} body{margin:0;background:radial-gradient(1100px 520px at 50% -200px,#18365d 0%,var(--bg) 58%);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei",Arial,sans-serif;line-height:1.65} .wrap{max-width:1240px;margin:0 auto;padding:40px 28px 90px}.hero{text-align:center;padding:10px 0 30px}.hero h1{margin:0;color:#68a7ff;font-size:34px;letter-spacing:.5px}.hero p{margin:5px 0 0;color:var(--muted)}.section{margin-top:42px}.section h2{font-size:24px;border-left:4px solid var(--blue);padding-left:14px;margin:0 0 18px;letter-spacing:.3px}.section h3{font-size:18px;margin:0 0 12px;color:#dceeff}.section-note{color:var(--muted);font-size:14px;margin:-8px 0 16px}.grid{display:grid;gap:18px}.kpis{grid-template-columns:repeat(4,minmax(0,1fr))}.card,.panel,.type-card,.matrix-cell{background:linear-gradient(135deg,#183454,#122740);border:1px solid var(--line);border-radius:16px;box-shadow:0 14px 34px rgba(0,0,0,.18)}.card{padding:18px}.card .label{color:#bfd0de;font-size:14px}.card .value{font-size:29px;font-weight:800;color:#69a7ff;margin-top:7px}.card .sub{font-size:12px;color:var(--muted);margin-top:4px}.panel{padding:20px}.two{grid-template-columns:1.1fr .9fr}.three{grid-template-columns:repeat(3,minmax(0,1fr))}.funnel{width:100%;height:auto;display:block}.metric-row{display:grid;grid-template-columns:140px 1fr 1fr 72px;gap:11px;align-items:center;margin:14px 0}.metric-name{font-size:14px;color:#cde1ee}.bar-cell{height:30px;background:#0e1e32;border-radius:8px;position:relative;overflow:hidden;min-width:0}.bar-cell .bar{display:block;height:100%;border-radius:8px}.bar-cell b{position:absolute;inset:3px 9px auto auto;color:#fff;font-size:12px}.control .bar{background:linear-gradient(90deg,#d88639,#ffbd68)}.treatment .bar{background:linear-gradient(90deg,#2ca588,#69d9a6)}.delta{font-weight:800;text-align:right}.positive,.good{color:var(--green)}.negative,.bad{color:var(--red)}.type-card{padding:18px}.eyebrow{color:var(--cyan);font-size:14px;font-weight:700}.type-top{display:flex;align-items:baseline;gap:9px;margin-top:8px}.type-top strong{font-size:30px;color:#70a9ff}.type-top span{color:var(--muted);font-size:13px}.mini-grid{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-top:15px}.mini-grid span{font-size:12px;color:var(--muted)}.mini-grid b{display:block;font-size:16px;color:#eaf5ff}.matrix{grid-template-columns:repeat(3,minmax(0,1fr))}.matrix-cell{padding:16px;position:relative;overflow:hidden}.matrix-cell::after{content:"";position:absolute;width:110px;height:110px;border-radius:50%;right:-38px;top:-40px;opacity:.17}.matrix-cell.high::after{background:var(--purple)}.matrix-cell.low::after{background:var(--cyan)}.matrix-cell>div{display:flex;justify-content:space-between;gap:10px;font-size:13px;color:var(--muted)}.matrix-cell>div b{color:#cce1f2}.matrix-cell>strong{display:block;font-size:28px;color:#fff;margin-top:12px}.matrix-cell small{color:var(--muted)}dl{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px 18px;margin:12px 0 0}dt{font-size:12px;color:var(--muted)}dd{margin:0;font-size:16px;font-weight:800}.insight{border-left:3px solid var(--cyan);background:#10233b;padding:14px 16px;border-radius:0 10px 10px 0;margin:12px 0}.insight.warn{border-color:var(--amber)}.insight.risk{border-color:var(--red)}.insight b{color:#fff}.table-wrap{overflow:auto;border:1px solid var(--line);border-radius:14px;background:#0d1d31}table{border-collapse:collapse;width:100%;min-width:1320px;font-size:13px}th{background:#1d4268;color:#eaf5ff;padding:10px 8px;text-align:right;white-space:nowrap}th:first-child,th:nth-child(2),th:nth-child(3),td:first-child,td:nth-child(2),td:nth-child(3){text-align:left}td{padding:8px;border-top:1px solid #1d3854;color:#d8e8f4;text-align:right;white-space:nowrap}.total-row td{background:#195078;font-weight:800;color:#fff;border-top:3px solid #69a7ff;border-bottom:2px solid #69a7ff}.type-row td{background:#1e527d;font-weight:800;color:#eff8ff;border-top:3px solid #69b7ef;border-bottom:1px solid #69b7ef}.type-row td:nth-child(2){color:#9fe7ff}.util-row td{background:#123d5f;font-weight:800;color:#d4f4ff;border-top:2px solid #42c6d4;border-bottom:1px solid #256e89}.util-row td:nth-child(3){color:#7ce8ef}.treat-row td{background:rgba(74,167,126,.12)}.control-row td{background:rgba(255,189,104,.08)}details{border:1px solid var(--line);background:#0c1b2e;border-radius:14px;padding:0 16px}summary{cursor:pointer;padding:16px 0;color:#80b8ff;font-weight:800;font-size:17px;list-style:none}summary::-webkit-details-marker{display:none}summary::before{content:"▾";display:inline-block;font-size:25px;margin-right:10px;transition:.2s}details:not([open]) summary::before{transform:rotate(-90deg)}pre{margin:0 0 16px;padding:18px;border-radius:10px;background:#07111f;color:#c5d8e9;white-space:pre;overflow:auto;font:12px/1.65 ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,monospace}.foot{color:var(--muted);font-size:13px;margin-top:14px}@media(max-width:900px){.kpis,.two,.three,.matrix{grid-template-columns:1fr}.metric-row{grid-template-columns:110px 1fr 1fr 58px}.wrap{padding:25px 14px}.hero h1{font-size:27px}} 
+  .matrix-board{display:grid;grid-template-columns:99px repeat(3,minmax(0,1fr));gap:12px;align-items:stretch}.matrix-corner,.matrix-col-head,.matrix-row-head{border:1px solid var(--line);border-radius:12px;display:flex;align-items:center;justify-content:center;text-align:center;font-weight:800}.matrix-corner{background:#0f2943;color:#8cc8f6;font-size:13px}.matrix-col-head{background:linear-gradient(135deg,#214e79,#183652);color:#eaf5ff;padding:12px;font-size:16px}.matrix-row-head{background:linear-gradient(180deg,#173e5e,#12304d);color:#9fe7ff;padding:12px;font-size:14px}.matrix-board .matrix-cell{min-height:236px}.matrix-card-title{font-size:13px;color:#b7cee2;font-weight:700}.matrix-board .matrix-cell>div{display:block}.matrix-board .matrix-cell>div b{display:none}@media(max-width:900px){.matrix-board{grid-template-columns:1fr}.matrix-corner{display:none}.matrix-col-head,.matrix-row-head{min-height:48px}.matrix-row-head{margin-top:8px}}
+</style>
+</head>
+<body><main class="wrap">
+  <header class="hero"><h1>📊 首次获额召回转化与盈利质量分析报告</h1><p>数据范围：2026 年 6 月 12 日起首次获额用户 ｜ 生成时间：2026 年 8 月 20 日</p></header>
+
+  <section class="grid kpis">
+    <article class="card"><div class="label">👥 原始流失用户</div><div class="value">4,932</div><div class="sub">最终进入首次获额样本 1,507 人（30.6%）</div></article>
+    <article class="card"><div class="label">✅ 首次获额通过率</div><div class="value">90.6%</div><div class="sub">1,366 / 1,507 人</div></article>
+    <article class="card"><div class="label">📝 首次提单率</div><div class="value">41.3%</div><div class="sub">564 / 1,366 人</div></article>
+    <article class="card"><div class="label">⚠️ 放款订单逾期率</div><div class="value">31.1%</div><div class="sub">盈利率 10.8% ｜ 逾期回款率 32.2%</div></article>
+  </section>
+
+  <section class="section"><h2>一、全链路转化：从召回样本到首次放款</h2><p class="section-note">样本筛选：仅保留从 2026-06-12 召回开始，到用户首次获额前未发生提单的用户；同一获额时间戳多笔订单时取 serial_id 最大的一笔。</p><div class="panel"><svg class="funnel" viewBox="0 0 960 330" role="img" aria-label="首次获额召回转化漏斗">
+    <g><rect x="40" y="10" width="880" height="42" rx="10" fill="#355D9E" opacity="0.96"/><text x="60" y="37" fill="#fff" font-size="15" font-weight="700">原始流失用户</text><text x="902" y="37" text-anchor="end" fill="#fff" font-size="17" font-weight="800">4,932 人</text><text x="480" y="69" text-anchor="middle" fill="#7EC9F4" font-size="14" font-weight="700">30.6%</text></g><g><rect x="209.94709661082464" y="76" width="540.1058067783507" height="42" rx="10" fill="#2B8DBB" opacity="0.96"/><text x="229.94709661082464" y="103" fill="#fff" font-size="15" font-weight="700">首次获额（最终样本）</text><text x="732.0529033891753" y="103" text-anchor="end" fill="#fff" font-size="17" font-weight="800">1,507 人</text><text x="480" y="135" text-anchor="middle" fill="#7EC9F4" font-size="14" font-weight="700">90.6%</text></g><g><rect x="220.01500461799645" y="142" width="519.9699907640071" height="42" rx="10" fill="#49B7A0" opacity="0.96"/><text x="240.01500461799645" y="169" fill="#fff" font-size="15" font-weight="700">首次获额通过</text><text x="721.9849953820035" y="169" text-anchor="end" fill="#fff" font-size="17" font-weight="800">1,366 人</text><text x="480" y="201" text-anchor="middle" fill="#7EC9F4" font-size="14" font-weight="700">41.3%</text></g><g><rect x="291.49748882948256" y="208" width="377.0050223410348" height="42" rx="10" fill="#F7AE4B" opacity="0.96"/><text x="311.49748882948256" y="235" fill="#fff" font-size="15" font-weight="700">首次获额提单</text><text x="650.5025111705174" y="235" text-anchor="end" fill="#fff" font-size="17" font-weight="800">564 人</text><text x="480" y="267" text-anchor="middle" fill="#7EC9F4" font-size="14" font-weight="700">97.0%</text></g><g><rect x="293.44895788200057" y="274" width="373.10208423599886" height="42" rx="10" fill="#FA796D" opacity="0.96"/><text x="313.44895788200057" y="301" fill="#fff" font-size="15" font-weight="700">首次成功放款</text><text x="648.5510421179995" y="301" text-anchor="end" fill="#fff" font-size="17" font-weight="800">547 人</text></g>
+  </svg></div><div class="insight"><b>核心结论：</b>4,932 名原始流失用户中，1,507 名（30.6%）进入最终首次获额样本；获额通过率为 90.6%，通过后首次提单率为 41.3%，提单后放款成功率为 97.0%。当前最大的转化损失发生在“获额通过 → 提单”环节。</div></section>
+
+  <section class="section"><h2>二、对照组与实验组：转化、风险和盈利质量对比</h2><div class="grid two"><div class="panel"><h3>转化与风险指标</h3><div class="section-note">柱长代表同一指标内的相对大小；右侧为实验组 − 对照组的百分点差异。</div>
+    <div class="metric-row">
+      <div class="metric-name">首次获额通过率</div>
+      <div class="bar-cell control"><span class="bar" style="width:89.66292134831461%"></span><b>89.7%</b></div>
+      <div class="bar-cell treatment"><span class="bar" style="width:91.05461393596987%"></span><b>91.1%</b></div>
+      <div class="delta positive">+1.4pp</div>
+    </div>
+    <div class="metric-row">
+      <div class="metric-name">首次提单率</div>
+      <div class="bar-cell control"><span class="bar" style="width:44.86215538847117%"></span><b>44.9%</b></div>
+      <div class="bar-cell treatment"><span class="bar" style="width:39.813857290589446%"></span><b>39.8%</b></div>
+      <div class="delta negative">-5.0pp</div>
+    </div>
+    <div class="metric-row">
+      <div class="metric-name">首次放款成功率</div>
+      <div class="bar-cell control"><span class="bar" style="width:97.76536312849163%"></span><b>97.8%</b></div>
+      <div class="bar-cell treatment"><span class="bar" style="width:96.62337662337663%"></span><b>96.6%</b></div>
+      <div class="delta negative">-1.1pp</div>
+    </div>
+    <div class="metric-row">
+      <div class="metric-name">逾期率</div>
+      <div class="bar-cell control"><span class="bar" style="width:26.285714285714285%"></span><b>26.3%</b></div>
+      <div class="bar-cell treatment"><span class="bar" style="width:33.33333333333333%"></span><b>33.3%</b></div>
+      <div class="delta positive">+7.0pp</div>
+    </div></div><div class="panel"><h3>盈利与额度使用质量</h3>
+    <div class="metric-row">
+      <div class="metric-name">盈利率</div>
+      <div class="bar-cell control"><span class="bar" style="width:67.54191201103926%"></span><b>17.1%</b></div>
+      <div class="bar-cell treatment"><span class="bar" style="width:50.37137475857835%"></span><b>7.7%</b></div>
+      <div class="delta negative">-9.4pp</div>
+    </div>
+    <div class="metric-row">
+      <div class="metric-name">逾期回款率</div>
+      <div class="bar-cell control"><span class="bar" style="width:35.897424238979696%"></span><b>35.9%</b></div>
+      <div class="bar-cell treatment"><span class="bar" style="width:30.706452454415427%"></span><b>30.7%</b></div>
+      <div class="delta negative">-5.2pp</div>
+    </div>
+    <div class="metric-row">
+      <div class="metric-name">召回前额度使用率</div>
+      <div class="bar-cell control"><span class="bar" style="width:76.21392217765789%"></span><b>76.2%</b></div>
+      <div class="bar-cell treatment"><span class="bar" style="width:79.0522202361748%"></span><b>79.1%</b></div>
+      <div class="delta positive">+2.8pp</div>
+    </div>
+    <div class="metric-row">
+      <div class="metric-name">首次获额后额度使用率</div>
+      <div class="bar-cell control"><span class="bar" style="width:73.12351740884132%"></span><b>73.1%</b></div>
+      <div class="bar-cell treatment"><span class="bar" style="width:73.66628892623515%"></span><b>73.7%</b></div>
+      <div class="delta positive">+0.5pp</div>
+    </div></div></div><div class="grid three" style="margin-top:18px"><article class="card"><div class="label">对照组首次提单率</div><div class="value">44.9%</div><div class="sub">179 / 399 人</div></article><article class="card"><div class="label">实验组首次提单率</div><div class="value">39.8%</div><div class="sub">385 / 967 人</div></article><article class="card"><div class="label">实验组相对对照组</div><div class="value" style="color:#ff7883">-5.0pp</div><div class="sub">盈利率差 -9.4pp；逾期率差 +7.0pp</div></article></div><div class="insight risk"><b>比较结论：</b>实验组首次提单率为 39.8%，低于对照组 44.9%（-5.0pp）；实验组逾期率高 7.0 个百分点，盈利率低 9.4 个百分点。由于两组样本量和分层结构并不相同，本表用于现状比较；发券/策略的因果判断仍应在同层、同批次随机实验中验证。</div></section>
+
+  <section class="section"><h2>三、用户类型：谁贡献了提单与盈利</h2><div class="grid three"><article class="type-card">
+    <div class="eyebrow">流失前非活跃用户</div>
+    <div class="type-top"><strong>53.8%</strong><span>首次提单率</span></div>
+    <div class="mini-grid">
+      <span>最终样本<b>300</b></span>
+      <span>提单贡献<b>25.0%</b></span>
+      <span>逾期率<b>32.1%</b></span>
+      <span>盈利率<b class="good">18.8%</b></span>
+    </div>
+  </article><article class="type-card">
+    <div class="eyebrow">流失90天以上用户</div>
+    <div class="type-top"><strong>40.3%</strong><span>首次提单率</span></div>
+    <div class="mini-grid">
+      <span>最终样本<b>346</b></span>
+      <span>提单贡献<b>22.3%</b></span>
+      <span>逾期率<b>28.9%</b></span>
+      <span>盈利率<b class="bad">-3.8%</b></span>
+    </div>
+  </article><article class="type-card">
+    <div class="eyebrow">流失8-90天用户</div>
+    <div class="type-top"><strong>37.5%</strong><span>首次提单率</span></div>
+    <div class="mini-grid">
+      <span>最终样本<b>861</b></span>
+      <span>提单贡献<b>52.7%</b></span>
+      <span>逾期率<b>31.5%</b></span>
+      <span>盈利率<b class="good">12.1%</b></span>
+    </div>
+  </article></div><div class="insight"><b>结构结论：</b>流失8-90天用户贡献 52.7% 的首次提单用户（297 人），是提单规模主来源；流失前非活跃用户的首次提单率最高（53.8%）且盈利率最高（18.8%）。流失90天以上用户的盈利率为 -3.8%，需作为风险治理优先对象。</div></section>
+
+  <section class="section"><h2>四、用户类型 × 额度分类：细分客群的质量矩阵</h2><p class="section-note">每个色块均为该“用户类型 × 额度分类”下对照/实验两组的原始金额、人数直接汇总结果。</p><div class="matrix-board"><div class="matrix-corner">额度使用率<br>分层</div><div class="matrix-col-head">流失前非活跃用户</div><div class="matrix-col-head">流失90天以上用户</div><div class="matrix-col-head">流失8-90天用户</div><div class="matrix-row-head">高额度使用率用户</div><article class="matrix-cell high"><div class="matrix-card-title">高额度分层汇总</div><strong>53.0%</strong><small>首次提单率</small><dl><div><dt>获额通过率</dt><dd>82.4%</dd></div><div><dt>放款成功率</dt><dd>95.2%</dd></div><div><dt>盈利率</dt><dd class="good">30.7%</dd></div><div><dt>逾期率</dt><dd>32.2%</dd></div></dl></article><article class="matrix-cell high"><div class="matrix-card-title">高额度分层汇总</div><strong>42.5%</strong><small>首次提单率</small><dl><div><dt>获额通过率</dt><dd>85.0%</dd></div><div><dt>放款成功率</dt><dd>97.9%</dd></div><div><dt>盈利率</dt><dd class="bad">-11.6%</dd></div><div><dt>逾期率</dt><dd>36.2%</dd></div></dl></article><article class="matrix-cell high"><div class="matrix-card-title">高额度分层汇总</div><strong>41.2%</strong><small>首次提单率</small><dl><div><dt>获额通过率</dt><dd>87.9%</dd></div><div><dt>放款成功率</dt><dd>96.4%</dd></div><div><dt>盈利率</dt><dd class="good">10.5%</dd></div><div><dt>逾期率</dt><dd>32.6%</dd></div></dl></article><div class="matrix-row-head">低额度使用率用户</div><article class="matrix-cell low"><div class="matrix-card-title">低额度分层汇总</div><strong>54.5%</strong><small>首次提单率</small><dl><div><dt>获额通过率</dt><dd>91.8%</dd></div><div><dt>放款成功率</dt><dd>98.7%</dd></div><div><dt>盈利率</dt><dd class="good">7.9%</dd></div><div><dt>逾期率</dt><dd>32.1%</dd></div></dl></article><article class="matrix-cell low"><div class="matrix-card-title">低额度分层汇总</div><strong>39.0%</strong><small>首次提单率</small><dl><div><dt>获额通过率</dt><dd>93.9%</dd></div><div><dt>放款成功率</dt><dd>94.9%</dd></div><div><dt>盈利率</dt><dd class="good">1.7%</dd></div><div><dt>逾期率</dt><dd>24.3%</dd></div></dl></article><article class="matrix-cell low"><div class="matrix-card-title">低额度分层汇总</div><strong>34.8%</strong><small>首次提单率</small><dl><div><dt>获额通过率</dt><dd>95.1%</dd></div><div><dt>放款成功率</dt><dd>98.1%</dd></div><div><dt>盈利率</dt><dd class="good">13.1%</dd></div><div><dt>逾期率</dt><dd>30.5%</dd></div></dl></article></div><div class="grid" style="margin-top:18px"><div class="panel"><h3>高额度使用率组：质量差异明显</h3><div class="insight risk"><b>流失8-90天 × 高额度：</b>实验组逾期率 38.5%，高于对照组 20.5%；盈利率为 -2.5%，而对照组为 33.5%。该细分在实验组的风险质量显著走弱。</div><div class="insight warn"><b>流失前非活跃 × 高额度：</b>实验组首次提单率 48.8%，低于对照组 62.2%；且实验组额度使用率从 98.1% 降至 87.7%，下降 10.5 个百分点。</div></div><div class="panel"><h3>低额度使用率组：存在可重点验证的客群</h3><div class="insight"><b>流失8-90天 × 低额度：</b>实验组首次提单率 35.6%，高于对照组 33.1%；盈利率 18.1%，也高于对照组 2.0%。这是当前数据中转化与盈利同时优于对照的重点候选客群。</div><div class="insight warn"><b>注意：</b>其他低额度细分未呈现一致改善，不能将该结果外推到全部低额度用户；应以“流失时长 × 额度使用率”作为精细化测试单元。</div></div></div></section>
+
+  <section class="section"><h2>五、策略建议：用分层实验替代全量投放</h2><div class="grid three"><div class="panel"><h3>1. 优先扩量验证</h3><p><b>流失8-90天 × 低额度使用率</b></p><p>该细分实验组首次提单率 35.6%，较对照组 33.1% 提升 +2.5pp；盈利率也更高。保持分层随机，扩大样本后以增量放款、逾期率、盈利率共同决策。</p></div><div class="panel"><h3>2. 限制或重设策略</h3><p><b>流失8-90天 × 高额度使用率</b></p><p>实验组逾期率高、盈利率为负。高额度使用率用户风险较高，改为先增加风控门槛、额度限额或更温和的触达方案，再单独验证。</p></div><div class="panel"><h3>3. 治理优先客群</h3><p><b>流失90天以上用户</b></p><p>整体盈利率为 -3.8%，逾期回款率为 19.5%。高危风险客群，需要严格筛选用户资质再召回。</p></div></div></section>
+
+  <section class="section"><h2>六、可核对的完整分层数据</h2><div class="table-wrap"><table><thead><tr><th>用户类型</th><th>额度分类</th><th>组别</th><th>原始流失</th><th>首次获额</th><th>通过率</th><th>首次提单</th><th>提单率</th><th>首次放款</th><th>放款成功率</th><th>逾期率</th><th>盈利率</th><th>逾期回款率</th><th>召回前使用率</th><th>获额后使用率</th><th>变化</th></tr></thead><tbody><tr class="total-row"><td>总计</td><td>全部额度分类</td><td>组别汇总</td><td>4,932</td><td>1,507</td><td>90.6%</td><td>564</td><td>41.3%</td><td>547</td><td>97.0%</td><td>31.1%</td><td class="good">10.8%</td><td>32.2%</td><td>78.0%</td><td>73.5%</td><td class="bad">-4.5pp</td></tr><tr class="type-row"><td>流失前非活跃用户</td><td>额度分类汇总</td><td>组别汇总</td><td>1,427</td><td>300</td><td>87.3%</td><td>141</td><td>53.8%</td><td>137</td><td>97.2%</td><td>32.1%</td><td class="good">18.8%</td><td>39.8%</td><td>78.6%</td><td>74.9%</td><td class="bad">-3.7pp</td></tr><tr class="util-row"><td>流失前非活跃用户</td><td>高额度使用率用户</td><td>组别汇总</td><td>777</td><td>142</td><td>82.4%</td><td>62</td><td>53.0%</td><td>59</td><td>95.2%</td><td>32.2%</td><td class="good">30.7%</td><td>51.3%</td><td>97.2%</td><td>90.3%</td><td class="bad">-6.8pp</td></tr><tr class="control-row"><td>流失前非活跃用户</td><td>高额度使用率用户</td><td>对照组</td><td>247</td><td>46</td><td>80.4%</td><td>23</td><td>62.2%</td><td>22</td><td>95.7%</td><td>27.3%</td><td class="good">27.2%</td><td>56.4%</td><td>95.4%</td><td>94.7%</td><td class="bad">-0.7pp</td></tr><tr class="treat-row"><td>流失前非活跃用户</td><td>高额度使用率用户</td><td>实验组</td><td>530</td><td>96</td><td>83.3%</td><td>39</td><td>48.8%</td><td>37</td><td>94.9%</td><td>35.1%</td><td class="good">32.9%</td><td>46.9%</td><td>98.1%</td><td>87.7%</td><td class="bad">-10.5pp</td></tr><tr class="util-row"><td>流失前非活跃用户</td><td>低额度使用率用户</td><td>组别汇总</td><td>650</td><td>158</td><td>91.8%</td><td>79</td><td>54.5%</td><td>78</td><td>98.7%</td><td>32.1%</td><td class="good">7.9%</td><td>34.2%</td><td>69.9%</td><td>64.9%</td><td class="bad">-4.9pp</td></tr><tr class="control-row"><td>流失前非活跃用户</td><td>低额度使用率用户</td><td>对照组</td><td>181</td><td>42</td><td>97.6%</td><td>24</td><td>58.5%</td><td>24</td><td>100.0%</td><td>33.3%</td><td class="good">13.7%</td><td>27.5%</td><td>69.3%</td><td>65.7%</td><td class="bad">-3.7pp</td></tr><tr class="treat-row"><td>流失前非活跃用户</td><td>低额度使用率用户</td><td>实验组</td><td>469</td><td>116</td><td>89.7%</td><td>55</td><td>52.9%</td><td>54</td><td>98.2%</td><td>31.5%</td><td class="good">5.5%</td><td>36.2%</td><td>70.2%</td><td>64.6%</td><td class="bad">-5.6pp</td></tr><tr class="type-row"><td>流失90天以上用户</td><td>额度分类汇总</td><td>组别汇总</td><td>1,961</td><td>346</td><td>90.5%</td><td>126</td><td>40.3%</td><td>121</td><td>96.0%</td><td>28.9%</td><td class="bad">-3.8%</td><td>19.5%</td><td>76.9%</td><td>69.6%</td><td class="bad">-7.4pp</td></tr><tr class="util-row"><td>流失90天以上用户</td><td>高额度使用率用户</td><td>组别汇总</td><td>894</td><td>133</td><td>85.0%</td><td>48</td><td>42.5%</td><td>47</td><td>97.9%</td><td>36.2%</td><td class="bad">-11.6%</td><td>26.1%</td><td>99.3%</td><td>79.2%</td><td class="bad">-20.0pp</td></tr><tr class="control-row"><td>流失90天以上用户</td><td>高额度使用率用户</td><td>对照组</td><td>261</td><td>37</td><td>83.8%</td><td>14</td><td>45.2%</td><td>13</td><td>92.9%</td><td>30.8%</td><td class="bad">-8.9%</td><td>34.1%</td><td>97.9%</td><td>83.7%</td><td class="bad">-14.2pp</td></tr><tr class="treat-row"><td>流失90天以上用户</td><td>高额度使用率用户</td><td>实验组</td><td>633</td><td>96</td><td>85.4%</td><td>34</td><td>41.5%</td><td>34</td><td>100.0%</td><td>38.2%</td><td class="bad">-11.9%</td><td>25.2%</td><td>99.5%</td><td>78.2%</td><td class="bad">-21.4pp</td></tr><tr class="util-row"><td>流失90天以上用户</td><td>低额度使用率用户</td><td>组别汇总</td><td>1,067</td><td>213</td><td>93.9%</td><td>78</td><td>39.0%</td><td>74</td><td>94.9%</td><td>24.3%</td><td class="good">1.7%</td><td>12.8%</td><td>68.7%</td><td>63.0%</td><td class="bad">-5.6pp</td></tr><tr class="control-row"><td>流失90天以上用户</td><td>低额度使用率用户</td><td>对照组</td><td>327</td><td>60</td><td>95.0%</td><td>28</td><td>49.1%</td><td>27</td><td>96.4%</td><td>18.5%</td><td class="good">19.1%</td><td>25.9%</td><td>70.0%</td><td>59.9%</td><td class="bad">-10.1pp</td></tr><tr class="treat-row"><td>流失90天以上用户</td><td>低额度使用率用户</td><td>实验组</td><td>740</td><td>153</td><td>93.5%</td><td>50</td><td>35.0%</td><td>47</td><td>94.0%</td><td>27.7%</td><td class="bad">-11.2%</td><td>7.0%</td><td>67.3%</td><td>65.4%</td><td class="bad">-1.9pp</td></tr><tr class="type-row"><td>流失8-90天用户</td><td>额度分类汇总</td><td>组别汇总</td><td>1,544</td><td>861</td><td>91.9%</td><td>297</td><td>37.5%</td><td>289</td><td>97.3%</td><td>31.5%</td><td class="good">12.1%</td><td>34.7%</td><td>78.2%</td><td>74.8%</td><td class="bad">-3.5pp</td></tr><tr class="util-row"><td>流失8-90天用户</td><td>高额度使用率用户</td><td>组别汇总</td><td>799</td><td>387</td><td>87.9%</td><td>140</td><td>41.2%</td><td>135</td><td>96.4%</td><td>32.6%</td><td class="good">10.5%</td><td>33.1%</td><td>99.6%</td><td>85.9%</td><td class="bad">-13.7pp</td></tr><tr class="control-row"><td>流失8-90天用户</td><td>高额度使用率用户</td><td>对照组</td><td>238</td><td>115</td><td>84.3%</td><td>45</td><td>46.4%</td><td>44</td><td>97.8%</td><td>20.5%</td><td class="good">33.5%</td><td>53.8%</td><td>99.3%</td><td>81.0%</td><td class="bad">-18.3pp</td></tr><tr class="treat-row"><td>流失8-90天用户</td><td>高额度使用率用户</td><td>实验组</td><td>561</td><td>272</td><td>89.3%</td><td>95</td><td>39.1%</td><td>91</td><td>95.8%</td><td>38.5%</td><td class="bad">-2.5%</td><td>27.6%</td><td>99.9%</td><td>89.7%</td><td class="bad">-10.2pp</td></tr><tr class="util-row"><td>流失8-90天用户</td><td>低额度使用率用户</td><td>组别汇总</td><td>745</td><td>474</td><td>95.1%</td><td>157</td><td>34.8%</td><td>154</td><td>98.1%</td><td>30.5%</td><td class="good">13.1%</td><td>35.9%</td><td>71.8%</td><td>68.6%</td><td class="bad">-3.2pp</td></tr><tr class="control-row"><td>流失8-90天用户</td><td>低额度使用率用户</td><td>对照组</td><td>225</td><td>145</td><td>93.8%</td><td>45</td><td>33.1%</td><td>45</td><td>100.0%</td><td>31.1%</td><td class="good">2.0%</td><td>28.7%</td><td>69.1%</td><td>69.0%</td><td class="bad">-0.1pp</td></tr><tr class="treat-row"><td>流失8-90天用户</td><td>低额度使用率用户</td><td>实验组</td><td>520</td><td>329</td><td>95.7%</td><td>112</td><td>35.6%</td><td>109</td><td>97.3%</td><td>30.3%</td><td class="good">18.1%</td><td>40.3%</td><td>73.1%</td><td>68.4%</td><td class="bad">-4.7pp</td></tr></tbody></table></div><p class="foot">说明：所有汇总行均按原始用户数、订单数、SUM(repaid_amt)、SUM(remit_amt)、SUM(apply_amt)、SUM(credit_amt) 重算；不对下级百分比做简单平均。</p></section>
+
+  <section class="section"><h2>附录：完整 PGSQL 查询代码</h2><details><summary>查看完整代码</summary><pre><code>WITH sample_users AS (
+    /* 原始流失用户样本及三类展示标签。 */
+    SELECT
+        c.churn_user_id AS user_id,
+        c.ab_group,
+        c.user_type,
+        CASE
+            WHEN c.utilization_rate &gt;= 0.9 THEN &#39;high&#39;
+            ELSE &#39;low&#39;
+        END AS utilization_level
+    FROM wangchuanliang.churned_user_4932 AS c
+),
+
+first_credit_ranked AS (
+    /* 2026-06-12 起的获额记录：
+       先按获额时间取最早；同一时间戳多笔获额时取 serial_id 最大的一笔。 */
+    SELECT
+        v.user_id,
+        v.serial_id,
+        v.vir_date,
+        v.vir_unix,
+        v.is_pass1,
+        v.max_credit_apply_amt,
+        ROW_NUMBER() OVER (
+            PARTITION BY v.user_id
+            ORDER BY
+                v.vir_unix ASC,
+                v.serial_id DESC
+        ) AS rn
+    FROM wangchuanliang.order_vir_f_copy AS v
+    INNER JOIN sample_users AS s
+        ON s.user_id = v.user_id
+    WHERE v.vir_date &gt;= &#39;2026-06-12&#39;
+      AND v.vir_unix IS NOT NULL
+),
+
+first_credit AS (
+    SELECT
+        f.user_id,
+        f.serial_id,
+        f.vir_date,
+        TO_TIMESTAMP(f.vir_unix) AS vir_time,
+        f.is_pass1,
+        f.max_credit_apply_amt
+    FROM first_credit_ranked AS f
+    WHERE f.rn = 1
+),
+
+eligible_first_credit AS (
+    /* 仅保留从 2026-06-12 召回开始至首次获额前从未提单的用户。 */
+    SELECT
+        f.user_id,
+        f.serial_id,
+        f.vir_date,
+        f.vir_time,
+        f.is_pass1,
+        f.max_credit_apply_amt
+    FROM first_credit AS f
+    WHERE NOT EXISTS (
+        SELECT
+            1
+        FROM wangchuanliang.order_loan_f_v2_copy AS o
+        WHERE o.user_id = f.user_id
+          AND o.apply_date IS NOT NULL
+          AND o.apply_time &gt;= TIMESTAMP &#39;2026-06-12 00:00:00&#39;
+          AND o.apply_time &lt; f.vir_time
+    )
+),
+
+credit_by_order AS (
+    /* 历史订单按 serial_id 保留唯一获额记录，以避免一笔订单重复计入额度。 */
+    SELECT DISTINCT ON (
+        v.serial_id
+    )
+        v.serial_id,
+        v.vir_date,
+        v.max_credit_apply_amt,
+        v.max_risk_credit_amount
+    FROM wangchuanliang.order_vir_f_copy AS v
+    ORDER BY
+        v.serial_id,
+        v.vir_unix DESC
+),
+
+history_order_amount AS (
+    /* 召回前历史订单：只用于计算召回前额度使用率。 */
+    SELECT
+        f.user_id,
+        o.apply_amt,
+        CASE
+            WHEN v.vir_date &gt;= DATE &#39;2025-04-01&#39;
+                THEN v.max_credit_apply_amt
+            WHEN r.recycle_type = 2
+                THEN v.max_credit_apply_amt
+            ELSE v.max_risk_credit_amount
+        END AS credit_amt
+    FROM eligible_first_credit AS f
+    INNER JOIN wangchuanliang.order_loan_f_v2_copy AS o
+        ON o.user_id = f.user_id
+       AND o.apply_date IS NOT NULL
+       AND o.apply_time &lt; f.vir_time
+    INNER JOIN credit_by_order AS v
+        ON v.serial_id = o.serial_id
+    LEFT JOIN wangchuanliang.side_recycle_type_copy AS r
+        ON r.serial_id = o.serial_id
+),
+
+pre_utilization_by_user AS (
+    /* 仅当提单金额、获额金额均不少于 200 时，历史订单参与额度使用率。 */
+    SELECT
+        h.user_id,
+        SUM(
+            CASE
+                WHEN h.apply_amt &gt;= 200
+                 AND h.credit_amt &gt;= 200
+                    THEN h.apply_amt
+                ELSE 0
+            END
+        ) AS pre_apply_amt,
+        SUM(
+            CASE
+                WHEN h.apply_amt &gt;= 200
+                 AND h.credit_amt &gt;= 200
+                    THEN h.credit_amt
+                ELSE 0
+            END
+        ) AS pre_credit_amt
+    FROM history_order_amount AS h
+    GROUP BY
+        h.user_id
+),
+
+evaluation_base AS (
+    /* 原始样本左连最终样本：原始流失用户数不受前置提单过滤影响。 */
+    SELECT
+        s.user_id,
+        s.ab_group,
+        s.user_type,
+        s.utilization_level,
+        f.serial_id AS first_credit_serial_id,
+        f.is_pass1,
+        f.max_credit_apply_amt,
+        o.serial_id AS first_apply_serial_id,
+        o.apply_amt,
+        o.is_remit,
+        o.loan_status_code,
+        o.remit_amt,
+        o.repaid_amt,
+        p.pre_apply_amt,
+        p.pre_credit_amt
+    FROM sample_users AS s
+    LEFT JOIN eligible_first_credit AS f
+        ON f.user_id = s.user_id
+    LEFT JOIN wangchuanliang.order_loan_f_v2_copy AS o
+        ON o.serial_id = f.serial_id
+    LEFT JOIN pre_utilization_by_user AS p
+        ON p.user_id = s.user_id
+),
+
+metric_aggregation AS (
+    /* 各层级均直接聚合原始人数、订单金额分子和分母。
+       禁止对下级的百分比作简单平均。 */
+    SELECT
+        GROUPING(e.user_type) AS g_user_type,
+        GROUPING(e.utilization_level) AS g_utilization_level,
+        GROUPING(e.ab_group) AS g_ab_group,
+        e.user_type,
+        e.utilization_level,
+        e.ab_group,
+        COUNT(DISTINCT e.user_id) AS churn_users,
+        COUNT(DISTINCT CASE
+            WHEN e.first_credit_serial_id IS NOT NULL THEN e.user_id
+        END) AS first_credit_users,
+        COUNT(DISTINCT CASE
+            WHEN e.is_pass1 = 1 THEN e.user_id
+        END) AS first_credit_pass_users,
+        COUNT(DISTINCT CASE
+            WHEN e.is_pass1 = 1
+             AND e.first_apply_serial_id IS NOT NULL THEN e.user_id
+        END) AS first_apply_users,
+        COUNT(DISTINCT CASE
+            WHEN e.is_pass1 = 1
+             AND e.first_apply_serial_id IS NOT NULL
+             AND e.is_remit = 1 THEN e.user_id
+        END) AS first_remit_users,
+        COUNT(DISTINCT CASE
+            WHEN e.is_pass1 = 1
+             AND e.first_apply_serial_id IS NOT NULL
+             AND e.is_remit = 1 THEN e.first_apply_serial_id
+        END) AS remit_orders,
+        COUNT(DISTINCT CASE
+            WHEN e.is_pass1 = 1
+             AND e.first_apply_serial_id IS NOT NULL
+             AND e.is_remit = 1
+             AND e.loan_status_code = 8 THEN e.first_apply_serial_id
+        END) AS overdue_orders,
+        SUM(CASE
+            WHEN e.is_pass1 = 1
+             AND e.first_apply_serial_id IS NOT NULL
+             AND e.is_remit = 1
+             AND e.loan_status_code IN (7, 8) THEN e.repaid_amt
+            ELSE 0
+        END) AS profit_repaid_amt,
+        SUM(CASE
+            WHEN e.is_pass1 = 1
+             AND e.first_apply_serial_id IS NOT NULL
+             AND e.is_remit = 1
+             AND e.loan_status_code IN (7, 8) THEN e.remit_amt
+            ELSE 0
+        END) AS profit_remit_amt,
+        SUM(CASE
+            WHEN e.is_pass1 = 1
+             AND e.first_apply_serial_id IS NOT NULL
+             AND e.is_remit = 1
+             AND e.loan_status_code = 8 THEN e.repaid_amt
+            ELSE 0
+        END) AS overdue_repaid_amt,
+        SUM(CASE
+            WHEN e.is_pass1 = 1
+             AND e.first_apply_serial_id IS NOT NULL
+             AND e.is_remit = 1
+             AND e.loan_status_code = 8 THEN e.remit_amt
+            ELSE 0
+        END) AS overdue_remit_amt,
+        SUM(CASE
+            WHEN e.is_pass1 = 1
+             AND e.first_apply_serial_id IS NOT NULL THEN e.pre_apply_amt
+            ELSE 0
+        END) AS pre_apply_amt,
+        SUM(CASE
+            WHEN e.is_pass1 = 1
+             AND e.first_apply_serial_id IS NOT NULL THEN e.pre_credit_amt
+            ELSE 0
+        END) AS pre_credit_amt,
+        SUM(CASE
+            WHEN e.is_pass1 = 1
+             AND e.first_apply_serial_id IS NOT NULL
+             AND e.apply_amt &gt;= 200
+             AND e.max_credit_apply_amt &gt;= 200 THEN e.apply_amt
+            ELSE 0
+        END) AS post_apply_amt,
+        SUM(CASE
+            WHEN e.is_pass1 = 1
+             AND e.first_apply_serial_id IS NOT NULL
+             AND e.apply_amt &gt;= 200
+             AND e.max_credit_apply_amt &gt;= 200 THEN e.max_credit_apply_amt
+            ELSE 0
+        END) AS post_credit_amt
+    FROM evaluation_base AS e
+    GROUP BY GROUPING SETS (
+        (e.user_type, e.utilization_level, e.ab_group),
+        (e.user_type, e.utilization_level),
+        (e.user_type),
+        (e.ab_group),
+        ()
+    )
+),
+
+metrics AS (
+    SELECT
+        m.*,
+        m.first_credit_pass_users::numeric
+            / NULLIF(m.first_credit_users, 0) AS pass_rate,
+        m.first_apply_users::numeric
+            / NULLIF(m.first_credit_pass_users, 0) AS apply_rate,
+        m.first_remit_users::numeric
+            / NULLIF(m.first_apply_users, 0) AS remit_success_rate,
+        m.overdue_orders::numeric
+            / NULLIF(m.remit_orders, 0) AS overdue_rate,
+        m.profit_repaid_amt
+            / NULLIF(m.profit_remit_amt, 0) - 1 AS profit_rate,
+        m.overdue_repaid_amt
+            / NULLIF(m.overdue_remit_amt, 0) AS overdue_repay_rate,
+        m.pre_apply_amt
+            / NULLIF(m.pre_credit_amt, 0) AS pre_utilization_rate,
+        m.post_apply_amt
+            / NULLIF(m.post_credit_amt, 0) AS post_utilization_rate
+    FROM metric_aggregation AS m
+),
+
+final_rows AS (
+    /* 总计/AB 组：用于第一张表。 */
+    SELECT
+        &#39;总计与AB组&#39; AS sheet_type,
+        CASE
+            WHEN m.g_ab_group = 1 THEN 1
+            WHEN m.ab_group = &#39;control&#39; THEN 2
+            WHEN m.ab_group = &#39;treatment&#39; THEN 3
+            ELSE 9
+        END AS sort_order,
+        CASE
+            WHEN m.g_ab_group = 1 THEN &#39;总计&#39;
+            WHEN m.ab_group = &#39;control&#39; THEN &#39;对照组&#39;
+            WHEN m.ab_group = &#39;treatment&#39; THEN &#39;实验组&#39;
+            ELSE m.ab_group
+        END AS level_1,
+        NULL::text AS level_2,
+        NULL::text AS level_3,
+        m.*
+    FROM metrics AS m
+    WHERE m.g_user_type = 1
+      AND m.g_utilization_level = 1
+
+    UNION ALL
+
+    /* 分类明细：总计 → 用户类型汇总 → 额度分类汇总 → 组别。 */
+    SELECT
+        &#39;层级分类&#39; AS sheet_type,
+        CASE
+            WHEN m.g_user_type = 1 THEN 1
+            WHEN m.user_type = &#39;type_1&#39; AND m.g_utilization_level = 1 THEN 10
+            WHEN m.user_type = &#39;type_1&#39; AND m.utilization_level = &#39;high&#39; AND m.g_ab_group = 1 THEN 11
+            WHEN m.user_type = &#39;type_1&#39; AND m.utilization_level = &#39;high&#39; AND m.ab_group = &#39;control&#39; THEN 12
+            WHEN m.user_type = &#39;type_1&#39; AND m.utilization_level = &#39;high&#39; AND m.ab_group = &#39;treatment&#39; THEN 13
+            WHEN m.user_type = &#39;type_1&#39; AND m.utilization_level = &#39;low&#39; AND m.g_ab_group = 1 THEN 14
+            WHEN m.user_type = &#39;type_1&#39; AND m.utilization_level = &#39;low&#39; AND m.ab_group = &#39;control&#39; THEN 15
+            WHEN m.user_type = &#39;type_1&#39; AND m.utilization_level = &#39;low&#39; AND m.ab_group = &#39;treatment&#39; THEN 16
+            WHEN m.user_type = &#39;type_2&#39; AND m.g_utilization_level = 1 THEN 20
+            WHEN m.user_type = &#39;type_2&#39; AND m.utilization_level = &#39;high&#39; AND m.g_ab_group = 1 THEN 21
+            WHEN m.user_type = &#39;type_2&#39; AND m.utilization_level = &#39;high&#39; AND m.ab_group = &#39;control&#39; THEN 22
+            WHEN m.user_type = &#39;type_2&#39; AND m.utilization_level = &#39;high&#39; AND m.ab_group = &#39;treatment&#39; THEN 23
+            WHEN m.user_type = &#39;type_2&#39; AND m.utilization_level = &#39;low&#39; AND m.g_ab_group = 1 THEN 24
+            WHEN m.user_type = &#39;type_2&#39; AND m.utilization_level = &#39;low&#39; AND m.ab_group = &#39;control&#39; THEN 25
+            WHEN m.user_type = &#39;type_2&#39; AND m.utilization_level = &#39;low&#39; AND m.ab_group = &#39;treatment&#39; THEN 26
+            WHEN m.user_type = &#39;type_3&#39; AND m.g_utilization_level = 1 THEN 30
+            WHEN m.user_type = &#39;type_3&#39; AND m.utilization_level = &#39;high&#39; AND m.g_ab_group = 1 THEN 31
+            WHEN m.user_type = &#39;type_3&#39; AND m.utilization_level = &#39;high&#39; AND m.ab_group = &#39;control&#39; THEN 32
+            WHEN m.user_type = &#39;type_3&#39; AND m.utilization_level = &#39;high&#39; AND m.ab_group = &#39;treatment&#39; THEN 33
+            WHEN m.user_type = &#39;type_3&#39; AND m.utilization_level = &#39;low&#39; AND m.g_ab_group = 1 THEN 34
+            WHEN m.user_type = &#39;type_3&#39; AND m.utilization_level = &#39;low&#39; AND m.ab_group = &#39;control&#39; THEN 35
+            WHEN m.user_type = &#39;type_3&#39; AND m.utilization_level = &#39;low&#39; AND m.ab_group = &#39;treatment&#39; THEN 36
+            ELSE 99
+        END AS sort_order,
+        CASE
+            WHEN m.g_user_type = 1 THEN &#39;总计&#39;
+            WHEN m.user_type = &#39;type_1&#39; THEN &#39;流失前非活跃用户&#39;
+            WHEN m.user_type = &#39;type_2&#39; THEN &#39;流失90天以上用户&#39;
+            WHEN m.user_type = &#39;type_3&#39; THEN &#39;流失8-90天用户&#39;
+            ELSE m.user_type
+        END AS level_1,
+        CASE
+            WHEN m.g_user_type = 1 THEN &#39;全部额度分类&#39;
+            WHEN m.g_utilization_level = 1 THEN &#39;额度分类汇总&#39;
+            WHEN m.utilization_level = &#39;high&#39; THEN &#39;高额度使用率用户&#39;
+            WHEN m.utilization_level = &#39;low&#39; THEN &#39;低额度使用率用户&#39;
+            ELSE m.utilization_level
+        END AS level_2,
+        CASE
+            WHEN m.g_ab_group = 1 THEN &#39;组别汇总&#39;
+            WHEN m.ab_group = &#39;control&#39; THEN &#39;对照组&#39;
+            WHEN m.ab_group = &#39;treatment&#39; THEN &#39;实验组&#39;
+            ELSE m.ab_group
+        END AS level_3,
+        m.*
+    FROM metrics AS m
+    WHERE NOT (
+        m.g_user_type = 1
+        AND m.g_utilization_level = 1
+        AND m.g_ab_group = 0
+    )
+)
+
+SELECT
+    f.sheet_type,
+    f.sort_order,
+    f.level_1,
+    f.level_2,
+    f.level_3,
+    f.churn_users,
+    f.first_credit_users,
+    f.first_credit_pass_users,
+    f.pass_rate,
+    f.first_apply_users,
+    f.apply_rate,
+    f.first_remit_users,
+    f.remit_success_rate,
+    f.remit_orders,
+    f.overdue_orders,
+    f.overdue_rate,
+    f.profit_rate,
+    f.overdue_repay_rate,
+    f.pre_utilization_rate,
+    f.post_utilization_rate,
+    f.post_utilization_rate - f.pre_utilization_rate AS utilization_rate_change,
+    f.profit_repaid_amt,
+    f.profit_remit_amt,
+    f.overdue_repaid_amt,
+    f.overdue_remit_amt,
+    f.pre_apply_amt,
+    f.pre_credit_amt,
+    f.post_apply_amt,
+    f.post_credit_amt
+FROM final_rows AS f
+ORDER BY
+    f.sheet_type,
+    f.sort_order;</code></pre></details></section>
+</main></body></html>
