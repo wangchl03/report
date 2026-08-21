@@ -1,0 +1,85 @@
+<!doctype html>
+<html lang="zh-CN"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>长期不活跃回流用户与比较活跃用户分析｜统计口径与分析大纲</title>
+<style>body{margin:0;background:#071b32;color:#eaf3ff;font-family:-apple-system,BlinkMacSystemFont,"PingFang SC",sans-serif;line-height:1.7}.wrap{max-width:1100px;margin:auto;padding:54px 28px 90px}.hero{text-align:center;padding:24px 0 42px;border-bottom:1px solid #2b5276}.hero h1{font-size:34px;margin:8px 0}.hero p{color:#a9c1d9}.tag{color:#65e2bf;letter-spacing:.12em;font-size:13px}h2{margin:46px 0 14px;font-size:24px;color:#fff}h3{font-size:18px;margin:22px 0 8px;color:#78d8ff}.box{background:#0d2947;border:1px solid #285a82;border-radius:14px;padding:20px 24px;margin:14px 0}.note{border-left:4px solid #62d9b4;background:#0b314f;padding:14px 18px;color:#d8ebff}.flow{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;margin:18px 0}.flow div{background:#12395d;border-radius:10px;padding:13px;text-align:center;font-weight:700}.flow div:nth-child(2n){background:#12566d}code,pre{font-family:ui-monospace,SFMono-Regular,Menlo,monospace}pre{white-space:pre-wrap;background:#041426;border:1px solid #214865;border-radius:12px;padding:20px;font-size:13px;color:#d5e7fa}.muted{color:#a9c1d9}li{margin:8px 0}@media(max-width:760px){.flow{grid-template-columns:1fr}.hero h1{font-size:26px}}</style>
+<main class="wrap"><header class="hero"><div class="tag">ANALYSIS BLUEPRINT · ELIGIBILITY-AWARE</div><h1>长期不活跃回流用户与比较活跃用户<br>提单及盈利质量分析</h1><p>统计口径、分析思路与执行大纲｜以“实际可提单资格”为前提</p></header>
+<h2>一、分析目标</h2><div class="box">验证两件事：① 沉默后重新进入 App 的用户，是否比持续较活跃用户更容易在重新活跃后提单；② 即使提单更快，其后续放款、逾期和盈利质量是否更差。核心原则是：<b>不能把系统不允许提单的用户当作“用户不愿提单”</b>。</div>
+<h2>二、样本与时间锚点</h2><ul><li>订单来源为 <code>order_loan_f_v2_copy</code>；不从注册表取样。本次仅纳入 <b>2025-01-01 至 2026-04-01</b> 注册，且至少有一笔成功放款订单的用户。</li><li>先在全部成功放款订单中按 <code>remit_time、serial_id</code> 升序取首笔；再要求首笔已结清。结清优先判定 <code>is_repaid=1</code>，其次可由 <code>loan_status_code=7</code> 识别；<code>repaid_date&gt;2000-01-01</code> 仅用于获得可靠的时间锚点。</li><li>从首笔结清的<b>次日</b>起读取 <code>event_track.active_date</code>；存在该日记录即为进入 App，不以 <code>active_status</code> 判断。</li><li>D0 为一次“重新活跃日”。仅纳入 D0 至今已满 30 天的用户，保证 D0–D30 可完整观察。</li></ul>
+<h2>三、用户分组口径</h2><div class="flow"><div>首笔放款</div><div>首笔结清</div><div>活跃间隔</div><div>D0 重回 App</div><div>D0–D30 结果</div></div>
+<div class="box"><b>沉默天数</b> = 本次活跃日期 − 上次活跃基准日期 − 1。第一次回流时，上次活跃基准取首笔结清日；之后取上一活跃日。因此，若同日活跃且同日提单，该提单为 <b>D0</b> 结果。</div>
+<ul><li><b>长期不活跃回流用户：</b>存在一次沉默天数 ≥ 21 天后再次活跃；D0 取首次满足该条件的回流日。</li><li><b>比较活跃用户：</b>沉默天数为 0–7 天的活跃用户，且在观察期内从未出现过 ≥21 天沉默；D0 取首次短间隔活跃日。</li><li><b>8–20 天：</b>属于中间带，不放入两组主比较，避免稀释差异；可作为稳健性补充。</li><li><b>去重：</b>一位用户只进入一个主组，长期不活跃优先；每位用户仅保留一个 D0。</li></ul>
+<h2>四、可提单资格口径（主分母）</h2><div class="note"><b>用户在 D0 当天可以提单，当且仅当：</b><br><code>is_pass1 = 1 AND recycle_type IN (2, 3)</code><br><span class="muted">recycle_type=2 为循环贷可提单；=3 为结清续贷可提单；=1、空值或其他值均不可提单。未同时满足两项条件的用户属于系统不允许提单，不进入“主观提单率”分母。</span></div>
+<ul><li>获额表以 <code>order_vir_f_copy</code> 为准，并按 <code>serial_id</code> 连接 <code>side_recycle_type_copy</code>。</li><li>同一用户在同一 <code>vir_unix</code>（同一秒）获得多笔订单时，只保留 <code>serial_id</code> 最大的一笔；这是该批次中可与后续提单订单对应的获额订单。</li><li>截至 D0 当日取最近一笔有效获额批次，判定其资格；以该获额订单的 <code>serial_id</code> 精确关联后续提单、放款与风险结果。</li></ul>
+<h2>五、结果指标与比较框架</h2><div class="box"><b>资格漏斗：</b>重新活跃用户数 → 可提单用户数 → D0/D0–D7/D8–D30/D0–D30 提单人数与提单率 → 放款成功率 → 逾期率、盈利率、逾期回款率。<br><b>行为强度：</b>D0 的活跃时长、提单页时长、进入提单页次数、金额/期次切换、查看合同/还款计划、确认提单等，均只作行为解释，不作为“是否活跃”的定义。</div>
+<ul><li><b>转化速度：</b>D0、D0–D7、D8–D30、D0–D30 的累计提单率；分母均为该组“可提单”用户数。</li><li><b>风险与盈利：</b>仅针对与 D0 获额订单匹配且成功放款的订单。逾期率=状态8订单数/成功放款订单数；盈利率=状态7、8订单的回款金额/放款金额−1；逾期回款率=状态8回款金额/状态8放款金额。</li><li><b>结论标准：</b>同时报告人数、比例和百分点差异；低样本风险指标标识为方向性，不将相关性直接解释为因果。</li></ul>
+<h2>六：指标口径</h2>
+<h3>1. 首笔成功放款且结清用户</h3><div class="box"><b>指标口径：</b>先在用户全部成功放款订单中识别时间最早的一笔订单；该笔订单已结清，且存在有效结清日期。不能先筛选结清订单再取首笔。</div><pre>首笔成功放款订单 =
+    每个 user_id 的 is_remit = 1 订单
+    按 remit_time ASC、serial_id ASC 排序后的第 1 笔
+
+纳入基础样本 =
+    首笔成功放款订单
+    AND (is_repaid = 1 OR loan_status_code = 7)
+    AND repaid_date &gt; DATE '2000-01-01'</pre>
+<h3>2. 活跃日与上次活跃基准日</h3><div class="box"><b>指标口径：</b><code>event_track</code> 中存在 <code>active_date</code> 即代表用户当日进入 App；同一用户同一天去重。第一次结清后的活跃以上述结清日为前序基准，之后以上一个活跃日为前序基准。</div><pre>活跃日 =
+    DISTINCT(user_id, active_date)
+    WHERE active_date &gt; 首笔结清日期
+
+上次活跃基准日 =
+    COALESCE(LAG(active_date), 首笔结清日期)</pre>
+<h3>3. 沉默天数</h3><div class="box"><b>指标口径：</b>沉默天数不包含前一次活跃日（或结清日）和本次重新活跃日。例如 6 月 1 日活跃、6 月 23 日再次活跃，沉默天数为 21 天。</div><pre>沉默天数 =
+    本次 active_date
+    - 上次活跃基准日
+    - 1</pre>
+<h3>4. 长期不活跃回流用户与比较活跃用户的 D0</h3><div class="box"><b>指标口径：</b>D0 是本次分析的重新活跃日。长期不活跃用户是沉默至少 21 天后重新进入 App 的用户；比较活跃用户的活跃间隔为 0–7 天。若用户曾出现长期沉默，优先归入长期不活跃组，保证两组互斥；8–20 天为中间带，不进入主比较。</div><pre>长期不活跃组 D0 =
+    每个 user_id 首次满足 沉默天数 &gt;= 21 的 active_date
+
+比较活跃组 D0 =
+    每个 user_id 首次满足 0 &lt;= 沉默天数 &lt;= 7 的 active_date
+    AND 该 user_id 从未出现 沉默天数 &gt;= 21
+
+观察样本 =
+    D0 &lt;= CURRENT_DATE - 30</pre>
+<h3>5. D0 当日可提单用户（主提单率分母）</h3><div class="box"><b>指标口径：</b>同一用户同一秒触发多笔获额时，仅保留订单编号最大的获额订单；截至 D0 当日取最近一笔获额。只有获额通过且订单类型为循环贷可提单或结清续贷可提单时，用户才属于“可提单”。未满足条件的用户是系统不允许提单，不计入主观提单率分母。</div><pre>同秒获额批次代表订单 =
+    每个 (user_id, vir_unix) 的 MAX(serial_id)
+
+D0 最近获额订单 =
+    user_id 相同
+    AND vir_date &lt;= D0
+    按 vir_unix DESC、serial_id DESC 排序后的第 1 笔
+
+D0 可提单 =
+    is_pass1 = 1
+    AND recycle_type IN (2, 3)</pre>
+<h3>6. 提单时效指标</h3><div class="box"><b>指标口径：</b>后续提单必须与 D0 最近获额订单的 <code>serial_id</code> 一致。D0 同日提单计为 D0；D0–D7 为从 D0 起连续 8 个自然日的累计提单；D8–D30 为 D0 后第 8–30 天新增提单。</div><pre>归因提单订单 =
+    order.user_id = D0 用户 user_id
+    AND order.serial_id = D0 最近获额订单 serial_id
+
+D0 提单率 =
+    D0 当日存在归因提单订单的可提单用户数
+    / D0 可提单用户数
+
+D0-D7 累计提单率 =
+    apply_date IN [D0, D0 + 7] 的可提单用户数
+    / D0 可提单用户数
+
+D8-D30 新增提单率 =
+    apply_date IN [D0 + 8, D0 + 30] 的可提单用户数
+    / D0 可提单用户数</pre>
+<h3>7. 放款、风险与盈利质量指标</h3><div class="box"><b>指标口径：</b>仅对上述归因提单订单中成功放款的订单计算质量。放款成功率的分母为 D0–D30 提单用户；逾期、盈利和逾期回款均基于成功放款订单的原始订单数或金额直接计算。</div><pre>放款成功率 =
+    is_remit = 1 的归因提单用户数
+    / D0-D30 归因提单用户数
+
+订单逾期率 =
+    loan_status_code = 8 的成功放款订单数
+    / 成功放款订单数
+
+订单盈利率 =
+    SUM(状态为 7 或 8 的 repaid_amt)
+    / SUM(状态为 7 或 8 的 remit_amt)
+    - 1
+
+逾期回款率 =
+    SUM(状态为 8 的 repaid_amt)
+    / SUM(状态为 8 的 remit_amt)</pre>
+<h2>七、分析报告大纲</h2><ol><li>样本、D0 与可提单资格漏斗：拆开系统不可提单与可提单但未提单。</li><li>主结论：两类用户的 D0–D30 提单率、提单速度及百分点差异。</li><li>回流当天的行为质量：进入提单页、时长与关键操作的对比。</li><li>放款风险和盈利质量：逾期率、盈利率、逾期回款率及样本量。</li><li>业务解读与运营边界：哪些差异支持“回流快但质量差”的假设，哪些只能视为待验证信号。</li><li>可核对明细与完整 PGSQL 附录。</li></ol>
+<div class="note">数据限制：<code>active_date</code> 为日期粒度；若获额与活跃在同一天但先后顺序无法由事件时间确定，则按“该日已获得最近获额”处理，并在正式报告中标注为日级口径。精确时序判断需要补充活跃事件的时间戳字段。</div></main></html>
