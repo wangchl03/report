@@ -1,0 +1,855 @@
+<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>长期不活跃回流用户与比较活跃用户提单及盈利质量对比分析报告</title>
+<style>
+:root{--bg:#061a30;--panel:#0c2948;--line:#285a82;--text:#eaf4ff;--muted:#9fb9d2;--long:#ffbf69;--active:#6ce0c0;--blue:#6fc5ff;--danger:#ff7b8c}*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei",sans-serif;line-height:1.65}.page{max-width:1420px;margin:auto;padding:42px 30px 90px}.hero{text-align:center;padding:32px 20px 42px;border-bottom:1px solid var(--line)}.eyebrow{color:var(--active);font-size:13px;letter-spacing:.15em}h1{font-size:37px;line-height:1.25;margin:12px 0}.sub{margin:auto;max-width:900px;color:var(--muted)}h2{font-size:26px;margin:48px 0 16px;border-left:5px solid var(--active);padding-left:14px}h3{font-size:18px;margin:0 0 12px}.report-section{display:block;clear:both;position:relative;margin-top:56px;padding-top:1px}.report-section h2{margin-top:0}.data-section{padding-bottom:16px}.grid4{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}.grid2{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:18px}.metric,.panel,.callout{background:var(--panel);border:1px solid var(--line);border-radius:14px}.metric{padding:18px;min-height:130px}.metric span,.metric small{display:block;color:var(--muted);font-size:13px}.metric strong{display:block;margin:7px 0;font-size:29px}.metric.emph strong{color:var(--active)}.metric.warn strong{color:var(--long)}.panel{padding:21px}.callout{padding:18px 21px;margin:14px 0;border-left:5px solid var(--long)}.callout.good{border-left-color:var(--active)}.legend{display:flex;gap:20px;color:var(--muted);font-size:13px;margin:5px 0 15px}.legend b:before{content:"";display:inline-block;width:10px;height:10px;border-radius:3px;background:var(--long);margin-right:6px}.legend b:last-child:before{background:var(--active)}.barrow{display:grid;grid-template-columns:155px 1fr 76px;gap:10px;align-items:center;margin:13px 0}.barlabel{font-size:13px;color:#d8e9fa}.bars{display:grid;gap:5px}.series{height:22px;background:#082039;border-radius:5px;position:relative;overflow:visible}.series i{position:absolute;inset:0 auto 0 0;border-radius:5px;background:var(--long)}.series.active i{background:var(--active)}.series b{position:relative;z-index:2;display:inline-block;line-height:18px;margin:2px 0 0 4px;padding:0 6px;border-radius:4px;background:rgba(3,18,33,.78);color:#f7fbff;font-size:12px;font-weight:750;letter-spacing:.01em;text-shadow:none}.series.active b{color:#f7fbff}.delta{font-weight:700;color:var(--blue);text-align:right;font-size:13px}.tablewrap{display:block;clear:both;margin-top:18px;overflow:auto;border:1px solid var(--line);border-radius:14px}table{border-collapse:collapse;min-width:1120px;width:100%;font-size:13px}th{background:#113a5e;color:#eaf4ff;position:sticky;top:0}th,td{padding:10px 12px;border-bottom:1px solid #214866;text-align:right;white-space:nowrap}th:first-child,td:first-child{text-align:left}tr:nth-child(even) td{background:#092442}.note{color:var(--muted);font-size:13px}details{display:block;clear:both;margin-top:92px;background:#071a2e;border:1px solid var(--line);border-radius:14px}summary{cursor:pointer;padding:18px 22px;font-size:19px;font-weight:700;list-style:none}summary::-webkit-details-marker{display:none}summary:before{content:"▼";display:inline-block;margin-right:10px;color:var(--active);font-size:22px;transform:rotate(-90deg);transition:.15s}details[open] summary:before{transform:rotate(0)}pre{margin:0;padding:22px;overflow:auto;border-top:1px solid var(--line);color:#cfe6fa;font:12px/1.6 ui-monospace,SFMono-Regular,Menlo,monospace;white-space:pre}@media(max-width:900px){.grid4,.grid2{grid-template-columns:1fr}.barrow{grid-template-columns:115px 1fr 64px}h1{font-size:28px}.page{padding:24px 14px 70px}}
+</style><style>
+        .speed-panel .series b {
+            position:relative;
+            z-index:2;
+            display:inline-block;
+            margin-left:8px;
+            padding:0;
+            color:#ffffff !important;
+            font-size:13px;
+            font-weight:800;
+            letter-spacing:.01em;
+            line-height:22px;
+            text-shadow:none;
+            background:transparent;
+            border-radius:0;
+        }
+        .speed-panel .series.active b {
+            color:#ffffff !important;
+        }
+        /* 第四、第五部分沿用第一版的纯文字标签，不应用阴影效果。 */
+        .panel:not(.speed-panel) .series b {
+            text-shadow:none !important;
+        }
+        </style></head><body><main class="page"><header class="hero"><div class="eyebrow">HISTORICAL COHORT · ELIGIBILITY-AWARE ANALYSIS</div><h1>长期不活跃回流用户与比较活跃用户<br>提单及盈利质量对比分析报告</h1><p class="sub">样本：首笔成功放款且结清的历史用户；注册日期 2025-01-01 至 2026-04-01。D0 为重新活跃日，D0–D30 为完整观察窗口。提单主分母仅包含 <b>is_pass1=1 且 recycle_type∈(2,3)</b> 的可提单用户。</p></header>
+<h2>一、核心结论</h2><div class="callout"><b>结论 1｜长期沉默回流用户并非“更容易总转化”，但其提单明显更集中在 D0。</b><br>长期组 D0 提单率 <b>34.84%</b>，比比较活跃组高 <b>+5.54pp</b>；但 D0–D30 累计提单率为 <b>44.88%</b>，较比较活跃组低 <b>1.18pp</b>。这更像“需求被重新激活后立即决策”，而不是总意愿更强。</div><div class="callout good"><b>结论 2｜当前样本不支持“长期沉默回流后，放款质量更差”。</b><br>长期组放款订单逾期率 <b>31.09%</b>，低于比较活跃组 <b>33.19%</b>（-2.10pp）；盈利率 <b>14.48%</b>，高 <b>+7.15pp</b>。这是资格筛选后的订单质量比较，不能外推到所有长期沉默用户。</div><div class="callout"><b>结论 3｜长期沉默组的最大约束是“资格”，而非仅是触达。</b><br>长期组重新活跃用户中仅 <b>60.15%</b> 在 D0 可提单，低于比较活跃组的 <b>77.55%</b>（-17.40pp）。系统不可提单用户占长期组 <b>39.85%</b>，不应被混入主观不提单率。</div>
+<h2>二、样本与可提单资格漏斗</h2><section class="grid4"><article class="metric warn"><span>长期组重新活跃用户</span><strong>38,287</strong><small>平均沉默 74.5 天</small></article><article class="metric emph"><span>长期组可提单用户</span><strong>23,030</strong><small>可提单占比 60.15%</small></article><article class="metric "><span>比较活跃组重新活跃用户</span><strong>85,027</strong><small>平均沉默 1.5 天</small></article><article class="metric emph"><span>比较活跃组可提单用户</span><strong>65,942</strong><small>可提单占比 77.55%</small></article></section><section class="grid2" style="margin-top:18px"><article class="panel"><h3>资格结构对比</h3><div class="legend"><b>长期不活跃回流</b><b>比较活跃</b></div><div class="barrow"><div class="barlabel">D0 可提单占比</div><div class="bars"><div class="series long"><i style="width:60.15%"></i><b>60.15%</b></div><div class="series active"><i style="width:77.55%"></i><b>77.55%</b></div></div><div class="delta">-17.40pp</div></div><div class="barrow"><div class="barlabel">D0 不可提单占比</div><div class="bars"><div class="series long"><i style="width:39.85%"></i><b>39.85%</b></div><div class="series active"><i style="width:22.45%"></i><b>22.45%</b></div></div><div class="delta">+17.40pp</div></div><p class="note">不可提单包括：获额未通过、recycle_type=1、缺少匹配获额或其他类型。该部分不纳入后续主提单率分母。</p></article><article class="panel"><h3>分析口径的关键控制</h3><ul><li>首笔放款先全量排序，再判断是否结清，避免把“首笔未结清、后续结清”的用户错误纳入。</li><li>同一秒多笔获额时，仅保留 serial_id 最大订单；结果订单按相同 serial_id 归因。</li><li>D0 同日提单计为 D0；D0–D7 为累计 8 个自然日，D8–D30 为后续新增。</li></ul></article></section>
+<h2>三、提单速度：D0 强、30 天总量略弱</h2><section class="panel speed-panel"><div class="legend"><b>长期不活跃回流</b><b>比较活跃</b></div><div class="barrow"><div class="barlabel">D0 当日提单率</div><div class="bars"><div class="series long"><i style="width:69.67%"></i><b>34.84%</b></div><div class="series active"><i style="width:58.58%"></i><b>29.29%</b></div></div><div class="delta">+5.54pp</div></div><div class="barrow"><div class="barlabel">D1 当日提单率</div><div class="bars"><div class="series long"><i style="width:7.41%"></i><b>3.70%</b></div><div class="series active"><i style="width:11.29%"></i><b>5.65%</b></div></div><div class="delta">-1.94pp</div></div><div class="barrow"><div class="barlabel">D2 当日提单率</div><div class="bars"><div class="series long"><i style="width:3.08%"></i><b>1.54%</b></div><div class="series active"><i style="width:5.73%"></i><b>2.86%</b></div></div><div class="delta">-1.32pp</div></div><div class="barrow"><div class="barlabel">D3 当日提单率</div><div class="bars"><div class="series long"><i style="width:1.81%"></i><b>0.90%</b></div><div class="series active"><i style="width:3.81%"></i><b>1.91%</b></div></div><div class="delta">-1.00pp</div></div><div class="barrow"><div class="barlabel">D0–D7 累计提单率</div><div class="bars"><div class="series long"><i style="width:84.59%"></i><b>42.29%</b></div><div class="series active"><i style="width:87.11%"></i><b>43.55%</b></div></div><div class="delta">-1.26pp</div></div><div class="barrow"><div class="barlabel">D8–D30 新增提单率</div><div class="bars"><div class="series long"><i style="width:5.18%"></i><b>2.59%</b></div><div class="series active"><i style="width:5.02%"></i><b>2.51%</b></div></div><div class="delta">+0.08pp</div></div><div class="barrow"><div class="barlabel">D0–D30 累计提单率</div><div class="bars"><div class="series long"><i style="width:89.77%"></i><b>44.88%</b></div><div class="series active"><i style="width:92.13%"></i><b>46.06%</b></div></div><div class="delta">-1.18pp</div></div><p class="note">D0–D3 为各自然日新增提单率；D0–D7、D0–D30 为累计提单率。横条按同指标下的数值比例绘制；右侧为“长期组 − 比较活跃组”百分点差。</p></section><div class="callout"><b>解读：</b>长期组在 D0 即产生 8,023 位提单用户，占其可提单用户的 34.84%；比较活跃组为 19,316 位、29.29%。但 D1、D2、D3 的当日提单率分别为 <b>3.70%、1.54%、0.90%</b>，均低于比较活跃组的 <b>5.65%、2.86%、1.91%</b>；D8–D30 的新增转化长期组仅 2.59%，未形成后段反超。</div>
+<h2>四、D0 行为质量：长期回流者的意图动作更强</h2><section class="panel"><div class="legend"><b>长期不活跃回流</b><b>比较活跃</b></div><div class="barrow"><div class="barlabel">进入提单页次数</div><div class="bars"><div class="series long"><i style="width:72.90%"></i><b>1.5</b></div><div class="series active"><i style="width:56.39%"></i><b>1.1</b></div></div><div class="delta">+0.3次</div></div><div class="barrow"><div class="barlabel">切换借款金额次数</div><div class="bars"><div class="series long"><i style="width:73.78%"></i><b>0.7</b></div><div class="series active"><i style="width:44.16%"></i><b>0.4</b></div></div><div class="delta">+0.3次</div></div><div class="barrow"><div class="barlabel">切换借款期次次数</div><div class="bars"><div class="series long"><i style="width:46.01%"></i><b>0.5</b></div><div class="series active"><i style="width:41.35%"></i><b>0.4</b></div></div><div class="delta">+0.0次</div></div><div class="barrow"><div class="barlabel">查看还款计划次数</div><div class="bars"><div class="series long"><i style="width:49.32%"></i><b>0.5</b></div><div class="series active"><i style="width:34.47%"></i><b>0.3</b></div></div><div class="delta">+0.1次</div></div><div class="barrow"><div class="barlabel">确认提单次数</div><div class="bars"><div class="series long"><i style="width:43.14%"></i><b>0.4</b></div><div class="series active"><i style="width:33.56%"></i><b>0.3</b></div></div><div class="delta">+0.1次</div></div><div class="barrow"><div class="barlabel">D0 平均活跃时长（秒）</div><div class="bars"><div class="series long"><i style="width:87.85%"></i><b>220</b></div><div class="series active"><i style="width:46.94%"></i><b>117</b></div></div><div class="delta">+102秒</div></div><div class="barrow"><div class="barlabel">D0 平均提单页停留（秒）</div><div class="bars"><div class="series long"><i style="width:78.77%"></i><b>39</b></div><div class="series active"><i style="width:57.29%"></i><b>29</b></div></div><div class="delta">+11秒</div></div></section><div class="callout good"><b>解读：</b>长期组在重回 App 当天平均进入提单页 1.46 次（比较活跃组 1.13 次），平均活跃时长 219.6 秒（比较活跃组 117.4 秒）。金额切换、还款计划查看、确认提单等行为也均更高，和其 D0 提单更集中的现象一致。</div>
+<section class="report-section"><h2>五、提单用户与未提单用户：D0 行为差异</h2><p class="note">仅比较 D0 时点已具备可提单资格的用户；“提单用户”指该获额订单在 D0–D30 内完成提单，“未提单用户”指同一窗口内未提单。因此差异可用于解释用户意愿，不混入系统不允许提单的情况。</p><div class="grid2"><article class="panel"><h3>长期不活跃回流用户</h3><div class="legend"><b>D0–D30 提单用户</b><b>D0–D30 未提单用户</b></div><div class="barrow"><div class="barlabel">进入提单页次数</div><div class="bars"><div class="series long"><i style="width:89.58%"></i><b>2.7</b></div><div class="series active"><i style="width:15.23%"></i><b>0.5</b></div></div><div class="delta">+2.2次</div></div><div class="barrow"><div class="barlabel">切换借款金额次数</div><div class="bars"><div class="series long"><i style="width:83.74%"></i><b>1.3</b></div><div class="series active"><i style="width:21.05%"></i><b>0.3</b></div></div><div class="delta">+0.9次</div></div><div class="barrow"><div class="barlabel">切换借款期次次数</div><div class="bars"><div class="series long"><i style="width:82.71%"></i><b>0.8</b></div><div class="series active"><i style="width:16.13%"></i><b>0.2</b></div></div><div class="delta">+0.7次</div></div><div class="barrow"><div class="barlabel">查看还款计划次数</div><div class="bars"><div class="series long"><i style="width:83.03%"></i><b>0.8</b></div><div class="series active"><i style="width:21.87%"></i><b>0.2</b></div></div><div class="delta">+0.6次</div></div><div class="barrow"><div class="barlabel">确认提单次数</div><div class="bars"><div class="series long"><i style="width:90.92%"></i><b>0.9</b></div><div class="series active"><i style="width:4.22%"></i><b>0.0</b></div></div><div class="delta">+0.9次</div></div><div class="barrow"><div class="barlabel">D0 活跃时长（秒）</div><div class="bars"><div class="series long"><i style="width:84.42%"></i><b>338</b></div><div class="series active"><i style="width:30.87%"></i><b>123</b></div></div><div class="delta">+214秒</div></div><div class="barrow"><div class="barlabel">D0 提单页停留（秒）</div><div class="bars"><div class="series long"><i style="width:71.08%"></i><b>71</b></div><div class="series active"><i style="width:13.57%"></i><b>14</b></div></div><div class="delta">+58秒</div></div></article><article class="panel"><h3>比较活跃用户</h3><div class="legend"><b>D0–D30 提单用户</b><b>D0–D30 未提单用户</b></div><div class="barrow"><div class="barlabel">进入提单页次数</div><div class="bars"><div class="series long"><i style="width:75.46%"></i><b>2.3</b></div><div class="series active"><i style="width:5.25%"></i><b>0.2</b></div></div><div class="delta">+2.1次</div></div><div class="barrow"><div class="barlabel">切换借款金额次数</div><div class="bars"><div class="series long"><i style="width:58.14%"></i><b>0.9</b></div><div class="series active"><i style="width:4.92%"></i><b>0.1</b></div></div><div class="delta">+0.8次</div></div><div class="barrow"><div class="barlabel">切换借款期次次数</div><div class="bars"><div class="series long"><i style="width:83.65%"></i><b>0.8</b></div><div class="series active"><i style="width:5.23%"></i><b>0.1</b></div></div><div class="delta">+0.8次</div></div><div class="barrow"><div class="barlabel">查看还款计划次数</div><div class="bars"><div class="series long"><i style="width:67.79%"></i><b>0.7</b></div><div class="series active"><i style="width:6.01%"></i><b>0.1</b></div></div><div class="delta">+0.6次</div></div><div class="barrow"><div class="barlabel">确认提单次数</div><div class="bars"><div class="series long"><i style="width:71.61%"></i><b>0.7</b></div><div class="series active"><i style="width:1.06%"></i><b>0.0</b></div></div><div class="delta">+0.7次</div></div><div class="barrow"><div class="barlabel">D0 活跃时长（秒）</div><div class="bars"><div class="series long"><i style="width:49.92%"></i><b>200</b></div><div class="series active"><i style="width:11.76%"></i><b>47</b></div></div><div class="delta">+153秒</div></div><div class="barrow"><div class="barlabel">D0 提单页停留（秒）</div><div class="bars"><div class="series long"><i style="width:57.82%"></i><b>58</b></div><div class="series active"><i style="width:3.73%"></i><b>4</b></div></div><div class="delta">+54秒</div></div></article></div><div class="callout good"><b>结论 1｜两类用户中，提单者在 D0 都呈现出明显更强的提单意图行为。</b><br>长期组提单者平均进入提单页 <b>2.7</b> 次，未提单者为 <b>0.5</b> 次；确认提单次数分别为 <b>0.9</b> 与 <b>0.0</b>。比较活跃组的对应数值为进入提单页 <b>2.3</b> vs <b>0.2</b>，确认提单 <b>0.7</b> vs <b>0.0</b>。</div><div class="callout"><b>结论 2｜提单页投入时长是最直观的区分信号。</b><br>长期组提单者 D0 平均提单页停留 <b>71</b> 秒，是未提单者 <b>14</b> 秒的约 <b>5.2</b> 倍；比较活跃组为 <b>58</b> 秒 vs <b>4</b> 秒，约 <b>15.5</b> 倍。</div></section>
+<section class="report-section"><h2>六、放款、风险与盈利：不支持“长期回流质量更差”</h2><section class="panel"><div class="legend"><b>长期不活跃回流</b><b>比较活跃</b></div><div class="barrow"><div class="barlabel">放款成功率</div><div class="bars"><div class="series long"><i style="width:88.95%"></i><b>88.95%</b></div><div class="series active"><i style="width:98.06%"></i><b>98.06%</b></div></div><div class="delta">-9.11pp</div></div><div class="barrow"><div class="barlabel">订单逾期率</div><div class="bars"><div class="series long"><i style="width:31.09%"></i><b>31.09%</b></div><div class="series active"><i style="width:33.19%"></i><b>33.19%</b></div></div><div class="delta">-2.10pp</div></div><div class="barrow"><div class="barlabel">订单盈利率</div><div class="bars"><div class="series long"><i style="width:72.41%"></i><b>14.48%</b></div><div class="series active"><i style="width:36.66%"></i><b>7.33%</b></div></div><div class="delta">+7.15pp</div></div><div class="barrow"><div class="barlabel">逾期回款率</div><div class="bars"><div class="series long"><i style="width:57.94%"></i><b>28.97%</b></div><div class="series active"><i style="width:74.37%"></i><b>37.19%</b></div></div><div class="delta">-8.22pp</div></div></section><div class="grid4" style="margin-top:18px"><article class="metric warn"><span>长期组成功放款订单</span><strong>9,195</strong><small>逾期订单 2,859</small></article><article class="metric "><span>比较活跃组成功放款订单</span><strong>29,785</strong><small>逾期订单 9,887</small></article><article class="metric emph"><span>长期组盈利率</span><strong>14.48%</strong><small>逾期回款率 28.97%</small></article><article class="metric emph"><span>比较活跃组盈利率</span><strong>7.33%</strong><small>逾期回款率 37.19%</small></article></div><div class="callout good"><b>解读：</b>在成功放款的 D0 获额匹配订单中，长期组逾期率更低、盈利率更高。这不代表“沉默带来更好质量”，更可能反映只有一部分长期沉默用户能在 D0 同时满足获额通过与可提单类型；因此该结果应表述为<b>资格筛选后的客群表现</b>。</div></section>
+<section class="report-section data-section"><h2>七、可核对的完整数据</h2><div class="tablewrap"><table><thead><tr><th>用户组</th><th>重新活跃用户</th><th>可提单用户</th><th>可提单占比</th><th>D0 提单人数</th><th>D0 提单率</th><th>D0–D7 提单人数</th><th>D0–D7 提单率</th><th>D0–D30 提单人数</th><th>D0–D30 提单率</th><th>放款用户</th><th>放款成功率</th><th>逾期率</th><th>盈利率</th></tr></thead><tbody><tr><td>长期不活跃回流用户</td><td>38,287</td><td>23,030</td><td>60.15%</td><td>8,023</td><td>34.84%</td><td>9,740</td><td>42.29%</td><td>10,337</td><td>44.88%</td><td>9,195</td><td>88.95%</td><td>31.09%</td><td>14.48%</td></tr><tr><td>比较活跃用户</td><td>85,027</td><td>65,942</td><td>77.55%</td><td>19,316</td><td>29.29%</td><td>28,720</td><td>43.55%</td><td>30,375</td><td>46.06%</td><td>29,785</td><td>98.06%</td><td>33.19%</td><td>7.33%</td></tr></tbody></table></div></section>
+<h2>八、运营含义与边界</h2><div class="callout"><b>对长期沉默回流用户：</b>先判断是否可提单。对已满足获额通过且 recycle_type 为 2/3 的用户，D0 是最高价值的响应窗口，可优先配置即时、清晰的回流引导；对不具资格者，不应按“不愿转化”处理，而应单列为资格/风控/产品路径问题。</div><div class="callout"><b>对比较活跃用户：</b>D0–D7 累计提单率略高，持续触达和正常路径承接更重要。不能因其绝对提单人数大，就省略与长期组相同的资格拆分。</div><div class="callout good"><b>使用边界：</b>本分析为历史观察性比较，不是随机实验。用户分组、资格与后续质量均可能受共同的风险和需求因素影响；若要确认运营动作的增量效果，应在“长期组 × 可提单资格”内随机分配触达策略。</div>
+<details><summary>附录：PGSQL 查询代码</summary><pre>/* 查询一：两类用户的提单、放款、风险与盈利汇总 */
+
+WITH all_orders AS (
+    /* 订单基础：只读取已注册于目标区间内的订单用户。 */
+    SELECT
+        o.user_id,
+        o.serial_id,
+        o.reg_date,
+        o.apply_date,
+        o.apply_time,
+        o.remit_time,
+        o.repaid_date,
+        o.repaid_time,
+        o.is_remit,
+        o.is_repaid,
+        o.loan_status_code,
+        o.remit_amt,
+        o.repaid_amt
+    FROM wangchuanliang.order_loan_f_v2_copy AS o
+    WHERE o.reg_date &gt;= DATE &#x27;2025-01-01&#x27;
+      AND o.reg_date &lt;= DATE &#x27;2026-04-01&#x27;
+),
+
+first_remit_ranked AS (
+    /* 先在全部成功放款订单中取用户首笔，不能先过滤结清订单。 */
+    SELECT
+        o.user_id,
+        o.serial_id,
+        o.reg_date,
+        o.repaid_date,
+        o.repaid_time,
+        o.is_repaid,
+        o.loan_status_code,
+        ROW_NUMBER() OVER (
+            PARTITION BY o.user_id
+            ORDER BY
+                o.remit_time ASC,
+                o.serial_id ASC
+        ) AS first_remit_rn
+    FROM all_orders AS o
+    WHERE o.is_remit = 1
+      AND o.remit_time IS NOT NULL
+),
+
+first_settled_loan AS (
+    /* 首笔成功放款已结清；is_repaid 优先，状态7为兼容判定；
+       repaid_date 仅保障能确定结清日这个时间锚点。 */
+    SELECT
+        f.user_id,
+        f.serial_id AS first_loan_serial_id,
+        f.reg_date,
+        f.repaid_date::date AS first_repaid_date
+    FROM first_remit_ranked AS f
+    WHERE f.first_remit_rn = 1
+      AND (
+            f.is_repaid = 1
+         OR f.loan_status_code = 7
+      )
+      AND f.repaid_date &gt; DATE &#x27;2000-01-01&#x27;
+),
+
+active_days AS (
+    /* event_track 存在 active_date 即代表当日进入 App；不使用 active_status。 */
+    SELECT DISTINCT
+        e.user_id,
+        e.active_date
+    FROM wangchuanliang.event_track AS e
+    INNER JOIN first_settled_loan AS f
+        ON f.user_id = e.user_id
+    WHERE e.active_date &gt; f.first_repaid_date
+      AND e.active_date &lt;= CURRENT_DATE - 30
+),
+
+activity_gaps AS (
+    /* 对每个用户的活跃日计算上次活跃日。 */
+    SELECT
+        a.user_id,
+        a.active_date,
+        LAG(a.active_date) OVER (
+            PARTITION BY a.user_id
+            ORDER BY
+                a.active_date
+        ) AS previous_active_date
+    FROM active_days AS a
+),
+
+activity_events AS (
+    /* 第一次活跃的前序基准为首笔结清日；沉默天数不包含两端日期。 */
+    SELECT
+        f.user_id,
+        g.active_date AS d0_date,
+        COALESCE(
+            g.previous_active_date,
+            f.first_repaid_date
+        ) AS previous_active_date,
+        g.active_date
+            - COALESCE(
+                g.previous_active_date,
+                f.first_repaid_date
+            )
+            - 1 AS silence_days
+    FROM first_settled_loan AS f
+    INNER JOIN activity_gaps AS g
+        ON g.user_id = f.user_id
+),
+
+long_candidates AS (
+    SELECT
+        e.user_id,
+        e.d0_date,
+        e.previous_active_date,
+        e.silence_days,
+        ROW_NUMBER() OVER (
+            PARTITION BY e.user_id
+            ORDER BY
+                e.d0_date ASC
+        ) AS rn
+    FROM activity_events AS e
+    WHERE e.silence_days &gt;= 21
+),
+
+long_anchor AS (
+    SELECT
+        l.user_id,
+        l.d0_date,
+        l.previous_active_date,
+        l.silence_days,
+        &#x27;长期不活跃回流用户&#x27;::text AS user_group
+    FROM long_candidates AS l
+    WHERE l.rn = 1
+),
+
+short_candidates AS (
+    SELECT
+        e.user_id,
+        e.d0_date,
+        e.previous_active_date,
+        e.silence_days,
+        ROW_NUMBER() OVER (
+            PARTITION BY e.user_id
+            ORDER BY
+                e.d0_date ASC
+        ) AS rn
+    FROM activity_events AS e
+    WHERE e.silence_days BETWEEN 0 AND 7
+),
+
+short_anchor AS (
+    /* 长沉默用户优先归入长期组，保证主比较组互斥。 */
+    SELECT
+        s.user_id,
+        s.d0_date,
+        s.previous_active_date,
+        s.silence_days,
+        &#x27;比较活跃用户&#x27;::text AS user_group
+    FROM short_candidates AS s
+    WHERE s.rn = 1
+      AND NOT EXISTS (
+            SELECT
+                1
+            FROM long_anchor AS l
+            WHERE l.user_id = s.user_id
+      )
+),
+
+anchors AS (
+    SELECT
+        l.user_id,
+        l.d0_date,
+        l.previous_active_date,
+        l.silence_days,
+        l.user_group
+    FROM long_anchor AS l
+
+    UNION ALL
+
+    SELECT
+        s.user_id,
+        s.d0_date,
+        s.previous_active_date,
+        s.silence_days,
+        s.user_group
+    FROM short_anchor AS s
+),
+
+credit_batch_ranked AS (
+    /* 同一秒多笔获额只保留 serial_id 最大的订单。 */
+    SELECT
+        v.user_id,
+        v.serial_id,
+        v.vir_unix,
+        v.vir_date,
+        TO_TIMESTAMP(v.vir_unix) AS vir_time,
+        v.is_pass1,
+        r.recycle_type,
+        ROW_NUMBER() OVER (
+            PARTITION BY
+                v.user_id,
+                v.vir_unix
+            ORDER BY
+                v.serial_id DESC
+        ) AS batch_rn
+    FROM wangchuanliang.order_vir_f_copy AS v
+    LEFT JOIN wangchuanliang.side_recycle_type_copy AS r
+        ON r.serial_id = v.serial_id
+    WHERE v.vir_unix IS NOT NULL
+),
+
+credit_batches AS (
+    SELECT
+        c.user_id,
+        c.serial_id,
+        c.vir_unix,
+        c.vir_date,
+        c.vir_time,
+        c.is_pass1,
+        c.recycle_type
+    FROM credit_batch_ranked AS c
+    WHERE c.batch_rn = 1
+),
+
+anchor_credit_ranked AS (
+    /* active_date 只有日粒度，故取 D0 当日及之前最近获额批次。 */
+    SELECT
+        a.user_id,
+        a.d0_date,
+        a.previous_active_date,
+        a.silence_days,
+        a.user_group,
+        b.serial_id AS credit_serial_id,
+        b.vir_time AS credit_time,
+        b.is_pass1,
+        b.recycle_type,
+        ROW_NUMBER() OVER (
+            PARTITION BY
+                a.user_id,
+                a.d0_date
+            ORDER BY
+                b.vir_unix DESC NULLS LAST,
+                b.serial_id DESC NULLS LAST
+        ) AS credit_rn
+    FROM anchors AS a
+    LEFT JOIN credit_batches AS b
+        ON b.user_id = a.user_id
+       AND b.vir_date &lt;= a.d0_date
+),
+
+anchor_credit AS (
+    SELECT
+        a.user_id,
+        a.d0_date,
+        a.previous_active_date,
+        a.silence_days,
+        a.user_group,
+        a.credit_serial_id,
+        a.credit_time,
+        a.is_pass1,
+        a.recycle_type
+    FROM anchor_credit_ranked AS a
+    WHERE a.credit_rn = 1
+),
+
+eligible_anchor AS (
+    /* 同时满足获额通过和类型可提单，才纳入主提单率分母。 */
+    SELECT
+        a.user_id,
+        a.d0_date,
+        a.previous_active_date,
+        a.silence_days,
+        a.user_group,
+        a.credit_serial_id,
+        a.credit_time,
+        a.is_pass1,
+        a.recycle_type,
+        CASE
+            WHEN a.is_pass1 = 1
+             AND a.recycle_type IN (2, 3)
+                THEN 1
+            ELSE 0
+        END AS can_apply
+    FROM anchor_credit AS a
+),
+
+matched_order AS (
+    /* 只将与 D0 最近获额订单 serial_id 完全一致的提单/放款结果归因。 */
+    SELECT
+        e.user_id,
+        e.d0_date,
+        e.user_group,
+        e.silence_days,
+        e.credit_serial_id,
+        e.credit_time,
+        e.is_pass1,
+        e.recycle_type,
+        e.can_apply,
+        o.apply_date,
+        o.apply_time,
+        o.is_remit,
+        o.loan_status_code,
+        o.remit_amt,
+        o.repaid_amt
+    FROM eligible_anchor AS e
+    LEFT JOIN all_orders AS o
+        ON o.user_id = e.user_id
+       AND o.serial_id = e.credit_serial_id
+       AND o.apply_date &gt;= e.d0_date
+       AND o.apply_date &lt;= e.d0_date + 30
+),
+
+d0_behavior AS (
+    /* D0 当天行为强度，仅作解释变量。 */
+    SELECT
+        a.user_id,
+        SUM(COALESCE(e.newpage, 0)) AS newpage_cnt,
+        SUM(COALESCE(e.amount_selection, 0)) AS amount_selection_cnt,
+        SUM(COALESCE(e.term_selection, 0)) AS term_selection_cnt,
+        SUM(COALESCE(e.contract_newdetails, 0)) AS contract_view_cnt,
+        SUM(COALESCE(e.plan_newdetails, 0)) AS plan_view_cnt,
+        SUM(COALESCE(e.newconfirm, 0)) AS confirm_cnt,
+        SUM(COALESCE(e.active_duration, 0)) AS active_duration,
+        SUM(COALESCE(e.apply_duration, 0)) AS apply_duration,
+        SUM(COALESCE(e.non_apply_duration, 0)) AS non_apply_duration
+    FROM anchors AS a
+    LEFT JOIN wangchuanliang.event_track AS e
+        ON e.user_id = a.user_id
+       AND e.active_date = a.d0_date
+    GROUP BY
+        a.user_id
+)
+
+
+
+SELECT
+    m.user_group,
+    COUNT(DISTINCT m.user_id) AS reactivated_users,
+    COUNT(DISTINCT CASE
+        WHEN m.can_apply = 1 THEN m.user_id
+    END) AS can_apply_users,
+    COUNT(DISTINCT CASE
+        WHEN m.can_apply = 0 THEN m.user_id
+    END) AS cannot_apply_users,
+    AVG(m.silence_days)::numeric AS avg_silence_days,
+    COUNT(DISTINCT CASE
+        WHEN m.can_apply = 1
+         AND m.apply_date = m.d0_date THEN m.user_id
+    END) AS d0_apply_users,
+    COUNT(DISTINCT CASE
+        WHEN m.can_apply = 1
+         AND m.apply_date = m.d0_date + 1 THEN m.user_id
+    END) AS d1_apply_users,
+    COUNT(DISTINCT CASE
+        WHEN m.can_apply = 1
+         AND m.apply_date = m.d0_date + 2 THEN m.user_id
+    END) AS d2_apply_users,
+    COUNT(DISTINCT CASE
+        WHEN m.can_apply = 1
+         AND m.apply_date = m.d0_date + 3 THEN m.user_id
+    END) AS d3_apply_users,
+    COUNT(DISTINCT CASE
+        WHEN m.can_apply = 1
+         AND m.apply_date &lt;= m.d0_date + 7 THEN m.user_id
+    END) AS d7_apply_users,
+    COUNT(DISTINCT CASE
+        WHEN m.can_apply = 1
+         AND m.apply_date BETWEEN m.d0_date + 8 AND m.d0_date + 30 THEN m.user_id
+    END) AS d8_30_apply_users,
+    COUNT(DISTINCT CASE
+        WHEN m.can_apply = 1
+         AND m.apply_date &lt;= m.d0_date + 30 THEN m.user_id
+    END) AS d30_apply_users,
+    COUNT(DISTINCT CASE
+        WHEN m.can_apply = 1
+         AND m.apply_date IS NOT NULL
+         AND m.is_remit = 1 THEN m.user_id
+    END) AS remit_users,
+    COUNT(DISTINCT CASE
+        WHEN m.can_apply = 1
+         AND m.apply_date IS NOT NULL
+         AND m.is_remit = 1 THEN m.credit_serial_id
+    END) AS remit_orders,
+    COUNT(DISTINCT CASE
+        WHEN m.can_apply = 1
+         AND m.apply_date IS NOT NULL
+         AND m.is_remit = 1
+         AND m.loan_status_code = 8 THEN m.credit_serial_id
+    END) AS overdue_orders,
+    SUM(CASE
+        WHEN m.can_apply = 1
+         AND m.apply_date IS NOT NULL
+         AND m.is_remit = 1
+         AND m.loan_status_code IN (7, 8) THEN m.repaid_amt
+        ELSE 0
+    END) AS profit_repaid_amt,
+    SUM(CASE
+        WHEN m.can_apply = 1
+         AND m.apply_date IS NOT NULL
+         AND m.is_remit = 1
+         AND m.loan_status_code IN (7, 8) THEN m.remit_amt
+        ELSE 0
+    END) AS profit_remit_amt,
+    SUM(CASE
+        WHEN m.can_apply = 1
+         AND m.apply_date IS NOT NULL
+         AND m.is_remit = 1
+         AND m.loan_status_code = 8 THEN m.repaid_amt
+        ELSE 0
+    END) AS overdue_repaid_amt,
+    SUM(CASE
+        WHEN m.can_apply = 1
+         AND m.apply_date IS NOT NULL
+         AND m.is_remit = 1
+         AND m.loan_status_code = 8 THEN m.remit_amt
+        ELSE 0
+    END) AS overdue_remit_amt,
+    AVG(CASE
+        WHEN m.can_apply = 1 THEN COALESCE(b.newpage_cnt, 0)
+    END)::numeric AS avg_newpage_cnt,
+    AVG(CASE
+        WHEN m.can_apply = 1 THEN COALESCE(b.amount_selection_cnt, 0)
+    END)::numeric AS avg_amount_selection_cnt,
+    AVG(CASE
+        WHEN m.can_apply = 1 THEN COALESCE(b.term_selection_cnt, 0)
+    END)::numeric AS avg_term_selection_cnt,
+    AVG(CASE
+        WHEN m.can_apply = 1 THEN COALESCE(b.contract_view_cnt, 0)
+    END)::numeric AS avg_contract_view_cnt,
+    AVG(CASE
+        WHEN m.can_apply = 1 THEN COALESCE(b.plan_view_cnt, 0)
+    END)::numeric AS avg_plan_view_cnt,
+    AVG(CASE
+        WHEN m.can_apply = 1 THEN COALESCE(b.confirm_cnt, 0)
+    END)::numeric AS avg_confirm_cnt,
+    AVG(CASE
+        WHEN m.can_apply = 1 THEN COALESCE(b.active_duration, 0)
+    END)::numeric AS avg_active_duration,
+    AVG(CASE
+        WHEN m.can_apply = 1 THEN COALESCE(b.apply_duration, 0)
+    END)::numeric AS avg_apply_duration,
+    AVG(CASE
+        WHEN m.can_apply = 1 THEN COALESCE(b.non_apply_duration, 0)
+    END)::numeric AS avg_non_apply_duration
+FROM matched_order AS m
+LEFT JOIN d0_behavior AS b
+    ON b.user_id = m.user_id
+GROUP BY
+    m.user_group
+ORDER BY
+    CASE m.user_group
+        WHEN &#x27;长期不活跃回流用户&#x27; THEN 1
+        WHEN &#x27;比较活跃用户&#x27; THEN 2
+    END;
+
+
+/* 查询二：可提单用户中，提单与未提单用户的 D0 行为差异 */
+
+WITH all_orders AS (
+    /* 订单基础：只读取已注册于目标区间内的订单用户。 */
+    SELECT
+        o.user_id,
+        o.serial_id,
+        o.reg_date,
+        o.apply_date,
+        o.apply_time,
+        o.remit_time,
+        o.repaid_date,
+        o.repaid_time,
+        o.is_remit,
+        o.is_repaid,
+        o.loan_status_code,
+        o.remit_amt,
+        o.repaid_amt
+    FROM wangchuanliang.order_loan_f_v2_copy AS o
+    WHERE o.reg_date &gt;= DATE &#x27;2025-01-01&#x27;
+      AND o.reg_date &lt;= DATE &#x27;2026-04-01&#x27;
+),
+
+first_remit_ranked AS (
+    /* 先在全部成功放款订单中取用户首笔，不能先过滤结清订单。 */
+    SELECT
+        o.user_id,
+        o.serial_id,
+        o.reg_date,
+        o.repaid_date,
+        o.repaid_time,
+        o.is_repaid,
+        o.loan_status_code,
+        ROW_NUMBER() OVER (
+            PARTITION BY o.user_id
+            ORDER BY
+                o.remit_time ASC,
+                o.serial_id ASC
+        ) AS first_remit_rn
+    FROM all_orders AS o
+    WHERE o.is_remit = 1
+      AND o.remit_time IS NOT NULL
+),
+
+first_settled_loan AS (
+    /* 首笔成功放款已结清；is_repaid 优先，状态7为兼容判定；
+       repaid_date 仅保障能确定结清日这个时间锚点。 */
+    SELECT
+        f.user_id,
+        f.serial_id AS first_loan_serial_id,
+        f.reg_date,
+        f.repaid_date::date AS first_repaid_date
+    FROM first_remit_ranked AS f
+    WHERE f.first_remit_rn = 1
+      AND (
+            f.is_repaid = 1
+         OR f.loan_status_code = 7
+      )
+      AND f.repaid_date &gt; DATE &#x27;2000-01-01&#x27;
+),
+
+active_days AS (
+    /* event_track 存在 active_date 即代表当日进入 App；不使用 active_status。 */
+    SELECT DISTINCT
+        e.user_id,
+        e.active_date
+    FROM wangchuanliang.event_track AS e
+    INNER JOIN first_settled_loan AS f
+        ON f.user_id = e.user_id
+    WHERE e.active_date &gt; f.first_repaid_date
+      AND e.active_date &lt;= CURRENT_DATE - 30
+),
+
+activity_gaps AS (
+    /* 对每个用户的活跃日计算上次活跃日。 */
+    SELECT
+        a.user_id,
+        a.active_date,
+        LAG(a.active_date) OVER (
+            PARTITION BY a.user_id
+            ORDER BY
+                a.active_date
+        ) AS previous_active_date
+    FROM active_days AS a
+),
+
+activity_events AS (
+    /* 第一次活跃的前序基准为首笔结清日；沉默天数不包含两端日期。 */
+    SELECT
+        f.user_id,
+        g.active_date AS d0_date,
+        COALESCE(
+            g.previous_active_date,
+            f.first_repaid_date
+        ) AS previous_active_date,
+        g.active_date
+            - COALESCE(
+                g.previous_active_date,
+                f.first_repaid_date
+            )
+            - 1 AS silence_days
+    FROM first_settled_loan AS f
+    INNER JOIN activity_gaps AS g
+        ON g.user_id = f.user_id
+),
+
+long_candidates AS (
+    SELECT
+        e.user_id,
+        e.d0_date,
+        e.previous_active_date,
+        e.silence_days,
+        ROW_NUMBER() OVER (
+            PARTITION BY e.user_id
+            ORDER BY
+                e.d0_date ASC
+        ) AS rn
+    FROM activity_events AS e
+    WHERE e.silence_days &gt;= 21
+),
+
+long_anchor AS (
+    SELECT
+        l.user_id,
+        l.d0_date,
+        l.previous_active_date,
+        l.silence_days,
+        &#x27;长期不活跃回流用户&#x27;::text AS user_group
+    FROM long_candidates AS l
+    WHERE l.rn = 1
+),
+
+short_candidates AS (
+    SELECT
+        e.user_id,
+        e.d0_date,
+        e.previous_active_date,
+        e.silence_days,
+        ROW_NUMBER() OVER (
+            PARTITION BY e.user_id
+            ORDER BY
+                e.d0_date ASC
+        ) AS rn
+    FROM activity_events AS e
+    WHERE e.silence_days BETWEEN 0 AND 7
+),
+
+short_anchor AS (
+    /* 长沉默用户优先归入长期组，保证主比较组互斥。 */
+    SELECT
+        s.user_id,
+        s.d0_date,
+        s.previous_active_date,
+        s.silence_days,
+        &#x27;比较活跃用户&#x27;::text AS user_group
+    FROM short_candidates AS s
+    WHERE s.rn = 1
+      AND NOT EXISTS (
+            SELECT
+                1
+            FROM long_anchor AS l
+            WHERE l.user_id = s.user_id
+      )
+),
+
+anchors AS (
+    SELECT
+        l.user_id,
+        l.d0_date,
+        l.previous_active_date,
+        l.silence_days,
+        l.user_group
+    FROM long_anchor AS l
+
+    UNION ALL
+
+    SELECT
+        s.user_id,
+        s.d0_date,
+        s.previous_active_date,
+        s.silence_days,
+        s.user_group
+    FROM short_anchor AS s
+),
+
+credit_batch_ranked AS (
+    /* 同一秒多笔获额只保留 serial_id 最大的订单。 */
+    SELECT
+        v.user_id,
+        v.serial_id,
+        v.vir_unix,
+        v.vir_date,
+        TO_TIMESTAMP(v.vir_unix) AS vir_time,
+        v.is_pass1,
+        r.recycle_type,
+        ROW_NUMBER() OVER (
+            PARTITION BY
+                v.user_id,
+                v.vir_unix
+            ORDER BY
+                v.serial_id DESC
+        ) AS batch_rn
+    FROM wangchuanliang.order_vir_f_copy AS v
+    LEFT JOIN wangchuanliang.side_recycle_type_copy AS r
+        ON r.serial_id = v.serial_id
+    WHERE v.vir_unix IS NOT NULL
+),
+
+credit_batches AS (
+    SELECT
+        c.user_id,
+        c.serial_id,
+        c.vir_unix,
+        c.vir_date,
+        c.vir_time,
+        c.is_pass1,
+        c.recycle_type
+    FROM credit_batch_ranked AS c
+    WHERE c.batch_rn = 1
+),
+
+anchor_credit_ranked AS (
+    /* active_date 只有日粒度，故取 D0 当日及之前最近获额批次。 */
+    SELECT
+        a.user_id,
+        a.d0_date,
+        a.previous_active_date,
+        a.silence_days,
+        a.user_group,
+        b.serial_id AS credit_serial_id,
+        b.vir_time AS credit_time,
+        b.is_pass1,
+        b.recycle_type,
+        ROW_NUMBER() OVER (
+            PARTITION BY
+                a.user_id,
+                a.d0_date
+            ORDER BY
+                b.vir_unix DESC NULLS LAST,
+                b.serial_id DESC NULLS LAST
+        ) AS credit_rn
+    FROM anchors AS a
+    LEFT JOIN credit_batches AS b
+        ON b.user_id = a.user_id
+       AND b.vir_date &lt;= a.d0_date
+),
+
+anchor_credit AS (
+    SELECT
+        a.user_id,
+        a.d0_date,
+        a.previous_active_date,
+        a.silence_days,
+        a.user_group,
+        a.credit_serial_id,
+        a.credit_time,
+        a.is_pass1,
+        a.recycle_type
+    FROM anchor_credit_ranked AS a
+    WHERE a.credit_rn = 1
+),
+
+eligible_anchor AS (
+    /* 同时满足获额通过和类型可提单，才纳入主提单率分母。 */
+    SELECT
+        a.user_id,
+        a.d0_date,
+        a.previous_active_date,
+        a.silence_days,
+        a.user_group,
+        a.credit_serial_id,
+        a.credit_time,
+        a.is_pass1,
+        a.recycle_type,
+        CASE
+            WHEN a.is_pass1 = 1
+             AND a.recycle_type IN (2, 3)
+                THEN 1
+            ELSE 0
+        END AS can_apply
+    FROM anchor_credit AS a
+),
+
+matched_order AS (
+    /* 只将与 D0 最近获额订单 serial_id 完全一致的提单/放款结果归因。 */
+    SELECT
+        e.user_id,
+        e.d0_date,
+        e.user_group,
+        e.silence_days,
+        e.credit_serial_id,
+        e.credit_time,
+        e.is_pass1,
+        e.recycle_type,
+        e.can_apply,
+        o.apply_date,
+        o.apply_time,
+        o.is_remit,
+        o.loan_status_code,
+        o.remit_amt,
+        o.repaid_amt
+    FROM eligible_anchor AS e
+    LEFT JOIN all_orders AS o
+        ON o.user_id = e.user_id
+       AND o.serial_id = e.credit_serial_id
+       AND o.apply_date &gt;= e.d0_date
+       AND o.apply_date &lt;= e.d0_date + 30
+),
+
+d0_behavior AS (
+    /* D0 当天行为强度，仅作解释变量。 */
+    SELECT
+        a.user_id,
+        SUM(COALESCE(e.newpage, 0)) AS newpage_cnt,
+        SUM(COALESCE(e.amount_selection, 0)) AS amount_selection_cnt,
+        SUM(COALESCE(e.term_selection, 0)) AS term_selection_cnt,
+        SUM(COALESCE(e.contract_newdetails, 0)) AS contract_view_cnt,
+        SUM(COALESCE(e.plan_newdetails, 0)) AS plan_view_cnt,
+        SUM(COALESCE(e.newconfirm, 0)) AS confirm_cnt,
+        SUM(COALESCE(e.active_duration, 0)) AS active_duration,
+        SUM(COALESCE(e.apply_duration, 0)) AS apply_duration,
+        SUM(COALESCE(e.non_apply_duration, 0)) AS non_apply_duration
+    FROM anchors AS a
+    LEFT JOIN wangchuanliang.event_track AS e
+        ON e.user_id = a.user_id
+       AND e.active_date = a.d0_date
+    GROUP BY
+        a.user_id
+)
+
+
+
+SELECT
+    m.user_group,
+    CASE
+        WHEN m.apply_date IS NOT NULL
+            THEN &#x27;D0-D30提单用户&#x27;
+        ELSE &#x27;D0-D30未提单用户&#x27;
+    END AS apply_group,
+    COUNT(DISTINCT m.user_id) AS user_cnt,
+    AVG(COALESCE(b.newpage_cnt, 0))::numeric AS avg_newpage_cnt,
+    AVG(COALESCE(b.amount_selection_cnt, 0))::numeric AS avg_amount_selection_cnt,
+    AVG(COALESCE(b.term_selection_cnt, 0))::numeric AS avg_term_selection_cnt,
+    AVG(COALESCE(b.contract_view_cnt, 0))::numeric AS avg_contract_view_cnt,
+    AVG(COALESCE(b.plan_view_cnt, 0))::numeric AS avg_plan_view_cnt,
+    AVG(COALESCE(b.confirm_cnt, 0))::numeric AS avg_confirm_cnt,
+    AVG(COALESCE(b.active_duration, 0))::numeric AS avg_active_duration,
+    AVG(COALESCE(b.apply_duration, 0))::numeric AS avg_apply_duration,
+    AVG(COALESCE(b.non_apply_duration, 0))::numeric AS avg_non_apply_duration
+FROM matched_order AS m
+LEFT JOIN d0_behavior AS b
+    ON b.user_id = m.user_id
+WHERE m.can_apply = 1
+GROUP BY
+    m.user_group,
+    CASE
+        WHEN m.apply_date IS NOT NULL
+            THEN &#x27;D0-D30提单用户&#x27;
+        ELSE &#x27;D0-D30未提单用户&#x27;
+    END
+ORDER BY
+    CASE m.user_group
+        WHEN &#x27;长期不活跃回流用户&#x27; THEN 1
+        WHEN &#x27;比较活跃用户&#x27; THEN 2
+    END,
+    apply_group;
+</pre></details></main></body></html>
