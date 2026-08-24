@@ -1,0 +1,1177 @@
+<!doctype html>
+<html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>T0 用户循环贷与非循环贷分层当天提单率分析报告</title><script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.8/dist/chart.umd.min.js"></script>
+<style>
+:root{--bg:#071b2f;--p:#0c2944;--line:#2a5c7e;--text:#eff8ff;--muted:#aac5da;--cy:#43c7e7;--gr:#64dcae;--am:#ffc26b;--pk:#f68ab0}*{box-sizing:border-box}body{margin:0;background:linear-gradient(135deg,#06192b,#0b2c47 55%,#071a2d);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei",sans-serif}.wrap{max-width:1450px;margin:auto;padding:32px 38px 76px}.hero{text-align:center;padding:38px 15px 28px;border-bottom:1px solid var(--line)}.kicker{color:var(--cy);font-size:14px;letter-spacing:2px;font-weight:700}.hero h1{font-size:37px;line-height:1.25;margin:10px 0}.hero p,.desc,.sub{color:var(--muted);margin:0}.tag{display:inline-block;margin-top:15px;border:1px solid #33779e;border-radius:99px;padding:5px 12px;font-size:13px;color:#ccecff;background:#0c304e}h2{font-size:26px;margin:50px 0 8px;line-height:1.35}.grid{display:grid;gap:18px}.g2{grid-template-columns:repeat(2,minmax(0,1fr))}.g4{grid-template-columns:repeat(4,minmax(0,1fr))}.card,.chart,.note{background:rgba(10,41,68,.95);border:1px solid var(--line);border-radius:16px;padding:19px;box-shadow:0 10px 28px rgba(0,0,0,.13)}.label{color:var(--muted);font-size:13px}.num{font-size:30px;font-weight:850;line-height:1.2;margin:5px 0}.cyan{color:var(--cy)}.green{color:var(--gr)}.amber{color:var(--am)}.pink{color:var(--pk)}.chart h3{font-size:17px;margin:0 0 4px}.chart p{font-size:13px;color:var(--muted);margin:0 0 14px}.box{height:330px;position:relative}.short{height:285px}.layer{position:relative;margin:18px 0}.layer-row{display:grid;grid-template-columns:155px 1fr;gap:14px;align-items:stretch;margin:12px 0}.layer-name{display:flex;align-items:center;justify-content:center;text-align:center;border:1px solid var(--line);border-radius:12px;background:#103651;font-weight:800}.layer-body{border:1px solid var(--line);border-radius:12px;padding:14px 17px;background:#0a2a45}.layer-body strong{font-size:18px}.layer-body span{display:block;color:var(--muted);font-size:13px;margin-top:3px}.insight{display:grid;grid-template-columns:54px 1fr;gap:13px;padding:15px 0;border-bottom:1px dashed #2d6081}.insight:last-child{border:0}.idx{font-size:23px;color:var(--cy);font-weight:850}.insight h3{font-size:17px;margin:0 0 4px}.insight p{margin:0;color:#c9dce9;font-size:14px;line-height:1.65}.callout{border-left:4px solid var(--am);padding:13px 16px;background:#102f49;border-radius:0 10px 10px 0;margin:16px 0;color:#d4e8f5}.table{overflow:auto;border:1px solid var(--line);border-radius:14px;background:#092640;margin-top:18px}table{width:100%;border-collapse:collapse;min-width:1070px;font-size:13px}caption{text-align:left;padding:15px;background:#0d2e4a;font-size:16px;font-weight:750}th{background:#123a58;color:#c8eafb;white-space:nowrap}th,td{padding:10px 12px;border-bottom:1px solid #255574;text-align:right}th:first-child,td:first-child{text-align:left}.total{background:#164b67;font-weight:850}.total td{border-top:2px solid var(--cy)}.foot{margin-top:40px;border-top:1px solid var(--line);padding-top:18px;color:var(--muted);font-size:12px}@media(max-width:850px){.wrap{padding:20px 15px}.hero h1{font-size:28px}.g2,.g4{grid-template-columns:1fr}.layer-row{grid-template-columns:1fr}.layer-name{padding:9px}.box{height:290px}}
+details{margin-top:20px;border:1px solid var(--line);border-radius:14px;background:#092640}summary{cursor:pointer;padding:17px 20px;font-size:17px;font-weight:750;color:#e5f5ff}pre{margin:0;padding:0 20px 24px;overflow:auto;color:#d7edf9;font:12px/1.7 ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;white-space:pre}
+</style></head><body><main class="wrap">
+<header class="hero"><div class="kicker">T0 用户结构与转化专项分析</div><h1>T0 用户循环贷与非循环贷<br>分层当天提单率分析报告</h1><p>统计期间：2026 年 1 月 1 日至 2026 年 8 月 15 日　·　报告生成时间：2026 年 8 月 24 日</p><span class="tag">先看全量 T0，再逐层下钻至“多在途结清转 T0”路径</span></header>
+
+<h2>核心结论</h2><p class="desc">所有结论均使用相同的 T0 时点口径：结清瞬间没有其他在途订单、同日获额通过且获额时间晚于结清时间；“当天提单”指结清后在同一自然日发生新申请。</p>
+<section class="grid g4" style="margin-top:18px"><article class="card"><div class="label">全量 T0 样本</div><div class="num cyan">137,716</div><div class="sub">用户日期样本；每个用户×结清日计一次</div></article><article class="card"><div class="label">循环贷 T0 用户占比</div><div class="num green">36.72%</div><div class="sub">50,571 个循环贷用户日期样本</div></article><article class="card"><div class="label">非循环贷 T0 用户占比</div><div class="num amber">63.28%</div><div class="sub">87,145 个非循环贷用户日期样本</div></article><article class="card"><div class="label">当天提单率差异</div><div class="num pink">+3.09pp</div><div class="sub">循环贷 48.42% − 非循环贷 45.33%</div></article></section>
+
+<h2>一、三层样本关系：总量与路径子集</h2><p class="desc">第五部分中出现的 16,447、15,039 不是全体循环贷用户数，而是逐层筛选后的子集。</p>
+<section class="note"><div class="layer"><div class="layer-row"><div class="layer-name">第一层<br>全量 T0</div><div class="layer-body"><strong>137,716 个 T0 用户日期样本</strong><span>循环贷用户 50,571（36.72%）；非循环贷用户 87,145（63.28%）。</span></div></div><div class="layer-row"><div class="layer-name">第二层<br>原始路径</div><div class="layer-body"><strong>16,447 个“多在途结清后转 T0”循环贷样本</strong><span>占第一层循环贷 T0 的 32.52%。最终订单 B 在此前订单 A 结清时已在途，且 A 至 B 之间没有新增提单。</span></div></div><div class="layer-row"><div class="layer-name">第三层<br>严格路径</div><div class="layer-body"><strong>15,039 个最终结清订单也为循环贷的样本</strong><span>占第二层原始路径 91.44%，占第一层循环贷 T0 的 29.74%。</span></div></div></div></section>
+
+<h2>二、第一层：循环贷与非循环贷 T0 用户对比</h2><p class="desc">第一层回答“全部 T0 用户由谁构成、谁更容易在当天继续提单”。</p>
+<section class="grid g2"><article class="chart"><h3>T0 用户构成与当天提单人数</h3><p>非循环贷用户数量更大；两类用户均显示当天提单人数。</p><div class="box short"><canvas id="count"></canvas></div></article><article class="chart"><h3>两类用户整体当天提单率</h3><p>循环贷用户整体高 3.09 个百分点。</p><div class="box short"><canvas id="overall"></canvas></div></article></section>
+<div class="callout"><strong>结论：</strong>全量 T0 中，非循环贷用户是主体（63.28%）；但循环贷用户当天提单率为 <strong>48.42%</strong>，高于非循环贷用户的 <strong>45.33%</strong>。这说明循环贷用户规模并非最大，但在已进入 T0 条件后，其当天继续借款的倾向更强。</div>
+
+<h2>三、当天提单订单的利率与额度使用率</h2><p class="desc">仅在第一层当天提单订单中计算。利率只纳入成功放款且放款金额大于 0 的订单；额度使用率只纳入提单金额、对应获额金额均不低于 200 的订单。两项均按金额加权汇总。</p>
+<section class="grid g2"><article class="chart"><h3>当天提单成功放款订单的加权利率</h3><p>循环贷与非循环贷的整体利率接近，差异为 0.28 个百分点。</p><div class="box short"><canvas id="interestRate"></canvas></div></article><article class="chart"><h3>当天提单订单的加权额度使用率</h3><p>循环贷用户为 90.13%，低于非循环贷用户的 91.98%。</p><div class="box short"><canvas id="utilizationRate"></canvas></div></article></section>
+<section class="grid g2" style="margin-top:18px"><article class="chart"><h3>加权利率月度趋势</h3><p>按 T0 结清月份统计；8 月仅含 1–15 日。</p><div class="box"><canvas id="interestTrend"></canvas></div></article><article class="chart"><h3>加权额度使用率月度趋势</h3><p>按 T0 结清月份统计；8 月仅含 1–15 日。</p><div class="box"><canvas id="utilizationTrend"></canvas></div></article></section>
+<section class="note" style="margin-top:18px"><div class="insight"><div class="idx">01</div><div><h3>循环贷与非循环贷的利率结构基本接近。</h3><p>循环贷用户当天提单后成功放款订单的加权利率为 <strong>52.91%</strong>（24,035 笔）；非循环贷用户为 <strong>52.63%</strong>（38,917 笔）。差异仅 <strong>0.28pp</strong>，不能据此认定两类用户在定价上存在显著差异。</p></div></div><div class="insight"><div class="idx">02</div><div><h3>循环贷用户当天提单率更高，但额度使用率略低。</h3><p>循环贷用户当天提单率比非循环贷高 <strong>3.09pp</strong>（48.42% vs 45.33%），但其加权额度使用率低 <strong>1.85pp</strong>（90.13% vs 91.98%）。这意味着循环贷用户更容易在当天继续申请，但平均申请金额相对可用额度的占用程度略低。</p></div></div></section>
+
+<h2>四、结清订单利率分组：五档用户的当天提单率变化</h2><p class="desc">按 T0 当天刚结清订单的实际利率分组，即 <code>(pre_amt + post_amt) / remit_amt</code>。利率在当天是否再次提单前已确定，因此五组用户均可进入提单率分母；8 月仅含 1–15 日。</p>
+<section class="grid g2"><article class="chart"><h3>五档利率用户的月度当天提单率</h3><p>观察不同历史定价用户在结清当日再次申请的变化。</p><div class="box"><canvas id="rateBucketTrend"></canvas></div></article><article class="chart"><h3>五档利率用户的月度 T0 样本量</h3><p>60% 以上与 40%–50% 两档是主要样本来源。</p><div class="box"><canvas id="rateBucketCount"></canvas></div></article></section>
+<p class="desc" style="margin-top:18px">按用户类型拆分：循环贷用户与非循环贷用户均使用各自的原始分子、分母计算提单率。</p>
+<section class="grid g2" style="margin-top:12px"><article class="chart"><h3>循环贷用户：五档利率月度当天提单率</h3><p>循环贷用户在 40%–60% 档的月度变化。</p><div class="box"><canvas id="cycleRateBucketTrend"></canvas></div></article><article class="chart"><h3>非循环贷用户：五档利率月度当天提单率</h3><p>非循环贷用户在不同利率档的月度变化。</p><div class="box"><canvas id="noncycleRateBucketTrend"></canvas></div></article></section>
+<section class="note" style="margin-top:18px"><div class="insight"><div class="idx">01</div><div><h3>40%–50% 利率用户的整体当天提单率最高。</h3><p>该组共有 <strong>53,135</strong> 个 T0 用户日期样本，占全量 38.58%，当天提单率为 <strong>48.11%</strong>；高于 60% 以上组的 <strong>44.97%</strong>。</p></div></div><div class="insight"><div class="idx">02</div><div><h3>60% 以上用户规模最大，后期提单率更具韧性。</h3><p>60% 以上组有 <strong>55,822</strong> 个样本，占全量 40.53%。其 1 月至 7 月提单率由 45.26% 降至 43.42%，下降 1.84pp；同期 40%–50% 组下降 14.56pp（54.44% → 39.88%）。</p></div></div><div class="insight"><div class="idx">03</div><div><h3>30% 以下组的转化最低，但样本量很小。</h3><p>30% 以下组总体提单率为 <strong>36.83%</strong>，但仅 1,450 个样本、占全量 1.05%，更适合持续观察，不宜单独据此推导整体策略。</p></div></div></section>
+
+<h2>五、当天提单订单期数分布</h2><p class="desc">按每个 T0 用户日期样本在结清后当天的首次提单订单统计期数；同一用户当天多笔提单仅保留最早一笔，若时间相同则取订单号最大的订单。柱体为月内各期数订单数的累计堆叠。</p>
+<section class="chart"><h3>1–8 月当天提单订单期数分布</h3><p>8 月仅含 1–15 日；不同颜色代表该月的 1、2、3、4 期提单订单数量。</p><div class="box"><canvas id="termDistribution"></canvas></div></section>
+<p class="desc" style="margin-top:18px">按用户类型拆分：两张图均为各期数订单量的累计堆叠，保留全量图用于观察总体结构。</p>
+<section class="grid g2" style="margin-top:12px"><article class="chart"><h3>循环贷用户：当天提单订单期数分布</h3><p>循环贷用户的期数结构。</p><div class="box"><canvas id="cycleTermDistribution"></canvas></div></article><article class="chart"><h3>非循环贷用户：当天提单订单期数分布</h3><p>非循环贷用户的期数结构。</p><div class="box"><canvas id="noncycleTermDistribution"></canvas></div></article></section>
+<div class="callout"><strong>结构概览：</strong>期数分布由 1–2 月以 2 期订单为主，逐步转向 5–8 月以 3 期订单为主；4 期订单规模相对稳定后回落。该图展示的是提单订单数量结构，不代表各期数的提单率或放款率。</div>
+
+<h2>六、不同期数订单的月度利率变化</h2><p class="desc">仅统计上述当天首次提单后成功放款、且放款金额大于 0 的续贷订单。利率按 <code>SUM(pre_amt + post_amt) / SUM(remit_amt)</code> 加权计算；8 月仅含 1–15 日。</p>
+<section class="chart"><h3>1、2、3、4 期提单订单的加权利率趋势</h3><p>同一期数内按订单金额加权，而非简单平均订单利率。</p><div class="box"><canvas id="termInterestTrend"></canvas></div></section>
+<p class="desc" style="margin-top:18px">按用户类型拆分：两类用户的利率均使用各期数成功放款订单的金额加权口径。</p>
+<section class="grid g2" style="margin-top:12px"><article class="chart"><h3>循环贷用户：不同期数订单加权利率</h3><p>循环贷用户的期数利率变化。</p><div class="box"><canvas id="cycleTermInterestTrend"></canvas></div></article><article class="chart"><h3>非循环贷用户：不同期数订单加权利率</h3><p>非循环贷用户的期数利率变化。</p><div class="box"><canvas id="noncycleTermInterestTrend"></canvas></div></article></section>
+<div class="callout"><strong>趋势解读：</strong>1 期订单利率始终最高，1–8 月在 61.90%–65.62% 之间；2 期订单最低，在 42.58%–48.57% 之间。3、4 期订单在 5 月后整体上行，6–8 月分别维持在约 62% 与 58%–61% 的区间。</div>
+
+<h2>七、第一层月度趋势：两类用户的提单率变化</h2><p class="desc">每月内按照 T0 结清日归属统计。8 月仅含 1–15 日，保留用于即时观察，不与完整月份做严格环比。</p>
+<section class="grid g2"><article class="chart"><h3>循环贷与非循环贷当天提单率</h3><p>从 3 月开始循环贷用户持续领先，7 月差距扩大至 8.43 个百分点。</p><div class="box"><canvas id="rate"></canvas></div></article><article class="chart"><h3>循环贷用户在当月 T0 中的占比</h3><p>循环贷用户的 T0 构成在 5–7 月约为 37%–40%；8 月为半月样本。</p><div class="box"><canvas id="share"></canvas></div></article></section>
+<section class="note"><div class="insight"><div class="idx">01</div><div><h3>年初两类用户提单率接近，之后循环贷用户的优势扩大。</h3><p>1 月循环贷与非循环贷分别为 52.40%、53.08%，循环贷略低 0.68pp；7 月则为 46.96%、38.53%，循环贷高 8.43pp。该结果是描述性对比，尚不能仅凭本表归因于产品或运营动作。</p></div></div><div class="insight"><div class="idx">02</div><div><h3>两类用户均呈下降趋势，但非循环贷下降更明显。</h3><p>从 1 月到 7 月，循环贷提单率下降 5.44pp（52.40% → 46.96%），非循环贷下降 14.55pp（53.08% → 38.53%）。因此 7 月的差距扩大主要来自非循环贷当日转化走弱。</p></div></div></section>
+
+<h2>八、第二层、第三层：循环贷用户的多在途结清转 T0 路径</h2><p class="desc">此处只观察循环贷用户中的特定业务旅程，不与第一层全量循环贷 T0 总量混用。</p>
+<section class="grid g2"><article class="chart"><h3>第二、三层在循环贷 T0 中的覆盖</h3><p>严格路径几乎覆盖原始路径，说明绝大多数路径终点的最终订单也是循环贷。</p><div class="box short"><canvas id="layerShare"></canvas></div></article><article class="chart"><h3>路径样本的当天提单率</h3><p>严格限定最终订单类型后，整体提单率仅下降 0.54pp。</p><div class="box short"><canvas id="pathRate"></canvas></div></article></section>
+<section class="grid g2" style="margin-top:18px"><article class="chart"><h3>第二层与第三层月度样本量</h3><p>7 月路径样本量较高；8 月为半月数据。</p><div class="box"><canvas id="pathCount"></canvas></div></article><article class="chart"><h3>第二层与第三层月度当天提单率</h3><p>两条路径走势接近，路径收窄未改变主要趋势。</p><div class="box"><canvas id="pathTrend"></canvas></div></article></section>
+<div class="callout"><strong>结论：</strong>第二层原始路径的当天提单率为 <strong>43.47%</strong>，第三层严格路径为 <strong>42.93%</strong>；差异仅 0.54pp。严格路径覆盖原始路径的 91.44%，因此原始路径并非由少数“最终订单非循环贷”的样本驱动。</div>
+
+<h2>九、月度可核对数据</h2><p class="desc">第一张表为全量 T0 的循环贷/非循环贷拆分；第二张表为循环贷用户的第二、三层路径结果；第三张表为当天提单订单的利率与额度使用率；第四张表为五档结清订单利率下的当天提单率。</p>
+<div class="table"><table><caption>第一层：全量 T0 用户按循环贷属性拆分</caption><thead><tr><th>结清月份</th><th>循环贷用户数</th><th>循环贷占比</th><th>循环贷当天提单数</th><th>循环贷提单率</th><th>非循环贷用户数</th><th>非循环贷占比</th><th>非循环贷当天提单数</th><th>非循环贷提单率</th></tr></thead><tbody id="table1"></tbody></table></div>
+<div class="table"><table><caption>第二、三层：循环贷用户多在途结清转 T0 路径</caption><thead><tr><th>结清月份</th><th>第二层样本</th><th>第二层当天提单</th><th>第二层提单率</th><th>第三层样本</th><th>第三层当天提单</th><th>第三层提单率</th><th>第三层/第二层覆盖</th></tr></thead><tbody id="table2"></tbody></table></div>
+<div class="table"><table><caption>第一层当天提单订单：加权利率与加权额度使用率</caption><thead><tr><th>结清月份</th><th>循环贷利率有效放款订单</th><th>循环贷加权利率</th><th>循环贷额度使用率有效订单</th><th>循环贷加权额度使用率</th><th>非循环贷利率有效放款订单</th><th>非循环贷加权利率</th><th>非循环贷额度使用率有效订单</th><th>非循环贷加权额度使用率</th></tr></thead><tbody id="table3"></tbody></table></div>
+<div class="table"><table><caption>按刚结清订单利率分组：五档 T0 用户当天提单率</caption><thead><tr><th>结清月份</th><th>30%以下样本 / 提单率</th><th>30%-40%样本 / 提单率</th><th>40%-50%样本 / 提单率</th><th>50%-60%样本 / 提单率</th><th>60%以上样本 / 提单率</th></tr></thead><tbody id="table4"></tbody></table></div>
+<h2>附录：完整 PGSQL</h2><p class="desc">以下代码覆盖本报告的第一、二、三层样本、总体结果与月度结果。当前版本对应 2026-01-01 至 2026-08-15 的 T0 用户。</p>
+<details><summary>模块一：完整取数与三层样本构建</summary><pre>/* ================================================================
+   T0 循环贷与非循环贷分层当天提单率
+   第一层：全量 T0，循环贷/非循环贷用户拆分
+   第二层：循环贷用户中，多在途结清后转 T0
+   第三层：第二层中，最终结清订单本身也是循环贷
+   ================================================================ */
+
+WITH params AS (
+    SELECT
+        DATE '2026-01-01' AS start_date,
+        DATE '2026-08-15' AS end_date,
+        TIMESTAMP '2026-08-16 00:00:00' AS data_cutoff_time
+),
+
+/* 1. 统计期间已结清订单；同日多笔结清时，后续仅保留最后结清的一笔。 */
+settled_orders AS (
+    SELECT
+        o.user_id,
+        o.serial_id,
+        o.apply_time,
+        o.repaid_time,
+        o.repaid_date::date AS repaid_date
+    FROM wangchuanliang.order_loan_f_v2_copy AS o
+    CROSS JOIN params AS p
+    WHERE o.is_remit = 1
+      AND o.loan_status_code = 7
+      AND o.repaid_date &gt;= p.start_date
+      AND o.repaid_date &lt;= p.end_date
+),
+
+candidate_users AS (
+    SELECT DISTINCT
+        s.user_id
+    FROM settled_orders AS s
+),
+
+/* 2. 候选用户全量订单：用于结清时点是否存在其他在途订单的判断。 */
+all_orders AS (
+    SELECT
+        o.user_id,
+        o.serial_id,
+        o.apply_time,
+        o.repaid_time,
+        o.repaid_date,
+        o.loan_status_code,
+        o.is_remit
+    FROM wangchuanliang.order_loan_f_v2_copy AS o
+    INNER JOIN candidate_users AS u
+        ON u.user_id = o.user_id
+    CROSS JOIN params AS p
+    WHERE o.apply_time &lt; p.data_cutoff_time
+),
+
+last_settle_of_day AS (
+    SELECT DISTINCT ON (
+        s.user_id,
+        s.repaid_date
+    )
+        s.user_id,
+        s.serial_id,
+        s.apply_time,
+        s.repaid_time,
+        s.repaid_date
+    FROM settled_orders AS s
+    ORDER BY
+        s.user_id,
+        s.repaid_date,
+        s.repaid_time DESC
+),
+
+/* 3. 干净结清：在目标订单结清时点，没有另一笔已申请且仍在途的订单。
+      状态 5、8 视作在途；状态 7 但结清时间更晚，同样在该时点尚未结清。 */
+clean_last_settles AS (
+    SELECT
+        s.user_id,
+        s.serial_id,
+        s.apply_time,
+        s.repaid_time,
+        s.repaid_date
+    FROM last_settle_of_day AS s
+    WHERE NOT EXISTS (
+        SELECT
+            1
+        FROM all_orders AS o2
+        WHERE o2.user_id = s.user_id
+          AND o2.serial_id &lt;&gt; s.serial_id
+          AND o2.apply_time &lt; s.repaid_time
+          AND (
+                o2.loan_status_code = 5
+             OR o2.loan_status_code = 8
+             OR (
+                    o2.loan_status_code = 7
+                AND o2.repaid_time &gt; s.repaid_time
+                )
+          )
+    )
+),
+
+/* 4. 同日获额通过，且获额时间晚于目标结清时间。 */
+credit_pass AS (
+    SELECT
+        v.user_id,
+        v.vir_date::date AS vir_date,
+        TO_TIMESTAMP(v.vir_unix) AS vir_time
+    FROM wangchuanliang.order_vir_f_copy AS v
+    CROSS JOIN params AS p
+    WHERE v.is_pass1 = 1
+      AND v.vir_date &gt;= p.start_date
+      AND v.vir_date &lt;= p.end_date
+),
+
+t0_samples AS (
+    SELECT DISTINCT
+        c.user_id,
+        c.serial_id AS final_serial_id,
+        c.apply_time AS final_apply_time,
+        c.repaid_time AS final_repaid_time,
+        c.repaid_date
+    FROM clean_last_settles AS c
+    INNER JOIN credit_pass AS cp
+        ON cp.user_id = c.user_id
+       AND cp.vir_date = c.repaid_date
+       AND cp.vir_time &gt; c.repaid_time
+),
+
+/* 5. 生命周期内任一已放款订单 recycle_type=2，即循环贷用户。 */
+cycle_users AS (
+    SELECT DISTINCT
+        o.user_id
+    FROM all_orders AS o
+    INNER JOIN wangchuanliang.side_recycle_type_copy AS r
+        ON r.serial_id = o.serial_id
+       AND r.recycle_type = 2
+    WHERE o.is_remit = 1
+),
+
+/* 6. 第一层：标记循环贷属性及结清当日是否出现新申请。 */
+layer1_t0 AS (
+    SELECT
+        t.user_id,
+        t.final_serial_id,
+        t.final_apply_time,
+        t.final_repaid_time,
+        t.repaid_date,
+        CASE
+            WHEN cu.user_id IS NOT NULL THEN '循环贷用户'
+            ELSE '非循环贷用户'
+        END AS user_type,
+        CASE
+            WHEN EXISTS (
+                SELECT
+                    1
+                FROM all_orders AS n
+                WHERE n.user_id = t.user_id
+                  AND n.apply_time &gt; t.final_repaid_time
+                  AND n.apply_time::date = t.repaid_date
+            ) THEN 1
+            ELSE 0
+        END AS is_t0_apply
+    FROM t0_samples AS t
+    LEFT JOIN cycle_users AS cu
+        ON cu.user_id = t.user_id
+),
+
+/* 7. 第二层：最终订单 B 在此前订单 A 结清时已在途；
+      A 取 B 之前最近的一笔并行结清订单；A 至 B 结清之间无新提单。 */
+layer2_path AS (
+    SELECT DISTINCT
+        t.user_id,
+        t.final_serial_id,
+        t.repaid_date,
+        t.is_t0_apply
+    FROM layer1_t0 AS t
+    INNER JOIN all_orders AS a
+        ON a.user_id = t.user_id
+       AND a.serial_id &lt;&gt; t.final_serial_id
+       AND a.is_remit = 1
+       AND a.loan_status_code = 7
+       AND a.repaid_time &lt; t.final_repaid_time
+       AND t.final_apply_time &lt; a.repaid_time
+       AND a.repaid_time = (
+            SELECT
+                MAX(a2.repaid_time)
+            FROM all_orders AS a2
+            WHERE a2.user_id = t.user_id
+              AND a2.serial_id &lt;&gt; t.final_serial_id
+              AND a2.is_remit = 1
+              AND a2.loan_status_code = 7
+              AND a2.repaid_time &lt; t.final_repaid_time
+              AND t.final_apply_time &lt; a2.repaid_time
+       )
+    WHERE t.user_type = '循环贷用户'
+      AND NOT EXISTS (
+            SELECT
+                1
+            FROM all_orders AS n
+            WHERE n.user_id = t.user_id
+              AND n.apply_time &gt; a.repaid_time
+              AND n.apply_time &lt; t.final_repaid_time
+      )
+),
+
+/* 8. 第三层：第二层基础上，最终结清订单 B 自身 recycle_type=2。 */
+layer3_strict_path AS (
+    SELECT
+        p.user_id,
+        p.final_serial_id,
+        p.repaid_date,
+        p.is_t0_apply
+    FROM layer2_path AS p
+    INNER JOIN wangchuanliang.side_recycle_type_copy AS r
+        ON r.serial_id = p.final_serial_id
+       AND r.recycle_type = 2
+),
+
+/* 9. 输出第一层月度结果。 */
+layer1_monthly AS (
+    SELECT
+        DATE_TRUNC('month', t.repaid_date)::date AS month,
+        t.user_type AS statistic_object,
+        COUNT(*) AS sample_cnt,
+        SUM(t.is_t0_apply) AS apply_cnt,
+        ROUND(
+            SUM(t.is_t0_apply)::numeric
+            / NULLIF(COUNT(*), 0) * 100,
+            2
+        ) AS t0_apply_rate_pct
+    FROM layer1_t0 AS t
+    GROUP BY
+        DATE_TRUNC('month', t.repaid_date)::date,
+        t.user_type
+),
+
+/* 10. 输出第二、三层月度结果。 */
+path_monthly AS (
+    SELECT
+        DATE_TRUNC('month', p.repaid_date)::date AS month,
+        '第二层：原始路径' AS statistic_object,
+        COUNT(*) AS sample_cnt,
+        SUM(p.is_t0_apply) AS apply_cnt,
+        ROUND(
+            SUM(p.is_t0_apply)::numeric
+            / NULLIF(COUNT(*), 0) * 100,
+            2
+        ) AS t0_apply_rate_pct
+    FROM layer2_path AS p
+    GROUP BY
+        DATE_TRUNC('month', p.repaid_date)::date
+
+    UNION ALL
+
+    SELECT
+        DATE_TRUNC('month', p.repaid_date)::date AS month,
+        '第三层：严格路径' AS statistic_object,
+        COUNT(*) AS sample_cnt,
+        SUM(p.is_t0_apply) AS apply_cnt,
+        ROUND(
+            SUM(p.is_t0_apply)::numeric
+            / NULLIF(COUNT(*), 0) * 100,
+            2
+        ) AS t0_apply_rate_pct
+    FROM layer3_strict_path AS p
+    GROUP BY
+        DATE_TRUNC('month', p.repaid_date)::date
+)
+
+SELECT
+    '第一层' AS layer,
+    m.month AS 结清月份,
+    m.statistic_object AS 统计对象,
+    m.sample_cnt AS 样本数,
+    ROUND(
+        m.sample_cnt::numeric
+        / SUM(m.sample_cnt) OVER (
+            PARTITION BY m.month
+        ) * 100,
+        2
+    ) AS 当月样本占比_pct,
+    m.apply_cnt AS 当天提单数,
+    m.t0_apply_rate_pct AS 当天提单率_pct
+FROM layer1_monthly AS m
+
+UNION ALL
+
+SELECT
+    '第二三层' AS layer,
+    m.month AS 结清月份,
+    m.statistic_object AS 统计对象,
+    m.sample_cnt AS 样本数,
+    NULL::numeric AS 当月样本占比_pct,
+    m.apply_cnt AS 当天提单数,
+    m.t0_apply_rate_pct AS 当天提单率_pct
+FROM path_monthly AS m
+ORDER BY
+    layer,
+    结清月份,
+    统计对象;</pre></details>
+<details><summary>模块二：第一层指标——循环贷与非循环贷构成、当天提单率</summary><pre>/* 在模块一的 layer1_t0 CTE 后执行本模块；
+   或将本模块 SELECT 替换至模块一最后的输出位置。 */
+
+SELECT
+    '总体' AS 统计周期,
+    t.user_type AS 用户类型,
+    COUNT(*) AS T0用户日期样本数,
+    ROUND(
+        COUNT(*)::numeric
+        / SUM(COUNT(*)) OVER () * 100,
+        2
+    ) AS T0用户占比_pct,
+    SUM(t.is_t0_apply) AS 当天提单用户数,
+    ROUND(
+        SUM(t.is_t0_apply)::numeric
+        / NULLIF(COUNT(*), 0) * 100,
+        2
+    ) AS 当天提单率_pct
+FROM layer1_t0 AS t
+GROUP BY
+    t.user_type
+
+UNION ALL
+
+SELECT
+    TO_CHAR(
+        DATE_TRUNC('month', t.repaid_date),
+        'YYYY-MM'
+    ) AS 统计周期,
+    t.user_type AS 用户类型,
+    COUNT(*) AS T0用户日期样本数,
+    ROUND(
+        COUNT(*)::numeric
+        / SUM(COUNT(*)) OVER (
+            PARTITION BY DATE_TRUNC('month', t.repaid_date)
+        ) * 100,
+        2
+    ) AS T0用户占比_pct,
+    SUM(t.is_t0_apply) AS 当天提单用户数,
+    ROUND(
+        SUM(t.is_t0_apply)::numeric
+        / NULLIF(COUNT(*), 0) * 100,
+        2
+    ) AS 当天提单率_pct
+FROM layer1_t0 AS t
+GROUP BY
+    DATE_TRUNC('month', t.repaid_date),
+    t.user_type
+ORDER BY
+    统计周期,
+    用户类型;</pre></details>
+<details><summary>模块三：第二、三层指标——多在途结清转 T0 路径</summary><pre>/* 在模块一已构建 layer1_t0、layer2_path、layer3_strict_path 后执行。 */
+
+SELECT
+    '第二层：原始路径' AS 路径层级,
+    COUNT(*) AS 路径样本数,
+    ROUND(
+        COUNT(*)::numeric
+        / NULLIF(
+            (
+                SELECT
+                    COUNT(*)
+                FROM layer1_t0
+                WHERE user_type = '循环贷用户'
+            ),
+            0
+        ) * 100,
+        2
+    ) AS 占第一层循环贷T0_pct,
+    SUM(p.is_t0_apply) AS 当天提单数,
+    ROUND(
+        SUM(p.is_t0_apply)::numeric
+        / NULLIF(COUNT(*), 0) * 100,
+        2
+    ) AS 当天提单率_pct
+FROM layer2_path AS p
+
+UNION ALL
+
+SELECT
+    '第三层：严格路径' AS 路径层级,
+    COUNT(*) AS 路径样本数,
+    ROUND(
+        COUNT(*)::numeric
+        / NULLIF(
+            (
+                SELECT
+                    COUNT(*)
+                FROM layer1_t0
+                WHERE user_type = '循环贷用户'
+            ),
+            0
+        ) * 100,
+        2
+    ) AS 占第一层循环贷T0_pct,
+    SUM(p.is_t0_apply) AS 当天提单数,
+    ROUND(
+        SUM(p.is_t0_apply)::numeric
+        / NULLIF(COUNT(*), 0) * 100,
+        2
+    ) AS 当天提单率_pct
+FROM layer3_strict_path AS p;</pre></details>
+<details><summary>模块四：第二、三层月度提单率与严格路径覆盖率</summary><pre>/* 月度分布：第二层与第三层分别统计；第三层覆盖率以第二层为分母。 */
+
+WITH layer2_monthly AS (
+    SELECT
+        DATE_TRUNC('month', p.repaid_date)::date AS month,
+        COUNT(*) AS sample_cnt,
+        SUM(p.is_t0_apply) AS apply_cnt
+    FROM layer2_path AS p
+    GROUP BY
+        DATE_TRUNC('month', p.repaid_date)::date
+),
+layer3_monthly AS (
+    SELECT
+        DATE_TRUNC('month', p.repaid_date)::date AS month,
+        COUNT(*) AS sample_cnt,
+        SUM(p.is_t0_apply) AS apply_cnt
+    FROM layer3_strict_path AS p
+    GROUP BY
+        DATE_TRUNC('month', p.repaid_date)::date
+)
+SELECT
+    l2.month AS 结清月份,
+    l2.sample_cnt AS 第二层样本数,
+    l2.apply_cnt AS 第二层当天提单数,
+    ROUND(
+        l2.apply_cnt::numeric
+        / NULLIF(l2.sample_cnt, 0) * 100,
+        2
+    ) AS 第二层当天提单率_pct,
+    l3.sample_cnt AS 第三层样本数,
+    l3.apply_cnt AS 第三层当天提单数,
+    ROUND(
+        l3.apply_cnt::numeric
+        / NULLIF(l3.sample_cnt, 0) * 100,
+        2
+    ) AS 第三层当天提单率_pct,
+    ROUND(
+        l3.sample_cnt::numeric
+        / NULLIF(l2.sample_cnt, 0) * 100,
+        2
+    ) AS 第三层覆盖第二层_pct
+FROM layer2_monthly AS l2
+LEFT JOIN layer3_monthly AS l3
+    ON l3.month = l2.month
+ORDER BY
+    结清月份;</pre></details>
+<details><summary>模块五：当天提单订单的加权利率与加权额度使用率</summary><pre>/* ================================================================
+   本模块可独立执行。
+   输出：循环贷/非循环贷 T0 用户的月度及整体可用分子、分母。
+   利率 = SUM(pre_amt + post_amt) / SUM(remit_amt)
+   额度使用率 = SUM(apply_amt) / SUM(credit_amt)
+   ================================================================ */
+
+WITH params AS (
+    SELECT
+        DATE '2026-01-01' AS start_date,
+        DATE '2026-08-15' AS end_date,
+        TIMESTAMP '2026-08-16 00:00:00' AS data_cutoff_time
+),
+
+settled_orders AS (
+    SELECT
+        o.user_id,
+        o.serial_id,
+        o.repaid_time,
+        o.repaid_date::date AS repaid_date
+    FROM wangchuanliang.order_loan_f_v2_copy AS o
+    CROSS JOIN params AS p
+    WHERE o.is_remit = 1
+      AND o.loan_status_code = 7
+      AND o.repaid_date &gt;= p.start_date
+      AND o.repaid_date &lt;= p.end_date
+),
+
+candidate_users AS (
+    SELECT DISTINCT
+        s.user_id
+    FROM settled_orders AS s
+),
+
+all_orders AS (
+    SELECT
+        o.user_id,
+        o.serial_id,
+        o.apply_time,
+        o.repaid_time,
+        o.loan_status_code,
+        o.is_remit,
+        o.pre_amt,
+        o.post_amt,
+        o.remit_amt,
+        o.apply_amt
+    FROM wangchuanliang.order_loan_f_v2_copy AS o
+    INNER JOIN candidate_users AS u
+        ON u.user_id = o.user_id
+    CROSS JOIN params AS p
+    WHERE o.apply_time &lt; p.data_cutoff_time
+),
+
+last_settle_of_day AS (
+    SELECT DISTINCT ON (
+        s.user_id,
+        s.repaid_date
+    )
+        s.user_id,
+        s.serial_id,
+        s.repaid_time,
+        s.repaid_date
+    FROM settled_orders AS s
+    ORDER BY
+        s.user_id,
+        s.repaid_date,
+        s.repaid_time DESC
+),
+
+clean_last_settles AS (
+    SELECT
+        s.user_id,
+        s.serial_id,
+        s.repaid_time,
+        s.repaid_date
+    FROM last_settle_of_day AS s
+    WHERE NOT EXISTS (
+        SELECT
+            1
+        FROM all_orders AS o2
+        WHERE o2.user_id = s.user_id
+          AND o2.serial_id &lt;&gt; s.serial_id
+          AND o2.apply_time &lt; s.repaid_time
+          AND (
+                o2.loan_status_code = 5
+             OR o2.loan_status_code = 8
+             OR (
+                    o2.loan_status_code = 7
+                AND o2.repaid_time &gt; s.repaid_time
+                )
+          )
+    )
+),
+
+credit_pass AS (
+    SELECT
+        v.user_id,
+        v.vir_date::date AS vir_date,
+        TO_TIMESTAMP(v.vir_unix) AS vir_time
+    FROM wangchuanliang.order_vir_f_copy AS v
+    CROSS JOIN params AS p
+    WHERE v.is_pass1 = 1
+      AND v.vir_date &gt;= p.start_date
+      AND v.vir_date &lt;= p.end_date
+),
+
+t0_samples AS (
+    SELECT DISTINCT
+        c.user_id,
+        c.repaid_date,
+        c.repaid_time
+    FROM clean_last_settles AS c
+    INNER JOIN credit_pass AS cp
+        ON cp.user_id = c.user_id
+       AND cp.vir_date = c.repaid_date
+       AND cp.vir_time &gt; c.repaid_time
+),
+
+cycle_users AS (
+    SELECT DISTINCT
+        o.user_id
+    FROM all_orders AS o
+    INNER JOIN wangchuanliang.side_recycle_type_copy AS r
+        ON r.serial_id = o.serial_id
+       AND r.recycle_type = 2
+    WHERE o.is_remit = 1
+),
+
+/* 同一 T0 样本有多笔当天提单时，只保留结清后的首次提单；
+   若提单时间相同，则保留 serial_id 最大的一笔。 */
+first_t0_apply AS (
+    SELECT DISTINCT ON (
+        t.user_id,
+        t.repaid_date
+    )
+        t.user_id,
+        t.repaid_date,
+        a.serial_id,
+        a.apply_time,
+        a.is_remit,
+        a.pre_amt,
+        a.post_amt,
+        a.remit_amt,
+        a.apply_amt
+    FROM t0_samples AS t
+    INNER JOIN all_orders AS a
+        ON a.user_id = t.user_id
+       AND a.apply_time &gt; t.repaid_time
+       AND a.apply_time::date = t.repaid_date
+    ORDER BY
+        t.user_id,
+        t.repaid_date,
+        a.apply_time ASC,
+        a.serial_id DESC
+),
+
+/* 每笔提单订单按 serial_id 取最新获额记录。 */
+credit_by_order AS (
+    SELECT DISTINCT ON (
+        v.serial_id
+    )
+        v.serial_id,
+        v.vir_date::date AS vir_date,
+        v.max_credit_apply_amt,
+        v.max_risk_credit_amount
+    FROM wangchuanliang.order_vir_f_copy AS v
+    INNER JOIN first_t0_apply AS a
+        ON a.serial_id = v.serial_id
+    ORDER BY
+        v.serial_id,
+        v.vir_unix DESC
+),
+
+metric_base AS (
+    SELECT
+        t.repaid_date,
+        CASE
+            WHEN cu.user_id IS NOT NULL THEN '循环贷用户'
+            ELSE '非循环贷用户'
+        END AS 用户类型,
+        a.serial_id AS 提单订单号,
+        a.is_remit,
+        a.pre_amt,
+        a.post_amt,
+        a.remit_amt,
+        a.apply_amt,
+        CASE
+            WHEN c.vir_date &gt;= DATE '2025-04-01'
+                THEN c.max_credit_apply_amt
+            WHEN r.recycle_type = 2
+                THEN c.max_credit_apply_amt
+            ELSE c.max_risk_credit_amount
+        END AS credit_amt
+    FROM t0_samples AS t
+    LEFT JOIN cycle_users AS cu
+        ON cu.user_id = t.user_id
+    LEFT JOIN first_t0_apply AS a
+        ON a.user_id = t.user_id
+       AND a.repaid_date = t.repaid_date
+    LEFT JOIN credit_by_order AS c
+        ON c.serial_id = a.serial_id
+    LEFT JOIN wangchuanliang.side_recycle_type_copy AS r
+        ON r.serial_id = a.serial_id
+),
+
+metric_aggregation AS (
+    SELECT
+        GROUPING(DATE_TRUNC('month', m.repaid_date)) AS g_month,
+        DATE_TRUNC('month', m.repaid_date)::date AS 结清月份,
+        m.用户类型,
+        COUNT(m.提单订单号) AS 当天提单订单数,
+        COUNT(CASE
+            WHEN m.is_remit = 1
+             AND m.remit_amt &gt; 0
+                THEN 1
+        END) AS 利率有效放款订单数,
+        SUM(CASE
+            WHEN m.is_remit = 1
+             AND m.remit_amt &gt; 0
+                THEN COALESCE(m.pre_amt, 0) + COALESCE(m.post_amt, 0)
+            ELSE 0
+        END) AS 利率分子_pre_amt加post_amt,
+        SUM(CASE
+            WHEN m.is_remit = 1
+             AND m.remit_amt &gt; 0
+                THEN m.remit_amt
+            ELSE 0
+        END) AS 利率分母_remit_amt,
+        COUNT(CASE
+            WHEN m.apply_amt &gt;= 200
+             AND m.credit_amt &gt;= 200
+                THEN 1
+        END) AS 额度使用率有效订单数,
+        SUM(CASE
+            WHEN m.apply_amt &gt;= 200
+             AND m.credit_amt &gt;= 200
+                THEN m.apply_amt
+            ELSE 0
+        END) AS 使用率分子_apply_amt,
+        SUM(CASE
+            WHEN m.apply_amt &gt;= 200
+             AND m.credit_amt &gt;= 200
+                THEN m.credit_amt
+            ELSE 0
+        END) AS 使用率分母_credit_amt
+    FROM metric_base AS m
+    GROUP BY GROUPING SETS (
+        (DATE_TRUNC('month', m.repaid_date), m.用户类型),
+        (m.用户类型)
+    )
+)
+
+SELECT
+    CASE
+        WHEN a.g_month = 1 THEN '合计'
+        ELSE TO_CHAR(a.结清月份, 'YYYY-MM')
+    END AS 结清月份,
+    a.用户类型,
+    a.当天提单订单数,
+    a.利率有效放款订单数,
+    a.利率分子_pre_amt加post_amt,
+    a.利率分母_remit_amt,
+    ROUND(
+        a.利率分子_pre_amt加post_amt::numeric
+        / NULLIF(a.利率分母_remit_amt, 0) * 100,
+        2
+    ) AS 加权利率_pct,
+    a.额度使用率有效订单数,
+    a.使用率分子_apply_amt,
+    a.使用率分母_credit_amt,
+    ROUND(
+        a.使用率分子_apply_amt::numeric
+        / NULLIF(a.使用率分母_credit_amt, 0) * 100,
+        2
+    ) AS 加权额度使用率_pct
+FROM metric_aggregation AS a
+ORDER BY
+    a.g_month,
+    a.结清月份,
+    CASE a.用户类型
+        WHEN '循环贷用户' THEN 1
+        WHEN '非循环贷用户' THEN 2
+    END;</pre></details>
+<details><summary>模块六：结清订单利率分组的月度当天提单率</summary><pre>/* ================================================================
+   利率标签取 T0 当天刚结清订单，避免使用提单后的结果变量。
+   结清订单利率 = (pre_amt + post_amt) / remit_amt
+   分组：&lt;30%、30%-40%、40%-50%、50%-60%、≥60%
+   ================================================================ */
+
+WITH params AS (
+    SELECT
+        DATE '2026-01-01' AS start_date,
+        DATE '2026-08-15' AS end_date,
+        TIMESTAMP '2026-08-16 00:00:00' AS data_cutoff_time
+),
+
+settled_orders AS (
+    SELECT
+        o.user_id,
+        o.serial_id,
+        o.repaid_time,
+        o.repaid_date::date AS repaid_date,
+        o.pre_amt,
+        o.post_amt,
+        o.remit_amt
+    FROM wangchuanliang.order_loan_f_v2_copy AS o
+    CROSS JOIN params AS p
+    WHERE o.is_remit = 1
+      AND o.loan_status_code = 7
+      AND o.repaid_date &gt;= p.start_date
+      AND o.repaid_date &lt;= p.end_date
+),
+
+candidate_users AS (
+    SELECT DISTINCT
+        s.user_id
+    FROM settled_orders AS s
+),
+
+all_orders AS (
+    SELECT
+        o.user_id,
+        o.serial_id,
+        o.apply_time,
+        o.repaid_time,
+        o.loan_status_code
+    FROM wangchuanliang.order_loan_f_v2_copy AS o
+    INNER JOIN candidate_users AS u
+        ON u.user_id = o.user_id
+    CROSS JOIN params AS p
+    WHERE o.apply_time &lt; p.data_cutoff_time
+),
+
+last_settle_of_day AS (
+    SELECT DISTINCT ON (
+        s.user_id,
+        s.repaid_date
+    )
+        s.user_id,
+        s.serial_id,
+        s.repaid_time,
+        s.repaid_date,
+        s.pre_amt,
+        s.post_amt,
+        s.remit_amt
+    FROM settled_orders AS s
+    ORDER BY
+        s.user_id,
+        s.repaid_date,
+        s.repaid_time DESC
+),
+
+clean_last_settles AS (
+    SELECT
+        s.user_id,
+        s.serial_id,
+        s.repaid_time,
+        s.repaid_date,
+        s.pre_amt,
+        s.post_amt,
+        s.remit_amt
+    FROM last_settle_of_day AS s
+    WHERE NOT EXISTS (
+        SELECT
+            1
+        FROM all_orders AS o2
+        WHERE o2.user_id = s.user_id
+          AND o2.serial_id &lt;&gt; s.serial_id
+          AND o2.apply_time &lt; s.repaid_time
+          AND (
+                o2.loan_status_code = 5
+             OR o2.loan_status_code = 8
+             OR (
+                    o2.loan_status_code = 7
+                AND o2.repaid_time &gt; s.repaid_time
+                )
+          )
+    )
+),
+
+credit_pass AS (
+    SELECT
+        v.user_id,
+        v.vir_date::date AS vir_date,
+        TO_TIMESTAMP(v.vir_unix) AS vir_time
+    FROM wangchuanliang.order_vir_f_copy AS v
+    CROSS JOIN params AS p
+    WHERE v.is_pass1 = 1
+      AND v.vir_date &gt;= p.start_date
+      AND v.vir_date &lt;= p.end_date
+),
+
+t0_labeled AS (
+    SELECT
+        c.user_id,
+        c.repaid_date,
+        c.repaid_time,
+        CASE
+            WHEN c.remit_amt &gt; 0
+                THEN (COALESCE(c.pre_amt, 0) + COALESCE(c.post_amt, 0))
+                     / c.remit_amt::numeric
+        END AS settled_order_rate,
+        CASE
+            WHEN EXISTS (
+                SELECT
+                    1
+                FROM all_orders AS a
+                WHERE a.user_id = c.user_id
+                  AND a.apply_time &gt; c.repaid_time
+                  AND a.apply_time::date = c.repaid_date
+            ) THEN 1
+            ELSE 0
+        END AS is_t0_apply
+    FROM clean_last_settles AS c
+    WHERE EXISTS (
+        SELECT
+            1
+        FROM credit_pass AS cp
+        WHERE cp.user_id = c.user_id
+          AND cp.vir_date = c.repaid_date
+          AND cp.vir_time &gt; c.repaid_time
+    )
+),
+
+bucketed AS (
+    SELECT
+        t.*,
+        CASE
+            WHEN t.settled_order_rate &lt; 0.30 THEN '30%以下'
+            WHEN t.settled_order_rate &lt; 0.40 THEN '30%-40%'
+            WHEN t.settled_order_rate &lt; 0.50 THEN '40%-50%'
+            WHEN t.settled_order_rate &lt; 0.60 THEN '50%-60%'
+            WHEN t.settled_order_rate &gt;= 0.60 THEN '60%以上'
+        END AS 利率分组
+    FROM t0_labeled AS t
+)
+
+SELECT
+    TO_CHAR(
+        DATE_TRUNC('month', b.repaid_date),
+        'YYYY-MM'
+    ) AS 结清月份,
+    b.利率分组,
+    COUNT(*) AS T0用户日期样本数,
+    SUM(b.is_t0_apply) AS 当天提单用户数,
+    ROUND(
+        SUM(b.is_t0_apply)::numeric
+        / NULLIF(COUNT(*), 0) * 100,
+        2
+    ) AS 当天提单率_pct
+FROM bucketed AS b
+WHERE b.利率分组 IS NOT NULL
+GROUP BY
+    DATE_TRUNC('month', b.repaid_date),
+    b.利率分组
+ORDER BY
+    结清月份,
+    CASE b.利率分组
+        WHEN '30%以下' THEN 1
+        WHEN '30%-40%' THEN 2
+        WHEN '40%-50%' THEN 3
+        WHEN '50%-60%' THEN 4
+        WHEN '60%以上' THEN 5
+    END;</pre></details>
+<details><summary>模块七：当天首次提单订单的期数月度分布</summary><pre>/* ================================================================
+   按 T0 用户结清后当天的首次提单订单统计 total_term。
+   每个用户日期样本仅保留一笔：按 apply_time 最早，
+   若申请时间相同则取 serial_id 最大。
+   ================================================================ */
+
+WITH params AS (
+    SELECT
+        DATE '2026-01-01' AS start_date,
+        DATE '2026-08-15' AS end_date,
+        TIMESTAMP '2026-08-16 00:00:00' AS data_cutoff_time
+),
+
+settled_orders AS (
+    SELECT
+        o.user_id,
+        o.serial_id,
+        o.repaid_time,
+        o.repaid_date::date AS repaid_date
+    FROM wangchuanliang.order_loan_f_v2_copy AS o
+    CROSS JOIN params AS p
+    WHERE o.is_remit = 1
+      AND o.loan_status_code = 7
+      AND o.repaid_date &gt;= p.start_date
+      AND o.repaid_date &lt;= p.end_date
+),
+
+candidate_users AS (
+    SELECT DISTINCT
+        s.user_id
+    FROM settled_orders AS s
+),
+
+all_orders AS (
+    SELECT
+        o.user_id,
+        o.serial_id,
+        o.apply_time,
+        o.repaid_time,
+        o.loan_status_code,
+        o.total_term
+    FROM wangchuanliang.order_loan_f_v2_copy AS o
+    INNER JOIN candidate_users AS u
+        ON u.user_id = o.user_id
+    CROSS JOIN params AS p
+    WHERE o.apply_time &lt; p.data_cutoff_time
+),
+
+last_settle_of_day AS (
+    SELECT DISTINCT ON (
+        s.user_id,
+        s.repaid_date
+    )
+        s.user_id,
+        s.serial_id,
+        s.repaid_time,
+        s.repaid_date
+    FROM settled_orders AS s
+    ORDER BY
+        s.user_id,
+        s.repaid_date,
+        s.repaid_time DESC
+),
+
+clean_last_settles AS (
+    SELECT
+        s.user_id,
+        s.serial_id,
+        s.repaid_time,
+        s.repaid_date
+    FROM last_settle_of_day AS s
+    WHERE NOT EXISTS (
+        SELECT
+            1
+        FROM all_orders AS o2
+        WHERE o2.user_id = s.user_id
+          AND o2.serial_id &lt;&gt; s.serial_id
+          AND o2.apply_time &lt; s.repaid_time
+          AND (
+                o2.loan_status_code = 5
+             OR o2.loan_status_code = 8
+             OR (
+                    o2.loan_status_code = 7
+                AND o2.repaid_time &gt; s.repaid_time
+                )
+          )
+    )
+),
+
+credit_pass AS (
+    SELECT
+        v.user_id,
+        v.vir_date::date AS vir_date,
+        TO_TIMESTAMP(v.vir_unix) AS vir_time
+    FROM wangchuanliang.order_vir_f_copy AS v
+    CROSS JOIN params AS p
+    WHERE v.is_pass1 = 1
+      AND v.vir_date &gt;= p.start_date
+      AND v.vir_date &lt;= p.end_date
+),
+
+t0_samples AS (
+    SELECT
+        c.user_id,
+        c.repaid_date,
+        c.repaid_time
+    FROM clean_last_settles AS c
+    WHERE EXISTS (
+        SELECT
+            1
+        FROM credit_pass AS cp
+        WHERE cp.user_id = c.user_id
+          AND cp.vir_date = c.repaid_date
+          AND cp.vir_time &gt; c.repaid_time
+    )
+),
+
+first_t0_apply AS (
+    SELECT DISTINCT ON (
+        t.user_id,
+        t.repaid_date
+    )
+        t.user_id,
+        t.repaid_date,
+        a.serial_id,
+        a.total_term
+    FROM t0_samples AS t
+    INNER JOIN all_orders AS a
+        ON a.user_id = t.user_id
+       AND a.apply_time &gt; t.repaid_time
+       AND a.apply_time::date = t.repaid_date
+    ORDER BY
+        t.user_id,
+        t.repaid_date,
+        a.apply_time ASC,
+        a.serial_id DESC
+)
+
+SELECT
+    TO_CHAR(
+        DATE_TRUNC('month', f.repaid_date),
+        'YYYY-MM'
+    ) AS 结清月份,
+    CASE
+        WHEN f.total_term IS NULL THEN '期数缺失'
+        ELSE f.total_term::text || '期'
+    END AS 提单订单期数,
+    COUNT(*) AS 当天提单订单数
+FROM first_t0_apply AS f
+GROUP BY
+    DATE_TRUNC('month', f.repaid_date),
+    提单订单期数,
+    f.total_term
+ORDER BY
+    结清月份,
+    f.total_term NULLS LAST;</pre></details>
+<footer class="foot">口径说明：循环贷用户指统计截止日前存在任一笔已放款、且 recycle_type = 2 的订单的用户；非循环贷用户指其余 T0 用户。报告展示用户日期样本，同一用户在不同结清日可重复出现。</footer>
+</main><script>
+const m=['2026-01','2026-02','2026-03','2026-04','2026-05','2026-06','2026-07','2026-08（1–15日）'];
+const cyc=[5899,6715,7324,6805,8136,7031,6663,1998],cycA=[3091,3463,3460,3317,3869,3298,3129,859];
+const non=[11056,13163,12257,11045,12133,11534,11430,4527],nonA=[5869,6821,5574,5054,5293,4820,4404,1666];
+const p2=[1796,1994,2029,1994,2528,2430,2689,987],p2a=[926,947,894,904,1011,997,1108,362],p3=[1606,1803,1872,1806,2320,2247,2466,919],p3a=[811,859,826,811,910,910,991,338];
+const cycInterest=[50.93,49.69,50.33,50.83,53.31,57.25,57.22,59.72],nonInterest=[48.40,48.09,50.66,52.46,55.55,59.84,59.16,60.25];
+const cycUtil=[89.57,90.32,89.80,91.09,89.97,91.02,89.54,89.05],nonUtil=[90.45,91.60,92.43,93.70,93.77,91.24,92.65,90.93];
+const cycRateOrders=[3043,3407,3403,3281,3782,3193,3081,845],nonRateOrders=[5796,6713,5502,5016,5184,4721,4327,1658];
+const rbLabels=['30%以下','30%-40%','40%-50%','50%-60%','60%以上'];
+const rbCount1=[482,299,172,125,150,85,99,38],rbApply1=[185,103,72,42,44,36,33,19];
+const rbCount2=[1652,1842,1790,1329,969,281,267,146],rbApply2=[846,947,834,604,423,117,97,38];
+const rbCount3=[9959,10918,9590,6889,6463,4381,3621,1314],rbApply3=[5422,5757,4511,3272,2889,1773,1444,495];
+const rbCount4=[3671,5053,2492,1178,1502,1511,2596,1030],rbApply4=[1968,2643,1083,604,695,627,961,301];
+const rbCount5=[1191,1766,5537,8329,11185,12307,11510,3997],rbApply5=[539,834,2534,3849,5111,5565,4998,1672];
+const term1=[68,629,1178,1182,1232,1168,964,300],term2=[3578,4220,3153,2260,2026,1541,1446,301],term3=[2966,3033,2322,2681,3659,3665,3505,1178],term4=[2348,2402,2381,2248,2245,1744,1618,746];
+const termInterest1=[61.90,62.40,62.15,62.27,63.21,65.06,64.38,65.62],termInterest2=[42.58,42.61,44.72,43.86,45.67,47.88,48.02,48.57],termInterest3=[53.47,52.25,54.17,55.29,58.68,62.92,62.48,62.53],termInterest4=[52.79,52.41,52.49,52.45,54.10,58.37,57.90,60.69];
+const cRb1=[38.63,35.94,44.44,34.51,31.40,47.83,33.75,48.39],cRb2=[48.77,52.76,46.57,48.27,45.52,40.44,36.97,31.07],cRb3=[54.69,52.13,47.42,48.86,47.54,44.29,45.30,44.25],cRb4=[55.79,54.12,48.74,54.07,50.77,45.19,46.85,40.85],cRb5=[44.00,47.53,47.27,47.59,47.37,49.21,48.72,43.82];
+const nRb1=[38.40,31.78,31.58,16.67,20.69,13.33,31.58,57.14],nRb2=[53.04,50.26,46.56,42.41,41.44,43.88,33.93,15.91],nRb3=[54.33,53.00,46.81,46.45,41.77,36.51,34.37,32.42],nRb4=[52.55,51.47,39.78,47.00,40.34,37.57,30.93,24.80],nRb5=[46.64,46.99,45.13,45.67,44.95,43.38,40.92,41.11];
+const cTerm1=[5,74,99,119,219,312,266,83],cTerm2=[735,900,1001,923,963,740,713,140],cTerm3=[1014,1009,867,866,1202,1199,1176,268],cTerm4=[1382,1537,1555,1445,1527,1106,1035,387];
+const nTerm1=[63,555,1079,1063,1013,856,698,217],nTerm2=[2843,3320,2152,1337,1063,801,733,161],nTerm3=[1952,2024,1455,1815,2457,2466,2329,910],nTerm4=[966,865,826,803,718,638,583,359];
+const cTi1=[62.50,62.46,62.33,62.38,63.54,66.21,66.13,64.71],cTi2=[39.30,38.32,41.96,42.56,45.45,47.92,47.86,48.63],cTi3=[54.69,53.16,55.22,55.66,58.85,62.37,62.41,63.24],cTi4=[52.82,52.10,51.93,52.24,53.78,57.59,57.38,60.84];
+const nTi1=[61.85,62.39,62.12,62.26,63.14,64.57,63.77,66.12],nTi2=[43.53,43.91,46.25,45.43,46.01,47.81,48.22,48.49],nTi3=[52.60,51.60,53.15,55.00,58.56,63.33,62.52,62.19],nTi4=[52.72,53.12,54.00,52.98,55.21,60.57,59.52,60.37];
+const sum=a=>a.reduce((x,y)=>x+y,0),pct=(a,b)=>+(a/b*100).toFixed(2),fmt=n=>n.toLocaleString();const cr=cyc.map((x,i)=>pct(cycA[i],x)),nr=non.map((x,i)=>pct(nonA[i],x)),p2r=p2.map((x,i)=>pct(p2a[i],x)),p3r=p3.map((x,i)=>pct(p3a[i],x)),cs=cyc.map((x,i)=>pct(x,x+non[i]));
+Chart.defaults.color='#c0d7e8';Chart.defaults.font.family='-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei",sans-serif';const base={responsive:true,maintainAspectRatio:false,plugins:{legend:{labels:{boxWidth:12,padding:15}},tooltip:{callbacks:{label:c=>c.dataset.label+': '+c.parsed.y}}},scales:{x:{grid:{color:'rgba(80,142,176,.16)'},ticks:{maxRotation:0}},y:{grid:{color:'rgba(80,142,176,.16)'},beginAtZero:true}}};
+new Chart(document.getElementById('count'),{type:'bar',data:{labels:['循环贷用户','非循环贷用户'],datasets:[{label:'T0 用户日期样本',data:[sum(cyc),sum(non)],backgroundColor:'#43c7e7',borderRadius:6},{label:'当天提单用户',data:[sum(cycA),sum(nonA)],backgroundColor:'#64dcae',borderRadius:6}]},options:base});
+new Chart(document.getElementById('overall'),{type:'bar',data:{labels:['循环贷用户','非循环贷用户'],datasets:[{label:'当天提单率',data:[pct(sum(cycA),sum(cyc)),pct(sum(nonA),sum(non))],backgroundColor:['#64dcae','#ffc26b'],borderRadius:7}]},options:{...base,plugins:{...base.plugins,legend:{display:false},tooltip:{callbacks:{label:c=>c.parsed.y.toFixed(2)+'%'}}},scales:{...base.scales,y:{...base.scales.y,max:55,ticks:{callback:v=>v+'%'}}}}});
+new Chart(document.getElementById('interestRate'),{type:'bar',data:{labels:['循环贷用户','非循环贷用户'],datasets:[{label:'加权利率',data:[52.91,52.63],backgroundColor:['#64dcae','#ffc26b'],borderRadius:7}]},options:{...base,plugins:{...base.plugins,legend:{display:false},tooltip:{callbacks:{label:c=>c.parsed.y.toFixed(2)+'%'}}},scales:{...base.scales,y:{...base.scales.y,min:45,max:56,ticks:{callback:v=>v+'%'}}}}});
+new Chart(document.getElementById('utilizationRate'),{type:'bar',data:{labels:['循环贷用户','非循环贷用户'],datasets:[{label:'加权额度使用率',data:[90.13,91.98],backgroundColor:['#43c7e7','#f68ab0'],borderRadius:7}]},options:{...base,plugins:{...base.plugins,legend:{display:false},tooltip:{callbacks:{label:c=>c.parsed.y.toFixed(2)+'%'}}},scales:{...base.scales,y:{...base.scales.y,min:85,max:95,ticks:{callback:v=>v+'%'}}}}});
+new Chart(document.getElementById('interestTrend'),{type:'line',data:{labels:m,datasets:[{label:'循环贷用户',data:cycInterest,borderColor:'#64dcae',backgroundColor:'#64dcae',tension:.25,pointRadius:4},{label:'非循环贷用户',data:nonInterest,borderColor:'#ffc26b',backgroundColor:'#ffc26b',tension:.25,pointRadius:4}]},options:{...base,plugins:{...base.plugins,tooltip:{callbacks:{label:c=>c.dataset.label+': '+c.parsed.y.toFixed(2)+'%'}}},scales:{...base.scales,y:{...base.scales.y,min:45,max:65,ticks:{callback:v=>v+'%'}}}}});
+new Chart(document.getElementById('utilizationTrend'),{type:'line',data:{labels:m,datasets:[{label:'循环贷用户',data:cycUtil,borderColor:'#43c7e7',backgroundColor:'#43c7e7',tension:.25,pointRadius:4},{label:'非循环贷用户',data:nonUtil,borderColor:'#f68ab0',backgroundColor:'#f68ab0',tension:.25,pointRadius:4}]},options:{...base,plugins:{...base.plugins,tooltip:{callbacks:{label:c=>c.dataset.label+': '+c.parsed.y.toFixed(2)+'%'}}},scales:{...base.scales,y:{...base.scales.y,min:85,max:96,ticks:{callback:v=>v+'%'}}}}});
+const rbRate1=rbCount1.map((x,i)=>pct(rbApply1[i],x)),rbRate2=rbCount2.map((x,i)=>pct(rbApply2[i],x)),rbRate3=rbCount3.map((x,i)=>pct(rbApply3[i],x)),rbRate4=rbCount4.map((x,i)=>pct(rbApply4[i],x)),rbRate5=rbCount5.map((x,i)=>pct(rbApply5[i],x));
+new Chart(document.getElementById('rateBucketTrend'),{type:'line',data:{labels:m,datasets:[{label:'30%以下',data:rbRate1,borderColor:'#f68ab0',backgroundColor:'#f68ab0',tension:.25,pointRadius:3},{label:'30%-40%',data:rbRate2,borderColor:'#43c7e7',backgroundColor:'#43c7e7',tension:.25,pointRadius:3},{label:'40%-50%',data:rbRate3,borderColor:'#64dcae',backgroundColor:'#64dcae',tension:.25,pointRadius:3},{label:'50%-60%',data:rbRate4,borderColor:'#ffc26b',backgroundColor:'#ffc26b',tension:.25,pointRadius:3},{label:'60%以上',data:rbRate5,borderColor:'#b49aff',backgroundColor:'#b49aff',tension:.25,pointRadius:3}]},options:{...base,plugins:{...base.plugins,tooltip:{callbacks:{label:c=>c.dataset.label+': '+c.parsed.y.toFixed(2)+'%'}}},scales:{...base.scales,y:{...base.scales.y,min:20,max:60,ticks:{callback:v=>v+'%'}}}}});
+new Chart(document.getElementById('rateBucketCount'),{type:'bar',data:{labels:m,datasets:[{label:'30%以下',data:rbCount1,backgroundColor:'#f68ab0',borderRadius:3},{label:'30%-40%',data:rbCount2,backgroundColor:'#43c7e7',borderRadius:3},{label:'40%-50%',data:rbCount3,backgroundColor:'#64dcae',borderRadius:3},{label:'50%-60%',data:rbCount4,backgroundColor:'#ffc26b',borderRadius:3},{label:'60%以上',data:rbCount5,backgroundColor:'#b49aff',borderRadius:3}]},options:{...base,scales:{...base.scales,x:{...base.scales.x,stacked:true},y:{...base.scales.y,stacked:true}}}});
+new Chart(document.getElementById('termDistribution'),{type:'bar',data:{labels:m,datasets:[{label:'1期',data:term1,backgroundColor:'#43c7e7',borderRadius:3},{label:'2期',data:term2,backgroundColor:'#64dcae',borderRadius:3},{label:'3期',data:term3,backgroundColor:'#ffc26b',borderRadius:3},{label:'4期',data:term4,backgroundColor:'#b49aff',borderRadius:3}]},options:{...base,plugins:{...base.plugins,tooltip:{callbacks:{label:c=>c.dataset.label+': '+fmt(c.parsed.y)+' 笔'}}},scales:{...base.scales,x:{...base.scales.x,stacked:true},y:{...base.scales.y,stacked:true,ticks:{callback:v=>fmt(v)}}}}});
+new Chart(document.getElementById('termInterestTrend'),{type:'line',data:{labels:m,datasets:[{label:'1期',data:termInterest1,borderColor:'#43c7e7',backgroundColor:'#43c7e7',tension:.25,pointRadius:4},{label:'2期',data:termInterest2,borderColor:'#64dcae',backgroundColor:'#64dcae',tension:.25,pointRadius:4},{label:'3期',data:termInterest3,borderColor:'#ffc26b',backgroundColor:'#ffc26b',tension:.25,pointRadius:4},{label:'4期',data:termInterest4,borderColor:'#b49aff',backgroundColor:'#b49aff',tension:.25,pointRadius:4}]},options:{...base,plugins:{...base.plugins,tooltip:{callbacks:{label:c=>c.dataset.label+': '+c.parsed.y.toFixed(2)+'%'}}},scales:{...base.scales,y:{...base.scales.y,min:35,max:70,ticks:{callback:v=>v+'%'}}}}});
+const splitPalette=['#f68ab0','#43c7e7','#64dcae','#ffc26b','#b49aff'];
+function splitLine(id,series,min,max){new Chart(document.getElementById(id),{type:'line',data:{labels:m,datasets:series.map((x,i)=>({label:x[0],data:x[1],borderColor:splitPalette[i],backgroundColor:splitPalette[i],tension:.25,pointRadius:3}))},options:{...base,plugins:{...base.plugins,tooltip:{callbacks:{label:c=>c.dataset.label+': '+c.parsed.y.toFixed(2)+'%'}}},scales:{...base.scales,y:{...base.scales.y,min,max,ticks:{callback:v=>v+'%'}}}}});}
+function splitStack(id,series){new Chart(document.getElementById(id),{type:'bar',data:{labels:m,datasets:series.map((x,i)=>({label:x[0],data:x[1],backgroundColor:splitPalette[i],borderRadius:3}))},options:{...base,plugins:{...base.plugins,tooltip:{callbacks:{label:c=>c.dataset.label+': '+fmt(c.parsed.y)+' 笔'}}},scales:{...base.scales,x:{...base.scales.x,stacked:true},y:{...base.scales.y,stacked:true,ticks:{callback:v=>fmt(v)}}}}});}
+splitLine('cycleRateBucketTrend',[['30%以下',cRb1],['30%-40%',cRb2],['40%-50%',cRb3],['50%-60%',cRb4],['60%以上',cRb5]],20,60);
+splitLine('noncycleRateBucketTrend',[['30%以下',nRb1],['30%-40%',nRb2],['40%-50%',nRb3],['50%-60%',nRb4],['60%以上',nRb5]],0,60);
+splitStack('cycleTermDistribution',[['1期',cTerm1],['2期',cTerm2],['3期',cTerm3],['4期',cTerm4]]);
+splitStack('noncycleTermDistribution',[['1期',nTerm1],['2期',nTerm2],['3期',nTerm3],['4期',nTerm4]]);
+splitLine('cycleTermInterestTrend',[['1期',cTi1],['2期',cTi2],['3期',cTi3],['4期',cTi4]],35,70);
+splitLine('noncycleTermInterestTrend',[['1期',nTi1],['2期',nTi2],['3期',nTi3],['4期',nTi4]],35,70);
+new Chart(document.getElementById('rate'),{type:'line',data:{labels:m,datasets:[{label:'循环贷用户',data:cr,borderColor:'#64dcae',backgroundColor:'#64dcae',tension:.25,pointRadius:4},{label:'非循环贷用户',data:nr,borderColor:'#ffc26b',backgroundColor:'#ffc26b',tension:.25,pointRadius:4}]},options:{...base,plugins:{...base.plugins,tooltip:{callbacks:{label:c=>c.dataset.label+': '+c.parsed.y.toFixed(2)+'%'}}},scales:{...base.scales,y:{...base.scales.y,min:30,max:56,ticks:{callback:v=>v+'%'}}}}});
+new Chart(document.getElementById('share'),{type:'bar',data:{labels:m,datasets:[{label:'循环贷用户占当月 T0',data:cs,backgroundColor:'#f68ab0',borderRadius:6}]},options:{...base,plugins:{...base.plugins,legend:{display:false},tooltip:{callbacks:{label:c=>c.parsed.y.toFixed(2)+'%'}}},scales:{...base.scales,y:{...base.scales.y,min:0,max:50,ticks:{callback:v=>v+'%'}}}}});
+new Chart(document.getElementById('layerShare'),{type:'bar',data:{labels:['第二层：原始路径','第三层：严格路径'],datasets:[{label:'占第一层循环贷 T0',data:[32.52,29.74],backgroundColor:['#43c7e7','#64dcae'],borderRadius:7}]},options:{...base,plugins:{...base.plugins,legend:{display:false},tooltip:{callbacks:{label:c=>c.parsed.y.toFixed(2)+'%'}}},scales:{...base.scales,y:{...base.scales.y,max:40,ticks:{callback:v=>v+'%'}}}}});
+new Chart(document.getElementById('pathRate'),{type:'bar',data:{labels:['第二层：原始路径','第三层：严格路径'],datasets:[{label:'当天提单率',data:[43.47,42.93],backgroundColor:['#43c7e7','#64dcae'],borderRadius:7}]},options:{...base,plugins:{...base.plugins,legend:{display:false},tooltip:{callbacks:{label:c=>c.parsed.y.toFixed(2)+'%'}}},scales:{...base.scales,y:{...base.scales.y,max:50,ticks:{callback:v=>v+'%'}}}}});
+new Chart(document.getElementById('pathCount'),{type:'bar',data:{labels:m,datasets:[{label:'第二层样本',data:p2,backgroundColor:'#43c7e7',borderRadius:5},{label:'第三层样本',data:p3,backgroundColor:'#64dcae',borderRadius:5}]},options:base});
+new Chart(document.getElementById('pathTrend'),{type:'line',data:{labels:m,datasets:[{label:'第二层提单率',data:p2r,borderColor:'#43c7e7',backgroundColor:'#43c7e7',tension:.25,pointRadius:4},{label:'第三层提单率',data:p3r,borderColor:'#64dcae',backgroundColor:'#64dcae',tension:.25,pointRadius:4}]},options:{...base,plugins:{...base.plugins,tooltip:{callbacks:{label:c=>c.dataset.label+': '+c.parsed.y.toFixed(2)+'%'}}},scales:{...base.scales,y:{...base.scales.y,min:30,max:55,ticks:{callback:v=>v+'%'}}}}});
+let a='';m.forEach((x,i)=>a+=`<tr><td>${x}</td><td>${fmt(cyc[i])}</td><td>${cs[i].toFixed(2)}%</td><td>${fmt(cycA[i])}</td><td>${cr[i].toFixed(2)}%</td><td>${fmt(non[i])}</td><td>${(100-cs[i]).toFixed(2)}%</td><td>${fmt(nonA[i])}</td><td>${nr[i].toFixed(2)}%</td></tr>`);a+=`<tr class="total"><td>合计</td><td>${fmt(sum(cyc))}</td><td>36.72%</td><td>${fmt(sum(cycA))}</td><td>48.42%</td><td>${fmt(sum(non))}</td><td>63.28%</td><td>${fmt(sum(nonA))}</td><td>45.33%</td></tr>`;document.getElementById('table1').innerHTML=a;
+let b='';m.forEach((x,i)=>b+=`<tr><td>${x}</td><td>${fmt(p2[i])}</td><td>${fmt(p2a[i])}</td><td>${p2r[i].toFixed(2)}%</td><td>${fmt(p3[i])}</td><td>${fmt(p3a[i])}</td><td>${p3r[i].toFixed(2)}%</td><td>${pct(p3[i],p2[i]).toFixed(2)}%</td></tr>`);b+=`<tr class="total"><td>合计</td><td>${fmt(sum(p2))}</td><td>${fmt(sum(p2a))}</td><td>43.47%</td><td>${fmt(sum(p3))}</td><td>${fmt(sum(p3a))}</td><td>42.93%</td><td>91.44%</td></tr>`;document.getElementById('table2').innerHTML=b;
+let d='';m.forEach((x,i)=>d+=`<tr><td>${x}</td><td>${fmt(cycRateOrders[i])}</td><td>${cycInterest[i].toFixed(2)}%</td><td>${fmt(cycA[i])}</td><td>${cycUtil[i].toFixed(2)}%</td><td>${fmt(nonRateOrders[i])}</td><td>${nonInterest[i].toFixed(2)}%</td><td>${fmt(nonA[i])}</td><td>${nonUtil[i].toFixed(2)}%</td></tr>`);d+=`<tr class="total"><td>合计</td><td>24,035</td><td>52.91%</td><td>24,486</td><td>90.13%</td><td>38,917</td><td>52.63%</td><td>39,501</td><td>91.98%</td></tr>`;document.getElementById('table3').innerHTML=d;
+const rbCounts=[rbCount1,rbCount2,rbCount3,rbCount4,rbCount5],rbApplies=[rbApply1,rbApply2,rbApply3,rbApply4,rbApply5],rbRates=[rbRate1,rbRate2,rbRate3,rbRate4,rbRate5];let e='';m.forEach((x,i)=>e+=`<tr><td>${x}</td>${rbCounts.map((a,j)=>`<td>${fmt(a[i])} / ${rbRates[j][i].toFixed(2)}%</td>`).join('')}</tr>`);e+=`<tr class="total"><td>合计</td><td>1,450 / 36.83%</td><td>8,276 / 47.20%</td><td>53,135 / 48.11%</td><td>19,033 / 46.67%</td><td>55,822 / 44.97%</td></tr>`;document.getElementById('table4').innerHTML=e;
+</script></body></html>
