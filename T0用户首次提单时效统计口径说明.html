@@ -1,0 +1,105 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>T0用户首次提单时效统计口径说明</title>
+  <style>
+    :root{--bg:#071a2e;--panel:#0c2945;--panel2:#103456;--line:#24557d;--text:#ecf5ff;--muted:#a9c1d8;--cyan:#52d6ed;--mint:#63d6aa;--amber:#ffc56d;--violet:#ad9bff;}
+    *{box-sizing:border-box} body{margin:0;background:linear-gradient(135deg,#06172a,#0a2844 55%,#071a2e);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei",sans-serif;line-height:1.7}
+    .wrap{max-width:1180px;margin:0 auto;padding:46px 28px 80px}.hero{text-align:center;padding:34px 20px 44px;border-bottom:1px solid var(--line)}
+    h1{font-size:36px;letter-spacing:.5px;margin:0 0 12px}.sub{color:var(--muted);font-size:15px}.tag{display:inline-block;margin-top:15px;padding:4px 14px;border:1px solid #31729e;border-radius:999px;color:var(--cyan);font-size:13px}
+    section{margin-top:32px;background:rgba(12,41,69,.88);border:1px solid var(--line);border-radius:16px;padding:28px;box-shadow:0 12px 36px rgba(0,0,0,.16)}
+    h2{margin:0 0 18px;font-size:23px;color:#fff}.num{color:var(--cyan);margin-right:9px}.lead{color:#dbeafa;margin:0 0 18px}.grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}.card{background:var(--panel2);border:1px solid #245d88;border-radius:12px;padding:17px}.card h3{font-size:16px;margin:0 0 7px;color:var(--cyan)}.card p{font-size:14px;color:var(--muted);margin:0}
+    ul{margin:8px 0 0;padding-left:22px}li{margin:7px 0;color:#d9e9f7} strong{color:#fff} table{width:100%;border-collapse:collapse;margin-top:12px;font-size:14px;overflow:hidden;border-radius:10px}th{background:#1a507a;color:#fff;font-weight:600;text-align:left}td,th{padding:13px 12px;border-bottom:1px solid #24557d;vertical-align:top}tr:nth-child(even) td{background:rgba(19,57,88,.48)}tr:last-child td{border-bottom:0}.window{color:var(--amber);font-weight:700;white-space:nowrap}.note{border-left:4px solid var(--amber);background:rgba(255,197,109,.09);padding:15px 17px;border-radius:0 10px 10px 0;color:#f5dfbd;margin-top:18px}.ok{border-left-color:var(--mint);background:rgba(99,214,170,.08);color:#cceedd}pre{margin:15px 0 0;padding:18px;background:#06192b;border:1px solid #204966;border-radius:10px;overflow:auto;color:#cbeeff;font:13px/1.75 ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,monospace}.footer{margin-top:28px;text-align:center;color:#7fa4c1;font-size:13px}
+    @media(max-width:760px){.wrap{padding:28px 16px 56px}h1{font-size:27px}section{padding:20px}.grid{grid-template-columns:1fr}table{display:block;overflow-x:auto;white-space:nowrap}}
+  </style>
+</head>
+<body>
+  <main class="wrap">
+    <header class="hero">
+      <h1>T0 用户首次提单时效统计口径说明</h1>
+      <div class="sub">用于拆分干净结清且当日获额通过用户，在结清后的首次提单时点与转化率</div>
+      <div class="tag">用户日期样本口径 · 不跨日去重</div>
+    </header>
+
+    <section>
+      <h2><span class="num">一、</span>统计目标</h2>
+      <p class="lead">以 T0 基础用户为样本，识别用户在目标结清订单之后的<strong>首次提单</strong>，并按 D0、D1、D2、D3+ 及多个固定观察窗口拆分提单人数与提单率。</p>
+      <div class="grid">
+        <div class="card"><h3>分母</h3><p>满足 T0 基础条件的用户日期样本数。</p></div>
+        <div class="card"><h3>分子</h3><p>首次提单日期落入目标日期或目标窗口的用户日期样本数。</p></div>
+        <div class="card"><h3>提单率</h3><p>对应窗口首次提单用户数 ÷ 对应可完整观察的基础用户数。</p></div>
+      </div>
+    </section>
+
+    <section>
+      <h2><span class="num">二、</span>T0 基础样本口径</h2>
+      <ul>
+        <li><strong>订单结清：</strong>订单满足 <code>is_repaid = 1</code>、<code>loan_status_code = 7</code> 或 <code>repaid_date &gt; '2000-01-01'</code> 中任一结清标识，且结清时间有效。</li>
+        <li><strong>干净结清：</strong>在目标订单的<strong>结清时点</strong>，用户不存在其他在途订单。结清后才新申请或新生成的订单，不影响此前结清时点的干净结清判断。</li>
+        <li><strong>当日获额通过：</strong>结清当日存在 <code>is_pass1 = 1</code> 的获额记录，且获额时间严格晚于目标订单结清时间。</li>
+        <li><strong>同日去重：</strong>同一用户同一结清日若有多笔订单满足上述条件，仅保留<strong>最早</strong>的一笔合格结清订单。</li>
+        <li><strong>统计单位：</strong>为“用户 × 结清日”样本；同一用户跨不同结清日再次满足条件时，会分别计入，不进行跨日去重。</li>
+      </ul>
+    </section>
+
+    <section>
+      <h2><span class="num">三、</span>首次提单归因规则</h2>
+      <p class="lead">对每个 T0 基础样本，从目标结清时间之后开始寻找最早一笔提单订单，并将该笔订单的申请日期作为首次提单日。</p>
+      <div class="note ok"><strong>核心原则：</strong>用户一旦在较早日期已提单，不能再归入更晚日期或更晚窗口。例如，D2 首次提单用户必须在 D0、D1 均没有提单。</div>
+      <pre>first_apply_time = MIN(apply_time)
+                   WHERE apply_time &gt; target_repaid_time
+
+first_apply_day = DATE(first_apply_time) - target_repaid_date
+
+若 first_apply_day = N：
+    该样本仅归入 DN 首次提单
+若不存在 first_apply_time：
+    不属于任何首次提单分子</pre>
+    </section>
+
+    <section>
+      <h2><span class="num">四、</span>需统计的提单时效指标</h2>
+      <table>
+        <thead><tr><th>指标</th><th>分子定义</th><th>提单率分母</th><th>完整观察要求</th></tr></thead>
+        <tbody>
+          <tr><td class="window">D0 首次提单</td><td>首次提单发生在结清当天。</td><td>全部 T0 基础样本。</td><td>无需额外观察期。</td></tr>
+          <tr><td class="window">D1 首次提单</td><td>D0 未提单，首次提单发生在结清后第 1 天。</td><td>已完整观察 D1 的 T0 样本。</td><td>结清日距统计截止日至少 1 天。</td></tr>
+          <tr><td class="window">D2 首次提单</td><td>D0、D1 均未提单，首次提单发生在第 2 天。</td><td>已完整观察 D2 的 T0 样本。</td><td>结清日距统计截止日至少 2 天。</td></tr>
+          <tr><td class="window">D3+ 首次提单</td><td>D0–D2 均未提单，首次提单发生在第 3 天或更晚。</td><td>按实际设定的观察期筛选后的 T0 样本。</td><td>若用于稳定比较，建议采用固定窗口。</td></tr>
+          <tr><td class="window">D3–D32</td><td>D0–D2 均未提单，首次提单发生在 D3 至 D32，共 30 天。</td><td>已完整观察 D32 的 T0 样本。</td><td>结清日距统计截止日至少 32 天。</td></tr>
+          <tr><td class="window">D5–D34</td><td>D0–D4 均未提单，首次提单发生在 D5 至 D34，共 30 天。</td><td>已完整观察 D34 的 T0 样本。</td><td>结清日距统计截止日至少 34 天。</td></tr>
+          <tr><td class="window">D8–D37</td><td>D0–D7 均未提单，首次提单发生在 D8 至 D37，共 30 天。</td><td>已完整观察 D37 的 T0 样本。</td><td>结清日距统计截止日至少 37 天。</td></tr>
+        </tbody>
+      </table>
+      <div class="note"><strong>注意：</strong>固定窗口指标必须剔除尚未走完窗口的近期样本；否则近期用户会因观察时间不足被错误当作“未提单”，从而系统性低估提单率。</div>
+    </section>
+
+    <section>
+      <h2><span class="num">五、</span>提单率计算方式</h2>
+      <pre>DN 首次提单率
+= DN 首次提单用户日期样本数
+  ÷ 已完整观察 DN 的 T0 基础用户日期样本数
+
+D3–D32 首次提单率
+= 首次提单日 ∈ [D3, D32] 的用户日期样本数
+  ÷ 已完整观察 D32 的 T0 基础用户日期样本数</pre>
+      <p class="lead" style="margin-top:16px">日、周、月汇总均应采用<strong>分子直接相加 ÷ 分母直接相加</strong>的方式计算，不可简单平均各日或各周的百分比。</p>
+    </section>
+
+    <section>
+      <h2><span class="num">六、</span>取数检查清单</h2>
+      <ul>
+        <li>提单时间必须严格晚于目标结清时间，避免把原结清订单自身的历史申请时间误判为结清后提单。</li>
+        <li>用户同日存在多笔合格结清时，只能对应最早一笔，避免同一用户同日重复进入分母。</li>
+        <li>首次提单必须按时间取最早值；不能仅判断窗口内是否存在任意提单。</li>
+        <li>固定窗口的分母必须使用已走完窗口的样本，确保不同结清日期具有相同观察时长。</li>
+        <li>若按日、周、月展示，建议同时保留分子和分母人数，便于核对提单率变化是否由样本结构变化造成。</li>
+      </ul>
+    </section>
+    <div class="footer">统计口径说明 · T0 用户首次提单时效分析</div>
+  </main>
+</body>
+</html>
+
