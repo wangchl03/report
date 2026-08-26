@@ -824,7 +824,8 @@ function barChart(id, labels, series) {
   labels.forEach((l,i)=>{const cx=p.l+group*(i+.5);h+='<text x="'+cx+'" y="'+(H-15)+'" text-anchor="middle" fill="#a7c3da" font-size="12">'+l+'</text>';series.forEach((s,j)=>{const bx=cx-(series.length*bw)/2+j*bw,v=s.data[i],yy=y(v);h+='<rect x="'+bx+'" y="'+yy+'" width="'+(bw-3)+'" height="'+(H-p.b-yy)+'" rx="3" fill="'+s.color+'"/><text x="'+(bx+(bw-3)/2)+'" y="'+(yy-7)+'" text-anchor="middle" fill="'+s.color+'" font-size="10" font-weight="700">'+(v/1000).toFixed(1)+'k</text>';})});svg.innerHTML=h;
 }
 lineChart('chart-total30',labels.slice(0,7),[{data:total30.slice(0,7),color:'#39c6e8'}],{min:75,max:92});
-lineChart('chart-observed',labels,[{data:observed,color:'#ffb45e'}],{min:65,max:100});
+/* 8 月仍处在不完整的后续观察期，不在累计提单率趋势图中展示。 */
+lineChart('chart-observed',labels.slice(0,7),[{data:observed.slice(0,7),color:'#ffb45e'}],{min:65,max:100});
 lineChart('chart-immediate',labels,[{data:immediate.d0,color:'#39c6e8'},{data:immediate.d1,color:'#62d6a7'},{data:immediate.d2,color:'#ffb45e',labelDy:-18,aboveOnly:[0,1,2,3,4,5,6,7]}],{min:0,max:60});
 lineChart('chart-delayed',delayedLabels,[{data:delayed.t3,color:'#eb7db5'},{data:delayed.t5,color:'#62d6a7'},{data:delayed.t7,color:'#ffb45e'}],{min:5,max:30});
 /* 第六部分只展示已具备充分后续观察的 1–7 月，避免 8 月截尾影响结构判断。 */
