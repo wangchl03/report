@@ -811,7 +811,7 @@ function lineChart(id, labels, series, options={}) {
   const y=v=>H-p.b-(v-min)*(H-p.t-p.b)/(max-min||1); let h='';
   for(let i=0;i<=5;i++) { const v=min+(max-min)*i/5,yy=y(v); h+='<line x1="'+p.l+'" x2="'+(W-p.r)+'" y1="'+yy+'" y2="'+yy+'" stroke="#255271" stroke-dasharray="3 5"/><text x="'+(p.l-9)+'" y="'+(yy+4)+'" text-anchor="end" fill="#a7c3da" font-size="12">'+v.toFixed(0)+'%</text>'; }
   labels.forEach((l,i)=>h+='<text x="'+x(i)+'" y="'+(H-15)+'" text-anchor="middle" fill="#a7c3da" font-size="12">'+l+'</text>');
-  series.forEach(s=>{let d='';s.data.forEach((v,i)=>{if(v===null||v===undefined)return;d+=(d?' L':'M')+x(i)+' '+y(v)});h+='<path d="'+d+'" fill="none" stroke="'+s.color+'" stroke-width="3"/>';s.data.forEach((v,i)=>{if(v===null||v===undefined)return;h+='<circle cx="'+x(i)+'" cy="'+y(v)+'" r="4.6" fill="'+s.color+'" stroke="#061d33" stroke-width="2"/><text x="'+x(i)+'" y="'+(y(v)-10)+'" text-anchor="middle" fill="'+s.color+'" font-size="11" font-weight="700">'+v.toFixed(1)+'%</text>'})});svg.innerHTML=h;
+  series.forEach(s=>{let d='';s.data.forEach((v,i)=>{if(v===null||v===undefined)return;d+=(d?' L':'M')+x(i)+' '+y(v)});h+='<path d="'+d+'" fill="none" stroke="'+s.color+'" stroke-width="3"/>';s.data.forEach((v,i)=>{if(v===null||v===undefined)return;const labelX=x(i)+(i===0?(options.firstLabelDx||0):0);h+='<circle cx="'+x(i)+'" cy="'+y(v)+'" r="4.6" fill="'+s.color+'" stroke="#061d33" stroke-width="2"/><text x="'+labelX+'" y="'+(y(v)-10)+'" text-anchor="middle" fill="'+s.color+'" font-size="11" font-weight="700">'+v.toFixed(1)+'%</text>'})});svg.innerHTML=h;
 }
 function barChart(id, labels, series) {
   const svg=document.getElementById(id),W=900,H=340,p={l:60,r:20,t:26,b:45},max=Math.ceil(Math.max(...series.flatMap(s=>s.data))/1000)*1000;
@@ -824,5 +824,5 @@ lineChart('chart-total30',labels.slice(0,7),[{data:total30.slice(0,7),color:'#39
 lineChart('chart-observed',labels,[{data:observed,color:'#ffb45e'}],{min:65,max:100});
 lineChart('chart-immediate',labels,[{data:immediate.d0,color:'#39c6e8'},{data:immediate.d1,color:'#62d6a7'},{data:immediate.d2,color:'#ffb45e'}],{min:0,max:60});
 lineChart('chart-delayed',delayedLabels,[{data:delayed.t3,color:'#eb7db5'},{data:delayed.t5,color:'#62d6a7'},{data:delayed.t7,color:'#ffb45e'}],{min:5,max:30});
-lineChart('chart-timeshare',labels,[{data:timeShares.d0,color:'#39c6e8'},{data:timeShares.d12,color:'#62d6a7'},{data:timeShares.d3plus,color:'#eb7db5'}],{min:0,max:60});
+lineChart('chart-timeshare',labels,[{data:timeShares.d0,color:'#39c6e8'},{data:timeShares.d12,color:'#62d6a7'},{data:timeShares.d3plus,color:'#eb7db5'}],{min:0,max:60,firstLabelDx:24});
 </script></body></html>
