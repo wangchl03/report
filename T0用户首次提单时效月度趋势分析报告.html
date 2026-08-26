@@ -1,0 +1,827 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>T0用户首次提单时效月度趋势分析报告</title>
+<style>
+:root{--bg:#071d34;--panel:#0c2b49;--panel2:#0a2540;--line:#215576;--text:#eef6ff;--muted:#a7c3da;--cyan:#39c6e8;--blue:#6495ed;--green:#62d6a7;--orange:#ffb45e;--pink:#eb7db5;--red:#ff7777;--ink:#09213a}
+*{box-sizing:border-box}body{margin:0;background:linear-gradient(160deg,#061b31 0%,#082744 52%,#061b31 100%);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei",Arial,sans-serif;line-height:1.55}.wrap{max-width:1440px;margin:0 auto;padding:42px 34px 80px}.hero{text-align:center;padding:24px 20px 36px;border-bottom:1px solid #2b6285}.hero .eyebrow{color:var(--cyan);letter-spacing:3px;font-size:13px;font-weight:700}.hero h1{font-size:36px;margin:8px 0 8px;letter-spacing:1px}.hero p{margin:0;color:var(--muted);font-size:15px}.section{margin-top:42px}.section h2{font-size:26px;margin:0 0 8px}.section .sub{color:var(--muted);margin:0 0 20px}.grid{display:grid;gap:18px}.grid.kpi{grid-template-columns:repeat(4,1fr)}.grid.two{grid-template-columns:repeat(2,1fr)}.card{background:linear-gradient(145deg,rgba(14,48,79,.98),rgba(7,35,60,.98));border:1px solid var(--line);border-radius:16px;padding:20px;box-shadow:0 10px 25px rgba(0,0,0,.16)}.kpi .card{min-height:145px}.metric-name{color:var(--muted);font-size:14px}.metric-value{font-size:35px;line-height:1.1;font-weight:800;margin:9px 0}.delta.good{color:var(--green)}.delta.bad{color:#ff8b8b}.delta{font-size:15px;font-weight:700}.note{font-size:13px;color:var(--muted);margin-top:9px}.callout{border-left:4px solid var(--cyan);background:#0c3150;border-radius:0 12px 12px 0;padding:16px 18px;color:#dbeeff}.callout strong{color:#fff}.chart-card{padding:20px}.chart-title{font-size:17px;font-weight:800;margin-bottom:3px}.chart-note{color:var(--muted);font-size:13px;margin-bottom:10px}.chart{width:100%;height:340px;background:rgba(3,18,33,.23);border-radius:10px}.legend{display:flex;gap:16px;flex-wrap:wrap;margin:8px 0 0;font-size:13px;color:var(--muted)}.dot{display:inline-block;width:10px;height:10px;border-radius:50%;margin-right:6px}.findings{display:grid;grid-template-columns:repeat(2,1fr);gap:16px}.finding{border:1px solid #2a5b7b;border-radius:14px;padding:18px;background:#0b2a46}.finding h3{font-size:17px;margin:0 0 8px}.finding p{margin:0;color:#d7e9f7}.finding .evidence{margin-top:10px;color:var(--green);font-weight:700}.table-wrap{overflow:auto;border:1px solid var(--line);border-radius:14px}.data-table{border-collapse:collapse;width:100%;min-width:1280px;font-size:13px}.data-table th{position:sticky;top:0;background:#18486d;color:#fff;padding:11px 10px;text-align:right;white-space:nowrap}.data-table th:first-child,.data-table td:first-child{text-align:left}.data-table td{padding:10px;border-top:1px solid #22516f;text-align:right;color:#dceefa}.data-table tr:nth-child(even) td{background:rgba(100,149,237,.05)}.data-table td:nth-child(4),.data-table td:nth-child(10),.data-table td:nth-child(12){font-weight:800;color:#7de2ba}.definitions{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}.definition{padding:16px;background:#0b2a46;border:1px solid var(--line);border-radius:12px}.definition b{display:block;color:#7de2ba;margin-bottom:4px}details{background:#061a2d;border:1px solid #286082;border-radius:12px;margin:12px 0;overflow:hidden}summary{cursor:pointer;padding:15px 18px;font-weight:800;list-style:none}summary::-webkit-details-marker{display:none}summary:before{content:'▾';display:inline-block;margin-right:10px;font-size:22px;color:var(--cyan);transform:rotate(-90deg);transition:.2s}details[open] summary:before{transform:rotate(0)}pre{margin:0;padding:18px 20px 24px;white-space:pre-wrap;word-break:break-word;border-top:1px solid #1d4e6d;color:#cbe5f7;font:12px/1.55 ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,monospace}.footnote{color:var(--muted);font-size:12px;margin-top:12px}@media(max-width:850px){.wrap{padding:26px 15px 60px}.hero h1{font-size:27px}.grid.kpi,.grid.two,.findings,.definitions{grid-template-columns:1fr}.chart{height:310px}}
+</style>
+</head>
+<body><main class="wrap">
+<header class="hero"><div class="eyebrow">T0 USER CONVERSION · MONTHLY TREND</div><h1>T0 用户首次提单时效月度趋势分析报告</h1><p>统计范围：2026-01-01 至 2026-08-20 的结清日样本｜按结清月份分组｜报告生成：2026-08-26</p></header>
+
+<section class="section"><h2>一、核心结论</h2><p class="sub">所有百分比均采用对应分子÷分母计算；固定 30 天窗口只保留完整观察样本。</p><div class="grid kpi">
+<div class="card"><div class="metric-name">D0–D29 总提单率（1月→7月）</div><div class="metric-value">88.35% → 82.38%</div><div class="delta bad">下降 5.97 个百分点</div><div class="note">完整 30 天观察口径，能够排除不同结清月份的观察期差异。</div></div>
+<div class="card"><div class="metric-name">T0 / D0 首次提单率（1月→7月）</div><div class="metric-value">52.98% → 41.73%</div><div class="delta bad">下降 11.25 个百分点</div><div class="note">T0 是当天结清、当天获额通过后的即时首次提单。</div></div>
+<div class="card"><div class="metric-name">T1、T2 首次提单率（1月→7月）</div><div class="metric-value">10.03% / 5.28%</div><div class="delta good">→ 10.05% / 5.02%</div><div class="note">T1 基本持平；T2 仅下降 0.26 个百分点。</div></div>
+<div class="card"><div class="metric-name">延迟窗口提单率（1月→7月）</div><div class="metric-value">T3 +5.55pp</div><div class="delta good">T5 +5.20pp｜T7+ +4.07pp</div><div class="note">分别对应 D3–D32、D5–D34、D8–D37 的固定 30 天首次提单窗口。</div></div>
+</div></section>
+
+<section class="section"><h2>二、口径与可比性说明</h2><div class="definitions"><div class="definition"><b>基础分母</b>干净结清，且结清当天获额通过（is_pass1=1），并且获额时间晚于结清时间；同一用户同日取最早合格结清。</div><div class="definition"><b>首次提单日</b>取结清时点之后最早一笔提单时间。D0、D1、D2 分别为结清当日、次日、第 2 日首次提单。</div><div class="definition"><b>T3 / T5 / T7+</b>T3 为 D3–D32，T5 为 D5–D34，T7+ 为 D8–D37，均为固定 30 天窗口。三个窗口相互嵌套，不可相加。</div></div><p class="footnote">8 月样本尚未具备完整的 30 天观察期，因此固定窗口趋势只展示至 7 月；“截至取数日总体首次提单率”也会受观察期长短影响，报告以 D0–D29 指标判断大盘可比趋势。</p></section>
+
+<section class="section"><h2>三、大盘提单率：完整 30 天口径持续下降</h2><p class="sub">结清当日及之后 30 天的总首次提单率从 1 月 88.35% 降至 7 月 82.38%，下降 5.97pp；截至取数日的总体首次提单率也由 94.63% 降至 83.78%。</p><div class="grid two"><div class="card chart-card"><div class="chart-title">完整观察：D0–D29 总提单率</div><div class="chart-note">推荐作为大盘趋势主指标（每个样本均完整观察 30 天）</div><svg id="chart-total30" class="chart"></svg><div class="legend"><span><i class="dot" style="background:#39c6e8"></i>D0–D29 总提单率</span></div></div><div class="card chart-card"><div class="chart-title">截至取数日的总体首次提单率</div><div class="chart-note">用于观察全量累计状态；后期月份因可观察时长较短，应辅助解读</div><svg id="chart-observed" class="chart"></svg><div class="legend"><span><i class="dot" style="background:#ffb45e"></i>结清后总首次提单率</span></div></div></div><div class="callout" style="margin-top:18px"><strong>结论 1：大盘提单率下降已得到固定 30 天口径支持。</strong> 1–7 月完整观察的 D0–D29 总提单率下降 5.97pp，不是仅由 8 月观察期不足造成的表象。</div></section>
+
+<section class="section"><h2>四、即时提单：T0 下降是大盘承压的主要来源</h2><p class="sub">T0 的下降幅度明显大于 T1、T2；后两者的提单率在样本期内基本稳定。</p><div class="card chart-card"><div class="chart-title">T0、T1、T2 首次提单率（月度）</div><div class="chart-note">T0：当日首次提单；T1：次日首次提单；T2：第 2 日首次提单</div><svg id="chart-immediate" class="chart"></svg><div class="legend"><span><i class="dot" style="background:#39c6e8"></i>T0 / D0</span><span><i class="dot" style="background:#62d6a7"></i>T1 / D1</span><span><i class="dot" style="background:#ffb45e"></i>T2 / D2</span></div></div><div class="findings" style="margin-top:18px"><div class="finding"><h3>结论 2：T0 当天提单率明显下降</h3><p>1 月 T0 首次提单率为 52.98%，7 月为 41.73%，下降 11.25pp；8 月当前可观测值进一步为 39.19%（但 8 月非完整后续观察）。</p><div class="evidence">D0 用户数：1 月 8,987 人 → 7 月 7,555 人</div></div><div class="finding"><h3>结论 3：T1、T2 变动较小</h3><p>T1 从 10.03% 变为 10.05%，基本持平；T2 从 5.28% 变为 5.02%，仅下降 0.26pp。即时转化收缩主要集中在 T0，而不是全面发生在 T1、T2。</p><div class="evidence">T1 范围 10.03%–10.76%；T2 范围 5.02%–5.73%</div></div></div></section>
+
+<section class="section"><h2>五、延迟首次提单：测试召回窗口内增长</h2><p class="sub">三项指标均采用各自完整的 30 天观察窗口，因而可在 1–7 月间横向比较。T7+ 在本报告中对应 D8–D37。</p><div class="card chart-card"><div class="chart-title">T3、T5、T7+ 的 30 天窗口首次提单率</div><div class="chart-note">T3：D3–D32；T5：D5–D34；T7+：D8–D37。窗口嵌套，曲线用于分别观察不同延迟起点的回流表现。</div><svg id="chart-delayed" class="chart"></svg><div class="legend"><span><i class="dot" style="background:#eb7db5"></i>T3 / D3–D32</span><span><i class="dot" style="background:#62d6a7"></i>T5 / D5–D34</span><span><i class="dot" style="background:#ffb45e"></i>T7+ / D8–D37</span></div></div><div class="findings" style="margin-top:18px"><div class="finding"><h3>结论 4：T3 召回窗口提单率增长</h3><p>T3（D3–D32）从 20.56% 升至 26.11%，提高 5.55pp。</p><div class="evidence">1 月 3,487 / 16,964；7 月 3,771 / 14,440</div></div><div class="finding"><h3>结论 5：T5 召回窗口提单率增长</h3><p>T5（D5–D34）从 15.20% 升至 20.40%，提高 5.20pp。</p><div class="evidence">1 月 2,578 / 16,964；7 月 2,697 / 13,218</div></div><div class="finding"><h3>结论 6：T7+ 召回窗口提单率增长</h3><p>T7+（D8–D37）从 10.59% 升至 14.66%，提高 4.07pp。</p><div class="evidence">1 月 1,796 / 16,964；7 月 1,696 / 11,566</div></div><div class="finding"><h3>解释边界</h3><p>这些增长可说明延迟窗口内的首次提单表现改善，但单凭月度趋势不能直接认定是某一单项运营动作的因果效果；仍应结合同期策略、样本构成和随机分组验证。</p><div class="evidence">固定窗口已控制观察期；未自动控制客群结构变化</div></div></div></section>
+
+<section class="section"><h2>六、规模贡献：T0 量级最大，延迟增长尚不足以抬升大盘</h2><p class="sub">D0 占所有截至取数日首次提单用户的 51.71%，是最大单一时点；D3+ 的人数虽可观，但其固定窗口子集不能与 T0 简单相加。</p><div class="grid two"><div class="card chart-card"><div class="chart-title">D0 与 D3+ 首次提单人数（月度）</div><div class="chart-note">D3+ 为 D3 及以后所有首次提单；用于与 D0 对比量级，不等同于 T3/T5/T7+ 固定窗口之和。</div><svg id="chart-counts" class="chart"></svg><div class="legend"><span><i class="dot" style="background:#39c6e8"></i>D0 首次提单人数</span><span><i class="dot" style="background:#eb7db5"></i>D3+ 首次提单人数</span></div></div><div class="card"><div class="chart-title">总体累计结构</div><div style="display:flex;align-items:center;gap:24px;min-height:260px;flex-wrap:wrap"><div style="width:190px;height:190px;border-radius:50%;background:conic-gradient(#39c6e8 0 51.71%,#eb7db5 51.71% 82.60%,#1d5578 82.60% 100%);position:relative"><div style="position:absolute;inset:35px;border-radius:50%;background:#0b2a46;display:flex;align-items:center;justify-content:center;text-align:center;font-weight:800;line-height:1.2">125,653<br><span style="font-size:12px;color:#a7c3da">总首次提单</span></div></div><div><p><b style="color:#39c6e8">51.71%</b>：D0 当天首次提单<br>64,971 人</p><p><b style="color:#eb7db5">30.89%</b>：D3+ 首次提单<br>38,820 人</p><p><b style="color:#a7c3da">17.40%</b>：D1 + D2<br>21,862 人</p></div></div></div></div><div class="callout" style="margin-top:18px"><strong>结论 7：T0 的量级与下降幅度共同拉低大盘。</strong> 累计看，T0 占总首次提单人数 51.71%；月度看，T0 提单率 1–7 月下降 11.25pp，而 T3/T5/T7+ 的增幅分别为 5.55pp、5.20pp、4.07pp，且它们本身是更小、彼此嵌套的延迟窗口。因而延迟转化改善尚不足以抵消 T0 即时转化的明显下滑。</div></section>
+
+<section class="section"><h2>七、月度可核对数据</h2><p class="sub">按结清月份分组。8 月尚未满足固定 30 天窗口的完整观察要求，固定窗口指标记为“—”。</p><div class="table-wrap"><table class="data-table"><thead><tr><th>结清月份</th><th>基础样本</th><th>T0 人数</th><th>T0 提单率</th><th>T1 提单率</th><th>T2 提单率</th><th>T3 提单率</th><th>T5 提单率</th><th>T7+ 提单率</th><th>截至取数日总提单率</th><th>T0 占总提单人数</th><th>D0–D29 总提单率</th></tr></thead><tbody><tr><td>2026-01</td><td>16,964</td><td>8,987</td><td>52.98%</td><td>10.03%</td><td>5.28%</td><td>20.56%</td><td>15.20%</td><td>10.59%</td><td>94.63%</td><td>55.98%</td><td>88.35%</td></tr><tr><td>2026-02</td><td>19,891</td><td>10,310</td><td>51.83%</td><td>10.33%</td><td>5.16%</td><td>21.34%</td><td>15.88%</td><td>11.03%</td><td>94.13%</td><td>55.07%</td><td>88.27%</td></tr><tr><td>2026-03</td><td>19,590</td><td>9,064</td><td>46.27%</td><td>10.76%</td><td>5.73%</td><td>23.61%</td><td>17.64%</td><td>12.60%</td><td>92.63%</td><td>49.95%</td><td>85.86%</td></tr><tr><td>2026-04</td><td>17,859</td><td>8,396</td><td>47.01%</td><td>10.57%</td><td>5.62%</td><td>23.65%</td><td>17.59%</td><td>12.34%</td><td>92.31%</td><td>50.93%</td><td>86.35%</td></tr><tr><td>2026-05</td><td>20,282</td><td>9,193</td><td>45.33%</td><td>10.47%</td><td>5.16%</td><td>24.68%</td><td>19.04%</td><td>13.82%</td><td>90.76%</td><td>49.94%</td><td>84.96%</td></tr><tr><td>2026-06</td><td>18,567</td><td>8,132</td><td>43.80%</td><td>10.23%</td><td>5.08%</td><td>25.21%</td><td>19.30%</td><td>14.00%</td><td>88.67%</td><td>49.39%</td><td>83.63%</td></tr><tr><td>2026-07</td><td>18,106</td><td>7,555</td><td>41.73%</td><td>10.05%</td><td>5.02%</td><td>26.11%</td><td>20.40%</td><td>14.66%</td><td>83.78%</td><td>49.80%</td><td>82.38%</td></tr><tr><td>2026-08</td><td>8,507</td><td>3,334</td><td>39.19%</td><td>10.43%</td><td>5.10%</td><td>—</td><td>—</td><td>—</td><td>72.93%</td><td>53.74%</td><td>—</td></tr></tbody></table></div></section>
+
+<section class="section"><h2>八、建议与后续验证</h2><div class="findings"><div class="finding"><h3>优先定位 T0 的下滑环节</h3><p>应将 T0 拆为“获额通过后未进入提单页、进入提单页未提单、提单后未放款”等步骤，判断是产品价格、资格、页面、触达还是需求变化导致。</p></div><div class="finding"><h3>保留并严谨验证延迟召回</h3><p>T3/T5/T7+ 固定窗口均呈增长，建议继续分层随机验证，并把增量提单、放款、逾期及盈利同时纳入判定，而不只看提单率。</p></div><div class="finding"><h3>避免把嵌套窗口重复贡献</h3><p>T5 是 T3 中从 D5 起的子窗口，T7+ 又是更后段子窗口。对大盘贡献应使用互斥区间（D0、D1、D2、D3+），不能将 T3/T5/T7+ 三者直接相加。</p></div><div class="finding"><h3>持续使用完整观察口径</h3><p>大盘趋势优先使用 D0–D29 完整窗口；“截至取数日总提单率”适合作补充观察，不能单独用于判断最近月份的真实变化。</p></div></div></section>
+
+<section class="section"><h2>附录：完整 PGSQL</h2><p class="sub">以下三个模块均可独立执行：每个模块都包含完整的基础样本 CTE、首次提单识别与最终统计。统计范围为 2026-01-01 至 2026-08-20 的 T0 用户日期样本。</p><details><summary>模块一：总体首次提单时效统计</summary><pre>/* ================================================================
+   T0 用户首次提单时效总体统计
+   统计范围：2026-01-01 至 2026-08-20
+
+   基础分母：干净结清 + 结清后当日获额通过 + 获额时间晚于结清时间。
+   同一用户同日保留最早合格结清订单。
+   ================================================================ */
+WITH params AS (
+    SELECT
+        DATE '2026-01-01' AS start_date,
+        DATE '2026-08-20' AS end_date,
+        CURRENT_DATE AS data_cutoff_date,
+        CURRENT_TIMESTAMP AS data_cutoff_time
+),
+
+settled_orders AS (
+    SELECT
+        o.user_id,
+        o.serial_id,
+        o.repaid_time,
+        o.repaid_date::date AS repaid_date
+    FROM wangchuanliang.order_loan_f_v2_copy AS o
+    CROSS JOIN params AS p
+    WHERE o.is_remit = 1
+      AND (
+            o.is_repaid = 1
+         OR o.loan_status_code = 7
+         OR o.repaid_date::date &gt; DATE '2000-01-01'
+      )
+      AND o.repaid_time &gt; TIMESTAMP '2000-01-01 00:00:00'
+      AND o.repaid_date::date &gt;= p.start_date
+      AND o.repaid_date::date &lt;= p.end_date
+),
+
+candidate_users AS (
+    SELECT DISTINCT
+        s.user_id
+    FROM settled_orders AS s
+),
+
+all_orders AS (
+    SELECT
+        o.user_id,
+        o.serial_id,
+        o.apply_time,
+        o.repaid_time,
+        o.loan_status_code
+    FROM wangchuanliang.order_loan_f_v2_copy AS o
+    INNER JOIN candidate_users AS u
+        ON u.user_id = o.user_id
+    CROSS JOIN params AS p
+    WHERE o.apply_time &lt; p.data_cutoff_time
+),
+
+clean_settles AS (
+    /* 结清瞬间没有任何其他在途订单。 */
+    SELECT
+        s.user_id,
+        s.serial_id,
+        s.repaid_time,
+        s.repaid_date
+    FROM settled_orders AS s
+    WHERE NOT EXISTS (
+        SELECT
+            1
+        FROM all_orders AS o2
+        WHERE o2.user_id = s.user_id
+          AND o2.serial_id &lt;&gt; s.serial_id
+          AND o2.apply_time &lt; s.repaid_time
+          AND (
+                o2.loan_status_code = 5
+             OR o2.loan_status_code = 8
+             OR (
+                    o2.loan_status_code = 7
+                AND o2.repaid_time &gt; s.repaid_time
+                )
+          )
+    )
+),
+
+same_day_credit_pass AS (
+    SELECT
+        v.user_id,
+        v.vir_date::date AS vir_date,
+        TO_TIMESTAMP(v.vir_unix) AS vir_time
+    FROM wangchuanliang.order_vir_f_copy AS v
+    CROSS JOIN params AS p
+    WHERE v.is_pass1 = 1
+      AND v.vir_date::date &gt;= p.start_date
+      AND v.vir_date::date &lt;= p.end_date
+),
+
+denominator_candidates AS (
+    SELECT
+        c.user_id,
+        c.serial_id,
+        c.repaid_time,
+        c.repaid_date
+    FROM clean_settles AS c
+    WHERE EXISTS (
+        SELECT
+            1
+        FROM same_day_credit_pass AS cp
+        WHERE cp.user_id = c.user_id
+          AND cp.vir_date = c.repaid_date
+          AND cp.vir_time &gt; c.repaid_time
+    )
+),
+
+base_sample AS (
+    /* 同一用户同日取最早一笔合格结清。 */
+    SELECT DISTINCT ON (
+        d.user_id,
+        d.repaid_date
+    )
+        d.user_id,
+        d.serial_id,
+        d.repaid_time,
+        d.repaid_date
+    FROM denominator_candidates AS d
+    ORDER BY
+        d.user_id,
+        d.repaid_date,
+        d.repaid_time ASC
+),
+
+first_apply AS (
+    /* 仅识别目标结清时间之后的首次提单。 */
+    SELECT
+        b.user_id,
+        b.serial_id,
+        b.repaid_date,
+        MIN(a.apply_time) AS first_apply_time
+    FROM base_sample AS b
+    LEFT JOIN all_orders AS a
+        ON a.user_id = b.user_id
+       AND a.serial_id &lt;&gt; b.serial_id
+       AND a.apply_time &gt; b.repaid_time
+    GROUP BY
+        b.user_id,
+        b.serial_id,
+        b.repaid_date
+),
+
+sample_flags AS (
+    SELECT
+        f.repaid_date,
+        CASE
+            WHEN f.first_apply_time IS NOT NULL THEN
+                f.first_apply_time::date - f.repaid_date
+        END AS first_apply_day
+    FROM first_apply AS f
+),
+
+metric_rows AS (
+    SELECT
+        1 AS sort_order,
+        'D0 首次提单' AS 指标,
+        COUNT(*) AS 分母用户数,
+        SUM(
+            CASE
+                WHEN first_apply_day = 0 THEN 1
+                ELSE 0
+            END
+        ) AS 首次提单用户数
+    FROM sample_flags
+
+    UNION ALL
+
+    SELECT
+        2 AS sort_order,
+        'D1 首次提单' AS 指标,
+        SUM(
+            CASE
+                WHEN repaid_date &lt;= (SELECT data_cutoff_date - 1 FROM params) THEN 1
+                ELSE 0
+            END
+        ) AS 分母用户数,
+        SUM(
+            CASE
+                WHEN repaid_date &lt;= (SELECT data_cutoff_date - 1 FROM params)
+                 AND first_apply_day = 1 THEN 1
+                ELSE 0
+            END
+        ) AS 首次提单用户数
+    FROM sample_flags
+
+    UNION ALL
+
+    SELECT
+        3 AS sort_order,
+        'D2 首次提单' AS 指标,
+        SUM(
+            CASE
+                WHEN repaid_date &lt;= (SELECT data_cutoff_date - 2 FROM params) THEN 1
+                ELSE 0
+            END
+        ) AS 分母用户数,
+        SUM(
+            CASE
+                WHEN repaid_date &lt;= (SELECT data_cutoff_date - 2 FROM params)
+                 AND first_apply_day = 2 THEN 1
+                ELSE 0
+            END
+        ) AS 首次提单用户数
+    FROM sample_flags
+
+    UNION ALL
+
+    SELECT
+        4 AS sort_order,
+        'D3 及以后首次提单' AS 指标,
+        SUM(
+            CASE
+                WHEN repaid_date &lt;= (SELECT data_cutoff_date - 3 FROM params) THEN 1
+                ELSE 0
+            END
+        ) AS 分母用户数,
+        SUM(
+            CASE
+                WHEN repaid_date &lt;= (SELECT data_cutoff_date - 3 FROM params)
+                 AND first_apply_day &gt;= 3 THEN 1
+                ELSE 0
+            END
+        ) AS 首次提单用户数
+    FROM sample_flags
+
+    UNION ALL
+
+    SELECT
+        5 AS sort_order,
+        'D3 至 D32 首次提单（30天）' AS 指标,
+        SUM(
+            CASE
+                WHEN repaid_date &lt;= (SELECT data_cutoff_date - 32 FROM params) THEN 1
+                ELSE 0
+            END
+        ) AS 分母用户数,
+        SUM(
+            CASE
+                WHEN repaid_date &lt;= (SELECT data_cutoff_date - 32 FROM params)
+                 AND first_apply_day BETWEEN 3 AND 32 THEN 1
+                ELSE 0
+            END
+        ) AS 首次提单用户数
+    FROM sample_flags
+
+    UNION ALL
+
+    SELECT
+        6 AS sort_order,
+        'D5 至 D34 首次提单（30天）' AS 指标,
+        SUM(
+            CASE
+                WHEN repaid_date &lt;= (SELECT data_cutoff_date - 34 FROM params) THEN 1
+                ELSE 0
+            END
+        ) AS 分母用户数,
+        SUM(
+            CASE
+                WHEN repaid_date &lt;= (SELECT data_cutoff_date - 34 FROM params)
+                 AND first_apply_day BETWEEN 5 AND 34 THEN 1
+                ELSE 0
+            END
+        ) AS 首次提单用户数
+    FROM sample_flags
+
+    UNION ALL
+
+    SELECT
+        7 AS sort_order,
+        'D8 至 D37 首次提单（30天）' AS 指标,
+        SUM(
+            CASE
+                WHEN repaid_date &lt;= (SELECT data_cutoff_date - 37 FROM params) THEN 1
+                ELSE 0
+            END
+        ) AS 分母用户数,
+        SUM(
+            CASE
+                WHEN repaid_date &lt;= (SELECT data_cutoff_date - 37 FROM params)
+                 AND first_apply_day BETWEEN 8 AND 37 THEN 1
+                ELSE 0
+            END
+        ) AS 首次提单用户数
+    FROM sample_flags
+)
+
+SELECT
+    指标,
+    分母用户数,
+    首次提单用户数,
+    ROUND(
+        首次提单用户数::numeric / NULLIF(分母用户数, 0),
+        4
+    ) AS 首次提单率
+FROM metric_rows
+ORDER BY
+    sort_order;</pre></details><details><summary>模块二：按结清月份统计 D0、D1、D2、T3、T5、T7+</summary><pre>/* ================================================================
+   T0 用户首次提单时效总体统计
+   统计范围：2026-01-01 至 2026-08-20
+
+   基础分母：干净结清 + 结清后当日获额通过 + 获额时间晚于结清时间。
+   同一用户同日保留最早合格结清订单。
+   ================================================================ */
+WITH params AS (
+    SELECT
+        DATE '2026-01-01' AS start_date,
+        DATE '2026-08-20' AS end_date,
+        CURRENT_DATE AS data_cutoff_date,
+        CURRENT_TIMESTAMP AS data_cutoff_time
+),
+
+settled_orders AS (
+    SELECT
+        o.user_id,
+        o.serial_id,
+        o.repaid_time,
+        o.repaid_date::date AS repaid_date
+    FROM wangchuanliang.order_loan_f_v2_copy AS o
+    CROSS JOIN params AS p
+    WHERE o.is_remit = 1
+      AND (
+            o.is_repaid = 1
+         OR o.loan_status_code = 7
+         OR o.repaid_date::date &gt; DATE '2000-01-01'
+      )
+      AND o.repaid_time &gt; TIMESTAMP '2000-01-01 00:00:00'
+      AND o.repaid_date::date &gt;= p.start_date
+      AND o.repaid_date::date &lt;= p.end_date
+),
+
+candidate_users AS (
+    SELECT DISTINCT
+        s.user_id
+    FROM settled_orders AS s
+),
+
+all_orders AS (
+    SELECT
+        o.user_id,
+        o.serial_id,
+        o.apply_time,
+        o.repaid_time,
+        o.loan_status_code
+    FROM wangchuanliang.order_loan_f_v2_copy AS o
+    INNER JOIN candidate_users AS u
+        ON u.user_id = o.user_id
+    CROSS JOIN params AS p
+    WHERE o.apply_time &lt; p.data_cutoff_time
+),
+
+clean_settles AS (
+    /* 结清瞬间没有任何其他在途订单。 */
+    SELECT
+        s.user_id,
+        s.serial_id,
+        s.repaid_time,
+        s.repaid_date
+    FROM settled_orders AS s
+    WHERE NOT EXISTS (
+        SELECT
+            1
+        FROM all_orders AS o2
+        WHERE o2.user_id = s.user_id
+          AND o2.serial_id &lt;&gt; s.serial_id
+          AND o2.apply_time &lt; s.repaid_time
+          AND (
+                o2.loan_status_code = 5
+             OR o2.loan_status_code = 8
+             OR (
+                    o2.loan_status_code = 7
+                AND o2.repaid_time &gt; s.repaid_time
+                )
+          )
+    )
+),
+
+same_day_credit_pass AS (
+    SELECT
+        v.user_id,
+        v.vir_date::date AS vir_date,
+        TO_TIMESTAMP(v.vir_unix) AS vir_time
+    FROM wangchuanliang.order_vir_f_copy AS v
+    CROSS JOIN params AS p
+    WHERE v.is_pass1 = 1
+      AND v.vir_date::date &gt;= p.start_date
+      AND v.vir_date::date &lt;= p.end_date
+),
+
+denominator_candidates AS (
+    SELECT
+        c.user_id,
+        c.serial_id,
+        c.repaid_time,
+        c.repaid_date
+    FROM clean_settles AS c
+    WHERE EXISTS (
+        SELECT
+            1
+        FROM same_day_credit_pass AS cp
+        WHERE cp.user_id = c.user_id
+          AND cp.vir_date = c.repaid_date
+          AND cp.vir_time &gt; c.repaid_time
+    )
+),
+
+base_sample AS (
+    /* 同一用户同日取最早一笔合格结清。 */
+    SELECT DISTINCT ON (
+        d.user_id,
+        d.repaid_date
+    )
+        d.user_id,
+        d.serial_id,
+        d.repaid_time,
+        d.repaid_date
+    FROM denominator_candidates AS d
+    ORDER BY
+        d.user_id,
+        d.repaid_date,
+        d.repaid_time ASC
+),
+
+first_apply AS (
+    /* 仅识别目标结清时间之后的首次提单。 */
+    SELECT
+        b.user_id,
+        b.serial_id,
+        b.repaid_date,
+        MIN(a.apply_time) AS first_apply_time
+    FROM base_sample AS b
+    LEFT JOIN all_orders AS a
+        ON a.user_id = b.user_id
+       AND a.serial_id &lt;&gt; b.serial_id
+       AND a.apply_time &gt; b.repaid_time
+    GROUP BY
+        b.user_id,
+        b.serial_id,
+        b.repaid_date
+),
+
+sample_flags AS (
+    SELECT
+        f.repaid_date,
+        CASE
+            WHEN f.first_apply_time IS NOT NULL THEN
+                f.first_apply_time::date - f.repaid_date
+        END AS first_apply_day
+    FROM first_apply AS f
+),
+
+month_metric_rows AS (
+    SELECT
+        TO_CHAR(repaid_date, 'YYYY-MM') AS 结清月份,
+        1 AS sort_order,
+        'D0 首次提单' AS 指标,
+        COUNT(*) AS 分母用户数,
+        SUM(CASE WHEN first_apply_day = 0 THEN 1 ELSE 0 END) AS 首次提单用户数
+    FROM sample_flags
+    GROUP BY TO_CHAR(repaid_date, 'YYYY-MM')
+
+    UNION ALL
+
+    SELECT
+        TO_CHAR(repaid_date, 'YYYY-MM') AS 结清月份,
+        2 AS sort_order,
+        'D1 首次提单' AS 指标,
+        SUM(CASE WHEN repaid_date &lt;= (SELECT data_cutoff_date - 1 FROM params) THEN 1 ELSE 0 END),
+        SUM(CASE WHEN repaid_date &lt;= (SELECT data_cutoff_date - 1 FROM params)
+                  AND first_apply_day = 1 THEN 1 ELSE 0 END)
+    FROM sample_flags
+    GROUP BY TO_CHAR(repaid_date, 'YYYY-MM')
+
+    UNION ALL
+
+    SELECT
+        TO_CHAR(repaid_date, 'YYYY-MM') AS 结清月份,
+        3 AS sort_order,
+        'D2 首次提单' AS 指标,
+        SUM(CASE WHEN repaid_date &lt;= (SELECT data_cutoff_date - 2 FROM params) THEN 1 ELSE 0 END),
+        SUM(CASE WHEN repaid_date &lt;= (SELECT data_cutoff_date - 2 FROM params)
+                  AND first_apply_day = 2 THEN 1 ELSE 0 END)
+    FROM sample_flags
+    GROUP BY TO_CHAR(repaid_date, 'YYYY-MM')
+
+    UNION ALL
+
+    SELECT
+        TO_CHAR(repaid_date, 'YYYY-MM') AS 结清月份,
+        4 AS sort_order,
+        'D3 及以后首次提单' AS 指标,
+        SUM(CASE WHEN repaid_date &lt;= (SELECT data_cutoff_date - 3 FROM params) THEN 1 ELSE 0 END),
+        SUM(CASE WHEN repaid_date &lt;= (SELECT data_cutoff_date - 3 FROM params)
+                  AND first_apply_day &gt;= 3 THEN 1 ELSE 0 END)
+    FROM sample_flags
+    GROUP BY TO_CHAR(repaid_date, 'YYYY-MM')
+
+    UNION ALL
+
+    SELECT
+        TO_CHAR(repaid_date, 'YYYY-MM') AS 结清月份,
+        5 AS sort_order,
+        'D3 至 D32 首次提单（30天）' AS 指标,
+        SUM(CASE WHEN repaid_date &lt;= (SELECT data_cutoff_date - 32 FROM params) THEN 1 ELSE 0 END),
+        SUM(CASE WHEN repaid_date &lt;= (SELECT data_cutoff_date - 32 FROM params)
+                  AND first_apply_day BETWEEN 3 AND 32 THEN 1 ELSE 0 END)
+    FROM sample_flags
+    GROUP BY TO_CHAR(repaid_date, 'YYYY-MM')
+
+    UNION ALL
+
+    SELECT
+        TO_CHAR(repaid_date, 'YYYY-MM') AS 结清月份,
+        6 AS sort_order,
+        'D5 至 D34 首次提单（30天）' AS 指标,
+        SUM(CASE WHEN repaid_date &lt;= (SELECT data_cutoff_date - 34 FROM params) THEN 1 ELSE 0 END),
+        SUM(CASE WHEN repaid_date &lt;= (SELECT data_cutoff_date - 34 FROM params)
+                  AND first_apply_day BETWEEN 5 AND 34 THEN 1 ELSE 0 END)
+    FROM sample_flags
+    GROUP BY TO_CHAR(repaid_date, 'YYYY-MM')
+
+    UNION ALL
+
+    SELECT
+        TO_CHAR(repaid_date, 'YYYY-MM') AS 结清月份,
+        7 AS sort_order,
+        'D8 至 D37 首次提单（30天）' AS 指标,
+        SUM(CASE WHEN repaid_date &lt;= (SELECT data_cutoff_date - 37 FROM params) THEN 1 ELSE 0 END),
+        SUM(CASE WHEN repaid_date &lt;= (SELECT data_cutoff_date - 37 FROM params)
+                  AND first_apply_day BETWEEN 8 AND 37 THEN 1 ELSE 0 END)
+    FROM sample_flags
+    GROUP BY TO_CHAR(repaid_date, 'YYYY-MM')
+)
+
+SELECT
+    结清月份,
+    指标,
+    分母用户数,
+    首次提单用户数,
+    ROUND(
+        首次提单用户数::numeric / NULLIF(分母用户数, 0),
+        4
+    ) AS 首次提单率
+FROM month_metric_rows
+ORDER BY
+    结清月份,
+    sort_order;</pre></details><details><summary>模块三：按结清月份统计 D0–D29 总提单率</summary><pre>/* ================================================================
+   T0 用户首次提单时效总体统计
+   统计范围：2026-01-01 至 2026-08-20
+
+   基础分母：干净结清 + 结清后当日获额通过 + 获额时间晚于结清时间。
+   同一用户同日保留最早合格结清订单。
+   ================================================================ */
+WITH params AS (
+    SELECT
+        DATE '2026-01-01' AS start_date,
+        DATE '2026-08-20' AS end_date,
+        CURRENT_DATE AS data_cutoff_date,
+        CURRENT_TIMESTAMP AS data_cutoff_time
+),
+
+settled_orders AS (
+    SELECT
+        o.user_id,
+        o.serial_id,
+        o.repaid_time,
+        o.repaid_date::date AS repaid_date
+    FROM wangchuanliang.order_loan_f_v2_copy AS o
+    CROSS JOIN params AS p
+    WHERE o.is_remit = 1
+      AND (
+            o.is_repaid = 1
+         OR o.loan_status_code = 7
+         OR o.repaid_date::date &gt; DATE '2000-01-01'
+      )
+      AND o.repaid_time &gt; TIMESTAMP '2000-01-01 00:00:00'
+      AND o.repaid_date::date &gt;= p.start_date
+      AND o.repaid_date::date &lt;= p.end_date
+),
+
+candidate_users AS (
+    SELECT DISTINCT
+        s.user_id
+    FROM settled_orders AS s
+),
+
+all_orders AS (
+    SELECT
+        o.user_id,
+        o.serial_id,
+        o.apply_time,
+        o.repaid_time,
+        o.loan_status_code
+    FROM wangchuanliang.order_loan_f_v2_copy AS o
+    INNER JOIN candidate_users AS u
+        ON u.user_id = o.user_id
+    CROSS JOIN params AS p
+    WHERE o.apply_time &lt; p.data_cutoff_time
+),
+
+clean_settles AS (
+    /* 结清瞬间没有任何其他在途订单。 */
+    SELECT
+        s.user_id,
+        s.serial_id,
+        s.repaid_time,
+        s.repaid_date
+    FROM settled_orders AS s
+    WHERE NOT EXISTS (
+        SELECT
+            1
+        FROM all_orders AS o2
+        WHERE o2.user_id = s.user_id
+          AND o2.serial_id &lt;&gt; s.serial_id
+          AND o2.apply_time &lt; s.repaid_time
+          AND (
+                o2.loan_status_code = 5
+             OR o2.loan_status_code = 8
+             OR (
+                    o2.loan_status_code = 7
+                AND o2.repaid_time &gt; s.repaid_time
+                )
+          )
+    )
+),
+
+same_day_credit_pass AS (
+    SELECT
+        v.user_id,
+        v.vir_date::date AS vir_date,
+        TO_TIMESTAMP(v.vir_unix) AS vir_time
+    FROM wangchuanliang.order_vir_f_copy AS v
+    CROSS JOIN params AS p
+    WHERE v.is_pass1 = 1
+      AND v.vir_date::date &gt;= p.start_date
+      AND v.vir_date::date &lt;= p.end_date
+),
+
+denominator_candidates AS (
+    SELECT
+        c.user_id,
+        c.serial_id,
+        c.repaid_time,
+        c.repaid_date
+    FROM clean_settles AS c
+    WHERE EXISTS (
+        SELECT
+            1
+        FROM same_day_credit_pass AS cp
+        WHERE cp.user_id = c.user_id
+          AND cp.vir_date = c.repaid_date
+          AND cp.vir_time &gt; c.repaid_time
+    )
+),
+
+base_sample AS (
+    /* 同一用户同日取最早一笔合格结清。 */
+    SELECT DISTINCT ON (
+        d.user_id,
+        d.repaid_date
+    )
+        d.user_id,
+        d.serial_id,
+        d.repaid_time,
+        d.repaid_date
+    FROM denominator_candidates AS d
+    ORDER BY
+        d.user_id,
+        d.repaid_date,
+        d.repaid_time ASC
+),
+
+first_apply AS (
+    /* 仅识别目标结清时间之后的首次提单。 */
+    SELECT
+        b.user_id,
+        b.serial_id,
+        b.repaid_date,
+        MIN(a.apply_time) AS first_apply_time
+    FROM base_sample AS b
+    LEFT JOIN all_orders AS a
+        ON a.user_id = b.user_id
+       AND a.serial_id &lt;&gt; b.serial_id
+       AND a.apply_time &gt; b.repaid_time
+    GROUP BY
+        b.user_id,
+        b.serial_id,
+        b.repaid_date
+),
+
+sample_flags AS (
+    SELECT
+        f.repaid_date,
+        CASE
+            WHEN f.first_apply_time IS NOT NULL THEN
+                f.first_apply_time::date - f.repaid_date
+        END AS first_apply_day
+    FROM first_apply AS f
+),
+
+monthly_d0_d29 AS (
+    SELECT
+        TO_CHAR(repaid_date, 'YYYY-MM') AS 结清月份,
+        SUM(
+            CASE
+                WHEN repaid_date &lt;= (SELECT data_cutoff_date - 29 FROM params) THEN 1
+                ELSE 0
+            END
+        ) AS D0至D29完整观察用户数,
+        SUM(
+            CASE
+                WHEN repaid_date &lt;= (SELECT data_cutoff_date - 29 FROM params)
+                 AND first_apply_day BETWEEN 0 AND 29 THEN 1
+                ELSE 0
+            END
+        ) AS D0至D29首次提单用户数
+    FROM sample_flags
+    GROUP BY
+        TO_CHAR(repaid_date, 'YYYY-MM')
+),
+overall_d0_d29 AS (
+    SELECT
+        '总计' AS 结清月份,
+        SUM(
+            CASE
+                WHEN repaid_date &lt;= (SELECT data_cutoff_date - 29 FROM params) THEN 1
+                ELSE 0
+            END
+        ) AS D0至D29完整观察用户数,
+        SUM(
+            CASE
+                WHEN repaid_date &lt;= (SELECT data_cutoff_date - 29 FROM params)
+                 AND first_apply_day BETWEEN 0 AND 29 THEN 1
+                ELSE 0
+            END
+        ) AS D0至D29首次提单用户数
+    FROM sample_flags
+)
+
+SELECT
+    结清月份,
+    D0至D29完整观察用户数,
+    D0至D29首次提单用户数,
+    ROUND(
+        D0至D29首次提单用户数::numeric
+        / NULLIF(D0至D29完整观察用户数, 0),
+        4
+    ) AS 结清当日及之后30天总提单率
+FROM (
+    SELECT * FROM monthly_d0_d29
+    UNION ALL
+    SELECT * FROM overall_d0_d29
+) AS result
+ORDER BY
+    CASE WHEN 结清月份 = '总计' THEN 0 ELSE 1 END,
+    结清月份;</pre></details></section>
+</main>
+<script>
+const labels=["01月","02月","03月","04月","05月","06月","07月","08月"];
+const delayedLabels=["01月","02月","03月","04月","05月","06月","07月"];
+const immediate={"d0":[52.980000000000004,51.83,46.27,47.010000000000005,45.33,43.8,41.730000000000004,39.190000000000005],"d1":[10.03,10.33,10.76,10.57,10.47,10.23,10.05,10.43],"d2":[5.28,5.16,5.7299999999999995,5.62,5.16,5.08,5.0200000000000005,5.1]};
+const delayed={"t3":[20.560000000000002,21.34,23.61,23.65,24.68,25.21,26.11],"t5":[15.2,15.879999999999999,17.64,17.59,19.040000000000003,19.3,20.4],"t7":[10.59,11.03,12.6,12.34,13.819999999999999,14.000000000000002,14.66]};
+const total30=[88.35,88.27000000000001,85.86,86.35000000000001,84.96000000000001,83.63000000000001,82.38,0];
+const observed=[94.63000000000001,94.13,92.63,92.31,90.75999999999999,88.67,83.78,72.92999999999999];
+const d0Counts=[8987,10310,9064,8396,9193,8132,7555,3334];
+const d3plusCounts=[4469,5332,5853,5198,6044,5489,4886,1549];
+function lineChart(id, labels, series, options={}) {
+  const svg=document.getElementById(id),W=900,H=340,p={l:56,r:22,t:24,b:44};
+  svg.setAttribute('viewBox','0 0 '+W+' '+H);
+  const vals=series.flatMap(s=>s.data).filter(v=>v!==null&&v!==undefined);
+  const min=options.min??Math.floor(Math.min(...vals)/5)*5;
+  const max=options.max??Math.ceil(Math.max(...vals)/5)*5;
+  const x=i=>p.l+i*(W-p.l-p.r)/Math.max(labels.length-1,1);
+  const y=v=>H-p.b-(v-min)*(H-p.t-p.b)/(max-min||1); let h='';
+  for(let i=0;i<=5;i++) { const v=min+(max-min)*i/5,yy=y(v); h+='<line x1="'+p.l+'" x2="'+(W-p.r)+'" y1="'+yy+'" y2="'+yy+'" stroke="#255271" stroke-dasharray="3 5"/><text x="'+(p.l-9)+'" y="'+(yy+4)+'" text-anchor="end" fill="#a7c3da" font-size="12">'+v.toFixed(0)+'%</text>'; }
+  labels.forEach((l,i)=>h+='<text x="'+x(i)+'" y="'+(H-15)+'" text-anchor="middle" fill="#a7c3da" font-size="12">'+l+'</text>');
+  series.forEach(s=>{let d='';s.data.forEach((v,i)=>{if(v===null||v===undefined)return;d+=(d?' L':'M')+x(i)+' '+y(v)});h+='<path d="'+d+'" fill="none" stroke="'+s.color+'" stroke-width="3"/>';s.data.forEach((v,i)=>{if(v===null||v===undefined)return;h+='<circle cx="'+x(i)+'" cy="'+y(v)+'" r="4.6" fill="'+s.color+'" stroke="#061d33" stroke-width="2"/><text x="'+x(i)+'" y="'+(y(v)-10)+'" text-anchor="middle" fill="'+s.color+'" font-size="11" font-weight="700">'+v.toFixed(1)+'%</text>'})});svg.innerHTML=h;
+}
+function barChart(id, labels, series) {
+  const svg=document.getElementById(id),W=900,H=340,p={l:60,r:20,t:26,b:45},max=Math.ceil(Math.max(...series.flatMap(s=>s.data))/1000)*1000;
+  svg.setAttribute('viewBox','0 0 '+W+' '+H);const y=v=>H-p.b-v*(H-p.t-p.b)/max;let h='';
+  for(let i=0;i<=5;i++){const v=max*i/5,yy=y(v);h+='<line x1="'+p.l+'" x2="'+(W-p.r)+'" y1="'+yy+'" y2="'+yy+'" stroke="#255271" stroke-dasharray="3 5"/><text x="'+(p.l-8)+'" y="'+(yy+4)+'" text-anchor="end" fill="#a7c3da" font-size="12">'+(v/1000).toFixed(0)+'k</text>';}
+  const group=(W-p.l-p.r)/labels.length,bw=Math.min(25,group/(series.length+1));
+  labels.forEach((l,i)=>{const cx=p.l+group*(i+.5);h+='<text x="'+cx+'" y="'+(H-15)+'" text-anchor="middle" fill="#a7c3da" font-size="12">'+l+'</text>';series.forEach((s,j)=>{const bx=cx-(series.length*bw)/2+j*bw,v=s.data[i],yy=y(v);h+='<rect x="'+bx+'" y="'+yy+'" width="'+(bw-3)+'" height="'+(H-p.b-yy)+'" rx="3" fill="'+s.color+'"/><text x="'+(bx+(bw-3)/2)+'" y="'+(yy-7)+'" text-anchor="middle" fill="'+s.color+'" font-size="10" font-weight="700">'+(v/1000).toFixed(1)+'k</text>';})});svg.innerHTML=h;
+}
+lineChart('chart-total30',labels.slice(0,7),[{data:total30.slice(0,7),color:'#39c6e8'}],{min:75,max:92});
+lineChart('chart-observed',labels,[{data:observed,color:'#ffb45e'}],{min:65,max:100});
+lineChart('chart-immediate',labels,[{data:immediate.d0,color:'#39c6e8'},{data:immediate.d1,color:'#62d6a7'},{data:immediate.d2,color:'#ffb45e'}],{min:0,max:60});
+lineChart('chart-delayed',delayedLabels,[{data:delayed.t3,color:'#eb7db5'},{data:delayed.t5,color:'#62d6a7'},{data:delayed.t7,color:'#ffb45e'}],{min:5,max:30});
+barChart('chart-counts',labels,[{data:d0Counts,color:'#39c6e8'},{data:d3plusCounts,color:'#eb7db5'}]);
+</script></body></html>
