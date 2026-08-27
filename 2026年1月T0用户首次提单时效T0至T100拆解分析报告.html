@@ -1,0 +1,184 @@
+<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>2026年1月 T0 用户首次提单时效拆解分析报告</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js"></script>
+<style>
+:root{--bg:#071d34;--panel:#0c2b49;--panel2:#0a2540;--line:#215576;--text:#eef6ff;--muted:#a7c3da;--cyan:#39c6e8;--blue:#6495ed;--green:#62d6a7;--orange:#ffb45e;--pink:#eb7db5}*{box-sizing:border-box}body{margin:0;background:linear-gradient(160deg,#061b31 0%,#082744 52%,#061b31 100%);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei",Arial,sans-serif;line-height:1.55}.wrap{max-width:1440px;margin:0 auto;padding:42px 34px 80px}.hero{text-align:center;padding:24px 20px 36px;border-bottom:1px solid #2b6285}.hero h1{font-size:34px;margin:8px 0;letter-spacing:1px}.hero p{margin:0;color:var(--muted);font-size:15px}.section{margin-top:42px}.section h2{font-size:26px;margin:0 0 8px}.section h3{font-size:17px;margin:0 0 8px}.grid{display:grid;gap:18px}.four{grid-template-columns:repeat(auto-fit,minmax(190px,1fr))}.two{grid-template-columns:repeat(2,minmax(0,1fr))}.card{background:linear-gradient(145deg,rgba(14,48,79,.98),rgba(7,35,60,.98));border:1px solid var(--line);border-radius:16px;padding:20px;box-shadow:0 10px 25px rgba(0,0,0,.16)}.card .label{font-size:14px;color:var(--muted)}.card .value{font-weight:800;font-size:31px;line-height:1.1;margin:9px 0}.card .sub{font-size:12px;color:var(--muted);line-height:1.55}.note{font-size:14px;color:#dbeeff;background:#0c3150;border-left:4px solid var(--cyan);padding:16px 18px;border-radius:0 12px 12px 0;line-height:1.75}.chart-box{height:390px;position:relative;background:rgba(3,18,33,.23);border-radius:10px;padding:10px}.table-wrap{overflow:auto;max-height:680px;border:1px solid var(--line);border-radius:14px}table{border-collapse:collapse;width:100%;font-size:13px;white-space:nowrap}th{position:sticky;top:0;background:#18486d;color:#fff;z-index:1}th,td{padding:10px 12px;border-bottom:1px solid #22516f;text-align:right;color:#dceefa}th:first-child,td:first-child{text-align:left}tbody tr:nth-child(even) td{background:rgba(100,149,237,.05)}tbody tr:hover td{background:rgba(57,198,232,.10)}.insight{border-left:4px solid var(--cyan);background:#0c3150;border-radius:0 12px 12px 0;padding:16px 18px;line-height:1.75;color:#dbeeff;margin-top:18px}.insight b{color:#fff}details{background:#061a2d;border:1px solid #286082;border-radius:12px;margin-top:12px;overflow:hidden}summary{cursor:pointer;font-weight:800;padding:15px 18px;list-style:none}summary::-webkit-details-marker{display:none}summary:before{content:'▾';display:inline-block;margin-right:10px;font-size:22px;color:var(--cyan);transform:rotate(-90deg);transition:.2s}details[open] summary:before{transform:rotate(0)}pre{margin:0;padding:0 18px 18px;overflow:auto;line-height:1.55;font-size:12px;color:#cbe5f7;white-space:pre;border-top:1px solid #1d4e6d}@media(max-width:850px){.wrap{padding:26px 15px 60px}.hero h1{font-size:27px}.four,.two{grid-template-columns:1fr}}
+</style></head><body><main class="wrap"><header class="hero"><h1>2026 年 1 月 T0 用户首次提单时效拆解分析</h1><p>按首次提单距结清日的天数拆分 T0～T100+；同步说明用户日期样本与去重用户的差异。</p></header>
+
+<section class="section"><h2>一、结论摘要</h2><div class="grid four"><article class="card"><div class="label">基础用户日期样本</div><div class="value">16,964</div><div class="sub">一月干净结清且当日获额通过的用户×结清日样本</div></article><article class="card"><div class="label">基础去重用户数</div><div class="value">13,125</div><div class="sub">按 user_id 去重后的人数</div></article><article class="card"><div class="label">T0 首次提单率</div><div class="value">52.98%</div><div class="sub">8,987 / 16,964 个用户日期样本</div></article><article class="card"><div class="label">截至当前有首次提单样本</div><div class="value">16,054</div><div class="sub">占基础用户日期样本 94.64%</div></article><article class="card"><div class="label">截至当前有首次提单去重用户</div><div class="value">12,322</div><div class="sub">16,054 个提单样本对应的去重用户数</div></article><article class="card"><div class="label">去重用户首次提单率</div><div class="value">93.88%</div><div class="sub">12,322 / 13,125；受长观察期影响，参考意义有限</div></article></div><div class="insight"><b>核心观察：</b>一月样本的首次提单高度集中在结清当日：T0 为 <b>8,987</b> 个样本，占全部有首次提单样本的 <b>55.98%</b>。T1、T2 分别为 1,702、895 个样本；随着间隔天数增加，单日首次提单人数明显收敛。<br><b>口径提醒：</b>去重用户首次提单率为 93.88%，由于一月用户已被观察至当前取数日，观察期很长，不能用于衡量短期转化或与近期月份直接比较。</div></section>
+
+<section class="section"><h2>二、先看清统计粒度：样本数不等于去重用户数</h2><div class="grid two"><div><h3>基础样本重复情况</h3><table><tbody><tr><td>基础用户日期样本</td><td>16,964</td></tr><tr><td>去重用户数</td><td>13,125</td></tr><tr><td>有重复样本的用户数</td><td>3,088</td></tr><tr><td>去重后减少的样本数</td><td>3,839</td></tr><tr><td>单用户最大样本数</td><td>8</td></tr></tbody></table></div><div class="note"><b>如何理解：</b>同一用户一月内可能多次满足“干净结清 + 当日获额通过”。当前 T0～T100 表按每个结清日建立观察起点，因此是<b>用户日期样本</b>，同一用户可能在不同结清日对应不同的首次提单时效。<br><br>各 T 组在样本层面互斥，但跨组不保证 user_id 唯一。若要回答“真实有多少人”，应额外按 user_id 选定一月内最早或最后一笔合格结清记录后再统计。</div></div></section>
+
+<section class="section"><h2>三、首次提单节奏：前 30 天高度前置</h2><div class="chart-box"><canvas id="bar"></canvas></div><div class="grid four" style="margin-top:12px"><article class="card"><div class="label">T0</div><div class="value">8,987</div><div class="sub">52.98%；占首次提单样本 55.98%</div></article><article class="card"><div class="label">T1–T2</div><div class="value">2,597</div><div class="sub">占首次提单样本 16.18%</div></article><article class="card"><div class="label">T3–T30</div><div class="value">3,438</div><div class="sub">占首次提单样本 21.42%</div></article><article class="card"><div class="label">T31 及以后</div><div class="value">1,032</div><div class="sub">占首次提单样本 6.43%</div></article></div><div class="insight"><b>解读：</b>T0、T1、T2 合计 11,584 个样本，占全部首次提单样本 72.16%；结清后的即时转化仍是最大的提单来源。T3 后仍持续有首次提单发生，但单日提单率大多已低于 1%。</div></section>
+
+<section class="section"><h2>四、T0～T100+ 完整明细</h2><p style="color:var(--muted);font-size:13px">“用户数”为每个时效组对应的基础用户日期样本数；“提单用户占全部首次提单样本”仅用于观察提单结构，不是提单率。</p><div class="table-wrap"><table><thead><tr><th>首次提单分组</th><th>用户数</th><th>首次提单用户数</th><th>首次提单率</th><th>提单用户占全部首次提单样本</th></tr></thead><tbody><tr><td>T0</td><td>16,964</td><td>8,987</td><td>52.98%</td><td>55.98%</td></tr><tr><td>T1</td><td>16,964</td><td>1,702</td><td>10.03%</td><td>10.60%</td></tr><tr><td>T2</td><td>16,964</td><td>895</td><td>5.28%</td><td>5.57%</td></tr><tr><td>T3</td><td>16,964</td><td>547</td><td>3.22%</td><td>3.41%</td></tr><tr><td>T4</td><td>16,964</td><td>415</td><td>2.45%</td><td>2.59%</td></tr><tr><td>T5</td><td>16,964</td><td>329</td><td>1.94%</td><td>2.05%</td></tr><tr><td>T6</td><td>16,964</td><td>247</td><td>1.46%</td><td>1.54%</td></tr><tr><td>T7</td><td>16,964</td><td>267</td><td>1.57%</td><td>1.66%</td></tr><tr><td>T8</td><td>16,964</td><td>173</td><td>1.02%</td><td>1.08%</td></tr><tr><td>T9</td><td>16,964</td><td>163</td><td>0.96%</td><td>1.02%</td></tr><tr><td>T10</td><td>16,964</td><td>155</td><td>0.91%</td><td>0.97%</td></tr><tr><td>T11</td><td>16,964</td><td>113</td><td>0.67%</td><td>0.70%</td></tr><tr><td>T12</td><td>16,964</td><td>91</td><td>0.54%</td><td>0.57%</td></tr><tr><td>T13</td><td>16,964</td><td>84</td><td>0.50%</td><td>0.52%</td></tr><tr><td>T14</td><td>16,964</td><td>96</td><td>0.57%</td><td>0.60%</td></tr><tr><td>T15</td><td>16,964</td><td>86</td><td>0.51%</td><td>0.54%</td></tr><tr><td>T16</td><td>16,964</td><td>71</td><td>0.42%</td><td>0.44%</td></tr><tr><td>T17</td><td>16,964</td><td>64</td><td>0.38%</td><td>0.40%</td></tr><tr><td>T18</td><td>16,964</td><td>72</td><td>0.42%</td><td>0.45%</td></tr><tr><td>T19</td><td>16,964</td><td>48</td><td>0.28%</td><td>0.30%</td></tr><tr><td>T20</td><td>16,964</td><td>42</td><td>0.25%</td><td>0.26%</td></tr><tr><td>T21</td><td>16,964</td><td>44</td><td>0.26%</td><td>0.27%</td></tr><tr><td>T22</td><td>16,964</td><td>53</td><td>0.31%</td><td>0.33%</td></tr><tr><td>T23</td><td>16,964</td><td>39</td><td>0.23%</td><td>0.24%</td></tr><tr><td>T24</td><td>16,964</td><td>48</td><td>0.28%</td><td>0.30%</td></tr><tr><td>T25</td><td>16,964</td><td>31</td><td>0.18%</td><td>0.19%</td></tr><tr><td>T26</td><td>16,964</td><td>37</td><td>0.22%</td><td>0.23%</td></tr><tr><td>T27</td><td>16,964</td><td>37</td><td>0.22%</td><td>0.23%</td></tr><tr><td>T28</td><td>16,964</td><td>25</td><td>0.15%</td><td>0.16%</td></tr><tr><td>T29</td><td>16,964</td><td>26</td><td>0.15%</td><td>0.16%</td></tr><tr><td>T30</td><td>16,964</td><td>35</td><td>0.21%</td><td>0.22%</td></tr><tr><td>T31</td><td>16,964</td><td>22</td><td>0.13%</td><td>0.14%</td></tr><tr><td>T32</td><td>16,964</td><td>27</td><td>0.16%</td><td>0.17%</td></tr><tr><td>T33</td><td>16,964</td><td>24</td><td>0.14%</td><td>0.15%</td></tr><tr><td>T34</td><td>16,964</td><td>29</td><td>0.17%</td><td>0.18%</td></tr><tr><td>T35</td><td>16,964</td><td>27</td><td>0.16%</td><td>0.17%</td></tr><tr><td>T36</td><td>16,964</td><td>21</td><td>0.12%</td><td>0.13%</td></tr><tr><td>T37</td><td>16,964</td><td>13</td><td>0.08%</td><td>0.08%</td></tr><tr><td>T38</td><td>16,964</td><td>20</td><td>0.12%</td><td>0.12%</td></tr><tr><td>T39</td><td>16,964</td><td>18</td><td>0.11%</td><td>0.11%</td></tr><tr><td>T40</td><td>16,964</td><td>10</td><td>0.06%</td><td>0.06%</td></tr><tr><td>T41</td><td>16,964</td><td>17</td><td>0.10%</td><td>0.11%</td></tr><tr><td>T42</td><td>16,964</td><td>13</td><td>0.08%</td><td>0.08%</td></tr><tr><td>T43</td><td>16,964</td><td>14</td><td>0.08%</td><td>0.09%</td></tr><tr><td>T44</td><td>16,964</td><td>17</td><td>0.10%</td><td>0.11%</td></tr><tr><td>T45</td><td>16,964</td><td>5</td><td>0.03%</td><td>0.03%</td></tr><tr><td>T46</td><td>16,964</td><td>15</td><td>0.09%</td><td>0.09%</td></tr><tr><td>T47</td><td>16,964</td><td>14</td><td>0.08%</td><td>0.09%</td></tr><tr><td>T48</td><td>16,964</td><td>9</td><td>0.05%</td><td>0.06%</td></tr><tr><td>T49</td><td>16,964</td><td>4</td><td>0.02%</td><td>0.02%</td></tr><tr><td>T50</td><td>16,964</td><td>23</td><td>0.14%</td><td>0.14%</td></tr><tr><td>T51</td><td>16,964</td><td>13</td><td>0.08%</td><td>0.08%</td></tr><tr><td>T52</td><td>16,964</td><td>11</td><td>0.06%</td><td>0.07%</td></tr><tr><td>T53</td><td>16,964</td><td>15</td><td>0.09%</td><td>0.09%</td></tr><tr><td>T54</td><td>16,964</td><td>8</td><td>0.05%</td><td>0.05%</td></tr><tr><td>T55</td><td>16,964</td><td>14</td><td>0.08%</td><td>0.09%</td></tr><tr><td>T56</td><td>16,964</td><td>8</td><td>0.05%</td><td>0.05%</td></tr><tr><td>T57</td><td>16,964</td><td>8</td><td>0.05%</td><td>0.05%</td></tr><tr><td>T58</td><td>16,964</td><td>7</td><td>0.04%</td><td>0.04%</td></tr><tr><td>T59</td><td>16,964</td><td>9</td><td>0.05%</td><td>0.06%</td></tr><tr><td>T60</td><td>16,964</td><td>14</td><td>0.08%</td><td>0.09%</td></tr><tr><td>T61</td><td>16,964</td><td>11</td><td>0.06%</td><td>0.07%</td></tr><tr><td>T62</td><td>16,964</td><td>9</td><td>0.05%</td><td>0.06%</td></tr><tr><td>T63</td><td>16,964</td><td>9</td><td>0.05%</td><td>0.06%</td></tr><tr><td>T64</td><td>16,964</td><td>9</td><td>0.05%</td><td>0.06%</td></tr><tr><td>T65</td><td>16,964</td><td>14</td><td>0.08%</td><td>0.09%</td></tr><tr><td>T66</td><td>16,964</td><td>7</td><td>0.04%</td><td>0.04%</td></tr><tr><td>T67</td><td>16,964</td><td>10</td><td>0.06%</td><td>0.06%</td></tr><tr><td>T68</td><td>16,964</td><td>10</td><td>0.06%</td><td>0.06%</td></tr><tr><td>T69</td><td>16,964</td><td>9</td><td>0.05%</td><td>0.06%</td></tr><tr><td>T70</td><td>16,964</td><td>13</td><td>0.08%</td><td>0.08%</td></tr><tr><td>T71</td><td>16,964</td><td>10</td><td>0.06%</td><td>0.06%</td></tr><tr><td>T72</td><td>16,964</td><td>5</td><td>0.03%</td><td>0.03%</td></tr><tr><td>T73</td><td>16,964</td><td>8</td><td>0.05%</td><td>0.05%</td></tr><tr><td>T74</td><td>16,964</td><td>12</td><td>0.07%</td><td>0.07%</td></tr><tr><td>T75</td><td>16,964</td><td>4</td><td>0.02%</td><td>0.02%</td></tr><tr><td>T76</td><td>16,964</td><td>9</td><td>0.05%</td><td>0.06%</td></tr><tr><td>T77</td><td>16,964</td><td>13</td><td>0.08%</td><td>0.08%</td></tr><tr><td>T78</td><td>16,964</td><td>5</td><td>0.03%</td><td>0.03%</td></tr><tr><td>T79</td><td>16,964</td><td>3</td><td>0.02%</td><td>0.02%</td></tr><tr><td>T80</td><td>16,964</td><td>7</td><td>0.04%</td><td>0.04%</td></tr><tr><td>T81</td><td>16,964</td><td>5</td><td>0.03%</td><td>0.03%</td></tr><tr><td>T82</td><td>16,964</td><td>2</td><td>0.01%</td><td>0.01%</td></tr><tr><td>T83</td><td>16,964</td><td>9</td><td>0.05%</td><td>0.06%</td></tr><tr><td>T84</td><td>16,964</td><td>6</td><td>0.04%</td><td>0.04%</td></tr><tr><td>T85</td><td>16,964</td><td>3</td><td>0.02%</td><td>0.02%</td></tr><tr><td>T86</td><td>16,964</td><td>8</td><td>0.05%</td><td>0.05%</td></tr><tr><td>T87</td><td>16,964</td><td>5</td><td>0.03%</td><td>0.03%</td></tr><tr><td>T88</td><td>16,964</td><td>7</td><td>0.04%</td><td>0.04%</td></tr><tr><td>T89</td><td>16,964</td><td>6</td><td>0.04%</td><td>0.04%</td></tr><tr><td>T90</td><td>16,964</td><td>2</td><td>0.01%</td><td>0.01%</td></tr><tr><td>T91</td><td>16,964</td><td>6</td><td>0.04%</td><td>0.04%</td></tr><tr><td>T92</td><td>16,964</td><td>11</td><td>0.06%</td><td>0.07%</td></tr><tr><td>T93</td><td>16,964</td><td>6</td><td>0.04%</td><td>0.04%</td></tr><tr><td>T94</td><td>16,964</td><td>7</td><td>0.04%</td><td>0.04%</td></tr><tr><td>T95</td><td>16,964</td><td>5</td><td>0.03%</td><td>0.03%</td></tr><tr><td>T96</td><td>16,964</td><td>10</td><td>0.06%</td><td>0.06%</td></tr><tr><td>T97</td><td>16,964</td><td>5</td><td>0.03%</td><td>0.03%</td></tr><tr><td>T98</td><td>16,964</td><td>4</td><td>0.02%</td><td>0.02%</td></tr><tr><td>T99</td><td>16,964</td><td>4</td><td>0.02%</td><td>0.02%</td></tr><tr><td>T100</td><td>16,964</td><td>6</td><td>0.04%</td><td>0.04%</td></tr><tr><td>T100+</td><td>16,964</td><td>289</td><td>1.70%</td><td>1.80%</td></tr></tbody></table></div></section>
+
+<section class="section"><h2>五、附录：完整 PGSQL</h2><p style="color:var(--muted);font-size:13px">三个模块需在同一数据库会话内按顺序执行。模块一创建会话级临时表；模块二和模块三使用该临时表输出诊断及 T0～T100+ 结果。</p><details open><summary>模块一：创建一月基础样本与首次提单时点</summary><pre>-- 模块一：创建 2026 年 1 月 T0 基础样本及首次提单时点临时表
+-- 基础口径：干净结清 + 结清后当日获额通过 + 获额时间晚于结清时间。
+-- 粒度：用户 × 结清日；同一用户同日仅保留最早的合格结清订单。
+
+DROP TABLE IF EXISTS tmp_t0_jan_first_apply;
+
+CREATE TEMP TABLE tmp_t0_jan_first_apply AS
+WITH params AS (
+    SELECT
+        DATE &#39;2026-01-01&#39; AS start_date,
+        DATE &#39;2026-01-31&#39; AS end_date,
+        CURRENT_DATE AS data_cutoff_date,
+        CURRENT_TIMESTAMP AS data_cutoff_time
+),
+settled_orders AS (
+    SELECT
+        o.user_id,
+        o.serial_id,
+        o.repaid_time,
+        o.repaid_date::date AS repaid_date
+    FROM wangchuanliang.order_loan_f_v2_copy AS o
+    CROSS JOIN params AS p
+    WHERE o.is_remit = 1
+      AND (
+            o.is_repaid = 1
+         OR o.loan_status_code = 7
+         OR o.repaid_date::date &gt; DATE &#39;2000-01-01&#39;
+      )
+      AND o.repaid_time &gt; TIMESTAMP &#39;2000-01-01 00:00:00&#39;
+      AND o.repaid_date::date BETWEEN p.start_date AND p.end_date
+),
+candidate_users AS (
+    SELECT DISTINCT user_id FROM settled_orders
+),
+all_orders AS (
+    SELECT o.user_id, o.serial_id, o.apply_time, o.repaid_time, o.loan_status_code
+    FROM wangchuanliang.order_loan_f_v2_copy AS o
+    INNER JOIN candidate_users AS u ON u.user_id = o.user_id
+    CROSS JOIN params AS p
+    WHERE o.apply_time &lt; p.data_cutoff_time
+),
+clean_settles AS (
+    -- 结清时点没有其他在途、逾期，或将在该时点之后才结清的订单。
+    SELECT s.user_id, s.serial_id, s.repaid_time, s.repaid_date
+    FROM settled_orders AS s
+    WHERE NOT EXISTS (
+        SELECT 1
+        FROM all_orders AS o2
+        WHERE o2.user_id = s.user_id
+          AND o2.serial_id &lt;&gt; s.serial_id
+          AND o2.apply_time &lt; s.repaid_time
+          AND (
+                o2.loan_status_code IN (5, 8)
+             OR (o2.loan_status_code = 7 AND o2.repaid_time &gt; s.repaid_time)
+          )
+    )
+),
+same_day_credit_pass AS (
+    SELECT
+        v.user_id,
+        v.vir_date::date AS vir_date,
+        TO_TIMESTAMP(v.vir_unix) AS vir_time
+    FROM wangchuanliang.order_vir_f_copy AS v
+    CROSS JOIN params AS p
+    WHERE v.is_pass1 = 1
+      AND v.vir_date::date BETWEEN p.start_date AND p.end_date
+),
+eligible_settles AS (
+    SELECT c.user_id, c.serial_id, c.repaid_time, c.repaid_date
+    FROM clean_settles AS c
+    WHERE EXISTS (
+        SELECT 1
+        FROM same_day_credit_pass AS cp
+        WHERE cp.user_id = c.user_id
+          AND cp.vir_date = c.repaid_date
+          AND cp.vir_time &gt; c.repaid_time
+    )
+),
+base_sample AS (
+    -- 同一用户同日若有多笔合格结清，仅保留最早结清的一笔。
+    SELECT DISTINCT ON (user_id, repaid_date)
+        user_id, serial_id, repaid_time, repaid_date
+    FROM eligible_settles
+    ORDER BY user_id, repaid_date, repaid_time ASC
+),
+first_apply AS (
+    SELECT
+        b.user_id,
+        b.serial_id AS settle_serial_id,
+        b.repaid_time,
+        b.repaid_date,
+        MIN(a.apply_time) AS first_apply_time
+    FROM base_sample AS b
+    LEFT JOIN all_orders AS a
+        ON a.user_id = b.user_id
+       AND a.serial_id &lt;&gt; b.serial_id
+       AND a.apply_time &gt; b.repaid_time
+    GROUP BY b.user_id, b.serial_id, b.repaid_time, b.repaid_date
+)
+SELECT
+    f.user_id,
+    f.settle_serial_id,
+    f.repaid_time,
+    f.repaid_date,
+    f.first_apply_time,
+    CASE
+        WHEN f.first_apply_time IS NOT NULL
+        THEN f.first_apply_time::date - f.repaid_date
+    END AS first_apply_day
+FROM first_apply AS f;</pre></details><details><summary>模块二：基础样本重复用户诊断</summary><pre>-- 模块二：基础样本的重复用户诊断
+-- “重复用户”指同一 user_id 在 2026 年 1 月出现两条及以上合格结清样本。
+WITH user_sample_cnt AS (
+    SELECT user_id, COUNT(*) AS sample_cnt
+    FROM tmp_t0_jan_first_apply
+    GROUP BY user_id
+)
+SELECT
+    (SELECT COUNT(*) FROM tmp_t0_jan_first_apply) AS 基础用户日期样本数,
+    COUNT(*) AS 去重用户数,
+    (SELECT COUNT(DISTINCT user_id)
+     FROM tmp_t0_jan_first_apply
+     WHERE first_apply_day IS NOT NULL) AS 有首次提单的去重用户数,
+    ROUND(
+        (SELECT COUNT(DISTINCT user_id)::numeric
+         FROM tmp_t0_jan_first_apply
+         WHERE first_apply_day IS NOT NULL)
+        / NULLIF(COUNT(*), 0),
+        4
+    ) AS 去重用户首次提单率,
+    SUM(CASE WHEN sample_cnt &gt;= 2 THEN 1 ELSE 0 END) AS 有重复样本的用户数,
+    SUM(CASE WHEN sample_cnt &gt;= 2 THEN sample_cnt ELSE 0 END) AS 重复用户贡献的样本数,
+    (SELECT COUNT(*) FROM tmp_t0_jan_first_apply) - COUNT(*) AS 去重后减少的样本数,
+    MAX(sample_cnt) AS 单用户最大样本数
+FROM user_sample_cnt;</pre></details><details><summary>模块三：T0～T100+ 时效分布</summary><pre>-- 模块三：T0 至 T100+ 首次提单时效分布
+-- Tn：结清后第 n 天首次提单，且此前没有提单。
+-- T100+：第 101 天及以后首次提单。各 T 分组在“用户日期样本”层面互斥。
+WITH day_groups AS (
+    SELECT
+        n AS sort_order,
+        &#39;T&#39; || n::text AS 提单时效分组,
+        COUNT(*) AS 用户数,
+        SUM(CASE WHEN first_apply_day = n THEN 1 ELSE 0 END) AS 提单用户数
+    FROM generate_series(0, 100) AS n
+    CROSS JOIN tmp_t0_jan_first_apply
+    GROUP BY n
+),
+t100_plus AS (
+    SELECT
+        101 AS sort_order,
+        &#39;T100+&#39; AS 提单时效分组,
+        COUNT(*) AS 用户数,
+        SUM(CASE WHEN first_apply_day &gt;= 101 THEN 1 ELSE 0 END) AS 提单用户数
+    FROM tmp_t0_jan_first_apply
+),
+all_groups AS (
+    SELECT * FROM day_groups
+    UNION ALL
+    SELECT * FROM t100_plus
+)
+SELECT
+    提单时效分组,
+    用户数,
+    提单用户数,
+    ROUND(提单用户数::numeric / NULLIF(用户数, 0), 4) AS 提单率
+FROM all_groups
+ORDER BY sort_order;</pre></details></section>
+</main><script>
+const labels=["T0","T1","T2","T3","T4","T5","T6","T7","T8","T9","T10","T11","T12","T13","T14","T15","T16","T17","T18","T19","T20","T21","T22","T23","T24","T25","T26","T27","T28","T29","T30"]; const applies=[8987,1702,895,547,415,329,247,267,173,163,155,113,91,84,96,86,71,64,72,48,42,44,53,39,48,31,37,37,25,26,35];
+new Chart(document.getElementById('bar'),{type:'bar',data:{labels,datasets:[{label:'首次提单用户日期样本数',data:applies,backgroundColor:applies.map((_,i)=>i===0?'#2563eb':i<3?'#0ea5e9':'#8bbde8'),borderRadius:4}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{callbacks:{label:(c)=>' '+c.raw.toLocaleString('zh-CN')+' 个样本'}}},scales:{x:{grid:{display:false}},y:{beginAtZero:true,ticks:{precision:0}}}}});
+</script></body></html>
