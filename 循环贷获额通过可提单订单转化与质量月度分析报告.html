@@ -173,5 +173,153 @@ GROUP BY CASE WHEN active_loan_success_no &gt;= 11 THEN '第11次及以上'
          active_loan_success_no
 ORDER BY MIN(active_loan_success_no);</pre></details>
 </section>
++
+<details style="border:1px solid #245675;border-radius:12px;background:#0b2a46;margin:14px 0"><summary style="cursor:pointer;padding:14px 16px;font-weight:800;color:#39c6e8">模块一：循环贷获额通过且可提单样本明细</summary><pre style="margin:0;padding:18px;overflow:auto;border-top:1px solid #245675;background:#061b31;color:#dceefa;font-size:12px;line-height:1.55;white-space:pre">WITH eligible_cycle_offer AS (
+    SELECT DISTINCT ON (v.user_id, v.serial_id)
+        v.user_id,
+        v.serial_id,
+        v.vir_date::date AS vir_date,
+        to_timestamp(v.vir_unix) AS vir_time,
+        v.is_pass1,
+        r.recycle_type
+    FROM wangchuanliang.order_vir_f_copy v
+    INNER JOIN wangchuanliang.side_recycle_type_copy r
+      ON r.serial_id = v.serial_id
+    WHERE v.is_pass1 = 1
+      AND r.recycle_type = 2
+      AND v.vir_date &gt;= DATE '2026-01-01'
+      AND v.vir_date &lt; DATE '2026-08-19'
+    ORDER BY v.user_id, v.serial_id, v.vir_unix DESC
+),
+interest_coupon AS (
+    SELECT
+        user_id,
+        serial_id,
+        MAX(coupon_no) AS coupon_no,
+        SUM(coupon_amount) AS coupon_amt
+    FROM wangchuanliang.coupon_user_detail_copy
+    WHERE type = 3
+    GROUP BY user_id, serial_id
+)
+SELECT
+    e.user_id,
+    e.serial_id AS 获额订单号,
+    e.vir_date AS 获额日期,
+    e.vir_time AS 获额时间,
+    o.apply_date AS 提单日期,
+    o.apply_time AS 提单时间,
+    EXTRACT(EPOCH FROM (o.apply_time - e.vir_time)) / 86400.0 AS 提单间隔_天,
+    o.is_remit,
+    o.is_due,
+    o.loan_status_code,
+    o.remit_amt,
+    o.repaid_amt,
+    CASE WHEN c.serial_id IS NOT NULL THEN 1 ELSE 0 END AS 是否使用降息券,
+    c.coupon_no,
+    c.coupon_amt
+FROM eligible_cycle_offer e
+LEFT JOIN wangchuanliang.order_loan_f_v2_copy o
+  ON o.user_id = e.user_id
+ AND o.serial_id = e.serial_id
+ AND o.apply_date IS NOT NULL
+ AND o.apply_time &gt;= e.vir_time
+LEFT JOIN interest_coupon c
+  ON c.user_id = e.user_id
+ AND c.serial_id = e.serial_id
+ORDER BY e.vir_time, e.user_id, e.serial_id;</pre></details>
+
+<details style="border:1px solid #245675;border-radius:12px;background:#0b2a46;margin:14px 0"><summary style="cursor:pointer;padding:14px 16px;font-weight:800;color:#39c6e8">模块二：月度提单率、平均提单间隔与降息券使用率</summary><pre style="margin:0;padding:18px;overflow:auto;border-top:1px solid #245675;background:#061b31;color:#dceefa;font-size:12px;line-height:1.55;white-space:pre">WITH eligible_cycle_offer AS (
+    SELECT DISTINCT ON (v.user_id, v.serial_id)
+        v.user_id, v.serial_id, v.vir_date::date AS vir_date,
+        to_timestamp(v.vir_unix) AS vir_time
+    FROM wangchuanliang.order_vir_f_copy v
+    INNER JOIN wangchuanliang.side_recycle_type_copy r
+      ON r.serial_id = v.serial_id
+    WHERE v.is_pass1 = 1
+      AND r.recycle_type = 2
+      AND v.vir_date &gt;= DATE '2026-01-01'
+      AND v.vir_date &lt; DATE '2026-08-19'
+    ORDER BY v.user_id, v.serial_id, v.vir_unix DESC
+),
+interest_coupon AS (
+    SELECT DISTINCT user_id, serial_id
+    FROM wangchuanliang.coupon_user_detail_copy
+    WHERE type = 3
+),
+base AS (
+    SELECT
+        e.*,
+        o.apply_time,
+        CASE WHEN c.serial_id IS NOT NULL THEN 1 ELSE 0 END AS has_coupon_3
+    FROM eligible_cycle_offer e
+    LEFT JOIN wangchuanliang.order_loan_f_v2_copy o
+      ON o.user_id = e.user_id
+     AND o.serial_id = e.serial_id
+     AND o.apply_date IS NOT NULL
+     AND o.apply_time &gt;= e.vir_time
+    LEFT JOIN interest_coupon c
+      ON c.user_id = e.user_id
+     AND c.serial_id = e.serial_id
+)
+SELECT
+    COALESCE(to_char(date_trunc('month', vir_date), 'YYYY-MM'), '总计') AS 获额月份,
+    COUNT(*) AS 可提单循环贷获额订单数,
+    COUNT(apply_time) AS 提单订单数,
+    ROUND(COUNT(apply_time)::numeric / NULLIF(COUNT(*), 0) * 100, 2) AS 提单率_pct,
+    ROUND(AVG(CASE WHEN apply_time IS NOT NULL
+        THEN EXTRACT(EPOCH FROM (apply_time - vir_time)) / 86400.0 END)::numeric, 4) AS 平均提单间隔_天,
+    SUM(CASE WHEN apply_time IS NOT NULL AND has_coupon_3 = 1 THEN 1 ELSE 0 END) AS 使用降息券提单订单数,
+    ROUND(SUM(CASE WHEN apply_time IS NOT NULL AND has_coupon_3 = 1 THEN 1 ELSE 0 END)::numeric
+        / NULLIF(COUNT(apply_time), 0) * 100, 2) AS 降息券使用率_pct
+FROM base
+GROUP BY GROUPING SETS ((to_char(date_trunc('month', vir_date), 'YYYY-MM')), ())
+ORDER BY CASE WHEN to_char(date_trunc('month', vir_date), 'YYYY-MM') IS NULL THEN 0 ELSE 1 END,
+         to_char(date_trunc('month', vir_date), 'YYYY-MM');</pre></details>
+
+<details style="border:1px solid #245675;border-radius:12px;background:#0b2a46;margin:14px 0"><summary style="cursor:pointer;padding:14px 16px;font-weight:800;color:#39c6e8">模块三：月度到期订单逾期率与盈利率</summary><pre style="margin:0;padding:18px;overflow:auto;border-top:1px solid #245675;background:#061b31;color:#dceefa;font-size:12px;line-height:1.55;white-space:pre">WITH eligible_cycle_offer AS (
+    SELECT DISTINCT ON (v.user_id, v.serial_id)
+        v.user_id, v.serial_id, v.vir_date::date AS vir_date,
+        to_timestamp(v.vir_unix) AS vir_time
+    FROM wangchuanliang.order_vir_f_copy v
+    INNER JOIN wangchuanliang.side_recycle_type_copy r
+      ON r.serial_id = v.serial_id
+    WHERE v.is_pass1 = 1
+      AND r.recycle_type = 2
+      AND v.vir_date &gt;= DATE '2026-01-01'
+      AND v.vir_date &lt; DATE '2026-08-19'
+    ORDER BY v.user_id, v.serial_id, v.vir_unix DESC
+),
+applied_order AS (
+    SELECT
+        e.vir_date,
+        o.is_remit, o.is_due, o.loan_status_code,
+        o.remit_amt, o.repaid_amt
+    FROM eligible_cycle_offer e
+    INNER JOIN wangchuanliang.order_loan_f_v2_copy o
+      ON o.user_id = e.user_id
+     AND o.serial_id = e.serial_id
+     AND o.apply_date IS NOT NULL
+     AND o.apply_time &gt;= e.vir_time
+)
+SELECT
+    COALESCE(to_char(date_trunc('month', vir_date), 'YYYY-MM'), '总计') AS 获额月份,
+    SUM(CASE WHEN is_remit = 1 AND is_due = 1 THEN 1 ELSE 0 END) AS 到期放款订单数,
+    SUM(CASE WHEN is_remit = 1 AND is_due = 1 AND loan_status_code = 8
+             THEN 1 ELSE 0 END) AS 逾期订单数,
+    ROUND(
+      SUM(CASE WHEN is_remit = 1 AND is_due = 1 AND loan_status_code = 8 THEN 1 ELSE 0 END)::numeric
+      / NULLIF(SUM(CASE WHEN is_remit = 1 AND is_due = 1 THEN 1 ELSE 0 END), 0) * 100, 2
+    ) AS 逾期率_pct,
+    ROUND((
+      SUM(CASE WHEN is_remit = 1 AND is_due = 1 AND loan_status_code IN (7, 8)
+               THEN repaid_amt ELSE 0 END)
+      / NULLIF(SUM(CASE WHEN is_remit = 1 AND is_due = 1 AND loan_status_code IN (7, 8)
+                         THEN remit_amt ELSE 0 END), 0)
+      - 1
+    ) * 100, 2) AS 盈利率_pct
+FROM applied_order
+GROUP BY GROUPING SETS ((to_char(date_trunc('month', vir_date), 'YYYY-MM')), ())
+ORDER BY CASE WHEN to_char(date_trunc('month', vir_date), 'YYYY-MM') IS NULL THEN 0 ELSE 1 END,
+         to_char(date_trunc('month', vir_date), 'YYYY-MM');</pre></details>
 </main></body></html>
 
