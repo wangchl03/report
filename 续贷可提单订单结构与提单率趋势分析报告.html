@@ -1,0 +1,326 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>续贷可提单订单结构与提单率趋势分析报告</title>
+  <style>
+    :root{--bg:#061b31;--panel:#0b2a46;--panel2:#0d3455;--line:#245675;--text:#eef6ff;--muted:#a7c3da;--cyan:#39c6e8;--green:#62d6a7;--orange:#ffb45e;--red:#ff8b8b;--violet:#b593e8}*{box-sizing:border-box}body{margin:0;background:linear-gradient(160deg,#061b31,#082744 52%,#061b31);font:15px/1.65 -apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei",Arial,sans-serif;color:var(--text)}.wrap{max-width:1420px;margin:auto;padding:0 32px}.hero{text-align:center;padding:38px 0 32px;border-bottom:1px solid #2b6285}.eyebrow{font-size:13px;letter-spacing:3px;color:var(--cyan);font-weight:800}.hero h1{font-size:35px;margin:8px 0}.hero p{margin:0;color:var(--muted)}.tag{display:inline-block;margin:14px 4px 0;border:1px solid #2b6285;border-radius:15px;padding:3px 12px;font-size:12px;color:#c8dceb}main{padding:28px 0 70px}.section{margin:40px 0}.section h2{font-size:25px;margin:0 0 7px}.section>p{margin:0 0 16px;color:var(--muted)}.grid{display:grid;gap:17px}.kpi{grid-template-columns:repeat(4,1fr)}.two{grid-template-columns:1fr 1fr}.three{grid-template-columns:repeat(3,1fr)}.card,.finding{background:linear-gradient(145deg,rgba(14,48,79,.98),rgba(7,35,60,.98));border:1px solid var(--line);border-radius:15px;padding:19px}.name{color:var(--muted);font-size:13px}.value{font-size:30px;font-weight:800;line-height:1.15;margin:8px 0}.green{color:var(--green)}.cyan{color:var(--cyan)}.orange{color:var(--orange)}.violet{color:var(--violet)}.note{font-size:12px;color:var(--muted)}.callout{border-left:4px solid var(--cyan);background:#0c3150;border-radius:0 12px 12px 0;padding:16px 18px;margin:18px 0;color:#d7e9f7}.callout strong{color:var(--green)}.finding h3{margin:0 0 7px;color:var(--cyan);font-size:17px}.finding p{margin:0;color:#d7e9f7}.chart{background:rgba(3,18,33,.24);border:1px solid var(--line);border-radius:14px;padding:18px}.chart h3{margin:0;font-size:17px}.chart p{margin:3px 0 8px;font-size:12px;color:var(--muted)}.legend{display:flex;gap:16px;flex-wrap:wrap;font-size:12px;color:var(--muted)}.dot{display:inline-block;width:9px;height:9px;border-radius:50%;margin-right:5px}.tree{display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px;align-items:stretch}.node{border:1px solid var(--line);border-radius:14px;padding:17px;background:#0b2a46}.node b{display:block;font-size:17px}.node span{color:var(--muted);font-size:13px}.node.cycle{border-color:#39c6e8}.node.t0{border-color:#ffb45e}.node.active{border-color:#b593e8}.node .pct{margin-top:7px;color:var(--green);font-size:21px;font-weight:800}.barrow{display:grid;grid-template-columns:150px 1fr 85px;gap:12px;align-items:center;margin:14px 0}.bar{height:20px;background:#123a5b;border-radius:20px;overflow:hidden}.fill{height:100%;border-radius:20px}.table-wrap{overflow:auto;border:1px solid var(--line);border-radius:13px}table{border-collapse:collapse;width:100%;min-width:1050px;font-size:13px;font-variant-numeric:tabular-nums}th{background:#18486d;padding:11px;text-align:right;white-space:nowrap}th:first-child,td:first-child{text-align:left}td{padding:10px;text-align:right;border-top:1px solid #22516f;color:#dceefa}tr:nth-child(even) td{background:rgba(100,149,237,.05)}tr.total td{background:rgba(57,198,232,.13);font-weight:800}.footer{font-size:12px;color:var(--muted);margin-top:18px}@media(max-width:980px){.kpi{grid-template-columns:repeat(2,1fr)}.two,.three,.tree{grid-template-columns:1fr}}@media(max-width:650px){.wrap{padding:0 16px}.hero h1{font-size:27px}.kpi{grid-template-columns:1fr}.barrow{grid-template-columns:110px 1fr 70px}}
+  </style>
+</head>
+<body>
+<header class="hero"><div class="wrap">
+  <div class="eyebrow">RELOAN ELIGIBLE OFFER ANALYSIS</div>
+  <h1>续贷可提单订单结构与提单率趋势分析报告</h1>
+  <p>从订单结构、提单率变化到下降来源，拆解循环贷、结清0在贷与主动获额三类续贷可提单订单。</p>
+  <span class="tag">统计周期：2026-01-01 至 2026-08-18</span>
+  <span class="tag">8 月仅统计至 8 月 18 日</span>
+  <span class="tag">获额通过 + 续贷获额 + 可提单</span>
+</div></header>
+
+<main class="wrap">
+<section class="section">
+  <h2>一、样本与核心结论</h2>
+  <p>基础样本统一限定为：<b>is_pass1=1、loan_type_code=2、recycle_type IN (2,3)</b>。其中 recycle_type=2 为循环贷，=3 为结清续贷。</p>
+  <div class="grid kpi">
+    <div class="card"><div class="name">全部可提单订单</div><div class="value cyan">534,771</div><div class="note">整体提单率 54.57%</div></div>
+    <div class="card"><div class="name">循环贷可提单订单</div><div class="value green">211,542</div><div class="note">占全部 39.56%；提单率 58.44%</div></div>
+    <div class="card"><div class="name">结清0在贷订单</div><div class="value orange">255,743</div><div class="note">占全部 47.82%；提单率 51.12%</div></div>
+    <div class="card"><div class="name">主动获额订单</div><div class="value violet">66,716</div><div class="note">占全部 12.48%；提单率 55.44%</div></div>
+  </div>
+  <div class="callout"><strong>核心结论：</strong>结清0在贷订单是最大单一订单类别，占全部可提单订单 47.82%，但其提单率从 1 月的 54.05% 降至 7 月的 47.58%，下降 6.47 个百分点。因此，整体提单率走弱的主要压力来自结清续贷，尤其是结清0在贷场景。</div>
+</section>
+
+<section class="section">
+  <h2>二、可提单订单由哪些类别构成</h2>
+  <p>结清续贷可提单订单再按“是否由当天干净结清触发”拆为结清0在贷订单与主动获额订单。边界订单单独保留，避免被强行归类。</p>
+  <div class="tree">
+    <div class="node cycle"><b>循环贷可提单订单</b><span>recycle_type = 2</span><div class="pct">211,542 笔｜39.56%</div><span>提单率 58.44%</span></div>
+    <div class="node t0"><b>结清0在贷订单</b><span>结清时无在途 + 当天结清后获额</span><div class="pct">255,743 笔｜47.82%</div><span>提单率 51.12%</span></div>
+    <div class="node active"><b>主动获额订单</b><span>获额时无在途 + 非结清日获额</span><div class="pct">66,716 笔｜12.48%</div><span>提单率 55.44%</span></div>
+  </div>
+  <div class="chart" style="margin-top:17px"><h3>订单结构占比</h3><p>分母为 534,771 笔全部可提单订单。</p>
+    <div class="barrow"><span>循环贷</span><div class="bar"><div class="fill" style="width:39.56%;background:#39c6e8"></div></div><b>39.56%</b></div>
+    <div class="barrow"><span>结清0在贷</span><div class="bar"><div class="fill" style="width:47.82%;background:#ffb45e"></div></div><b>47.82%</b></div>
+    <div class="barrow"><span>主动获额</span><div class="bar"><div class="fill" style="width:12.48%;background:#b593e8"></div></div><b>12.48%</b></div>
+    <div class="barrow"><span>边界订单</span><div class="bar"><div class="fill" style="width:.14%;background:#a7c3da"></div></div><b>0.14%</b></div>
+  </div>
+  <div class="grid two" style="margin-top:17px">
+    <div class="finding"><h3>结清续贷是整体转化的关键</h3><p>结清续贷共 323,229 笔，占全部订单 60.44%，提单率仅 52.04%，低于循环贷的 58.44%。</p></div>
+    <div class="finding"><h3>结清0在贷是结清续贷的主体</h3><p>结清0在贷占结清续贷订单 79.12%，其提单率较主动获额低 4.32 个百分点，是优先需要排查与运营干预的人群。</p></div>
+  </div>
+</section>
+
+<section class="section">
+  <h2>三、最近几个月提单率走势：整体下滑主要集中在结清续贷</h2>
+  <p>下图按获额月份展示。8 月为截至 18 日的部分月份，仅作早期观察。</p>
+  <div class="chart"><h3>全部、循环贷与结清续贷提单率</h3><p>循环贷提单率整体相对稳定；结清续贷提单率下行更明显。</p>
+    <svg viewBox="0 0 1120 340" width="100%" role="img" aria-label="全部、循环贷与结清续贷提单率趋势">
+      <line x1="80" y1="278" x2="1080" y2="278" stroke="#245675"/><line x1="80" y1="45" x2="80" y2="278" stroke="#245675"/>
+      <g fill="#a7c3da" font-size="12"><text x="28" y="54">62%</text><text x="28" y="131">58%</text><text x="28" y="209">54%</text><text x="28" y="282">50%</text></g>
+      <polyline points="150,153 271,148 392,180 513,176 634,194 755,191 876,221 997,238" fill="none" stroke="#39c6e8" stroke-width="4"/>
+      <polyline points="150,95 271,106 392,168 513,110 634,99 755,70 876,117 997,149" fill="none" stroke="#62d6a7" stroke-width="4"/>
+      <polyline points="150,187 271,205 392,216 513,246 634,282 755,300 876,333 997,341" fill="none" stroke="#ffb45e" stroke-width="4"/>
+      <g fill="#39c6e8"><circle cx="150" cy="153" r="5"/><circle cx="271" cy="148" r="5"/><circle cx="392" cy="180" r="5"/><circle cx="513" cy="176" r="5"/><circle cx="634" cy="194" r="5"/><circle cx="755" cy="191" r="5"/><circle cx="876" cy="221" r="5"/><circle cx="997" cy="238" r="5"/></g>
+      <g fill="#62d6a7"><circle cx="150" cy="95" r="5"/><circle cx="271" cy="106" r="5"/><circle cx="392" cy="168" r="5"/><circle cx="513" cy="110" r="5"/><circle cx="634" cy="99" r="5"/><circle cx="755" cy="70" r="5"/><circle cx="876" cy="117" r="5"/><circle cx="997" cy="149" r="5"/></g>
+      <g fill="#ffb45e"><circle cx="150" cy="187" r="5"/><circle cx="271" cy="205" r="5"/><circle cx="392" cy="216" r="5"/><circle cx="513" cy="246" r="5"/><circle cx="634" cy="282" r="5"/><circle cx="755" cy="300" r="5"/><circle cx="876" cy="333" r="5"/><circle cx="997" cy="341" r="5"/></g>
+      <g fill="#a7c3da" font-size="12" text-anchor="middle"><text x="150" y="307">1月</text><text x="271" y="307">2月</text><text x="392" y="307">3月</text><text x="513" y="307">4月</text><text x="634" y="307">5月</text><text x="755" y="307">6月</text><text x="876" y="307">7月</text><text x="997" y="307">8月</text></g>
+      <text x="150" y="85" fill="#62d6a7" font-size="12">59.41%</text><text x="755" y="60" fill="#62d6a7" font-size="12">60.00%</text><text x="876" y="107" fill="#62d6a7" font-size="12">58.27%</text>
+      <text x="150" y="177" fill="#ffb45e" font-size="12">54.67%</text><text x="876" y="323" fill="#ffb45e" font-size="12">48.61%</text>
+    </svg>
+    <div class="legend"><span><i class="dot" style="background:#39c6e8"></i>全部可提单订单</span><span><i class="dot" style="background:#62d6a7"></i>循环贷</span><span><i class="dot" style="background:#ffb45e"></i>结清续贷</span></div>
+  </div>
+  <div class="grid three" style="margin-top:17px">
+    <div class="finding"><h3>整体：-3.58pp</h3><p>整体提单率由 1 月 56.43% 降至 7 月 52.85%。</p></div>
+    <div class="finding"><h3>循环贷：-1.14pp</h3><p>循环贷由 59.41% 降至 58.27%，波动较小，非本轮整体下降的主要来源。</p></div>
+    <div class="finding"><h3>结清续贷：-6.06pp</h3><p>结清续贷由 54.67% 降至 48.61%，降幅显著大于循环贷。</p></div>
+  </div>
+</section>
+
+<section class="section">
+  <h2>四、结清续贷内部：结清0在贷是提单率下降的主要来源</h2>
+  <p>两类均为无在途状态下的可提单续贷订单，但触发场景不同：结清0在贷由当天结清触发；主动获额发生在非结清日。</p>
+  <div class="chart"><h3>结清0在贷与主动获额提单率趋势</h3><p>两类均有下降，但结清0在贷体量更大、绝对降幅也更高。</p>
+    <svg viewBox="0 0 1120 315" width="100%" role="img" aria-label="结清0在贷与主动获额提单率趋势">
+      <line x1="80" y1="250" x2="1080" y2="250" stroke="#245675"/><line x1="80" y1="42" x2="80" y2="250" stroke="#245675"/>
+      <polyline points="150,95 271,71 392,108 513,159 634,218 755,240 876,276 997,308" fill="none" stroke="#ffb45e" stroke-width="4"/>
+      <polyline points="150,42 271,25 392,33 513,58 634,102 755,173 876,227 997,244" fill="none" stroke="#b593e8" stroke-width="4"/>
+      <g fill="#a7c3da" font-size="12" text-anchor="middle"><text x="150" y="278">1月</text><text x="271" y="278">2月</text><text x="392" y="278">3月</text><text x="513" y="278">4月</text><text x="634" y="278">5月</text><text x="755" y="278">6月</text><text x="876" y="278">7月</text><text x="997" y="278">8月</text></g>
+      <g fill="#ffb45e" font-size="12"><text x="150" y="85">54.05%</text><text x="876" y="266">47.58%</text></g><g fill="#b593e8" font-size="12"><text x="150" y="18">57.42%</text><text x="876" y="217">51.59%</text></g>
+    </svg>
+    <div class="legend"><span><i class="dot" style="background:#ffb45e"></i>结清0在贷</span><span><i class="dot" style="background:#b593e8"></i>主动获额</span></div>
+  </div>
+  <div class="grid two" style="margin-top:17px">
+    <div class="finding"><h3>结清0在贷：体量最大、降幅最大</h3><p>结清0在贷 1 月提单率为 54.05%，7 月为 47.58%，下降 6.47 个百分点；其占全部订单 47.82%，且占结清续贷 79.12%。</p></div>
+    <div class="finding"><h3>主动获额：提单率较高，但规模有限</h3><p>主动获额 1 月至 7 月由 57.42% 降至 51.59%，下降 5.83 个百分点；但其仅占全部订单 12.48%，难以抵消结清0在贷带来的大盘影响。</p></div>
+  </div>
+  <div class="callout"><strong>结论：</strong>整体提单率下降不能简单归因为循环贷。循环贷提单率 1 月至 7 月仅下降 1.14 个百分点；真正需要优先拆解的是“当天结清后获额”的结清0在贷人群。建议进一步打标获额后进入提单页、价格展示、券触达与提单失败等行为，定位其提单意愿或链路卡点。</div>
+</section>
+
+<section class="section">
+  <h2>五、可核对的月度数据</h2>
+  <div class="table-wrap"><table><thead><tr><th>获额月份</th><th>全部可提单订单</th><th>全部提单率</th><th>循环贷可提单订单</th><th>循环贷提单率</th><th>结清续贷可提单订单</th><th>结清续贷提单率</th></tr></thead>
+  <tbody>
+    <tr class="total"><td>总计</td><td>534,771</td><td>54.57%</td><td>211,542</td><td>58.44%</td><td>323,229</td><td>52.04%</td></tr>
+    <tr><td>2026-01</td><td>57,992</td><td>56.43%</td><td>21,487</td><td>59.41%</td><td>36,505</td><td>54.67%</td></tr>
+    <tr><td>2026-02</td><td>63,327</td><td>56.68%</td><td>22,352</td><td>58.82%</td><td>40,975</td><td>55.51%</td></tr>
+    <tr><td>2026-03</td><td>62,206</td><td>55.02%</td><td>20,808</td><td>55.61%</td><td>41,398</td><td>54.72%</td></tr>
+    <tr><td>2026-04</td><td>64,210</td><td>55.20%</td><td>23,970</td><td>58.61%</td><td>40,240</td><td>53.17%</td></tr>
+    <tr><td>2026-05</td><td>74,736</td><td>54.26%</td><td>28,791</td><td>59.19%</td><td>45,945</td><td>51.17%</td></tr>
+    <tr><td>2026-06</td><td>78,760</td><td>54.42%</td><td>33,541</td><td>60.00%</td><td>45,219</td><td>50.28%</td></tr>
+    <tr><td>2026-07</td><td>83,945</td><td>52.85%</td><td>36,809</td><td>58.27%</td><td>47,136</td><td>48.61%</td></tr>
+    <tr><td>2026-08（截至18日）</td><td>49,595</td><td>51.96%</td><td>23,784</td><td>56.69%</td><td>25,811</td><td>47.62%</td></tr>
+  </tbody></table></div>
+  <div class="table-wrap" style="margin-top:18px"><table><thead><tr><th>获额月份</th><th>结清0在贷订单</th><th>结清0在贷提单率</th><th>主动获额订单</th><th>主动获额提单率</th><th>边界订单</th></tr></thead>
+  <tbody>
+    <tr class="total"><td>总计</td><td>255,743</td><td>51.12%</td><td>66,716</td><td>55.44%</td><td>770</td></tr>
+    <tr><td>2026-01</td><td>30,126</td><td>54.05%</td><td>6,280</td><td>57.42%</td><td>99</td></tr>
+    <tr><td>2026-02</td><td>34,383</td><td>54.96%</td><td>6,520</td><td>58.44%</td><td>72</td></tr>
+    <tr><td>2026-03</td><td>33,086</td><td>53.84%</td><td>8,199</td><td>58.21%</td><td>113</td></tr>
+    <tr><td>2026-04</td><td>32,231</td><td>52.03%</td><td>7,913</td><td>57.77%</td><td>96</td></tr>
+    <tr><td>2026-05</td><td>36,738</td><td>49.77%</td><td>9,052</td><td>56.64%</td><td>155</td></tr>
+    <tr><td>2026-06</td><td>34,657</td><td>48.96%</td><td>10,431</td><td>54.48%</td><td>131</td></tr>
+    <tr><td>2026-07</td><td>35,318</td><td>47.58%</td><td>11,760</td><td>51.59%</td><td>58</td></tr>
+    <tr><td>2026-08（截至18日）</td><td>19,204</td><td>46.40%</td><td>6,561</td><td>51.06%</td><td>46</td></tr>
+  </tbody></table></div>
+</section>
+
+<section class="section">
+  <h2>六、统计口径</h2>
+  <div class="grid three">
+    <div class="finding"><h3>全部可提单订单</h3><p>获额通过、续贷获额，且 recycle_type IN (2,3)。提单时间需不早于获额时间。</p></div>
+    <div class="finding"><h3>结清0在贷订单</h3><p>用户某笔订单结清时无任何其他在途订单；同日获额，且获额时间大于等于结清时间。</p></div>
+    <div class="finding"><h3>主动获额订单</h3><p>获额时无任何在途订单，且用户当日不存在结清订单；排除已归入结清0在贷的订单。</p></div>
+  </div>
+</section>
+
+<section class="section">
+  <h2>附录：完整 PGSQL</h2>
+  <p>三个模块需按顺序执行：模块一输出全部/循环贷/结清续贷月度指标；模块二建立严格的结清0在贷与主动获额临时分类样本；模块三输出分类结果、占比及提单率。临时表仅在当前数据库会话有效。</p>
+  <div style="border:1px solid #245675;border-radius:12px;overflow:hidden;background:#0b2a46">
+    <details style="margin:0;border:0;border-bottom:1px solid #245675;border-radius:0;background:#0b2a46"><summary style="cursor:pointer;padding:14px 16px;font-weight:800;color:#39c6e8">模块一：全部、循环贷、结清续贷的总计与月度提单率</summary><pre style="margin:0;padding:18px;overflow:auto;border-top:1px solid #245675;background:#061b31;color:#dceefa;font-size:12px;line-height:1.55;white-space:pre">WITH eligible_offer AS (
+    SELECT DISTINCT ON (v.user_id, v.serial_id)
+        v.user_id, v.serial_id, v.vir_date::date AS vir_date,
+        to_timestamp(v.vir_unix) AS vir_time, r.recycle_type
+    FROM wangchuanliang.order_vir_f_copy v
+    INNER JOIN wangchuanliang.side_recycle_type_copy r ON r.serial_id = v.serial_id
+    WHERE v.is_pass1 = 1
+      AND v.loan_type_code = 2
+      AND r.recycle_type IN (2, 3)
+      AND v.vir_date >= DATE '2026-01-01'
+      AND v.vir_date &lt; DATE '2026-08-19'
+    ORDER BY v.user_id, v.serial_id, v.vir_unix DESC
+),
+base AS (
+    SELECT e.*, CASE WHEN o.serial_id IS NOT NULL THEN 1 ELSE 0 END AS is_applied
+    FROM eligible_offer e
+    LEFT JOIN wangchuanliang.order_loan_f_v2_copy o
+      ON o.user_id = e.user_id AND o.serial_id = e.serial_id
+     AND o.apply_date IS NOT NULL AND o.apply_time >= e.vir_time
+),
+metrics AS (
+    SELECT to_char(date_trunc('month', vir_date), 'YYYY-MM') AS month,
+           COUNT(*) AS eligible_count,
+           SUM(CASE WHEN recycle_type = 2 THEN 1 ELSE 0 END) AS cycle_count,
+           SUM(CASE WHEN recycle_type = 3 THEN 1 ELSE 0 END) AS type3_count,
+           SUM(is_applied) AS applied_count,
+           SUM(CASE WHEN recycle_type = 2 THEN is_applied ELSE 0 END) AS cycle_applied,
+           SUM(CASE WHEN recycle_type = 3 THEN is_applied ELSE 0 END) AS type3_applied
+    FROM base
+    GROUP BY GROUPING SETS ((to_char(date_trunc('month', vir_date), 'YYYY-MM')), ())
+)
+SELECT COALESCE(month, '总计') AS 获额月份,
+       eligible_count AS 可提单订单数,
+       cycle_count AS 循环贷可提单订单数,
+       type3_count AS 结清续贷可提单订单数,
+       applied_count AS 可提单提单订单数,
+       ROUND(applied_count::numeric / NULLIF(eligible_count, 0) * 100, 2) AS 可提单订单提单率_pct,
+       ROUND(cycle_applied::numeric / NULLIF(cycle_count, 0) * 100, 2) AS 循环贷提单率_pct,
+       ROUND(type3_applied::numeric / NULLIF(type3_count, 0) * 100, 2) AS 结清续贷提单率_pct
+FROM metrics
+ORDER BY CASE WHEN month IS NULL THEN 0 ELSE 1 END, month;</pre></details>
+
+    <details style="margin:0;border:0;border-bottom:1px solid #245675;border-radius:0;background:#0b2a46"><summary style="cursor:pointer;padding:14px 16px;font-weight:800;color:#39c6e8">模块二：建立结清0在贷与主动获额的严格分类临时表</summary><pre style="margin:0;padding:18px;overflow:auto;border-top:1px solid #245675;background:#061b31;color:#dceefa;font-size:12px;line-height:1.55;white-space:pre">/* 本模块须在同一数据库会话中顺序执行。 */
+CREATE TEMP TABLE tmp_eligible_type3 AS
+SELECT DISTINCT ON (v.user_id, v.serial_id)
+    v.user_id, v.serial_id, v.vir_date::date AS vir_date,
+    to_timestamp(v.vir_unix) AS vir_time
+FROM wangchuanliang.order_vir_f_copy v
+INNER JOIN wangchuanliang.side_recycle_type_copy r ON r.serial_id = v.serial_id
+WHERE v.is_pass1 = 1
+  AND v.loan_type_code = 2
+  AND r.recycle_type = 3
+  AND v.vir_date >= DATE '2026-01-01'
+  AND v.vir_date &lt; DATE '2026-08-19'
+ORDER BY v.user_id, v.serial_id, v.vir_unix DESC;
+CREATE INDEX ON tmp_eligible_type3 (user_id, vir_date, vir_time);
+
+CREATE TEMP TABLE tmp_candidate_users AS
+SELECT DISTINCT user_id FROM tmp_eligible_type3;
+CREATE INDEX ON tmp_candidate_users (user_id);
+
+CREATE TEMP TABLE tmp_orders AS
+SELECT o.user_id, o.serial_id, o.apply_time, o.repaid_time,
+       o.repaid_date::date AS repaid_date, o.loan_status_code,
+       o.is_remit, o.is_repaid
+FROM wangchuanliang.order_loan_f_v2_copy o
+INNER JOIN tmp_candidate_users u ON u.user_id = o.user_id;
+CREATE INDEX ON tmp_orders (user_id, apply_time);
+CREATE INDEX ON tmp_orders (user_id, repaid_date);
+
+CREATE TEMP TABLE tmp_settled AS
+SELECT user_id, serial_id, repaid_time, repaid_date
+FROM tmp_orders
+WHERE is_remit = 1
+  AND (is_repaid = 1 OR loan_status_code = 7 OR repaid_date > DATE '2000-01-01')
+  AND repaid_time > TIMESTAMP '2000-01-01 00:00:00'
+  AND repaid_date >= DATE '2026-01-01'
+  AND repaid_date &lt; DATE '2026-08-19';
+CREATE INDEX ON tmp_settled (user_id, repaid_date, repaid_time);
+
+/* 在结清瞬间，无其他在途订单。 */
+CREATE TEMP TABLE tmp_clean_settles AS
+SELECT s.user_id, s.serial_id, s.repaid_time, s.repaid_date
+FROM tmp_settled s
+WHERE NOT EXISTS (
+    SELECT 1 FROM tmp_orders o2
+    WHERE o2.user_id = s.user_id
+      AND o2.serial_id &lt;&gt; s.serial_id
+      AND o2.apply_time &lt; s.repaid_time
+      AND (o2.loan_status_code IN (5, 8)
+           OR (o2.loan_status_code = 7 AND o2.repaid_time > s.repaid_time))
+);
+CREATE INDEX ON tmp_clean_settles (user_id, repaid_date, repaid_time);
+
+CREATE TEMP TABLE tmp_applied AS
+SELECT DISTINCT e.user_id, e.serial_id
+FROM tmp_eligible_type3 e
+INNER JOIN wangchuanliang.order_loan_f_v2_copy a
+  ON a.user_id = e.user_id AND a.serial_id = e.serial_id
+ AND a.apply_date IS NOT NULL AND a.apply_time >= e.vir_time;
+CREATE INDEX ON tmp_applied (user_id, serial_id);
+
+/* 结清0在贷：同日、结清后（含同一秒）获额。 */
+CREATE TEMP TABLE tmp_t0_offer AS
+SELECT DISTINCT e.user_id, e.serial_id
+FROM tmp_eligible_type3 e
+INNER JOIN tmp_clean_settles c
+  ON c.user_id = e.user_id
+ AND c.repaid_date = e.vir_date
+ AND e.vir_time >= c.repaid_time;
+CREATE INDEX ON tmp_t0_offer (user_id, serial_id);
+
+CREATE TEMP TABLE tmp_settle_date AS
+SELECT DISTINCT user_id, repaid_date FROM tmp_settled;
+CREATE INDEX ON tmp_settle_date (user_id, repaid_date);
+
+CREATE TEMP TABLE tmp_labeled AS
+SELECT e.user_id, e.serial_id, e.vir_date, e.vir_time,
+       CASE WHEN a.serial_id IS NOT NULL THEN 1 ELSE 0 END AS is_applied,
+       CASE WHEN t.serial_id IS NOT NULL THEN 1 ELSE 0 END AS is_t0,
+       CASE WHEN d.user_id IS NOT NULL THEN 1 ELSE 0 END AS has_settle_on_vir_date
+FROM tmp_eligible_type3 e
+LEFT JOIN tmp_applied a ON a.user_id = e.user_id AND a.serial_id = e.serial_id
+LEFT JOIN tmp_t0_offer t ON t.user_id = e.user_id AND t.serial_id = e.serial_id
+LEFT JOIN tmp_settle_date d ON d.user_id = e.user_id AND d.repaid_date = e.vir_date;
+CREATE INDEX ON tmp_labeled (user_id, vir_time);
+
+/* 获额时点是否仍存在任何其他在途订单。 */
+CREATE TEMP TABLE tmp_inflight_at_vir AS
+SELECT l.user_id, l.serial_id,
+       CASE WHEN COUNT(o2.serial_id) > 0 THEN 1 ELSE 0 END AS has_inflight
+FROM tmp_labeled l
+LEFT JOIN tmp_orders o2
+  ON o2.user_id = l.user_id
+ AND o2.serial_id &lt;&gt; l.serial_id
+ AND o2.apply_time &lt; l.vir_time
+ AND (o2.loan_status_code IN (5, 8)
+      OR (o2.loan_status_code = 7 AND o2.repaid_time > l.vir_time))
+GROUP BY l.user_id, l.serial_id;
+CREATE INDEX ON tmp_inflight_at_vir (user_id, serial_id);
+
+CREATE TEMP TABLE tmp_classified AS
+SELECT l.*,
+       CASE
+         WHEN l.is_t0 = 1 THEN '结清0在贷订单'
+         WHEN l.has_settle_on_vir_date = 0 AND f.has_inflight = 0 THEN '主动获额订单'
+         ELSE '未归入两类订单'
+       END AS order_type
+FROM tmp_labeled l
+INNER JOIN tmp_inflight_at_vir f
+  ON f.user_id = l.user_id AND f.serial_id = l.serial_id;</pre></details>
+
+    <details style="margin:0;border:0;border-radius:0;background:#0b2a46"><summary style="cursor:pointer;padding:14px 16px;font-weight:800;color:#39c6e8">模块三：结清0在贷、主动获额的总计、月度订单量、占比与提单率</summary><pre style="margin:0;padding:18px;overflow:auto;border-top:1px solid #245675;background:#061b31;color:#dceefa;font-size:12px;line-height:1.55;white-space:pre">/* 依赖模块二创建的 tmp_classified 临时表。 */
+WITH metrics AS (
+    SELECT
+        to_char(date_trunc('month', vir_date), 'YYYY-MM') AS month,
+        COUNT(*) AS type3_eligible_count,
+        SUM(CASE WHEN order_type = '结清0在贷订单' THEN 1 ELSE 0 END) AS t0_count,
+        SUM(CASE WHEN order_type = '结清0在贷订单' THEN is_applied ELSE 0 END) AS t0_applied_count,
+        SUM(CASE WHEN order_type = '主动获额订单' THEN 1 ELSE 0 END) AS active_count,
+        SUM(CASE WHEN order_type = '主动获额订单' THEN is_applied ELSE 0 END) AS active_applied_count,
+        SUM(CASE WHEN order_type = '未归入两类订单' THEN 1 ELSE 0 END) AS other_count
+    FROM tmp_classified
+    GROUP BY GROUPING SETS ((to_char(date_trunc('month', vir_date), 'YYYY-MM')), ())
+)
+SELECT
+    COALESCE(month, '总计') AS 获额月份,
+    type3_eligible_count AS 结清续贷可提单订单数,
+    t0_count AS 结清0在贷订单数,
+    ROUND(t0_count::numeric / NULLIF(type3_eligible_count, 0) * 100, 2) AS 结清0在贷订单占比_pct,
+    t0_applied_count AS 结清0在贷提单订单数,
+    ROUND(t0_applied_count::numeric / NULLIF(t0_count, 0) * 100, 2) AS 结清0在贷提单率_pct,
+    active_count AS 主动获额订单数,
+    ROUND(active_count::numeric / NULLIF(type3_eligible_count, 0) * 100, 2) AS 主动获额订单占比_pct,
+    active_applied_count AS 主动获额提单订单数,
+    ROUND(active_applied_count::numeric / NULLIF(active_count, 0) * 100, 2) AS 主动获额提单率_pct,
+    other_count AS 未归入两类订单数
+FROM metrics
+ORDER BY CASE WHEN month IS NULL THEN 0 ELSE 1 END, month;</pre></details>
+  </div>
+  <p class="footer">报告生成时间：2026-08-28</p>
+</section>
+</main>
+</body>
+</html>
+
