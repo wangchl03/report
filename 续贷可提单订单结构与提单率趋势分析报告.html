@@ -136,8 +136,24 @@
 
 <section class="section">
   <h2>附录：完整 PGSQL</h2>
-  <p>三个模块需按顺序执行：模块一输出全部/循环贷/结清续贷月度指标；模块二建立严格的结清0在贷与主动获额临时分类样本；模块三输出分类结果、占比及提单率。临时表仅在当前数据库会话有效。</p>
+  <p>四个模块需在同一数据库会话中按顺序执行：模块零清理临时表；模块一输出全部/循环贷/结清续贷月度指标；模块二建立严格的结清0在贷与主动获额分类样本；模块三、四分别输出分类月度结果与整体结构占比。临时表仅在当前数据库会话有效。</p>
   <div style="border:1px solid #245675;border-radius:12px;overflow:hidden;background:#0b2a46">
+    <details style="margin:0;border:0;border-bottom:1px solid #245675;border-radius:0;background:#0b2a46"><summary style="cursor:pointer;padding:14px 16px;font-weight:800;color:#39c6e8">模块零：执行参数与临时表清理</summary><pre style="margin:0;padding:18px;overflow:auto;border-top:1px solid #245675;background:#061b31;color:#dceefa;font-size:12px;line-height:1.55;white-space:pre">/* 统计区间：[2026-01-01, 2026-08-19)，即截至 2026-08-18。
+   重新执行时先清理本次统计使用的临时表。 */
+SET statement_timeout = '900000';
+
+DROP TABLE IF EXISTS tmp_classified;
+DROP TABLE IF EXISTS tmp_inflight_at_vir;
+DROP TABLE IF EXISTS tmp_labeled;
+DROP TABLE IF EXISTS tmp_settle_date;
+DROP TABLE IF EXISTS tmp_t0_offer;
+DROP TABLE IF EXISTS tmp_applied;
+DROP TABLE IF EXISTS tmp_clean_settles;
+DROP TABLE IF EXISTS tmp_settled;
+DROP TABLE IF EXISTS tmp_orders;
+DROP TABLE IF EXISTS tmp_candidate_users;
+DROP TABLE IF EXISTS tmp_eligible_type3;</pre></details>
+
     <details style="margin:0;border:0;border-bottom:1px solid #245675;border-radius:0;background:#0b2a46"><summary style="cursor:pointer;padding:14px 16px;font-weight:800;color:#39c6e8">模块一：全部、循环贷、结清续贷的总计与月度提单率</summary><pre style="margin:0;padding:18px;overflow:auto;border-top:1px solid #245675;background:#061b31;color:#dceefa;font-size:12px;line-height:1.55;white-space:pre">WITH eligible_offer AS (
     SELECT DISTINCT ON (v.user_id, v.serial_id)
         v.user_id, v.serial_id, v.vir_date::date AS vir_date,
@@ -317,6 +333,68 @@ SELECT
     other_count AS 未归入两类订单数
 FROM metrics
 ORDER BY CASE WHEN month IS NULL THEN 0 ELSE 1 END, month;</pre></details>
+    <details style="margin:0;border:0;border-radius:0;background:#0b2a46"><summary style="cursor:pointer;padding:14px 16px;font-weight:800;color:#39c6e8">模块四：全量结构占比、各类提单率与下降结论支撑数据</summary><pre style="margin:0;padding:18px;overflow:auto;border-top:1px solid #245675;background:#061b31;color:#dceefa;font-size:12px;line-height:1.55;white-space:pre">/* 依赖模块二创建的 tmp_classified。
+   直接输出报告“订单结构占比”图与各类别提单率的原始分子、分母。 */
+WITH all_eligible AS (
+    SELECT DISTINCT ON (v.user_id, v.serial_id)
+        v.user_id, v.serial_id, to_timestamp(v.vir_unix) AS vir_time,
+        r.recycle_type
+    FROM wangchuanliang.order_vir_f_copy v
+    INNER JOIN wangchuanliang.side_recycle_type_copy r ON r.serial_id = v.serial_id
+    WHERE v.is_pass1 = 1
+      AND v.loan_type_code = 2
+      AND r.recycle_type IN (2, 3)
+      AND v.vir_date >= DATE '2026-01-01'
+      AND v.vir_date &lt; DATE '2026-08-19'
+    ORDER BY v.user_id, v.serial_id, v.vir_unix DESC
+),
+all_labeled AS (
+    SELECT e.user_id, e.serial_id, e.recycle_type,
+           CASE WHEN o.serial_id IS NOT NULL THEN 1 ELSE 0 END AS is_applied
+    FROM all_eligible e
+    LEFT JOIN wangchuanliang.order_loan_f_v2_copy o
+      ON o.user_id = e.user_id AND o.serial_id = e.serial_id
+     AND o.apply_date IS NOT NULL AND o.apply_time >= e.vir_time
+),
+category_metric AS (
+    SELECT '全部可提单订单' AS order_category, COUNT(*) AS order_count, SUM(is_applied) AS applied_count
+    FROM all_labeled
+    UNION ALL
+    SELECT '循环贷可提单订单', COUNT(*), SUM(is_applied)
+    FROM all_labeled WHERE recycle_type = 2
+    UNION ALL
+    SELECT '结清续贷可提单订单', COUNT(*), SUM(is_applied)
+    FROM all_labeled WHERE recycle_type = 3
+    UNION ALL
+    SELECT '结清0在贷订单', COUNT(*), SUM(is_applied)
+    FROM tmp_classified WHERE order_type = '结清0在贷订单'
+    UNION ALL
+    SELECT '主动获额订单', COUNT(*), SUM(is_applied)
+    FROM tmp_classified WHERE order_type = '主动获额订单'
+    UNION ALL
+    SELECT '未归入两类订单', COUNT(*), SUM(is_applied)
+    FROM tmp_classified WHERE order_type = '未归入两类订单'
+),
+total AS (
+    SELECT order_count AS total_order_count
+    FROM category_metric WHERE order_category = '全部可提单订单'
+)
+SELECT
+    m.order_category AS 订单类别,
+    m.order_count AS 可提单订单数,
+    m.applied_count AS 提单订单数,
+    ROUND(m.order_count::numeric / NULLIF(t.total_order_count, 0) * 100, 2) AS 占全部可提单订单比例_pct,
+    ROUND(m.applied_count::numeric / NULLIF(m.order_count, 0) * 100, 2) AS 提单率_pct
+FROM category_metric m
+CROSS JOIN total t
+ORDER BY CASE m.order_category
+    WHEN '全部可提单订单' THEN 1
+    WHEN '循环贷可提单订单' THEN 2
+    WHEN '结清续贷可提单订单' THEN 3
+    WHEN '结清0在贷订单' THEN 4
+    WHEN '主动获额订单' THEN 5
+    ELSE 6
+END;</pre></details>
   </div>
   <p class="footer">报告生成时间：2026-08-28</p>
 </section>
