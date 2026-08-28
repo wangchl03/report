@@ -1,0 +1,171 @@
+<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>T0用户当天提单时效与降息券使用分析报告</title><style>
+:root{--bg:#071d34;--panel:#0c2b49;--line:#245675;--text:#eef6ff;--muted:#a7c3da;--cyan:#39c6e8;--green:#62d6a7;--orange:#ffb45e;--pink:#eb7db5;--red:#ff8b8b}*{box-sizing:border-box}body{margin:0;background:linear-gradient(160deg,#061b31,#082744 52%,#061b31);color:var(--text);font:15px/1.6 -apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei",Arial,sans-serif}.wrap{max-width:1400px;margin:auto;padding:42px 32px 80px}.hero{text-align:center;border-bottom:1px solid #2b6285;padding:20px 0 34px}.eyebrow{color:var(--cyan);font-size:13px;font-weight:700;letter-spacing:3px}.hero h1{font-size:36px;margin:8px 0}.hero p,.sub{color:var(--muted);margin:0}.section{margin-top:42px}.section h2{font-size:25px;margin:0 0 8px}.grid{display:grid;gap:17px}.kpis{grid-template-columns:repeat(4,1fr)}.two{grid-template-columns:repeat(2,1fr)}.card{background:linear-gradient(145deg,rgba(14,48,79,.98),rgba(7,35,60,.98));border:1px solid var(--line);border-radius:15px;padding:19px}.name{color:var(--muted);font-size:13px}.value{font-size:30px;font-weight:800;line-height:1.15;margin:8px 0}.delta{font-weight:700}.bad{color:var(--red)}.good{color:var(--green)}.note{font-size:13px;color:var(--muted)}.chart-title{font-size:17px;font-weight:800;margin-bottom:5px}.chart-note{color:var(--muted);font-size:13px;margin-bottom:10px}.chart{width:100%;height:335px;background:rgba(3,18,33,.24);border-radius:10px}.legend{display:flex;gap:15px;flex-wrap:wrap;font-size:13px;color:var(--muted);margin-top:8px}.dot{width:10px;height:10px;border-radius:50%;display:inline-block;margin-right:5px}.callout{border-left:4px solid var(--cyan);background:#0c3150;border-radius:0 12px 12px 0;padding:16px 18px;margin-top:17px}.findings{display:grid;grid-template-columns:repeat(2,1fr);gap:16px}.finding{background:#0b2a46;border:1px solid #2a5b7b;border-radius:13px;padding:17px}.finding h3{font-size:17px;margin:0 0 7px}.finding p{margin:0;color:#d7e9f7}.table-wrap{overflow:auto;border:1px solid var(--line);border-radius:13px}.data{width:100%;border-collapse:collapse;min-width:1200px;font-size:13px}.data th{background:#18486d;padding:11px;text-align:right;white-space:nowrap}.data th:first-child,.data td:first-child{text-align:left}.data td{padding:10px;text-align:right;border-top:1px solid #22516f;color:#dceefa}.data tr:nth-child(even) td{background:rgba(100,149,237,.05)}.data td:nth-child(4),.data td:nth-child(7){color:#7de2ba;font-weight:800}.defs{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}.def{background:#0b2a46;border:1px solid var(--line);border-radius:12px;padding:15px}.def b{display:block;color:#7de2ba;margin-bottom:4px}@media(max-width:850px){.wrap{padding:26px 15px}.hero h1{font-size:27px}.kpis,.two,.findings,.defs{grid-template-columns:1fr}.chart{height:300px}}
+</style></head><body><main class="wrap"><header class="hero"><div class="eyebrow">T0 CONVERSION · COUPON TIMING ANALYSIS</div><h1>T0 用户当天提单时效与降息券使用分析报告</h1><p>统计范围：2026-01-01 至 2026-08-25｜按结清月份分组｜降息券仅指 type=3</p></header>
+<section class="section"><h2>一、核心结论</h2><p class="sub">重点观察严格 T0 用户在结清当天的首次提单时点，以及降息券在不同提单时段的使用差异。</p><div class="grid kpis"><div class="card"><div class="name">当日提单率（1月→7月）</div><div class="value">52.91% → 41.36%</div><div class="delta bad">下降 11.55 个百分点</div><div class="note">8 月截至 25 日为 38.99%。</div></div><div class="card"><div class="name">获额后 3 小时内提单占比（1月→7月）</div><div class="value">91.34% → 90.10%</div><div class="delta bad">下降 1.24 个百分点</div><div class="note">仍是当天提单的主要时间窗口。</div></div><div class="card"><div class="name">获额后 3 小时提单占比（1月→7月）</div><div class="value">8.64% → 9.88%</div><div class="delta good">提升 1.24 个百分点</div><div class="note">8 月截至 25 日为 11.07%。</div></div><div class="card"><div class="name">7月降息券使用率</div><div class="value">7.02% / 11.15%</div><div class="delta good">后段高出 4.13pp</div><div class="note">依次为 3 小时内 / 3 小时后提单订单。</div></div></div></section>
+<section class="section"><h2>二、统计口径</h2><div class="defs"><div class="def"><b>严格 T0 基础样本</b>用户结清时没有其他在途订单；结清当日获额通过，且获额时间不早于结清时间；同一用户同日保留最早合格结清记录。</div><div class="def"><b>当天首次提单</b>在该合格结清记录后，于结清当日发生的最早一笔提单订单。统计粒度为“用户 × 合格结清日期”。</div><div class="def"><b>降息券使用</b>提单订单以 user_id + serial_id 关联红包表；存在 type=3 记录即标记为使用降息券，不纳入 type=2 还款优惠券。</div></div></section>
+<section class="section"><h2>三、当日提单率：大盘持续下滑</h2><p class="sub">当日提单率 = 当天首次提单订单数 / 当月严格 T0 基础样本数。</p><div class="card"><div class="chart-title">严格 T0 用户当日提单率（月度）</div><svg id="chart-rate" class="chart"></svg><div class="legend"><span><i class="dot" style="background:var(--cyan)"></i>当日提单率</span></div></div><div class="callout"><b>结论 1：</b>1 月至 7 月，当日提单率由 52.91% 降至 41.36%，下降 11.55 个百分点。说明即时提单能力或即时提单意愿正在走弱；8 月为未完整月度，适合持续观察。</div></section>
+<section class="section"><h2>四、降息券使用率与提单率：同向比较</h2><p class="sub">左轴为当日提单率，右轴为当天首次提单订单的总体降息券使用率。两项指标分母不同，仅用于观察月度共同变化，不用于直接判断因果。</p><div class="card"><div class="chart-title">当日提单率与总体降息券使用率（月度）</div><svg id="chart-rate-coupon" class="chart"></svg><div class="legend"><span><i class="dot" style="background:var(--cyan)"></i>当日提单率（左轴）</span><span><i class="dot" style="background:var(--orange)"></i>总体降息券使用率（右轴）</span></div></div><div class="findings" style="margin-top:17px"><div class="finding"><h3>结论 2：两项指标不存在稳定的同步变化</h3><p>当日提单率从 1 月的 52.91% 持续下滑至 7 月的 41.36%，但总体降息券使用率在 1 月至 5 月由 5.07% 降至 1.40%，随后 6—7 月又升至 3.87% 和 7.43%。因此，仅从月度趋势不能证明“发券更多或更少”直接造成当日提单率变化。</p></div><div class="finding"><h3>建议：以延迟未提单用户为实验对象验证</h3><p>应固定在获额后 3 小时仍未提单的用户内，对比发券与未发券的后续当天提单率；再同步比较放款、逾期、盈利和券成本，才能识别优惠券的真实增量效果。</p></div></div></section>
+<section class="section"><h2>五、提单时效结构：3 小时后的等待人群占比上升</h2><div class="grid two"><div class="card"><div class="chart-title">当天首次提单的时效结构</div><div class="chart-note">分母为当月当天首次提单订单；获额前异常记录极少，不在两条线中展示。</div><svg id="chart-timing" class="chart"></svg><div class="legend"><span><i class="dot" style="background:var(--cyan)"></i>获额后 3 小时内</span><span><i class="dot" style="background:var(--pink)"></i>获额后 3 小时后</span></div></div><div class="finding"><h3>结论 3：优惠券窗口覆盖的是小体量、但在扩大的延迟人群</h3><p>获额后超过 3 小时才提单的用户占比，从 1 月的 8.64% 升至 7 月的 9.88%，8 月截至 25 日为 11.07%。绝对人数大致稳定在每月约 900–1,100 单，但随着当天总提单量下滑，其结构占比提升。</p></div></div></section>
+<section class="section"><h2>六、降息券使用：延迟提单订单使用率更高</h2><div class="card"><div class="chart-title">当天首次提单订单的降息券使用率</div><div class="chart-note">总体使用率包含全部当天首次提单订单；分时段使用率分别以对应时段的提单订单为分母。</div><svg id="chart-coupon" class="chart"></svg><div class="legend"><span><i class="dot" style="background:var(--orange)"></i>总体</span><span><i class="dot" style="background:var(--cyan)"></i>3 小时内</span><span><i class="dot" style="background:var(--pink)"></i>3 小时后</span></div></div><div class="findings" style="margin-top:17px"><div class="finding"><h3>结论 4：各月后段提单订单的降息券使用率均更高</h3><p>例如 7 月，获额后 3 小时内提单订单的用券率为 7.02%，3 小时后为 11.15%，高出 4.13 个百分点。该差异与“3 小时未提单后发券”的策略方向一致。</p></div><div class="finding"><h3>解读边界：不能仅凭用券率判断券的增量效果</h3><p>3 小时后用户本身就是未即时转化的人群，通常提单意愿更弱、价格敏感度更高。要评估优惠券带来的增量，应在同类延迟用户内设置未发券对照组，同时观察提单率、放款率、逾期率和红包成本后的盈利率。</p></div></div></section>
+<section class="section"><h2>七、月度可核对数据</h2><div class="table-wrap"><table class="data"><thead><tr><th>结清月份</th><th>严格T0基础样本</th><th>当天首次提单</th><th>当日提单率</th><th>3小时内提单占比</th><th>3小时后提单占比</th><th>总体降息券使用率</th><th>3小时内用券率</th><th>3小时后用券率</th></tr></thead><tbody><tr><td>1月</td><td>19,521</td><td>10,328</td><td>52.91%</td><td>91.34%</td><td>8.64%</td><td>5.07%</td><td>4.98%</td><td>5.94%</td></tr><tr><td>2月</td><td>22,741</td><td>11,783</td><td>51.81%</td><td>90.96%</td><td>9.01%</td><td>2.81%</td><td>2.56%</td><td>5.27%</td></tr><tr><td>3月</td><td>22,200</td><td>10,298</td><td>46.39%</td><td>90.39%</td><td>9.57%</td><td>3.03%</td><td>2.84%</td><td>4.87%</td></tr><tr><td>4月</td><td>20,782</td><td>9,736</td><td>46.85%</td><td>89.85%</td><td>10.15%</td><td>2.72%</td><td>2.56%</td><td>4.15%</td></tr><tr><td>5月</td><td>23,876</td><td>10,784</td><td>45.17%</td><td>90.09%</td><td>9.90%</td><td>1.40%</td><td>1.17%</td><td>3.46%</td></tr><tr><td>6月</td><td>22,636</td><td>9,908</td><td>43.77%</td><td>89.84%</td><td>10.15%</td><td>3.87%</td><td>3.81%</td><td>4.27%</td></tr><tr><td>7月</td><td>23,278</td><td>9,628</td><td>41.36%</td><td>90.10%</td><td>9.88%</td><td>7.43%</td><td>7.02%</td><td>11.15%</td></tr><tr><td>8月截至25日</td><td>17,299</td><td>6,745</td><td>38.99%</td><td>88.93%</td><td>11.07%</td><td>1.41%</td><td>1.15%</td><td>3.48%</td></tr></tbody></table></div></section>
+<section class="section"><h2>八、建议的下一步验证</h2><div class="findings"><div class="finding"><h3>建立 3 小时后人群的随机对照</h3><p>在“获额通过后 3 小时仍未提单”的严格 T0 用户中，随机分为发降息券与不发券两组；分别计算 3 小时后至当日结束的增量提单率。</p></div><div class="finding"><h3>同时观察质量指标</h3><p>除增量提单外，应同步对比放款成功率、逾期率、盈利率和红包金额。只有增量转化覆盖红包成本且风险质量稳定，才适合扩大策略。</p></div></div></section><section class="section"><h2>附录：完整 PGSQL</h2><p class="sub">以下代码覆盖严格 T0 样本、当天首次提单时效、降息券使用及月度汇总结果；当前版本对应 2026-01-01 至 2026-08-25。</p><details style="background:#061a2d;border:1px solid #286082;border-radius:12px;overflow:hidden"><summary style="cursor:pointer;padding:15px 18px;font-weight:800;list-style:none"><span style="display:inline-block;margin-right:10px;color:#39c6e8;font-size:19px;vertical-align:-1px">▸</span>总体首次提单时效统计</summary><pre style="margin:0;overflow:auto;padding:18px;background:#031729;border-top:1px solid #245675;color:#d8ebf7;font:12px/1.65 ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;white-space:pre;tab-size:4">/* ================================================================
+   T0 用户当天首次提单时效与降息券使用率（月度）
+   统计范围：2026-01-01 至 2026-08-25
+
+   1. 严格 T0：结清时点没有其他在途订单；
+   2. 结清当日获额通过，且获额时间 &gt;= 结清时间；
+   3. 同一用户同日保留最早的合格结清记录；
+   4. 当天首次提单须发生在对应获额通过之后；
+   5. 降息券仅统计 coupon_user_detail_copy.type = 3。
+   ================================================================ */
+WITH params AS (
+    SELECT DATE '2026-01-01' AS start_date,
+           DATE '2026-08-25' AS end_date
+),
+
+/* 模块一：候选结清订单与严格“结清 0 在贷”判断 */
+settled_orders AS (
+    SELECT o.user_id, o.serial_id, o.repaid_time,
+           o.repaid_date::date AS repaid_date
+    FROM wangchuanliang.order_loan_f_v2_copy AS o
+    CROSS JOIN params AS p
+    WHERE o.is_remit = 1
+      AND (o.is_repaid = 1
+           OR o.loan_status_code = 7
+           OR o.repaid_date::date &gt; DATE '2000-01-01')
+      AND o.repaid_time &gt; TIMESTAMP '2000-01-01 00:00:00'
+      AND o.repaid_date::date BETWEEN p.start_date AND p.end_date
+),
+candidate_users AS (
+    SELECT DISTINCT user_id FROM settled_orders
+),
+all_orders AS (
+    SELECT o.user_id, o.serial_id, o.apply_time,
+           o.repaid_time, o.loan_status_code
+    FROM wangchuanliang.order_loan_f_v2_copy AS o
+    INNER JOIN candidate_users AS u ON u.user_id = o.user_id
+),
+clean_settles AS (
+    SELECT s.*
+    FROM settled_orders AS s
+    WHERE NOT EXISTS (
+        SELECT 1
+        FROM all_orders AS o2
+        WHERE o2.user_id = s.user_id
+          AND o2.serial_id &lt;&gt; s.serial_id
+          AND o2.apply_time &lt; s.repaid_time
+          AND (
+                o2.loan_status_code IN (5, 8)
+             OR (o2.loan_status_code = 7 AND o2.repaid_time &gt; s.repaid_time)
+          )
+    )
+),
+
+/* 模块二：结清当日获额通过；同一秒获额、结清也纳入 */
+passed_vir AS (
+    SELECT v.user_id, v.vir_date::date AS vir_date,
+           TO_TIMESTAMP(v.vir_unix) AS vir_time
+    FROM wangchuanliang.order_vir_f_copy AS v
+    CROSS JOIN params AS p
+    WHERE v.is_pass1 = 1
+      AND v.vir_date::date BETWEEN p.start_date AND p.end_date
+),
+settle_vir AS (
+    SELECT c.user_id, c.serial_id AS settled_serial_id,
+           c.repaid_date, c.repaid_time,
+           MIN(v.vir_time) AS first_vir_time
+    FROM clean_settles AS c
+    INNER JOIN passed_vir AS v
+      ON v.user_id = c.user_id
+     AND v.vir_date = c.repaid_date
+     AND v.vir_time &gt;= c.repaid_time
+    GROUP BY c.user_id, c.serial_id, c.repaid_date, c.repaid_time
+),
+base_sample AS (
+    SELECT DISTINCT ON (user_id, repaid_date)
+           user_id, settled_serial_id, repaid_date, repaid_time, first_vir_time
+    FROM settle_vir
+    ORDER BY user_id, repaid_date, repaid_time, settled_serial_id
+),
+
+/* 模块三：结清后、获额通过后，当天首次提单订单 */
+d0_first_apply AS (
+    SELECT b.user_id, b.repaid_date, b.first_vir_time,
+           a.serial_id AS apply_serial_id, a.apply_time,
+           ROW_NUMBER() OVER (
+               PARTITION BY b.user_id, b.repaid_date
+               ORDER BY a.apply_time, a.serial_id
+           ) AS rn
+    FROM base_sample AS b
+    INNER JOIN all_orders AS a
+      ON a.user_id = b.user_id
+     AND a.serial_id &lt;&gt; b.settled_serial_id
+     AND a.apply_time &gt;= b.first_vir_time
+     AND a.apply_time::date = b.repaid_date
+),
+d0_orders AS (
+    SELECT user_id, repaid_date, first_vir_time, apply_serial_id, apply_time
+    FROM d0_first_apply
+    WHERE rn = 1
+),
+
+/* 模块四：订单级降息券。type=3 多期记录按订单去重。 */
+interest_coupon_orders AS (
+    SELECT DISTINCT user_id, serial_id
+    FROM wangchuanliang.coupon_user_detail_copy
+    WHERE type = 3
+),
+monthly AS (
+    SELECT DATE_TRUNC('month', b.repaid_date)::date AS settle_month,
+           COUNT(*) AS strict_t0_base_users,
+           COUNT(d.apply_serial_id) AS d0_first_apply_users,
+           COUNT(d.apply_serial_id)::numeric / NULLIF(COUNT(*), 0) AS d0_apply_rate,
+           COUNT(*) FILTER (
+               WHERE d.apply_time &lt;= d.first_vir_time + INTERVAL '3 hours'
+           ) AS apply_within_3h,
+           COUNT(*) FILTER (
+               WHERE d.apply_time &gt; d.first_vir_time + INTERVAL '3 hours'
+           ) AS apply_after_3h,
+           COUNT(*) FILTER (WHERE c.serial_id IS NOT NULL) AS coupon_d0_orders,
+           COUNT(*) FILTER (
+               WHERE c.serial_id IS NOT NULL
+                 AND d.apply_time &lt;= d.first_vir_time + INTERVAL '3 hours'
+           ) AS coupon_within_3h,
+           COUNT(*) FILTER (
+               WHERE c.serial_id IS NOT NULL
+                 AND d.apply_time &gt; d.first_vir_time + INTERVAL '3 hours'
+           ) AS coupon_after_3h
+    FROM base_sample AS b
+    LEFT JOIN d0_orders AS d
+      ON d.user_id = b.user_id AND d.repaid_date = b.repaid_date
+    LEFT JOIN interest_coupon_orders AS c
+      ON c.user_id = d.user_id AND c.serial_id = d.apply_serial_id
+    GROUP BY 1
+)
+SELECT settle_month,
+       strict_t0_base_users,
+       d0_first_apply_users,
+       ROUND(100 * d0_apply_rate, 2) AS d0_apply_rate_pct,
+       apply_within_3h,
+       apply_after_3h,
+       ROUND(100 * apply_within_3h::numeric /
+             NULLIF(d0_first_apply_users, 0), 2) AS within_3h_share_pct,
+       ROUND(100 * apply_after_3h::numeric /
+             NULLIF(d0_first_apply_users, 0), 2) AS after_3h_share_pct,
+       coupon_d0_orders,
+       ROUND(100 * coupon_d0_orders::numeric /
+             NULLIF(d0_first_apply_users, 0), 2) AS coupon_use_rate_pct,
+       coupon_within_3h,
+       ROUND(100 * coupon_within_3h::numeric /
+             NULLIF(apply_within_3h, 0), 2) AS coupon_within_3h_rate_pct,
+       coupon_after_3h,
+       ROUND(100 * coupon_after_3h::numeric /
+             NULLIF(apply_after_3h, 0), 2) AS coupon_after_3h_rate_pct
+FROM monthly
+ORDER BY settle_month;
+</pre></details></section></main><script>
+const data=[{"month":"1月","base":19521,"d0":10328,"d0Rate":52.91,"under3":91.34,"after3":8.64,"coupon":5.07,"couponUnder3":4.98,"couponAfter3":5.94},{"month":"2月","base":22741,"d0":11783,"d0Rate":51.81,"under3":90.96,"after3":9.01,"coupon":2.81,"couponUnder3":2.56,"couponAfter3":5.27},{"month":"3月","base":22200,"d0":10298,"d0Rate":46.39,"under3":90.39,"after3":9.57,"coupon":3.03,"couponUnder3":2.84,"couponAfter3":4.87},{"month":"4月","base":20782,"d0":9736,"d0Rate":46.85,"under3":89.85,"after3":10.15,"coupon":2.72,"couponUnder3":2.56,"couponAfter3":4.15},{"month":"5月","base":23876,"d0":10784,"d0Rate":45.17,"under3":90.09,"after3":9.9,"coupon":1.4,"couponUnder3":1.17,"couponAfter3":3.46},{"month":"6月","base":22636,"d0":9908,"d0Rate":43.77,"under3":89.84,"after3":10.15,"coupon":3.87,"couponUnder3":3.81,"couponAfter3":4.27},{"month":"7月","base":23278,"d0":9628,"d0Rate":41.36,"under3":90.1,"after3":9.88,"coupon":7.43,"couponUnder3":7.02,"couponAfter3":11.15},{"month":"8月截至25日","base":17299,"d0":6745,"d0Rate":38.99,"under3":88.93,"after3":11.07,"coupon":1.41,"couponUnder3":1.15,"couponAfter3":3.48}];
+function lineChart(id,series,opt){const svg=document.getElementById(id),W=900,H=335,p={l:62,r:25,t:26,b:46};svg.setAttribute('viewBox','0 0 '+W+' '+H);const min=opt.min,max=opt.max,x=i=>p.l+i*(W-p.l-p.r)/(data.length-1),y=v=>H-p.b-(v-min)*(H-p.t-p.b)/(max-min);let h='';for(let i=0;i<=5;i++){const v=min+(max-min)*i/5,yy=y(v);h+='<line x1="'+p.l+'" x2="'+(W-p.r)+'" y1="'+yy+'" y2="'+yy+'" stroke="#255271" stroke-dasharray="3 5"/><text x="'+(p.l-9)+'" y="'+(yy+4)+'" text-anchor="end" fill="#a7c3da" font-size="12">'+v.toFixed(0)+'%</text>'}data.forEach((d,i)=>h+='<text x="'+x(i)+'" y="'+(H-15)+'" text-anchor="middle" fill="#a7c3da" font-size="12">'+d.month.replace('截至25日','')+'</text>');series.forEach(s=>{let path='';data.forEach((d,i)=>{const v=d[s.key];path+=(i?' L':'M')+x(i)+' '+y(v)});h+='<path d="'+path+'" fill="none" stroke="'+s.color+'" stroke-width="3"/>';data.forEach((d,i)=>{const v=d[s.key],dy=s.dy?.[i]??-10;h+='<circle cx="'+x(i)+'" cy="'+y(v)+'" r="4.5" fill="'+s.color+'" stroke="#061d33" stroke-width="2"/><text x="'+x(i)+'" y="'+(y(v)+dy)+'" text-anchor="middle" fill="'+s.color+'" font-size="11" font-weight="700">'+v.toFixed(1)+'%</text>'})});svg.innerHTML=h}
+function dualChart(){const svg=document.getElementById('chart-rate-coupon'),W=900,H=335,p={l:58,r:58,t:26,b:46},x=i=>p.l+i*(W-p.l-p.r)/(data.length-1),yl=v=>H-p.b-(v-35)*(H-p.t-p.b)/(56-35),yr=v=>H-p.b-v*(H-p.t-p.b)/13;svg.setAttribute('viewBox','0 0 '+W+' '+H);let h='';for(let i=0;i<=5;i++){const vl=35+(56-35)*i/5,vr=13*i/5,yy=yl(vl);h+='<line x1="'+p.l+'" x2="'+(W-p.r)+'" y1="'+yy+'" y2="'+yy+'" stroke="#255271" stroke-dasharray="3 5"/><text x="'+(p.l-8)+'" y="'+(yy+4)+'" text-anchor="end" fill="#39c6e8" font-size="12">'+vl.toFixed(0)+'%</text><text x="'+(W-p.r+8)+'" y="'+(yy+4)+'" fill="#ffb45e" font-size="12">'+vr.toFixed(0)+'%</text>'}data.forEach((d,i)=>h+='<text x="'+x(i)+'" y="'+(H-15)+'" text-anchor="middle" fill="#a7c3da" font-size="12">'+d.month.replace('截至25日','')+'</text>');const draw=(key,color,y,dy)=>{let path='';data.forEach((d,i)=>path+=(i?' L':'M')+x(i)+' '+y(d[key]));h+='<path d="'+path+'" fill="none" stroke="'+color+'" stroke-width="3"/>';data.forEach((d,i)=>h+='<circle cx="'+x(i)+'" cy="'+y(d[key])+'" r="4.5" fill="'+color+'" stroke="#061d33" stroke-width="2"/><text x="'+x(i)+'" y="'+(y(d[key])+dy)+'" text-anchor="middle" fill="'+color+'" font-size="11" font-weight="700">'+d[key].toFixed(1)+'%</text>')};draw('d0Rate','#39c6e8',yl,-11);draw('coupon','#ffb45e',yr,17);svg.innerHTML=h}
+lineChart('chart-rate',[{key:'d0Rate',color:'#39c6e8',dy:[-12,-12,-12,-12,-12,-12,-12,-12]}],{min:35,max:56});dualChart();lineChart('chart-timing',[{key:'under3',color:'#39c6e8',dy:[-12,-12,-12,-12,-12,-12,-12,-12]},{key:'after3',color:'#eb7db5',dy:[-12,-12,-12,-12,-12,-12,-12,-12]}],{min:0,max:100});lineChart('chart-coupon',[{key:'coupon',color:'#ffb45e',dy:[-12,-12,-12,-12,-12,-12,-12,-12]},{key:'couponUnder3',color:'#39c6e8',dy:[17,17,17,17,17,17,17,17]},{key:'couponAfter3',color:'#eb7db5',dy:[-12,-12,-12,-12,-12,-12,-12,-12]}],{min:0,max:13});
+</script></body></html>
