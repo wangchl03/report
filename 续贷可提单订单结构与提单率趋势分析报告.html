@@ -576,12 +576,30 @@ SELECT
 FROM metrics
 ORDER BY CASE WHEN month IS NULL THEN 0 ELSE 1 END, month;</pre></details>
   </div>
+  <details style="margin:0;border:0;border-radius:0;background:#0b2a46"><summary style="cursor:pointer;padding:14px 16px;font-weight:800;color:#39c6e8">模块五：图表与结论复现（结构占比、趋势变化、相对少提单量）</summary><pre style="margin:0;padding:18px;overflow:auto;border-top:1px solid #245675;background:#061b31;color:#dceefa;font-size:12px;line-height:1.55;white-space:pre">/* 结构占比=类别订单数/全部可提单订单数；相对少提单量=7月T0订单数×(1月T0率-7月T0率)。 */
+WITH base_m AS(
+ SELECT to_char(date_trunc('month',vir_date),'YYYY-MM') stat_month,COUNT(*) all_cnt,SUM(CASE WHEN apply_time IS NOT NULL THEN 1 ELSE 0 END) all_applied,
+ SUM(CASE WHEN recycle_type=2 THEN 1 ELSE 0 END) cycle_cnt,SUM(CASE WHEN recycle_type=2 AND apply_time IS NOT NULL THEN 1 ELSE 0 END) cycle_applied,
+ SUM(CASE WHEN recycle_type=3 THEN 1 ELSE 0 END) type3_cnt,SUM(CASE WHEN recycle_type=3 AND apply_time IS NOT NULL THEN 1 ELSE 0 END) type3_applied
+ FROM tmp_eligible_offer GROUP BY to_char(date_trunc('month',vir_date),'YYYY-MM')
+),t0_m AS(
+ SELECT to_char(date_trunc('month',t.vir_date),'YYYY-MM') stat_month,COUNT(*) t0_cnt,SUM(CASE WHEN e.apply_time IS NOT NULL THEN 1 ELSE 0 END) t0_applied,
+ SUM(CASE WHEN e.apply_time IS NOT NULL AND e.apply_time::date=t.vir_date THEN 1 ELSE 0 END) t0_d0
+ FROM tmp_t0_offer t JOIN tmp_eligible_offer e ON e.user_id=t.user_id AND e.serial_id=t.serial_id GROUP BY to_char(date_trunc('month',t.vir_date),'YYYY-MM')
+),r AS(SELECT b.*,t.t0_cnt,t.t0_applied,t.t0_d0,b.type3_cnt-t.t0_cnt other_cnt,b.type3_applied-t.t0_applied other_applied FROM base_m b JOIN t0_m t ON t.stat_month=b.stat_month),
+x AS(SELECT *,all_applied::numeric/all_cnt all_rate,cycle_applied::numeric/cycle_cnt cycle_rate,type3_applied::numeric/type3_cnt type3_rate,t0_applied::numeric/t0_cnt t0_rate,t0_d0::numeric/t0_cnt t0_d0_rate,other_applied::numeric/other_cnt other_rate FROM r),
+jan AS(SELECT * FROM x WHERE stat_month='2026-01'),jul AS(SELECT * FROM x WHERE stat_month='2026-07')
+SELECT '月度图表底表' 输出类型,stat_month 统计周期,all_cnt 全部订单数,ROUND(all_rate*100,2) 全部提单率_pct,cycle_cnt 循环贷订单数,ROUND(cycle_rate*100,2) 循环贷提单率_pct,type3_cnt 结清续贷订单数,ROUND(type3_rate*100,2) 结清续贷提单率_pct,t0_cnt 结清0在贷订单数,ROUND(t0_rate*100,2) 结清0在贷提单率_pct,ROUND(t0_d0_rate*100,2) T0提单率_pct,other_cnt 其他结清续贷订单数,ROUND(other_rate*100,2) 其他结清续贷提单率_pct,ROUND(t0_cnt::numeric/all_cnt*100,2) 结清0在贷占全部_pct,ROUND(t0_cnt::numeric/type3_cnt*100,2) 结清0在贷占结清续贷_pct FROM x
+UNION ALL
+SELECT '1月到7月提单率变化',NULL,NULL,ROUND((jul.all_rate-jan.all_rate)*100,2),NULL,ROUND((jul.cycle_rate-jan.cycle_rate)*100,2),NULL,ROUND((jul.type3_rate-jan.type3_rate)*100,2),NULL,ROUND((jul.t0_rate-jan.t0_rate)*100,2),ROUND((jul.t0_d0_rate-jan.t0_d0_rate)*100,2),NULL,ROUND((jul.other_rate-jan.other_rate)*100,2),NULL,NULL FROM jan CROSS JOIN jul
+UNION ALL
+SELECT '7月T0相对少提单量',NULL,ROUND(jul.t0_cnt*(jan.t0_d0_rate-jul.t0_d0_rate),0),NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL FROM jan CROSS JOIN jul;</pre></details>
   <p class="footer">报告生成时间：2026-08-31</p>
 </section>
 
 <section class="section">
   <h2>附录 B：当前口径完整 PGSQL（20 秒去重）</h2>
-  <p>请在同一数据库会话中按以下四个模块顺序执行。模块一建立公共临时表；模块二、三、四分别输出报告的总体、类别结构和时效指标。</p>
+  <p>请在同一数据库会话中按以下五个模块顺序执行。模块一建立公共临时表；模块二至四输出报告中的所有原始分子、分母与比率；模块五专门输出图表和结论所用的环比、结构占比及“相对少提单量”。</p>
   <div class="code-blocks" style="border:1px solid #245675;border-radius:10px;overflow:hidden;background:#0b2a46">
     <details style="margin:0;border:0;border-bottom:1px solid #245675;background:#0b2a46"><summary style="cursor:pointer;padding:14px 16px;font-weight:800;color:#39c6e8">模块一：20 秒去重与公共样本</summary><pre style="margin:0;padding:18px;overflow:auto;border-top:1px solid #245675;background:#061b31;color:#dceefa;font-size:12px;line-height:1.55;white-space:pre">/* 当前口径的完整公共样本。统计区间：[2026-01-01, 2026-08-19)。 */
 CREATE TEMP TABLE tmp_raw_pass_offer AS
@@ -627,10 +645,10 @@ SUM(CASE WHEN recycle_type=2 AND apply_time IS NOT NULL THEN 1 ELSE 0 END) cycle
 SUM(CASE WHEN recycle_type=3 THEN 1 ELSE 0 END) type3_cnt,
 SUM(CASE WHEN recycle_type=3 AND apply_time IS NOT NULL THEN 1 ELSE 0 END) type3_applied_cnt
 FROM tmp_eligible_offer GROUP BY GROUPING SETS((to_char(date_trunc('month',vir_date),'YYYY-MM')),()))
-SELECT COALESCE(stat_month,'总计') 统计周期,total_cnt 可提单订单数,applied_cnt 提单订单数,
+SELECT COALESCE(stat_month,'总计') 统计周期,total_cnt 可提单订单数,applied_cnt 可提单提单订单数,
 ROUND(applied_cnt::numeric/NULLIF(total_cnt,0)*100,2) 可提单提单率_pct,
-cycle_cnt 循环贷可提单订单数,ROUND(cycle_applied_cnt::numeric/NULLIF(cycle_cnt,0)*100,2) 循环贷提单率_pct,
-type3_cnt 结清续贷可提单订单数,ROUND(type3_applied_cnt::numeric/NULLIF(type3_cnt,0)*100,2) 结清续贷提单率_pct
+cycle_cnt 循环贷可提单订单数,cycle_applied_cnt 循环贷提单订单数,ROUND(cycle_applied_cnt::numeric/NULLIF(cycle_cnt,0)*100,2) 循环贷提单率_pct,
+type3_cnt 结清续贷可提单订单数,type3_applied_cnt 结清续贷提单订单数,ROUND(type3_applied_cnt::numeric/NULLIF(type3_cnt,0)*100,2) 结清续贷提单率_pct
 FROM m ORDER BY CASE WHEN stat_month IS NULL THEN 0 ELSE 1 END,stat_month;</pre></details>
     <details style="margin:0;border:0;border-bottom:1px solid #245675;background:#0b2a46"><summary style="cursor:pointer;padding:14px 16px;font-weight:800;color:#39c6e8">模块三：结清0在贷与其他结清续贷订单量、提单率</summary><pre style="margin:0;padding:18px;overflow:auto;border-top:1px solid #245675;background:#061b31;color:#dceefa;font-size:12px;line-height:1.55;white-space:pre">WITH a AS(
 SELECT to_char(date_trunc('month',vir_date),'YYYY-MM') stat_month,COUNT(*) type3_cnt,
@@ -641,9 +659,9 @@ SELECT to_char(date_trunc('month',t.vir_date),'YYYY-MM') stat_month,COUNT(*) t0_
 SUM(CASE WHEN e.apply_time IS NOT NULL THEN 1 ELSE 0 END) t0_applied_cnt
 FROM tmp_t0_offer t JOIN tmp_eligible_offer e ON e.user_id=t.user_id AND e.serial_id=t.serial_id
 GROUP BY GROUPING SETS((to_char(date_trunc('month',t.vir_date),'YYYY-MM')),()))
-SELECT COALESCE(b.stat_month,'总计') 统计周期,b.t0_cnt 结清0在贷订单数,
+SELECT COALESCE(b.stat_month,'总计') 统计周期,b.t0_cnt 结清0在贷订单数,b.t0_applied_cnt 结清0在贷提单订单数,
 ROUND(b.t0_applied_cnt::numeric/NULLIF(b.t0_cnt,0)*100,2) 结清0在贷提单率_pct,
-a.type3_cnt-b.t0_cnt 其他结清续贷订单数,
+a.type3_cnt-b.t0_cnt 其他结清续贷订单数,a.type3_applied_cnt-b.t0_applied_cnt 其他结清续贷提单订单数,
 ROUND((a.type3_applied_cnt-b.t0_applied_cnt)::numeric/NULLIF(a.type3_cnt-b.t0_cnt,0)*100,2) 其他结清续贷提单率_pct
 FROM a JOIN b ON a.stat_month IS NOT DISTINCT FROM b.stat_month
 ORDER BY CASE WHEN b.stat_month IS NULL THEN 0 ELSE 1 END,b.stat_month;</pre></details>
@@ -657,9 +675,9 @@ SUM(CASE WHEN first_day=4 THEN 1 ELSE 0 END) d4,SUM(CASE WHEN first_day&gt;=5 TH
 SUM(CASE WHEN first_day IS NOT NULL THEN 1 ELSE 0 END) total_apply
 FROM f GROUP BY GROUPING SETS((to_char(date_trunc('month',vir_date),'YYYY-MM')),()))
 SELECT COALESCE(stat_month,'总计') 统计周期,base_cnt 结清0在贷订单数,
-ROUND(d0::numeric/NULLIF(base_cnt,0)*100,2) T0提单率_pct,ROUND(d1::numeric/NULLIF(base_cnt,0)*100,2) T1提单率_pct,
-ROUND(d2::numeric/NULLIF(base_cnt,0)*100,2) T2提单率_pct,ROUND(d3::numeric/NULLIF(base_cnt,0)*100,2) T3提单率_pct,
-ROUND(d4::numeric/NULLIF(base_cnt,0)*100,2) T4提单率_pct,ROUND(d5p::numeric/NULLIF(base_cnt,0)*100,2) T5plus提单率_pct,
+d0 T0提单订单数,ROUND(d0::numeric/NULLIF(base_cnt,0)*100,2) T0提单率_pct,d1 T1提单订单数,ROUND(d1::numeric/NULLIF(base_cnt,0)*100,2) T1提单率_pct,
+d2 T2提单订单数,ROUND(d2::numeric/NULLIF(base_cnt,0)*100,2) T2提单率_pct,d3 T3提单订单数,ROUND(d3::numeric/NULLIF(base_cnt,0)*100,2) T3提单率_pct,
+d4 T4提单订单数,ROUND(d4::numeric/NULLIF(base_cnt,0)*100,2) T4提单率_pct,d5p T5plus提单订单数,ROUND(d5p::numeric/NULLIF(base_cnt,0)*100,2) T5plus提单率_pct,
 ROUND(total_apply::numeric/NULLIF(base_cnt,0)*100,2) 总提单率_pct
 FROM m ORDER BY CASE WHEN stat_month IS NULL THEN 0 ELSE 1 END,stat_month;</pre></details>
   </div>
