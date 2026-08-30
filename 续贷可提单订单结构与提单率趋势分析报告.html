@@ -122,9 +122,9 @@
       <line x1="80" y1="345" x2="1080" y2="345" stroke="#245675"/><line x1="80" y1="55" x2="80" y2="345" stroke="#245675"/>
       <g fill="#a7c3da" font-size="12"><text x="28" y="65">82%</text><text x="28" y="158">70%</text><text x="28" y="251">58%</text><text x="28" y="348">35%</text></g>
       <polyline points="150,75 271,77 392,108 513,101 634,134 755,148 876,171 997,196" fill="none" stroke="#39c6e8" stroke-width="4"/>
-      <polyline points="150,215 271,225 392,286 513,278 634,298 755,311 876,335 997,365" fill="none" stroke="#ffb45e" stroke-width="4"/>
+      <polyline points="150,215 271,225 392,286 513,278 634,298 755,311 876,335 997,338" fill="none" stroke="#ffb45e" stroke-width="4"/>
       <g fill="#39c6e8"><circle cx="150" cy="75" r="5"/><circle cx="271" cy="77" r="5"/><circle cx="392" cy="108" r="5"/><circle cx="513" cy="101" r="5"/><circle cx="634" cy="134" r="5"/><circle cx="755" cy="148" r="5"/><circle cx="876" cy="171" r="5"/><circle cx="997" cy="196" r="5"/></g>
-      <g fill="#ffb45e"><circle cx="150" cy="215" r="5"/><circle cx="271" cy="225" r="5"/><circle cx="392" cy="286" r="5"/><circle cx="513" cy="278" r="5"/><circle cx="634" cy="298" r="5"/><circle cx="755" cy="311" r="5"/><circle cx="876" cy="335" r="5"/><circle cx="997" cy="365" r="5"/></g>
+      <g fill="#ffb45e"><circle cx="150" cy="215" r="5"/><circle cx="271" cy="225" r="5"/><circle cx="392" cy="286" r="5"/><circle cx="513" cy="278" r="5"/><circle cx="634" cy="298" r="5"/><circle cx="755" cy="311" r="5"/><circle cx="876" cy="335" r="5"/><circle cx="997" cy="338" r="5"/></g>
       <g fill="#a7c3da" font-size="12" text-anchor="middle"><text x="150" y="380">1月</text><text x="271" y="380">2月</text><text x="392" y="380">3月</text><text x="513" y="380">4月</text><text x="634" y="380">5月</text><text x="755" y="380">6月</text><text x="876" y="380">7月</text><text x="997" y="380">8月</text></g>
       <text x="150" y="65" fill="#39c6e8" font-size="12">80.86%</text><text x="876" y="161" fill="#39c6e8" font-size="12">70.54%</text><text x="150" y="205" fill="#ffb45e" font-size="12">51.70%</text><text x="876" y="325" fill="#ffb45e" font-size="12">40.78%</text>
     </svg>
@@ -215,7 +215,7 @@
 <section class="section">
   <h2>附录 A：旧口径 PGSQL（历史留存）</h2>
   <p>本节为 20 秒去重规则加入前的历史代码，不用于本次报告的数据复现。当前报告应以文末“附录 B：当前口径完整 PGSQL”为准。</p>
-  <div style="border:1px solid #245675;border-radius:12px;overflow:hidden;background:#0b2a46">
+  <div class="code-blocks" style="border:1px solid #245675;border-radius:12px;overflow:hidden;background:#0b2a46">
     <details style="margin:0;border:0;border-bottom:1px solid #245675;border-radius:0;background:#0b2a46"><summary style="cursor:pointer;padding:14px 16px;font-weight:800;color:#39c6e8">模块零：执行参数与临时表清理</summary><pre style="margin:0;padding:18px;overflow:auto;border-top:1px solid #245675;background:#061b31;color:#dceefa;font-size:12px;line-height:1.55;white-space:pre">/* 统计区间：[2026-01-01, 2026-08-19)，即截至 2026-08-18。
    重新执行时先清理本次统计使用的临时表。 */
 SET statement_timeout = '900000';
@@ -691,8 +691,7 @@ d2 T2提单订单数,ROUND(d2::numeric/NULLIF(base_cnt,0)*100,2) T2提单率_pct
 d4 T4提单订单数,ROUND(d4::numeric/NULLIF(base_cnt,0)*100,2) T4提单率_pct,d5p T5plus提单订单数,ROUND(d5p::numeric/NULLIF(base_cnt,0)*100,2) T5plus提单率_pct,
 ROUND(total_apply::numeric/NULLIF(base_cnt,0)*100,2) 总提单率_pct
 FROM m ORDER BY CASE WHEN stat_month IS NULL THEN 0 ELSE 1 END,stat_month;</pre></details>
-  </div>
-  <div class="code-blocks" style="margin-top:16px;border:1px solid #245675;border-radius:10px;overflow:hidden;background:#0b2a46">
+
     <details style="margin:0;border:0;background:#0b2a46">
       <summary style="cursor:pointer;padding:14px 16px;font-weight:800;color:#39c6e8">模块五：图表与结论复现</summary>
       <pre style="margin:0;padding:18px;overflow:auto;border-top:1px solid #245675;background:#061b31;color:#dceefa;font-size:12px;line-height:1.55;white-space:pre">/* 图表、结构占比与结论变化的完整底表。 */
