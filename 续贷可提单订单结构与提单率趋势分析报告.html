@@ -5,7 +5,18 @@
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <title>续贷可提单订单结构与提单率趋势分析报告</title>
   <style>
-    :root{--bg:#061b31;--panel:#0b2a46;--panel2:#0d3455;--line:#245675;--text:#eef6ff;--muted:#a7c3da;--cyan:#39c6e8;--green:#62d6a7;--orange:#ffb45e;--red:#ff8b8b;--violet:#b593e8}*{box-sizing:border-box}body{margin:0;background:linear-gradient(160deg,#061b31,#082744 52%,#061b31);font:15px/1.65 -apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei",Arial,sans-serif;color:var(--text)}.wrap{max-width:1420px;margin:auto;padding:0 32px}.hero{text-align:center;padding:38px 0 32px;border-bottom:1px solid #2b6285}.eyebrow{font-size:13px;letter-spacing:3px;color:var(--cyan);font-weight:800}.hero h1{font-size:35px;margin:8px 0}.hero p{margin:0;color:var(--muted)}.tag{display:inline-block;margin:14px 4px 0;border:1px solid #2b6285;border-radius:15px;padding:3px 12px;font-size:12px;color:#c8dceb}main{padding:28px 0 70px}.section{margin:40px 0}.section h2{font-size:25px;margin:0 0 7px}.section>p{margin:0 0 16px;color:var(--muted)}.grid{display:grid;gap:17px}.kpi{grid-template-columns:repeat(4,1fr)}.two{grid-template-columns:1fr 1fr}.three{grid-template-columns:repeat(3,1fr)}.card,.finding{background:linear-gradient(145deg,rgba(14,48,79,.98),rgba(7,35,60,.98));border:1px solid var(--line);border-radius:15px;padding:19px}.name{color:var(--muted);font-size:13px}.value{font-size:30px;font-weight:800;line-height:1.15;margin:8px 0}.green{color:var(--green)}.cyan{color:var(--cyan)}.orange{color:var(--orange)}.violet{color:var(--violet)}.note{font-size:12px;color:var(--muted)}.callout{border-left:4px solid var(--cyan);background:#0c3150;border-radius:0 12px 12px 0;padding:16px 18px;margin:18px 0;color:#d7e9f7}.callout strong{color:var(--green)}.finding h3{margin:0 0 7px;color:var(--cyan);font-size:17px}.finding p{margin:0;color:#d7e9f7}.chart{background:rgba(3,18,33,.24);border:1px solid var(--line);border-radius:14px;padding:18px}.chart h3{margin:0;font-size:17px}.chart p{margin:3px 0 8px;font-size:12px;color:var(--muted)}.legend{display:flex;gap:16px;flex-wrap:wrap;font-size:12px;color:var(--muted)}.dot{display:inline-block;width:9px;height:9px;border-radius:50%;margin-right:5px}.tree{display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px;align-items:stretch}.node{border:1px solid var(--line);border-radius:14px;padding:17px;background:#0b2a46}.node b{display:block;font-size:17px}.node span{color:var(--muted);font-size:13px}.node.cycle{border-color:#39c6e8}.node.t0{border-color:#ffb45e}.node.active{border-color:#b593e8}.node .pct{margin-top:7px;color:var(--green);font-size:21px;font-weight:800}.barrow{display:grid;grid-template-columns:150px 1fr 85px;gap:12px;align-items:center;margin:14px 0}.bar{height:20px;background:#123a5b;border-radius:20px;overflow:hidden}.fill{height:100%;border-radius:20px}.table-wrap{overflow:auto;border:1px solid var(--line);border-radius:13px}table{border-collapse:collapse;width:100%;min-width:1050px;font-size:13px;font-variant-numeric:tabular-nums}th{background:#18486d;padding:11px;text-align:right;white-space:nowrap}th:first-child,td:first-child{text-align:left}td{padding:10px;text-align:right;border-top:1px solid #22516f;color:#dceefa}tr:nth-child(even) td{background:rgba(100,149,237,.05)}tr.total td{background:rgba(57,198,232,.13);font-weight:800}.footer{font-size:12px;color:var(--muted);margin-top:18px}@media(max-width:980px){.kpi{grid-template-columns:repeat(2,1fr)}.two,.three,.tree{grid-template-columns:1fr}}@media(max-width:650px){.wrap{padding:0 16px}.hero h1{font-size:27px}.kpi{grid-template-columns:1fr}.barrow{grid-template-columns:110px 1fr 70px}}
+    :root{--bg:#061b31;--panel:#0b2a46;--panel2:#0d3455;--line:#245675;--text:#eef6ff;--muted:#a7c3da;--cyan:#39c6e8;--green:#62d6a7;--orange:#ffb45e;--red:#ff8b8b;--violet:#b593e8}*{box-sizing:border-box}body{margin:0;background:linear-gradient(160deg,#061b31,#082744 52%,#061b31);font:15px/1.65 -apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei",Arial,sans-serif;color:var(--text)}.wrap{max-width:1420px;margin:auto;padding:0 32px}.hero{text-align:center;padding:38px 0 32px;border-bottom:1px solid #2b6285}.eyebrow{font-size:13px;letter-spacing:3px;color:var(--cyan);font-weight:800}.hero h1{font-size:35px;margin:8px 0}.hero p{margin:0;color:var(--muted)}.tag{display:inline-block;margin:14px 4px 0;border:1px solid #2b6285;border-radius:15px;padding:3px 12px;font-size:12px;color:#c8dceb}main{padding:28px 0 70px}.section{margin:40px 0}.section h2{font-size:25px;margin:0 0 7px}.section>p{margin:0 0 16px;color:var(--muted)}.grid{display:grid;gap:17px}.kpi{grid-template-columns:repeat(4,1fr)}.two{grid-template-columns:1fr 1fr}.three{grid-template-columns:repeat(3,1fr)}.card,.finding{background:linear-gradient(145deg,rgba(14,48,79,.98),rgba(7,35,60,.98));border:1px solid var(--line);border-radius:15px;padding:19px}.name{color:var(--muted);font-size:13px}.value{font-size:30px;font-weight:800;line-height:1.15;margin:8px 0}.green{color:var(--green)}.cyan{color:var(--cyan)}.orange{color:var(--orange)}.violet{color:var(--violet)}.note{font-size:12px;color:var(--muted)}.callout{border-left:4px solid var(--cyan);background:#0c3150;border-radius:0 12px 12px 0;padding:16px 18px;margin:18px 0;color:#d7e9f7}.callout strong{color:var(--green)}.finding h3{margin:0 0 7px;color:var(--cyan);font-size:17px}.finding p{margin:0;color:#d7e9f7}.chart{background:rgba(3,18,33,.24);border:1px solid var(--line);border-radius:14px;padding:18px}.chart h3{margin:0;font-size:17px}.chart p{margin:3px 0 8px;font-size:12px;color:var(--muted)}.legend{display:flex;gap:16px;flex-wrap:wrap;font-size:12px;color:var(--muted)}.dot{display:inline-block;width:9px;height:9px;border-radius:50%;margin-right:5px}.tree{display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px;align-items:stretch}.node{border:1px solid var(--line);border-radius:14px;padding:17px;background:#0b2a46}.node b{display:block;font-size:17px}.node span{color:var(--muted);font-size:13px}.node.cycle{border-color:#39c6e8}.node.t0{border-color:#ffb45e}.node.active{border-color:#b593e8}.node .pct{margin-top:7px;color:var(--green);font-size:21px;font-weight:800}.barrow{display:grid;grid-template-columns:150px 1fr 85px;gap:12px;align-items:center;margin:14px 0}.bar{height:20px;background:#123a5b;border-radius:20px;overflow:hidden}.fill{height:100%;border-radius:20px}.table-wrap{overflow:auto;border:1px solid var(--line);border-radius:13px}table{border-collapse:collapse;width:100%;min-width:1050px;font-size:13px;font-variant-numeric:tabular-nums}th{background:#18486d;padding:11px;text-align:right;white-space:nowrap}th:first-child,td:first-child{text-align:left}td{padding:10px;text-align:right;border-top:1px solid #22516f;color:#dceefa}tr:nth-child(even) td{background:rgba(100,149,237,.05)}tr.total td{background:rgba(57,198,232,.13);font-weight:800}.footer{font-size:12px;color:var(--muted);margin-top:18px}.code-blocks details+details{border-top:1px solid #245675!important}@media(max-width:980px){.kpi{grid-template-columns:repeat(2,1fr)}.two,.three,.tree{grid-template-columns:1fr}}@media(max-width:650px){.wrap{padding:0 16px}.hero h1{font-size:27px}.kpi{grid-template-columns:1fr}.barrow{grid-template-columns:110px 1fr 70px}}
+  </style>
+  <style>
+    /* 每个模块都是独立的可折叠代码块，模块三与模块四之间也保留分隔线。 */
+    .code-blocks details + details {
+      border-top:1px solid #245675 !important;
+    }
+    .code-blocks pre {
+      white-space:pre-wrap !important;
+      overflow-wrap:anywhere;
+      tab-size:2;
+    }
   </style>
 </head>
 <body>
@@ -576,7 +587,7 @@ SELECT
 FROM metrics
 ORDER BY CASE WHEN month IS NULL THEN 0 ELSE 1 END, month;</pre></details>
   </div>
-  <details style="margin:0;border:0;border-radius:0;background:#0b2a46"><summary style="cursor:pointer;padding:14px 16px;font-weight:800;color:#39c6e8">模块五：图表与结论复现（结构占比、趋势变化、相对少提单量）</summary><pre style="margin:0;padding:18px;overflow:auto;border-top:1px solid #245675;background:#061b31;color:#dceefa;font-size:12px;line-height:1.55;white-space:pre">/* 结构占比=类别订单数/全部可提单订单数；相对少提单量=7月T0订单数×(1月T0率-7月T0率)。 */
+  <!-- 历史附录 A 的模块五已迁移至附录 B，不再展示。
 WITH base_m AS(
  SELECT to_char(date_trunc('month',vir_date),'YYYY-MM') stat_month,COUNT(*) all_cnt,SUM(CASE WHEN apply_time IS NOT NULL THEN 1 ELSE 0 END) all_applied,
  SUM(CASE WHEN recycle_type=2 THEN 1 ELSE 0 END) cycle_cnt,SUM(CASE WHEN recycle_type=2 AND apply_time IS NOT NULL THEN 1 ELSE 0 END) cycle_applied,
@@ -593,7 +604,7 @@ SELECT '月度图表底表' 输出类型,stat_month 统计周期,all_cnt 全部�
 UNION ALL
 SELECT '1月到7月提单率变化',NULL,NULL,ROUND((jul.all_rate-jan.all_rate)*100,2),NULL,ROUND((jul.cycle_rate-jan.cycle_rate)*100,2),NULL,ROUND((jul.type3_rate-jan.type3_rate)*100,2),NULL,ROUND((jul.t0_rate-jan.t0_rate)*100,2),ROUND((jul.t0_d0_rate-jan.t0_d0_rate)*100,2),NULL,ROUND((jul.other_rate-jan.other_rate)*100,2),NULL,NULL FROM jan CROSS JOIN jul
 UNION ALL
-SELECT '7月T0相对少提单量',NULL,ROUND(jul.t0_cnt*(jan.t0_d0_rate-jul.t0_d0_rate),0),NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL FROM jan CROSS JOIN jul;</pre></details>
+SELECT '7月T0相对少提单量',NULL,ROUND(jul.t0_cnt*(jan.t0_d0_rate-jul.t0_d0_rate),0),NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL FROM jan CROSS JOIN jul; -->
   <p class="footer">报告生成时间：2026-08-31</p>
 </section>
 
@@ -680,6 +691,97 @@ d2 T2提单订单数,ROUND(d2::numeric/NULLIF(base_cnt,0)*100,2) T2提单率_pct
 d4 T4提单订单数,ROUND(d4::numeric/NULLIF(base_cnt,0)*100,2) T4提单率_pct,d5p T5plus提单订单数,ROUND(d5p::numeric/NULLIF(base_cnt,0)*100,2) T5plus提单率_pct,
 ROUND(total_apply::numeric/NULLIF(base_cnt,0)*100,2) 总提单率_pct
 FROM m ORDER BY CASE WHEN stat_month IS NULL THEN 0 ELSE 1 END,stat_month;</pre></details>
+  </div>
+  <div class="code-blocks" style="margin-top:16px;border:1px solid #245675;border-radius:10px;overflow:hidden;background:#0b2a46">
+    <details style="margin:0;border:0;background:#0b2a46">
+      <summary style="cursor:pointer;padding:14px 16px;font-weight:800;color:#39c6e8">模块五：图表与结论复现</summary>
+      <pre style="margin:0;padding:18px;overflow:auto;border-top:1px solid #245675;background:#061b31;color:#dceefa;font-size:12px;line-height:1.55;white-space:pre">/* 图表、结构占比与结论变化的完整底表。 */
+WITH monthly_base AS (
+    SELECT
+        to_char(date_trunc('month', vir_date), 'YYYY-MM') AS stat_month,
+        COUNT(*) AS all_cnt,
+        SUM(CASE WHEN apply_time IS NOT NULL THEN 1 ELSE 0 END) AS all_applied,
+        SUM(CASE WHEN recycle_type = 2 THEN 1 ELSE 0 END) AS cycle_cnt,
+        SUM(CASE WHEN recycle_type = 2 AND apply_time IS NOT NULL THEN 1 ELSE 0 END) AS cycle_applied,
+        SUM(CASE WHEN recycle_type = 3 THEN 1 ELSE 0 END) AS type3_cnt,
+        SUM(CASE WHEN recycle_type = 3 AND apply_time IS NOT NULL THEN 1 ELSE 0 END) AS type3_applied
+    FROM tmp_eligible_offer
+    GROUP BY to_char(date_trunc('month', vir_date), 'YYYY-MM')
+),
+monthly_t0 AS (
+    SELECT
+        to_char(date_trunc('month', t.vir_date), 'YYYY-MM') AS stat_month,
+        COUNT(*) AS t0_cnt,
+        SUM(CASE WHEN e.apply_time IS NOT NULL THEN 1 ELSE 0 END) AS t0_applied,
+        SUM(CASE WHEN e.apply_time IS NOT NULL
+                  AND e.apply_time::date = t.vir_date
+                 THEN 1 ELSE 0 END) AS t0_d0
+    FROM tmp_t0_offer t
+    JOIN tmp_eligible_offer e
+      ON e.user_id = t.user_id
+     AND e.serial_id = t.serial_id
+    GROUP BY to_char(date_trunc('month', t.vir_date), 'YYYY-MM')
+),
+rates AS (
+    SELECT
+        b.*,
+        t.t0_cnt,
+        t.t0_applied,
+        t.t0_d0,
+        b.type3_cnt - t.t0_cnt AS other_cnt,
+        b.type3_applied - t.t0_applied AS other_applied,
+        b.all_applied::numeric / NULLIF(b.all_cnt, 0) AS all_rate,
+        b.cycle_applied::numeric / NULLIF(b.cycle_cnt, 0) AS cycle_rate,
+        b.type3_applied::numeric / NULLIF(b.type3_cnt, 0) AS type3_rate,
+        t.t0_applied::numeric / NULLIF(t.t0_cnt, 0) AS t0_rate,
+        t.t0_d0::numeric / NULLIF(t.t0_cnt, 0) AS t0_d0_rate,
+        (b.type3_applied - t.t0_applied)::numeric
+          / NULLIF(b.type3_cnt - t.t0_cnt, 0) AS other_rate
+    FROM monthly_base b
+    JOIN monthly_t0 t ON t.stat_month = b.stat_month
+),
+jan AS (
+    SELECT * FROM rates WHERE stat_month = '2026-01'
+),
+jul AS (
+    SELECT * FROM rates WHERE stat_month = '2026-07'
+)
+SELECT
+    '月度图表底表' AS 输出类型,
+    stat_month AS 统计周期,
+    all_cnt AS 全部订单数,
+    ROUND(all_rate * 100, 2) AS 全部提单率_pct,
+    cycle_cnt AS 循环贷订单数,
+    ROUND(cycle_rate * 100, 2) AS 循环贷提单率_pct,
+    type3_cnt AS 结清续贷订单数,
+    ROUND(type3_rate * 100, 2) AS 结清续贷提单率_pct,
+    t0_cnt AS 结清0在贷订单数,
+    ROUND(t0_rate * 100, 2) AS 结清0在贷提单率_pct,
+    ROUND(t0_d0_rate * 100, 2) AS T0提单率_pct,
+    other_cnt AS 其他结清续贷订单数,
+    ROUND(other_rate * 100, 2) AS 其他结清续贷提单率_pct,
+    ROUND(t0_cnt::numeric / NULLIF(all_cnt, 0) * 100, 2) AS 结清0在贷占全部_pct,
+    ROUND(t0_cnt::numeric / NULLIF(type3_cnt, 0) * 100, 2) AS 结清0在贷占结清续贷_pct
+FROM rates
+UNION ALL
+SELECT
+    '1月到7月提单率变化', NULL, NULL,
+    ROUND((jul.all_rate - jan.all_rate) * 100, 2), NULL,
+    ROUND((jul.cycle_rate - jan.cycle_rate) * 100, 2), NULL,
+    ROUND((jul.type3_rate - jan.type3_rate) * 100, 2), NULL,
+    ROUND((jul.t0_rate - jan.t0_rate) * 100, 2),
+    ROUND((jul.t0_d0_rate - jan.t0_d0_rate) * 100, 2), NULL,
+    ROUND((jul.other_rate - jan.other_rate) * 100, 2), NULL, NULL
+FROM jan CROSS JOIN jul
+UNION ALL
+SELECT
+    '7月T0相对少提单量',
+    NULL,
+    ROUND(jul.t0_cnt * (jan.t0_d0_rate - jul.t0_d0_rate), 0),
+    NULL, NULL, NULL, NULL, NULL, NULL, NULL,
+    NULL, NULL, NULL, NULL, NULL
+FROM jan CROSS JOIN jul;</pre>
+    </details>
   </div>
   <p class="footer">报告生成时间：2026-08-31</p>
 </section>
