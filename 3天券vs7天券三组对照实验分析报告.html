@@ -53,6 +53,23 @@
 <article class="chart"><h3>上笔利率类型</h3><p>high rate 用户7天券额外价值更大。</p><div class="box"><canvas id="d_itype"></canvas></div></article>
 <article class="chart"><h3>历史放款金额</h3><p>高金额用户两种券都有效。</p><div class="box"><canvas id="d_amt"></canvas></div></article>
 <article class="chart"><h3>历史提单次数</h3><p>3次提单用户7天券额外价值最大。</p><div class="box"><canvas id="d_apply"></canvas></div></article>
+<article class="chart"><h3>额度使用率</h3><p>中等使用率用户7天券额外价值更大。</p><div class="box"><canvas id="d_util"></canvas></div></article>
+<article class="chart"><h3>上笔逾期天数</h3><p>上笔无逾期用户7天券更强。</p><div class="box"><canvas id="d_lrod"></canvas></div></article>
+</section>
+
+<h2>四·附、10 个维度的逐维分析</h2>
+<p class="desc">以下逐维度解读「3天券 vs 7天券」的差异及适配人群。数据为前 7 天累计券增量（A=7天券vs无券，B=7天券vs3天券，C=3天券vs无券）。</p>
+<section class="note">
+<div class="insight"><div class="idx">1</div><div><h3>第一阶段活跃天数——券期限选择的第一变量。</h3><p>沉默用户（0天）3天券 +4.86pp 明显高于 7天券 +0.19pp，7天券对沉默用户甚至为负（B组 -1.18pp）；而活跃 1~2 天用户 7天券（+8.89/+17.76pp）大幅强于 3天券（-6.17/+6.49pp）。<strong>结论：沉默用户发 3 天券（靠临期紧迫感），活跃用户发 7 天券（给足决策窗口）。</strong></p></div></div>
+<div class="insight"><div class="idx">2</div><div><h3>高息率——高息用户两种券都敏感，无高息只有 7 天券有效。</h3><p>高高息(>0.5) 用户两种券都强（7天券 +11.28pp / 3天券 +7.89pp）；无高息(0) 用户 3天券几乎无效（-0.05pp）、7天券有效（+8.82pp）；低高息(0~0.5] 用户 7天券额外价值最大（B组 +6.17pp）。<strong>结论：高息用户随便发哪种都行，无高息/低高息用户应发 7 天券。</strong></p></div></div>
+<div class="insight"><div class="idx">3</div><div><h3>历史放款次数——新手和 3 次用户发 7 天券，4 次+ 谨慎。</h3><p>新手(1次) 7天券 +8.56pp 强于 3天券 +3.17pp；3次用户 7天券额外价值大（B组 +8.39pp）；4次+ 用户 3天券为负（-1.36pp）、7天券额外价值也为负（-0.72pp）。<strong>结论：1~3 次借款用户发 7 天券；4 次以上老用户对券已钝化，不建议发券。</strong></p></div></div>
+<div class="insight"><div class="idx">4</div><div><h3>有无逾期——有逾期用户两种券都无效。</h3><p>无逾期用户 7天券 +9.36pp 强于 3天券 +2.08pp；有逾期用户三个口径都极低（A +1.29 / B +1.26 / C +0.10pp）。<strong>结论：有逾期用户不建议发降息券，改用风控/还款提醒等其他手段。</strong></p></div></div>
+<div class="insight"><div class="idx">5</div><div><h3>上笔期数——2 期用户是 7 天券核心受众。</h3><p>2期用户 7天券额外价值最大（B组 +9.83pp）；1期用户 7天券反而为负（-11.93pp，样本仅 61/54 人需谨慎）；3、4期用户 7天券略强。两期产品通常对应 7 天还款节奏，用户决策窗口更长。<strong>结论：2 期（及 3、4 期）用户发 7 天券。</strong></p></div></div>
+<div class="insight"><div class="idx">6</div><div><h3>上笔利率类型——high rate 用户发 7 天券。</h3><p>high rate 用户 7天券额外价值 +6.72pp（A +6.86 / C +4.33）；low rate 用户两种券差异小（B组仅 +1.19pp）。<strong>结论：high rate（高息定价）用户发 7 天券能吃到更大增量。</strong></p></div></div>
+<div class="insight"><div class="idx">7</div><div><h3>历史放款金额——高金额用户两种券都强，中金额只认 7 天券。</h3><p>高金额(≥8000) 用户两种券都强（7天券 +10.32 / 3天券 +7.46pp）；中金额(3000~8000) 用户 3天券为负（-4.98pp）、7天券为正（+2.57pp）；低金额 7天券更强（+8.31 vs +2.01pp）。<strong>结论：高金额用户随便发，中低金额用户发 7 天券。</strong></p></div></div>
+<div class="insight"><div class="idx">8</div><div><h3>历史提单次数——3 次提单用户是 7 天券最大受益者。</h3><p>3次提单用户 7天券额外价值 +13.44pp（全场最高），但 3天券对其仅 +0.73pp；1次用户 7天券 +9.36pp 强于 3天券 +2.41pp。<strong>结论：提单 1~3 次的用户发 7 天券，尤其 3 次提单的成熟用户。</strong></p></div></div>
+<div class="insight"><div class="idx">9</div><div><h3>额度使用率——中等使用率用户 7 天券额外价值更大。</h3><p>中(50~90%) 用户 7天券额外价值 +5.86pp（A +9.40 / C +0.98）；高(≥90%) 用户差异较小（B组 +1.77pp）。<strong>结论：额度使用率中等的用户是 7 天券的增量来源，使用率已打满的用户两种券差异不大。</strong></p></div></div>
+<div class="insight"><div class="idx">10</div><div><h3>上笔逾期天数——上笔无逾期用户发 7 天券。</h3><p>上笔无逾期(<0) 用户 7天券 +9.37pp 明显强于 3天券 +1.92pp；上笔有逾期(≥0) 用户整体增量都偏低（最高仅 +4.70pp）。<strong>结论：上笔无逾期（优质履约）用户发 7 天券，有逾期记录用户不建议发券。</strong></p></div></div>
 </section>
 
 <h2>五、完整数据表（可核对）</h2>
@@ -131,4 +148,6 @@ grouped('d_term',['1期','2期','3期','4期'],[10.40,10.53,7.63,5.01],[-11.93,9
 grouped('d_itype',['high rate','low rate'],[6.86,7.70],[6.72,1.19],[4.33,0.23],0,9);
 grouped('d_amt',['低(<3000)','中(3000~8000)','高(≥8000)'],[8.31,2.57,10.32],[1.92,2.75,6.60],[2.01,-4.98,7.46],-6,12);
 grouped('d_apply',['1次','2次','3次','4次+'],[9.36,7.28,-2.47,7.43],[1.20,4.01,13.44,-1.71],[2.41,-0.43,0.73,2.10],-4,15);
+grouped('d_util',['中(50~90%)','高(≥90%)'],[9.40,6.46],[5.86,1.77],[0.98,1.87],0,11);
+grouped('d_lrod',['无逾期(<0)','有逾期(≥0)'],[9.37,4.70],[1.63,4.51],[1.92,1.03],0,11);
 </script></body></html>
