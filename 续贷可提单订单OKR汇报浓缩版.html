@@ -1,0 +1,85 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>续贷可提单订单结构与提单率 OKR 汇报浓缩版</title>
+  <style>
+    :root{--bg:#071d34;--panel:#0b2a46;--line:#245675;--txt:#edf6ff;--muted:#a7c3da;--cyan:#39c6e8;--green:#62d6a7;--orange:#ffb45e;--violet:#b593e8;--red:#ff8b8b}
+    *{box-sizing:border-box} body{margin:0;background:linear-gradient(155deg,#061a30,#0a2d4d 55%,#061b31);color:var(--txt);font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei",Arial,sans-serif;line-height:1.55}
+    .wrap{max-width:1300px;margin:auto;padding:42px 28px 70px}.hero{text-align:center;padding:22px 0 30px;border-bottom:1px solid #2b6285}.eyebrow{color:var(--cyan);font-size:12px;font-weight:800;letter-spacing:2px}.hero h1{font-size:34px;margin:7px 0}.hero p{margin:0;color:var(--muted)}
+    section{margin-top:34px}h2{font-size:25px;margin:0 0 9px}.sub{color:var(--muted);margin:0 0 17px}.grid{display:grid;gap:16px}.kpi{grid-template-columns:repeat(4,1fr)}.two{grid-template-columns:1.15fr .85fr}.card,.panel{background:linear-gradient(145deg,#0d3151,#082641);border:1px solid var(--line);border-radius:15px;padding:19px}.kpi .card{min-height:142px}.name{font-size:14px;color:var(--muted)}.value{font-weight:850;font-size:32px;line-height:1.1;margin:9px 0}.note{font-size:13px;color:var(--muted)}.cyan{color:var(--cyan)}.green{color:var(--green)}.orange{color:var(--orange)}.violet{color:var(--violet)}
+    .callout{padding:17px 19px;background:#0b3455;border-left:4px solid var(--orange);border-radius:0 12px 12px 0;color:#dceefa}.callout b{color:white}.structure{display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px}.node{border:1px solid var(--line);border-radius:12px;padding:16px;background:#08253e}.node b{display:block;font-size:17px}.node span{display:block;color:var(--muted);font-size:13px;margin:4px 0}.node .big{font-size:27px;font-weight:850;margin:7px 0}.barrow{display:grid;grid-template-columns:145px 1fr 70px;gap:10px;align-items:center;margin:13px 0;color:#dceefa}.bar{height:15px;border-radius:20px;background:#123853;overflow:hidden}.fill{height:100%;border-radius:20px}
+    .chart{padding:18px;background:#08253e;border:1px solid var(--line);border-radius:13px}.chart h3{font-size:17px;margin:0 0 3px}.chart p{font-size:13px;color:var(--muted);margin:0 0 11px}.chart svg{width:100%;height:auto;display:block}.legend{display:flex;gap:16px;flex-wrap:wrap;font-size:13px;color:var(--muted);margin-top:6px}.dot{width:10px;height:10px;border-radius:50%;display:inline-block;margin-right:5px}.finding{background:#08253e;border:1px solid var(--line);border-radius:12px;padding:16px}.finding h3{font-size:17px;margin:0 0 7px}.finding p{margin:0;color:#dceefa}.impact{color:var(--orange);font-size:28px;font-weight:850;line-height:1.1;margin:8px 0}.okr{display:grid;grid-template-columns:repeat(3,1fr);gap:15px}.okr .num{display:inline-block;color:var(--cyan);font-weight:850;font-size:24px;margin-right:8px}.tag{display:inline-block;border:1px solid #317196;color:#a7dff0;border-radius:30px;padding:4px 10px;font-size:12px;margin:4px 0}.foot{margin-top:20px;color:var(--muted);font-size:12px}
+    @media(max-width:900px){.kpi,.two,.structure,.okr{grid-template-columns:1fr}.wrap{padding:28px 16px 55px}.hero h1{font-size:27px}.barrow{grid-template-columns:120px 1fr 58px}}
+  </style>
+</head>
+<body><main class="wrap">
+  <header class="hero">
+    <div class="eyebrow">OKR INPUT · RELENDING CONVERSION</div>
+    <h1>续贷可提单订单结构与提单率<br>OKR 汇报浓缩版</h1>
+    <p>数据来源：续贷可提单订单结构与提单率趋势分析报告｜统计周期：2026-01-01 至 2026-08-18</p>
+  </header>
+
+  <section>
+    <h2>一、先看结论：大盘压力主要来自结清 0 在贷的当日提单下滑</h2>
+    <div class="grid kpi">
+      <div class="card"><div class="name">全部可提单订单</div><div class="value cyan">429,384</div><div class="note">整体提单率 67.98%</div></div>
+      <div class="card"><div class="name">结清 0 在贷订单</div><div class="value orange">172,560</div><div class="note">占全部 40.19%，为最大单一场景</div></div>
+      <div class="card"><div class="name">结清 0 在贷提单率（1月→7月）</div><div class="value orange" style="font-size:29px;white-space:nowrap">80.86% → 70.54%</div><div class="note">下降 10.32 个百分点</div></div>
+      <div class="card"><div class="name">T0 当日首次提单率（1月→7月）</div><div class="value orange" style="font-size:29px;white-space:nowrap">51.70% → 40.78%</div><div class="note">下降 10.92 个百分点，是主要拖累</div></div>
+    </div>
+    <div class="callout" style="margin-top:17px"><b>一句话汇报：</b>可提单订单中，结清 0 在贷占比超过四成；其提单率下降幅度显著高于循环贷，且下降集中在获额当天未完成提单的用户。因此，提高当天提单承接效率，是当前最直接、最有规模效应的 OKR 方向。</div>
+  </section>
+
+  <section>
+    <h2>二、可提单订单目前由哪些场景构成</h2>
+    <p class="sub">以下结构已按原报告的 20 秒获额批次去重口径统计。</p>
+    <div class="structure">
+      <div class="node"><b class="green">循环贷可提单订单</b><span>recycle_type = 2</span><div class="big green">189,470 笔</div><span>占比 44.13%｜提单率 65.26%</span></div>
+      <div class="node"><b class="orange">结清 0 在贷订单</b><span>同日干净结清后获额，recycle_type = 3</span><div class="big orange">172,560 笔</div><span>占比 40.19%｜提单率 75.79%</span></div>
+      <div class="node"><b class="violet">其他结清续贷订单</b><span>含主动获额及边界场景</span><div class="big violet">67,354 笔</div><span>占比 15.68%｜提单率 55.63%</span></div>
+    </div>
+    <div class="panel" style="margin-top:16px">
+      <div class="barrow"><span>循环贷</span><div class="bar"><div class="fill" style="width:44.13%;background:var(--green)"></div></div><b>44.13%</b></div>
+      <div class="barrow"><span>结清 0 在贷</span><div class="bar"><div class="fill" style="width:40.19%;background:var(--orange)"></div></div><b>40.19%</b></div>
+      <div class="barrow"><span>其他结清续贷</span><div class="bar"><div class="fill" style="width:15.68%;background:var(--violet)"></div></div><b>15.68%</b></div>
+    </div>
+  </section>
+
+  <section>
+    <h2>三、提单率下降较大的群体：结清 0 在贷优先级最高</h2>
+    <div class="grid two">
+      <div class="chart">
+        <h3>1 月至 7 月提单率变化</h3><p>结清 0 在贷降幅为 10.32 个百分点，高于循环贷的 4.33 个百分点。</p>
+        <svg viewBox="0 0 820 330" aria-label="提单率趋势">
+          <rect x="0" y="0" width="820" height="330" rx="8" fill="#061c31"/>
+          <g stroke="#245675" stroke-dasharray="3 5"><line x1="70" y1="45" x2="785" y2="45"/><line x1="70" y1="115" x2="785" y2="115"/><line x1="70" y1="185" x2="785" y2="185"/><line x1="70" y1="255" x2="785" y2="255"/></g>
+          <g fill="#a7c3da" font-size="12"><text x="34" y="49">85%</text><text x="34" y="119">75%</text><text x="34" y="189">65%</text><text x="34" y="259">55%</text><text x="85" y="292">1月</text><text x="762" y="292">7月</text></g>
+          <path d="M85 154 L762 184" fill="none" stroke="#62d6a7" stroke-width="4"/><circle cx="85" cy="154" r="5" fill="#62d6a7"/><circle cx="762" cy="184" r="5" fill="#62d6a7"/>
+          <path d="M85 74 L762 146" fill="none" stroke="#ffb45e" stroke-width="4"/><circle cx="85" cy="74" r="5" fill="#ffb45e"/><circle cx="762" cy="146" r="5" fill="#ffb45e"/>
+          <path d="M85 278 L762 278" fill="none" stroke="#39c6e8" stroke-width="3" opacity=".35"/>
+          <g font-size="13" font-weight="800"><text x="89" y="66" fill="#ffb45e">80.86%</text><text x="706" y="138" fill="#ffb45e">70.54%</text><text x="89" y="146" fill="#62d6a7">68.14%</text><text x="706" y="176" fill="#62d6a7">63.81%</text></g>
+        </svg>
+        <div class="legend"><span><i class="dot" style="background:var(--orange)"></i>结清 0 在贷</span><span><i class="dot" style="background:var(--green)"></i>循环贷</span></div>
+      </div>
+      <div class="grid" style="grid-template-columns:1fr">
+        <div class="finding"><h3>最大拖累：T0 当日未完成决策</h3><div class="impact">-10.92pp</div><p>T0 当日首次提单率由 51.70% 降至 40.78%。而 T1–T5+ 合计仅由 29.15% 升至 29.76%，后续延迟提单无法抵消当日损失。</p></div>
+        <div class="finding"><h3>按 7 月量级估算的机会</h3><div class="impact">约 +2,602 笔</div><p>若以 7 月 23,823 笔结清 0 在贷订单为基础，将 T0 提单率恢复至 1 月水平，可增加约 2,602 笔当日提单。</p></div>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <h2>四、建议的 OKR 提升方向</h2>
+    <p class="sub">优先把资源投向结清 0 在贷的获额当天，而不是单纯延长后续触达时间。</p>
+    <div class="okr">
+      <div class="finding"><h3><span class="num">01</span>先定位当天不提单的卡点</h3><span class="tag">基础建设</span><p>对获额通过后的“未进入提单页、进入页未提单、提单失败/取消”打标，按价格、额度、券、页面和资格拆分，明确损失发生在哪一步。</p></div>
+      <div class="finding"><h3><span class="num">02</span>把 T0 提单率作为主 OKR</h3><span class="tag">结果指标</span><p>以 7 月 40.78% 为基线，建议先以提升 3 个百分点作为阶段性验证目标；按 7 月订单量级，对应约增加 715 笔当日提单。</p></div>
+      <div class="finding"><h3><span class="num">03</span>围绕即时决策做实验</h3><span class="tag">行动抓手</span><p>在获额后 0–3 小时测试券力度、价格展示、额度呈现、页面引导与触达时点；同时保留 T1–T5+ 监控，防止将提单简单后移而误判为增长。</p></div>
+    </div>
+    <div class="callout" style="margin-top:17px;border-left-color:var(--cyan)"><b>OKR 建议：</b>把“结清 0 在贷 T0 当日提单率提升”设为主目标，把“获额后关键行为漏斗覆盖”和“不同即时触达方案的增量效果”设为关键结果；循环贷与其他结清续贷保持月度监控，但当前不应分散主要优化资源。</div>
+  </section>
+
+  <p class="foot">说明：本浓缩版仅引用《续贷可提单订单结构与提单率趋势分析报告》已展示的统计结果，用于管理汇报与 OKR 讨论；不替代原报告的完整口径、月度明细与 PGSQL 附录。</p>
+</main></body></html>
