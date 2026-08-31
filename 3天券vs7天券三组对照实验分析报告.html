@@ -138,101 +138,222 @@ WITH exp AS (
          total_remit_rnb, total_remit_amt, overdue_cnt, high_interest_rate, active_days_cnt,
          utilization_rate, last_remit_total_term, last_remit_interest_type, total_apply_rnb, last_remit_overdue_days
   FROM wangchuanliang.no_apply_0716_0721_30pct
-  UNION ALL SELECT &#x27;A_7天券vs无券&#x27;, churn_user_id::bigint, ab_group, DATE &#x27;2026-07-22&#x27;, total_remit_rnb, total_remit_amt, overdue_cnt, high_interest_rate, active_days_cnt, utilization_rate, last_remit_total_term, last_remit_interest_type, total_apply_rnb, last_remit_overdue_days FROM wangchuanliang.no_apply_0717_0722_30pct
-  UNION ALL SELECT &#x27;A_7天券vs无券&#x27;, churn_user_id::bigint, ab_group, DATE &#x27;2026-07-23&#x27;, total_remit_rnb, total_remit_amt, overdue_cnt, high_interest_rate, active_days_cnt, utilization_rate, last_remit_total_term, last_remit_interest_type, total_apply_rnb, last_remit_overdue_days FROM wangchuanliang.no_apply_0718_0723_30pct
-  UNION ALL SELECT &#x27;A_7天券vs无券&#x27;, churn_user_id::bigint, ab_group, DATE &#x27;2026-07-24&#x27;, total_remit_rnb, total_remit_amt, overdue_cnt, high_interest_rate, active_days_cnt, utilization_rate, last_remit_total_term, last_remit_interest_type, total_apply_rnb, last_remit_overdue_days FROM wangchuanliang.no_apply_0719_0724_30pct
-  UNION ALL SELECT &#x27;B_7天券vs3天券&#x27;, churn_user_id::bigint, ab_group, DATE &#x27;2026-08-04&#x27;, total_remit_rnb, total_remit_amt, overdue_cnt, high_interest_rate, active_days_cnt, utilization_rate, last_remit_total_term, last_remit_interest_type, total_apply_rnb, last_remit_overdue_days FROM wangchuanliang.no_apply_0730_0804_30pct
-  UNION ALL SELECT &#x27;B_7天券vs3天券&#x27;, churn_user_id::bigint, ab_group, DATE &#x27;2026-08-05&#x27;, total_remit_rnb, total_remit_amt, overdue_cnt, high_interest_rate, active_days_cnt, utilization_rate, last_remit_total_term, last_remit_interest_type, total_apply_rnb, last_remit_overdue_days FROM wangchuanliang.no_apply_0731_0805_30pct
-  UNION ALL SELECT &#x27;B_7天券vs3天券&#x27;, churn_user_id::bigint, ab_group, DATE &#x27;2026-08-06&#x27;, total_remit_rnb, total_remit_amt, overdue_cnt, high_interest_rate, active_days_cnt, utilization_rate, last_remit_total_term, last_remit_interest_type, total_apply_rnb, last_remit_overdue_days FROM wangchuanliang.no_apply_0801_0806_30pct
-  UNION ALL SELECT &#x27;B_7天券vs3天券&#x27;, churn_user_id::bigint, ab_group, DATE &#x27;2026-08-07&#x27;, total_remit_rnb, total_remit_amt, overdue_cnt, high_interest_rate, active_days_cnt, utilization_rate, last_remit_total_term, last_remit_interest_type, total_apply_rnb, last_remit_overdue_days FROM wangchuanliang.no_apply_0802_0807_30pct
-  UNION ALL SELECT &#x27;C_3天券vs无券&#x27;, churn_user_id::bigint, ab_group, DATE &#x27;2026-08-18&#x27;, total_remit_rnb, total_remit_amt, overdue_cnt, high_interest_rate, active_days_cnt, utilization_rate, last_remit_total_term, last_remit_interest_type, total_apply_rnb, last_remit_overdue_days FROM wangchuanliang.no_apply_0813_0818_30pct
-  UNION ALL SELECT &#x27;C_3天券vs无券&#x27;, churn_user_id::bigint, ab_group, DATE &#x27;2026-08-20&#x27;, total_remit_rnb, total_remit_amt, overdue_cnt, high_interest_rate, active_days_cnt, utilization_rate, last_remit_total_term, last_remit_interest_type, total_apply_rnb, last_remit_overdue_days FROM wangchuanliang.no_apply_0815_0820_30pct
-  UNION ALL SELECT &#x27;C_3天券vs无券&#x27;, churn_user_id::bigint, ab_group, DATE &#x27;2026-08-21&#x27;, total_remit_rnb, total_remit_amt, overdue_cnt, high_interest_rate, active_days_cnt, utilization_rate, last_remit_total_term, last_remit_interest_type, total_apply_rnb, last_remit_overdue_days FROM wangchuanliang.no_apply_0816_0821_30pct
-  UNION ALL SELECT &#x27;C_3天券vs无券&#x27;, churn_user_id::bigint, ab_group, DATE &#x27;2026-08-26&#x27;, total_remit_rnb, total_remit_amt, overdue_cnt, high_interest_rate, active_days_cnt, utilization_rate, last_remit_total_term, last_remit_interest_type, total_apply_rnb, last_remit_overdue_days FROM wangchuanliang.no_apply_0821_0826_30pct
-  UNION ALL SELECT &#x27;C_3天券vs无券&#x27;, churn_user_id::bigint, ab_group, DATE &#x27;2026-08-27&#x27;, total_remit_rnb, total_remit_amt, overdue_cnt, high_interest_rate, active_days_cnt, utilization_rate, last_remit_total_term, last_remit_interest_type, total_apply_rnb, last_remit_overdue_days FROM wangchuanliang.no_apply_0822_0827_30pct
-  UNION ALL SELECT &#x27;C_3天券vs无券&#x27;, churn_user_id::bigint, ab_group, DATE &#x27;2026-08-28&#x27;, total_remit_rnb, total_remit_amt, overdue_cnt, high_interest_rate, active_days_cnt, utilization_rate, last_remit_total_term, last_remit_interest_type, total_apply_rnb, last_remit_overdue_days FROM wangchuanliang.no_apply_0823_0828_30pct
+
+  UNION ALL
+  SELECT &#x27;A_7天券vs无券&#x27; AS grp, churn_user_id::bigint AS user_id, ab_group, DATE &#x27;2026-07-22&#x27; AS recall_date,
+         total_remit_rnb, total_remit_amt, overdue_cnt, high_interest_rate, active_days_cnt,
+         utilization_rate, last_remit_total_term, last_remit_interest_type, total_apply_rnb, last_remit_overdue_days
+  FROM wangchuanliang.no_apply_0717_0722_30pct
+
+  UNION ALL
+  SELECT &#x27;A_7天券vs无券&#x27; AS grp, churn_user_id::bigint AS user_id, ab_group, DATE &#x27;2026-07-23&#x27; AS recall_date,
+         total_remit_rnb, total_remit_amt, overdue_cnt, high_interest_rate, active_days_cnt,
+         utilization_rate, last_remit_total_term, last_remit_interest_type, total_apply_rnb, last_remit_overdue_days
+  FROM wangchuanliang.no_apply_0718_0723_30pct
+
+  UNION ALL
+  SELECT &#x27;A_7天券vs无券&#x27; AS grp, churn_user_id::bigint AS user_id, ab_group, DATE &#x27;2026-07-24&#x27; AS recall_date,
+         total_remit_rnb, total_remit_amt, overdue_cnt, high_interest_rate, active_days_cnt,
+         utilization_rate, last_remit_total_term, last_remit_interest_type, total_apply_rnb, last_remit_overdue_days
+  FROM wangchuanliang.no_apply_0719_0724_30pct
+
+  UNION ALL
+  SELECT &#x27;B_7天券vs3天券&#x27; AS grp, churn_user_id::bigint AS user_id, ab_group, DATE &#x27;2026-08-04&#x27; AS recall_date,
+         total_remit_rnb, total_remit_amt, overdue_cnt, high_interest_rate, active_days_cnt,
+         utilization_rate, last_remit_total_term, last_remit_interest_type, total_apply_rnb, last_remit_overdue_days
+  FROM wangchuanliang.no_apply_0730_0804_30pct
+
+  UNION ALL
+  SELECT &#x27;B_7天券vs3天券&#x27; AS grp, churn_user_id::bigint AS user_id, ab_group, DATE &#x27;2026-08-05&#x27; AS recall_date,
+         total_remit_rnb, total_remit_amt, overdue_cnt, high_interest_rate, active_days_cnt,
+         utilization_rate, last_remit_total_term, last_remit_interest_type, total_apply_rnb, last_remit_overdue_days
+  FROM wangchuanliang.no_apply_0731_0805_30pct
+
+  UNION ALL
+  SELECT &#x27;B_7天券vs3天券&#x27; AS grp, churn_user_id::bigint AS user_id, ab_group, DATE &#x27;2026-08-06&#x27; AS recall_date,
+         total_remit_rnb, total_remit_amt, overdue_cnt, high_interest_rate, active_days_cnt,
+         utilization_rate, last_remit_total_term, last_remit_interest_type, total_apply_rnb, last_remit_overdue_days
+  FROM wangchuanliang.no_apply_0801_0806_30pct
+
+  UNION ALL
+  SELECT &#x27;B_7天券vs3天券&#x27; AS grp, churn_user_id::bigint AS user_id, ab_group, DATE &#x27;2026-08-07&#x27; AS recall_date,
+         total_remit_rnb, total_remit_amt, overdue_cnt, high_interest_rate, active_days_cnt,
+         utilization_rate, last_remit_total_term, last_remit_interest_type, total_apply_rnb, last_remit_overdue_days
+  FROM wangchuanliang.no_apply_0802_0807_30pct
+
+  UNION ALL
+  SELECT &#x27;C_3天券vs无券&#x27; AS grp, churn_user_id::bigint AS user_id, ab_group, DATE &#x27;2026-08-18&#x27; AS recall_date,
+         total_remit_rnb, total_remit_amt, overdue_cnt, high_interest_rate, active_days_cnt,
+         utilization_rate, last_remit_total_term, last_remit_interest_type, total_apply_rnb, last_remit_overdue_days
+  FROM wangchuanliang.no_apply_0813_0818_30pct
+
+  UNION ALL
+  SELECT &#x27;C_3天券vs无券&#x27; AS grp, churn_user_id::bigint AS user_id, ab_group, DATE &#x27;2026-08-20&#x27; AS recall_date,
+         total_remit_rnb, total_remit_amt, overdue_cnt, high_interest_rate, active_days_cnt,
+         utilization_rate, last_remit_total_term, last_remit_interest_type, total_apply_rnb, last_remit_overdue_days
+  FROM wangchuanliang.no_apply_0815_0820_30pct
+
+  UNION ALL
+  SELECT &#x27;C_3天券vs无券&#x27; AS grp, churn_user_id::bigint AS user_id, ab_group, DATE &#x27;2026-08-21&#x27; AS recall_date,
+         total_remit_rnb, total_remit_amt, overdue_cnt, high_interest_rate, active_days_cnt,
+         utilization_rate, last_remit_total_term, last_remit_interest_type, total_apply_rnb, last_remit_overdue_days
+  FROM wangchuanliang.no_apply_0816_0821_30pct
+
+  UNION ALL
+  SELECT &#x27;C_3天券vs无券&#x27; AS grp, churn_user_id::bigint AS user_id, ab_group, DATE &#x27;2026-08-26&#x27; AS recall_date,
+         total_remit_rnb, total_remit_amt, overdue_cnt, high_interest_rate, active_days_cnt,
+         utilization_rate, last_remit_total_term, last_remit_interest_type, total_apply_rnb, last_remit_overdue_days
+  FROM wangchuanliang.no_apply_0821_0826_30pct
+
+  UNION ALL
+  SELECT &#x27;C_3天券vs无券&#x27; AS grp, churn_user_id::bigint AS user_id, ab_group, DATE &#x27;2026-08-27&#x27; AS recall_date,
+         total_remit_rnb, total_remit_amt, overdue_cnt, high_interest_rate, active_days_cnt,
+         utilization_rate, last_remit_total_term, last_remit_interest_type, total_apply_rnb, last_remit_overdue_days
+  FROM wangchuanliang.no_apply_0822_0827_30pct
+
+  UNION ALL
+  SELECT &#x27;C_3天券vs无券&#x27; AS grp, churn_user_id::bigint AS user_id, ab_group, DATE &#x27;2026-08-28&#x27; AS recall_date,
+         total_remit_rnb, total_remit_amt, overdue_cnt, high_interest_rate, active_days_cnt,
+         utilization_rate, last_remit_total_term, last_remit_interest_type, total_apply_rnb, last_remit_overdue_days
+  FROM wangchuanliang.no_apply_0823_0828_30pct
 ),
 fa AS (
-  SELECT e.grp, e.user_id, e.ab_group, e.recall_date, MIN(o.apply_date) AS fa
-  FROM exp e
-  JOIN wangchuanliang.order_loan_f_v2_copy o
-    ON o.user_id = e.user_id AND o.apply_date BETWEEN e.recall_date AND e.recall_date + 6
-  GROUP BY e.grp, e.user_id, e.ab_group, e.recall_date
+    SELECT e.grp, e.user_id, e.ab_group, e.recall_date,
+           MIN(o.apply_date) AS fa
+    FROM exp e
+    JOIN wangchuanliang.order_loan_f_v2_copy o
+      ON o.user_id = e.user_id
+     AND o.apply_date BETWEEN e.recall_date AND e.recall_date + 6
+    GROUP BY e.grp, e.user_id, e.ab_group, e.recall_date
 )
-SELECT e.*, f.fa, (f.fa - e.recall_date) AS day_idx,
+SELECT e.*,
+       f.fa,
+       (f.fa - e.recall_date) AS day_idx,
        CASE WHEN f.fa IS NOT NULL AND f.fa &lt;= e.recall_date + 2 THEN 1 ELSE 0 END AS applied3,
        CASE WHEN f.fa IS NOT NULL THEN 1 ELSE 0 END AS applied7
 FROM exp e
-LEFT JOIN fa f ON f.grp = e.grp AND f.user_id = e.user_id AND f.ab_group = e.ab_group AND f.recall_date = e.recall_date;</pre></details><details><summary>模块二：样本量 + 累计券增量（前3天 / 第4~7天 / 前7天）</summary><pre>-- ============================================================
+LEFT JOIN fa f
+  ON f.grp = e.grp AND f.user_id = e.user_id AND f.ab_group = e.ab_group AND f.recall_date = e.recall_date;</pre></details><details><summary>模块二：样本量 + 累计券增量（前3天 / 第4~7天 / 前7天）</summary><pre>-- ============================================================
 -- 模块二：样本量 + 累计券增量（前3天 / 第4~7天 / 前7天）
 -- 券增量 = 实验组(treatment)提单率 - 对照组(control)提单率
 -- 第4~7天提单 = applied7 - applied3（首次提单唯一，落在3天内则第4~7天为0）
 -- ============================================================
 SELECT grp AS 组,
-  SUM(CASE WHEN ab_group=&#x27;treatment&#x27; THEN 1 ELSE 0 END) AS 实验组样本,
-  SUM(CASE WHEN ab_group=&#x27;control&#x27;   THEN 1 ELSE 0 END) AS 对照组样本,
-  -- 前3天
-  ROUND(AVG(CASE WHEN ab_group=&#x27;treatment&#x27; THEN applied3 END)::numeric*100, 2) AS 实验组前3天,
-  ROUND(AVG(CASE WHEN ab_group=&#x27;control&#x27;   THEN applied3 END)::numeric*100, 2) AS 对照组前3天,
-  ROUND((AVG(CASE WHEN ab_group=&#x27;treatment&#x27; THEN applied3 END)
-       - AVG(CASE WHEN ab_group=&#x27;control&#x27; THEN applied3 END))::numeric*100, 2) AS 前3天增量pp,
-  -- 第4~7天（券期后）
-  ROUND(AVG(CASE WHEN ab_group=&#x27;treatment&#x27; THEN applied7 - applied3 END)::numeric*100, 2) AS 实验组第4_7天,
-  ROUND(AVG(CASE WHEN ab_group=&#x27;control&#x27;   THEN applied7 - applied3 END)::numeric*100, 2) AS 对照组第4_7天,
-  ROUND((AVG(CASE WHEN ab_group=&#x27;treatment&#x27; THEN applied7 - applied3 END)
-       - AVG(CASE WHEN ab_group=&#x27;control&#x27; THEN applied7 - applied3 END))::numeric*100, 2) AS 第4_7天增量pp,
-  -- 前7天
-  ROUND(AVG(CASE WHEN ab_group=&#x27;treatment&#x27; THEN applied7 END)::numeric*100, 2) AS 实验组前7天,
-  ROUND(AVG(CASE WHEN ab_group=&#x27;control&#x27;   THEN applied7 END)::numeric*100, 2) AS 对照组前7天,
-  ROUND((AVG(CASE WHEN ab_group=&#x27;treatment&#x27; THEN applied7 END)
-       - AVG(CASE WHEN ab_group=&#x27;control&#x27; THEN applied7 END))::numeric*100, 2) AS 前7天增量pp
+       SUM(CASE WHEN ab_group=&#x27;treatment&#x27; THEN 1 ELSE 0 END) AS 实验组样本,
+       SUM(CASE WHEN ab_group=&#x27;control&#x27;   THEN 1 ELSE 0 END) AS 对照组样本,
+       -- 前3天
+       ROUND(AVG(CASE WHEN ab_group=&#x27;treatment&#x27; THEN applied3 END)::numeric*100, 2) AS 实验组前3天,
+       ROUND(AVG(CASE WHEN ab_group=&#x27;control&#x27;   THEN applied3 END)::numeric*100, 2) AS 对照组前3天,
+       ROUND((AVG(CASE WHEN ab_group=&#x27;treatment&#x27; THEN applied3 END)
+            - AVG(CASE WHEN ab_group=&#x27;control&#x27; THEN applied3 END))::numeric*100, 2) AS 前3天增量pp,
+       -- 第4~7天（券期后）
+       ROUND(AVG(CASE WHEN ab_group=&#x27;treatment&#x27; THEN applied7 - applied3 END)::numeric*100, 2) AS 实验组第4_7天,
+       ROUND(AVG(CASE WHEN ab_group=&#x27;control&#x27;   THEN applied7 - applied3 END)::numeric*100, 2) AS 对照组第4_7天,
+       ROUND((AVG(CASE WHEN ab_group=&#x27;treatment&#x27; THEN applied7 - applied3 END)
+            - AVG(CASE WHEN ab_group=&#x27;control&#x27; THEN applied7 - applied3 END))::numeric*100, 2) AS 第4_7天增量pp,
+       -- 前7天
+       ROUND(AVG(CASE WHEN ab_group=&#x27;treatment&#x27; THEN applied7 END)::numeric*100, 2) AS 实验组前7天,
+       ROUND(AVG(CASE WHEN ab_group=&#x27;control&#x27;   THEN applied7 END)::numeric*100, 2) AS 对照组前7天,
+       ROUND((AVG(CASE WHEN ab_group=&#x27;treatment&#x27; THEN applied7 END)
+            - AVG(CASE WHEN ab_group=&#x27;control&#x27; THEN applied7 END))::numeric*100, 2) AS 前7天增量pp
 FROM tmp_coupon_exp
 GROUP BY grp
 ORDER BY grp;</pre></details><details><summary>模块三：逐日券增量（D1~D7，含逐日绝对值）</summary><pre>-- ============================================================
 -- 模块三：逐日券增量（第1~7天，D1=召回日当天，含逐日绝对值）
 -- ============================================================
 WITH day_cnt AS (
-  SELECT grp, ab_group, day_idx, COUNT(*) AS cnt
-  FROM tmp_coupon_exp
-  WHERE day_idx IS NOT NULL
-  GROUP BY grp, ab_group, day_idx
+    SELECT grp, ab_group, day_idx, COUNT(*) AS cnt
+    FROM tmp_coupon_exp
+    WHERE day_idx IS NOT NULL
+    GROUP BY grp, ab_group, day_idx
 ),
 tot AS (
-  SELECT grp, ab_group, COUNT(*) AS n FROM tmp_coupon_exp GROUP BY grp, ab_group
+    SELECT grp, ab_group, COUNT(*) AS n
+    FROM tmp_coupon_exp
+    GROUP BY grp, ab_group
 )
-SELECT d.grp AS 组, &#x27;D&#x27; || (d.day_idx + 1) AS 第几天,
-  ROUND(MAX(CASE WHEN d.ab_group=&#x27;treatment&#x27; THEN d.cnt * 100.0 / t.n END), 2) AS 实验组提单率,
-  ROUND(MAX(CASE WHEN d.ab_group=&#x27;control&#x27;   THEN d.cnt * 100.0 / t.n END), 2) AS 对照组提单率,
-  ROUND((MAX(CASE WHEN d.ab_group=&#x27;treatment&#x27; THEN d.cnt * 100.0 / t.n END)
-       - MAX(CASE WHEN d.ab_group=&#x27;control&#x27;   THEN d.cnt * 100.0 / t.n END)), 2) AS 逐日增量pp
+SELECT d.grp AS 组,
+       &#x27;D&#x27; || (d.day_idx + 1) AS 第几天,
+       ROUND(MAX(CASE WHEN d.ab_group=&#x27;treatment&#x27; THEN d.cnt * 100.0 / t.n END), 2) AS 实验组提单率,
+       ROUND(MAX(CASE WHEN d.ab_group=&#x27;control&#x27;   THEN d.cnt * 100.0 / t.n END), 2) AS 对照组提单率,
+       ROUND((MAX(CASE WHEN d.ab_group=&#x27;treatment&#x27; THEN d.cnt * 100.0 / t.n END)
+            - MAX(CASE WHEN d.ab_group=&#x27;control&#x27;   THEN d.cnt * 100.0 / t.n END)), 2) AS 逐日增量pp
 FROM day_cnt d
-JOIN tot t ON t.grp = d.grp AND t.ab_group = d.ab_group
+JOIN tot t
+  ON t.grp = d.grp AND t.ab_group = d.ab_group
 GROUP BY d.grp, d.day_idx
 ORDER BY d.grp, d.day_idx;</pre></details><details><summary>模块四：10 个维度特征分层 × 券增量（含样本量）</summary><pre>-- ============================================================
 -- 模块四：10 个维度特征分层 × 券增量（前7天口径）
 -- 用 UNION ALL 统一 10 个维度为 (dim, seg)，再按组计算券增量与样本量
 -- ============================================================
 WITH seg AS (
-  SELECT grp, ab_group, applied7, &#x27;活跃天数&#x27; AS dim,
-         CASE WHEN active_days_cnt&lt;=0 THEN &#x27;0天&#x27; WHEN active_days_cnt=1 THEN &#x27;1天&#x27; WHEN active_days_cnt=2 THEN &#x27;2天&#x27; WHEN active_days_cnt=3 THEN &#x27;3天&#x27; ELSE &#x27;4天&#x27; END AS seg
-  FROM tmp_coupon_exp
-  UNION ALL SELECT grp, ab_group, applied7, &#x27;高息率&#x27;, CASE WHEN high_interest_rate&lt;=0 THEN &#x27;无高息(0)&#x27; WHEN high_interest_rate&lt;=0.5 THEN &#x27;低高息(0~0.5]&#x27; ELSE &#x27;高高息(&gt;0.5)&#x27; END FROM tmp_coupon_exp
-  UNION ALL SELECT grp, ab_group, applied7, &#x27;放款次数&#x27;, CASE WHEN total_remit_rnb&lt;=1 THEN &#x27;1次&#x27; WHEN total_remit_rnb=2 THEN &#x27;2次&#x27; WHEN total_remit_rnb=3 THEN &#x27;3次&#x27; ELSE &#x27;4次+&#x27; END FROM tmp_coupon_exp
-  UNION ALL SELECT grp, ab_group, applied7, &#x27;有无逾期&#x27;, CASE WHEN overdue_cnt&gt;0 THEN &#x27;有逾期&#x27; ELSE &#x27;无逾期&#x27; END FROM tmp_coupon_exp
-  UNION ALL SELECT grp, ab_group, applied7, &#x27;上笔期数&#x27;, CASE WHEN last_remit_total_term&lt;=1 THEN &#x27;1期&#x27; WHEN last_remit_total_term=2 THEN &#x27;2期&#x27; WHEN last_remit_total_term=3 THEN &#x27;3期&#x27; ELSE &#x27;4期&#x27; END FROM tmp_coupon_exp
-  UNION ALL SELECT grp, ab_group, applied7, &#x27;利率类型&#x27;, last_remit_interest_type FROM tmp_coupon_exp
-  UNION ALL SELECT grp, ab_group, applied7, &#x27;放款金额&#x27;, CASE WHEN total_remit_amt&lt;3000 THEN &#x27;低(&lt;3000)&#x27; WHEN total_remit_amt&lt;8000 THEN &#x27;中(3000~8000)&#x27; ELSE &#x27;高(&gt;=8000)&#x27; END FROM tmp_coupon_exp
-  UNION ALL SELECT grp, ab_group, applied7, &#x27;提单次数&#x27;, CASE WHEN total_apply_rnb&lt;=1 THEN &#x27;1次&#x27; WHEN total_apply_rnb=2 THEN &#x27;2次&#x27; WHEN total_apply_rnb=3 THEN &#x27;3次&#x27; ELSE &#x27;4次+&#x27; END FROM tmp_coupon_exp
-  UNION ALL SELECT grp, ab_group, applied7, &#x27;额度使用率&#x27;, CASE WHEN utilization_rate&lt;0.5 THEN &#x27;低(&lt;50%)&#x27; WHEN utilization_rate&lt;0.9 THEN &#x27;中(50~90%)&#x27; ELSE &#x27;高(&gt;=90%)&#x27; END FROM tmp_coupon_exp
-  UNION ALL SELECT grp, ab_group, applied7, &#x27;上笔逾期天数&#x27;, CASE WHEN last_remit_overdue_days&lt;0 THEN &#x27;无逾期(&lt;0)&#x27; ELSE &#x27;有逾期(&gt;=0)&#x27; END FROM tmp_coupon_exp
+    -- 1. 第一阶段活跃天数
+    SELECT grp, ab_group, applied7, &#x27;活跃天数&#x27; AS dim,
+           CASE WHEN active_days_cnt&lt;=0 THEN &#x27;0天&#x27;
+                WHEN active_days_cnt=1 THEN &#x27;1天&#x27;
+                WHEN active_days_cnt=2 THEN &#x27;2天&#x27;
+                WHEN active_days_cnt=3 THEN &#x27;3天&#x27;
+                ELSE &#x27;4天&#x27; END AS seg
+    FROM tmp_coupon_exp
+    -- 2. 高息率
+    UNION ALL SELECT grp, ab_group, applied7, &#x27;高息率&#x27;,
+           CASE WHEN high_interest_rate&lt;=0 THEN &#x27;无高息(0)&#x27;
+                WHEN high_interest_rate&lt;=0.5 THEN &#x27;低高息(0~0.5]&#x27;
+                ELSE &#x27;高高息(&gt;0.5)&#x27; END
+    FROM tmp_coupon_exp
+    -- 3. 历史放款次数
+    UNION ALL SELECT grp, ab_group, applied7, &#x27;放款次数&#x27;,
+           CASE WHEN total_remit_rnb&lt;=1 THEN &#x27;1次&#x27;
+                WHEN total_remit_rnb=2 THEN &#x27;2次&#x27;
+                WHEN total_remit_rnb=3 THEN &#x27;3次&#x27;
+                ELSE &#x27;4次+&#x27; END
+    FROM tmp_coupon_exp
+    -- 4. 有无逾期
+    UNION ALL SELECT grp, ab_group, applied7, &#x27;有无逾期&#x27;,
+           CASE WHEN overdue_cnt&gt;0 THEN &#x27;有逾期&#x27; ELSE &#x27;无逾期&#x27; END
+    FROM tmp_coupon_exp
+    -- 5. 上笔期数
+    UNION ALL SELECT grp, ab_group, applied7, &#x27;上笔期数&#x27;,
+           CASE WHEN last_remit_total_term&lt;=1 THEN &#x27;1期&#x27;
+                WHEN last_remit_total_term=2 THEN &#x27;2期&#x27;
+                WHEN last_remit_total_term=3 THEN &#x27;3期&#x27;
+                ELSE &#x27;4期&#x27; END
+    FROM tmp_coupon_exp
+    -- 6. 上笔利率类型
+    UNION ALL SELECT grp, ab_group, applied7, &#x27;利率类型&#x27;, last_remit_interest_type
+    FROM tmp_coupon_exp
+    -- 7. 历史放款金额
+    UNION ALL SELECT grp, ab_group, applied7, &#x27;放款金额&#x27;,
+           CASE WHEN total_remit_amt&lt;3000 THEN &#x27;低(&lt;3000)&#x27;
+                WHEN total_remit_amt&lt;8000 THEN &#x27;中(3000~8000)&#x27;
+                ELSE &#x27;高(&gt;=8000)&#x27; END
+    FROM tmp_coupon_exp
+    -- 8. 历史提单次数
+    UNION ALL SELECT grp, ab_group, applied7, &#x27;提单次数&#x27;,
+           CASE WHEN total_apply_rnb&lt;=1 THEN &#x27;1次&#x27;
+                WHEN total_apply_rnb=2 THEN &#x27;2次&#x27;
+                WHEN total_apply_rnb=3 THEN &#x27;3次&#x27;
+                ELSE &#x27;4次+&#x27; END
+    FROM tmp_coupon_exp
+    -- 9. 额度使用率
+    UNION ALL SELECT grp, ab_group, applied7, &#x27;额度使用率&#x27;,
+           CASE WHEN utilization_rate&lt;0.5 THEN &#x27;低(&lt;50%)&#x27;
+                WHEN utilization_rate&lt;0.9 THEN &#x27;中(50~90%)&#x27;
+                ELSE &#x27;高(&gt;=90%)&#x27; END
+    FROM tmp_coupon_exp
+    -- 10. 上笔逾期天数
+    UNION ALL SELECT grp, ab_group, applied7, &#x27;上笔逾期天数&#x27;,
+           CASE WHEN last_remit_overdue_days&lt;0 THEN &#x27;无逾期(&lt;0)&#x27;
+                ELSE &#x27;有逾期(&gt;=0)&#x27; END
+    FROM tmp_coupon_exp
 )
 SELECT dim AS 维度, seg AS 分段, grp AS 组,
-  SUM(CASE WHEN ab_group=&#x27;treatment&#x27; THEN 1 ELSE 0 END) AS 实验组n,
-  ROUND(AVG(CASE WHEN ab_group=&#x27;treatment&#x27; THEN applied7 END)::numeric*100, 2) AS 实验组提单率,
-  SUM(CASE WHEN ab_group=&#x27;control&#x27; THEN 1 ELSE 0 END) AS 对照组n,
-  ROUND(AVG(CASE WHEN ab_group=&#x27;control&#x27; THEN applied7 END)::numeric*100, 2) AS 对照组提单率,
-  ROUND((AVG(CASE WHEN ab_group=&#x27;treatment&#x27; THEN applied7 END)
-       - AVG(CASE WHEN ab_group=&#x27;control&#x27; THEN applied7 END))::numeric*100, 2) AS 券增量pp
+       SUM(CASE WHEN ab_group=&#x27;treatment&#x27; THEN 1 ELSE 0 END) AS 实验组n,
+       ROUND(AVG(CASE WHEN ab_group=&#x27;treatment&#x27; THEN applied7 END)::numeric*100, 2) AS 实验组提单率,
+       SUM(CASE WHEN ab_group=&#x27;control&#x27; THEN 1 ELSE 0 END) AS 对照组n,
+       ROUND(AVG(CASE WHEN ab_group=&#x27;control&#x27; THEN applied7 END)::numeric*100, 2) AS 对照组提单率,
+       ROUND((AVG(CASE WHEN ab_group=&#x27;treatment&#x27; THEN applied7 END)
+            - AVG(CASE WHEN ab_group=&#x27;control&#x27; THEN applied7 END))::numeric*100, 2) AS 券增量pp
 FROM seg
 GROUP BY dim, seg, grp
 ORDER BY dim, seg, grp;</pre></details>
