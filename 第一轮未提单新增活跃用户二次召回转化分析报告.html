@@ -1,0 +1,158 @@
+<!doctype html>
+<html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>新增活跃用户二次召回转化分析报告</title>
+<style>
+:root{--ink:#172033;--muted:#64748b;--blue:#2563eb;--cyan:#0891b2;--line:#dbe4ef;--paper:#fff;--bg:#f4f7fb;--green:#047857;--orange:#b45309}
+*{box-sizing:border-box} body{margin:0;background:var(--bg);color:var(--ink);font:14px/1.7 -apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei",sans-serif}
+.hero{background:linear-gradient(125deg,#102a56,#163e79 52%,#0f5e8c);color:#fff;padding:42px 0 38px}.wrap{max-width:1160px;margin:auto;padding:0 28px}h1{font-size:30px;line-height:1.25;margin:0 0 8px;letter-spacing:.2px}.hero p{margin:0;color:#d7e8ff;font-size:15px}.tag{display:inline-block;margin-top:17px;border:1px solid #6ca6da;background:#ffffff18;border-radius:6px;padding:5px 11px;color:#eff7ff;font-size:12px;line-height:1.7}
+main{padding-top:26px;padding-bottom:54px}.section{background:var(--paper);border:1px solid var(--line);border-radius:12px;margin:0 0 18px;padding:24px 26px;box-shadow:0 2px 8px #1e293b08}h2{font-size:20px;margin:0 0 16px}h3{font-size:16px;margin:23px 0 8px}.lead{color:#475569;margin:0 0 14px}.cards{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}.card{border:1px solid var(--line);border-radius:9px;padding:15px;background:#fbfdff}.card .label{font-size:12px;color:var(--muted)}.card .num{font-size:28px;font-weight:750;line-height:1.2;margin:5px 0;color:var(--blue)}.card .hint{color:var(--muted);font-size:12px}.callout{border-left:4px solid var(--blue);background:#eff6ff;padding:13px 15px;border-radius:4px;margin-top:14px}.warn{border-left-color:#f59e0b;background:#fffbeb}.grid2{display:grid;grid-template-columns:1fr 1fr;gap:18px}.chart{border:1px solid var(--line);border-radius:9px;padding:12px;background:#fff;overflow:hidden}.chart h3{margin:0 0 4px}svg{width:100%;height:auto;display:block}.grid{stroke:#dfe7f1;stroke-width:1}.axis{fill:#718096;font-size:11px}.legend{font-size:12px;font-weight:650}.point{font-size:11px;font-weight:650}table{border-collapse:collapse;width:100%;margin-top:10px;font-variant-numeric:tabular-nums}th,td{border-bottom:1px solid var(--line);padding:9px 10px;text-align:right}th{background:#f1f5f9;color:#475569;font-size:12px}th:first-child,td:first-child{text-align:left}.bar-row{display:grid;grid-template-columns:100px 1fr 140px;align-items:center;gap:10px;margin:11px 0}.bar-label{font-weight:650}.bar-track{height:18px;background:#eaf0f7;border-radius:4px;overflow:hidden}.bar{height:100%;background:linear-gradient(90deg,#2563eb,#38bdf8);border-radius:4px}.bar-value{font-weight:650}small{color:var(--muted);font-weight:400}details{border:1px solid var(--line);border-radius:8px;background:#fbfdff;margin-top:10px}summary{padding:11px 14px;cursor:pointer;font-weight:650}pre{padding:0 16px 16px;margin:0;white-space:pre-wrap;word-break:break-word;font:12px/1.55 ui-monospace,SFMono-Regular,Menlo,monospace;color:#24334d}.footer{color:var(--muted);font-size:12px;margin-top:12px}@media(max-width:800px){.cards,.grid2{grid-template-columns:1fr 1fr}.bar-row{grid-template-columns:85px 1fr 105px}}@media(max-width:520px){.cards,.grid2{grid-template-columns:1fr}.wrap{padding:0 15px}.section{padding:18px 15px}h1{font-size:24px}}
+</style></head><body>
+<header class="hero"><div class="wrap"><h1>第一轮未提单新增活跃用户<br>二次召回转化分析报告</h1><p>聚焦第一轮减息券触达后未提单、但重新活跃的用户，评估二次触达的转化效率。</p><span class="tag">第一轮观察期：2026-08-18 至 2026-08-29<br>第二轮提单观察起点：2026-08-27<br>报告生成时间：2026-08-31</span></div></header>
+<main class="wrap">
+<section class="section"><h2>一、分析背景与策略逻辑</h2><p class="lead">原有方式是对流失用户发放 7 天减息券；7 天后，未提单用户再次获得触达。问题在于：第一轮已经触达、仍未提单且后续没有活跃动作的用户，实际提单意愿通常很低，重复触达会拉低营销产出。</p><div class="grid2"><div class="callout"><strong>旧策略</strong><br>第一轮未提单用户，统一进入第二轮触达。</div><div class="callout"><strong>新策略</strong><br>第一轮未提单用户中，仅保留后续重新活跃的用户进行第二轮触达；未活跃用户不再触达。</div></div><div class="callout warn"><strong>本报告要验证的问题：</strong>被“新增活跃”筛出的二次触达用户，是否能在较短时间内产生与第一轮相当的提单转化，从而证明把资源集中在重新活跃用户上是有效的。</div></section>
+<section class="section"><h2>二、样本与统计口径</h2><p class="lead">样本为 <code>t7recall_active0827</code> 与 <code>t7recalllist_0818_0819</code> 按 <code>churn_user_id</code> 内连接后的用户。先按用户去重；提单指用户在 2026-08-27 00:00:00 起存在 <code>apply_time</code> 的订单；提单率 = 有至少一笔提单的去重用户数 ÷ 内连接去重用户数。</p><table><thead><tr><th>口径项</th><th>结果</th><th>说明</th></tr></thead><tbody><tr><td>新增活跃表去重用户</td><td>1,071</td><td>8 月 27 日重新活跃用户</td></tr><tr><td>内连接后去重样本</td><td>1,071</td><td>与第一轮召回名单同时存在的用户</td></tr><tr><td>截至 2026-08-30 提单用户</td><td>122</td><td>按用户去重</td></tr><tr><td>提单订单数</td><td>123</td><td>订单口径；高于用户数说明有用户多次提单</td></tr></tbody></table></section>
+<section class="section"><h2>三、核心结果：二次触达在 3 天内已实现接近首轮的转化</h2><div class="cards"><div class="card"><div class="label">第一轮整体提单率</div><div class="num">11.58%</div><div class="hint">1,342/11,585，观察 12 天</div></div><div class="card"><div class="label">二次触达前三天提单率</div><div class="num">11.30%</div><div class="hint">121/1,071，8/27–8/29</div></div><div class="card"><div class="label">二次触达截至当前提单率</div><div class="num">11.39%</div><div class="hint">122/1,071，数据至 2026-08-30</div></div><div class="card"><div class="label">被过滤用户提单率</div><div class="num">0.68%</div><div class="hint">36/5,328，来自第一轮策略报告</div></div></div><div class="callout"><strong>结论 1：</strong>二次触达的新增活跃人群，在 3 天内提单率为 <strong>11.30%</strong>，与第一轮 12 天整体提单率 <strong>11.58%</strong> 基本相当（差 0.28 个百分点）。因此，该人群的特点不是“最终提单率已显著高于首轮”，而是<strong>转化出现得更快</strong>；相比之下，被新策略过滤的人群提单率仅 0.68%，不继续触达具备明确的效率依据。</div></section>
+<section class="section"><h2>四、二次触达后的提单时点：转化集中在前三天</h2><div class="grid2"><div class="chart"><h3>累计提单率</h3><p class="footer">固定分母：1,071 位内连接去重用户</p><svg viewBox="0 0 920 330" role="img"><line x1="64" x2="898" y1="285.0" y2="285.0" class="grid"/><text x="54" y="289.0" class="axis" text-anchor="end">0%</text><line x1="64" x2="898" y1="234.0" y2="234.0" class="grid"/><text x="54" y="238.0" class="axis" text-anchor="end">3%</text><line x1="64" x2="898" y1="183.0" y2="183.0" class="grid"/><text x="54" y="187.0" class="axis" text-anchor="end">5%</text><line x1="64" x2="898" y1="132.0" y2="132.0" class="grid"/><text x="54" y="136.0" class="axis" text-anchor="end">8%</text><line x1="64" x2="898" y1="81.0" y2="81.0" class="grid"/><text x="54" y="85.0" class="axis" text-anchor="end">11%</text><line x1="64" x2="898" y1="30.0" y2="30.0" class="grid"/><text x="54" y="34.0" class="axis" text-anchor="end">14%</text><text x="64.0" y="314" class="axis" text-anchor="middle">08-27</text><text x="342.0" y="314" class="axis" text-anchor="middle">08-28</text><text x="620.0" y="314" class="axis" text-anchor="middle">08-29</text><text x="898.0" y="314" class="axis" text-anchor="middle">08-30</text><polyline points="64.0,209.2 342.0,147.4 620.0,71.6 898.0,69.8" fill="none" stroke="#2563eb" stroke-width="3"/><circle cx="64.0" cy="209.2" r="4.8" fill="#2563eb"/><circle cx="342.0" cy="147.4" r="4.8" fill="#2563eb"/><circle cx="620.0" cy="71.6" r="4.8" fill="#2563eb"/><circle cx="898.0" cy="69.8" r="4.8" fill="#2563eb"/><text x="64" y="18" fill="#2563eb" class="legend">● 累计提单率</text><text x="64.0" y="199.2" fill="#2563eb" class="point" text-anchor="middle">4.01%</text><text x="342.0" y="137.4" fill="#2563eb" class="point" text-anchor="middle">7.28%</text><text x="620.0" y="61.6" fill="#2563eb" class="point" text-anchor="middle">11.30%</text><text x="898.0" y="59.8" fill="#2563eb" class="point" text-anchor="middle">11.39%</text></svg></div><div class="chart"><h3>与第一轮转化效率对比</h3><p class="footer">首轮为 12 天整体；二轮同时展示前三天及截至当前</p><svg viewBox="0 0 920 330" role="img"><line x1="64" x2="898" y1="285.0" y2="285.0" class="grid"/><text x="54" y="289.0" class="axis" text-anchor="end">0%</text><line x1="64" x2="898" y1="234.0" y2="234.0" class="grid"/><text x="54" y="238.0" class="axis" text-anchor="end">3%</text><line x1="64" x2="898" y1="183.0" y2="183.0" class="grid"/><text x="54" y="187.0" class="axis" text-anchor="end">5%</text><line x1="64" x2="898" y1="132.0" y2="132.0" class="grid"/><text x="54" y="136.0" class="axis" text-anchor="end">8%</text><line x1="64" x2="898" y1="81.0" y2="81.0" class="grid"/><text x="54" y="85.0" class="axis" text-anchor="end">11%</text><line x1="64" x2="898" y1="30.0" y2="30.0" class="grid"/><text x="54" y="34.0" class="axis" text-anchor="end">14%</text><text x="64.0" y="314" class="axis" text-anchor="middle">首轮12天</text><text x="481.0" y="314" class="axis" text-anchor="middle">二轮3天</text><text x="898.0" y="314" class="axis" text-anchor="middle">二轮截至当前</text><polyline points="64.0,66.3 481.0,71.6 898.0,69.8" fill="none" stroke="#2563eb" stroke-width="3"/><circle cx="64.0" cy="66.3" r="4.8" fill="#2563eb"/><circle cx="481.0" cy="71.6" r="4.8" fill="#2563eb"/><circle cx="898.0" cy="69.8" r="4.8" fill="#2563eb"/><text x="64" y="18" fill="#2563eb" class="legend">● 提单率</text><text x="64.0" y="56.3" fill="#2563eb" class="point" text-anchor="middle">11.58%</text><text x="481.0" y="61.6" fill="#2563eb" class="point" text-anchor="middle">11.30%</text><text x="898.0" y="59.8" fill="#2563eb" class="point" text-anchor="middle">11.39%</text></svg></div></div><table><thead><tr><th>提单日期</th><th>当日首次提单用户</th><th>累计提单用户</th><th>累计提单率</th></tr></thead><tbody><tr><td>2026-08-27</td><td>43</td><td>43</td><td>4.01%</td></tr><tr><td>2026-08-28</td><td>35</td><td>78</td><td>7.28%</td></tr><tr><td>2026-08-29</td><td>43</td><td>121</td><td>11.30%</td></tr><tr><td>2026-08-30</td><td>1</td><td>122</td><td>11.39%</td></tr></tbody></table><div class="callout"><strong>结论 2：</strong>121 位提单用户中，前三天已形成主要转化；以全部样本为分母，8 月 27 日、28 日、29 日累计提单率依次达到 4.01%、7.28%、11.30%。二次触达应优先关注触达后的前三天承接效果。</div></section>
+<section class="section"><h2>五、不同流失分层的二次触达表现</h2><div class="grid2"><div class="chart"><h3>各分层提单率</h3><div class="bar-row"><div class="bar-label">20d</div>
+            <div class="bar-track"><div class="bar" style="width:38.7%"></div></div>
+            <div class="bar-value">15.22% <small>(21/138)</small></div></div><div class="bar-row"><div class="bar-label">20d+10r</div>
+            <div class="bar-track"><div class="bar" style="width:27.9%"></div></div>
+            <div class="bar-value">10.98% <small>(48/437)</small></div></div><div class="bar-row"><div class="bar-label">30d</div>
+            <div class="bar-track"><div class="bar" style="width:25.1%"></div></div>
+            <div class="bar-value">9.86% <small>(29/294)</small></div></div><div class="bar-row"><div class="bar-label">30d+10r</div>
+            <div class="bar-track"><div class="bar" style="width:27.7%"></div></div>
+            <div class="bar-value">10.88% <small>(21/193)</small></div></div><div class="bar-row"><div class="bar-label">40d</div>
+            <div class="bar-track"><div class="bar" style="width:84.7%"></div></div>
+            <div class="bar-value">33.33% <small>(3/9)</small></div></div></div><div><h3>分层明细</h3><table><thead><tr><th>分层</th><th>样本用户</th><th>提单用户</th><th>提单率</th><th>提单订单</th></tr></thead><tbody><tr><td>20d</td><td>138</td><td>21</td><td>15.22%</td><td>21</td></tr><tr><td>20d+10r</td><td>437</td><td>48</td><td>10.98%</td><td>48</td></tr><tr><td>30d</td><td>294</td><td>29</td><td>9.86%</td><td>30</td></tr><tr><td>30d+10r</td><td>193</td><td>21</td><td>10.88%</td><td>21</td></tr><tr><td>40d</td><td>9</td><td>3</td><td>33.33%</td><td>3</td></tr></tbody></table><p class="footer">40d 分层仅 9 人，虽然提单率较高，但样本量过小，暂不作为稳定结论。</p></div></div><div class="callout"><strong>结论 3：</strong>样本量较大的分层中，20d 用户提单率最高（15.22%）；20d+10r、30d 与 30d+10r 的提单率处于 9.86%–10.98%。二次触达可以继续保留“新增活跃”这一共同筛选条件，再结合分层优先级优化触达资源。</div></section>
+<section class="section"><h2>六、综合判断与后续动作</h2><div class="callout"><strong>策略有效的依据</strong><br>第一轮已验证：被过滤用户占 5,328 人，但仅产生 36 位提单用户，提单率 0.68%。二次触达仅面向重新活跃用户后，1,071 人在 3 天内即达到 11.30% 提单率，说明“先用活跃行为筛选、再触达”的方向能够减少低效覆盖，并快速承接有意愿用户。</div><div class="callout warn"><strong>解读边界</strong><br>二次触达用户是经过“重新活跃”筛选的人群，与第一轮全量用户并非随机同质样本。因此，本报告可以说明该筛选方法有较高的运营效率和转化速度；若需估计二次券触达本身的因果增量，仍应在新增活跃人群内保留随机对照组。</div><h3>建议动作</h3><ol><li>将“第一轮未提单 + 新增活跃”固定为第二轮触达的准入条件，不再对未活跃用户进行普遍二次发券。</li><li>把触达后 0–3 天作为核心观察窗口，按日监控提单率、券使用率和取消/拒绝等漏斗指标。</li><li>对样本量较大的 20d、20d+10r、30d 分层设置独立的券力度或触达频次测试，避免将小样本分层结论直接放大。</li><li>在新增活跃用户中设置随机对照组，进一步区分“用户自然恢复意愿”与“二次触达带来的额外转化”。</li></ol></section>
+<section class="section"><h2>附录：完整 PGSQL</h2><p class="lead">以下代码覆盖报告全部数值：模块一读取已发布的第一轮导出汇总值，模块二从数据库内连接样本并计算二次触达的样本规模、日期趋势及分层指标。</p><details open><summary>模块一：第一轮策略报告的导出数据对比值</summary><pre>/* 第一轮策略报告的已发布导出结果；用于复现本报告的对比卡片。 */
+WITH first_round_source AS (
+    SELECT * FROM (
+        VALUES
+            (&#x27;第一轮新策略整体&#x27;, 11585::bigint, 1342::bigint),
+            (&#x27;被新策略过滤用户&#x27;, 5328::bigint, 36::bigint)
+    ) AS t(metric, sample_users, apply_users)
+)
+SELECT
+    metric,
+    sample_users,
+    apply_users,
+    ROUND(apply_users::numeric / sample_users * 100, 2) AS apply_rate_pct
+FROM first_round_source
+ORDER BY metric;</pre></details><details><summary>模块二：样本内连接、总体提单率、日期趋势与分层指标</summary><pre>WITH active AS (
+    SELECT
+        churn_user_id::bigint AS user_id,
+        MAX(strat_1) AS strat_1
+    FROM wangchuanliang.t7recall_active0827
+    GROUP BY churn_user_id::bigint
+),
+recall_list AS (
+    SELECT DISTINCT churn_user_id::bigint AS user_id
+    FROM wangchuanliang.t7recalllist_0818_0819
+),
+sample AS (
+    SELECT a.user_id, a.strat_1
+    FROM active AS a
+    INNER JOIN recall_list AS r
+        ON r.user_id = a.user_id
+),
+apply_orders AS (
+    SELECT
+        s.user_id,
+        s.strat_1,
+        o.serial_id,
+        o.apply_time,
+        o.apply_date,
+        ROW_NUMBER() OVER (
+            PARTITION BY s.user_id
+            ORDER BY o.apply_time, o.serial_id
+        ) AS first_apply_rn
+    FROM sample AS s
+    INNER JOIN wangchuanliang.order_loan_f_v2_copy AS o
+        ON o.user_id = s.user_id
+    WHERE o.apply_time &gt;= TIMESTAMP &#x27;2026-08-27 00:00:00&#x27;
+)
+SELECT
+    (SELECT COUNT(*) FROM active) AS active_users,
+    (SELECT COUNT(*) FROM recall_list) AS recall_list_users,
+    (SELECT COUNT(*) FROM sample) AS joined_users,
+    (SELECT COUNT(DISTINCT user_id) FROM apply_orders) AS apply_users,
+    (SELECT COUNT(*) FROM apply_orders) AS apply_orders,
+    (SELECT MAX(apply_date) FROM apply_orders) AS latest_apply_date;
+
+WITH active AS (
+    SELECT
+        churn_user_id::bigint AS user_id,
+        MAX(strat_1) AS strat_1
+    FROM wangchuanliang.t7recall_active0827
+    GROUP BY churn_user_id::bigint
+),
+recall_list AS (
+    SELECT DISTINCT churn_user_id::bigint AS user_id
+    FROM wangchuanliang.t7recalllist_0818_0819
+),
+sample AS (
+    SELECT a.user_id, a.strat_1
+    FROM active AS a
+    INNER JOIN recall_list AS r
+        ON r.user_id = a.user_id
+),
+first_apply AS (
+    SELECT
+        s.user_id,
+        o.apply_date,
+        ROW_NUMBER() OVER (
+            PARTITION BY s.user_id
+            ORDER BY o.apply_time, o.serial_id
+        ) AS first_apply_rn
+    FROM sample AS s
+    INNER JOIN wangchuanliang.order_loan_f_v2_copy AS o
+        ON o.user_id = s.user_id
+    WHERE o.apply_time &gt;= TIMESTAMP &#x27;2026-08-27 00:00:00&#x27;
+)
+SELECT
+    apply_date,
+    COUNT(*) AS first_apply_users
+FROM first_apply
+WHERE first_apply_rn = 1
+GROUP BY apply_date
+ORDER BY apply_date;
+
+WITH active AS (
+    SELECT
+        churn_user_id::bigint AS user_id,
+        MAX(strat_1) AS strat_1
+    FROM wangchuanliang.t7recall_active0827
+    GROUP BY churn_user_id::bigint
+),
+recall_list AS (
+    SELECT DISTINCT churn_user_id::bigint AS user_id
+    FROM wangchuanliang.t7recalllist_0818_0819
+),
+sample AS (
+    SELECT a.user_id, a.strat_1
+    FROM active AS a
+    INNER JOIN recall_list AS r
+        ON r.user_id = a.user_id
+),
+apply_orders AS (
+    SELECT
+        s.user_id,
+        s.strat_1,
+        o.serial_id
+    FROM sample AS s
+    INNER JOIN wangchuanliang.order_loan_f_v2_copy AS o
+        ON o.user_id = s.user_id
+    WHERE o.apply_time &gt;= TIMESTAMP &#x27;2026-08-27 00:00:00&#x27;
+)
+SELECT
+    s.strat_1,
+    COUNT(DISTINCT s.user_id) AS sample_users,
+    COUNT(DISTINCT a.user_id) AS apply_users,
+    COUNT(a.serial_id) AS apply_order_count
+FROM sample AS s
+LEFT JOIN apply_orders AS a
+    ON a.user_id = s.user_id
+GROUP BY s.strat_1
+ORDER BY s.strat_1;</pre></details></section>
+</main></body></html>
