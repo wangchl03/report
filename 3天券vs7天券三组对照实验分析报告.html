@@ -125,11 +125,12 @@
 </section>
 
 <h2>附录：完整 PGSQL（可复现报告全部指标）</h2>
-<p class="desc">按模块一至四在同一数据库会话顺序执行即可复现：宽表构建、累计券增量、逐日券增量、10 个维度特征分层券增量。执行前请确认统计截止日（本报告以 2026-08-30 为召回后第 7 天观察截止）。</p>
+<p class="desc">按模块一至四在同一数据库会话顺序执行即可复现：宽表构建、样本量与累计券增量（前3天/第4~7天/前7天）、逐日券增量（含绝对值）、10 个维度特征分层券增量（含样本量与提单率）。执行前请确认统计截止日（本报告以 2026-08-30 为召回后第 7 天观察截止）。</p>
 <details><summary>模块一：构建宽表 tmp_coupon_exp（14 批合并 + 首次提单标记）</summary><pre>-- ============================================================
 -- 模块一：构建宽表 tmp_coupon_exp（执行一次，供后续模块复用）
 -- 三组实验：A=7天券vs无券(0716~0719) / B=7天券vs3天券(0730~0807) / C=3天券vs无券(0813~0823)
 -- 召回日 = 表名最后一个日期；首次提单 = 召回日起 7 天内 apply_date 最早一笔
+-- 字段：applied3=前3天提单, applied7=前7天提单, day_idx=首次提单日偏移(0~6)
 -- ============================================================
 CREATE TEMP TABLE tmp_coupon_exp AS
 WITH exp AS (
@@ -162,23 +163,33 @@ SELECT e.*, f.fa, (f.fa - e.recall_date) AS day_idx,
        CASE WHEN f.fa IS NOT NULL AND f.fa &lt;= e.recall_date + 2 THEN 1 ELSE 0 END AS applied3,
        CASE WHEN f.fa IS NOT NULL THEN 1 ELSE 0 END AS applied7
 FROM exp e
-LEFT JOIN fa f ON f.grp = e.grp AND f.user_id = e.user_id AND f.ab_group = e.ab_group AND f.recall_date = e.recall_date;</pre></details><details><summary>模块二：累计券增量（前3天 / 前7天）</summary><pre>-- ============================================================
--- 模块二：累计券增量（前3天 / 前7天）
+LEFT JOIN fa f ON f.grp = e.grp AND f.user_id = e.user_id AND f.ab_group = e.ab_group AND f.recall_date = e.recall_date;</pre></details><details><summary>模块二：样本量 + 累计券增量（前3天 / 第4~7天 / 前7天）</summary><pre>-- ============================================================
+-- 模块二：样本量 + 累计券增量（前3天 / 第4~7天 / 前7天）
 -- 券增量 = 实验组(treatment)提单率 - 对照组(control)提单率
+-- 第4~7天提单 = applied7 - applied3（首次提单唯一，落在3天内则第4~7天为0）
 -- ============================================================
 SELECT grp AS 组,
+  SUM(CASE WHEN ab_group=&#x27;treatment&#x27; THEN 1 ELSE 0 END) AS 实验组样本,
+  SUM(CASE WHEN ab_group=&#x27;control&#x27;   THEN 1 ELSE 0 END) AS 对照组样本,
+  -- 前3天
   ROUND(AVG(CASE WHEN ab_group=&#x27;treatment&#x27; THEN applied3 END)::numeric*100, 2) AS 实验组前3天,
   ROUND(AVG(CASE WHEN ab_group=&#x27;control&#x27;   THEN applied3 END)::numeric*100, 2) AS 对照组前3天,
   ROUND((AVG(CASE WHEN ab_group=&#x27;treatment&#x27; THEN applied3 END)
        - AVG(CASE WHEN ab_group=&#x27;control&#x27; THEN applied3 END))::numeric*100, 2) AS 前3天增量pp,
+  -- 第4~7天（券期后）
+  ROUND(AVG(CASE WHEN ab_group=&#x27;treatment&#x27; THEN applied7 - applied3 END)::numeric*100, 2) AS 实验组第4_7天,
+  ROUND(AVG(CASE WHEN ab_group=&#x27;control&#x27;   THEN applied7 - applied3 END)::numeric*100, 2) AS 对照组第4_7天,
+  ROUND((AVG(CASE WHEN ab_group=&#x27;treatment&#x27; THEN applied7 - applied3 END)
+       - AVG(CASE WHEN ab_group=&#x27;control&#x27; THEN applied7 - applied3 END))::numeric*100, 2) AS 第4_7天增量pp,
+  -- 前7天
   ROUND(AVG(CASE WHEN ab_group=&#x27;treatment&#x27; THEN applied7 END)::numeric*100, 2) AS 实验组前7天,
   ROUND(AVG(CASE WHEN ab_group=&#x27;control&#x27;   THEN applied7 END)::numeric*100, 2) AS 对照组前7天,
   ROUND((AVG(CASE WHEN ab_group=&#x27;treatment&#x27; THEN applied7 END)
        - AVG(CASE WHEN ab_group=&#x27;control&#x27; THEN applied7 END))::numeric*100, 2) AS 前7天增量pp
 FROM tmp_coupon_exp
 GROUP BY grp
-ORDER BY grp;</pre></details><details><summary>模块三：逐日券增量（D1~D7）</summary><pre>-- ============================================================
--- 模块三：逐日券增量（第1~7天，D1=召回日当天）
+ORDER BY grp;</pre></details><details><summary>模块三：逐日券增量（D1~D7，含逐日绝对值）</summary><pre>-- ============================================================
+-- 模块三：逐日券增量（第1~7天，D1=召回日当天，含逐日绝对值）
 -- ============================================================
 WITH day_cnt AS (
   SELECT grp, ab_group, day_idx, COUNT(*) AS cnt
@@ -190,14 +201,16 @@ tot AS (
   SELECT grp, ab_group, COUNT(*) AS n FROM tmp_coupon_exp GROUP BY grp, ab_group
 )
 SELECT d.grp AS 组, &#x27;D&#x27; || (d.day_idx + 1) AS 第几天,
+  ROUND(MAX(CASE WHEN d.ab_group=&#x27;treatment&#x27; THEN d.cnt * 100.0 / t.n END), 2) AS 实验组提单率,
+  ROUND(MAX(CASE WHEN d.ab_group=&#x27;control&#x27;   THEN d.cnt * 100.0 / t.n END), 2) AS 对照组提单率,
   ROUND((MAX(CASE WHEN d.ab_group=&#x27;treatment&#x27; THEN d.cnt * 100.0 / t.n END)
        - MAX(CASE WHEN d.ab_group=&#x27;control&#x27;   THEN d.cnt * 100.0 / t.n END)), 2) AS 逐日增量pp
 FROM day_cnt d
 JOIN tot t ON t.grp = d.grp AND t.ab_group = d.ab_group
 GROUP BY d.grp, d.day_idx
-ORDER BY d.grp, d.day_idx;</pre></details><details><summary>模块四：10 个维度特征分层 × 券增量</summary><pre>-- ============================================================
+ORDER BY d.grp, d.day_idx;</pre></details><details><summary>模块四：10 个维度特征分层 × 券增量（含样本量）</summary><pre>-- ============================================================
 -- 模块四：10 个维度特征分层 × 券增量（前7天口径）
--- 用 UNION ALL 统一 10 个维度为 (dim, seg)，再按组计算券增量
+-- 用 UNION ALL 统一 10 个维度为 (dim, seg)，再按组计算券增量与样本量
 -- ============================================================
 WITH seg AS (
   SELECT grp, ab_group, applied7, &#x27;活跃天数&#x27; AS dim,
@@ -206,11 +219,11 @@ WITH seg AS (
   UNION ALL SELECT grp, ab_group, applied7, &#x27;高息率&#x27;, CASE WHEN high_interest_rate&lt;=0 THEN &#x27;无高息(0)&#x27; WHEN high_interest_rate&lt;=0.5 THEN &#x27;低高息(0~0.5]&#x27; ELSE &#x27;高高息(&gt;0.5)&#x27; END FROM tmp_coupon_exp
   UNION ALL SELECT grp, ab_group, applied7, &#x27;放款次数&#x27;, CASE WHEN total_remit_rnb&lt;=1 THEN &#x27;1次&#x27; WHEN total_remit_rnb=2 THEN &#x27;2次&#x27; WHEN total_remit_rnb=3 THEN &#x27;3次&#x27; ELSE &#x27;4次+&#x27; END FROM tmp_coupon_exp
   UNION ALL SELECT grp, ab_group, applied7, &#x27;有无逾期&#x27;, CASE WHEN overdue_cnt&gt;0 THEN &#x27;有逾期&#x27; ELSE &#x27;无逾期&#x27; END FROM tmp_coupon_exp
-  UNION ALL SELECT grp, ab_group, applied7, &#x27;上笔期数&#x27;, last_remit_total_term::int::text || &#x27;期&#x27; FROM tmp_coupon_exp
+  UNION ALL SELECT grp, ab_group, applied7, &#x27;上笔期数&#x27;, CASE WHEN last_remit_total_term&lt;=1 THEN &#x27;1期&#x27; WHEN last_remit_total_term=2 THEN &#x27;2期&#x27; WHEN last_remit_total_term=3 THEN &#x27;3期&#x27; ELSE &#x27;4期&#x27; END FROM tmp_coupon_exp
   UNION ALL SELECT grp, ab_group, applied7, &#x27;利率类型&#x27;, last_remit_interest_type FROM tmp_coupon_exp
   UNION ALL SELECT grp, ab_group, applied7, &#x27;放款金额&#x27;, CASE WHEN total_remit_amt&lt;3000 THEN &#x27;低(&lt;3000)&#x27; WHEN total_remit_amt&lt;8000 THEN &#x27;中(3000~8000)&#x27; ELSE &#x27;高(&gt;=8000)&#x27; END FROM tmp_coupon_exp
   UNION ALL SELECT grp, ab_group, applied7, &#x27;提单次数&#x27;, CASE WHEN total_apply_rnb&lt;=1 THEN &#x27;1次&#x27; WHEN total_apply_rnb=2 THEN &#x27;2次&#x27; WHEN total_apply_rnb=3 THEN &#x27;3次&#x27; ELSE &#x27;4次+&#x27; END FROM tmp_coupon_exp
-  UNION ALL SELECT grp, ab_group, applied7, &#x27;额度使用率&#x27;, CASE WHEN utilization_rate&lt;0.9 THEN &#x27;中(50~90%)&#x27; ELSE &#x27;高(&gt;=90%)&#x27; END FROM tmp_coupon_exp
+  UNION ALL SELECT grp, ab_group, applied7, &#x27;额度使用率&#x27;, CASE WHEN utilization_rate&lt;0.5 THEN &#x27;低(&lt;50%)&#x27; WHEN utilization_rate&lt;0.9 THEN &#x27;中(50~90%)&#x27; ELSE &#x27;高(&gt;=90%)&#x27; END FROM tmp_coupon_exp
   UNION ALL SELECT grp, ab_group, applied7, &#x27;上笔逾期天数&#x27;, CASE WHEN last_remit_overdue_days&lt;0 THEN &#x27;无逾期(&lt;0)&#x27; ELSE &#x27;有逾期(&gt;=0)&#x27; END FROM tmp_coupon_exp
 )
 SELECT dim AS 维度, seg AS 分段, grp AS 组,
