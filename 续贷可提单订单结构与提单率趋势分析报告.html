@@ -215,489 +215,213 @@
   </div>
 </section>
 
+
 <section class="section">
-  <h2>附录 A：旧口径 PGSQL（历史留存）</h2>
-  <p>本节为 20 秒去重规则加入前的历史代码，不用于本次报告的数据复现。当前报告应以文末“附录 B：当前口径完整 PGSQL”为准。</p>
+  <h2>附录：完整 PGSQL</h2>
+  <p>以下 SQL 可复现报告中的全部订单量、提单率、订单分类、T0 至 T5+ 时效拆解、图表结论，以及 8 月 T0 当日提单率。截至 8 月 15 日的常规指标请依次执行模块一至五；模块六为独立 SQL，仅用于将 8 月 T0 当日提单率延长统计至 8 月 28 日。</p>
   <div class="code-blocks" style="border:1px solid #245675;border-radius:12px;overflow:hidden;background:#0b2a46">
-    <details style="margin:0;border:0;border-bottom:1px solid #245675;border-radius:0;background:#0b2a46"><summary style="cursor:pointer;padding:14px 16px;font-weight:800;color:#39c6e8">模块零：执行参数与临时表清理</summary><pre style="margin:0;padding:18px;overflow:auto;border-top:1px solid #245675;background:#061b31;color:#dceefa;font-size:12px;line-height:1.55;white-space:pre">/* 统计区间：[2026-01-01, 2026-08-16)，即截至 2026-08-15。
-   重新执行时先清理本次统计使用的临时表。 */
-SET statement_timeout = '900000';
-
-DROP TABLE IF EXISTS tmp_classified;
-DROP TABLE IF EXISTS tmp_inflight_at_vir;
-DROP TABLE IF EXISTS tmp_labeled;
-DROP TABLE IF EXISTS tmp_settle_date;
-DROP TABLE IF EXISTS tmp_t0_offer;
-DROP TABLE IF EXISTS tmp_applied;
-DROP TABLE IF EXISTS tmp_clean_settles;
-DROP TABLE IF EXISTS tmp_settled;
-DROP TABLE IF EXISTS tmp_orders;
-DROP TABLE IF EXISTS tmp_candidate_users;
-DROP TABLE IF EXISTS tmp_eligible_type3;</pre></details>
-
-    <details style="margin:0;border:0;border-bottom:1px solid #245675;border-radius:0;background:#0b2a46"><summary style="cursor:pointer;padding:14px 16px;font-weight:800;color:#39c6e8">模块一：全部、循环贷、结清续贷的总计与月度提单率</summary><pre style="margin:0;padding:18px;overflow:auto;border-top:1px solid #245675;background:#061b31;color:#dceefa;font-size:12px;line-height:1.55;white-space:pre">WITH eligible_offer AS (
-    SELECT DISTINCT ON (v.user_id, v.serial_id)
-        v.user_id, v.serial_id, v.vir_date::date AS vir_date,
-        to_timestamp(v.vir_unix) AS vir_time, r.recycle_type
-    FROM wangchuanliang.order_vir_f_copy v
-    INNER JOIN wangchuanliang.side_recycle_type_copy r ON r.serial_id = v.serial_id
-    WHERE v.is_pass1 = 1
-      AND v.loan_type_code = 2
-      AND r.recycle_type IN (2, 3)
-      AND v.vir_date >= DATE '2026-01-01'
-      AND v.vir_date &lt; DATE '2026-08-16'
-    ORDER BY v.user_id, v.serial_id, v.vir_unix DESC
-),
-base AS (
-    SELECT e.*, CASE WHEN o.serial_id IS NOT NULL THEN 1 ELSE 0 END AS is_applied
-    FROM eligible_offer e
-    LEFT JOIN wangchuanliang.order_loan_f_v2_copy o
-      ON o.user_id = e.user_id AND o.serial_id = e.serial_id
-     AND o.apply_date IS NOT NULL AND o.apply_time >= e.vir_time
-),
-metrics AS (
-    SELECT to_char(date_trunc('month', vir_date), 'YYYY-MM') AS month,
-           COUNT(*) AS eligible_count,
-           SUM(CASE WHEN recycle_type = 2 THEN 1 ELSE 0 END) AS cycle_count,
-           SUM(CASE WHEN recycle_type = 3 THEN 1 ELSE 0 END) AS type3_count,
-           SUM(is_applied) AS applied_count,
-           SUM(CASE WHEN recycle_type = 2 THEN is_applied ELSE 0 END) AS cycle_applied,
-           SUM(CASE WHEN recycle_type = 3 THEN is_applied ELSE 0 END) AS type3_applied
-    FROM base
-    GROUP BY GROUPING SETS ((to_char(date_trunc('month', vir_date), 'YYYY-MM')), ())
-)
-SELECT COALESCE(month, '总计') AS 获额月份,
-       eligible_count AS 可提单订单数,
-       cycle_count AS 循环贷可提单订单数,
-       type3_count AS 结清续贷可提单订单数,
-       applied_count AS 可提单提单订单数,
-       ROUND(applied_count::numeric / NULLIF(eligible_count, 0) * 100, 2) AS 可提单订单提单率_pct,
-       ROUND(cycle_applied::numeric / NULLIF(cycle_count, 0) * 100, 2) AS 循环贷提单率_pct,
-       ROUND(type3_applied::numeric / NULLIF(type3_count, 0) * 100, 2) AS 结清续贷提单率_pct
-FROM metrics
-ORDER BY CASE WHEN month IS NULL THEN 0 ELSE 1 END, month;</pre></details>
-
-    <details style="margin:0;border:0;border-bottom:1px solid #245675;border-radius:0;background:#0b2a46"><summary style="cursor:pointer;padding:14px 16px;font-weight:800;color:#39c6e8">模块二：建立结清0在贷与主动获额的严格分类临时表</summary><pre style="margin:0;padding:18px;overflow:auto;border-top:1px solid #245675;background:#061b31;color:#dceefa;font-size:12px;line-height:1.55;white-space:pre">/* 本模块须在同一数据库会话中顺序执行。 */
-CREATE TEMP TABLE tmp_eligible_type3 AS
+    <details style="margin:0;border:0;border-bottom:1px solid #245675;border-radius:0;background:#0b2a46"><summary style="cursor:pointer;padding:14px 16px;font-weight:800;color:#39c6e8">模块一：公共样本与临时表（常规指标截至 2026-08-15）</summary><pre style="margin:0;padding:18px;overflow:auto;border-top:1px solid #245675;background:#061b31;color:#dceefa;font-size:12px;line-height:1.55;white-space:pre">/* 参数：统计区间 [2026-01-01, 2026-08-19)，即 8 月截至 15 日。 */
+CREATE TEMP TABLE tmp_raw_pass_offer AS
 SELECT DISTINCT ON (v.user_id, v.serial_id)
-    v.user_id, v.serial_id, v.vir_date::date AS vir_date,
-    to_timestamp(v.vir_unix) AS vir_time
+    v.user_id,
+    v.serial_id,
+    v.vir_date::date AS vir_date,
+    to_timestamp(v.vir_unix) AS vir_time,
+    r.recycle_type
 FROM wangchuanliang.order_vir_f_copy v
-INNER JOIN wangchuanliang.side_recycle_type_copy r ON r.serial_id = v.serial_id
+JOIN wangchuanliang.side_recycle_type_copy r ON r.serial_id = v.serial_id
 WHERE v.is_pass1 = 1
   AND v.loan_type_code = 2
-  AND r.recycle_type = 3
-  AND v.vir_date >= DATE '2026-01-01'
+  AND v.vir_date &gt;= DATE '2026-01-01'
   AND v.vir_date &lt; DATE '2026-08-16'
 ORDER BY v.user_id, v.serial_id, v.vir_unix DESC;
-CREATE INDEX ON tmp_eligible_type3 (user_id, vir_date, vir_time);
+CREATE INDEX ON tmp_raw_pass_offer (user_id, vir_time);
 
-CREATE TEMP TABLE tmp_candidate_users AS
-SELECT DISTINCT user_id FROM tmp_eligible_type3;
-CREATE INDEX ON tmp_candidate_users (user_id);
+/* 同一用户：相邻两次获额时间差不超过 20 秒的记录归为一批。 */
+CREATE TEMP TABLE tmp_offer_batch AS
+WITH s AS (
+    SELECT *,
+           LAG(vir_time) OVER (PARTITION BY user_id ORDER BY vir_time, serial_id) AS prev_vir_time
+    FROM tmp_raw_pass_offer
+), b AS (
+    SELECT *,
+           SUM(CASE WHEN prev_vir_time IS NULL
+                         OR vir_time - prev_vir_time &gt; INTERVAL '20 seconds'
+                    THEN 1 ELSE 0 END)
+           OVER (PARTITION BY user_id ORDER BY vir_time, serial_id ROWS UNBOUNDED PRECEDING) AS batch_id
+    FROM s
+)
+SELECT * FROM b;
+CREATE INDEX ON tmp_offer_batch (user_id, batch_id);
 
-CREATE TEMP TABLE tmp_orders AS
+/* 每个 20 秒批次仅保留订单号最大的获额订单；此处尚未限制 recycle_type。 */
+CREATE TEMP TABLE tmp_dedup_pass_offer AS
+SELECT user_id, serial_id, vir_date, vir_time, recycle_type
+FROM (
+    SELECT *, ROW_NUMBER() OVER (PARTITION BY user_id, batch_id ORDER BY serial_id DESC) AS rn
+    FROM tmp_offer_batch
+) x
+WHERE rn = 1;
+CREATE INDEX ON tmp_dedup_pass_offer (user_id, serial_id);
+
+/* 去重后再按可提单条件过滤。 */
+CREATE TEMP TABLE tmp_eligible_offer AS
+SELECT d.*, MIN(CASE WHEN o.apply_date IS NOT NULL AND o.apply_time &gt;= d.vir_time
+                     THEN o.apply_time END) AS apply_time
+FROM tmp_dedup_pass_offer d
+LEFT JOIN wangchuanliang.order_loan_f_v2_copy o
+  ON o.user_id = d.user_id AND o.serial_id = d.serial_id
+WHERE d.recycle_type IN (2, 3)
+GROUP BY d.user_id, d.serial_id, d.vir_date, d.vir_time, d.recycle_type;
+CREATE INDEX ON tmp_eligible_offer (user_id, serial_id);
+CREATE INDEX ON tmp_eligible_offer (user_id, vir_date, vir_time);
+
+CREATE TEMP TABLE tmp_type3_users AS
+SELECT DISTINCT user_id FROM tmp_eligible_offer WHERE recycle_type = 3;
+CREATE INDEX ON tmp_type3_users (user_id);
+
+CREATE TEMP TABLE tmp_user_orders AS
 SELECT o.user_id, o.serial_id, o.apply_time, o.repaid_time,
        o.repaid_date::date AS repaid_date, o.loan_status_code,
        o.is_remit, o.is_repaid
 FROM wangchuanliang.order_loan_f_v2_copy o
-INNER JOIN tmp_candidate_users u ON u.user_id = o.user_id;
-CREATE INDEX ON tmp_orders (user_id, apply_time);
-CREATE INDEX ON tmp_orders (user_id, repaid_date);
+JOIN tmp_type3_users u ON u.user_id = o.user_id;
+CREATE INDEX ON tmp_user_orders (user_id, apply_time);
+CREATE INDEX ON tmp_user_orders (user_id, repaid_date, repaid_time);
 
-CREATE TEMP TABLE tmp_settled AS
+CREATE TEMP TABLE tmp_settled_orders AS
 SELECT user_id, serial_id, repaid_time, repaid_date
-FROM tmp_orders
+FROM tmp_user_orders
 WHERE is_remit = 1
-  AND (is_repaid = 1 OR loan_status_code = 7 OR repaid_date > DATE '2000-01-01')
-  AND repaid_time > TIMESTAMP '2000-01-01 00:00:00'
-  AND repaid_date >= DATE '2026-01-01'
-  AND repaid_date &lt; DATE '2026-08-16';
-CREATE INDEX ON tmp_settled (user_id, repaid_date, repaid_time);
+  AND (is_repaid = 1 OR loan_status_code = 7 OR repaid_date &gt; DATE '2000-01-01')
+  AND repaid_time &gt; TIMESTAMP '2000-01-01 00:00:00';
+CREATE INDEX ON tmp_settled_orders (user_id, repaid_date, repaid_time);
 
-/* 在结清瞬间，无其他在途订单。 */
+/* 干净结清：该结清瞬间不存在其他在途订单。 */
 CREATE TEMP TABLE tmp_clean_settles AS
-SELECT s.user_id, s.serial_id, s.repaid_time, s.repaid_date
-FROM tmp_settled s
+SELECT s.*
+FROM tmp_settled_orders s
 WHERE NOT EXISTS (
-    SELECT 1 FROM tmp_orders o2
+    SELECT 1
+    FROM tmp_user_orders o2
     WHERE o2.user_id = s.user_id
       AND o2.serial_id &lt;&gt; s.serial_id
       AND o2.apply_time &lt; s.repaid_time
       AND (o2.loan_status_code IN (5, 8)
-           OR (o2.loan_status_code = 7 AND o2.repaid_time > s.repaid_time))
+           OR (o2.loan_status_code = 7 AND o2.repaid_time &gt; s.repaid_time))
 );
 CREATE INDEX ON tmp_clean_settles (user_id, repaid_date, repaid_time);
 
-CREATE TEMP TABLE tmp_applied AS
-SELECT DISTINCT e.user_id, e.serial_id
-FROM tmp_eligible_type3 e
-INNER JOIN wangchuanliang.order_loan_f_v2_copy a
-  ON a.user_id = e.user_id AND a.serial_id = e.serial_id
- AND a.apply_date IS NOT NULL AND a.apply_time >= e.vir_time;
-CREATE INDEX ON tmp_applied (user_id, serial_id);
-
-/* 结清0在贷：同日、结清后（含同一秒）获额。 */
+/* 结清0在贷：recycle_type=3、同日结清、获额时间&gt;=结清时间。 */
 CREATE TEMP TABLE tmp_t0_offer AS
-SELECT DISTINCT e.user_id, e.serial_id
-FROM tmp_eligible_type3 e
-INNER JOIN tmp_clean_settles c
+SELECT DISTINCT e.user_id, e.serial_id, e.vir_date, e.vir_time
+FROM tmp_eligible_offer e
+JOIN tmp_clean_settles c
   ON c.user_id = e.user_id
  AND c.repaid_date = e.vir_date
- AND e.vir_time >= c.repaid_time;
+ AND e.vir_time &gt;= c.repaid_time
+WHERE e.recycle_type = 3;
 CREATE INDEX ON tmp_t0_offer (user_id, serial_id);
 
 CREATE TEMP TABLE tmp_settle_date AS
-SELECT DISTINCT user_id, repaid_date FROM tmp_settled;
+SELECT DISTINCT user_id, repaid_date FROM tmp_settled_orders;
 CREATE INDEX ON tmp_settle_date (user_id, repaid_date);
 
-CREATE TEMP TABLE tmp_labeled AS
-SELECT e.user_id, e.serial_id, e.vir_date, e.vir_time,
-       CASE WHEN a.serial_id IS NOT NULL THEN 1 ELSE 0 END AS is_applied,
-       CASE WHEN t.serial_id IS NOT NULL THEN 1 ELSE 0 END AS is_t0,
-       CASE WHEN d.user_id IS NOT NULL THEN 1 ELSE 0 END AS has_settle_on_vir_date
-FROM tmp_eligible_type3 e
-LEFT JOIN tmp_applied a ON a.user_id = e.user_id AND a.serial_id = e.serial_id
-LEFT JOIN tmp_t0_offer t ON t.user_id = e.user_id AND t.serial_id = e.serial_id
-LEFT JOIN tmp_settle_date d ON d.user_id = e.user_id AND d.repaid_date = e.vir_date;
-CREATE INDEX ON tmp_labeled (user_id, vir_time);
-
-/* 获额时点是否仍存在任何其他在途订单。 */
-CREATE TEMP TABLE tmp_inflight_at_vir AS
-SELECT l.user_id, l.serial_id,
-       CASE WHEN COUNT(o2.serial_id) > 0 THEN 1 ELSE 0 END AS has_inflight
-FROM tmp_labeled l
-LEFT JOIN tmp_orders o2
-  ON o2.user_id = l.user_id
- AND o2.serial_id &lt;&gt; l.serial_id
- AND o2.apply_time &lt; l.vir_time
+CREATE TEMP TABLE tmp_inflight_at_offer AS
+SELECT e.user_id, e.serial_id,
+       CASE WHEN COUNT(o2.serial_id) &gt; 0 THEN 1 ELSE 0 END AS has_inflight
+FROM tmp_eligible_offer e
+LEFT JOIN tmp_user_orders o2
+  ON o2.user_id = e.user_id
+ AND o2.serial_id &lt;&gt; e.serial_id
+ AND o2.apply_time &lt; e.vir_time
  AND (o2.loan_status_code IN (5, 8)
-      OR (o2.loan_status_code = 7 AND o2.repaid_time > l.vir_time))
-GROUP BY l.user_id, l.serial_id;
-CREATE INDEX ON tmp_inflight_at_vir (user_id, serial_id);
+      OR (o2.loan_status_code = 7 AND o2.repaid_time &gt; e.vir_time))
+WHERE e.recycle_type = 3
+GROUP BY e.user_id, e.serial_id;
+CREATE INDEX ON tmp_inflight_at_offer (user_id, serial_id);
 
-CREATE TEMP TABLE tmp_classified AS
-SELECT l.*,
+CREATE TEMP TABLE tmp_type3_classified AS
+SELECT e.*,
+       CASE WHEN e.apply_time IS NOT NULL THEN 1 ELSE 0 END AS is_applied,
+       CASE WHEN t.serial_id IS NOT NULL THEN 1 ELSE 0 END AS is_t0,
+       CASE WHEN d.user_id IS NOT NULL THEN 1 ELSE 0 END AS has_settle_on_offer_date,
+       i.has_inflight,
        CASE
-         WHEN l.is_t0 = 1 THEN '结清0在贷订单'
-         WHEN l.has_settle_on_vir_date = 0 AND f.has_inflight = 0 THEN '主动获额订单'
-         ELSE '未归入两类订单'
-       END AS order_type
-FROM tmp_labeled l
-INNER JOIN tmp_inflight_at_vir f
-  ON f.user_id = l.user_id AND f.serial_id = l.serial_id;</pre></details>
-
-    <details style="margin:0;border:0;border-radius:0;background:#0b2a46"><summary style="cursor:pointer;padding:14px 16px;font-weight:800;color:#39c6e8">模块三：结清0在贷、主动获额的总计、月度订单量、占比与提单率</summary><pre style="margin:0;padding:18px;overflow:auto;border-top:1px solid #245675;background:#061b31;color:#dceefa;font-size:12px;line-height:1.55;white-space:pre">/* 依赖模块二创建的 tmp_classified 临时表。 */
-WITH metrics AS (
-    SELECT
-        to_char(date_trunc('month', vir_date), 'YYYY-MM') AS month,
-        COUNT(*) AS type3_eligible_count,
-        SUM(CASE WHEN order_type = '结清0在贷订单' THEN 1 ELSE 0 END) AS t0_count,
-        SUM(CASE WHEN order_type = '结清0在贷订单' THEN is_applied ELSE 0 END) AS t0_applied_count,
-        SUM(CASE WHEN order_type = '主动获额订单' THEN 1 ELSE 0 END) AS active_count,
-        SUM(CASE WHEN order_type = '主动获额订单' THEN is_applied ELSE 0 END) AS active_applied_count,
-        SUM(CASE WHEN order_type = '未归入两类订单' THEN 1 ELSE 0 END) AS other_count
-    FROM tmp_classified
+           WHEN t.serial_id IS NOT NULL THEN '结清0在贷订单'
+           WHEN d.user_id IS NULL AND i.has_inflight = 0 THEN '主动获额订单'
+           ELSE '边界订单'
+       END AS order_category
+FROM tmp_eligible_offer e
+LEFT JOIN tmp_t0_offer t ON t.user_id=e.user_id AND t.serial_id=e.serial_id
+LEFT JOIN tmp_settle_date d ON d.user_id=e.user_id AND d.repaid_date=e.vir_date
+LEFT JOIN tmp_inflight_at_offer i ON i.user_id=e.user_id AND i.serial_id=e.serial_id
+WHERE e.recycle_type = 3;
+CREATE INDEX ON tmp_type3_classified (vir_date, order_category);</pre></details>
+    <details style="margin:0;border:0;border-bottom:1px solid #245675;border-radius:0;background:#0b2a46"><summary style="cursor:pointer;padding:14px 16px;font-weight:800;color:#39c6e8">模块二：全部、循环贷、结清续贷订单量与提单率</summary><pre style="margin:0;padding:18px;overflow:auto;border-top:1px solid #245675;background:#061b31;color:#dceefa;font-size:12px;line-height:1.55;white-space:pre">WITH m AS (
+    SELECT to_char(date_trunc('month', vir_date), 'YYYY-MM') AS month,
+           COUNT(*) AS eligible_count,
+           SUM(CASE WHEN apply_time IS NOT NULL THEN 1 ELSE 0 END) AS applied_count,
+           SUM(CASE WHEN recycle_type=2 THEN 1 ELSE 0 END) AS cycle_count,
+           SUM(CASE WHEN recycle_type=2 AND apply_time IS NOT NULL THEN 1 ELSE 0 END) AS cycle_applied,
+           SUM(CASE WHEN recycle_type=3 THEN 1 ELSE 0 END) AS type3_count,
+           SUM(CASE WHEN recycle_type=3 AND apply_time IS NOT NULL THEN 1 ELSE 0 END) AS type3_applied
+    FROM tmp_eligible_offer
     GROUP BY GROUPING SETS ((to_char(date_trunc('month', vir_date), 'YYYY-MM')), ())
 )
-SELECT
-    COALESCE(month, '总计') AS 获额月份,
-    type3_eligible_count AS 结清续贷可提单订单数,
-    t0_count AS 结清0在贷订单数,
-    ROUND(t0_count::numeric / NULLIF(type3_eligible_count, 0) * 100, 2) AS 结清0在贷订单占比_pct,
-    t0_applied_count AS 结清0在贷提单订单数,
-    ROUND(t0_applied_count::numeric / NULLIF(t0_count, 0) * 100, 2) AS 结清0在贷提单率_pct,
-    active_count AS 主动获额订单数,
-    ROUND(active_count::numeric / NULLIF(type3_eligible_count, 0) * 100, 2) AS 主动获额订单占比_pct,
-    active_applied_count AS 主动获额提单订单数,
-    ROUND(active_applied_count::numeric / NULLIF(active_count, 0) * 100, 2) AS 主动获额提单率_pct,
-    other_count AS 未归入两类订单数
-FROM metrics
+SELECT COALESCE(month, '总计') AS 统计周期,
+       eligible_count AS 可提单订单数, applied_count AS 可提单提单订单数,
+       ROUND(applied_count::numeric/NULLIF(eligible_count,0)*100,2) AS 可提单订单提单率_pct,
+       cycle_count AS 循环贷可提单订单数, cycle_applied AS 循环贷提单订单数,
+       ROUND(cycle_applied::numeric/NULLIF(cycle_count,0)*100,2) AS 循环贷提单率_pct,
+       type3_count AS 结清续贷可提单订单数, type3_applied AS 结清续贷提单订单数,
+       ROUND(type3_applied::numeric/NULLIF(type3_count,0)*100,2) AS 结清续贷提单率_pct
+FROM m
 ORDER BY CASE WHEN month IS NULL THEN 0 ELSE 1 END, month;</pre></details>
-    <details style="margin:0;border:0;border-radius:0;background:#0b2a46"><summary style="cursor:pointer;padding:14px 16px;font-weight:800;color:#39c6e8">模块四：全量结构占比、各类提单率与下降结论支撑数据</summary><pre style="margin:0;padding:18px;overflow:auto;border-top:1px solid #245675;background:#061b31;color:#dceefa;font-size:12px;line-height:1.55;white-space:pre">/* 依赖模块二创建的 tmp_classified。
-   直接输出报告“订单结构占比”图与各类别提单率的原始分子、分母。 */
-WITH all_eligible AS (
-    SELECT DISTINCT ON (v.user_id, v.serial_id)
-        v.user_id, v.serial_id, to_timestamp(v.vir_unix) AS vir_time,
-        r.recycle_type
-    FROM wangchuanliang.order_vir_f_copy v
-    INNER JOIN wangchuanliang.side_recycle_type_copy r ON r.serial_id = v.serial_id
-    WHERE v.is_pass1 = 1
-      AND v.loan_type_code = 2
-      AND r.recycle_type IN (2, 3)
-      AND v.vir_date >= DATE '2026-01-01'
-      AND v.vir_date &lt; DATE '2026-08-16'
-    ORDER BY v.user_id, v.serial_id, v.vir_unix DESC
-),
-all_labeled AS (
-    SELECT e.user_id, e.serial_id, e.recycle_type,
-           CASE WHEN o.serial_id IS NOT NULL THEN 1 ELSE 0 END AS is_applied
-    FROM all_eligible e
-    LEFT JOIN wangchuanliang.order_loan_f_v2_copy o
-      ON o.user_id = e.user_id AND o.serial_id = e.serial_id
-     AND o.apply_date IS NOT NULL AND o.apply_time >= e.vir_time
-),
-category_metric AS (
-    SELECT '全部可提单订单' AS order_category, COUNT(*) AS order_count, SUM(is_applied) AS applied_count
-    FROM all_labeled
-    UNION ALL
-    SELECT '循环贷可提单订单', COUNT(*), SUM(is_applied)
-    FROM all_labeled WHERE recycle_type = 2
-    UNION ALL
-    SELECT '结清续贷可提单订单', COUNT(*), SUM(is_applied)
-    FROM all_labeled WHERE recycle_type = 3
-    UNION ALL
-    SELECT '结清0在贷订单', COUNT(*), SUM(is_applied)
-    FROM tmp_classified WHERE order_type = '结清0在贷订单'
-    UNION ALL
-    SELECT '主动获额订单', COUNT(*), SUM(is_applied)
-    FROM tmp_classified WHERE order_type = '主动获额订单'
-    UNION ALL
-    SELECT '未归入两类订单', COUNT(*), SUM(is_applied)
-    FROM tmp_classified WHERE order_type = '未归入两类订单'
-),
-total AS (
-    SELECT order_count AS total_order_count
-    FROM category_metric WHERE order_category = '全部可提单订单'
+    <details style="margin:0;border:0;border-bottom:1px solid #245675;border-radius:0;background:#0b2a46"><summary style="cursor:pointer;padding:14px 16px;font-weight:800;color:#39c6e8">模块三：结清0在贷、主动获额与边界订单分类及提单率</summary><pre style="margin:0;padding:18px;overflow:auto;border-top:1px solid #245675;background:#061b31;color:#dceefa;font-size:12px;line-height:1.55;white-space:pre">WITH m AS (
+    SELECT to_char(date_trunc('month', vir_date), 'YYYY-MM') AS month,
+           order_category, COUNT(*) AS order_count, SUM(is_applied) AS applied_count
+    FROM tmp_type3_classified
+    GROUP BY GROUPING SETS ((to_char(date_trunc('month', vir_date), 'YYYY-MM'), order_category), (order_category))
 )
-SELECT
-    m.order_category AS 订单类别,
-    m.order_count AS 可提单订单数,
-    m.applied_count AS 提单订单数,
-    ROUND(m.order_count::numeric / NULLIF(t.total_order_count, 0) * 100, 2) AS 占全部可提单订单比例_pct,
-    ROUND(m.applied_count::numeric / NULLIF(m.order_count, 0) * 100, 2) AS 提单率_pct
-FROM category_metric m
-CROSS JOIN total t
-ORDER BY CASE m.order_category
-    WHEN '全部可提单订单' THEN 1
-    WHEN '循环贷可提单订单' THEN 2
-    WHEN '结清续贷可提单订单' THEN 3
-    WHEN '结清0在贷订单' THEN 4
-    WHEN '主动获额订单' THEN 5
-    ELSE 6
-END;</pre></details>
-    <details style="margin:0;border:0;border-top:1px solid #245675;border-radius:0;background:#0b2a46"><summary style="cursor:pointer;padding:14px 16px;font-weight:800;color:#39c6e8">模块五：结清0在贷 T0/T1/T2/T3/T4/T5+ 首次提单时效拆解、总计与月度指标</summary><pre style="margin:0;padding:18px;overflow:auto;border-top:1px solid #245675;background:#061b31;color:#dceefa;font-size:12px;line-height:1.55;white-space:pre">/* 结清0在贷订单的首次提单时效拆解。
-   统计区间：[2026-01-01, 2026-08-16)，8月截至15日。
-   T0/T1/T2/T3/T4/T5+ 互斥，分母均为当月结清0在贷可提单订单量。 */
-WITH eligible_type3 AS (
-    SELECT DISTINCT ON (v.user_id, v.serial_id)
-        v.user_id,
-        v.serial_id,
-        v.vir_date::date AS vir_date,
-        to_timestamp(v.vir_unix) AS vir_time
-    FROM wangchuanliang.order_vir_f_copy v
-    INNER JOIN wangchuanliang.side_recycle_type_copy r
-      ON r.serial_id = v.serial_id
-    WHERE v.is_pass1 = 1
-      AND v.loan_type_code = 2
-      AND r.recycle_type = 3
-      AND v.vir_date &gt;= DATE '2026-01-01'
-      AND v.vir_date &lt; DATE '2026-08-16'
-    ORDER BY v.user_id, v.serial_id, v.vir_unix DESC
-),
-candidate_users AS (
-    SELECT DISTINCT user_id FROM eligible_type3
-),
-all_orders AS (
-    SELECT o.user_id, o.serial_id, o.apply_time, o.repaid_time,
-           o.repaid_date::date AS repaid_date, o.loan_status_code,
-           o.is_remit, o.is_repaid
-    FROM wangchuanliang.order_loan_f_v2_copy o
-    INNER JOIN candidate_users u ON u.user_id = o.user_id
-),
-settled_orders AS (
-    SELECT user_id, serial_id, repaid_time, repaid_date
-    FROM all_orders
-    WHERE is_remit = 1
-      AND (is_repaid = 1 OR loan_status_code = 7 OR repaid_date &gt; DATE '2000-01-01')
-      AND repaid_time &gt; TIMESTAMP '2000-01-01 00:00:00'
-      AND repaid_date &gt;= DATE '2026-01-01'
-      AND repaid_date &lt; DATE '2026-08-16'
-),
-clean_settles AS (
-    /* 原订单结清瞬间，用户没有任何其他在途订单。 */
-    SELECT s.user_id, s.serial_id, s.repaid_time, s.repaid_date
-    FROM settled_orders s
-    WHERE NOT EXISTS (
-        SELECT 1 FROM all_orders o2
-        WHERE o2.user_id = s.user_id
-          AND o2.serial_id &lt;&gt; s.serial_id
-          AND o2.apply_time &lt; s.repaid_time
-          AND (o2.loan_status_code IN (5, 8)
-               OR (o2.loan_status_code = 7 AND o2.repaid_time &gt; s.repaid_time))
-    )
-),
-t0_eligible AS (
-    /* 仅保留同日结清、同日获额，且获额时点不早于结清时点的订单。
-       跨日获额（如23:59:59结清、次日00:00:01获额）不纳入样本。 */
-    SELECT DISTINCT e.user_id, e.serial_id, e.vir_date, e.vir_time
-    FROM eligible_type3 e
-    INNER JOIN clean_settles c
-      ON c.user_id = e.user_id
-     AND c.repaid_date = e.vir_date
-     AND e.vir_time &gt;= c.repaid_time
-),
-t0_first_apply AS (
-    /* 同一获额订单只匹配其本身的首次提单；未提单保留为NULL。 */
-    SELECT e.user_id, e.serial_id, e.vir_date, e.vir_time,
-           MIN(CASE
-               WHEN o.apply_time &gt;= e.vir_time AND o.apply_date IS NOT NULL
-               THEN o.apply_time
-           END) AS first_apply_time
-    FROM t0_eligible e
-    LEFT JOIN wangchuanliang.order_loan_f_v2_copy o
-      ON o.user_id = e.user_id AND o.serial_id = e.serial_id
-    GROUP BY e.user_id, e.serial_id, e.vir_date, e.vir_time
-),
-sample_flags AS (
-    SELECT *,
-           CASE WHEN first_apply_time IS NOT NULL
-                THEN (first_apply_time::date - vir_date)
-           END AS first_apply_day
-    FROM t0_first_apply
-),
-metrics AS (
-    SELECT
-        to_char(date_trunc('month', vir_date), 'YYYY-MM') AS month,
-        COUNT(*) AS t0_eligible_count,
-        SUM(CASE WHEN first_apply_day = 0 THEN 1 ELSE 0 END) AS t0_apply_count,
-        SUM(CASE WHEN first_apply_day = 1 THEN 1 ELSE 0 END) AS t1_apply_count,
-        SUM(CASE WHEN first_apply_day = 2 THEN 1 ELSE 0 END) AS t2_apply_count,
-        SUM(CASE WHEN first_apply_day = 3 THEN 1 ELSE 0 END) AS t3_apply_count,
-        SUM(CASE WHEN first_apply_day = 4 THEN 1 ELSE 0 END) AS t4_apply_count,
-        SUM(CASE WHEN first_apply_day &gt;= 5 THEN 1 ELSE 0 END) AS t5_plus_apply_count,
-        SUM(CASE WHEN first_apply_day IS NOT NULL THEN 1 ELSE 0 END) AS total_apply_count
-    FROM sample_flags
-    GROUP BY GROUPING SETS ((to_char(date_trunc('month', vir_date), 'YYYY-MM')), ())
+SELECT COALESCE(month, '总计') AS 统计周期, order_category AS 订单分类,
+       order_count AS 可提单订单数, applied_count AS 提单订单数,
+       ROUND(applied_count::numeric/NULLIF(order_count,0)*100,2) AS 提单率_pct
+FROM m
+ORDER BY CASE WHEN month IS NULL THEN 0 ELSE 1 END, month,
+         CASE order_category WHEN '结清0在贷订单' THEN 1 WHEN '主动获额订单' THEN 2 ELSE 3 END;</pre></details>
+    <details style="margin:0;border:0;border-bottom:1px solid #245675;border-radius:0;background:#0b2a46"><summary style="cursor:pointer;padding:14px 16px;font-weight:800;color:#39c6e8">模块四：结清0在贷 T0、T1、T2、T3、T4、T5+ 首次提单时效</summary><pre style="margin:0;padding:18px;overflow:auto;border-top:1px solid #245675;background:#061b31;color:#dceefa;font-size:12px;line-height:1.55;white-space:pre">WITH f AS (
+    SELECT t.vir_date,
+           CASE WHEN e.apply_time IS NOT NULL THEN (e.apply_time::date - t.vir_date) END AS first_apply_day
+    FROM tmp_t0_offer t
+    JOIN tmp_eligible_offer e ON e.user_id=t.user_id AND e.serial_id=t.serial_id
+), m AS (
+    SELECT to_char(date_trunc('month',vir_date),'YYYY-MM') AS month,
+           COUNT(*) AS t0_eligible_count,
+           SUM(CASE WHEN first_apply_day=0 THEN 1 ELSE 0 END) AS d0,
+           SUM(CASE WHEN first_apply_day=1 THEN 1 ELSE 0 END) AS d1,
+           SUM(CASE WHEN first_apply_day=2 THEN 1 ELSE 0 END) AS d2,
+           SUM(CASE WHEN first_apply_day=3 THEN 1 ELSE 0 END) AS d3,
+           SUM(CASE WHEN first_apply_day=4 THEN 1 ELSE 0 END) AS d4,
+           SUM(CASE WHEN first_apply_day&gt;=5 THEN 1 ELSE 0 END) AS d5p,
+           SUM(CASE WHEN first_apply_day IS NOT NULL THEN 1 ELSE 0 END) AS total_apply
+    FROM f
+    GROUP BY GROUPING SETS ((to_char(date_trunc('month',vir_date),'YYYY-MM')),())
 )
-SELECT
-    COALESCE(month, '总计') AS 获额月份,
-    t0_eligible_count AS 结清0在贷可提单订单数,
-    t0_apply_count AS T0首次提单订单数,
-    ROUND(t0_apply_count::numeric / NULLIF(t0_eligible_count, 0) * 100, 2) AS T0提单率_pct,
-    t1_apply_count AS T1首次提单订单数,
-    ROUND(t1_apply_count::numeric / NULLIF(t0_eligible_count, 0) * 100, 2) AS T1提单率_pct,
-    t2_apply_count AS T2首次提单订单数,
-    ROUND(t2_apply_count::numeric / NULLIF(t0_eligible_count, 0) * 100, 2) AS T2提单率_pct,
-    t3_apply_count AS T3首次提单订单数,
-    ROUND(t3_apply_count::numeric / NULLIF(t0_eligible_count, 0) * 100, 2) AS T3提单率_pct,
-    t4_apply_count AS T4首次提单订单数,
-    ROUND(t4_apply_count::numeric / NULLIF(t0_eligible_count, 0) * 100, 2) AS T4提单率_pct,
-    t5_plus_apply_count AS T5plus首次提单订单数,
-    ROUND(t5_plus_apply_count::numeric / NULLIF(t0_eligible_count, 0) * 100, 2) AS T5plus提单率_pct,
-    total_apply_count AS 总提单订单数,
-    ROUND(total_apply_count::numeric / NULLIF(t0_eligible_count, 0) * 100, 2) AS 总提单率_pct
-FROM metrics
+SELECT COALESCE(month,'总计') AS 统计周期, t0_eligible_count AS 结清0在贷订单数,
+       d0 AS T0提单订单数, ROUND(d0::numeric/NULLIF(t0_eligible_count,0)*100,2) AS T0提单率_pct,
+       d1 AS T1提单订单数, ROUND(d1::numeric/NULLIF(t0_eligible_count,0)*100,2) AS T1提单率_pct,
+       d2 AS T2提单订单数, ROUND(d2::numeric/NULLIF(t0_eligible_count,0)*100,2) AS T2提单率_pct,
+       d3 AS T3提单订单数, ROUND(d3::numeric/NULLIF(t0_eligible_count,0)*100,2) AS T3提单率_pct,
+       d4 AS T4提单订单数, ROUND(d4::numeric/NULLIF(t0_eligible_count,0)*100,2) AS T4提单率_pct,
+       d5p AS T5plus提单订单数, ROUND(d5p::numeric/NULLIF(t0_eligible_count,0)*100,2) AS T5plus提单率_pct,
+       total_apply AS 总提单订单数, ROUND(total_apply::numeric/NULLIF(t0_eligible_count,0)*100,2) AS 总提单率_pct
+FROM m
 ORDER BY CASE WHEN month IS NULL THEN 0 ELSE 1 END, month;</pre></details>
-  </div>
-  <!-- 历史附录 A 的模块五已迁移至附录 B，不再展示。
-WITH base_m AS(
- SELECT to_char(date_trunc('month',vir_date),'YYYY-MM') stat_month,COUNT(*) all_cnt,SUM(CASE WHEN apply_time IS NOT NULL THEN 1 ELSE 0 END) all_applied,
- SUM(CASE WHEN recycle_type=2 THEN 1 ELSE 0 END) cycle_cnt,SUM(CASE WHEN recycle_type=2 AND apply_time IS NOT NULL THEN 1 ELSE 0 END) cycle_applied,
- SUM(CASE WHEN recycle_type=3 THEN 1 ELSE 0 END) type3_cnt,SUM(CASE WHEN recycle_type=3 AND apply_time IS NOT NULL THEN 1 ELSE 0 END) type3_applied
- FROM tmp_eligible_offer GROUP BY to_char(date_trunc('month',vir_date),'YYYY-MM')
-),t0_m AS(
- SELECT to_char(date_trunc('month',t.vir_date),'YYYY-MM') stat_month,COUNT(*) t0_cnt,SUM(CASE WHEN e.apply_time IS NOT NULL THEN 1 ELSE 0 END) t0_applied,
- SUM(CASE WHEN e.apply_time IS NOT NULL AND e.apply_time::date=t.vir_date THEN 1 ELSE 0 END) t0_d0
- FROM tmp_t0_offer t JOIN tmp_eligible_offer e ON e.user_id=t.user_id AND e.serial_id=t.serial_id GROUP BY to_char(date_trunc('month',t.vir_date),'YYYY-MM')
-),r AS(SELECT b.*,t.t0_cnt,t.t0_applied,t.t0_d0,b.type3_cnt-t.t0_cnt other_cnt,b.type3_applied-t.t0_applied other_applied FROM base_m b JOIN t0_m t ON t.stat_month=b.stat_month),
-x AS(SELECT *,all_applied::numeric/all_cnt all_rate,cycle_applied::numeric/cycle_cnt cycle_rate,type3_applied::numeric/type3_cnt type3_rate,t0_applied::numeric/t0_cnt t0_rate,t0_d0::numeric/t0_cnt t0_d0_rate,other_applied::numeric/other_cnt other_rate FROM r),
-jan AS(SELECT * FROM x WHERE stat_month='2026-01'),jul AS(SELECT * FROM x WHERE stat_month='2026-07')
-SELECT '月度图表底表' 输出类型,stat_month 统计周期,all_cnt 全部订单数,ROUND(all_rate*100,2) 全部提单率_pct,cycle_cnt 循环贷订单数,ROUND(cycle_rate*100,2) 循环贷提单率_pct,type3_cnt 结清续贷订单数,ROUND(type3_rate*100,2) 结清续贷提单率_pct,t0_cnt 结清0在贷订单数,ROUND(t0_rate*100,2) 结清0在贷提单率_pct,ROUND(t0_d0_rate*100,2) T0提单率_pct,other_cnt 其他结清续贷订单数,ROUND(other_rate*100,2) 其他结清续贷提单率_pct,ROUND(t0_cnt::numeric/all_cnt*100,2) 结清0在贷占全部_pct,ROUND(t0_cnt::numeric/type3_cnt*100,2) 结清0在贷占结清续贷_pct FROM x
-UNION ALL
-SELECT '1月到7月提单率变化',NULL,NULL,ROUND((jul.all_rate-jan.all_rate)*100,2),NULL,ROUND((jul.cycle_rate-jan.cycle_rate)*100,2),NULL,ROUND((jul.type3_rate-jan.type3_rate)*100,2),NULL,ROUND((jul.t0_rate-jan.t0_rate)*100,2),ROUND((jul.t0_d0_rate-jan.t0_d0_rate)*100,2),NULL,ROUND((jul.other_rate-jan.other_rate)*100,2),NULL,NULL FROM jan CROSS JOIN jul
-UNION ALL
-SELECT '7月T0相对少提单量',NULL,ROUND(jul.t0_cnt*(jan.t0_d0_rate-jul.t0_d0_rate),0),NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL FROM jan CROSS JOIN jul; -->
-  <p class="footer">报告生成时间：2026-08-31</p>
-</section>
-
-<section class="section">
-  <h2>附录 B：当前口径完整 PGSQL（20 秒去重）</h2>
-  <p>请在同一数据库会话中按以下五个模块顺序执行。模块一建立公共临时表；模块二至四输出报告中的所有原始分子、分母与比率；模块五专门输出图表和结论所用的环比、结构占比及“相对少提单量”。</p>
-  <div class="code-blocks" style="border:1px solid #245675;border-radius:10px;overflow:hidden;background:#0b2a46">
-    <details style="margin:0;border:0;border-bottom:1px solid #245675;background:#0b2a46"><summary style="cursor:pointer;padding:14px 16px;font-weight:800;color:#39c6e8">模块一：20 秒去重与公共样本</summary><pre style="margin:0;padding:18px;overflow:auto;border-top:1px solid #245675;background:#061b31;color:#dceefa;font-size:12px;line-height:1.55;white-space:pre">/* 当前口径的完整公共样本。统计区间：[2026-01-01, 2026-08-16)。 */
-CREATE TEMP TABLE tmp_raw_pass_offer AS
-SELECT DISTINCT ON (v.user_id,v.serial_id) v.user_id,v.serial_id,v.vir_date::date AS vir_date,
-       to_timestamp(v.vir_unix) AS vir_time,r.recycle_type
-FROM wangchuanliang.order_vir_f_copy v JOIN wangchuanliang.side_recycle_type_copy r ON r.serial_id=v.serial_id
-WHERE v.is_pass1=1 AND v.loan_type_code=2
-  AND v.vir_date &gt;= DATE '2026-01-01' AND v.vir_date &lt; DATE '2026-08-16'
-ORDER BY v.user_id,v.serial_id,v.vir_unix DESC;
-CREATE TEMP TABLE tmp_offer_batch AS
-WITH s AS (SELECT *,LAG(vir_time) OVER(PARTITION BY user_id ORDER BY vir_time,serial_id) AS prev_vir_time FROM tmp_raw_pass_offer)
-SELECT *,SUM(CASE WHEN prev_vir_time IS NULL OR vir_time-prev_vir_time&gt;INTERVAL '20 seconds' THEN 1 ELSE 0 END)
- OVER(PARTITION BY user_id ORDER BY vir_time,serial_id ROWS UNBOUNDED PRECEDING) AS batch_id FROM s;
-CREATE TEMP TABLE tmp_dedup_pass_offer AS
-SELECT user_id,serial_id,vir_date,vir_time,recycle_type FROM(
- SELECT *,ROW_NUMBER() OVER(PARTITION BY user_id,batch_id ORDER BY serial_id DESC) AS rn FROM tmp_offer_batch
-) x WHERE rn=1;
-CREATE TEMP TABLE tmp_eligible_offer AS
-SELECT d.*,MIN(CASE WHEN o.apply_date IS NOT NULL AND o.apply_time&gt;=d.vir_time THEN o.apply_time END) AS apply_time
-FROM tmp_dedup_pass_offer d LEFT JOIN wangchuanliang.order_loan_f_v2_copy o ON o.user_id=d.user_id AND o.serial_id=d.serial_id
-WHERE d.recycle_type IN(2,3)
-GROUP BY d.user_id,d.serial_id,d.vir_date,d.vir_time,d.recycle_type;
-CREATE TEMP TABLE tmp_type3_users AS SELECT DISTINCT user_id FROM tmp_eligible_offer WHERE recycle_type=3;
-CREATE TEMP TABLE tmp_user_orders AS
-SELECT o.user_id,o.serial_id,o.apply_time,o.repaid_time,o.repaid_date::date AS repaid_date,o.loan_status_code,o.is_remit,o.is_repaid
-FROM wangchuanliang.order_loan_f_v2_copy o JOIN tmp_type3_users u ON u.user_id=o.user_id;
-CREATE TEMP TABLE tmp_settled_orders AS
-SELECT user_id,serial_id,repaid_time,repaid_date FROM tmp_user_orders
-WHERE is_remit=1 AND(is_repaid=1 OR loan_status_code=7 OR repaid_date&gt;DATE '2000-01-01')
-  AND repaid_time&gt;TIMESTAMP '2000-01-01 00:00:00';
-CREATE TEMP TABLE tmp_clean_settles AS
-SELECT s.* FROM tmp_settled_orders s WHERE NOT EXISTS(
- SELECT 1 FROM tmp_user_orders o2 WHERE o2.user_id=s.user_id AND o2.serial_id&lt;&gt;s.serial_id AND o2.apply_time&lt;s.repaid_time
- AND(o2.loan_status_code IN(5,8) OR(o2.loan_status_code=7 AND o2.repaid_time&gt;s.repaid_time)));
-CREATE TEMP TABLE tmp_t0_offer AS
-SELECT DISTINCT e.user_id,e.serial_id,e.vir_date,e.vir_time FROM tmp_eligible_offer e JOIN tmp_clean_settles c
- ON c.user_id=e.user_id AND c.repaid_date=e.vir_date AND e.vir_time&gt;=c.repaid_time WHERE e.recycle_type=3;</pre></details>
-    <details style="margin:0;border:0;border-bottom:1px solid #245675;background:#0b2a46"><summary style="cursor:pointer;padding:14px 16px;font-weight:800;color:#39c6e8">模块二：全部、循环贷、结清续贷订单量与提单率</summary><pre style="margin:0;padding:18px;overflow:auto;border-top:1px solid #245675;background:#061b31;color:#dceefa;font-size:12px;line-height:1.55;white-space:pre">WITH m AS(
-SELECT to_char(date_trunc('month',vir_date),'YYYY-MM') stat_month,COUNT(*) total_cnt,
-SUM(CASE WHEN apply_time IS NOT NULL THEN 1 ELSE 0 END) applied_cnt,
-SUM(CASE WHEN recycle_type=2 THEN 1 ELSE 0 END) cycle_cnt,
-SUM(CASE WHEN recycle_type=2 AND apply_time IS NOT NULL THEN 1 ELSE 0 END) cycle_applied_cnt,
-SUM(CASE WHEN recycle_type=3 THEN 1 ELSE 0 END) type3_cnt,
-SUM(CASE WHEN recycle_type=3 AND apply_time IS NOT NULL THEN 1 ELSE 0 END) type3_applied_cnt
-FROM tmp_eligible_offer GROUP BY GROUPING SETS((to_char(date_trunc('month',vir_date),'YYYY-MM')),()))
-SELECT COALESCE(stat_month,'总计') 统计周期,total_cnt 可提单订单数,applied_cnt 可提单提单订单数,
-ROUND(applied_cnt::numeric/NULLIF(total_cnt,0)*100,2) 可提单提单率_pct,
-cycle_cnt 循环贷可提单订单数,cycle_applied_cnt 循环贷提单订单数,ROUND(cycle_applied_cnt::numeric/NULLIF(cycle_cnt,0)*100,2) 循环贷提单率_pct,
-type3_cnt 结清续贷可提单订单数,type3_applied_cnt 结清续贷提单订单数,ROUND(type3_applied_cnt::numeric/NULLIF(type3_cnt,0)*100,2) 结清续贷提单率_pct
-FROM m ORDER BY CASE WHEN stat_month IS NULL THEN 0 ELSE 1 END,stat_month;</pre></details>
-    <details style="margin:0;border:0;border-bottom:1px solid #245675;background:#0b2a46"><summary style="cursor:pointer;padding:14px 16px;font-weight:800;color:#39c6e8">模块三：结清0在贷与其他结清续贷订单量、提单率</summary><pre style="margin:0;padding:18px;overflow:auto;border-top:1px solid #245675;background:#061b31;color:#dceefa;font-size:12px;line-height:1.55;white-space:pre">WITH a AS(
-SELECT to_char(date_trunc('month',vir_date),'YYYY-MM') stat_month,COUNT(*) type3_cnt,
-SUM(CASE WHEN apply_time IS NOT NULL THEN 1 ELSE 0 END) type3_applied_cnt
-FROM tmp_eligible_offer WHERE recycle_type=3 GROUP BY GROUPING SETS((to_char(date_trunc('month',vir_date),'YYYY-MM')),())),
-b AS(
-SELECT to_char(date_trunc('month',t.vir_date),'YYYY-MM') stat_month,COUNT(*) t0_cnt,
-SUM(CASE WHEN e.apply_time IS NOT NULL THEN 1 ELSE 0 END) t0_applied_cnt
-FROM tmp_t0_offer t JOIN tmp_eligible_offer e ON e.user_id=t.user_id AND e.serial_id=t.serial_id
-GROUP BY GROUPING SETS((to_char(date_trunc('month',t.vir_date),'YYYY-MM')),()))
-SELECT COALESCE(b.stat_month,'总计') 统计周期,b.t0_cnt 结清0在贷订单数,b.t0_applied_cnt 结清0在贷提单订单数,
-ROUND(b.t0_applied_cnt::numeric/NULLIF(b.t0_cnt,0)*100,2) 结清0在贷提单率_pct,
-a.type3_cnt-b.t0_cnt 其他结清续贷订单数,a.type3_applied_cnt-b.t0_applied_cnt 其他结清续贷提单订单数,
-ROUND((a.type3_applied_cnt-b.t0_applied_cnt)::numeric/NULLIF(a.type3_cnt-b.t0_cnt,0)*100,2) 其他结清续贷提单率_pct
-FROM a JOIN b ON a.stat_month IS NOT DISTINCT FROM b.stat_month
-ORDER BY CASE WHEN b.stat_month IS NULL THEN 0 ELSE 1 END,b.stat_month;</pre></details>
-    <details style="margin:0;border:0;border-radius:0;background:#0b2a46"><summary style="cursor:pointer;padding:14px 16px;font-weight:800;color:#39c6e8">模块四：结清0在贷 T0 至 T5+ 首次提单时效</summary><pre style="margin:0;padding:18px;overflow:auto;border-top:1px solid #245675;background:#061b31;color:#dceefa;font-size:12px;line-height:1.55;white-space:pre">WITH f AS(
-SELECT t.vir_date,CASE WHEN e.apply_time IS NOT NULL THEN e.apply_time::date-t.vir_date END first_day
-FROM tmp_t0_offer t JOIN tmp_eligible_offer e ON e.user_id=t.user_id AND e.serial_id=t.serial_id),m AS(
-SELECT to_char(date_trunc('month',vir_date),'YYYY-MM') stat_month,COUNT(*) base_cnt,
-SUM(CASE WHEN first_day=0 THEN 1 ELSE 0 END) d0,SUM(CASE WHEN first_day=1 THEN 1 ELSE 0 END) d1,
-SUM(CASE WHEN first_day=2 THEN 1 ELSE 0 END) d2,SUM(CASE WHEN first_day=3 THEN 1 ELSE 0 END) d3,
-SUM(CASE WHEN first_day=4 THEN 1 ELSE 0 END) d4,SUM(CASE WHEN first_day&gt;=5 THEN 1 ELSE 0 END) d5p,
-SUM(CASE WHEN first_day IS NOT NULL THEN 1 ELSE 0 END) total_apply
-FROM f GROUP BY GROUPING SETS((to_char(date_trunc('month',vir_date),'YYYY-MM')),()))
-SELECT COALESCE(stat_month,'总计') 统计周期,base_cnt 结清0在贷订单数,
-d0 T0提单订单数,ROUND(d0::numeric/NULLIF(base_cnt,0)*100,2) T0提单率_pct,d1 T1提单订单数,ROUND(d1::numeric/NULLIF(base_cnt,0)*100,2) T1提单率_pct,
-d2 T2提单订单数,ROUND(d2::numeric/NULLIF(base_cnt,0)*100,2) T2提单率_pct,d3 T3提单订单数,ROUND(d3::numeric/NULLIF(base_cnt,0)*100,2) T3提单率_pct,
-d4 T4提单订单数,ROUND(d4::numeric/NULLIF(base_cnt,0)*100,2) T4提单率_pct,d5p T5plus提单订单数,ROUND(d5p::numeric/NULLIF(base_cnt,0)*100,2) T5plus提单率_pct,
-ROUND(total_apply::numeric/NULLIF(base_cnt,0)*100,2) 总提单率_pct
-FROM m ORDER BY CASE WHEN stat_month IS NULL THEN 0 ELSE 1 END,stat_month;</pre></details>
-
-    <details style="margin:0;border:0;background:#0b2a46">
-      <summary style="cursor:pointer;padding:14px 16px;font-weight:800;color:#39c6e8">模块五：图表与结论复现</summary>
-      <pre style="margin:0;padding:18px;overflow:auto;border-top:1px solid #245675;background:#061b31;color:#dceefa;font-size:12px;line-height:1.55;white-space:pre">/* 图表、结构占比与结论变化的完整底表。 */
+    <details style="margin:0;border:0;border-bottom:1px solid #245675;border-radius:0;background:#0b2a46"><summary style="cursor:pointer;padding:14px 16px;font-weight:800;color:#39c6e8">模块五：图表、结构占比、1月至7月变化与相对少提单量</summary><pre style="margin:0;padding:18px;overflow:auto;border-top:1px solid #245675;background:#061b31;color:#dceefa;font-size:12px;line-height:1.55;white-space:pre">/* 本模块输出报告图表和文字结论的底表：
+   1. 逐月结构占比与提单率；2. 1 月至 7 月的百分点变化；
+   3. 7 月 T0 相对少提单量。
+   请在模块一临时表已创建后执行。 */
 WITH monthly_base AS (
     SELECT
         to_char(date_trunc('month', vir_date), 'YYYY-MM') AS stat_month,
@@ -715,9 +439,7 @@ monthly_t0 AS (
         to_char(date_trunc('month', t.vir_date), 'YYYY-MM') AS stat_month,
         COUNT(*) AS t0_cnt,
         SUM(CASE WHEN e.apply_time IS NOT NULL THEN 1 ELSE 0 END) AS t0_applied,
-        SUM(CASE WHEN e.apply_time IS NOT NULL
-                  AND e.apply_time::date = t.vir_date
-                 THEN 1 ELSE 0 END) AS t0_d0
+        SUM(CASE WHEN e.apply_time::date = t.vir_date THEN 1 ELSE 0 END) AS t0_d0
     FROM tmp_t0_offer t
     JOIN tmp_eligible_offer e
       ON e.user_id = t.user_id
@@ -742,32 +464,28 @@ rates AS (
     FROM monthly_base b
     JOIN monthly_t0 t ON t.stat_month = b.stat_month
 ),
-jan AS (
-    SELECT * FROM rates WHERE stat_month = '2026-01'
-),
-jul AS (
-    SELECT * FROM rates WHERE stat_month = '2026-07'
-)
+jan AS (SELECT * FROM rates WHERE stat_month = '2026-01'),
+jul AS (SELECT * FROM rates WHERE stat_month = '2026-07')
 SELECT
-    '月度图表底表' AS 输出类型,
-    stat_month AS 统计周期,
-    all_cnt AS 全部订单数,
-    ROUND(all_rate * 100, 2) AS 全部提单率_pct,
-    cycle_cnt AS 循环贷订单数,
-    ROUND(cycle_rate * 100, 2) AS 循环贷提单率_pct,
-    type3_cnt AS 结清续贷订单数,
-    ROUND(type3_rate * 100, 2) AS 结清续贷提单率_pct,
-    t0_cnt AS 结清0在贷订单数,
-    ROUND(t0_rate * 100, 2) AS 结清0在贷提单率_pct,
-    ROUND(t0_d0_rate * 100, 2) AS T0提单率_pct,
-    other_cnt AS 其他结清续贷订单数,
-    ROUND(other_rate * 100, 2) AS 其他结清续贷提单率_pct,
-    ROUND(t0_cnt::numeric / NULLIF(all_cnt, 0) * 100, 2) AS 结清0在贷占全部_pct,
-    ROUND(t0_cnt::numeric / NULLIF(type3_cnt, 0) * 100, 2) AS 结清0在贷占结清续贷_pct
+    '月度图表底表' AS output_type,
+    stat_month,
+    all_cnt,
+    ROUND(all_rate * 100, 2) AS all_rate_pct,
+    cycle_cnt,
+    ROUND(cycle_rate * 100, 2) AS cycle_rate_pct,
+    type3_cnt,
+    ROUND(type3_rate * 100, 2) AS type3_rate_pct,
+    t0_cnt,
+    ROUND(t0_rate * 100, 2) AS t0_total_rate_pct,
+    ROUND(t0_d0_rate * 100, 2) AS t0_same_day_rate_pct,
+    other_cnt,
+    ROUND(other_rate * 100, 2) AS other_type3_rate_pct,
+    ROUND(t0_cnt::numeric / NULLIF(all_cnt, 0) * 100, 2) AS t0_share_all_pct,
+    ROUND(t0_cnt::numeric / NULLIF(type3_cnt, 0) * 100, 2) AS t0_share_type3_pct
 FROM rates
 UNION ALL
 SELECT
-    '1月到7月提单率变化', NULL, NULL,
+    '1月至7月变化_pp', NULL, NULL,
     ROUND((jul.all_rate - jan.all_rate) * 100, 2), NULL,
     ROUND((jul.cycle_rate - jan.cycle_rate) * 100, 2), NULL,
     ROUND((jul.type3_rate - jan.type3_rate) * 100, 2), NULL,
@@ -777,44 +495,92 @@ SELECT
 FROM jan CROSS JOIN jul
 UNION ALL
 SELECT
-    '7月T0相对少提单量',
-    NULL,
+    '7月T0相对少提单量', NULL,
     ROUND(jul.t0_cnt * (jan.t0_d0_rate - jul.t0_d0_rate), 0),
-    NULL, NULL, NULL, NULL, NULL, NULL, NULL,
-    NULL, NULL, NULL, NULL, NULL
-FROM jan CROSS JOIN jul;</pre>
-    </details>
+    NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL
+FROM jan CROSS JOIN jul
+ORDER BY output_type, stat_month;</pre></details>
+    <details style="margin:0;border:0;border-radius:0;background:#0b2a46"><summary style="cursor:pointer;padding:14px 16px;font-weight:800;color:#39c6e8">模块六：8月 T0 当日提单率（独立完整 SQL，截至 2026-08-28）</summary><pre style="margin:0;padding:18px;overflow:auto;border-top:1px solid #245675;background:#061b31;color:#dceefa;font-size:12px;line-height:1.55;white-space:pre">WITH raw_offer AS MATERIALIZED (
+    SELECT DISTINCT ON (v.user_id, v.serial_id)
+           v.user_id, v.serial_id, v.vir_date::date AS vir_date,
+           to_timestamp(v.vir_unix) AS vir_time, r.recycle_type
+    FROM wangchuanliang.order_vir_f_copy v
+    JOIN wangchuanliang.side_recycle_type_copy r ON r.serial_id = v.serial_id
+    WHERE v.is_pass1 = 1
+      AND v.loan_type_code = 2
+      AND v.vir_date &gt;= DATE '2026-08-01'
+      AND v.vir_date &lt; DATE '2026-08-29'
+    ORDER BY v.user_id, v.serial_id, v.vir_unix DESC
+), ordered_offer AS MATERIALIZED (
+    SELECT *, LAG(vir_time) OVER (
+        PARTITION BY user_id ORDER BY vir_time, serial_id
+    ) AS prev_vir_time
+    FROM raw_offer
+), offer_batch AS MATERIALIZED (
+    SELECT *, SUM(CASE WHEN prev_vir_time IS NULL
+                         OR vir_time - prev_vir_time &gt; INTERVAL '20 seconds'
+                        THEN 1 ELSE 0 END)
+              OVER (PARTITION BY user_id ORDER BY vir_time, serial_id) AS batch_id
+    FROM ordered_offer
+), dedup_offer AS MATERIALIZED (
+    SELECT user_id, serial_id, vir_date, vir_time, recycle_type
+    FROM (
+        SELECT *, ROW_NUMBER() OVER (
+            PARTITION BY user_id, batch_id ORDER BY serial_id DESC
+        ) AS rn
+        FROM offer_batch
+    ) s
+    WHERE rn = 1
+), eligible AS MATERIALIZED (
+    SELECT d.user_id, d.serial_id, d.vir_date, d.vir_time,
+           MIN(CASE WHEN o.apply_date IS NOT NULL
+                         AND o.apply_time &gt;= d.vir_time
+                    THEN o.apply_time END) AS apply_time
+    FROM dedup_offer d
+    LEFT JOIN wangchuanliang.order_loan_f_v2_copy o
+      ON o.user_id = d.user_id AND o.serial_id = d.serial_id
+    WHERE d.recycle_type = 3
+    GROUP BY d.user_id, d.serial_id, d.vir_date, d.vir_time
+), e_users AS MATERIALIZED (
+    SELECT DISTINCT user_id FROM eligible
+), user_orders AS MATERIALIZED (
+    SELECT o.user_id, o.serial_id, o.apply_time, o.repaid_time,
+           o.repaid_date::date AS repaid_date, o.loan_status_code,
+           o.is_remit, o.is_repaid
+    FROM wangchuanliang.order_loan_f_v2_copy o
+    JOIN e_users u ON u.user_id = o.user_id
+), settled AS MATERIALIZED (
+    SELECT user_id, serial_id, repaid_time, repaid_date
+    FROM user_orders
+    WHERE is_remit = 1
+      AND (is_repaid = 1 OR loan_status_code = 7 OR repaid_date &gt; DATE '2000-01-01')
+      AND repaid_time &gt; TIMESTAMP '2000-01-01 00:00:00'
+), t0 AS MATERIALIZED (
+    SELECT DISTINCT e.user_id, e.serial_id, e.vir_date, e.apply_time
+    FROM eligible e
+    JOIN settled s
+      ON s.user_id = e.user_id
+     AND s.repaid_date = e.vir_date
+     AND e.vir_time &gt;= s.repaid_time
+    WHERE NOT EXISTS (
+        SELECT 1
+        FROM user_orders o2
+        WHERE o2.user_id = s.user_id
+          AND o2.serial_id &lt;&gt; s.serial_id
+          AND o2.apply_time &lt; s.repaid_time
+          AND (o2.loan_status_code IN (5,8)
+               OR (o2.loan_status_code = 7 AND o2.repaid_time &gt; s.repaid_time))
+    )
+)
+SELECT COUNT(*) AS t0_eligible_count,
+       SUM(CASE WHEN apply_time::date = vir_date THEN 1 ELSE 0 END) AS t0_applied_count,
+       ROUND(SUM(CASE WHEN apply_time::date = vir_date THEN 1 ELSE 0 END)::numeric
+             / NULLIF(COUNT(*), 0) * 100, 2) AS t0_apply_rate
+FROM t0;</pre></details>
   </div>
   <p class="footer">报告生成时间：2026-08-31</p>
 </section>
 
-<section class="section">
-  <h2>附录 C：8 月 T0 当日提单率延长至 8 月 28 日</h2>
-  <p>本模块只用于复现报告中唯一延长至 8 月 28 日的指标：8 月结清0在贷订单的 T0 当日提单率。公共样本、20 秒批次去重、干净结清与同日获额条件均与附录 B 一致；仅将获额日期范围改为 2026-08-01 至 2026-08-28。</p>
-  <div class="code-blocks" style="border:1px solid #245675;border-radius:12px;overflow:hidden;background:#0b2a46"><details style="margin:0;border:0;background:#0b2a46"><summary style="cursor:pointer;padding:14px 16px;font-weight:800;color:#39c6e8">模块：8 月 T0 当日提单率（截至 8 月 28 日）</summary><pre style="margin:0;padding:18px;overflow:auto;border-top:1px solid #245675;background:#061b31;color:#dceefa;font-size:12px;line-height:1.55;white-space:pre">/* 在附录 B 的公共临时表逻辑基础上执行；将获额样本范围改为 [2026-08-01, 2026-08-29)。
-   最终仅取 8 月的结清0在贷订单，计算 apply_time::date = vir_date 的占比。 */
-WITH f AS (
-  SELECT
-    t.vir_date,
-    e.apply_time
-  FROM tmp_t0_offer t
-  JOIN tmp_eligible_offer e
-    ON e.user_id = t.user_id
-   AND e.serial_id = t.serial_id
-  WHERE t.vir_date &gt;= DATE '2026-08-01'
-    AND t.vir_date &lt; DATE '2026-08-29'
-)
-SELECT
-  COUNT(*) AS 结清0在贷订单数,
-  SUM(CASE WHEN apply_time::date = vir_date THEN 1 ELSE 0 END) AS T0提单订单数,
-  ROUND(
-    SUM(CASE WHEN apply_time::date = vir_date THEN 1 ELSE 0 END)::numeric
-    / NULLIF(COUNT(*), 0) * 100,
-    2
-  ) AS T0当日提单率_pct
-FROM f;
-/* 结果：20,195；7,762；38.44 */</pre></details></div>
-</section>
 </main>
 </body>
 </html>
