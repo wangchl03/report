@@ -1,0 +1,134 @@
+<!doctype html>
+<html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>3天券 vs 7天券 三组对照实验分析报告</title><script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.8/dist/chart.umd.min.js"></script>
+<style>
+:root{--bg:#071b2f;--p:#0c2944;--line:#2a5c7e;--text:#eff8ff;--muted:#aac5da;--cy:#43c7e7;--gr:#64dcae;--am:#ffc26b;--pk:#f68ab0;--vio:#b49aff}*{box-sizing:border-box}body{margin:0;background:linear-gradient(135deg,#06192b,#0b2c47 55%,#071a2d);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei",sans-serif}.wrap{max-width:1500px;margin:auto;padding:32px 38px 76px}.hero{text-align:center;padding:38px 15px 28px;border-bottom:1px solid var(--line)}.kicker{color:var(--cy);font-size:14px;letter-spacing:2px;font-weight:700}.hero h1{font-size:36px;line-height:1.25;margin:10px 0}.hero p,.desc,.sub{color:var(--muted);margin:0}.tag{display:inline-block;margin-top:15px;border:1px solid #33779e;border-radius:99px;padding:5px 12px;font-size:13px;color:#ccecff;background:#0c304e}h2{font-size:26px;margin:50px 0 8px;line-height:1.35}h3{font-size:17px;margin:0 0 4px}.grid{display:grid;gap:18px}.g2{grid-template-columns:repeat(2,minmax(0,1fr))}.g3{grid-template-columns:repeat(3,minmax(0,1fr))}.g4{grid-template-columns:repeat(4,minmax(0,1fr))}.card,.chart,.note{background:rgba(10,41,68,.95);border:1px solid var(--line);border-radius:16px;padding:19px}.label{color:var(--muted);font-size:13px}.num{font-size:28px;font-weight:850;line-height:1.2;margin:5px 0}.cyan{color:var(--cy)}.green{color:var(--gr)}.amber{color:var(--am)}.pink{color:var(--pk)}.violet{color:var(--vio)}.chart p{font-size:13px;color:var(--muted);margin:0 0 14px}.box{height:320px;position:relative}.short{height:260px}.callout{background:#0a2a45;border:1px solid #2a5c7e;border-left:4px solid #43c7e7;border-radius:12px;padding:14px 18px;margin:18px 0;line-height:1.75}.callout.amber{border-left-color:#ffc26b}.callout.red{border-left-color:#f68ab0}.insight{display:flex;gap:14px;padding:15px;border:1px solid var(--line);border-radius:12px;background:#0a2a45;margin:10px 0}.idx{font-size:22px;font-weight:800;color:var(--cy);flex:none;width:38px}.insight h3{font-size:15.5px;margin:0 0 4px}.insight p{color:var(--muted);font-size:13.5px;margin:0;line-height:1.65}.table{overflow-x:auto;margin:14px 0}.table table{width:100%;border-collapse:collapse;font-size:13.5px;background:rgba(10,41,68,.95)}caption{caption-side:top;text-align:left;color:#e5f5ff;font-size:15px;font-weight:700;margin-bottom:8px}th,td{border:1px solid var(--line);padding:8px 10px;text-align:center;white-space:nowrap}th{background:#0e3a5c;color:#d7edf9;font-weight:650}td.good{color:var(--gr);font-weight:750}td.bad{color:#ff8d8d;font-weight:750}tr.total td{background:#0e3453;font-weight:800}.foot{color:var(--muted);font-size:12.5px;text-align:center;margin-top:50px;padding:20px;border-top:1px solid var(--line);line-height:1.8}@media(max-width:900px){.g4,.g3{grid-template-columns:repeat(2,1fr)}.g2{grid-template-columns:1fr}}
+</style></head><body><main class="wrap">
+<header class="hero"><div class="kicker">30% 降息券 · 券期限专项对比</div><h1>3 天券 vs 7 天券<br>三组对照实验分析报告</h1><p>统计期间：2026 年 7 月 ~ 8 月　·　报告生成时间：2026 年 8 月 31 日</p><span class="tag">A 7天券vs无券 · B 7天券vs3天券 · C 3天券vs无券（14 个召回批次，4,528 人）</span></header>
+
+<h2>核心结论</h2><p class="desc">三组实验均为 30% 降息券，唯一变量是「券有效期」与「是否发券」。券增量 = 实验组 − 对照组首次提单率。</p>
+<section class="grid g4" style="margin-top:18px">
+<article class="card"><div class="label">7天券总价值（A组）</div><div class="num green">+7.46pp</div><div class="sub">前7天累计（32.73% vs 25.27%）</div></article>
+<article class="card"><div class="label">3天券总价值（C组）</div><div class="num amber">+1.58pp</div><div class="sub">前7天累计（25.96% vs 24.39%）</div></article>
+<article class="card"><div class="label">7天券额外价值（B组）</div><div class="num violet">+2.87pp</div><div class="sub">同批次 7天券 vs 3天券</div></article>
+<article class="card"><div class="label">核心机制</div><div class="num pink">第4~5天</div><div class="sub">7天券增量几乎全部来自券期后承接</div></article>
+</section>
+
+<h2>一、实验设计与口径</h2>
+<div class="table"><table><caption>三组实验对照</caption><thead><tr><th>组</th><th>召回批次</th><th>实验组</th><th>对照组</th><th>样本</th><th>券增量含义</th></tr></thead><tbody>
+<tr><td>A</td><td>0716~0719（4批）</td><td>7天30%券</td><td>无营销</td><td>1,317</td><td>7天券总价值</td></tr>
+<tr><td>B</td><td>0730~0807（4批）</td><td>7天30%券</td><td>3天30%券</td><td>1,658</td><td>7天券相对3天券的额外价值（同批次，最干净）</td></tr>
+<tr><td>C</td><td>0813~0823（6批）</td><td>3天30%券</td><td>无营销</td><td>1,553</td><td>3天券总价值</td></tr>
+</tbody></table></div>
+<div class="callout"><strong>分析逻辑：</strong>① 用 B 组（同批次 7天券 vs 3天券）度量「券期限」的纯差异，避免批次混杂；② 用 A、C 组度量各自相对无券的总价值；③ 结合逐日拆解（券期内 vs 券期后）与 10 个用户特征分层，定位「3天券和7天券各自适配的用户」。</div>
+
+<h2>二、累计券增量：前3天 vs 前7天</h2>
+<div class="table"><table><caption>累计首次提单率与券增量</caption><thead><tr><th>组</th><th>前3天 实验组</th><th>前3天 对照组</th><th>前3天 增量</th><th>前7天 实验组</th><th>前7天 对照组</th><th>前7天 增量</th></tr></thead><tbody>
+<tr><td>A 7天券vs无券</td><td>18.64%</td><td>12.63%</td><td class="good">+6.00pp</td><td>32.73%</td><td>25.27%</td><td class="good">+7.46pp</td></tr>
+<tr><td>B 7天券vs3天券</td><td>18.89%</td><td>18.50%</td><td>+0.39pp</td><td>32.37%</td><td>29.50%</td><td class="good">+2.87pp</td></tr>
+<tr><td>C 3天券vs无券</td><td>17.87%</td><td>13.68%</td><td class="good">+4.19pp</td><td>25.96%</td><td>24.39%</td><td>+1.58pp</td></tr>
+</tbody></table></div>
+<section class="grid g2"><article class="chart"><h3>前3天 vs 前7天 累计券增量</h3><p>7天券前7天增量更高；3天券前7天增量被券期后自然回流侵蚀。</p><div class="box"><canvas id="cumBar"></canvas></div></article><article class="chart"><h3>三组逐日券增量（第1~7天）</h3><p>3天券与7天券前3天一致，差异在第4~5天。</p><div class="box"><canvas id="dailyLine"></canvas></div></article></section>
+<div class="callout amber"><strong>关键判断：</strong>① B 组前 3 天仅 +0.39pp，说明<strong>券期内 3天券和7天券效果相同</strong>；② 7天券的额外 +2.87pp 几乎全部来自第 4~5 天（+2.03/+0.95pp）；③ C 组（3天券）前 7 天增量从 +4.19pp 缩水到 +1.58pp——券过期后对照组自然回流，把 3 天券的短期优势「抹平」了一部分。</div>
+
+<h2>三、逐日券增量拆解（时间节奏）</h2>
+<div class="table"><table><caption>逐日首次提单率增量（实验组−对照组，pp）</caption><thead><tr><th>第几天</th><th>A 7天券vs无券</th><th>B 7天券vs3天券</th><th>C 3天券vs无券</th></tr></thead><tbody>
+<tr><td>第1天</td><td class="good">+2.26</td><td>-0.03</td><td class="good">+1.26</td></tr>
+<tr><td>第2天</td><td class="good">+2.71</td><td>+0.33</td><td class="good">+1.53</td></tr>
+<tr><td>第3天</td><td class="good">+1.04</td><td>+0.09</td><td class="good">+1.40</td></tr>
+<tr><td>第4天</td><td>+0.59</td><td class="good">+2.03</td><td class="bad">-1.17</td></tr>
+<tr><td>第5天</td><td>+1.04</td><td>+0.95</td><td class="bad">-0.78</td></tr>
+<tr><td>第6天</td><td class="bad">-0.92</td><td>-0.50</td><td>+0.25</td></tr>
+<tr><td>第7天</td><td>+0.75</td><td>-0.01</td><td class="bad">-0.91</td></tr>
+</tbody></table></div>
+<div class="callout"><strong>时间节奏结论：</strong>3 天券的增量集中在前 3 天（+4.19pp），第 4~7 天转为负（对照组反超）；7 天券前 3 天已强于无券（+6.00pp），且第 4~5 天仍有正增量（券仍有效）。<strong>7 天券 = 3 天券的前 3 天效果 + 第 4~5 天的承接效果</strong>。</div>
+
+<h2>四、特征分层 × 券增量（10 个维度）</h2>
+<p class="desc">以下均为前 7 天累计口径的券增量（pp）。B 组是「券期限纯差异」的权威度量；A、C 组用于看各自总价值。</p>
+<section class="grid g2">
+<article class="chart"><h3>第一阶段活跃天数</h3><p>7天券对活跃用户更强，3天券对沉默用户更强。</p><div class="box"><canvas id="d_active"></canvas></div></article>
+<article class="chart"><h3>高息率</h3><p>高高息用户两种券都有效；无高息只有7天券有效。</p><div class="box"><canvas id="d_hi"></canvas></div></article>
+<article class="chart"><h3>历史放款次数</h3><p>7天券额外价值集中在3次借款用户。</p><div class="box"><canvas id="d_loan"></canvas></div></article>
+<article class="chart"><h3>有无逾期</h3><p>有逾期用户两种券都几乎无效。</p><div class="box"><canvas id="d_od"></canvas></div></article>
+<article class="chart"><h3>上笔期数</h3><p>2期用户7天券额外价值最大。</p><div class="box"><canvas id="d_term"></canvas></div></article>
+<article class="chart"><h3>上笔利率类型</h3><p>high rate 用户7天券额外价值更大。</p><div class="box"><canvas id="d_itype"></canvas></div></article>
+<article class="chart"><h3>历史放款金额</h3><p>高金额用户两种券都有效。</p><div class="box"><canvas id="d_amt"></canvas></div></article>
+<article class="chart"><h3>历史提单次数</h3><p>3次提单用户7天券额外价值最大。</p><div class="box"><canvas id="d_apply"></canvas></div></article>
+</section>
+
+<h2>五、完整数据表（可核对）</h2>
+<p class="desc">A=7天券vs无券，B=7天券vs3天券，C=3天券vs无券；数值均为前7天累计券增量（pp）。</p>
+<div class="table"><table><caption>10 个维度的特征分层券增量</caption><thead><tr><th>维度</th><th>分段</th><th>A 7天券</th><th>B 7天券vs3天券</th><th>C 3天券</th></tr></thead><tbody>
+<tr><td rowspan="5">第一阶段活跃天数</td><td>0天(沉默)</td><td>+0.19</td><td class="bad">-1.18</td><td class="good">+4.86</td></tr>
+<tr><td>1天</td><td>+8.89</td><td class="good">+8.86</td><td>-6.17</td></tr>
+<tr><td>2天</td><td class="good">+17.76</td><td class="good">+8.89</td><td>+6.49</td></tr>
+<tr><td>3天</td><td>+8.19</td><td>-1.56</td><td>+3.68</td></tr>
+<tr><td>4天</td><td class="good">+38.20</td><td class="good">+13.08</td><td>-1.07</td></tr>
+<tr><td rowspan="3">高息率</td><td>无高息(0)</td><td class="good">+8.82</td><td>+0.98</td><td>-0.05</td></tr>
+<tr><td>低高息(0~0.5]</td><td>-0.74</td><td class="good">+6.17</td><td>-2.41</td></tr>
+<tr><td>高高息(>0.5)</td><td class="good">+11.28</td><td>+4.87</td><td class="good">+7.89</td></tr>
+<tr><td rowspan="4">历史放款次数</td><td>1次(新手)</td><td class="good">+8.56</td><td>+2.26</td><td>+3.17</td></tr>
+<tr><td>2次</td><td>+6.01</td><td>+4.44</td><td>-3.31</td></tr>
+<tr><td>3次</td><td>+4.11</td><td class="good">+8.39</td><td class="good">+9.80</td></tr>
+<tr><td>4次+</td><td>+6.56</td><td>-0.72</td><td>-1.36</td></tr>
+<tr><td rowspan="2">有无逾期</td><td>无逾期</td><td class="good">+9.36</td><td>+3.41</td><td>+2.08</td></tr>
+<tr><td>有逾期</td><td>+1.29</td><td>+1.26</td><td>+0.10</td></tr>
+<tr><td rowspan="4">上笔期数</td><td>1期</td><td>+10.40</td><td class="bad">-11.93</td><td>+6.31</td></tr>
+<tr><td>2期</td><td class="good">+10.53</td><td class="good">+9.83</td><td>+2.96</td></tr>
+<tr><td>3期</td><td>+7.63</td><td>+2.46</td><td>-0.88</td></tr>
+<tr><td>4期</td><td>+5.01</td><td>+4.04</td><td>+4.96</td></tr>
+<tr><td rowspan="2">上笔利率类型</td><td>high rate</td><td>+6.86</td><td class="good">+6.72</td><td>+4.33</td></tr>
+<tr><td>low rate</td><td>+7.70</td><td>+1.19</td><td>+0.23</td></tr>
+<tr><td rowspan="3">历史放款金额</td><td>低(<3000)</td><td>+8.31</td><td>+1.92</td><td>+2.01</td></tr>
+<tr><td>中(3000~8000)</td><td>+2.57</td><td>+2.75</td><td>-4.98</td></tr>
+<tr><td>高(≥8000)</td><td class="good">+10.32</td><td class="good">+6.60</td><td class="good">+7.46</td></tr>
+<tr><td rowspan="4">历史提单次数</td><td>1次</td><td class="good">+9.36</td><td>+1.20</td><td>+2.41</td></tr>
+<tr><td>2次</td><td>+7.28</td><td>+4.01</td><td>-0.43</td></tr>
+<tr><td>3次</td><td>-2.47</td><td class="good">+13.44</td><td>+0.73</td></tr>
+<tr><td>4次+</td><td>+7.43</td><td>-1.71</td><td>+2.10</td></tr>
+<tr><td rowspan="2">额度使用率</td><td>中(50~90%)</td><td class="good">+9.40</td><td class="good">+5.86</td><td>+0.98</td></tr>
+<tr><td>高(≥90%)</td><td>+6.46</td><td>+1.77</td><td>+1.87</td></tr>
+<tr><td rowspan="2">上笔逾期天数</td><td>无逾期(<0)</td><td class="good">+9.37</td><td>+1.63</td><td>+1.92</td></tr>
+<tr><td>有逾期(≥0)</td><td>+4.70</td><td>+4.51</td><td>+1.03</td></tr>
+</tbody></table></div>
+
+<h2>六、3天券 vs 7天券 差异画像（结论）</h2>
+<section class="note">
+<div class="insight"><div class="idx">01</div><div><h3>7 天券的额外价值集中在「慢决策成熟用户」。</h3><p>B 组增量最大的层：活跃 1~2 天（+8.86/+8.89pp）、借款 3 次（+8.39pp）、历史提单 3 次（+13.44pp）、上笔 2 期（+9.83pp）、high rate（+6.72pp）、高金额≥8000（+6.60pp）。共同画像：有明确需求但需要更长比较/决策窗口。</p></div></div>
+<div class="insight"><div class="idx">02</div><div><h3>3 天券的独特价值在「沉默用户的临期刺激」。</h3><p>沉默用户（活跃0天）：3 天券 +4.86pp（C组）明显高于 7 天券 +0.19pp（A组）——沉默用户对「临期紧迫感」有响应，给宽裕的 7 天反而无感。7 天券对沉默用户甚至为负（B组 -1.18pp）。</p></div></div>
+<div class="insight"><div class="idx">03</div><div><h3>有逾期用户：两种券都几乎无效。</h3><p>A +1.29pp / B +1.26pp / C +0.10pp，三个口径都极低——逾期用户对降息券不敏感，不建议作为券投放对象。</p></div></div>
+<div class="insight"><div class="idx">04</div><div><h3>券期内两种券等价，差异只在券期后。</h3><p>B 组前 3 天 +0.39pp（等价），第 4~5 天 +2.98pp（7天券承接）。所以「该发 3 天还是 7 天」本质是「用户决策周期多长」的问题。</p></div></div>
+</section>
+
+<h2>七、运营建议</h2>
+<section class="note">
+<div class="insight"><div class="idx">A</div><div><h3>活跃 + 成熟 + 高价值用户 → 发 7 天券。</h3><p>这类用户（活跃1~2天、借款/提单3次、high rate、高金额、2期）需要更长的决策窗口，7 天券的第 4~5 天承接价值能带来额外 +6~13pp 增量。</p></div></div>
+<div class="insight"><div class="idx">B</div><div><h3>沉默 / 低意向用户 → 发 3 天券（或不发）。</h3><p>沉默用户靠 3 天券的临期紧迫感拉动（+4.86pp），7 天券对其无效；但沉默用户整体转化率低，可先低成本唤醒再决定是否给券。</p></div></div>
+<div class="insight"><div class="idx">C</div><div><h3>有逾期用户 → 不建议发降息券。</h3><p>三个口径都显示券增量约 +0.1~1.3pp，投入产出比极低，应改用其他风控/运营手段。</p></div></div>
+<div class="insight"><div class="idx">D</div><div><h3>券期限作为分层变量，而非全局统一。</h3><p>3 天券和 7 天券覆盖的是不同决策周期的人群，建议按「第一阶段活跃度 + 借款深度 + 利率类型」分层后差异化匹配券期限。</p></div></div>
+</section>
+
+<p class="foot">口径说明：券增量 = 实验组 − 对照组首次提单率（召回日起 7 天内）。A 组（0716~0719）7天券 vs 无券；B 组（0730~0807）7天券 vs 3天券；C 组（0813~0823）3天券 vs 无券。第一阶段 = 结清后至触达前 4 天空窗期，活跃度用宽表 active_days_cnt 字段（已验证与 event_track 口径一致）。A、C 组为跨批次对比，绝对数值含批次因素；券期限的纯差异以 B 组为准。</p>
+</main>
+<script>
+Chart.defaults.color='#c0d7e8';Chart.defaults.font.family='-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei",sans-serif';
+const base={responsive:true,maintainAspectRatio:false,plugins:{legend:{labels:{boxWidth:12,padding:12}}},scales:{x:{grid:{color:'rgba(80,142,176,.16)'}},y:{grid:{color:'rgba(80,142,176,.16)'},beginAtZero:true}}};
+const pct=(min,max)=>({...base,plugins:{...base.plugins,tooltip:{callbacks:{label:c=>c.dataset.label+': '+c.parsed.y+'pp'}}},scales:{...base.scales,y:{...base.scales.y,min,max,ticks:{callback:v=>v+'pp'}}}});
+const COL=['#43c7e7','#b49aff','#ffc26b'];
+const LEG=['A 7天券vs无券','B 7天券vs3天券','C 3天券vs无券'];
+// 累计柱状
+new Chart(document.getElementById('cumBar'),{type:'bar',data:{labels:['前3天','前7天'],datasets:[{label:'A 7天券vs无券',data:[6.00,7.46],backgroundColor:'#43c7e7'},{label:'B 7天券vs3天券',data:[0.39,2.87],backgroundColor:'#b49aff'},{label:'C 3天券vs无券',data:[4.19,1.58],backgroundColor:'#ffc26b'}]},options:pct(0,9)});
+// 逐日折线
+new Chart(document.getElementById('dailyLine'),{type:'line',data:{labels:['D1','D2','D3','D4','D5','D6','D7'],datasets:[{label:'A 7天券vs无券',data:[2.26,2.71,1.04,0.59,1.04,-0.92,0.75],borderColor:'#43c7e7',backgroundColor:'#43c7e7',tension:.25,pointRadius:3},{label:'B 7天券vs3天券',data:[-0.03,0.33,0.09,2.03,0.95,-0.50,-0.01],borderColor:'#b49aff',backgroundColor:'#b49aff',tension:.25,pointRadius:3},{label:'C 3天券vs无券',data:[1.26,1.53,1.40,-1.17,-0.78,0.25,-0.91],borderColor:'#ffc26b',backgroundColor:'#ffc26b',tension:.25,pointRadius:3}]},options:pct(-2,4)});
+// 特征维度分组柱状图
+function grouped(id, labels, A, B, C, mn, mx){
+  new Chart(document.getElementById(id),{type:'bar',data:{labels:labels,datasets:[{label:'A 7天券vs无券',data:A,backgroundColor:'#43c7e7'},{label:'B 7天券vs3天券',data:B,backgroundColor:'#b49aff'},{label:'C 3天券vs无券',data:C,backgroundColor:'#ffc26b'}]},options:pct(mn,mx)});
+}
+grouped('d_active',['0天','1天','2天','3天','4天'],[0.19,8.89,17.76,8.19,38.20],[-1.18,8.86,8.89,-1.56,13.08],[4.86,-6.17,6.49,3.68,-1.07],-8,40);
+grouped('d_hi',['无高息','低高息','高高息'],[8.82,-0.74,11.28],[0.98,6.17,4.87],[-0.05,-2.41,7.89],-4,13);
+grouped('d_loan',['1次','2次','3次','4次+'],[8.56,6.01,4.11,6.56],[2.26,4.44,8.39,-0.72],[3.17,-3.31,9.80,-1.36],-4,11);
+grouped('d_od',['无逾期','有逾期'],[9.36,1.29],[3.41,1.26],[2.08,0.10],0,10);
+grouped('d_term',['1期','2期','3期','4期'],[10.40,10.53,7.63,5.01],[-11.93,9.83,2.46,4.04],[6.31,2.96,-0.88,4.96],-13,12);
+grouped('d_itype',['high rate','low rate'],[6.86,7.70],[6.72,1.19],[4.33,0.23],0,9);
+grouped('d_amt',['低(<3000)','中(3000~8000)','高(≥8000)'],[8.31,2.57,10.32],[1.92,2.75,6.60],[2.01,-4.98,7.46],-6,12);
+grouped('d_apply',['1次','2次','3次','4次+'],[9.36,7.28,-2.47,7.43],[1.20,4.01,13.44,-1.71],[2.41,-0.43,0.73,2.10],-4,15);
+</script></body></html>
