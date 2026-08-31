@@ -1,0 +1,80 @@
+<!doctype html>
+<html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>循环贷当天提单率趋势与下降归因汇报</title><script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.8/dist/chart.umd.min.js"></script>
+<style>
+:root{--bg:#071b2f;--p:#0c2944;--line:#2a5c7e;--text:#eff8ff;--muted:#aac5da;--cy:#43c7e7;--gr:#64dcae;--am:#ffc26b;--pk:#f68ab0;--vio:#b49aff}*{box-sizing:border-box}body{margin:0;background:linear-gradient(135deg,#06192b,#0b2c47 55%,#071a2d);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei",sans-serif}.wrap{max-width:1450px;margin:auto;padding:32px 38px 76px}.hero{text-align:center;padding:38px 15px 28px;border-bottom:1px solid var(--line)}.kicker{color:var(--cy);font-size:14px;letter-spacing:2px;font-weight:700}.hero h1{font-size:36px;line-height:1.25;margin:10px 0}.hero p,.desc,.sub{color:var(--muted);margin:0}.tag{display:inline-block;margin-top:15px;border:1px solid #33779e;border-radius:99px;padding:5px 12px;font-size:13px;color:#ccecff;background:#0c304e}h2{font-size:26px;margin:50px 0 8px}.grid{display:grid;gap:18px}.g2{grid-template-columns:repeat(2,minmax(0,1fr))}.g4{grid-template-columns:repeat(4,minmax(0,1fr))}.card,.chart,.note{background:rgba(10,41,68,.95);border:1px solid var(--line);border-radius:16px;padding:19px}.label{color:var(--muted);font-size:13px}.num{font-size:30px;font-weight:850;line-height:1.2;margin:5px 0}.cyan{color:var(--cy)}.green{color:var(--gr)}.amber{color:var(--am)}.pink{color:var(--pk)}.violet{color:var(--vio)}.chart h3{font-size:17px;margin:0 0 4px}.chart p{font-size:13px;color:var(--muted);margin:0 0 14px}.box{height:340px;position:relative}.callout{background:#0a2a45;border:1px solid #2a5c7e;border-left:4px solid #43c7e7;border-radius:12px;padding:14px 18px;margin:18px 0;line-height:1.7}.callout.red{border-left-color:#f68ab0}.insight{display:flex;gap:14px;padding:15px;border:1px solid var(--line);border-radius:12px;background:#0a2a45;margin:10px 0}.idx{font-size:22px;font-weight:800;color:var(--cy);flex:none;width:38px}.insight h3{font-size:15.5px;margin:0 0 4px}.insight p{color:var(--muted);font-size:13.5px;margin:0}.table{overflow-x:auto;margin:14px 0}.table table{width:100%;border-collapse:collapse;font-size:14px;background:rgba(10,41,68,.95)}caption{caption-side:top;text-align:left;color:#e5f5ff;font-size:15px;font-weight:700;margin-bottom:8px}th,td{border:1px solid var(--line);padding:9px 12px;text-align:center;white-space:nowrap}th{background:#0e3a5c;color:#d7edf9;font-weight:650}td.good{color:var(--gr);font-weight:750}td.bad{color:#ff8d8d;font-weight:750}td.down{color:#ff8d8d}td.up{color:var(--am)}tr.total td{background:#0e3453;font-weight:800}.foot{color:var(--muted);font-size:12.5px;text-align:center;margin-top:50px;padding:20px;border-top:1px solid var(--line);line-height:1.8}@media(max-width:900px){.g4{grid-template-columns:repeat(2,1fr)}.g2{grid-template-columns:1fr}}
+</style></head><body><main class="wrap">
+<header class="hero"><div class="kicker">循环贷 T0 当天提单率 · 汇报版</div><h1>循环贷当天提单率趋势与下降归因汇报</h1><p>统计期间：2026 年 1 月 1 日 ~ 8 月 15 日　·　报告生成时间：2026 年 8 月 31 日</p><span class="tag">T0 口径：结清时点无在途 + 同日获额通过 · 8 月为 1–15 日半月样本</span></header>
+
+<h2>核心结论</h2><p class="desc">循环贷用户 T0 当天提单率持续下滑，核心归因是产品利率上调。以下均为循环贷 T0 用户（1–8 月合计 60,809 个用户日期样本）。</p>
+<section class="grid g4" style="margin-top:18px"><article class="card"><div class="label">当天提单率（1月→8月）</div><div class="num pink">52.47% → 41.94%</div><div class="sub">累计下滑 10.53pp</div></article><article class="card"><div class="label">加权利率（1月→8月）</div><div class="num amber">50.93% → 59.16%</div><div class="sub">累计上调 8.23pp</div></article><article class="card"><div class="label">循环贷整体提单率</div><div class="num cyan">48.2%</div><div class="sub">非循环贷 45.02%（+3.18pp）</div></article><article class="card"><div class="label">核心归因</div><div class="num violet">利率上调</div><div class="sub">与提单率下滑高度同步</div></article></section>
+
+<h2>一、提单率趋势：循环贷 vs 非循环贷</h2><p class="desc">两类用户当天提单率均逐月下滑，8 月（半月）跌至年内低点。</p>
+<div class="table"><table><caption>月度当天提单率与循环贷占比</caption><thead><tr><th>结清月份</th><th>循环贷样本</th><th>循环贷提单率</th><th>环比</th><th>循环贷占比</th><th>非循环贷提单率</th></tr></thead><tbody>
+<tr><td>1月</td><td>6,792</td><td>52.47%</td><td>—</td><td>34.79%</td><td>53.14%</td></tr>
+<tr><td>2月</td><td>7,745</td><td>51.52%</td><td class="down">-0.95pp</td><td>34.06%</td><td>51.97%</td></tr>
+<tr><td>3月</td><td>8,337</td><td>47.57%</td><td class="down">-3.95pp</td><td>37.55%</td><td>45.68%</td></tr>
+<tr><td>4月</td><td>7,991</td><td>48.83%</td><td class="good">+1.26pp</td><td>38.45%</td><td>45.61%</td></tr>
+<tr><td>5月</td><td>9,576</td><td>47.55%</td><td class="down">-1.28pp</td><td>40.11%</td><td>43.57%</td></tr>
+<tr><td>6月</td><td>8,538</td><td>46.76%</td><td class="down">-0.79pp</td><td>37.72%</td><td>41.96%</td></tr>
+<tr><td>7月</td><td>8,523</td><td>46.38%</td><td class="down">-0.38pp</td><td>36.62%</td><td>38.46%</td></tr>
+<tr><td>8月（1–15日）</td><td>3,307</td><td class="bad">41.94%</td><td class="down">-4.44pp</td><td>30.52%</td><td class="bad">36.55%</td></tr>
+<tr class="total"><td>总计</td><td>60,809</td><td>48.2%</td><td>—</td><td>36.66%</td><td>45.02%</td></tr>
+</tbody></table></div>
+<section class="grid g2"><article class="chart"><h3>两类用户月度当天提单率</h3><p>循环贷整体高于非循环贷，但均逐月下滑。</p><div class="box"><canvas id="trend"></canvas></div></article><article class="chart"><h3>循环贷提单率 vs 加权利率</h3><p>利率上升与提单率下滑高度同步。</p><div class="box"><canvas id="dual"></canvas></div></article></section>
+
+<h2>二、下降归因：产品利率上调</h2><p class="desc">循环贷当天首次提单订单的加权利率从 1 月 50.93% 持续升至 8 月 59.16%，是提单率下滑最直接、最同步的驱动因素。</p>
+<div class="table"><table><caption>循环贷加权利率与提单率月度对照</caption><thead><tr><th>月份</th><th>加权利率</th><th>利率环比</th><th>当天提单率</th><th>提单率环比</th></tr></thead><tbody>
+<tr><td>1月</td><td>50.93%</td><td>—</td><td>52.47%</td><td>—</td></tr>
+<tr><td>2月</td><td>49.88%</td><td class="good">-1.05pp</td><td>51.52%</td><td class="down">-0.95pp</td></tr>
+<tr><td>3月</td><td>50.38%</td><td class="up">+0.50pp</td><td>47.57%</td><td class="down">-3.95pp</td></tr>
+<tr><td>4月</td><td>50.79%</td><td class="up">+0.41pp</td><td>48.83%</td><td class="good">+1.26pp</td></tr>
+<tr><td>5月</td><td>53.27%</td><td class="up">+2.48pp</td><td>47.55%</td><td class="down">-1.28pp</td></tr>
+<tr><td>6月</td><td>57.14%</td><td class="up">+3.87pp</td><td>46.76%</td><td class="down">-0.79pp</td></tr>
+<tr><td>7月</td><td>57.51%</td><td class="up">+0.37pp</td><td>46.38%</td><td class="down">-0.38pp</td></tr>
+<tr><td>8月（1–15日）</td><td class="bad">59.16%</td><td class="up">+1.65pp</td><td class="bad">41.94%</td><td class="down">-4.44pp</td></tr>
+</tbody></table></div>
+<div class="callout red"><strong>关键判断：</strong>① 1–4 月利率稳定在 49.9%~50.9%，提单率维持在 47.6%~52.5%；② 5 月起利率快速上调（53.27%→57.14%→57.51%→59.16%），同期提单率加速下滑（47.55%→41.94%）。<strong>利率上调是 5 月后提单率加速下滑的直接推手</strong>，8 月半月利率触及年内高点 59.16%，提单率跌破 42%。</div>
+<section class="chart"><h3>利率分组 × 当天提单率（循环贷）</h3><p>结清订单利率分组的月度提单率：中高利率组下滑最明显。</p><div class="box"><canvas id="bucket"></canvas></div></section>
+<div class="callout"><strong>分组解读：</strong>8 月相比 1 月，中高利率组提单率下滑显著（30%~40% 组 -20.47pp、50%~60% 组 -15.28pp、40%~50% 组 -11.83pp），而「30% 以下」低息组（-2.22pp）与「60% 以上」组（基本持平）变化较小——<strong>利率上调对中高利率档的冲击最大</strong>。</div>
+
+<h2>三、期数与提单率关系</h2><p class="desc">循环贷当天首次提单订单以 3 期、4 期为主，期数结构相对稳定，非提单率下滑主因。</p>
+<div class="table"><table><caption>循环贷当天提单订单期数分布（占比）</caption><thead><tr><th>月份</th><th>1期</th><th>2期</th><th>3期</th><th>4期</th><th>合计订单</th></tr></thead><tbody>
+<tr><td>1月</td><td>0.2%</td><td>23.9%</td><td>31.7%</td><td>44.2%</td><td>3,564</td></tr>
+<tr><td>2月</td><td>2.2%</td><td>25.6%</td><td>28.7%</td><td>43.5%</td><td>3,990</td></tr>
+<tr><td>3月</td><td>2.7%</td><td>28.5%</td><td>24.5%</td><td>44.4%</td><td>3,966</td></tr>
+<tr><td>4月</td><td>3.4%</td><td>27.2%</td><td>26.1%</td><td>43.3%</td><td>3,902</td></tr>
+<tr><td>5月</td><td>5.8%</td><td>24.2%</td><td>31.3%</td><td>38.7%</td><td>4,553</td></tr>
+<tr><td>6月</td><td>9.3%</td><td>21.7%</td><td>36.4%</td><td>32.7%</td><td>3,992</td></tr>
+<tr><td>7月</td><td>8.6%</td><td>21.2%</td><td>37.3%</td><td>32.9%</td><td>3,953</td></tr>
+<tr><td>8月（1–15日）</td><td>9.4%</td><td>16.0%</td><td>30.3%</td><td>44.3%</td><td>1,387</td></tr>
+</tbody></table></div>
+<section class="grid g2"><article class="chart"><h3>循环贷提单订单期数分布（堆叠）</h3><p>4 期为主流，1 期占比小幅上升。</p><div class="box"><canvas id="terms"></canvas></div></article><article class="chart"><h3>期数结构趋势（占比）</h3><p>3/4 期合计稳定在 70%~75% 左右。</p><div class="box"><canvas id="termShare"></canvas></div></article></section>
+<div class="callout"><strong>期数结论：</strong>期数结构整体稳定（3 期 + 4 期合计约 70%~75%），仅 1 期短账期占比从 0.2% 小幅升至 9.4%。<strong>期数不是提单率下滑的主因，利率才是</strong>。</div>
+
+<h2>四、核心结论汇总</h2>
+<section class="note"><div class="insight"><div class="idx">01</div><div><h3>循环贷当天提单率年内累计下滑 10.53pp。</h3><p>从 1 月 52.47% 降至 8 月 41.94%，8 月（半月）跌至年内最低点。</p></div></div><div class="insight"><div class="idx">02</div><div><h3>核心归因是利率上调（+8.23pp）。</h3><p>加权利率 5 月起快速上行（50.79%→59.16%），与提单率加速下滑高度同步；中高利率档（30%~60%）提单率下滑最明显。</p></div></div><div class="insight"><div class="idx">03</div><div><h3>期数结构稳定，非下滑主因。</h3><p>3/4 期为主流（合计约 70%~75%），仅 1 期占比小幅上升，结构变化不足以解释提单率下降。</p></div></div><div class="insight"><div class="idx">04</div><div><h3>循环贷仍显著优于非循环贷。</h3><p>循环贷整体提单率 48.2%，高于非循环贷 45.02%（+3.18pp），且下滑幅度更小（-10.53pp vs -16.59pp）。</p></div></div></section>
+
+<h2>五、建议</h2>
+<section class="note"><div class="insight"><div class="idx">A</div><div><h3>关注利率定价，控制中高利率档上浮节奏。</h3><p>利率是提单率最敏感的杠杆，5 月后的快速上调直接压制了提单意愿，建议评估利率上浮对转化的边际弹性。</p></div></div><div class="insight"><div class="idx">B</div><div><h3>针对中高利率档用户配置降息类运营手段。</h3><p>中高利率档（30%~60%）提单率下滑最显著，可对这部分用户投放降息券/利率优惠，对冲定价上浮带来的转化损失。</p></div></div><div class="insight"><div class="idx">C</div><div><h3>持续跟踪 8 月完整月数据验证趋势。</h3><p>8 月为半月样本（1,387 笔），41.94% 的年内低点需用完整月数据复核，确认是否为利率持续上行的延续效应。</p></div></div></section>
+
+<p class="foot">口径说明：T0 = 结清时点无其他在途订单 + 同日获额通过 + 获额时间 ≥ 结清时间（20 秒批次去重后取最早满足一笔）。加权利率 = (pre_amt + post_amt) / remit_amt（仅成功放款且放款金额 > 0）。8 月为 2026-08-01 至 08-15 半月样本。数据源自《T0 用户循环贷与非循环贷分层当天提单率分析报告》。</p>
+</main>
+<script>
+Chart.defaults.color='#c0d7e8';Chart.defaults.font.family='-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei",sans-serif';
+const L=['1月','2月','3月','4月','5月','6月','7月','8月(1-15)'];
+const base={responsive:true,maintainAspectRatio:false,plugins:{legend:{labels:{boxWidth:12,padding:15}}},scales:{x:{grid:{color:'rgba(80,142,176,.16)'}},y:{grid:{color:'rgba(80,142,176,.16)'},beginAtZero:true}}};
+const pct=(max)=>({...base,plugins:{...base.plugins,tooltip:{callbacks:{label:c=>c.dataset.label+': '+c.parsed.y+'%'}}},scales:{...base.scales,y:{...base.scales.y,max,ticks:{callback:v=>v+'%'}}}});
+const cycRate=[52.47,51.52,47.57,48.83,47.55,46.76,46.38,41.94];
+const nonRate=[53.14,51.97,45.68,45.61,43.57,41.96,38.46,36.55];
+const intRate=[50.93,49.88,50.38,50.79,53.27,57.14,57.51,59.16];
+const bucketLabels=['30%以下','30%-40%','40%-50%','50%-60%','60%以上'];
+const bucketSeries=[[39.26,34.82,43.51,36.36,32.17,45.45,36.17,37.04],[49.22,52.36,46.82,47.79,45.74,40.17,34.5,28.75],[54.9,52.37,47.54,49.14,47.37,43.42,44.64,43.07],[55.61,53.53,49.1,54,50.41,45.62,46.37,40.33],[43.21,46.89,47.43,47.74,47.83,49.28,48.1,43.2]];
+const termSeries=[[8,88,105,133,262,371,338,131],[851,1021,1131,1063,1104,865,839,222],[1128,1147,970,1018,1424,1452,1474,420],[1577,1734,1760,1688,1763,1304,1302,614]];
+const termShare=[[0.2,2.2,2.7,3.4,5.8,9.3,8.6,9.4],[23.9,25.6,28.5,27.2,24.2,21.7,21.2,16.0],[31.7,28.7,24.5,26.1,31.3,36.4,37.3,30.3],[44.2,43.5,44.4,43.3,38.7,32.7,32.9,44.3]];
+const cols=['#43c7e7','#64dcae','#ffc26b','#b49aff','#f68ab0'];
+new Chart(document.getElementById('trend'),{type:'line',data:{labels:L,datasets:[{label:'循环贷提单率 %',data:cycRate,borderColor:'#43c7e7',backgroundColor:'#43c7e7',tension:.25,pointRadius:4},{label:'非循环贷提单率 %',data:nonRate,borderColor:'#94a3b8',backgroundColor:'#94a3b8',tension:.25,pointRadius:4}]},options:pct(60)});
+new Chart(document.getElementById('dual'),{type:'line',data:{labels:L,datasets:[{label:'当天提单率 % (左轴)',data:cycRate,borderColor:'#43c7e7',backgroundColor:'#43c7e7',tension:.25,pointRadius:4,yAxisID:'y'},{label:'加权利率 % (右轴)',data:intRate,borderColor:'#ffc26b',backgroundColor:'#ffc26b',tension:.25,pointRadius:4,yAxisID:'y1'}]},options:{...base,plugins:{...base.plugins,tooltip:{callbacks:{label:c=>c.dataset.label+': '+c.parsed.y+'%'}}},scales:{x:{grid:{color:'rgba(80,142,176,.16)'}},y:{position:'left',min:30,max:60,grid:{color:'rgba(80,142,176,.16)'},ticks:{callback:v=>v+'%'}},y1:{position:'right',min:40,max:65,grid:{drawOnChartArea:false},ticks:{callback:v=>v+'%'}}}}});
+new Chart(document.getElementById('bucket'),{type:'line',data:{labels:L,datasets:bucketLabels.map((x,i)=>({label:x,data:bucketSeries[i],borderColor:cols[i],backgroundColor:cols[i],tension:.25,pointRadius:3}))},options:pct(65)});
+new Chart(document.getElementById('terms'),{type:'bar',data:{labels:L,datasets:['1期','2期','3期','4期'].map((x,i)=>({label:x,data:termSeries[i],backgroundColor:cols[i],borderRadius:3}))},options:{...base,plugins:{...base.plugins,tooltip:{callbacks:{label:c=>c.dataset.label+': '+c.parsed.y+' 单'}}},scales:{...base.scales,x:{...base.scales.x,stacked:true},y:{...base.scales.y,stacked:true}}}});
+new Chart(document.getElementById('termShare'),{type:'line',data:{labels:L,datasets:['1期','2期','3期','4期'].map((x,i)=>({label:x,data:termShare[i],borderColor:cols[i],backgroundColor:cols[i],tension:.25,pointRadius:3,fill:false}))},options:pct(60)});
+</script></body></html>
