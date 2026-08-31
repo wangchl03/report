@@ -10,32 +10,32 @@
 </style>
 </head>
 <body><main class="wrap">
-<header class="hero"><div class="eyebrow">T0 USER CONVERSION · MONTHLY TREND</div><h1>T0 用户首次提单时效月度趋势分析报告</h1><p>统计范围：2026-01-01 至 2026-08-20 的结清日样本｜按结清月份分组｜报告生成：2026-08-26</p></header>
+<header class="hero"><div class="eyebrow">T0 USER CONVERSION · MONTHLY TREND</div><h1>T0 用户首次提单时效月度趋势分析报告</h1><p>统计范围：2026-01-01 至 2026-08-15 的结清日样本｜按结清月份分组｜报告生成：2026-08-31</p></header>
 
 <section class="section"><h2>一、核心结论</h2><p class="sub">以下比例均为符合条件用户中的提单占比；涉及 30 天的指标，仅保留已完成完整 30 天观察的用户。</p><div class="grid kpi">
-<div class="card"><div class="metric-name">结清后 30 天内总提单率（1月→7月）</div><div class="metric-value" style="font-size:31px;white-space:nowrap">88.24% → 82.00%</div><div class="delta bad">下降 6.24 个百分点</div><div class="note">每个月都按完整 30 天来算，前后可以直接比较。</div></div>
-<div class="card"><div class="metric-name">T0 / D0 首次提单率（1月→7月）</div><div class="metric-value" style="font-size:31px;white-space:nowrap">52.84% → 41.24%</div><div class="delta bad">下降 11.60 个百分点</div><div class="note">T0 是当天结清、当天获额通过后的即时首次提单。</div></div>
-<div class="card"><div class="metric-name">T1、T2 首次提单率（1月→7月）</div><div class="metric-value" style="font-size:25px;margin:9px 0 4px">T1：10.02% → 10.06%</div><div class="metric-value" style="font-size:25px;margin:4px 0 7px">T2：5.32% → 5.13%</div><div class="note">T1 基本持平；T2 下降 0.19 个百分点。</div></div>
-<div class="card"><div class="metric-name">第三天开始提单的用户（1月→7月）</div><div class="metric-value" style="font-size:31px;white-space:nowrap">20.56% → 26.01%</div><div class="delta good">提升 5.45 个百分点</div><div class="note">T3+ 提单率在增加。</div></div>
+<div class="card"><div class="metric-name">结清后 30 天内总提单率（1月→7月）</div><div class="metric-value" style="font-size:31px;white-space:nowrap">88.29% → 81.83%</div><div class="delta bad">下降 6.46 个百分点</div><div class="note">每个月都按完整 30 天来算，前后可以直接比较。</div></div>
+<div class="card"><div class="metric-name">T0 / D0 首次提单率（1月→7月）</div><div class="metric-value" style="font-size:31px;white-space:nowrap">52.91% → 41.36%</div><div class="delta bad">下降 11.55 个百分点</div><div class="note">T0 是当天结清、当天获额通过后的即时首次提单。</div></div>
+<div class="card"><div class="metric-name">T1、T2 首次提单率（1月→7月）</div><div class="metric-value" style="font-size:25px;margin:9px 0 4px">T1：10.01% → 10.04%</div><div class="metric-value" style="font-size:25px;margin:4px 0 7px">T2：5.29% → 5.14%</div><div class="note">T1 提升 0.03 个百分点；T2 下降 0.15 个百分点。</div></div>
+<div class="card"><div class="metric-name">第三天开始提单的用户（1月→7月）</div><div class="metric-value" style="font-size:31px;white-space:nowrap">20.58% → 25.77%</div><div class="delta good">提升 5.19 个百分点</div><div class="note">T3+ 提单率在增加。</div></div>
 </div></section>
 
 <section class="section"><h2>二、统计口径说明</h2><div class="definitions"><div class="definition"><b>基础样本</b>用户结清时没有其他在途订单；结清当天获额通过（is_pass1=1）；且获额时间不早于结清时间。同一用户同日只保留一次。</div><div class="definition"><b>D0、D1、D2</b>按结清后的首次提单日期划分：结清当日为 D0，次日为 D1，第 2 日为 D2。</div><div class="definition"><b>T3 / T5 / T7+</b>分别从第 3 天、第 5 天、第 8 天开始观察后续 30 天的首次提单。三组窗口有重叠，人数不能直接相加。</div></div><p class="footnote">8 月样本尚未完成完整 30 天观察，因此“30 天内”指标仅展示至 7 月。大盘趋势优先参考结清后 30 天总提单率。</p></section>
 
-<section class="section"><h2>三、大盘趋势：结清后 30 天总提单率持续下滑</h2><p class="sub">1 月为 88.24%，7 月降至 82.00%，下滑 6.24 个百分点。由于每位用户均按完整 30 天观察，该趋势具有可比性。</p><div class="grid two"><div class="card chart-card"><div class="chart-title">结清后 30 天总提单率</div><div class="chart-note">每个月均给予用户完整 30 天观察期，适合用于判断大盘趋势。</div><svg id="chart-total30" class="chart"></svg><div class="legend"><span><i class="dot" style="background:#39c6e8"></i>30 天总提单率</span></div></div><div class="card chart-card"><div class="chart-title">截至当前的累计提单率</div><div class="chart-note">后期月份观察时间较短，因此该图仅作为辅助参考。</div><svg id="chart-observed" class="chart"></svg><div class="legend"><span><i class="dot" style="background:#ffb45e"></i>累计提单率</span></div></div></div><div class="callout" style="margin-top:18px"><strong>结论 1：大盘下滑并非仅由 8 月观察期不足导致。</strong> 在统一观察满 30 天后，1–7 月提单率仍下滑 6.24 个百分点。</div></section>
+<section class="section"><h2>三、大盘趋势：结清后 30 天总提单率持续下滑</h2><p class="sub">1 月为 88.29%，7 月为 81.83%，下降 6.46 个百分点。由于每位用户均按完整 30 天观察，该趋势具有可比性。</p><div class="grid two"><div class="card chart-card"><div class="chart-title">结清后 30 天总提单率</div><div class="chart-note">每个月均给予用户完整 30 天观察期，适合用于判断大盘趋势。</div><svg id="chart-total30" class="chart"></svg><div class="legend"><span><i class="dot" style="background:#39c6e8"></i>30 天总提单率</span></div></div><div class="card chart-card"><div class="chart-title">截至当前的累计提单率</div><div class="chart-note">后期月份观察时间较短，因此该图仅作为辅助参考。</div><svg id="chart-observed" class="chart"></svg><div class="legend"><span><i class="dot" style="background:#ffb45e"></i>累计提单率</span></div></div></div><div class="callout" style="margin-top:18px"><strong>结论 1：大盘趋势不受 8 月观察期不足的影响。</strong> 在统一观察满 30 天后，1–7 月提单率下降 6.46 个百分点。</div></section>
 
-<section class="section"><h2>四、即时提单：T0 下滑最明显</h2><p class="sub">T0 的下滑幅度明显高于 T1、T2；T3+（从第 3 天开始的后续 30 天）提单率则呈上升趋势。</p><div class="card chart-card"><div class="chart-title">T0、T1、T2、T3+ 首次提单率</div><div class="chart-note">T0 = 结清当日，T1 = 次日，T2 = 第 2 日；T3+ = 从第 3 天开始、后续 30 天内首次提单。</div><svg id="chart-immediate" class="chart"></svg><div class="legend"><span><i class="dot" style="background:#39c6e8"></i>T0 / 当日</span><span><i class="dot" style="background:#62d6a7"></i>T1 / 次日</span><span><i class="dot" style="background:#ffb45e"></i>T2 / 第 2 日</span><span><i class="dot" style="background:#eb7db5"></i>T3+ / 第 3 天开始（30天）</span></div></div><div class="findings" style="margin-top:18px"><div class="finding"><h3>结论 2：T0 当日提单率下滑最明显</h3><p>1 月 T0 为 52.84%，7 月降至 41.24%，下滑 11.60 个百分点。8 月当前为 38.19%，仍需等待后续数据补全。</p></div><div class="finding"><h3>结论 3：T1、T2 变化较小</h3><p>T1 从 10.02% 升至 10.06%，基本持平；T2 从 5.32% 降至 5.13%，仅下滑 0.19 个百分点。</p><div class="evidence">主要变化发生在 T0，而不是用户整体仅向后推迟 1–2 天提单。</div></div></div></section>
+<section class="section"><h2>四、即时提单：T0 下滑最明显</h2><p class="sub">T0 的下滑幅度明显高于 T1、T2；T3+（从第 3 天开始的后续 30 天）提单率则呈上升趋势。</p><div class="card chart-card"><div class="chart-title">T0、T1、T2、T3+ 首次提单率</div><div class="chart-note">T0 = 结清当日，T1 = 次日，T2 = 第 2 日；T3+ = 从第 3 天开始、后续 30 天内首次提单。</div><svg id="chart-immediate" class="chart"></svg><div class="legend"><span><i class="dot" style="background:#39c6e8"></i>T0 / 当日</span><span><i class="dot" style="background:#62d6a7"></i>T1 / 次日</span><span><i class="dot" style="background:#ffb45e"></i>T2 / 第 2 日</span><span><i class="dot" style="background:#eb7db5"></i>T3+ / 第 3 天开始（30天）</span></div></div><div class="findings" style="margin-top:18px"><div class="finding"><h3>结论 2：T0 当日提单率下滑最明显</h3><p>1 月 T0 为 52.91%，7 月为 41.36%，下降 11.55 个百分点。8 月当前为 38.20%，仍需等待后续数据补全。</p></div><div class="finding"><h3>结论 3：T1、T2 变化较小</h3><p>T1 10.01% → 10.04%，提升 0.03 个百分点；T2 5.29% → 5.14%，下降 0.15 个百分点。</p><div class="evidence">主要变化发生在 T0，而不是用户整体仅向后推迟 1–2 天提单。</div></div></div></section>
 
-<section class="section"><h2>五、延迟首次提单：30 天窗口内转化提升</h2><p class="sub">当天未提单用户在后续时间的回流表现有所改善。各条曲线均按完整 30 天观察，可以直接比较。</p><div class="card chart-card"><div class="chart-title">T3+、T5+、T7+ 的 30 天内首次提单率</div><div class="chart-note">T3+ 从第 3 天开始，T5+ 从第 5 天开始，T7+ 从第 8 天开始观察。三条线存在重叠，分别用于观察不同起点的变化。</div><svg id="chart-delayed" class="chart"></svg><div class="legend"><span><i class="dot" style="background:#eb7db5"></i>T3+ / 第 3 天开始</span><span><i class="dot" style="background:#62d6a7"></i>T5+ / 第 5 天开始</span><span><i class="dot" style="background:#ffb45e"></i>T7+ / 第 8 天开始</span></div></div><div class="findings" style="margin-top:18px;grid-template-columns:1fr"><div class="finding"><h3>结论 4：T3+ 转化提升</h3><p>从第 3 天开始的 30 天内，提单率由 20.56% 升至 26.01%，提升 5.45 个百分点。</p></div><div class="finding"><h3>结论 5：T5+ 转化提升</h3><p>从第 5 天开始的 30 天内，提单率由 15.22% 升至 20.28%，提升 5.06 个百分点。</p></div><div class="finding"><h3>结论 6：T7+ 转化提升</h3><p>从第 8 天开始的 30 天内，提单率由 10.57% 升至 14.86%，提升 4.29 个百分点。</p></div></div></section>
+<section class="section"><h2>五、延迟首次提单：30 天窗口内转化提升</h2><p class="sub">当天未提单用户在后续时间的回流表现有所改善。各条曲线均按完整 30 天观察，可以直接比较。</p><div class="card chart-card"><div class="chart-title">T3+、T5+、T7+ 的 30 天内首次提单率</div><div class="chart-note">T3+ 从第 3 天开始，T5+ 从第 5 天开始，T7+ 从第 8 天开始观察。三条线存在重叠，分别用于观察不同起点的变化。</div><svg id="chart-delayed" class="chart"></svg><div class="legend"><span><i class="dot" style="background:#eb7db5"></i>T3+ / 第 3 天开始</span><span><i class="dot" style="background:#62d6a7"></i>T5+ / 第 5 天开始</span><span><i class="dot" style="background:#ffb45e"></i>T7+ / 第 8 天开始</span></div></div><div class="findings" style="margin-top:18px;grid-template-columns:1fr"><div class="finding"><h3>结论 4：T3+ 转化变化</h3><p>从第 3 天开始的 30 天内，提单率 20.58% → 25.77%，提升 5.19 个百分点。</p></div><div class="finding"><h3>结论 5：T5+ 转化变化</h3><p>从第 5 天开始的 30 天内，提单率 15.21% → 19.90%，提升 4.69 个百分点。</p></div><div class="finding"><h3>结论 6：T7+ 转化变化</h3><p>从第 8 天开始的 30 天内，提单率 10.60% → 14.65%，提升 4.05 个百分点。</p></div></div></section>
 
-<section class="section"><h2>六、大盘下滑原因：统一限定为结清后 30 天</h2><p class="sub">为避免延迟提单用户因观察期拉长而持续累积，本节只统计结清后 30 天内的首次提单。D0、D1–D2、D3–D29 三类人群互斥，且各月三类人数之和等于当月 30 天内总提单人数。</p><div class="card chart-card"><div class="chart-title">结清后 30 天内首次提单时点的用户占比（月度）</div><div class="chart-note">各月三条线合计为 100%，分母均为当月结清后 30 天内的首次提单用户数；8 月未完成完整观察，不展示。</div><svg id="chart-timeshare" class="chart"></svg><div class="legend"><span><i class="dot" style="background:#39c6e8"></i>当日提单用户占比（D0）</span><span><i class="dot" style="background:#62d6a7"></i>第 1–2 天提单用户占比</span><span><i class="dot" style="background:#eb7db5"></i>第 3–29 天提单用户占比</span></div></div><div class="callout" style="margin-top:18px"><strong style="display:block;font-size:17px">结论 7：30 天内的提单结构正在后移</strong><div style="display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin:14px 0"><div style="padding:11px 13px;border:1px solid #2a6386;border-radius:9px"><span style="display:block;color:#a7c3da;font-size:13px">D0 当日提单用户占比</span><b style="display:block;color:#39c6e8;font-size:20px;margin-top:2px">59.88% → 50.83%</b><span style="color:#ff9a9a;font-weight:700">下降 9.05 个百分点</span></div><div style="padding:11px 13px;border:1px solid #2a6386;border-radius:9px"><span style="display:block;color:#a7c3da;font-size:13px">D3–D29 提单用户占比</span><b style="display:block;color:#eb7db5;font-size:20px;margin-top:2px">22.73% → 30.58%</b><span style="color:#7de2ba;font-weight:700">提升 7.85 个百分点</span></div></div><div style="border-top:1px solid #2a6386;padding-top:12px">当前对 T3/T5/T7+ 进行多层次拦截触达，提单率提升明显；但这部分提单人数较少，暂时无法拉升大盘提单率，T0 用户的提单率仍关系着大盘走向。</div></div></section>
+<section class="section"><h2>六、大盘下滑原因：统一限定为结清后 30 天</h2><p class="sub">为避免延迟提单用户因观察期拉长而持续累积，本节只统计结清后 30 天内的首次提单。D0、D1–D2、D3–D29 三类人群互斥，且各月三类人数之和等于当月 30 天内总提单人数。</p><div class="card chart-card"><div class="chart-title">结清后 30 天内首次提单时点的用户占比（月度）</div><div class="chart-note">各月三条线合计为 100%，分母均为当月结清后 30 天内的首次提单用户数；8 月未完成完整观察，不展示。</div><svg id="chart-timeshare" class="chart"></svg><div class="legend"><span><i class="dot" style="background:#39c6e8"></i>当日提单用户占比（D0）</span><span><i class="dot" style="background:#62d6a7"></i>第 1–2 天提单用户占比</span><span><i class="dot" style="background:#eb7db5"></i>第 3–29 天提单用户占比</span></div></div><div class="callout" style="margin-top:18px"><strong style="display:block;font-size:17px">结论 7：30 天内的提单结构正在后移</strong><div style="display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin:14px 0"><div style="padding:11px 13px;border:1px solid #2a6386;border-radius:9px"><span style="display:block;color:#a7c3da;font-size:13px">D0 当日提单用户占比</span><b style="display:block;color:#39c6e8;font-size:20px;margin-top:2px">59.92% → 50.55%</b><span style="color:#ff9a9a;font-weight:700">下降 9.38 个百分点</span></div><div style="padding:11px 13px;border:1px solid #2a6386;border-radius:9px"><span style="display:block;color:#a7c3da;font-size:13px">D3–D29 提单用户占比</span><b style="display:block;color:#eb7db5;font-size:20px;margin-top:2px">22.74% → 30.90%</b><span style="color:#7de2ba;font-weight:700">提升 8.16 个百分点</span></div></div><div style="border-top:1px solid #2a6386;padding-top:12px">当前对 T3/T5/T7+ 进行多层次拦截触达，提单率提升明显；但这部分提单人数较少，暂时无法拉升大盘提单率，T0 用户的提单率仍关系着大盘走向。</div></div></section>
 
-<section class="section"><h2>七、月度可核对数据</h2><p class="sub">按结清月份分组。8 月尚未满足固定 30 天窗口的完整观察要求，固定窗口指标记为“—”。</p><div class="table-wrap"><table class="data-table"><thead><tr><th>结清月份</th><th>基础样本</th><th>T0 人数</th><th>T0 提单率</th><th>T1 提单率</th><th>T2 提单率</th><th>T3+ 提单率</th><th>T5+ 提单率</th><th>T7+ 提单率</th><th>截至取数日总提单率</th><th>T0 占总提单人数</th><th>D0–D29 总提单率</th></tr></thead><tbody><tr><td>2026-01</td><td>19,178</td><td>10,133</td><td>52.84%</td><td>10.02%</td><td>5.32%</td><td>20.56%</td><td>15.22%</td><td>10.57%</td><td>94.69%</td><td>55.80%</td><td>88.24%</td></tr><tr><td>2026-02</td><td>22,360</td><td>11,568</td><td>51.74%</td><td>10.39%</td><td>5.23%</td><td>21.30%</td><td>15.81%</td><td>10.97%</td><td>94.23%</td><td>54.91%</td><td>88.26%</td></tr><tr><td>2026-03</td><td>21,859</td><td>10,113</td><td>46.26%</td><td>10.78%</td><td>5.76%</td><td>23.56%</td><td>17.69%</td><td>12.65%</td><td>92.71%</td><td>49.90%</td><td>85.81%</td></tr><tr><td>2026-04</td><td>20,497</td><td>9,581</td><td>46.74%</td><td>10.53%</td><td>5.63%</td><td>23.91%</td><td>17.81%</td><td>12.51%</td><td>92.29%</td><td>50.65%</td><td>86.32%</td></tr><tr><td>2026-05</td><td>23,496</td><td>10,563</td><td>44.96%</td><td>10.39%</td><td>5.18%</td><td>24.82%</td><td>19.12%</td><td>13.91%</td><td>90.64%</td><td>49.60%</td><td>84.69%</td></tr><tr><td>2026-06</td><td>22,288</td><td>9,728</td><td>43.65%</td><td>10.31%</td><td>5.04%</td><td>25.23%</td><td>19.43%</td><td>14.09%</td><td>88.66%</td><td>49.23%</td><td>83.49%</td></tr><tr><td>2026-07</td><td>22,936</td><td>9,458</td><td>41.24%</td><td>10.06%</td><td>5.13%</td><td>26.01%</td><td>20.28%</td><td>14.86%</td><td>83.65%</td><td>49.30%</td><td>82.00%</td></tr><tr><td>2026-08</td><td>13,938</td><td>5,323</td><td>38.19%</td><td>10.50%</td><td>5.18%</td><td>—</td><td>—</td><td>—</td><td>73.53%</td><td>51.94%</td><td>—</td></tr></tbody></table></div></section>
+<section class="section"><h2>七、月度可核对数据</h2><p class="sub">按结清月份分组。8 月尚未满足固定 30 天窗口的完整观察要求，固定窗口指标记为“—”。</p><div class="table-wrap"><table class="data-table"><thead><tr><th>结清月份</th><th>基础样本</th><th>T0 人数</th><th>T0 提单率</th><th>T1 提单率</th><th>T2 提单率</th><th>T3+ 提单率</th><th>T5+ 提单率</th><th>T7+ 提单率</th><th>截至取数日总提单率</th><th>T0 占总提单人数</th><th>D0–D29 总提单率</th></tr></thead><tbody><tr><td>2026-01</td><td>19,521</td><td>10,328</td><td>52.91%</td><td>10.01%</td><td>5.29%</td><td>20.58%</td><td>15.21%</td><td>10.60%</td><td>94.77%</td><td>55.83%</td><td>88.29%</td></tr><tr><td>2026-02</td><td>22,741</td><td>11,783</td><td>51.81%</td><td>10.37%</td><td>5.20%</td><td>21.31%</td><td>15.81%</td><td>10.94%</td><td>94.34%</td><td>54.92%</td><td>88.30%</td></tr><tr><td>2026-03</td><td>22,200</td><td>10,298</td><td>46.39%</td><td>10.81%</td><td>5.75%</td><td>23.51%</td><td>17.65%</td><td>12.61%</td><td>92.84%</td><td>49.97%</td><td>85.89%</td></tr><tr><td>2026-04</td><td>20,782</td><td>9,736</td><td>46.85%</td><td>10.52%</td><td>5.63%</td><td>23.87%</td><td>17.78%</td><td>12.51%</td><td>92.45%</td><td>50.67%</td><td>86.36%</td></tr><tr><td>2026-05</td><td>23,876</td><td>10,784</td><td>45.17%</td><td>10.36%</td><td>5.17%</td><td>24.74%</td><td>19.07%</td><td>13.87%</td><td>90.82%</td><td>49.73%</td><td>84.78%</td></tr><tr><td>2026-06</td><td>22,636</td><td>9,908</td><td>43.77%</td><td>10.30%</td><td>5.03%</td><td>25.25%</td><td>19.41%</td><td>14.06%</td><td>89.04%</td><td>49.16%</td><td>83.61%</td></tr><tr><td>2026-07</td><td>23,277</td><td>9,628</td><td>41.36%</td><td>10.04%</td><td>5.14%</td><td>25.77%</td><td>19.90%</td><td>14.65%</td><td>84.35%</td><td>49.03%</td><td>81.83%</td></tr><tr><td>2026-08</td><td>10,836</td><td>4,139</td><td>38.20%</td><td>10.23%</td><td>5.15%</td><td>—</td><td>—</td><td>—</td><td>77.70%</td><td>49.16%</td><td>82.95%</td></tr></tbody></table></div></section>
 
 <section class="section"><h2>八、建议与后续验证</h2><div class="findings"><div class="finding"><h3>定位 T0 用户的提单卡点</h3><p>对 T0 “获额通过后未进入提单页、进入提单页未提单”等行为数据打标，判断用户的提单意愿和提单卡点。</p></div><div class="finding"><h3>保持 T3/T5/T7+ 的召回策略</h3><p>T3/T5/T7+ 30 天内提单率均呈增长，保持当前的召回策略；当前测试完成后，对全量用户上线。</p></div></div></section>
 
-<section class="section"><h2>附录：完整 PGSQL</h2><p class="sub">以下三个模块均可独立执行：每个模块都包含完整的基础样本 CTE、首次提单识别与最终统计。统计范围为 2026-01-01 至 2026-08-20 的 T0 用户日期样本。</p><details><summary>模块一：总体首次提单时效统计</summary><pre>/* ================================================================
+<section class="section"><h2>附录：完整 PGSQL</h2><p class="sub">以下三个模块均可独立执行：每个模块都包含完整的基础样本 CTE、首次提单识别与最终统计。统计范围为 2026-01-01 至 2026-08-15 的 T0 用户日期样本。</p><details><summary>模块一：总体首次提单时效统计</summary><pre>/* ================================================================
    T0 用户首次提单时效总体统计
-   统计范围：2026-01-01 至 2026-08-20
+   统计范围：2026-01-01 至 2026-08-15
 
    基础分母：干净结清 + 结清后当日获额通过 + 获额时间晚于结清时间。
    同一用户同日保留最早合格结清订单。
@@ -43,7 +43,7 @@
 WITH params AS (
     SELECT
         DATE '2026-01-01' AS start_date,
-        DATE '2026-08-20' AS end_date,
+        DATE '2026-08-15' AS end_date,
         CURRENT_DATE AS data_cutoff_date,
         CURRENT_TIMESTAMP AS data_cutoff_time
 ),
@@ -334,7 +334,7 @@ FROM metric_rows
 ORDER BY
     sort_order;</pre></details><details><summary>模块二：按结清月份统计 D0、D1、D2、T3、T5、T7+</summary><pre>/* ================================================================
    T0 用户首次提单时效总体统计
-   统计范围：2026-01-01 至 2026-08-20
+   统计范围：2026-01-01 至 2026-08-15
 
    基础分母：干净结清 + 结清后当日获额通过 + 获额时间晚于结清时间。
    同一用户同日保留最早合格结清订单。
@@ -342,7 +342,7 @@ ORDER BY
 WITH params AS (
     SELECT
         DATE '2026-01-01' AS start_date,
-        DATE '2026-08-20' AS end_date,
+        DATE '2026-08-15' AS end_date,
         CURRENT_DATE AS data_cutoff_date,
         CURRENT_TIMESTAMP AS data_cutoff_time
 ),
@@ -584,7 +584,7 @@ ORDER BY
     结清月份,
     sort_order;</pre></details><details><summary>模块三：按结清月份统计 D0–D29 总提单率</summary><pre>/* ================================================================
    T0 用户首次提单时效总体统计
-   统计范围：2026-01-01 至 2026-08-20
+   统计范围：2026-01-01 至 2026-08-15
 
    基础分母：干净结清 + 结清后当日获额通过 + 获额时间晚于结清时间。
    同一用户同日保留最早合格结清订单。
@@ -592,7 +592,7 @@ ORDER BY
 WITH params AS (
     SELECT
         DATE '2026-01-01' AS start_date,
-        DATE '2026-08-20' AS end_date,
+        DATE '2026-08-15' AS end_date,
         CURRENT_DATE AS data_cutoff_date,
         CURRENT_TIMESTAMP AS data_cutoff_time
 ),
@@ -843,13 +843,13 @@ ORDER BY
 <script>
 const labels=["01月","02月","03月","04月","05月","06月","07月","08月"];
 const delayedLabels=["01月","02月","03月","04月","05月","06月","07月"];
-const immediate={"d0":[52.839999999999996,51.739999999999995,46.26,46.739999999999995,44.96,43.65,41.24,38.190000000000005],"d1":[10.02,10.39,10.780000000000001,10.530000000000001,10.39,10.31,10.059999999999999,10.5],"d2":[5.319999999999999,5.2299999999999995,5.76,5.63,5.18,5.04,5.13,5.18]};
-const delayed={"t3":[20.560000000000002,21.3,23.56,23.91,24.82,25.230000000000004,26.009999999999998],"t5":[15.22,15.809999999999999,17.69,17.810000000000002,19.12,19.43,20.28],"t7":[10.57,10.97,12.65,12.509999999999998,13.91,14.09,14.860000000000001]};
-const total30=[88.24,88.26,85.81,86.32,84.69,83.49,82,0];
-const observed=[94.69,94.23,92.71000000000001,92.29,90.64,88.66000000000001,83.65,73.53];
-const d0Counts=[10133,11568,10113,9581,10563,9728,9458,5323];
-const d3plusCounts=[5083,6008,6537,6022,7073,6612,6245,2741];
-const timeShares={"d0":[59.88062876728519,58.616670889283,53.91299712122827,54.1544200768709,53.083069500979946,52.27858985382631,50.82613484839701,0],"d12":[17.39156128117244,17.69951862173803,19.271777374986673,18.731630115306352,18.392884064525855,18.38456577815993,18.59238216708215,0],"d329":[22.727809951542373,23.68381048897897,26.81522550378505,27.113949807822745,28.524046434494196,29.336844368013757,30.581482984520843,0]};
+const immediate={"d0":[52.910000000000004,51.81,46.39,46.85,45.17,43.769999999999996,41.36,38.2],"d1":[10.01,10.37,10.81,10.52,10.36,10.299999999999999,10.040000000000001,10.23],"d2":[5.29,5.2,5.75,5.63,5.17,5.029999999999999,5.140000000000001,5.1499999999999995]};
+const delayed={"t3":[20.580000000000002,21.310000000000002,23.51,23.87,24.740000000000002,25.25,25.77],"t5":[15.21,15.809999999999999,17.65,17.78,19.07,19.41,19.900000000000002],"t7":[10.6,10.94,12.61,12.509999999999998,13.87,14.06,14.649999999999999]};
+const total30=[88.29,88.3,85.89,86.36,84.78,83.61,81.83,82.95];
+const observed=[94.77,94.34,92.84,92.45,90.82000000000001,89.03999999999999,84.35000000000001,77.7];
+const d0Counts=[10328,11783,10298,9736,10784,9908,9628,4139];
+const d3plusCounts=[5184,6128,6637,6121,7192,6777,6473,2614];
+const timeShares={"d0":[59.92109538175911,58.67735670534336,54.0067128172855,54.24559839536439,53.272736254507734,52.34849685634279,50.5459890802184,51.90258751902587],"d12":[17.335808772336968,17.638563816543,19.273127753303964,18.698462224203254,18.31744306673912,18.33359750620806,18.553128937421253,16.894977168949772],"d329":[22.743095845903923,23.684079478113638,26.72015942941053,27.05593938043236,28.40982067875315,29.317905637449147,30.900881982360353,31.202435312024352]};
 function lineChart(id, labels, series, options={}) {
   const svg=document.getElementById(id),W=900,H=340,p={l:56,r:22,t:24,b:44};
   svg.setAttribute('viewBox','0 0 '+W+' '+H);
