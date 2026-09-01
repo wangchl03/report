@@ -1,0 +1,119 @@
+<!doctype html>
+<html lang="zh-CN">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>3天券第二批 A/B 测试：无券 vs 30%降息券（0821~0823）</title>
+<style>
+:root{--bg:#06162a;--panel:#0c2947;--line:#285579;--text:#e9f4fc;--muted:#a9c5d9;--cyan:#6de2ff;--purple:#b792ff;--green:#70dfae;--orange:#ffbc6c;--red:#ff9da5}*{box-sizing:border-box}body{margin:0;background:radial-gradient(circle at 80% 0,#123d63 0,#06162a 42%);color:var(--text);font:16px/1.65 Arial,"PingFang SC",sans-serif}.page{max-width:1220px;margin:auto;padding:36px 24px 72px}.hero,.panel{background:rgba(10,38,65,.94);border:1px solid var(--line);border-radius:18px}.hero{text-align:center;padding:38px 28px;margin-bottom:18px}.eyebrow{letter-spacing:2px;color:var(--cyan);font-size:12px}.hero h1{font-size:34px;margin:8px 0}.hero p{margin:3px;color:var(--muted)}h2{font-size:22px;margin:0 0 8px}h3{margin:0 0 8px;font-size:16px}.panel{padding:22px;margin-top:18px}.sub{color:var(--muted);margin:0 0 16px}.kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:13px}.kpi{background:#0a213b;border:1px solid #285273;border-radius:14px;padding:15px}.kpi span{color:var(--muted);font-size:13px}.kpi b{display:block;font-size:28px;margin:4px 0;color:#fff}.kpi.good b{color:var(--green)}.kpi.warn b{color:var(--orange)}.kpi.bad b{color:var(--red)}.grid2{display:grid;grid-template-columns:1fr 1fr;gap:16px}.chart{background:#071d34;border:1px solid #2c5b7e;border-radius:14px;padding:18px}.row{display:grid;grid-template-columns:96px 1fr 1fr 62px;gap:10px;align-items:end;margin:16px 0;font-size:13px}.bar-cell{min-width:0}.bar-label{display:block;height:20px;color:#dcebf6;font-size:12px;line-height:20px;white-space:nowrap;font-weight:bold}.bar{display:block;height:16px;min-width:0;border-radius:5px;padding:0;cursor:pointer}.d3{background:var(--orange)}.d7{background:var(--green)}.ctrl{background:var(--purple)}.trt{background:var(--cyan)}.delta{color:var(--green);font-weight:bold}.delta.neg{color:var(--red)}.note{background:#0b3254;border-left:4px solid var(--cyan);border-radius:9px;padding:15px;margin-top:16px}.note strong{color:#fff}.grpbox{background:#0a2440;border:1px solid #285273;border-radius:12px;padding:12px 14px 2px;margin-top:14px}.grp-title{font-size:13px;font-weight:bold;letter-spacing:1px;margin-bottom:6px}.strategy{display:grid;grid-template-columns:1fr 1fr 1fr 1fr;border:1px solid var(--line);border-radius:14px;overflow:hidden}.strategy>*{padding:15px;border-right:1px solid var(--line);border-bottom:1px solid var(--line)}.strategy .head{background:#164468;font-weight:bold}.seg{font-weight:bold;font-size:17px}.no{border-left:4px solid var(--red)}.low{border-left:4px solid var(--orange)}.short{border-left:4px solid var(--cyan)}.long{border-left:4px solid var(--green)}.flow{display:grid;grid-template-columns:repeat(4,1fr);gap:13px;margin-top:16px}.step{background:#092946;border:1px solid var(--line);border-radius:12px;padding:14px}.step b{display:block;color:var(--cyan);margin-bottom:5px}.small{font-size:13px;color:var(--muted)}.decision{border-left:4px solid var(--green);padding:14px 16px;background:#0a354f;border-radius:9px;margin-top:16px}.foot{color:var(--muted);font-size:12px;margin-top:20px}.table{overflow-x:auto;margin:14px 0}.table table{width:100%;border-collapse:collapse;font-size:14px;background:rgba(10,38,65,.94)}th,td{border:1px solid var(--line);padding:8px 12px;text-align:center;white-space:nowrap}th{background:#164468;color:#dcebf6}details{margin-top:14px;border:1px solid var(--line);border-radius:12px;background:#092640}summary{cursor:pointer;padding:14px 18px;font-size:15px;font-weight:700;color:#e5f5ff}pre{margin:0;padding:0 18px 20px;overflow:auto;color:#d7edf9;font:12px/1.7 ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;white-space:pre}@media(max-width:800px){.kpis,.grid2,.flow{grid-template-columns:1fr}.strategy{grid-template-columns:1fr}.strategy>*{border-right:0}.row{grid-template-columns:1fr}.hero h1{font-size:27px}}
+</style>
+<main class="page">
+ <header class="hero"><div class="eyebrow">T5 3天券第二批 · 30% COUPON vs NO COUPON</div><h1>3天券第二批 A/B 测试：无券 vs 30%降息券<br>召回批次 0821_0826 / 0822_0827 / 0823_0828（精简版）</h1><p>报告生成时间：2026年8月31日</p><p>口径：结清后连续4天为第一阶段（无提单）；召回日起第1–3天为快速转化窗口；提单率为前3天首次提单。</p></header>
+
+ <section class="panel"><h2>一、会议结论</h2><p class="sub">本批券整体效果弱（+1.11pp），分批次方向严重分裂（0823_0828 好、0821_0826 反）；券只对「第一阶段活跃」用户有效，对沉默用户转负。</p><div class="kpis"><article class="kpi good"><span>前3天提单率（30%券 vs 无券）</span><b>+1.11pp</b><small>15.52% vs 14.41%（52/335 vs 48/333）</small></article><article class="kpi good"><span>第一阶段活跃用户提单率</span><b>21.25%</b><small>是沉默用户 7.94% 的 2.7 倍</small></article><article class="kpi"><span>券对活跃用户的增量</span><b>+2.96pp</b><small>22.73% vs 19.77%</small></article><article class="kpi bad"><span>券对沉默用户的增量</span><b>-0.78pp</b><small>7.55% vs 8.33%，券对沉默用户无效</small></article></div><div class="decision"><strong>决策建议：</strong>本批 3 天券效果明显弱于第一批（第一批 +6.52pp），整体仅 +1.11pp，且分批次方向分裂（0823_0828 +8.51pp、0821_0826 -3.06pp、0822_0827 -0.14pp）。券增量仍集中在「第一阶段活跃」用户（+2.96pp），沉默用户券增量转负（-0.78pp）——<strong>建议只对活跃用户发券，沉默用户不发券、先低成本唤醒</strong>。</div></section>
+
+ <section class="panel"><h2>二、实验结果</h2><div class="grid2"><article class="chart"><h3>分批次：前3天提单率（无券 vs 30%券）</h3><p class="sub">三批召回 08-26 / 08-27 / 08-28，方向严重分裂。</p><div class="grpbox"><div class="grp-title" style="color:var(--cyan)">三批合并</div><div class="row"><b>无券</b><div class="bar-cell"><span class="bar-label">14.41%（48/333）</span><i class="bar ctrl" style="width:53%"></i></div><em class="delta"></em></div><div class="row"><b>30%券</b><div class="bar-cell"><span class="bar-label">15.52%（52/335）</span><i class="bar trt" style="width:57%"></i></div><em class="delta">+1.11pp</em></div></div><div class="grpbox"><div class="grp-title" style="color:var(--purple)">分批次</div><div class="row"><b>0821_0826</b><div class="bar-cell"><span class="bar-label">无券 16.30%</span><i class="bar ctrl" style="width:60%"></i></div><div class="bar-cell"><span class="bar-label">30%券 13.24%</span><i class="bar trt" style="width:49%"></i></div><em class="delta neg">-3.06pp</em></div><div class="row"><b>0822_0827</b><div class="bar-cell"><span class="bar-label">无券 14.42%</span><i class="bar ctrl" style="width:53%"></i></div><div class="bar-cell"><span class="bar-label">30%券 14.29%</span><i class="bar trt" style="width:53%"></i></div><em class="delta neg">-0.14pp</em></div><div class="row"><b>0823_0828</b><div class="bar-cell"><span class="bar-label">无券 11.70%</span><i class="bar ctrl" style="width:43%"></i></div><div class="bar-cell"><span class="bar-label">30%券 20.21%</span><i class="bar trt" style="width:75%"></i></div><em class="delta">+8.51pp</em></div></div></article><article class="chart"><h3>第一阶段活跃分层：前3天提单率</h3><p class="sub">同一张券，活跃/沉默用户表现显著分化，沉默用户券增量为负。</p><div class="grpbox"><div class="grp-title" style="color:var(--cyan)">合计对比</div><div class="row"><b>活跃合计</b><div class="bar-cell"><span class="bar-label">21.25%（75/353）</span><i class="bar d7" style="width:79%"></i></div><em class="delta">2.7倍</em></div><div class="row"><b>沉默合计</b><div class="bar-cell"><span class="bar-label">7.94%（25/315）</span><i class="bar d3" style="width:29%"></i></div><em class="delta"></em></div></div><div class="grpbox"><div class="grp-title" style="color:var(--purple)">活跃用户（无券 vs 30%券）</div><div class="row"><b>无券</b><div class="bar-cell"><span class="bar-label">19.77%（35/177）</span><i class="bar ctrl" style="width:73%"></i></div><em class="delta"></em></div><div class="row"><b>30%券</b><div class="bar-cell"><span class="bar-label">22.73%（40/176）</span><i class="bar trt" style="width:84%"></i></div><em class="delta">+2.96pp</em></div></div><div class="grpbox"><div class="grp-title" style="color:var(--purple)">沉默用户（无券 vs 30%券）</div><div class="row"><b>无券</b><div class="bar-cell"><span class="bar-label">8.33%（13/156）</span><i class="bar ctrl" style="width:31%"></i></div><em class="delta"></em></div><div class="row"><b>30%券</b><div class="bar-cell"><span class="bar-label">7.55%（12/159）</span><i class="bar trt" style="width:28%"></i></div><em class="delta neg">-0.78pp</em></div></div></article></div>
+ <div class="note"><strong>为什么本批效果弱：</strong>① 分批次方向分裂——0821_0826 对照组反超（-3.06pp，该批实验组活跃占比仅 45.6%，对照组高息率 0.344、高息用户自然转化强）；0822_0827 持平；仅 0823_0828 实验组领先（+8.51pp，该批实验组活跃占比 61.7%、历史放款金额 12,806 为三批最高）。② 一正一负抵消后，整体只剩 +1.11pp。③ 券增量只落在活跃用户（+2.96pp），沉默用户转负（-0.78pp）。</div></section>
+
+ <section class="panel"><h2>三、分层召回方案：谁发什么券</h2><p class="sub">先按「第一阶段活跃度」分流，再决定是否补贴。本批数据进一步证明：活跃度是券效果的先决条件。</p><div class="strategy"><b class="head">人群</b><b class="head">识别信号</b><b class="head">推荐动作</b><b class="head">运营逻辑</b><b class="seg long">活跃用户</b><span>结清后4天内有活跃记录（active_days_cnt > 0）</span><span>30%降息券（聚焦投放）</span><span>提单率 21.25%、券增量 +2.96pp，是全场唯一有正增量的群体；券价值集中在这一层。</span><b class="seg no">沉默用户</b><span>结清后4天无任何活跃记录</span><span>默认不发券；先低成本唤醒</span><span>提单率仅 7.94%，券增量 -0.78pp（发券反而更差）；先唤醒、再观察行为分层。</span><b class="seg low">活跃但未进提单页</b><span>活跃但无提单页浏览/金额切换行为</span><span>轻提醒 + 小流量验证券</span><span>需求信号尚弱，避免给本会自然转化的人补贴。</span><b class="seg short">活跃且接近决策</b><span>活跃并进入提单页/切换金额期次</span><span>30%券 + 到期提醒</span><span>有明确意愿缺临门一脚，券促成快速决策，前3天集中转化。</span></div></section>
+
+ <section class="panel"><h2>四、执行与下一步验证</h2><div class="flow"><article class="step"><b>第一阶段 D1～D4</b><span class="small">沉淀结清后4天的活跃、提单页访问、金额/期次切换等信号，形成「活跃/沉默」分层。</span></article><article class="step"><b>召回日 D0</b><span class="small">按分层分流：活跃用户发30%降息券；沉默用户只做低成本唤醒，不发高价值券。</span></article><article class="step"><b>D+3 复盘</b><span class="small">跟踪前3天提单率；本批券增量偏弱（+1.11pp），需重点看分批次方向的稳定性。</span></article><article class="step"><b>D+7 复盘</b><span class="small">对比前3天/前7天口径，验证沉默用户券增量的负效应；评估让利成本与逾期风险。</span></article></div></section>
+
+ <h2 style="margin-top:24px">附录：完整 PGSQL 代码</h2>
+ <section class="panel" style="margin-top:12px"><p class="sub">以下代码覆盖本报告全部统计。执行前请按实际需要调整统计截止日。</p>
+<details><summary>模块一：三批合并 + 前3天提单率（分批次 / 合并，按 ab_group）</summary><pre>-- 数据源：no_apply_0821_0826_30pct / 0822_0827 / 0823_0828
+-- 第一阶段 = 结清后到召回前的4天（无提单）；前3天 = 召回日 ~ 召回日+2
+WITH t AS (
+    SELECT churn_user_id::bigint AS user_id, ab_group,
+           DATE '2026-08-26' AS recall_date, '0821_0826' AS batch
+    FROM wangchuanliang.no_apply_0821_0826_30pct
+    UNION ALL
+    SELECT churn_user_id::bigint, ab_group, DATE '2026-08-27', '0822_0827'
+    FROM wangchuanliang.no_apply_0822_0827_30pct
+    UNION ALL
+    SELECT churn_user_id::bigint, ab_group, DATE '2026-08-28', '0823_0828'
+    FROM wangchuanliang.no_apply_0823_0828_30pct
+),
+apply3 AS (
+    SELECT DISTINCT t.user_id, t.batch, t.ab_group
+    FROM t
+    JOIN wangchuanliang.order_loan_f_v2_copy o
+      ON o.user_id = t.user_id
+     AND o.apply_date BETWEEN t.recall_date AND t.recall_date + 2
+)
+-- 分批次
+SELECT
+    t.batch                                            AS 批次,
+    t.ab_group                                          AS 分组,
+    COUNT(DISTINCT t.user_id)                           AS 用户数,
+    COUNT(DISTINCT a.user_id)                           AS 前3天提单用户,
+    ROUND(COUNT(DISTINCT a.user_id) * 100.0
+          / NULLIF(COUNT(DISTINCT t.user_id), 0), 2)    AS 前3天提单率
+FROM t
+LEFT JOIN apply3 a
+       ON a.user_id = t.user_id
+      AND a.batch = t.batch
+      AND a.ab_group = t.ab_group
+GROUP BY t.batch, t.ab_group
+ORDER BY t.batch, t.ab_group;
+
+-- 三批合并（按 ab_group）
+SELECT
+    t.ab_group                                          AS 分组,
+    COUNT(DISTINCT t.user_id)                           AS 用户数,
+    COUNT(DISTINCT a.user_id)                           AS 前3天提单用户,
+    ROUND(COUNT(DISTINCT a.user_id) * 100.0
+          / NULLIF(COUNT(DISTINCT t.user_id), 0), 2)    AS 前3天提单率
+FROM t
+LEFT JOIN apply3 a
+       ON a.user_id = t.user_id
+      AND a.ab_group = t.ab_group
+GROUP BY t.ab_group
+ORDER BY t.ab_group;</pre></details>
+<details><summary>模块二：第一阶段活跃/沉默分层 × ab_group 的前3天提单率</summary><pre>-- 第一阶段活跃 = 宽表 active_days_cnt > 0（结清后4天内有活跃记录）
+WITH t AS (
+    SELECT churn_user_id::bigint AS user_id, ab_group, active_days_cnt,
+           DATE '2026-08-26' AS recall_date
+    FROM wangchuanliang.no_apply_0821_0826_30pct
+    UNION ALL
+    SELECT churn_user_id::bigint, ab_group, active_days_cnt, DATE '2026-08-27'
+    FROM wangchuanliang.no_apply_0822_0827_30pct
+    UNION ALL
+    SELECT churn_user_id::bigint, ab_group, active_days_cnt, DATE '2026-08-28'
+    FROM wangchuanliang.no_apply_0823_0828_30pct
+),
+apply3 AS (
+    SELECT DISTINCT t.user_id
+    FROM t
+    JOIN wangchuanliang.order_loan_f_v2_copy o
+      ON o.user_id = t.user_id
+     AND o.apply_date BETWEEN t.recall_date AND t.recall_date + 2
+)
+-- 分组 × 活跃
+SELECT
+    t.ab_group                                          AS 分组,
+    CASE WHEN t.active_days_cnt > 0
+         THEN '第一阶段活跃' ELSE '第一阶段沉默' END        AS 第一阶段,
+    COUNT(DISTINCT t.user_id)                           AS 用户数,
+    COUNT(DISTINCT a.user_id)                           AS 前3天提单用户,
+    ROUND(COUNT(DISTINCT a.user_id) * 100.0
+          / NULLIF(COUNT(DISTINCT t.user_id), 0), 2)    AS 前3天提单率
+FROM t
+LEFT JOIN apply3 a ON a.user_id = t.user_id
+GROUP BY t.ab_group, 2
+ORDER BY t.ab_group, 2;
+
+-- 总和（不分 ab_group）
+SELECT
+    CASE WHEN t.active_days_cnt > 0
+         THEN '第一阶段活跃' ELSE '第一阶段沉默' END        AS 第一阶段,
+    COUNT(DISTINCT t.user_id)                           AS 用户数,
+    COUNT(DISTINCT a.user_id)                           AS 前3天提单用户,
+    ROUND(COUNT(DISTINCT a.user_id) * 100.0
+          / NULLIF(COUNT(DISTINCT t.user_id), 0), 2)    AS 前3天提单率
+FROM t
+LEFT JOIN apply3 a ON a.user_id = t.user_id
+GROUP BY 1
+ORDER BY 1;</pre></details>
+</section>
+ <p class="foot">数据来源：3天券第二批 30% 降息券 A/B 测试（无券 vs 30%券）。批次：0821_0826、0822_0827、0823_0828（召回日 08-26/27/28）。提单指标为召回后 3 天内首次提单；第一阶段 = 结清后连续 4 天无提单窗口；活跃度用宽表 active_days_cnt 字段（已验证与 event_track 口径一致）。</p>
+</main></html>
