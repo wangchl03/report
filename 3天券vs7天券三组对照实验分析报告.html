@@ -7,9 +7,9 @@
 
 <h2>核心结论</h2><p class="desc">三组实验均为 30% 降息券，唯一变量是「券有效期」与「是否发券」。券增量 = 实验组 − 对照组首次提单率。</p>
 <section class="grid g4" style="margin-top:18px">
-<article class="card"><div class="label">7天券总价值（A组）</div><div class="num green">+7.46pp</div><div class="sub">前7天累计（32.73% vs 25.27%）</div></article>
-<article class="card"><div class="label">3天券总价值（C组）</div><div class="num amber">+1.58pp</div><div class="sub">前7天累计（25.96% vs 24.39%）</div></article>
-<article class="card"><div class="label">7天券额外价值（B组）</div><div class="num violet">+2.87pp</div><div class="sub">同批次 7天券 vs 3天券</div></article>
+<article class="card"><div class="label">7天券总价值（A组）</div><div class="num green">+7.46pp</div><div class="sub">前3天累计 18.64% vs 12.63%<br>前7天累计 32.73% vs 25.27%</div></article>
+<article class="card"><div class="label">3天券总价值（C组）</div><div class="num amber">+1.58pp</div><div class="sub">前3天累计 17.87% vs 13.68%<br>前7天累计 25.96% vs 24.39%</div></article>
+<article class="card"><div class="label">7天券额外价值（B组）</div><div class="num violet">+2.87pp</div><div class="sub">前3天累计 18.89% vs 18.50%<br>前7天累计 32.37% vs 29.50%</div></article>
 <article class="card"><div class="label">核心机制</div><div class="num pink">第4~5天</div><div class="sub">7天券增量几乎全部来自券期后承接</div></article>
 </section>
 
@@ -233,8 +233,8 @@ SELECT e.*,
        CASE WHEN f.fa IS NOT NULL THEN 1 ELSE 0 END AS applied7
 FROM exp e
 LEFT JOIN fa f
-  ON f.grp = e.grp AND f.user_id = e.user_id AND f.ab_group = e.ab_group AND f.recall_date = e.recall_date;</pre></details><details><summary>模块二：样本量 + 累计券增量（前3天 / 第4~7天 / 前7天）</summary><pre>-- ============================================================
--- 模块二：样本量 + 累计券增量（前3天 / 第4~7天 / 前7天）
+  ON f.grp = e.grp AND f.user_id = e.user_id AND f.ab_group = e.ab_group AND f.recall_date = e.recall_date;</pre></details><details><summary>模块二：样本量 + 累计券增量（前3天 / 前7天 / 第4~7天）</summary><pre>-- ============================================================
+-- 模块二：样本量 + 累计券增量（前3天 / 前7天 / 第4~7天）
 -- 券增量 = 实验组(treatment)提单率 - 对照组(control)提单率
 -- 第4~7天提单 = applied7 - applied3（首次提单唯一，落在3天内则第4~7天为0）
 -- ============================================================
@@ -246,16 +246,16 @@ SELECT grp AS 组,
        ROUND(AVG(CASE WHEN ab_group=&#x27;control&#x27;   THEN applied3 END)::numeric*100, 2) AS 对照组前3天,
        ROUND((AVG(CASE WHEN ab_group=&#x27;treatment&#x27; THEN applied3 END)
             - AVG(CASE WHEN ab_group=&#x27;control&#x27; THEN applied3 END))::numeric*100, 2) AS 前3天增量pp,
-       -- 第4~7天（券期后）
-       ROUND(AVG(CASE WHEN ab_group=&#x27;treatment&#x27; THEN applied7 - applied3 END)::numeric*100, 2) AS 实验组第4_7天,
-       ROUND(AVG(CASE WHEN ab_group=&#x27;control&#x27;   THEN applied7 - applied3 END)::numeric*100, 2) AS 对照组第4_7天,
-       ROUND((AVG(CASE WHEN ab_group=&#x27;treatment&#x27; THEN applied7 - applied3 END)
-            - AVG(CASE WHEN ab_group=&#x27;control&#x27; THEN applied7 - applied3 END))::numeric*100, 2) AS 第4_7天增量pp,
-       -- 前7天
-       ROUND(AVG(CASE WHEN ab_group=&#x27;treatment&#x27; THEN applied7 END)::numeric*100, 2) AS 实验组前7天,
-       ROUND(AVG(CASE WHEN ab_group=&#x27;control&#x27;   THEN applied7 END)::numeric*100, 2) AS 对照组前7天,
-       ROUND((AVG(CASE WHEN ab_group=&#x27;treatment&#x27; THEN applied7 END)
-            - AVG(CASE WHEN ab_group=&#x27;control&#x27; THEN applied7 END))::numeric*100, 2) AS 前7天增量pp
+        -- 前7天
+        ROUND(AVG(CASE WHEN ab_group=&#x27;treatment&#x27; THEN applied7 END)::numeric*100, 2) AS 实验组前7天,
+        ROUND(AVG(CASE WHEN ab_group=&#x27;control&#x27;   THEN applied7 END)::numeric*100, 2) AS 对照组前7天,
+        ROUND((AVG(CASE WHEN ab_group=&#x27;treatment&#x27; THEN applied7 END)
+             - AVG(CASE WHEN ab_group=&#x27;control&#x27; THEN applied7 END))::numeric*100, 2) AS 前7天增量pp,
+        -- 第4~7天（券期后，补充）
+        ROUND(AVG(CASE WHEN ab_group=&#x27;treatment&#x27; THEN applied7 - applied3 END)::numeric*100, 2) AS 实验组第4_7天,
+        ROUND(AVG(CASE WHEN ab_group=&#x27;control&#x27;   THEN applied7 - applied3 END)::numeric*100, 2) AS 对照组第4_7天,
+        ROUND((AVG(CASE WHEN ab_group=&#x27;treatment&#x27; THEN applied7 - applied3 END)
+             - AVG(CASE WHEN ab_group=&#x27;control&#x27; THEN applied7 - applied3 END))::numeric*100, 2) AS 第4_7天增量pp
 FROM tmp_coupon_exp
 GROUP BY grp
 ORDER BY grp;</pre></details><details><summary>模块三：逐日券增量（D1~D7，含逐日绝对值）</summary><pre>-- ============================================================
