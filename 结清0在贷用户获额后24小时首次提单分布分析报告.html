@@ -1,0 +1,399 @@
+<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>结清0在贷用户获额后24小时首次提单分布分析报告</title><script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.8/dist/chart.umd.min.js"></script><style>:root{--bg:#071b2f;--panel:#0c2944;--line:#2a5c7e;--text:#eff8ff;--muted:#aac5da;--cyan:#43c7e7;--green:#64dcae;--amber:#ffc26b;--pink:#f68ab0;--violet:#b49aff}*{box-sizing:border-box}body{margin:0;background:linear-gradient(135deg,#06192b,#0b2c47);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei",sans-serif}.wrap{max-width:1420px;margin:auto;padding:34px 40px 72px}.hero{text-align:center;border-bottom:1px solid var(--line);padding:25px 12px}.kicker{color:var(--cyan);font-weight:700;letter-spacing:2px}.hero h1{font-size:34px;margin:9px}.hero p,p{color:var(--muted);line-height:1.7}.tag{display:inline-block;border:1px solid #33779e;border-radius:20px;padding:5px 13px;color:#ccecff}.grid{display:grid;gap:18px}.g4{grid-template-columns:repeat(4,1fr)}.g2{grid-template-columns:repeat(2,1fr)}.card,.panel{background:var(--panel);border:1px solid var(--line);border-radius:15px;padding:18px}.label{color:var(--muted);font-size:13px}.num{font-size:29px;font-weight:800;margin:7px 0}.cyan{color:var(--cyan)}.green{color:var(--green)}.amber{color:var(--amber)}.pink{color:var(--pink)}h2{margin:46px 0 8px;font-size:25px}.panel h3{margin:0;font-size:17px}.panel p{font-size:13px;margin:7px 0 12px}.chart{height:335px}.note{margin-top:18px;padding:14px 17px;border-left:4px solid var(--amber);background:#102f49;border-radius:0 10px 10px 0;color:#d6e8f3;line-height:1.75}.table{overflow:auto;border:1px solid var(--line);border-radius:12px}table{width:100%;border-collapse:collapse;font-size:13px}th,td{padding:10px;border-bottom:1px solid #24516e;text-align:right;white-space:nowrap}th{background:#103551;color:#ccecff}th:first-child,td:first-child{text-align:left}.insight{padding:15px 0;border-bottom:1px dashed #2d6081;line-height:1.7}.insight:last-child{border:0}.foot{margin-top:36px;font-size:12px;color:#85a9c1}@media(max-width:900px){.wrap{padding:22px 14px}.g4,.g2{grid-template-columns:1fr}.hero h1{font-size:27px}}.sql-detail{margin-top:10px;border:1px solid var(--line);border-radius:10px;background:#09243d}.sql-detail summary{padding:13px 16px;cursor:pointer;color:#d7efff;font-weight:700}.sql-detail pre{margin:0;padding:16px;overflow:auto;border-top:1px solid var(--line);background:#061a2c;color:#d5edf9;font:12px/1.62 ui-monospace,SFMono-Regular,Menlo,monospace;white-space:pre}.sql-detail code{font-family:inherit}</style></head><body><main class="wrap"><header class="hero"><div class="kicker">T0 获额后转化时效专项</div><h1>结清 0 在贷用户<br>获额后 24 小时首次提单分布分析报告</h1><p>统计期间：2026-01-01 至 2026-08-30　·　报告生成时间：2026-09-02</p><span class="tag">提单时效起点：对应结清后获额通过时间</span></header><section><h2>一、核心结果</h2><div class="grid g4"><div class="card"><div class="label">结清 0 在贷用户日样本</div><div class="num cyan">176,176</div><p>用户在不同日期可重复出现，按用户日期样本统计。</p></div><div class="card"><div class="label">24 小时内首次提单用户</div><div class="num green">93,229</div><p>每个用户日样本仅计入一个小时段。</p></div><div class="card"><div class="label">获额后 24 小时总提单率</div><div class="num amber">52.92%</div><p>分母为全部结清 0 在贷用户日样本。</p></div><div class="card"><div class="label">获额后 3 小时内提单率</div><div class="num pink">41.59%</div><p>占 24 小时内提单用户的 78.60%。</p></div></div></section><section><h2>二、24 小时总提单率：月度走势</h2><p>各月份均以“当月结清 0 在贷用户日样本”为分母，统计其获额后 24 小时内是否发生首次提单。</p><div class="grid g2"><article class="panel"><h3>获额后 24 小时总提单率（月度）</h3><p>8 月统计至 8 月 30 日。</p><div class="chart"><canvas id="totalRate"></canvas></div></article><article class="panel"><h3>结清 0 在贷样本量（月度）</h3><p>用于区分样本波动与转化率变化。</p><div class="chart"><canvas id="sample"></canvas></div></article></div><div class="note">1 月 24 小时总提单率为 59.94%，8 月为 46.15%，下降 13.79 个百分点。</div></section><section><h2>三、获额后提单时段结构：即时转化与延迟转化</h2><p>四个时段的提单率均使用同一分母，即当月结清 0 在贷用户日样本，因此可直接比较各时间段对 24 小时总提单率的贡献。</p><div class="grid g2"><article class="panel"><h3>四个时段首次提单率（月度）</h3><p>0–1 小时、1–3 小时、3–6 小时、6–24 小时。</p><div class="chart"><canvas id="segments"></canvas></div></article><article class="panel"><h3>获额后不同时间窗口首次提单率（月度）</h3><p>对比即时（0–1 小时）、前 3 小时累计与 3–24 小时的转化变化。</p><div class="chart"><canvas id="near"></canvas></div></article></div><div class="note">汇总看，获额后 1 小时内提单率为 37.23%，获额后 3 小时内累计为 41.59%，3–24 小时为 11.33%。</div></section><section><h2>四、总计小时分布</h2><div class="grid g2"><article class="panel"><h3>获额后各小时首次提单人数（总计）</h3><p>0–1 小时至 23–24 小时，每位用户仅出现一次。</p><div class="chart"><canvas id="hourUsers"></canvas></div></article><article class="panel"><h3>获额后各小时首次提单率（总计）</h3><p>每个小时段均以全部结清 0 在贷用户日样本为分母。</p><div class="chart"><canvas id="hourRate"></canvas></div></article></div><div class="table"><table><thead><tr><th>获额后时间段</th><th>首次提单人数</th><th>该时段提单率</th></tr></thead><tbody><tr><td>0–1 小时</td><td>65,591</td><td>37.23%</td></tr><tr><td>1–2 小时</td><td>4,808</td><td>2.73%</td></tr><tr><td>2–3 小时</td><td>2,877</td><td>1.63%</td></tr><tr><td>3–4 小时</td><td>1,947</td><td>1.11%</td></tr><tr><td>4–5 小时</td><td>1,391</td><td>0.79%</td></tr><tr><td>5–6 小时</td><td>1,134</td><td>0.64%</td></tr><tr><td>6–7 小时</td><td>920</td><td>0.52%</td></tr><tr><td>7–8 小时</td><td>805</td><td>0.46%</td></tr><tr><td>8–9 小时</td><td>747</td><td>0.42%</td></tr><tr><td>9–10 小时</td><td>764</td><td>0.43%</td></tr><tr><td>10–11 小时</td><td>729</td><td>0.41%</td></tr><tr><td>11–12 小时</td><td>722</td><td>0.41%</td></tr><tr><td>12–13 小时</td><td>739</td><td>0.42%</td></tr><tr><td>13–14 小时</td><td>774</td><td>0.44%</td></tr><tr><td>14–15 小时</td><td>844</td><td>0.48%</td></tr><tr><td>15–16 小时</td><td>812</td><td>0.46%</td></tr><tr><td>16–17 小时</td><td>863</td><td>0.49%</td></tr><tr><td>17–18 小时</td><td>931</td><td>0.53%</td></tr><tr><td>18–19 小时</td><td>829</td><td>0.47%</td></tr><tr><td>19–20 小时</td><td>872</td><td>0.49%</td></tr><tr><td>20–21 小时</td><td>978</td><td>0.56%</td></tr><tr><td>21–22 小时</td><td>1,005</td><td>0.57%</td></tr><tr><td>22–23 小时</td><td>1,069</td><td>0.61%</td></tr><tr><td>23–24 小时</td><td>1,078</td><td>0.61%</td></tr></tbody></table></div></section><section><h2>五、月度可核对数据</h2><div class="table"><table><thead><tr><th>结清月份</th><th>结清0在贷样本</th><th>0–1小时提单率</th><th>1–3小时提单率</th><th>3–6小时提单率</th><th>6–24小时提单率</th><th>24小时总提单率</th></tr></thead><tbody><tr><td>1月</td><td>19,521</td><td>44.08%</td><td>4.50%</td><td>2.71%</td><td>8.65%</td><td>59.94%</td></tr><tr><td>2月</td><td>22,741</td><td>42.64%</td><td>4.74%</td><td>2.63%</td><td>9.01%</td><td>59.02%</td></tr><tr><td>3月</td><td>22,200</td><td>37.74%</td><td>4.40%</td><td>2.54%</td><td>9.17%</td><td>53.85%</td></tr><tr><td>4月</td><td>20,781</td><td>37.86%</td><td>4.55%</td><td>2.68%</td><td>8.92%</td><td>54.01%</td></tr><tr><td>5月</td><td>23,876</td><td>36.70%</td><td>4.14%</td><td>2.49%</td><td>8.82%</td><td>52.15%</td></tr><tr><td>6月</td><td>22,636</td><td>35.27%</td><td>4.25%</td><td>2.67%</td><td>8.68%</td><td>50.87%</td></tr><tr><td>7月</td><td>23,277</td><td>33.17%</td><td>4.30%</td><td>2.35%</td><td>8.30%</td><td>48.12%</td></tr><tr><td>8月</td><td>21,144</td><td>31.09%</td><td>4.05%</td><td>2.26%</td><td>8.75%</td><td>46.15%</td></tr></tbody></table></div></section><section><h2>六、结论与运营方向</h2><div class="panel"><div class="insight"><b>结论 1：获额后的即时阶段是当天提单的核心窗口。</b><br>获额后 3 小时内贡献 41.59% 个百分点的提单率，占 24 小时总提单率的 78.60%。应将获额通知、落地页跳转、金额和期数选择、风控确认等链路作为优先排查对象。</div><div class="insight"><b>结论 2：6–24 小时窗口仍有可运营承接空间。</b><br>该时段累计贡献 11.33% 个百分点。可针对已活跃、已进入提单页、已浏览额度但未提交的用户定向测试降息券或提额券，不宜对所有未提单用户统一发券。</div><div class="insight"><b>结论 3：月度变化需拆解到小时段判断原因。</b><br>0–1 小时段下降更明显，优先排查即时产品吸引力和页面链路。</div></div></section><section><h2>七、统计口径</h2><p>结清 0 在贷样本：获额通过订单先按用户 20 秒获额批次去重，每批保留订单号最大的获额订单；再要求用户结清时无其他在途订单、结清日等于获额通过日、获额时间大于等于结清时间；同一用户同日多次满足时，仅保留获额时间最早的符合条件订单。</p><p>首次提单：从对应获额通过时间起，取 24 小时内最早的一笔提单；按 <code>FLOOR((apply_time − credit_vir_time) / 3600)</code> 分入 0–1、1–2 … 23–24 小时桶。每个用户日期样本最多归入一个小时桶。各桶提单率 = 对应小时桶首次提单用户数 ÷ 当天结清 0 在贷用户数；24 小时总提单率为 24 个小时桶首次提单人数之和 ÷ 同一分母。</p></section><section><h2>附录：完整 PGSQL</h2><p>以下代码按模块一、模块二、模块三顺序在同一 PostgreSQL 数据库会话内执行，可复现本报告的结清 0 在贷样本、获额后 0–24 小时首次提单人数、各小时段提单率、24 小时总提单率，以及日度、月度、总计数据。</p><details class="sql-detail"><summary>模块一：结清 0 在贷样本（20 秒获额去重、结清时点无在途判断）</summary><pre><code>-- 模块一：结清 0 在贷样本
+-- 统计期：2026-01-01 至 2026-08-30；apply_end 额外保留至 2026-09-01，
+-- 用于观察 8 月 30 日获额后的完整 24 小时提单。
+
+CREATE TEMP TABLE params AS
+SELECT DATE '2026-01-01' AS start_date,
+       DATE '2026-08-31' AS end_date,
+       TIMESTAMP '2026-09-01 00:00:00' AS apply_end;
+
+-- 1. 只保留统计期内实际发生结清的“用户 × 结清日”，用于同日获额预筛。
+CREATE TEMP TABLE settle_candidate_days AS
+SELECT DISTINCT
+       o.user_id,
+       o.repaid_date::date AS repaid_date
+FROM wangchuanliang.order_loan_f_v2_copy o
+CROSS JOIN params p
+WHERE o.is_remit = 1
+  AND o.loan_status_code = 7
+  AND o.repaid_time > TIMESTAMP '2000-01-01 00:00:00'
+  AND o.repaid_date >= p.start_date
+  AND o.repaid_date &lt; p.end_date;
+
+CREATE INDEX ON settle_candidate_days (user_id, repaid_date);
+
+-- 2. 获额通过订单：同一 user_id + serial_id 仅留最新获额记录。
+CREATE TEMP TABLE raw_credit_pass AS
+SELECT DISTINCT ON (v.user_id, v.serial_id)
+       v.user_id,
+       v.serial_id,
+       v.vir_date::date AS vir_date,
+       to_timestamp(v.vir_unix) AS vir_time
+FROM wangchuanliang.order_vir_f_copy v
+JOIN settle_candidate_days d
+  ON d.user_id = v.user_id
+ AND d.repaid_date = v.vir_date::date
+CROSS JOIN params p
+WHERE v.is_pass1 = 1
+  AND v.vir_date >= p.start_date
+  AND v.vir_date &lt; p.end_date
+ORDER BY v.user_id,
+         v.serial_id,
+         v.vir_unix DESC;
+
+CREATE INDEX ON raw_credit_pass (user_id, vir_time);
+
+-- 3. 20 秒获额批次：相邻获额间隔不超过 20 秒视为同一批次。
+CREATE TEMP TABLE credit_pass_batch AS
+WITH ordered AS (
+    SELECT r.*,
+           LAG(r.vir_time) OVER (
+               PARTITION BY r.user_id
+               ORDER BY r.vir_time, r.serial_id
+           ) AS prev_vir_time
+    FROM raw_credit_pass r
+), batched AS (
+    SELECT o.*,
+           SUM(
+               CASE
+                   WHEN o.prev_vir_time IS NULL
+                     OR o.vir_time - o.prev_vir_time > INTERVAL '20 seconds'
+                   THEN 1
+                   ELSE 0
+               END
+           ) OVER (
+               PARTITION BY o.user_id
+               ORDER BY o.vir_time, o.serial_id
+           ) AS batch_id
+    FROM ordered o
+)
+SELECT *
+FROM batched;
+
+CREATE INDEX ON credit_pass_batch (user_id, batch_id);
+
+-- 4. 每个 20 秒批次仅保留 serial_id 最大的获额订单。
+CREATE TEMP TABLE dedup_credit_pass AS
+SELECT user_id,
+       serial_id,
+       vir_date,
+       vir_time
+FROM (
+    SELECT b.*,
+           ROW_NUMBER() OVER (
+               PARTITION BY b.user_id, b.batch_id
+               ORDER BY b.serial_id DESC, b.vir_time DESC
+           ) AS rn
+    FROM credit_pass_batch b
+) x
+WHERE x.rn = 1;
+
+CREATE INDEX ON dedup_credit_pass (user_id, vir_date, vir_time);
+
+-- 5. 统计期内结清的放款订单。
+CREATE TEMP TABLE settled_orders AS
+SELECT o.user_id,
+       o.serial_id,
+       o.apply_time,
+       o.repaid_time,
+       o.repaid_date::date AS repaid_date
+FROM wangchuanliang.order_loan_f_v2_copy o
+CROSS JOIN params p
+WHERE o.is_remit = 1
+  AND o.loan_status_code = 7
+  AND o.repaid_time > TIMESTAMP '2000-01-01 00:00:00'
+  AND o.repaid_date >= p.start_date
+  AND o.repaid_date &lt; p.end_date;
+
+CREATE INDEX ON settled_orders (user_id, repaid_date, repaid_time);
+
+CREATE TEMP TABLE candidate_users AS
+SELECT DISTINCT user_id
+FROM settled_orders;
+
+-- 6. 用户订单全集。apply_end 至 9 月 1 日，保证 8 月 30 日样本可观察完整 24 小时。
+CREATE TEMP TABLE all_orders AS
+SELECT o.user_id,
+       o.serial_id,
+       o.apply_time,
+       o.repaid_time,
+       o.repaid_date::date AS repaid_date,
+       o.loan_status_code,
+       o.is_remit
+FROM wangchuanliang.order_loan_f_v2_copy o
+JOIN candidate_users u
+  ON u.user_id = o.user_id
+CROSS JOIN params p
+WHERE o.apply_time &lt; p.apply_end;
+
+CREATE INDEX ON all_orders (user_id, apply_time);
+CREATE INDEX ON all_orders (user_id, repaid_time);
+
+-- 7. 干净结清：结清时点不存在其他在途订单。
+CREATE TEMP TABLE clean_settles AS
+SELECT s.*
+FROM settled_orders s
+WHERE NOT EXISTS (
+    SELECT 1
+    FROM all_orders o2
+    WHERE o2.user_id = s.user_id
+      AND o2.serial_id &lt;> s.serial_id
+      AND o2.apply_time &lt; s.repaid_time
+      AND (
+             o2.loan_status_code IN (5, 8)
+          OR (
+                 o2.loan_status_code = 7
+             AND o2.repaid_time > s.repaid_time
+             )
+      )
+);
+
+CREATE INDEX ON clean_settles (user_id, repaid_date, repaid_time);
+
+-- 8. 结清 0 在贷：同日获额通过且获额时间不早于结清时间；
+--    同一用户同日多次满足时，仅保留获额时间最早的一笔。
+CREATE TEMP TABLE t0_samples AS
+SELECT user_id,
+       final_serial_id,
+       final_apply_time,
+       final_repaid_time,
+       repaid_date,
+       credit_serial_id,
+       credit_vir_time
+FROM (
+    SELECT c.user_id,
+           c.serial_id AS final_serial_id,
+           c.apply_time AS final_apply_time,
+           c.repaid_time AS final_repaid_time,
+           c.repaid_date,
+           cp.serial_id AS credit_serial_id,
+           cp.vir_time AS credit_vir_time,
+           ROW_NUMBER() OVER (
+               PARTITION BY c.user_id, c.repaid_date
+               ORDER BY cp.vir_time ASC,
+                        cp.serial_id DESC,
+                        c.repaid_time ASC
+           ) AS rn
+    FROM clean_settles c
+    JOIN dedup_credit_pass cp
+      ON cp.user_id = c.user_id
+     AND cp.vir_date = c.repaid_date
+     AND cp.vir_time >= c.repaid_time
+) x
+WHERE x.rn = 1;
+
+CREATE INDEX ON t0_samples (user_id, repaid_date);</code></pre></details><details class="sql-detail"><summary>模块二：获额后 24 小时首次提单、小时分布、日度/月度/总计明细</summary><pre><code>-- 模块二：获额后 24 小时首次提单、小时分布、日度/月度/总计汇总
+-- 请在模块一完成后、同一数据库会话内执行。
+
+-- 1. 每个“用户 × 结清日样本”仅保留获额后 24 小时内最早的一笔提单。
+CREATE TEMP TABLE first_apply_24h AS
+SELECT user_id,
+       repaid_date,
+       credit_vir_time,
+       first_apply_time,
+       FLOOR(
+           EXTRACT(EPOCH FROM (first_apply_time - credit_vir_time)) / 3600.0
+       )::int AS hour_bucket
+FROM (
+    SELECT t.user_id,
+           t.repaid_date,
+           t.credit_vir_time,
+           a.apply_time AS first_apply_time,
+           ROW_NUMBER() OVER (
+               PARTITION BY t.user_id, t.repaid_date
+               ORDER BY a.apply_time, a.serial_id
+           ) AS rn
+    FROM t0_samples t
+    JOIN all_orders a
+      ON a.user_id = t.user_id
+     AND a.apply_time >= t.credit_vir_time
+     AND a.apply_time &lt; t.credit_vir_time + INTERVAL '24 hours'
+) x
+WHERE x.rn = 1;
+
+-- 2. 每日结清 0 在贷样本量。
+CREATE TEMP TABLE daily_base AS
+SELECT repaid_date,
+       COUNT(*) AS t0_sample_users
+FROM t0_samples
+GROUP BY repaid_date;
+
+-- 3. 日度 24 个小时桶；没有提单的小时桶也补 0。
+CREATE TEMP TABLE daily_hourly AS
+SELECT d.repaid_date,
+       h.hour_bucket,
+       d.t0_sample_users,
+       COUNT(f.user_id) AS first_apply_users
+FROM daily_base d
+CROSS JOIN generate_series(0, 23) AS h(hour_bucket)
+LEFT JOIN first_apply_24h f
+  ON f.repaid_date = d.repaid_date
+ AND f.hour_bucket = h.hour_bucket
+GROUP BY d.repaid_date,
+         h.hour_bucket,
+         d.t0_sample_users;
+
+-- 4. 一次性输出报告所用的总计、月度与日度数据。
+WITH daily AS (
+    SELECT '日度'::text AS statistic_level,
+           repaid_date::text AS statistic_period,
+           repaid_date,
+           hour_bucket,
+           t0_sample_users,
+           first_apply_users
+    FROM daily_hourly
+), monthly AS (
+    SELECT '月度'::text AS statistic_level,
+           to_char(date_trunc('month', repaid_date), 'YYYY-MM') AS statistic_period,
+           NULL::date AS repaid_date,
+           hour_bucket,
+           SUM(t0_sample_users) AS t0_sample_users,
+           SUM(first_apply_users) AS first_apply_users
+    FROM daily_hourly
+    GROUP BY to_char(date_trunc('month', repaid_date), 'YYYY-MM'),
+             hour_bucket
+), total AS (
+    SELECT '总计'::text AS statistic_level,
+           '总计'::text AS statistic_period,
+           NULL::date AS repaid_date,
+           hour_bucket,
+           SUM(t0_sample_users) AS t0_sample_users,
+           SUM(first_apply_users) AS first_apply_users
+    FROM daily_hourly
+    GROUP BY hour_bucket
+), result AS (
+    SELECT * FROM total
+    UNION ALL
+    SELECT * FROM monthly
+    UNION ALL
+    SELECT * FROM daily
+)
+SELECT statistic_level AS "统计层级",
+       statistic_period AS "统计期间",
+       hour_bucket AS "获额后小时桶",
+       t0_sample_users AS "结清0在贷用户数",
+       first_apply_users AS "首次提单用户数",
+       ROUND(
+           first_apply_users::numeric
+           / NULLIF(t0_sample_users, 0) * 100,
+           4
+       ) AS "该小时段提单率_pct",
+       ROUND(
+           SUM(first_apply_users) OVER (
+               PARTITION BY statistic_level, statistic_period
+           )::numeric
+           / NULLIF(
+               MAX(t0_sample_users) OVER (
+                   PARTITION BY statistic_level, statistic_period
+               ),
+               0
+           ) * 100,
+           4
+       ) AS "获额后24小时总提单率_pct"
+FROM result
+ORDER BY CASE statistic_level
+             WHEN '总计' THEN 1
+             WHEN '月度' THEN 2
+             ELSE 3
+         END,
+         statistic_period,
+         hour_bucket;</code></pre></details><details class="sql-detail"><summary>模块三：报告数字卡、月度趋势、四段时效指标与总计小时分布</summary><pre><code>-- 模块三：报告数字卡、月度趋势和四段时效指标
+-- 请在模块一、模块二完成后、同一数据库会话内执行。
+-- 本模块直接输出报告中的核心数字卡、月度可核对表和小时分布图数据。
+
+-- 1. 月度分母：结清 0 在贷用户日样本。
+CREATE TEMP TABLE monthly_t0_base AS
+SELECT to_char(date_trunc('month', repaid_date), 'YYYY-MM') AS settle_month,
+       SUM(t0_sample_users) AS t0_sample_users
+FROM daily_base
+GROUP BY to_char(date_trunc('month', repaid_date), 'YYYY-MM');
+
+-- 2. 月度分子：按报告的四个时效区间汇总首次提单人数。
+CREATE TEMP TABLE monthly_t0_apply AS
+SELECT to_char(date_trunc('month', repaid_date), 'YYYY-MM') AS settle_month,
+       SUM(CASE WHEN hour_bucket = 0 THEN first_apply_users ELSE 0 END)
+           AS apply_user_0_1h,
+       SUM(CASE WHEN hour_bucket BETWEEN 1 AND 2 THEN first_apply_users ELSE 0 END)
+           AS apply_user_1_3h,
+       SUM(CASE WHEN hour_bucket BETWEEN 3 AND 5 THEN first_apply_users ELSE 0 END)
+           AS apply_user_3_6h,
+       SUM(CASE WHEN hour_bucket BETWEEN 6 AND 23 THEN first_apply_users ELSE 0 END)
+           AS apply_user_6_24h,
+       SUM(first_apply_users) AS apply_user_24h
+FROM daily_hourly
+GROUP BY to_char(date_trunc('month', repaid_date), 'YYYY-MM');
+
+-- 3. 月度表与“24 小时总提单率”“0–1 小时提单率”等趋势图数据。
+SELECT b.settle_month AS "结清月份",
+       b.t0_sample_users AS "结清0在贷用户日样本",
+       a.apply_user_0_1h AS "0_1小时首次提单用户数",
+       ROUND(a.apply_user_0_1h::numeric / NULLIF(b.t0_sample_users, 0) * 100, 4)
+           AS "0_1小时提单率_pct",
+       a.apply_user_1_3h AS "1_3小时首次提单用户数",
+       ROUND(a.apply_user_1_3h::numeric / NULLIF(b.t0_sample_users, 0) * 100, 4)
+           AS "1_3小时提单率_pct",
+       a.apply_user_3_6h AS "3_6小时首次提单用户数",
+       ROUND(a.apply_user_3_6h::numeric / NULLIF(b.t0_sample_users, 0) * 100, 4)
+           AS "3_6小时提单率_pct",
+       a.apply_user_6_24h AS "6_24小时首次提单用户数",
+       ROUND(a.apply_user_6_24h::numeric / NULLIF(b.t0_sample_users, 0) * 100, 4)
+           AS "6_24小时提单率_pct",
+       a.apply_user_24h AS "24小时首次提单用户数",
+       ROUND(a.apply_user_24h::numeric / NULLIF(b.t0_sample_users, 0) * 100, 4)
+           AS "24小时总提单率_pct"
+FROM monthly_t0_base b
+JOIN monthly_t0_apply a
+  ON a.settle_month = b.settle_month
+ORDER BY b.settle_month;
+
+-- 4. 全期间核心数字卡及四段时效汇总。
+WITH total_base AS (
+    SELECT SUM(t0_sample_users) AS t0_sample_users
+    FROM daily_base
+), total_apply AS (
+    SELECT SUM(CASE WHEN hour_bucket = 0 THEN first_apply_users ELSE 0 END)
+               AS apply_user_0_1h,
+           SUM(CASE WHEN hour_bucket BETWEEN 1 AND 2 THEN first_apply_users ELSE 0 END)
+               AS apply_user_1_3h,
+           SUM(CASE WHEN hour_bucket BETWEEN 3 AND 5 THEN first_apply_users ELSE 0 END)
+               AS apply_user_3_6h,
+           SUM(CASE WHEN hour_bucket BETWEEN 6 AND 23 THEN first_apply_users ELSE 0 END)
+               AS apply_user_6_24h,
+           SUM(first_apply_users) AS apply_user_24h
+    FROM daily_hourly
+)
+SELECT b.t0_sample_users AS "结清0在贷用户日样本",
+       a.apply_user_24h AS "24小时首次提单用户数",
+       ROUND(a.apply_user_24h::numeric / NULLIF(b.t0_sample_users, 0) * 100, 4)
+           AS "24小时总提单率_pct",
+       a.apply_user_0_1h AS "0_1小时首次提单用户数",
+       ROUND(a.apply_user_0_1h::numeric / NULLIF(b.t0_sample_users, 0) * 100, 4)
+           AS "0_1小时提单率_pct",
+       ROUND(
+           (a.apply_user_0_1h + a.apply_user_1_3h)::numeric
+           / NULLIF(b.t0_sample_users, 0) * 100,
+           4
+       ) AS "0_3小时累计提单率_pct",
+       ROUND(a.apply_user_3_6h::numeric / NULLIF(b.t0_sample_users, 0) * 100, 4)
+           AS "3_6小时提单率_pct",
+       ROUND(a.apply_user_6_24h::numeric / NULLIF(b.t0_sample_users, 0) * 100, 4)
+           AS "6_24小时提单率_pct"
+FROM total_base b
+CROSS JOIN total_apply a;
+
+-- 5. 总计小时分布图和小时明细表数据。
+WITH total_base AS (
+    SELECT SUM(t0_sample_users) AS t0_sample_users
+    FROM daily_base
+)
+SELECT h.hour_bucket AS "获额后小时桶",
+       SUM(h.first_apply_users) AS "首次提单用户数",
+       ROUND(
+           SUM(h.first_apply_users)::numeric
+           / NULLIF(MAX(b.t0_sample_users), 0) * 100,
+           4
+       ) AS "该小时段提单率_pct"
+FROM daily_hourly h
+CROSS JOIN total_base b
+GROUP BY h.hour_bucket
+ORDER BY h.hour_bucket;</code></pre></details></section><p class="foot">数据来源：数据库实时 SQL 查询结果。统计期：2026-01-01 至 2026-08-30。</p></main><script>const labels=["1月","2月","3月","4月","5月","6月","7月","8月"],totalRate=[59.9406,59.0212,53.8468,54.0109,52.1528,50.8703,48.1248,46.1549],t0N=[19521,22741,22200,20781,23876,22636,23277,21144],h0=[44.080733568976996,42.641044808935405,37.74324324324324,37.86150810836822,36.702127659574465,35.27124933733875,33.17008205524767,31.09156261823685],h1to2=[4.497720403667845,4.7359394925465015,4.4009009009009015,4.54742312689476,4.138046573965489,4.245449726100017,4.304678437943034,4.053159288687098],h3to5=[2.7099021566518107,2.6296117145244273,2.536036036036036,2.680332996487176,2.4920422181269895,2.67273369853331,2.354255273445891,2.255959137343927],h6to23=[8.652220685415706,9.014555208653972,9.166666666666666,8.921611087050671,8.820572960294855,8.680862343170173,8.295742578510977,8.754256526674235],h0to3=[48.57845397264484,47.376984301481905,42.14414414414414,42.40893123526298,40.840174233539955,39.51669906343877,37.4747604931907,35.14472190692395],h3to24=[11.362122842067517,11.6441669231784,11.702702702702702,11.601944083537846,11.312615178421845,11.353596041703483,10.649997851956869,11.010215664018162],hourLabels=["0–1小时","1–2小时","2–3小时","3–4小时","4–5小时","5–6小时","6–7小时","7–8小时","8–9小时","9–10小时","10–11小时","11–12小时","12–13小时","13–14小时","14–15小时","15–16小时","16–17小时","17–18小时","18–19小时","19–20小时","20–21小时","21–22小时","22–23小时","23–24小时"],hourUsers=[65591,4808,2877,1947,1391,1134,920,805,747,764,729,722,739,774,844,812,863,931,829,872,978,1005,1069,1078],hourRates=[37.230383253110524,2.7290890927254563,1.6330260648442465,1.1051448551448553,0.7895513577331759,0.643674507310871,0.5222050676596132,0.4569294342021615,0.4240078103714467,0.43365725183907006,0.41379075469984555,0.40981745527200075,0.419466896739624,0.43933339387884845,0.47906638815729724,0.46090273363000633,0.48985105803287626,0.5284488239033693,0.47055217509762964,0.4949595858686768,0.5551266914903278,0.5704522749977295,0.6067795840523112,0.6118881118881119];Chart.defaults.color='#c0d7e8';Chart.defaults.font.family='-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei",sans-serif';const base={responsive:true,maintainAspectRatio:false,plugins:{legend:{labels:{boxWidth:12,padding:14}},tooltip:{callbacks:{label:c=>c.dataset.label+': '+(c.dataset.percent?Number(c.parsed.y).toFixed(2)+'%':Number(c.parsed.y).toLocaleString('zh-CN'))}}},scales:{x:{grid:{color:'rgba(80,142,176,.16)'}},y:{beginAtZero:true,ticks:{precision:0},grid:{color:'rgba(80,142,176,.16)'}}}};const percentOpt=(min,max)=>({...base,scales:{...base.scales,y:{...base.scales.y,min,max,ticks:{precision:0,callback:v=>Math.round(v)+'%'}}}});const linePointLabels={id:'linePointLabels',afterDatasetsDraw(chart){if(chart.canvas.id!=='near')return;const ctx=chart.ctx;ctx.save();ctx.font='600 10px -apple-system,BlinkMacSystemFont,PingFang SC,sans-serif';ctx.textAlign='center';ctx.textBaseline='bottom';chart.data.datasets.forEach((dataset,datasetIndex)=>{chart.getDatasetMeta(datasetIndex).data.forEach((point,index)=>{const pos=point.tooltipPosition();ctx.fillStyle=dataset.borderColor;ctx.fillText(Number(dataset.data[index]).toFixed(2)+'%',pos.x,datasetIndex===0?Math.min(chart.chartArea.bottom-4,pos.y+16):Math.max(chart.chartArea.top+14,pos.y-12));});});ctx.restore();}};Chart.register(linePointLabels);const trend=(id,datasets,opt)=>new Chart(document.getElementById(id),{type:'line',data:{labels,datasets},options:opt});trend('totalRate',[{label:'24小时总提单率',data:totalRate,borderColor:'#64dcae',backgroundColor:'#64dcae',tension:.25,pointRadius:4,percent:true}],percentOpt(0,Math.max(30,...totalRate)+5));new Chart(document.getElementById('sample'),{type:'bar',data:{labels,datasets:[{label:'结清0在贷用户日样本',data:t0N,backgroundColor:'#43c7e7',borderRadius:5}]},options:base});trend('segments',[{label:'0–1小时',data:h0,borderColor:'#43c7e7',backgroundColor:'#43c7e7',tension:.25,pointRadius:4,percent:true},{label:'1–3小时',data:h1to2,borderColor:'#64dcae',backgroundColor:'#64dcae',tension:.25,pointRadius:4,percent:true},{label:'3–6小时',data:h3to5,borderColor:'#ffc26b',backgroundColor:'#ffc26b',tension:.25,pointRadius:4,percent:true},{label:'6–24小时',data:h6to23,borderColor:'#f68ab0',backgroundColor:'#f68ab0',tension:.25,pointRadius:4,percent:true}],percentOpt(0,Math.max(...h0,...h1to2,...h3to5,...h6to23)+5));trend('near',[{label:'0–1小时',data:h0,borderColor:'#43c7e7',backgroundColor:'#43c7e7',tension:.25,pointRadius:4,percent:true},{label:'0–3小时累计',data:h0to3,borderColor:'#ffc26b',backgroundColor:'#ffc26b',tension:.25,pointRadius:4,percent:true},{label:'3–24小时',data:h3to24,borderColor:'#f68ab0',backgroundColor:'#f68ab0',tension:.25,pointRadius:4,percent:true}],percentOpt(0,Math.max(...h0,...h0to3,...h3to24)+5));new Chart(document.getElementById('hourUsers'),{type:'bar',data:{labels:hourLabels,datasets:[{label:'首次提单人数',data:hourUsers,backgroundColor:'#43c7e7',borderRadius:4}]},options:base});new Chart(document.getElementById('hourRate'),{type:'bar',data:{labels:hourLabels,datasets:[{label:'该时段提单率',data:hourRates,backgroundColor:'#64dcae',borderRadius:4,percent:true}]},options:percentOpt(0,Math.max(...hourRates)+2)});</script></body></html>
