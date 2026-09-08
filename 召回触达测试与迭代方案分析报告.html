@@ -2,7 +2,7 @@
 <html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>召回触达测试与迭代方案分析报告</title>
 <style>
 :root{--bg:#071b2f;--p:#0c2944;--line:#2a5c7e;--text:#eff8ff;--muted:#aac5da;--cy:#43c7e7;--gr:#64dcae;--am:#ffc26b;--pk:#f68ab0;--vio:#b49aff;--rd:#ff7b72}*{box-sizing:border-box}body{margin:0;background:linear-gradient(135deg,#06192b,#0b2c47 55%,#071a2d);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei",sans-serif}.wrap{max-width:1450px;margin:auto;padding:32px 38px 76px}.hero{text-align:center;padding:38px 15px 28px;border-bottom:1px solid var(--line)}.kicker{color:var(--cy);font-size:14px;letter-spacing:2px;font-weight:700}.hero h1{font-size:32px;line-height:1.25;margin:10px 0}.hero p,.desc,.sub{color:var(--muted);margin:0}.hero-meta{display:inline-block;text-align:left;margin-top:14px;line-height:1.8;color:var(--muted);font-size:14px}.hero-meta .indent{padding-left:3em}h2{font-size:26px;margin:50px 0 8px}.grid{display:grid;gap:18px}.g2{grid-template-columns:repeat(2,minmax(0,1fr))}.g3{grid-template-columns:repeat(3,minmax(0,1fr))}.g4{grid-template-columns:repeat(4,minmax(0,1fr))}.card,.chart,.note{background:rgba(10,41,68,.95);border:1px solid var(--line);border-radius:16px;padding:19px}.label{color:var(--muted);font-size:13px}.num{font-size:28px;font-weight:850;line-height:1.2;margin:5px 0}.cyan{color:var(--cy)}.green{color:var(--gr)}.amber{color:var(--am)}.pink{color:var(--pk)}.violet{color:var(--vio)}.red{color:var(--rd)}.chart h3{font-size:17px;margin:0 0 4px}.chart p{font-size:13px;color:var(--muted);margin:0 0 14px}.box{height:320px;position:relative}.callout{background:#0a2a45;border:1px solid #2a5c7e;border-left:4px solid #43c7e7;border-radius:12px;padding:16px 20px;margin:18px 0;line-height:1.75}.callout.red{border-left-color:#f68ab0}.callout.gold{border-left-color:#ffc26b}.callout.green{border-left-color:#64dcae}.callout .ch{font-weight:800;margin-bottom:10px;font-size:14px;color:#fff}.callout .cl{display:block;margin:8px 0}.callout .cl b{color:#43c7e7;margin-right:2px}.insight{display:flex;gap:14px;padding:15px;border:1px solid var(--line);border-radius:12px;background:#0a2a45;margin:10px 0}.idx{font-size:22px;font-weight:800;color:var(--cy);flex:none;width:38px}.insight h3{font-size:15.5px;margin:0 0 4px}.insight p{color:var(--muted);font-size:13.5px;margin:0}.table{overflow-x:auto;margin:14px 0}.table table{width:100%;border-collapse:collapse;font-size:13.5px}.table th,.table td{padding:9px 11px;border-bottom:1px solid rgba(42,92,126,.5);text-align:right;white-space:nowrap}.table th{color:var(--muted);font-weight:600;background:rgba(12,48,78,.6)}.table th:first-child,.table td:first-child{text-align:left}.table tr:hover td{background:rgba(67,199,231,.05)}.total td{font-weight:700;border-top:2px solid #43c7e7;color:#fff}.bad{color:var(--pk)}.good{color:var(--gr)}.foot{color:#7fa6c2;font-size:12.5px;margin-top:50px;border-top:1px solid var(--line);padding-top:16px;line-height:1.9}
-</style></head><body><main class="wrap">
+pre.sql{background:#081726;border:1px solid var(--line);border-radius:14px;padding:18px;overflow:auto;max-height:820px;font-size:12px;line-height:1.6;color:#bfe0f2;font-family:"SF Mono",ui-monospace,Menlo,Consolas,monospace;white-space:pre;tab-size:2}details{margin:14px 0}summary{cursor:pointer;color:var(--cy);font-size:14px;padding:6px 0}</style></head><body><main class="wrap">
 
 <header class="hero">
 <div class="kicker">T7 召回名单 · 两轮让利触达测试</div>
@@ -172,6 +172,204 @@
 <b>特征字段</b>：churn_days=流失天数；days_since_last_active=距最后活跃天数；total_remit_rnb=历史放款次数；fpd7_score=风险评分（&lt;-100 万为高风险）；send_coupon_d_cnt=历史发券次数<br>
 <b>两轮触达</b>：第一轮 8/27 触达、观察 8/27~9/2；第二轮 9/3 触达、观察 9/3~9/7<br>
 <b>数据源</b>：wangchuanliang.t7recalllist_0818_0819、event_track、order_loan_f_v2_copy（kaby_dw，截止 2026-09-07）</p>
+<h2>附录：完整 PGsql 代码</h2>
+<p class="desc">以下 SQL 可完整复现本报告所有指标（两轮触达、三层分层、窗口提单来源、特征分桶、组合筛选规则），在 kaby_dw 库（wangchuanliang schema）直接执行即可。统计截止 2026-09-07。</p>
+<details open><summary>展开/收起完整 SQL（约 200 行）</summary>
+<pre class="sql">-- ============================================================================
+-- 召回触达测试与迭代方案分析 —— 完整复现 SQL
+-- 数据源：kaby_dw（wangchuanliang schema），统计截止 2026-09-07（America/Belize）
+-- 输出统一结构：section=指标区块 / dim=维度 / bucket=分类
+--               cnt=基数(分母) / applied=提单人数(分子) / rate_pct=提单率%(applied/cnt*100)
+-- 口径说明：
+--   活跃   = event_track.active_date 存在记录
+--   回归提单 = 名单用户在 8/18 及之后的最小 apply_date
+--   G1 = 8/18~8/26 有活跃；G2 = 8/18~8/26 无活跃但 7/18~8/17 有活跃；G3 = 7/18 后无活跃
+--   块1「两轮触达」中，活跃/未活跃行的 cnt=窗口提单总数、applied=活跃(未活跃)人数
+-- ============================================================================
+WITH
+recall_list AS (
+    SELECT DISTINCT churn_user_id AS user_id
+    FROM wangchuanliang.t7recalllist_0818_0819
+),
+first_apply AS (
+    SELECT o.user_id, MIN(o.apply_date) AS first_apply_date
+    FROM wangchuanliang.order_loan_f_v2_copy o
+    JOIN recall_list r ON r.user_id = o.user_id
+    WHERE o.apply_date &gt;= DATE &#x27;2026-08-18&#x27;
+    GROUP BY o.user_id
+),
+act_r1 AS (
+    SELECT DISTINCT user_id FROM wangchuanliang.event_track
+    WHERE active_date BETWEEN DATE &#x27;2026-08-18&#x27; AND DATE &#x27;2026-08-26&#x27;
+),
+act_hist AS (
+    SELECT DISTINCT user_id FROM wangchuanliang.event_track
+    WHERE active_date BETWEEN DATE &#x27;2026-07-18&#x27; AND DATE &#x27;2026-08-17&#x27;
+),
+act_r2 AS (
+    SELECT DISTINCT user_id FROM wangchuanliang.event_track
+    WHERE active_date BETWEEN DATE &#x27;2026-08-18&#x27; AND DATE &#x27;2026-09-02&#x27;
+),
+enriched AS (
+    SELECT
+        t.churn_user_id            AS user_id,
+        t.churn_days               AS churn_days,
+        t.days_since_last_active   AS days_since_last_active,
+        t.total_remit_rnb          AS total_remit_rnb,
+        t.fpd7_score               AS fpd7_score,
+        t.send_coupon_d_cnt        AS send_coupon_d_cnt,
+        CASE WHEN ar1.user_id IS NOT NULL THEN &#x27;G1&#x27;
+             WHEN ah.user_id  IS NOT NULL THEN &#x27;G2&#x27;
+             ELSE &#x27;G3&#x27; END         AS seg
+    FROM wangchuanliang.t7recalllist_0818_0819 t
+    LEFT JOIN act_r1  ar1 ON ar1.user_id = t.churn_user_id
+    LEFT JOIN act_hist ah  ON ah.user_id  = t.churn_user_id
+),
+w AS (
+    SELECT
+        SUM(CASE WHEN first_apply_date BETWEEN DATE &#x27;2026-08-27&#x27; AND DATE &#x27;2026-09-02&#x27; THEN 1 ELSE 0 END) AS w1_total,
+        SUM(CASE WHEN first_apply_date BETWEEN DATE &#x27;2026-09-03&#x27; AND DATE &#x27;2026-09-07&#x27; THEN 1 ELSE 0 END) AS w2_total
+    FROM first_apply
+),
+blocks AS (
+    -- ========== 块1：两轮触达测试 ==========
+    SELECT &#x27;1.两轮触达&#x27; AS section, &#x27;回归基数&#x27; AS dim, &#x27;8/18后首次提单&#x27; AS bucket,
+           COUNT(*)::numeric AS cnt, COUNT(*)::numeric AS applied FROM first_apply
+    UNION ALL
+    SELECT &#x27;1.两轮触达&#x27;, &#x27;第一轮窗口(8/27~9/2)&#x27;, &#x27;窗口内首次提单&#x27;, COUNT(*), COUNT(*)
+    FROM first_apply WHERE first_apply_date BETWEEN DATE &#x27;2026-08-27&#x27; AND DATE &#x27;2026-09-02&#x27;
+    UNION ALL
+    SELECT &#x27;1.两轮触达&#x27;, &#x27;第一轮窗口(8/27~9/2)&#x27;, &#x27;其中8/18~8/26活跃&#x27;,
+           (SELECT w1_total FROM w), COUNT(*)
+    FROM first_apply fa JOIN act_r1 a ON a.user_id = fa.user_id
+    WHERE fa.first_apply_date BETWEEN DATE &#x27;2026-08-27&#x27; AND DATE &#x27;2026-09-02&#x27;
+    UNION ALL
+    SELECT &#x27;1.两轮触达&#x27;, &#x27;第一轮窗口(8/27~9/2)&#x27;, &#x27;其中8/18~8/26未活跃&#x27;,
+           (SELECT w1_total FROM w), COUNT(*)
+    FROM first_apply fa LEFT JOIN act_r1 a ON a.user_id = fa.user_id
+    WHERE fa.first_apply_date BETWEEN DATE &#x27;2026-08-27&#x27; AND DATE &#x27;2026-09-02&#x27; AND a.user_id IS NULL
+    UNION ALL
+    SELECT &#x27;1.两轮触达&#x27;, &#x27;第二轮窗口(9/3~9/7)&#x27;, &#x27;窗口内首次提单&#x27;, COUNT(*), COUNT(*)
+    FROM first_apply WHERE first_apply_date BETWEEN DATE &#x27;2026-09-03&#x27; AND DATE &#x27;2026-09-07&#x27;
+    UNION ALL
+    SELECT &#x27;1.两轮触达&#x27;, &#x27;第二轮窗口(9/3~9/7)&#x27;, &#x27;其中8/18~9/2活跃&#x27;,
+           (SELECT w2_total FROM w), COUNT(*)
+    FROM first_apply fa JOIN act_r2 a ON a.user_id = fa.user_id
+    WHERE fa.first_apply_date BETWEEN DATE &#x27;2026-09-03&#x27; AND DATE &#x27;2026-09-07&#x27;
+    UNION ALL
+    SELECT &#x27;1.两轮触达&#x27;, &#x27;第二轮窗口(9/3~9/7)&#x27;, &#x27;其中8/18~9/2未活跃&#x27;,
+           (SELECT w2_total FROM w), COUNT(*)
+    FROM first_apply fa LEFT JOIN act_r2 a ON a.user_id = fa.user_id
+    WHERE fa.first_apply_date BETWEEN DATE &#x27;2026-09-03&#x27; AND DATE &#x27;2026-09-07&#x27; AND a.user_id IS NULL
+
+    -- ========== 块2：三层分层提单率 ==========
+    UNION ALL
+    SELECT &#x27;2.三层分层&#x27;, e.seg, &#x27;回归提单率&#x27;, COUNT(*), COUNT(fa.user_id)
+    FROM enriched e LEFT JOIN first_apply fa ON fa.user_id = e.user_id
+    GROUP BY e.seg
+
+    -- ========== 块3：两轮窗口提单来源(seg × 窗口) ==========
+    UNION ALL
+    SELECT &#x27;3.窗口提单来源&#x27;, &#x27;第一轮窗口(8/27~9/2)&#x27;, e.seg, NULL, COUNT(fa.user_id)
+    FROM enriched e JOIN first_apply fa ON fa.user_id = e.user_id
+    WHERE fa.first_apply_date BETWEEN DATE &#x27;2026-08-27&#x27; AND DATE &#x27;2026-09-02&#x27;
+    GROUP BY e.seg
+    UNION ALL
+    SELECT &#x27;3.窗口提单来源&#x27;, &#x27;第二轮窗口(9/3~9/7)&#x27;, e.seg, NULL, COUNT(fa.user_id)
+    FROM enriched e JOIN first_apply fa ON fa.user_id = e.user_id
+    WHERE fa.first_apply_date BETWEEN DATE &#x27;2026-09-03&#x27; AND DATE &#x27;2026-09-07&#x27;
+    GROUP BY e.seg
+
+    -- ========== 块4：流失天数分桶（未活跃层 G2+G3） ==========
+    UNION ALL
+    SELECT &#x27;4.流失天数分桶&#x27;, &#x27;未活跃层(G2+G3)&#x27;,
+           CASE WHEN e.churn_days &lt;= 30  THEN &#x27;≤30天&#x27;
+                WHEN e.churn_days &lt;= 60  THEN &#x27;31~60天&#x27;
+                WHEN e.churn_days &lt;= 90  THEN &#x27;61~90天&#x27;
+                WHEN e.churn_days &lt;= 180 THEN &#x27;91~180天&#x27;
+                ELSE &#x27;&gt;180天&#x27; END,
+           COUNT(*), COUNT(fa.user_id)
+    FROM enriched e LEFT JOIN first_apply fa ON fa.user_id = e.user_id
+    WHERE e.seg &lt;&gt; &#x27;G1&#x27;
+    GROUP BY 3
+
+    -- ========== 块5：距最后活跃分桶（未活跃层 G2+G3） ==========
+    UNION ALL
+    SELECT &#x27;5.距最后活跃分桶&#x27;, &#x27;未活跃层(G2+G3)&#x27;,
+           CASE WHEN e.days_since_last_active &lt;= 15 THEN &#x27;≤15天&#x27;
+                WHEN e.days_since_last_active &lt;= 30 THEN &#x27;16~30天&#x27;
+                WHEN e.days_since_last_active &lt;= 60 THEN &#x27;31~60天&#x27;
+                ELSE &#x27;61天以上&#x27; END,
+           COUNT(*), COUNT(fa.user_id)
+    FROM enriched e LEFT JOIN first_apply fa ON fa.user_id = e.user_id
+    WHERE e.seg &lt;&gt; &#x27;G1&#x27;
+    GROUP BY 3
+
+    -- ========== 块6：历史放款次数分桶（未活跃层 G2+G3） ==========
+    UNION ALL
+    SELECT &#x27;6.历史放款次数分桶&#x27;, &#x27;未活跃层(G2+G3)&#x27;,
+           CASE WHEN e.total_remit_rnb &lt;= 1 THEN &#x27;1次&#x27;
+                WHEN e.total_remit_rnb = 2  THEN &#x27;2次&#x27;
+                WHEN e.total_remit_rnb &lt;= 4 THEN &#x27;3~4次&#x27;
+                ELSE &#x27;5次以上&#x27; END,
+           COUNT(*), COUNT(fa.user_id)
+    FROM enriched e LEFT JOIN first_apply fa ON fa.user_id = e.user_id
+    WHERE e.seg &lt;&gt; &#x27;G1&#x27;
+    GROUP BY 3
+
+    -- ========== 块7：风险评分分档（未活跃层 G2+G3） ==========
+    UNION ALL
+    SELECT &#x27;7.风险评分分档&#x27;, &#x27;未活跃层(G2+G3)&#x27;,
+           CASE WHEN e.fpd7_score &gt;= -1000000 THEN &#x27;非高风险(≥-100万)&#x27;
+                ELSE &#x27;高风险(&lt;-100万)&#x27; END,
+           COUNT(*), COUNT(fa.user_id)
+    FROM enriched e LEFT JOIN first_apply fa ON fa.user_id = e.user_id
+    WHERE e.seg &lt;&gt; &#x27;G1&#x27;
+    GROUP BY 3
+
+    -- ========== 块8：历史发券次数分桶（未活跃层 G2+G3） ==========
+    UNION ALL
+    SELECT &#x27;8.历史发券次数分桶&#x27;, &#x27;未活跃层(G2+G3)&#x27;,
+           CASE WHEN e.send_coupon_d_cnt = 0 THEN &#x27;0次&#x27;
+                WHEN e.send_coupon_d_cnt &lt;= 2 THEN &#x27;1~2次&#x27;
+                ELSE &#x27;3次以上&#x27; END,
+           COUNT(*), COUNT(fa.user_id)
+    FROM enriched e LEFT JOIN first_apply fa ON fa.user_id = e.user_id
+    WHERE e.seg &lt;&gt; &#x27;G1&#x27;
+    GROUP BY 3
+
+    -- ========== 块9：组合筛选规则（未活跃层 G2+G3） ==========
+    UNION ALL
+    SELECT &#x27;9.组合筛选规则&#x27;, &#x27;规则A&#x27;, &#x27;流失≤60天+距活跃≤15天+非高风险&#x27;,
+           COUNT(*), COUNT(fa.user_id)
+    FROM enriched e LEFT JOIN first_apply fa ON fa.user_id = e.user_id
+    WHERE e.seg &lt;&gt; &#x27;G1&#x27; AND e.churn_days &lt;= 60 AND COALESCE(e.days_since_last_active,9999) &lt;= 15
+      AND e.fpd7_score &gt;= -1000000
+    UNION ALL
+    SELECT &#x27;9.组合筛选规则&#x27;, &#x27;规则B&#x27;, &#x27;流失≤60天+距活跃16~30天+非高风险&#x27;,
+           COUNT(*), COUNT(fa.user_id)
+    FROM enriched e LEFT JOIN first_apply fa ON fa.user_id = e.user_id
+    WHERE e.seg &lt;&gt; &#x27;G1&#x27; AND e.churn_days &lt;= 60
+      AND COALESCE(e.days_since_last_active,9999) BETWEEN 16 AND 30 AND e.fpd7_score &gt;= -1000000
+    UNION ALL
+    SELECT &#x27;9.组合筛选规则&#x27;, &#x27;规则C(A+B)&#x27;, &#x27;流失≤60天+距活跃≤30天+非高风险&#x27;,
+           COUNT(*), COUNT(fa.user_id)
+    FROM enriched e LEFT JOIN first_apply fa ON fa.user_id = e.user_id
+    WHERE e.seg &lt;&gt; &#x27;G1&#x27; AND e.churn_days &lt;= 60 AND COALESCE(e.days_since_last_active,9999) &lt;= 30
+      AND e.fpd7_score &gt;= -1000000
+    UNION ALL
+    SELECT &#x27;9.组合筛选规则&#x27;, &#x27;其余&#x27;, &#x27;未命中规则C的未活跃用户&#x27;,
+           COUNT(*), COUNT(fa.user_id)
+    FROM enriched e LEFT JOIN first_apply fa ON fa.user_id = e.user_id
+    WHERE e.seg &lt;&gt; &#x27;G1&#x27; AND NOT (e.churn_days &lt;= 60 AND COALESCE(e.days_since_last_active,9999) &lt;= 30
+      AND e.fpd7_score &gt;= -1000000)
+)
+SELECT section, dim, bucket, cnt, applied,
+       ROUND(applied / NULLIF(cnt, 0) * 100, 2) AS rate_pct
+FROM blocks
+ORDER BY section, dim, bucket;
+</pre>
+</details>
 </main>
 <script>/**
  * Skipped minification because the original files appears to be already minified.
