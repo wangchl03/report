@@ -1,0 +1,1187 @@
+<!doctype html>
+<html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>结清0在贷 T0 提单率与盈利平衡点分析报告</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.8/dist/chart.umd.min.js"></script>
+<style>
+:root{--bg:#071b2f;--panel:#0c2944;--line:#2a5c7e;--text:#eff8ff;--muted:#aac5da;--cy:#43c7e7;--gr:#64dcae;--am:#ffc26b;--pk:#f68ab0;--vio:#b49aff;--red:#ff8d8d}*{box-sizing:border-box}body{margin:0;background:linear-gradient(135deg,#06192b,#0b2c47 55%,#071a2d);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei",sans-serif}.wrap{max-width:1480px;margin:auto;padding:32px 38px 76px}.hero{text-align:center;padding:38px 15px 28px;border-bottom:1px solid var(--line)}.kicker{color:var(--cy);font-size:14px;letter-spacing:2px;font-weight:700}.hero h1{font-size:36px;line-height:1.25;margin:10px 0}.hero p,.desc,.sub{color:var(--muted);margin:0}.hero-meta{width:min(760px,100%);margin:16px auto 0;text-align:left;color:var(--muted);font-size:14px;line-height:1.9;transform:translateX(72px)}.hero-meta span{display:block}.tag{display:inline-block;margin-top:15px;border:1px solid #33779e;border-radius:99px;padding:5px 12px;font-size:13px;color:#ccecff;background:#0c304e}h2{font-size:26px;margin:50px 0 8px}.grid{display:grid;gap:18px}.g2{grid-template-columns:repeat(2,minmax(0,1fr))}.g4{grid-template-columns:repeat(4,minmax(0,1fr))}.card,.chart,.note{background:rgba(10,41,68,.95);border:1px solid var(--line);border-radius:16px;padding:19px}.label{color:var(--muted);font-size:13px}.num{font-size:30px;font-weight:850;line-height:1.2;margin:5px 0}.cyan{color:var(--cy)}.green{color:var(--gr)}.amber{color:var(--am)}.pink{color:var(--pk)}.violet{color:var(--vio)}.chart h3{font-size:17px;margin:0 0 4px}.chart p{font-size:13px;color:var(--muted);margin:0 0 14px}.box{height:340px;position:relative}.callout{background:#0a2a45;border:1px solid #2a5c7e;border-left:4px solid #43c7e7;border-radius:12px;padding:14px 18px;margin:18px 0;line-height:1.75}.callout.red{border-left-color:var(--pk)}.callout.amber{border-left-color:var(--am)}.finding-list{list-style:none;padding:0;margin:0}.finding-list li{position:relative;padding:8px 0 8px 21px;border-bottom:1px solid rgba(80,142,176,.22);color:#d9edf9}.finding-list li:last-child{border-bottom:0}.finding-list li:before{content:'•';position:absolute;left:2px;color:var(--cy);font-weight:900}.finding-list .finding-label{display:inline-block;min-width:86px;color:var(--cy);font-weight:750}.insight{display:flex;gap:14px;padding:15px;border:1px solid var(--line);border-radius:12px;background:#0a2a45;margin:10px 0}.idx{font-size:22px;font-weight:800;color:var(--cy);flex:none;width:38px}.insight h3{font-size:15.5px;margin:0 0 4px}.insight p{color:var(--muted);font-size:13.5px;margin:0}.table{overflow-x:auto;margin:14px 0}.table table{width:100%;border-collapse:collapse;font-size:14px;background:rgba(10,41,68,.95)}caption{caption-side:top;text-align:left;color:#e5f5ff;font-size:15px;font-weight:700;margin-bottom:8px}th,td{border:1px solid var(--line);padding:9px 12px;text-align:center;white-space:nowrap}th{background:#0e3a5c;color:#d7edf9;font-weight:650}td.good{color:var(--gr);font-weight:750}td.bad{color:var(--red);font-weight:750}tr.total td{background:#0e3453;font-weight:800}.sql{background:#041323;border:1px solid #275370;border-radius:12px;padding:18px;overflow:auto;color:#d9edf9;font:12px/1.7 ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,monospace;white-space:pre;tab-size:4;margin:10px 0 0}.sql-title{color:var(--cy);font-size:17px;font-weight:750;margin:24px 0 8px}.sql-toolbar{display:flex;gap:10px;flex-wrap:wrap;margin:16px 0}.sql-toolbar button{border:1px solid #33779e;background:#0d3554;color:#d8effc;padding:7px 12px;border-radius:8px;cursor:pointer}.sql-toolbar button:hover{background:#155075}.sql-module{border:1px solid #2a5c7e;border-radius:12px;background:#082740;margin:10px 0;overflow:hidden}.sql-module summary{display:flex;align-items:center;gap:10px;cursor:pointer;padding:13px 15px;list-style:none}.sql-module summary::-webkit-details-marker{display:none}.sql-module summary:before{content:'›';font-size:24px;line-height:12px;color:var(--cy);transition:transform .15s}.sql-module[open] summary:before{transform:rotate(90deg)}.sql-module-title{font-size:14px;font-weight:750;flex:1}.sql-expand-hint{font-size:12px;color:var(--muted)}.sql-fav{border:0;background:transparent;color:#aac5da;font-size:23px;line-height:1;padding:0 5px;cursor:pointer}.sql-fav.active{color:#ffc26b}.foot{color:var(--muted);font-size:12.5px;text-align:center;margin-top:50px;padding:20px;border-top:1px solid var(--line);line-height:1.8}.small{font-size:13px;color:var(--muted);line-height:1.7}@media(max-width:900px){.g4{grid-template-columns:repeat(2,1fr)}.g2{grid-template-columns:1fr}.wrap{padding:22px 14px 55px}.hero h1{font-size:28px}.hero-meta{transform:none}.sql-expand-hint{display:none}}
+</style></head><body><main class="wrap">
+<header class="hero"><div class="kicker">结清 0 在贷 · T0 提单率与盈利平衡点</div><h1>结清 0 在贷当天提单率与盈利平衡点分析报告</h1><div class="hero-meta"><span>T0 提单率与息费：2026 年 1 月 1 日 — 8 月 31 日</span><span>到期质量与流水盈利：2026 年 1 月 1 日 — 7 月 31 日放款 cohort</span><span>固定 30 天盈利：2026 年 1 月 1 日 — 6 月 30 日</span><span>报告生成时间：2026 年 9 月 7 日</span></div><span class="tag">T0：同日结清 0 在贷 + 同日获额通过 + 获额时间 ≥ 结清时间 · 20 秒去重</span></header>
+
+<h2>核心结论</h2><p class="desc">提单率下降与盈利率上行同时出现，但<strong>盈利率上升不代表经济产出更优</strong>。用固定 30 天窗口核算后，6 月每个可提单机会创造的折扣后盈利低于 1 月。</p>
+<section class="grid g4" style="margin-top:18px"><article class="card"><div class="label">T0 提单率（1 月 → 8 月）</div><div class="num pink">51.45% → 38.19%</div><div class="sub">-13.26pp；按率比较，不以月度人数差异判断</div></article><article class="card"><div class="label">加权息费率（1 月 → 8 月）</div><div class="num amber">49.58% → 60.24%</div><div class="sub">+10.66pp，仅统计 T0 成功放款订单</div></article><article class="card"><div class="label">30 天折扣后盈利率（1 月 → 6 月）</div><div class="num green">6.67% → 8.45%</div><div class="sub">+1.78pp，7—8 月不纳入盈利比较</div></article><article class="card"><div class="label">单个可提单样本盈利（1 月 → 6 月）</div><div class="num cyan">100.52 → 73.62</div><div class="sub">-26.8%，机会产出下降</div></article></section>
+
+<div class="callout"><ul class="finding-list"><li><span class="finding-label">客群拆解：</span>四类客群的“加权息费率—T0 提单率”月度相关系数依次为 -0.91、-0.88、-0.88、-0.92。</li><li><span class="finding-label">8 月表现：</span>贷款1次 37.15%、贷款2次 36.46%、贷款3-5次 38.62%、贷款6次及以上 43.47%。</li><li><span class="finding-label">结论：</span>高频用户的绝对提单率更高，但所有客群均呈现息费上升、提单率下降的共同趋势。</li></ul></div>
+
+<div class="callout red"><ul class="finding-list"><li><span class="finding-label">1—8 月：</span>T0 提单率下降 -13.26pp，加权息费率上升 +10.66pp。</li><li><span class="finding-label">1—6 月：</span>T0 提单率下降 -8.98pp，30 天折扣后盈利率仅增加 +1.78pp。</li><li><span class="finding-label">机会产出：</span>单个可提单样本盈利由 100.52 降至 73.62。</li><li><span class="finding-label">判断：</span>现有数据不能支持“降低提单率已换来更优整体盈利”的结论。</li></ul></div>
+
+<h2>一、样本与统计口径</h2>
+<section class="note"><div class="insight"><div class="idx">01</div><div><h3>结清 0 在贷样本</h3><p>获额通过且 loan_type_code=2 的订单先按用户 20 秒获额批次去重，每批保留订单号最大的记录；仅保留 recycle_type=3。该获额订单须与同一用户同日的结清记录匹配，获额时间不早于结清时间；结清时不得存在其他已提单且仍在途/在贷订单。同一用户同日仅保留最早满足条件的一笔获额订单。</p></div></div><div class="insight"><div class="idx">02</div><div><h3>T0 提单与放款</h3><p>T0 提单指所保留获额订单在获额当天、且获额时间之后存在提单；T0 成功放款为该笔 T0 提单订单 is_remit=1。提单率的分母为结清 0 在贷可提单样本数。</p></div></div><div class="insight"><div class="idx">03</div><div><h3>固定 30 天折扣后盈利</h3><p>为避免 1 月样本天然比 6 月多观察数月，盈利统一取 T0 提单后 30 天内到期、且已放款的分期。盈利额 = Σ(repaid_amt_period − remit_amt_period − discount_amount_period)；盈利率 = 盈利额 ÷ Σ(remit_amt_period)。金额单位为墨西哥比索。</p></div></div><div class="insight"><div class="idx">04</div><div><h3>降息券效果不使用 coupon_user_detail_copy 评估</h3><p>该表记录的是用户提单时实际使用的红包；未提单用户没有记录。因此它不能用于定义“发券覆盖”，也不能作为 T0 提单率的分母分组。本报告不再据此输出降息券提升效果。</p></div></div></section>
+
+<h2>二、提单率与折扣后盈利：提单减少未换来更高的机会产出</h2><p class="desc">月度盈利率与 T0 提单率呈反向变化，但只有 6 个观测月份，且产品、用户结构、风险策略等因素未被完全控制；以下是经营描述，不是因果估计。</p>
+<section class="grid g2"><article class="chart"><h3>T0 提单率与 30 天折扣后盈利率</h3><p>提单率从 51.45% 降至 42.47%；折扣后盈利率在 3—5 月走高，6 月回落。</p><div class="box"><canvas id="rateMargin"></canvas></div></article><article class="chart"><h3>单个可提单样本的折扣后盈利</h3><p>衡量每一个“可提单机会”带来的经济产出，能同时纳入转化率与单笔盈利。</p><div class="box"><canvas id="unitProfit"></canvas></div></article></section>
+<section class="grid g2"><article class="chart"><h3>单个可提单样本盈利、息费与 T0 提单率</h3><p>固定 30 天盈利仅观察至 6 月；左轴为每个可提单机会的盈利，右轴为息费率与 T0 提单率。</p><div class="box"><canvas id="unitProfitFeeT0"></canvas></div></article><article class="card"><div class="label">三指标联动（1—6 月）</div><div class="num cyan">100.52 → 73.62</div><div class="sub">单个可提单样本盈利（MXN）</div><hr style="border:0;border-top:1px solid var(--line);margin:22px 0"><p class="small">单个可提单样本盈利与 T0 提单率的月度相关系数为 -0.24，与加权息费率的相关系数为 -0.18。6 月息费仍上升至 58.30%，T0 提单率降至 42.47%，同时机会盈利降至 73.62。这反映三者在 6 月共同走弱/走高，但不构成“息费或提单率单独导致盈利下降”的因果证明。</p></article></section>
+<div class="table"><table><caption>月度 T0 提单与固定 30 天折扣后盈利（墨西哥比索）</caption><thead><tr><th>月份</th><th>可提单样本</th><th>T0 提单数</th><th>T0 提单率</th><th>提单率环比</th><th>成功放款订单</th><th>到期放款金额</th><th>到期还款金额</th><th>折扣金额</th><th>折扣后盈利额</th><th>折扣后盈利率</th><th>单个机会盈利</th></tr></thead><tbody><tr><td>2026-01</td><td>19,520</td><td>10,044</td><td class="good">51.45%</td><td class="">—</td><td>9,936</td><td>29,435,639</td><td>32,017,675</td><td>619,819</td><td>1,962,217</td><td class="bad">6.67%</td><td>100.52</td></tr><tr><td>2026-02</td><td>22,739</td><td>11,509</td><td class="bad">50.61%</td><td class="bad">-0.84pp</td><td>11,342</td><td>29,882,430</td><td>31,956,833</td><td>584,024</td><td>1,490,379</td><td class="bad">4.99%</td><td>65.54</td></tr><tr><td>2026-03</td><td>22,198</td><td>9,999</td><td class="bad">45.04%</td><td class="bad">-5.57pp</td><td>9,877</td><td>23,393,432</td><td>26,441,814</td><td>420,177</td><td>2,628,205</td><td class="good">11.23%</td><td>118.40</td></tr><tr><td>2026-04</td><td>20,780</td><td>9,487</td><td class="good">45.65%</td><td class="">+0.61pp</td><td>9,422</td><td>20,372,019</td><td>23,190,088</td><td>406,635</td><td>2,411,435</td><td class="good">11.84%</td><td>116.05</td></tr><tr><td>2026-05</td><td>23,875</td><td>10,513</td><td class="bad">44.03%</td><td class="bad">-1.62pp</td><td>10,318</td><td>21,857,280</td><td>24,907,964</td><td>412,450</td><td>2,638,234</td><td class="good">12.07%</td><td>110.50</td></tr><tr><td>2026-06</td><td>22,635</td><td>9,612</td><td class="bad">42.47%</td><td class="bad">-1.56pp</td><td>9,396</td><td>19,712,639</td><td>21,770,891</td><td>391,757</td><td>1,666,495</td><td class="bad">8.45%</td><td>73.62</td></tr></tbody></table></div>
+<div class="callout"><ul class="finding-list"><li><span class="finding-label">月度相关：</span>1—6 月提单率与折扣后盈利率的相关系数为 -0.72，呈反向关系。</li><li><span class="finding-label">因果边界：</span>该相关性不能直接证明“压低提单率会提高盈利”。</li><li><span class="finding-label">机会产出：</span>单个可提单样本盈利在 3—5 月为 110.50—118.40，6 月降为 73.62。</li><li><span class="finding-label">结论：</span>6 月转化下降已开始削弱每个可提单机会的综合产出。</li></ul></div>
+
+<h2>三、息费趋势与 T0 提单率：1—8 月同步下行</h2><p class="desc">加权息费 = Σ(post_amt + pre_amt) ÷ Σ(remit_amt)，仅统计 T0 成功放款订单。它反映用户面对的息费水平；该模块统计至 8 月 31 日。</p>
+<section class="grid g2"><article class="chart"><h3>T0 加权息费率与当天提单率</h3><p>息费从 1 月 49.58% 升至 8 月 60.24%；同期提单率持续下降。</p><div class="box"><canvas id="feeTrend"></canvas></div></article><article class="card"><div class="label">息费变化（1 月 → 8 月）</div><div class="num amber">49.58% → 60.24%</div><div class="sub">+10.66pp；与 T0 提单率月度相关系数 -0.92</div><hr style="border:0;border-top:1px solid var(--line);margin:22px 0"><div class="label">重点观察</div><p class="small">7 月息费仍处于 58.18%，8 月继续升至 60.24%；同期 T0 提单率由 40.39% 降至 38.19%。息费上升是需要优先验证的解释变量。</p></article></section>
+<div class="table"><table><caption>T0 成功放款订单的月度加权息费</caption><thead><tr><th>月份</th><th>息费金额分子<br>Σ(post_amt + pre_amt)</th><th>放款金额分母<br>Σ(remit_amt)</th><th>加权息费率</th><th>T0 提单率</th></tr></thead><tbody><tr><td>2026-01</td><td>14,593,939</td><td>29,435,639</td><td class="bad">49.58%</td><td>51.45%</td></tr><tr><td>2026-02</td><td>14,626,880</td><td>29,885,580</td><td class="good">48.94%</td><td>50.61%</td></tr><tr><td>2026-03</td><td>11,857,889</td><td>23,471,786</td><td class="bad">50.52%</td><td>45.04%</td></tr><tr><td>2026-04</td><td>10,566,674</td><td>20,533,969</td><td class="bad">51.46%</td><td>45.65%</td></tr><tr><td>2026-05</td><td>12,060,206</td><td>22,236,302</td><td class="bad">54.24%</td><td>44.03%</td></tr><tr><td>2026-06</td><td>11,760,309</td><td>20,171,272</td><td class="bad">58.30%</td><td>42.47%</td></tr><tr><td>2026-07</td><td>13,084,228</td><td>22,490,549</td><td class="bad">58.18%</td><td>40.39%</td></tr><tr><td>2026-08</td><td>11,312,596</td><td>18,779,204</td><td class="bad">60.24%</td><td>38.19%</td></tr></tbody></table></div>
+<div class="callout"><ul class="finding-list"><li><span class="finding-label">总体趋势：</span>1—8 月加权息费率上升 +10.66pp，T0 提单率下降 -13.26pp，月度相关系数为 -0.92。</li><li><span class="finding-label">近期表现：</span>5 月后息费维持在 54% 以上，8 月达到 60.24%；同期 T0 提单率降至 38.19%。</li><li><span class="finding-label">因果边界：</span>2 月息费下降时提单率也略降、4 月息费上升时提单率小幅回升。</li><li><span class="finding-label">解释：</span>用户结构、风险准入、竞品与运营策略也可能共同影响结果，当前仅能视为趋势关联。</li></ul></div>
+
+<h2>四、到期质量与流水盈利：低提单率未形成清晰的总利润增益</h2><p class="desc">放款 cohort 为 2026 年 1—7 月的 T0 成功放款订单；到期和还款观察截至 2026 年 9 月 8 日。整笔订单逾期以 repaid_date 判定：未结清（空值或早于 2000-01-01）或晚于 due_date 结清均计为逾期；分期金额逾期按同一规则比较 repaid_date_period 与 due_date_period。利润不再扣减折扣：还款流水表的 amount 已是实际到账金额，直接以“到期前实际还款 − 放款金额”计算。</p>
+<section class="grid g2"><article class="chart"><h3>T0 提单率与到期盈利率</h3><p>盈利率按已整笔到期订单计算，回款取整笔到期日及之前的还款流水。</p><div class="box"><canvas id="qualityProfitTrend"></canvas></div></article><article class="chart"><h3>T0 提单率与到期逾期率</h3><p>逾期以到期时是否结清判定：还款日期为空/早于 2000-01-01，或晚于到期日，均计为到期逾期。</p><div class="box"><canvas id="qualityRiskTrend"></canvas></div></article></section>
+<section class="grid g2"><article class="chart"><h3>加权息费率与盈利率</h3><p>息费率按整笔 T0 成功放款订单计算；盈利率仅使用已到期的整笔订单。</p><div class="box"><canvas id="qualityFeeProfitTrend"></canvas></div></article><article class="chart"><h3>到期盈利额（月度）</h3><p>总利润受样本量、提单率、放款金额、息费与到期回款共同影响，不能只用盈利率判断。</p><div class="box"><canvas id="qualityProfitAmount"></canvas></div></article></section>
+<div class="table"><table><caption>T0、整笔到期质量与到期流水盈利（月度）</caption><thead><tr><th>月份</th><th>T0 可提单样本</th><th>T0 提单率</th><th>加权息费率</th><th>整笔到期订单数</th><th>订单逾期率</th><th>分期金额逾期率</th><th>到期前实际还款</th><th>到期盈利额</th><th>到期盈利率</th><th>单个可提单样本盈利</th></tr></thead><tbody><tr><td>2026-01</td><td>19,520</td><td>51.45%</td><td>49.58%</td><td>9,936</td><td>36.75%</td><td>36.39%</td><td>30,478,602.14</td><td>1,042,963.14</td><td>3.54%</td><td>53.43</td></tr><tr><td>2026-02</td><td>22,739</td><td>50.61%</td><td>48.94%</td><td>11,342</td><td>37.35%</td><td>37.34%</td><td>30,286,244.88</td><td>400,664.88</td><td>1.34%</td><td>17.62</td></tr><tr><td>2026-03</td><td>22,198</td><td>45.04%</td><td>50.52%</td><td>9,877</td><td>36.42%</td><td>34.15%</td><td>25,257,886.24</td><td>1,786,100.24</td><td>7.61%</td><td>80.46</td></tr><tr><td>2026-04</td><td>20,780</td><td>45.65%</td><td>51.46%</td><td>9,422</td><td>36.63%</td><td>34.61%</td><td>22,182,220.39</td><td>1,648,251.39</td><td>8.03%</td><td>79.32</td></tr><tr><td>2026-05</td><td>23,875</td><td>44.03%</td><td>54.24%</td><td>10,318</td><td>37.76%</td><td>36.08%</td><td>23,982,389.50</td><td>1,746,087.50</td><td>7.85%</td><td>73.13</td></tr><tr><td>2026-06</td><td>22,635</td><td>42.47%</td><td>58.30%</td><td>9,396</td><td>42.16%</td><td>40.13%</td><td>21,023,484.00</td><td>852,212.00</td><td>4.22%</td><td>37.65</td></tr><tr><td>2026-07</td><td>23,275</td><td>40.39%</td><td>58.19%</td><td>9,238</td><td>42.41%</td><td>39.54%</td><td>23,330,497.48</td><td>1,278,997.48</td><td>5.80%</td><td>54.95</td></tr></tbody></table></div>
+<div class="callout"><ul class="finding-list"><li><span class="finding-label">转化：</span>1—7 月 T0 提单率由 51.45% 降至 40.39%（-11.06pp）。</li><li><span class="finding-label">息费：</span>同期加权息费率由 49.58% 升至 58.19%（+8.61pp）。</li><li><span class="finding-label">整笔风险：</span>到期订单逾期率由 36.75% 升至 42.41%。</li><li><span class="finding-label">分期风险：</span>分期金额逾期率由 36.39% 升至 39.54%。</li><li><span class="finding-label">结论：</span>息费上行期间，转化走弱的同时，到期质量也在承压。</li></ul></div>
+<div class="callout amber"><ul class="finding-list"><li><span class="finding-label">相关性：</span>T0 提单率与到期盈利率的相关系数为 -0.55。</li><li><span class="finding-label">风险关联：</span>与订单逾期率、分期金额逾期率的相关系数分别为 -0.71、-0.39。</li><li><span class="finding-label">因果边界：</span>低提单率月份同时伴随较高盈利率和较高逾期，不能证明“压低提单率”带来了更多总利润。</li><li><span class="finding-label">总额变化：</span>1 月至 7 月到期盈利额由 1,042,963.14 增至 1,278,997.48，同时可提单样本由 19,520 增至 23,275。</li><li><span class="finding-label">机会产出：</span>单个可提单样本盈利由 53.43 变为 54.95。</li><li><span class="finding-label">行动：</span>以价格、券、准入的随机对照测量新增提单带来的增量到期利润是否覆盖让利及新增风险成本。</li></ul></div>
+
+<h2>五、按历史成功放款次数分层：各客群均呈“息费升、T0 降”</h2><p class="desc">贷款次数按获额通过时点之前的成功放款订单数划分，不包含当前待转化的 T0 获额订单；因此该分层是 T0 决策发生前就已确定的用户历史特征。</p>
+<section class="grid g2"><article class="chart"><h3>各客群加权息费率（月度）</h3><p>所有客群的息费率在 7—8 月处于较高水平；6 次及以上用户的上升幅度相对较小。</p><div class="box"><canvas id="segmentFeeTrend"></canvas></div></article><article class="chart"><h3>各客群 T0 当天提单率（月度）</h3><p>4 类客群的 T0 提单率均下行；高频贷款用户的绝对提单率相对更高。</p><div class="box"><canvas id="segmentApplyTrend"></canvas></div></article></section>
+<div class="table"><table><caption>1 月与 8 月分层对比：历史成功放款次数</caption><thead><tr><th>客群</th><th>可提单样本<br>1 月 → 8 月</th><th>加权息费率<br>1 月 → 8 月</th><th>息费变化</th><th>T0 提单率<br>1 月 → 8 月</th><th>T0 变化</th><th>息费率与 T0 提单率<br>月度相关系数</th></tr></thead><tbody><tr><td>贷款1次</td><td>8,164 → 8,850</td><td>48.62% → 61.67%</td><td class="bad">+13.05pp</td><td>49.30% → 37.15%</td><td class="bad">-12.15pp</td><td>-0.91</td></tr><tr><td>贷款2次</td><td>3,726 → 4,652</td><td>49.35% → 61.16%</td><td class="bad">+11.81pp</td><td>52.15% → 36.46%</td><td class="bad">-15.69pp</td><td>-0.88</td></tr><tr><td>贷款3-5次</td><td>4,914 → 5,805</td><td>49.10% → 61.44%</td><td class="bad">+12.34pp</td><td>53.83% → 38.62%</td><td class="bad">-15.21pp</td><td>-0.88</td></tr><tr><td>贷款6次及以上</td><td>2,716 → 2,804</td><td>50.83% → 57.35%</td><td class="bad">+6.52pp</td><td>52.69% → 43.47%</td><td class="bad">-9.22pp</td><td>-0.92</td></tr></tbody></table></div>
+<div class="table"><table><caption>分层月度明细：单元格为“加权息费率 / T0 提单率”</caption><thead><tr><th>月份</th><th>贷款1次</th><th>贷款2次</th><th>贷款3-5次</th><th>贷款6次及以上</th></tr></thead><tbody><tr><td>2026-01</td><td>48.62%<br><span class="small">提单 49.30%</span></td><td>49.35%<br><span class="small">提单 52.15%</span></td><td>49.10%<br><span class="small">提单 53.83%</span></td><td>50.83%<br><span class="small">提单 52.69%</span></td></tr><tr><td>2026-02</td><td>48.71%<br><span class="small">提单 48.24%</span></td><td>49.14%<br><span class="small">提单 49.49%</span></td><td>48.72%<br><span class="small">提单 54.02%</span></td><td>49.28%<br><span class="small">提单 53.22%</span></td></tr><tr><td>2026-03</td><td>51.30%<br><span class="small">提单 42.91%</span></td><td>51.89%<br><span class="small">提单 41.87%</span></td><td>50.75%<br><span class="small">提单 47.36%</span></td><td>49.34%<br><span class="small">提单 49.76%</span></td></tr><tr><td>2026-04</td><td>53.24%<br><span class="small">提单 43.11%</span></td><td>54.04%<br><span class="small">提单 45.30%</span></td><td>51.23%<br><span class="small">提单 46.07%</span></td><td>50.11%<br><span class="small">提单 51.28%</span></td></tr><tr><td>2026-05</td><td>55.95%<br><span class="small">提单 43.69%</span></td><td>56.91%<br><span class="small">提单 43.38%</span></td><td>53.84%<br><span class="small">提单 42.78%</span></td><td>52.60%<br><span class="small">提单 47.75%</span></td></tr><tr><td>2026-06</td><td>60.49%<br><span class="small">提单 41.25%</span></td><td>60.31%<br><span class="small">提单 41.03%</span></td><td>59.26%<br><span class="small">提单 43.59%</span></td><td>54.69%<br><span class="small">提单 45.56%</span></td></tr><tr><td>2026-07</td><td>59.18%<br><span class="small">提单 38.62%</span></td><td>59.75%<br><span class="small">提单 38.96%</span></td><td>59.49%<br><span class="small">提单 42.12%</span></td><td>54.91%<br><span class="small">提单 44.19%</span></td></tr><tr><td>2026-08</td><td>61.67%<br><span class="small">提单 37.15%</span></td><td>61.16%<br><span class="small">提单 36.46%</span></td><td>61.44%<br><span class="small">提单 38.62%</span></td><td>57.35%<br><span class="small">提单 43.47%</span></td></tr></tbody></table></div>
+<div class="callout"><ul class="finding-list"><li><span class="finding-label">分层相关：</span>贷款1次 -0.91、贷款2次 -0.88、贷款3-5次 -0.88、贷款6次及以上 -0.92，均为明显负相关。</li><li><span class="finding-label">8 月 T0：</span>贷款 1 次 37.15%、贷款 2 次 36.46%、贷款 3—5 次 38.62%、贷款 6 次及以上 43.47%。</li><li><span class="finding-label">判断：</span>息费上行与转化下滑并非仅由客群结构变化造成。</li><li><span class="finding-label">限制：</span>仍不能排除风险准入、额度、竞品与运营策略的共同影响。</li></ul></div>
+
+<h2>六、额度使用率：高频用户的额度使用率更低，月度弹性存在差异</h2><p class="desc">额度使用率 = Σ(T0 提单金额 apply_amt) ÷ Σ(同一 T0 获额订单的 max_credit_apply_amt)。仅纳入提单金额与获额金额均不低于 200 的有效 T0 提单订单；它衡量已提单用户的额度使用深度，不等同于 T0 提单率。</p>
+<section class="grid g2"><article class="chart"><h3>不同历史贷款次数的额度使用率（月度）</h3><p>贷款次数越高，整体额度使用率越低；1 次用户维持在约 95%，6 次及以上用户约 87%。</p><div class="box"><canvas id="utilizationTrend"></canvas></div></article><article class="chart"><h3>额度使用率、T0 提单率与加权息费</h3><p>月度明细表将三项指标并列，避免把“已提单金额深度”误解为“提单概率”。</p><div class="box"><canvas id="utilizationT0Fee"></canvas></div></article></section>
+<section class="grid g4"><article class="card"><div class="label">总体有效 T0 提单订单</div><div class="num cyan">79,010</div><div class="sub">提单金额、获额金额均 ≥ 200</div></article><article class="card"><div class="label">总体提单金额</div><div class="num green">193,419,971</div><div class="sub">额度使用率分子</div></article><article class="card"><div class="label">总体获额金额</div><div class="num amber">213,190,576</div><div class="sub">max_credit_apply_amt 汇总</div></article><article class="card"><div class="label">总体额度使用率</div><div class="num pink">90.73%</div><div class="sub">Σ 提单金额 ÷ Σ 获额金额</div></article></section>
+<div class="table"><table><caption>按历史成功放款次数汇总的额度使用率与关联分析</caption><thead><tr><th>客群</th><th>有效提单订单数</th><th>提单金额分子</th><th>获额金额分母</th><th>汇总额度使用率</th><th>1 月 → 8 月额度使用率</th><th>额度使用率与 T0<br>月度相关系数</th><th>额度使用率与息费<br>月度相关系数</th></tr></thead><tbody><tr><td>贷款1次</td><td>29,300</td><td>43,612,929</td><td>45,918,693</td><td class="good">94.98%</td><td>95.07% → 95.01%</td><td>-0.02</td><td>0.04</td></tr><tr><td>贷款2次</td><td>15,458</td><td>27,749,944</td><td>29,444,060</td><td class="good">94.25%</td><td>94.40% → 92.53%</td><td>0.59</td><td>-0.55</td></tr><tr><td>贷款3-5次</td><td>22,283</td><td>59,271,053</td><td>65,800,983</td><td class="good">90.08%</td><td>89.94% → 87.95%</td><td>0.43</td><td>-0.70</td></tr><tr><td>贷款6次及以上</td><td>11,969</td><td>62,786,045</td><td>72,026,840</td><td class="good">87.17%</td><td>86.06% → 86.24%</td><td>0.00</td><td>-0.19</td></tr></tbody></table></div>
+<div class="table"><table><caption>额度使用率月度明细：单元格为“额度使用率 / T0 提单率 / 加权息费率”</caption><thead><tr><th>月份</th><th>贷款1次</th><th>贷款2次</th><th>贷款3-5次</th><th>贷款6次及以上</th></tr></thead><tbody><tr><td>2026-01</td><td>95.07%<br><span class="small">T0 49.30% · 息费 48.62%</span></td><td>94.40%<br><span class="small">T0 52.15% · 息费 49.35%</span></td><td>89.94%<br><span class="small">T0 53.83% · 息费 49.10%</span></td><td>86.06%<br><span class="small">T0 52.69% · 息费 50.83%</span></td></tr><tr><td>2026-02</td><td>93.46%<br><span class="small">T0 48.24% · 息费 48.71%</span></td><td>94.95%<br><span class="small">T0 49.49% · 息费 49.14%</span></td><td>90.15%<br><span class="small">T0 54.02% · 息费 48.72%</span></td><td>86.72%<br><span class="small">T0 53.22% · 息费 49.28%</span></td></tr><tr><td>2026-03</td><td>95.69%<br><span class="small">T0 42.91% · 息费 51.30%</span></td><td>94.31%<br><span class="small">T0 41.87% · 息费 51.89%</span></td><td>91.17%<br><span class="small">T0 47.36% · 息费 50.75%</span></td><td>87.06%<br><span class="small">T0 49.76% · 息费 49.34%</span></td></tr><tr><td>2026-04</td><td>96.38%<br><span class="small">T0 43.11% · 息费 53.24%</span></td><td>96.78%<br><span class="small">T0 45.30% · 息费 54.04%</span></td><td>91.71%<br><span class="small">T0 46.07% · 息费 51.23%</span></td><td>88.97%<br><span class="small">T0 51.28% · 息费 50.11%</span></td></tr><tr><td>2026-05</td><td>96.75%<br><span class="small">T0 43.69% · 息费 55.95%</span></td><td>95.34%<br><span class="small">T0 43.38% · 息费 56.91%</span></td><td>90.14%<br><span class="small">T0 42.78% · 息费 53.84%</span></td><td>87.43%<br><span class="small">T0 47.75% · 息费 52.60%</span></td></tr><tr><td>2026-06</td><td>95.25%<br><span class="small">T0 41.25% · 息费 60.49%</span></td><td>93.66%<br><span class="small">T0 41.03% · 息费 60.31%</span></td><td>89.10%<br><span class="small">T0 43.59% · 息费 59.26%</span></td><td>87.18%<br><span class="small">T0 45.56% · 息费 54.69%</span></td></tr><tr><td>2026-07</td><td>93.61%<br><span class="small">T0 38.62% · 息费 59.18%</span></td><td>92.81%<br><span class="small">T0 38.96% · 息费 59.75%</span></td><td>90.00%<br><span class="small">T0 42.12% · 息费 59.49%</span></td><td>87.75%<br><span class="small">T0 44.19% · 息费 54.91%</span></td></tr><tr><td>2026-08</td><td>95.01%<br><span class="small">T0 37.15% · 息费 61.67%</span></td><td>92.53%<br><span class="small">T0 36.46% · 息费 61.16%</span></td><td>87.95%<br><span class="small">T0 38.62% · 息费 61.44%</span></td><td>86.24%<br><span class="small">T0 43.47% · 息费 57.35%</span></td></tr></tbody></table></div>
+<div class="callout"><ul class="finding-list"><li><span class="finding-label">额度使用率：</span>贷款 1 次 94.98%、贷款 2 次 94.25%、贷款 3—5 次 90.08%、贷款 6 次及以上 87.17%。</li><li><span class="finding-label">用户特征：</span>高频用户虽更可能当天提单，但单笔提单相对获额的使用深度更低。</li><li><span class="finding-label">关联较强：</span>额度使用率与 T0 提单率在贷款 2 次、3—5 次客群中的相关系数分别为 0.59、0.43。</li><li><span class="finding-label">策略含义：</span>贷款 1 次和 6 次及以上客群的相关性接近 0，不能用单一额度使用率策略解释所有客群的 T0 变化。</li></ul></div>
+
+<h2>七、降息券与 T0 提单：当前数据不能直接评估券效果</h2><p class="desc">已删除原先“使用券 / 未使用券”的 T0 提单率对比，因为该对比存在明确的后处理偏差。</p>
+<section class="note"><div class="insight"><div class="idx">01</div><div><h3>不能把“实际使用券”当作“发券覆盖”</h3><p>coupon_user_detail_copy 只在用户提单时记录实际使用的红包。未提单用户没有对应记录，因此按该表把用户划为“有券/无券”，会把结果变量（是否提单）混入分组条件，分母不成立。</p></div></div><div class="insight"><div class="idx">02</div><div><h3>降息券的触达时点在即时转化之后</h3><p>结清获额后的即时提单主要集中在 1 小时内，而这部分用户通常不会收到降息券。降息券面向短时间未提单、基础转化意愿更低的用户，因此不能用完整 T0 人群直接比较“券用户”和“非券用户”。</p></div></div><div class="insight"><div class="idx">03</div><div><h3>正确的评估样本与方法</h3><p>应使用发券/触达明细表，至少包含发券时间、券金额、有效期、用户或订单标识。样本限定为触达时点前尚未提单的用户；以发券后有效期内提单率、增量放款、增量折扣后盈利为结果，并在同一风险、额度、利率和活跃度分层中设置未发券对照或随机对照。</p></div></div></section>
+<div class="callout amber"><ul class="finding-list"><li><span class="finding-label">当前结论：</span>现有数据不足以回答“降息券是否提升 T0 提单率”。</li><li><span class="finding-label">适用对象：</span>降息券应重点服务于获额后短时间未提单的用户，而不是已在 1 小时内自然提单的用户。</li><li><span class="finding-label">下一步：</span>补充发券时点与对照样本后，才能计算增量提单与增量盈利。</li></ul></div>
+
+<h2>八、T0 提单率的经营平衡点：如何定义与验证</h2><p class="desc">平衡点不是某个固定提单率，而是每个价格/准入策略下的“增量利润最大”位置。</p>
+<section class="note"><div class="insight"><div class="idx">A</div><div><h3>以“单个可提单样本的增量折扣后盈利”为主目标</h3><p>比较不同利率、额度、优惠券和通过策略时，主指标应为：增量 T0 放款 × 后续回收利润 − 新增折扣/降息券成本 − 新增坏账成本。提单率只作为前置漏斗指标，不能单独做最优性判断。</p></div></div><div class="insight"><div class="idx">B</div><div><h3>建立价格梯度随机对照</h3><p>在同一风险/额度/历史行为层内，将用户随机分配到基准利率、低息档、降息券档。观察 T0 提单、30/60/90 天回收、折扣成本、逾期率和单个机会盈利，直接估计降息或提额的边际利润。</p></div></div><div class="insight"><div class="idx">C</div><div><h3>降息券只针对可验证的高弹性层</h3><p>不要以当前“已使用券”观察性分组决定扩大投放。先在高利率、近期活跃、历史正常还款等层做小流量随机实验；若增量盈利覆盖券成本和风险损失，再扩大至对应层级。</p></div></div><div class="insight"><div class="idx">D</div><div><h3>将竞品环境作为未观测外部变量监控</h3><p>在控制本产品利率、额度、风险准入和券策略后，若转化仍同步下降，可将剩余变化视为外部竞争或市场需求的候选影响。建议同步记录竞品价格、外部投放强度、节假日等时间序列，而非把全部下降归因于价格。</p></div></div></section>
+
+<h2>九、结论</h2><section class="note"><div class="insight"><div class="idx">01</div><div><h3>T0 提单率下降并未得到“总利润更优”的充分支持。</h3><ul class="finding-list"><li>1—7 月到期盈利率虽总体高于年初，但到期订单逾期率和分期金额逾期率同步走高。</li><li>单个可提单样本的到期盈利没有形成稳定上升。</li><li>因此，不能把较低 T0 提单率直接解释为更优的经营平衡点。</li></ul></div></div><div class="insight"><div class="idx">02</div><div><h3>息费、额度使用率与 T0 的关系存在客群差异。</h3><ul class="finding-list"><li>高频用户的额度使用率更低，但其 T0 提单率相对更高。</li><li>贷款 2 次、3—5 次客群中，额度使用率与 T0 提单率具有中等正相关。</li><li>贷款 1 次和 6 次及以上客群中的关系很弱。</li><li>额度、息费和触达策略应按历史贷款次数分层测试，而非统一调价。</li></ul></div></div><div class="insight"><div class="idx">03</div><div><h3>提升 T0 的决策必须以增量到期利润为准。</h3><ul class="finding-list"><li>在同层用户中随机测试更低息费、降息券或不同准入策略。</li><li>主指标为新增 T0 放款带来的到期前实际回款，减新增放款与营销成本。</li><li>同步观察订单逾期率和分期金额逾期率。</li><li>只有增量利润为正，才应扩大提升 T0 的策略。</li></ul></div></div></section>
+
+<h2>附录 A：完整 PGSQL（可复现报告全部指标）</h2><p class="desc">按顺序执行模块 1—9：模块 1 建立统一 T0 明细与历史贷款次数分层；模块 2—5 复现原盈利、总体息费和分层息费模块；模块 6 构建 2026 年 1—7 月 T0 到期质量与流水盈利底表；模块 7 直接输出报告使用的所有月度指标、分子、分母和总体相关系数；模块 8 输出各历史成功放款次数客群的息费/T0 相关系数；模块 9 输出额度使用率的月度趋势、客群汇总、分子分母及其与 T0、息费的相关性。额度使用率仅使用提单金额与获额金额均不低于 200 的 T0 提单订单。可点击模块标题展开代码；星标收藏仅保存在当前浏览器。SQL 不使用 FILTER 或 LATERAL。</p><div class="sql-title">统一底表、盈利主表、总体与分层息费/提单主表、到期质量与流水盈利、额度使用率</div><div class="sql-toolbar"><button type="button" id="sqlExpandAll">全部展开</button><button type="button" id="sqlCollapseAll">全部收起</button></div><div id="sqlAccordion"><details class="sql-module" data-sql-module="module-1" open><summary><span class="sql-module-title">模块 1：统一 T0 明细底表与历史贷款次数分层</span><button class="sql-fav" type="button" data-sql-favorite="module-1" title="收藏此模块" aria-label="收藏此模块">☆</button><span class="sql-expand-hint">点击展开/收起</span></summary><pre class="sql">-- ============================================================
+-- 结清 0 在贷 T0 提单率、降息券与盈利平衡点分析
+-- 分析期：2026-01-01 至 2026-06-30
+-- 数据截至：运行当天；金额单位：墨西哥比索
+--
+-- 核心规则：
+-- 1. 获额通过、loan_type_code=2；先在用户维度按 20 秒批次去重，
+--    每批仅保留 serial_id 最大的获额订单；
+-- 2. 仅 recycle_type=3；同日结清、同日获额通过，且获额时间 &gt;= 结清时间；
+-- 3. 结清时不存在其他已提单且仍在途/在贷订单；
+-- 4. 同一用户同一天仅保留最早符合条件的获额订单；
+-- 5. T0 提单：该获额订单当日且获额后存在提单；
+-- 6. 盈利采用提单后 30 日内到期分期：还款 - 放款 - 分期折扣。
+-- ============================================================
+
+DROP TABLE IF EXISTS tmp_t0_balance_detail;
+
+CREATE TEMP TABLE tmp_t0_balance_detail AS
+WITH params AS (
+    SELECT
+        DATE '2026-01-01' AS start_date,
+        DATE '2026-09-01' AS end_date,
+        30 AS profit_window_days
+), raw_offer AS (
+    SELECT DISTINCT ON (
+        v.user_id,
+        v.serial_id
+    )
+        v.user_id,
+        v.serial_id,
+        v.vir_date::date AS vir_date,
+        TO_TIMESTAMP(v.vir_unix) AS vir_time,
+        v.max_credit_apply_amt,
+        r.recycle_type
+    FROM wangchuanliang.order_vir_f_copy AS v
+    INNER JOIN wangchuanliang.side_recycle_type_copy AS r
+        ON r.serial_id = v.serial_id
+    CROSS JOIN params AS p
+    WHERE v.is_pass1 = 1
+      AND v.loan_type_code = 2
+      -- 多取一天，仅用于正确识别 1 月 1 日边界处的 20 秒批次。
+      AND v.vir_date &gt;= p.start_date - 1
+      AND v.vir_date &lt; p.end_date
+    ORDER BY
+        v.user_id,
+        v.serial_id,
+        v.vir_unix DESC
+), lagged_offer AS (
+    SELECT
+        r.*,
+        LAG(r.vir_time) OVER (
+            PARTITION BY r.user_id
+            ORDER BY r.vir_time, r.serial_id
+        ) AS prev_vir_time
+    FROM raw_offer AS r
+), batched_offer AS (
+    SELECT
+        l.*,
+        SUM(
+            CASE
+                WHEN l.prev_vir_time IS NULL
+                  OR l.vir_time - l.prev_vir_time &gt; INTERVAL '20 seconds'
+                    THEN 1
+                ELSE 0
+            END
+        ) OVER (
+            PARTITION BY l.user_id
+            ORDER BY l.vir_time, l.serial_id
+            ROWS UNBOUNDED PRECEDING
+        ) AS batch_id
+    FROM lagged_offer AS l
+), dedup_offer AS (
+    SELECT
+        user_id,
+        serial_id,
+        vir_date,
+        vir_time,
+        max_credit_apply_amt,
+        recycle_type
+    FROM (
+        SELECT
+            b.*,
+            ROW_NUMBER() OVER (
+                PARTITION BY b.user_id, b.batch_id
+                ORDER BY b.serial_id DESC
+            ) AS batch_rn
+        FROM batched_offer AS b
+    ) AS x
+    CROSS JOIN params AS p
+    WHERE batch_rn = 1
+      AND recycle_type = 3
+      AND vir_date &gt;= p.start_date
+      AND vir_date &lt; p.end_date
+), candidate_users AS (
+    SELECT DISTINCT
+        user_id
+    FROM dedup_offer
+), all_orders AS (
+    SELECT
+        o.user_id,
+        o.serial_id,
+        o.apply_time,
+        o.apply_date,
+        o.repaid_time,
+        o.repaid_date::date AS repaid_date,
+        o.loan_status_code,
+        o.is_remit,
+        o.is_repaid
+    FROM wangchuanliang.order_loan_f_v2_copy AS o
+    INNER JOIN candidate_users AS u
+        ON u.user_id = o.user_id
+), clean_settlement AS (
+    SELECT
+        o.user_id,
+        o.serial_id,
+        o.repaid_time,
+        o.repaid_date
+    FROM all_orders AS o
+    WHERE o.is_remit = 1
+      AND (
+            o.is_repaid = 1
+         OR o.loan_status_code = 7
+      )
+      AND o.repaid_time &gt; TIMESTAMP '2000-01-01 00:00:00'
+      AND NOT EXISTS (
+          SELECT
+              1
+          FROM all_orders AS x
+          WHERE x.user_id = o.user_id
+            AND x.serial_id &lt;&gt; o.serial_id
+            AND x.apply_time &lt; o.repaid_time
+            AND (
+                  x.loan_status_code IN (5, 8)
+               OR (
+                      x.loan_status_code = 7
+                  AND x.repaid_time &gt; o.repaid_time
+                  )
+            )
+      )
+), offer_settlement_pair AS (
+    SELECT
+        e.user_id,
+        e.serial_id AS offer_serial_id,
+        e.vir_date,
+        e.vir_time,
+        e.max_credit_apply_amt,
+        s.serial_id AS settlement_serial_id,
+        s.repaid_time,
+        ROW_NUMBER() OVER (
+            PARTITION BY
+                e.user_id,
+                e.serial_id,
+                e.vir_time
+            ORDER BY
+                s.repaid_time DESC,
+                s.serial_id DESC
+        ) AS settlement_rn
+    FROM dedup_offer AS e
+    INNER JOIN clean_settlement AS s
+        ON s.user_id = e.user_id
+       AND s.repaid_date = e.vir_date
+       AND e.vir_time &gt;= s.repaid_time
+), t0_sample AS (
+    SELECT
+        user_id,
+        offer_serial_id,
+        vir_date,
+        vir_time,
+        max_credit_apply_amt,
+        settlement_serial_id,
+        repaid_time
+    FROM (
+        SELECT
+            p.*,
+            ROW_NUMBER() OVER (
+                PARTITION BY p.user_id, p.vir_date
+                ORDER BY p.vir_time, p.offer_serial_id DESC
+            ) AS day_rn
+        FROM offer_settlement_pair AS p
+        WHERE p.settlement_rn = 1
+    ) AS x
+    WHERE day_rn = 1
+), sample_apply AS (
+    SELECT
+        s.*,
+        o.apply_time,
+        o.apply_date,
+        o.is_remit,
+        o.pre_amt,
+        o.post_amt,
+        o.remit_amt,
+        o.repaid_date,
+        o.apply_amt,
+        CASE
+            WHEN o.apply_time IS NOT NULL THEN 1
+            ELSE 0
+        END AS is_t0_apply,
+        CASE
+            WHEN o.is_remit = 1 THEN 1
+            ELSE 0
+        END AS is_t0_remit
+    FROM t0_sample AS s
+    LEFT JOIN wangchuanliang.order_loan_f_v2_copy AS o
+        ON o.user_id = s.user_id
+       AND o.serial_id = s.offer_serial_id
+       AND o.apply_date = s.vir_date
+       AND o.apply_time &gt;= s.vir_time
+), interest_coupon AS (
+    SELECT
+        c.serial_id::bigint AS serial_id,
+        COUNT(DISTINCT c.coupon_no) AS interest_coupon_count,
+        SUM(COALESCE(c.coupon_amount, 0)) AS interest_coupon_amount
+    FROM wangchuanliang.coupon_user_detail_copy AS c
+    INNER JOIN sample_apply AS a
+        ON a.offer_serial_id = c.serial_id::bigint
+    WHERE c.type = 3
+    GROUP BY
+        c.serial_id
+), order_profit AS (
+    SELECT
+        a.offer_serial_id,
+        COUNT(*) AS due_term_count_30d,
+        SUM(COALESCE(rp.remit_amt_period, 0)) AS due_remit_amount_30d,
+        SUM(COALESCE(rp.repaid_amt_period, 0)) AS due_repaid_amount_30d,
+        SUM(COALESCE(rp.discount_amount_period, 0))
+            AS due_discount_amount_30d,
+        SUM(
+            COALESCE(rp.repaid_amt_period, 0)
+            - COALESCE(rp.remit_amt_period, 0)
+            - COALESCE(rp.discount_amount_period, 0)
+        ) AS profit_after_discount_30d
+    FROM sample_apply AS a
+    INNER JOIN wangchuanliang.repayment_plan_v2_copy AS rp
+        ON rp.serial_id = a.offer_serial_id
+       AND rp.is_remit = 1
+       AND rp.due_date_period &gt;= a.apply_date
+       AND rp.due_date_period &lt;= a.apply_date + 30
+    WHERE a.is_t0_remit = 1
+    GROUP BY
+        a.offer_serial_id
+), loan_history AS (
+    -- 贷款次数按获额通过时点之前已成功放款的订单数计算；
+    -- 当前待转化的 T0 获额订单不计入该次数。
+    SELECT
+        a.user_id,
+        a.offer_serial_id,
+        COUNT(DISTINCT h.serial_id) AS 历史成功放款次数
+    FROM sample_apply AS a
+    LEFT JOIN wangchuanliang.order_loan_f_v2_copy AS h
+        ON h.user_id = a.user_id
+       AND h.is_remit = 1
+       AND h.remit_time &lt; a.vir_time
+    GROUP BY
+        a.user_id,
+        a.offer_serial_id
+)
+SELECT
+    a.user_id,
+    a.offer_serial_id,
+    a.settlement_serial_id,
+    a.vir_date,
+    a.vir_time,
+    a.repaid_time,
+    a.repaid_date,
+    a.apply_time,
+    a.apply_date,
+    a.is_t0_apply,
+    a.is_t0_remit,
+    COALESCE(a.pre_amt, 0) AS pre_amt,
+    COALESCE(a.post_amt, 0) AS post_amt,
+    COALESCE(a.remit_amt, 0) AS remit_amt,
+    COALESCE(a.apply_amt, 0) AS apply_amt,
+    COALESCE(a.max_credit_apply_amt, 0) AS max_credit_apply_amt,
+    CASE
+        WHEN c.serial_id IS NOT NULL THEN '使用降息券'
+        ELSE '未使用降息券'
+    END AS 降息券分组,
+    COALESCE(c.interest_coupon_count, 0) AS 降息券数量,
+    COALESCE(c.interest_coupon_amount, 0) AS 降息券金额,
+    CASE
+        WHEN p.offer_serial_id IS NOT NULL THEN 1
+        ELSE 0
+    END AS 有30天到期盈利观察,
+    COALESCE(p.due_term_count_30d, 0) AS due_term_count_30d,
+    COALESCE(p.due_remit_amount_30d, 0) AS due_remit_amount_30d,
+    COALESCE(p.due_repaid_amount_30d, 0) AS due_repaid_amount_30d,
+    COALESCE(p.due_discount_amount_30d, 0) AS due_discount_amount_30d,
+    COALESCE(p.profit_after_discount_30d, 0) AS profit_after_discount_30d,
+    COALESCE(h.历史成功放款次数, 0) AS 历史成功放款次数,
+    CASE
+        WHEN COALESCE(h.历史成功放款次数, 0) &lt;= 1 THEN '贷款1次'
+        WHEN h.历史成功放款次数 = 2 THEN '贷款2次'
+        WHEN h.历史成功放款次数 BETWEEN 3 AND 5 THEN '贷款3-5次'
+        ELSE '贷款6次及以上'
+    END AS 贷款次数分层
+FROM sample_apply AS a
+LEFT JOIN interest_coupon AS c
+    ON c.serial_id = a.offer_serial_id
+LEFT JOIN order_profit AS p
+    ON p.offer_serial_id = a.offer_serial_id
+LEFT JOIN loan_history AS h
+    ON h.user_id = a.user_id
+   AND h.offer_serial_id = a.offer_serial_id;
+
+</pre></details><details class="sql-module" data-sql-module="module-2" ><summary><span class="sql-module-title">模块 2：报告月度主表（提单率、固定 30 天折扣后盈利）</span><button class="sql-fav" type="button" data-sql-favorite="module-2" title="收藏此模块" aria-label="收藏此模块">☆</button><span class="sql-expand-hint">点击展开/收起</span></summary><pre class="sql">-- ============================================================
+-- 模块 2：报告月度主表（提单率、固定 30 天折扣后盈利）
+-- ============================================================
+SELECT
+    TO_CHAR(vir_date, 'YYYY-MM') AS 统计月份,
+    COUNT(*) AS 结清0在贷可提单样本数,
+    SUM(is_t0_apply) AS T0提单数,
+    ROUND(
+        SUM(is_t0_apply)::numeric / NULLIF(COUNT(*), 0) * 100,
+        2
+    ) AS T0提单率_pct,
+    SUM(is_t0_remit) AS T0成功放款订单数,
+    SUM(有30天到期盈利观察) AS 盈利观察订单数,
+    SUM(due_term_count_30d) AS due_term_count_30d,
+    SUM(due_remit_amount_30d) AS due_remit_amount_30d,
+    SUM(due_repaid_amount_30d) AS due_repaid_amount_30d,
+    SUM(due_discount_amount_30d) AS due_discount_amount_30d,
+    SUM(profit_after_discount_30d) AS profit_after_discount_30d,
+    ROUND(
+        SUM(profit_after_discount_30d)
+        / NULLIF(SUM(due_remit_amount_30d), 0) * 100,
+        2
+    ) AS profit_rate_after_discount_30d_pct,
+    ROUND(
+        SUM(profit_after_discount_30d) / NULLIF(COUNT(*), 0),
+        2
+    ) AS 单个可提单样本盈利,
+    ROUND(
+        SUM(profit_after_discount_30d) / NULLIF(SUM(is_t0_remit), 0),
+        2
+    ) AS 单笔成功放款订单盈利,
+    SUM(
+        CASE
+            WHEN is_t0_remit = 1
+             AND remit_amt &gt; 0
+                THEN pre_amt + post_amt
+            ELSE 0
+        END
+    ) AS T0成功放款息费金额,
+    SUM(
+        CASE
+            WHEN is_t0_remit = 1
+             AND remit_amt &gt; 0
+                THEN remit_amt
+            ELSE 0
+        END
+    ) AS T0成功放款金额_息费口径,
+    ROUND(
+        SUM(
+            CASE
+                WHEN is_t0_remit = 1
+                 AND remit_amt &gt; 0
+                    THEN pre_amt + post_amt
+                ELSE 0
+            END
+        ) / NULLIF(
+            SUM(
+                CASE
+                    WHEN is_t0_remit = 1
+                     AND remit_amt &gt; 0
+                        THEN remit_amt
+                    ELSE 0
+                END
+            ),
+            0
+        ) * 100,
+        2
+    ) AS T0加权息费率_pct
+FROM tmp_t0_balance_detail
+WHERE vir_date &lt; DATE '2026-07-01'
+GROUP BY
+    TO_CHAR(vir_date, 'YYYY-MM')
+ORDER BY
+    统计月份;
+
+</pre></details><details class="sql-module" data-sql-module="module-3" ><summary><span class="sql-module-title">模块 3：2026 年 1—8 月 T0 提单率与加权息费率</span><button class="sql-fav" type="button" data-sql-favorite="module-3" title="收藏此模块" aria-label="收藏此模块">☆</button><span class="sql-expand-hint">点击展开/收起</span></summary><pre class="sql">-- ============================================================
+-- 模块 3：2026 年 1—8 月 T0 提单率与加权息费率
+-- 加权息费率 = SUM(post_amt + pre_amt) / SUM(remit_amt)
+-- 仅统计 T0 成功放款订单，且 remit_amt &gt; 0。
+-- ============================================================
+SELECT
+    TO_CHAR(vir_date, 'YYYY-MM') AS 统计月份,
+    COUNT(*) AS 结清0在贷可提单样本数,
+    SUM(is_t0_apply) AS T0提单数,
+    ROUND(
+        SUM(is_t0_apply)::numeric / NULLIF(COUNT(*), 0) * 100,
+        2
+    ) AS T0提单率_pct,
+    SUM(
+        CASE
+            WHEN is_t0_remit = 1
+             AND remit_amt &gt; 0
+                THEN pre_amt + post_amt
+            ELSE 0
+        END
+    ) AS T0成功放款息费金额,
+    SUM(
+        CASE
+            WHEN is_t0_remit = 1
+             AND remit_amt &gt; 0
+                THEN remit_amt
+            ELSE 0
+        END
+    ) AS T0成功放款金额_息费口径,
+    ROUND(
+        SUM(
+            CASE
+                WHEN is_t0_remit = 1
+                 AND remit_amt &gt; 0
+                    THEN pre_amt + post_amt
+                ELSE 0
+            END
+        ) / NULLIF(
+            SUM(
+                CASE
+                    WHEN is_t0_remit = 1
+                     AND remit_amt &gt; 0
+                        THEN remit_amt
+                    ELSE 0
+                END
+            ),
+            0
+        ) * 100,
+        2
+    ) AS T0加权息费率_pct
+FROM tmp_t0_balance_detail
+WHERE vir_date &lt; DATE '2026-09-01'
+GROUP BY
+    TO_CHAR(vir_date, 'YYYY-MM')
+ORDER BY
+    统计月份;
+
+-- 降息券效果评估需要“发券/触达明细表”。coupon_user_detail_copy
+-- 仅记录提单时实际使用券，不能用作 T0 提单率的发券覆盖分母。
+
+</pre></details><details class="sql-module" data-sql-module="module-4" ><summary><span class="sql-module-title">模块 4：2026 年 1—6 月盈利汇总，用于盈利模块的总计复现。</span><button class="sql-fav" type="button" data-sql-favorite="module-4" title="收藏此模块" aria-label="收藏此模块">☆</button><span class="sql-expand-hint">点击展开/收起</span></summary><pre class="sql">-- ============================================================
+-- 模块 4：2026 年 1—6 月盈利汇总，用于盈利模块的总计复现。
+-- ============================================================
+SELECT
+    COUNT(*) AS 结清0在贷可提单样本数,
+    SUM(is_t0_apply) AS T0提单数,
+    ROUND(
+        SUM(is_t0_apply)::numeric / NULLIF(COUNT(*), 0) * 100,
+        2
+    ) AS T0提单率_pct,
+    SUM(is_t0_remit) AS T0成功放款订单数,
+    SUM(due_remit_amount_30d) AS due_remit_amount_30d,
+    SUM(due_repaid_amount_30d) AS due_repaid_amount_30d,
+    SUM(due_discount_amount_30d) AS due_discount_amount_30d,
+    SUM(profit_after_discount_30d) AS profit_after_discount_30d,
+    ROUND(
+        SUM(profit_after_discount_30d)
+        / NULLIF(SUM(due_remit_amount_30d), 0) * 100,
+        2
+    ) AS profit_rate_after_discount_30d_pct,
+    ROUND(
+        SUM(profit_after_discount_30d) / NULLIF(COUNT(*), 0),
+        2
+    ) AS 单个可提单样本盈利
+FROM tmp_t0_balance_detail
+WHERE vir_date &lt; DATE '2026-07-01';
+
+</pre></details><details class="sql-module" data-sql-module="module-5" ><summary><span class="sql-module-title">模块 5：2026 年 1—8 月，按历史成功放款次数分层的息费与 T0 提单率。</span><button class="sql-fav" type="button" data-sql-favorite="module-5" title="收藏此模块" aria-label="收藏此模块">☆</button><span class="sql-expand-hint">点击展开/收起</span></summary><pre class="sql">-- ============================================================
+-- 模块 5：2026 年 1—8 月，按历史成功放款次数分层的息费与 T0 提单率。
+-- 分层次数为获额通过时点之前的成功放款笔数：1 次、2 次、3—5 次、6 次及以上。
+-- ============================================================
+SELECT
+    TO_CHAR(vir_date, 'YYYY-MM') AS 统计月份,
+    贷款次数分层,
+    COUNT(*) AS 结清0在贷可提单样本数,
+    SUM(is_t0_apply) AS T0提单数,
+    ROUND(
+        SUM(is_t0_apply)::numeric / NULLIF(COUNT(*), 0) * 100,
+        2
+    ) AS T0提单率_pct,
+    SUM(
+        CASE
+            WHEN is_t0_remit = 1 AND remit_amt &gt; 0
+                THEN pre_amt + post_amt
+            ELSE 0
+        END
+    ) AS T0成功放款息费金额,
+    SUM(
+        CASE
+            WHEN is_t0_remit = 1 AND remit_amt &gt; 0
+                THEN remit_amt
+            ELSE 0
+        END
+    ) AS T0成功放款金额_息费口径,
+    ROUND(
+        SUM(CASE WHEN is_t0_remit = 1 AND remit_amt &gt; 0 THEN pre_amt + post_amt ELSE 0 END)
+        / NULLIF(SUM(CASE WHEN is_t0_remit = 1 AND remit_amt &gt; 0 THEN remit_amt ELSE 0 END), 0)
+        * 100,
+        2
+    ) AS T0加权息费率_pct
+FROM tmp_t0_balance_detail
+WHERE vir_date &lt; DATE '2026-09-01'
+GROUP BY
+    TO_CHAR(vir_date, 'YYYY-MM'),
+    贷款次数分层
+ORDER BY
+    统计月份,
+    CASE 贷款次数分层
+        WHEN '贷款1次' THEN 1
+        WHEN '贷款2次' THEN 2
+        WHEN '贷款3-5次' THEN 3
+        ELSE 4
+    END;</pre></details><details class="sql-module" data-sql-module="module-6" ><summary><span class="sql-module-title">模块 6：构建 1—7 月 T0 到期质量与流水盈利月度底表</span><button class="sql-fav" type="button" data-sql-favorite="module-6" title="收藏此模块" aria-label="收藏此模块">☆</button><span class="sql-expand-hint">点击展开/收起</span></summary><pre class="sql">DROP TABLE IF EXISTS tmp_t0_mature_quality_monthly;
+
+CREATE TEMP TABLE tmp_t0_mature_quality_monthly AS
+
+WITH raw_offer AS (
+    SELECT DISTINCT ON (
+        v.user_id,
+        v.serial_id
+    )
+        v.user_id,
+        v.serial_id,
+        v.vir_date::date AS vir_date,
+        TO_TIMESTAMP(v.vir_unix) AS vir_time,
+        v.max_credit_apply_amt,
+        r.recycle_type
+    FROM wangchuanliang.order_vir_f_copy AS v
+    INNER JOIN wangchuanliang.side_recycle_type_copy AS r
+        ON r.serial_id = v.serial_id
+    WHERE v.is_pass1 = 1
+      AND v.loan_type_code = 2
+      AND v.vir_date &gt;= DATE '2025-12-31'
+      AND v.vir_date &lt; DATE '2026-08-01'
+    ORDER BY
+        v.user_id,
+        v.serial_id,
+        v.vir_unix DESC
+), lagged_offer AS (
+    SELECT
+        r.*,
+        LAG(r.vir_time) OVER (
+            PARTITION BY r.user_id
+            ORDER BY r.vir_time, r.serial_id
+        ) AS prev_vir_time
+    FROM raw_offer AS r
+), batched_offer AS (
+    SELECT
+        l.*,
+        SUM(
+            CASE
+                WHEN l.prev_vir_time IS NULL
+                  OR l.vir_time - l.prev_vir_time &gt; INTERVAL '20 seconds'
+                    THEN 1
+                ELSE 0
+            END
+        ) OVER (
+            PARTITION BY l.user_id
+            ORDER BY l.vir_time, l.serial_id
+            ROWS UNBOUNDED PRECEDING
+        ) AS batch_id
+    FROM lagged_offer AS l
+), dedup_offer AS (
+    SELECT
+        user_id,
+        serial_id,
+        vir_date,
+        vir_time,
+        max_credit_apply_amt,
+        recycle_type
+    FROM (
+        SELECT
+            b.*,
+            ROW_NUMBER() OVER (
+                PARTITION BY b.user_id, b.batch_id
+                ORDER BY b.serial_id DESC
+            ) AS batch_rn
+        FROM batched_offer AS b
+    ) AS x
+    WHERE batch_rn = 1
+      AND recycle_type = 3
+      AND vir_date &gt;= DATE '2026-01-01'
+      AND vir_date &lt; DATE '2026-08-01'
+), candidate_users AS (
+    SELECT DISTINCT
+        user_id
+    FROM dedup_offer
+), all_orders AS (
+    SELECT
+        o.user_id,
+        o.serial_id,
+        o.apply_time,
+        o.apply_date,
+        o.repaid_time,
+        o.repaid_date::date AS repaid_date,
+        o.loan_status_code,
+        o.is_remit,
+        o.is_repaid
+    FROM wangchuanliang.order_loan_f_v2_copy AS o
+    INNER JOIN candidate_users AS u
+        ON u.user_id = o.user_id
+), clean_settlement AS (
+    SELECT
+        o.user_id,
+        o.serial_id,
+        o.repaid_time,
+        o.repaid_date
+    FROM all_orders AS o
+    WHERE o.is_remit = 1
+      AND (
+            o.is_repaid = 1
+         OR o.loan_status_code = 7
+      )
+      AND o.repaid_time &gt; TIMESTAMP '2000-01-01 00:00:00'
+      AND NOT EXISTS (
+          SELECT
+              1
+          FROM all_orders AS x
+          WHERE x.user_id = o.user_id
+            AND x.serial_id &lt;&gt; o.serial_id
+            AND x.apply_time &lt; o.repaid_time
+            AND (
+                  x.loan_status_code IN (5, 8)
+               OR (
+                      x.loan_status_code = 7
+                  AND x.repaid_time &gt; o.repaid_time
+                  )
+            )
+      )
+), offer_settlement_pair AS (
+    SELECT
+        e.user_id,
+        e.serial_id AS offer_serial_id,
+        e.vir_date,
+        e.vir_time,
+        e.max_credit_apply_amt,
+        s.serial_id AS settlement_serial_id,
+        s.repaid_time,
+        ROW_NUMBER() OVER (
+            PARTITION BY
+                e.user_id,
+                e.serial_id,
+                e.vir_time
+            ORDER BY
+                s.repaid_time DESC,
+                s.serial_id DESC
+        ) AS settlement_rn
+    FROM dedup_offer AS e
+    INNER JOIN clean_settlement AS s
+        ON s.user_id = e.user_id
+       AND s.repaid_date = e.vir_date
+       AND e.vir_time &gt;= s.repaid_time
+), t0_sample AS (
+    SELECT
+        user_id,
+        offer_serial_id,
+        vir_date,
+        vir_time,
+        max_credit_apply_amt,
+        settlement_serial_id,
+        repaid_time
+    FROM (
+        SELECT
+            p.*,
+            ROW_NUMBER() OVER (
+                PARTITION BY p.user_id, p.vir_date
+                ORDER BY p.vir_time, p.offer_serial_id DESC
+            ) AS day_rn
+        FROM offer_settlement_pair AS p
+        WHERE p.settlement_rn = 1
+    ) AS x
+    WHERE day_rn = 1
+), sample_apply AS (
+    SELECT
+        s.*,
+        o.apply_time,
+        o.apply_date,
+        o.is_remit,
+        o.pre_amt,
+        o.post_amt,
+        o.remit_amt,
+        o.repaid_date,
+        o.remit_date,
+        o.due_date,
+        o.due_time,
+        o.apply_amt,
+        CASE
+            WHEN o.apply_time IS NOT NULL THEN 1
+            ELSE 0
+        END AS is_t0_apply,
+        CASE
+            WHEN o.is_remit = 1 THEN 1
+            ELSE 0
+        END AS is_t0_remit
+    FROM t0_sample AS s
+    LEFT JOIN wangchuanliang.order_loan_f_v2_copy AS o
+        ON o.user_id = s.user_id
+       AND o.serial_id = s.offer_serial_id
+       AND o.apply_date = s.vir_date
+       AND o.apply_time &gt;= s.vir_time
+), coupon AS (
+    SELECT
+        c.serial_id::bigint AS serial_id,
+        COUNT(DISTINCT c.coupon_no) AS interest_coupon_count,
+        SUM(COALESCE(c.coupon_amount, 0)) AS interest_coupon_amount
+    FROM wangchuanliang.coupon_user_detail_copy AS c
+    INNER JOIN sample_apply AS a
+        ON a.offer_serial_id = c.serial_id::bigint
+    WHERE c.type = 3
+    GROUP BY
+        c.serial_id
+), order_profit AS (
+    SELECT
+        a.offer_serial_id,
+        COUNT(*) AS due_term_count_30d,
+        SUM(COALESCE(p.remit_amt_period, 0)) AS due_remit_amount_30d,
+        SUM(COALESCE(p.repaid_amt_period, 0)) AS due_repaid_amount_30d,
+        SUM(COALESCE(p.discount_amount_period, 0)) AS due_discount_amount_30d,
+        SUM(
+            COALESCE(p.repaid_amt_period, 0)
+            - COALESCE(p.remit_amt_period, 0)
+            - COALESCE(p.discount_amount_period, 0)
+        ) AS profit_after_discount_30d
+    FROM sample_apply AS a
+    INNER JOIN wangchuanliang.repayment_plan_v2_copy AS p
+        ON p.serial_id = a.offer_serial_id
+       AND p.is_remit = 1
+       AND p.due_date_period &gt;= a.apply_date
+       AND p.due_date_period &lt;= a.apply_date + 30
+    WHERE a.is_t0_remit = 1
+    GROUP BY
+        a.offer_serial_id
+), loan_history AS (
+    -- 以获额通过时点为截点，统计该用户此前已成功放款的订单次数。
+    -- 当前获额订单尚未发生 T0 提单/放款，因此不计入历史次数。
+    SELECT
+        a.user_id,
+        a.offer_serial_id,
+        COUNT(DISTINCT h.serial_id) AS prior_successful_loan_count
+    FROM sample_apply AS a
+    LEFT JOIN wangchuanliang.order_loan_f_v2_copy AS h
+        ON h.user_id = a.user_id
+       AND h.is_remit = 1
+       AND h.remit_time &lt; a.vir_time
+    GROUP BY
+        a.user_id,
+        a.offer_serial_id
+), detail AS (
+    SELECT
+        a.*,
+        CASE
+            WHEN c.serial_id IS NOT NULL THEN '使用降息券'
+            ELSE '未使用降息券'
+        END AS coupon_group,
+        COALESCE(c.interest_coupon_count, 0) AS interest_coupon_count,
+        COALESCE(c.interest_coupon_amount, 0) AS interest_coupon_amount,
+        p.offer_serial_id AS profit_observed_serial_id,
+        COALESCE(p.due_term_count_30d, 0) AS due_term_count_30d,
+        COALESCE(p.due_remit_amount_30d, 0) AS due_remit_amount_30d,
+        COALESCE(p.due_repaid_amount_30d, 0) AS due_repaid_amount_30d,
+        COALESCE(p.due_discount_amount_30d, 0) AS due_discount_amount_30d,
+        COALESCE(p.profit_after_discount_30d, 0) AS profit_after_discount_30d,
+        COALESCE(h.prior_successful_loan_count, 0) AS prior_successful_loan_count,
+        CASE
+            WHEN COALESCE(h.prior_successful_loan_count, 0) &lt;= 1 THEN '贷款1次'
+            WHEN h.prior_successful_loan_count = 2 THEN '贷款2次'
+            WHEN h.prior_successful_loan_count BETWEEN 3 AND 5 THEN '贷款3-5次'
+            ELSE '贷款6次及以上'
+        END AS loan_times_group
+    FROM sample_apply AS a
+    LEFT JOIN coupon AS c
+        ON c.serial_id = a.offer_serial_id
+    LEFT JOIN order_profit AS p
+        ON p.offer_serial_id = a.offer_serial_id
+    LEFT JOIN loan_history AS h
+        ON h.user_id = a.user_id
+       AND h.offer_serial_id = a.offer_serial_id
+)
+, t0_success_orders AS (
+    SELECT
+        offer_serial_id,
+        vir_date,
+        remit_date,
+        due_date,
+        due_time,
+        remit_amt,
+        repaid_date,
+        pre_amt,
+        post_amt
+    FROM detail
+    WHERE is_t0_remit = 1
+      AND remit_date &gt;= DATE '2026-01-01'
+      AND remit_date &lt; DATE '2026-08-01'
+), mature_orders AS (
+    SELECT
+        t.*
+    FROM t0_success_orders AS t
+    WHERE t.due_date &lt;= DATE '2026-09-08'
+), order_paid_by_due AS (
+    SELECT
+        m.offer_serial_id,
+        SUM(COALESCE(pay.amount, 0)) AS 到期前实际还款金额
+    FROM mature_orders AS m
+    LEFT JOIN wangchuanliang.repayment_plan_record_copy AS pay
+        ON pay.serial_id = m.offer_serial_id
+       AND pay.payin_date &gt;= m.remit_date
+       AND pay.payin_date &lt;= m.due_date
+    GROUP BY
+        m.offer_serial_id
+), mature_terms AS (
+    SELECT
+        m.offer_serial_id,
+        p.current_term,
+        p.remit_amt_period,
+        p.repaid_amt_period,
+        p.discount_amount_period,
+        p.repaid_date_period,
+        p.due_date_period,
+        m.remit_date
+    FROM mature_orders AS m
+    INNER JOIN wangchuanliang.repayment_plan_v2_copy AS p
+        ON p.serial_id = m.offer_serial_id
+       AND p.is_remit = 1
+       AND p.due_date_period &lt;= DATE '2026-09-08'
+), mature_order_metrics AS (
+    SELECT
+        m.offer_serial_id,
+        m.vir_date,
+        m.remit_amt,
+        COALESCE(op.到期前实际还款金额, 0) AS 到期前实际还款金额,
+        CASE
+            WHEN m.repaid_date IS NULL
+              OR m.repaid_date &lt; DATE '2000-01-01'
+              OR m.repaid_date &gt; m.due_date
+                THEN 1
+            ELSE 0
+        END AS 整笔订单到期逾期标记,
+        SUM(COALESCE(t.remit_amt_period, 0)) AS 到期分期放款金额,
+        SUM(
+            CASE
+                WHEN t.repaid_date_period IS NULL
+                  OR t.repaid_date_period &lt; DATE '2000-01-01'
+                  OR t.repaid_date_period &gt; t.due_date_period
+                    THEN COALESCE(t.remit_amt_period, 0)
+                ELSE 0
+            END
+        ) AS 到期逾期分期放款金额
+    FROM mature_orders AS m
+    LEFT JOIN order_paid_by_due AS op
+        ON op.offer_serial_id = m.offer_serial_id
+    LEFT JOIN mature_terms AS t
+        ON t.offer_serial_id = m.offer_serial_id
+    GROUP BY
+        m.offer_serial_id,
+        m.vir_date,
+        m.remit_amt,
+        m.repaid_date,
+        m.due_date,
+        op.到期前实际还款金额
+)
+SELECT
+    TO_CHAR(d.vir_date, 'YYYY-MM') AS stat_month,
+    COUNT(*) AS t0_eligible_sample_count,
+    SUM(d.is_t0_apply) AS t0_apply_count,
+    SUM(
+        CASE
+            WHEN d.is_t0_remit = 1
+             AND d.remit_date &gt;= DATE '2026-01-01'
+             AND d.remit_date &lt; DATE '2026-08-01'
+                THEN 1
+            ELSE 0
+        END
+    ) AS t0_remit_order_count,
+    SUM(
+        CASE
+            WHEN d.is_t0_remit = 1
+             AND d.remit_date &gt;= DATE '2026-01-01'
+             AND d.remit_date &lt; DATE '2026-08-01'
+             AND COALESCE(d.remit_amt, 0) &gt; 0
+                THEN COALESCE(d.pre_amt, 0) + COALESCE(d.post_amt, 0)
+            ELSE 0
+        END
+    ) AS fee_amount,
+    SUM(
+        CASE
+            WHEN d.is_t0_remit = 1
+             AND d.remit_date &gt;= DATE '2026-01-01'
+             AND d.remit_date &lt; DATE '2026-08-01'
+             AND COALESCE(d.remit_amt, 0) &gt; 0
+                THEN d.remit_amt
+            ELSE 0
+        END
+    ) AS fee_remit_amount,
+    COUNT(m.offer_serial_id) AS mature_order_count,
+    SUM(COALESCE(m.整笔订单到期逾期标记, 0)) AS overdue_order_count,
+    SUM(COALESCE(m.到期分期放款金额, 0)) AS due_term_remit_amount,
+    SUM(COALESCE(m.到期逾期分期放款金额, 0)) AS overdue_term_remit_amount,
+    SUM(COALESCE(m.remit_amt, 0)) AS mature_order_remit_amount,
+    SUM(COALESCE(m.到期前实际还款金额, 0)) AS mature_order_paid_amount,
+    SUM(
+        COALESCE(m.到期前实际还款金额, 0)
+        - COALESCE(m.remit_amt, 0)
+    ) AS mature_order_profit_amount
+FROM detail AS d
+LEFT JOIN mature_order_metrics AS m
+    ON m.offer_serial_id = d.offer_serial_id
+GROUP BY
+    TO_CHAR(d.vir_date, 'YYYY-MM')
+ORDER BY
+    stat_month;
+</pre></details><details class="sql-module" data-sql-module="module-7" ><summary><span class="sql-module-title">模块 7：输出报告月度指标、分子分母与总体相关性</span><button class="sql-fav" type="button" data-sql-favorite="module-7" title="收藏此模块" aria-label="收藏此模块">☆</button><span class="sql-expand-hint">点击展开/收起</span></summary><pre class="sql">-- ============================================================
+-- 模块 7：报告“到期质量与流水盈利”月度指标及相关性
+-- 先执行模块 6；本模块直接输出报告表格、图表和文字结论所用指标。
+-- 整笔订单逾期：repaid_date 为空/早于 2000-01-01，或晚于 due_date。
+-- 分期金额逾期：repaid_date_period 为空/早于 2000-01-01，或晚于 due_date_period。
+-- 两项均以到期时是否已结清判定，不以还款金额或订单当前状态判定。
+-- ============================================================
+SELECT
+    stat_month AS 统计月份,
+    t0_eligible_sample_count AS T0可提单样本数,
+    t0_apply_count AS T0提单数,
+    ROUND(t0_apply_count::numeric / NULLIF(t0_eligible_sample_count, 0) * 100, 2)
+        AS T0当天提单率_pct,
+    t0_remit_order_count AS T0成功放款订单数,
+    fee_amount AS 息费金额分子,
+    fee_remit_amount AS 息费放款金额分母,
+    ROUND(fee_amount::numeric / NULLIF(fee_remit_amount, 0) * 100, 2)
+        AS 加权息费率_pct,
+    mature_order_count AS 整笔到期订单数,
+    overdue_order_count AS 整笔到期逾期订单数,
+    ROUND(overdue_order_count::numeric / NULLIF(mature_order_count, 0) * 100, 2)
+        AS 整笔订单逾期率_pct,
+    due_term_remit_amount AS 到期分期放款金额分母,
+    overdue_term_remit_amount AS 到期逾期分期放款金额分子,
+    ROUND(overdue_term_remit_amount::numeric / NULLIF(due_term_remit_amount, 0) * 100, 2)
+        AS 分期金额逾期率_pct,
+    mature_order_remit_amount AS 整笔到期放款金额,
+    mature_order_paid_amount AS 整笔到期前实际还款流水金额,
+    mature_order_profit_amount AS 到期盈利额,
+    ROUND(mature_order_profit_amount::numeric / NULLIF(mature_order_remit_amount, 0) * 100, 2)
+        AS 到期盈利率_pct,
+    ROUND(mature_order_profit_amount::numeric / NULLIF(t0_eligible_sample_count, 0), 2)
+        AS 单个可提单样本到期盈利
+FROM tmp_t0_mature_quality_monthly
+ORDER BY stat_month;
+
+-- 相关性复现：与报告“数据解读”和“是否应继续提升 T0”中的相关系数一致。
+WITH monthly_rate AS (
+    SELECT
+        t0_apply_count::numeric / NULLIF(t0_eligible_sample_count, 0) AS t0_apply_rate,
+        fee_amount::numeric / NULLIF(fee_remit_amount, 0) AS weighted_fee_rate,
+        overdue_order_count::numeric / NULLIF(mature_order_count, 0) AS order_overdue_rate,
+        overdue_term_remit_amount::numeric / NULLIF(due_term_remit_amount, 0) AS term_amount_overdue_rate,
+        mature_order_profit_amount::numeric / NULLIF(mature_order_remit_amount, 0) AS profit_rate
+    FROM tmp_t0_mature_quality_monthly
+)
+SELECT
+    ROUND(CORR(t0_apply_rate, profit_rate)::numeric, 4)
+        AS T0提单率_到期盈利率相关系数,
+    ROUND(CORR(t0_apply_rate, order_overdue_rate)::numeric, 4)
+        AS T0提单率_整笔订单逾期率相关系数,
+    ROUND(CORR(t0_apply_rate, term_amount_overdue_rate)::numeric, 4)
+        AS T0提单率_分期金额逾期率相关系数,
+    ROUND(CORR(t0_apply_rate, weighted_fee_rate)::numeric, 4)
+        AS T0提单率_加权息费率相关系数,
+    ROUND(CORR(weighted_fee_rate, profit_rate)::numeric, 4)
+        AS 加权息费率_到期盈利率相关系数,
+    ROUND(CORR(weighted_fee_rate, order_overdue_rate)::numeric, 4)
+        AS 加权息费率_整笔订单逾期率相关系数
+FROM monthly_rate;</pre></details><details class="sql-module" data-sql-module="module-8" ><summary><span class="sql-module-title">模块 8：输出历史成功放款次数分层相关性</span><button class="sql-fav" type="button" data-sql-favorite="module-8" title="收藏此模块" aria-label="收藏此模块">☆</button><span class="sql-expand-hint">点击展开/收起</span></summary><pre class="sql">-- ============================================================
+-- 模块 8：按历史成功放款次数分层的相关系数
+-- 先执行模块 1；用于复现报告“各客群均呈息费升、T0 降”的相关性结论。
+-- ============================================================
+WITH segment_monthly AS (
+    SELECT
+        TO_CHAR(vir_date, 'YYYY-MM') AS stat_month,
+        贷款次数分层,
+        SUM(is_t0_apply)::numeric / NULLIF(COUNT(*), 0) AS t0_apply_rate,
+        SUM(CASE WHEN is_t0_remit = 1 AND remit_amt &gt; 0 THEN pre_amt + post_amt ELSE 0 END)::numeric
+            / NULLIF(SUM(CASE WHEN is_t0_remit = 1 AND remit_amt &gt; 0 THEN remit_amt ELSE 0 END), 0)
+            AS weighted_fee_rate
+    FROM tmp_t0_balance_detail
+    WHERE vir_date &lt; DATE '2026-09-01'
+    GROUP BY
+        TO_CHAR(vir_date, 'YYYY-MM'),
+        贷款次数分层
+)
+SELECT
+    贷款次数分层,
+    ROUND(CORR(weighted_fee_rate, t0_apply_rate)::numeric, 4)
+        AS 加权息费率_T0当天提单率相关系数
+FROM segment_monthly
+GROUP BY 贷款次数分层
+ORDER BY
+    CASE 贷款次数分层
+        WHEN '贷款1次' THEN 1
+        WHEN '贷款2次' THEN 2
+        WHEN '贷款3-5次' THEN 3
+        ELSE 4
+    END;</pre></details><details class="sql-module" data-sql-module="module-9" ><summary><span class="sql-module-title">模块 9：输出额度使用率月度、汇总及与 T0/息费的关系</span><button class="sql-fav" type="button" data-sql-favorite="module-9" title="收藏此模块" aria-label="收藏此模块">☆</button><span class="sql-expand-hint">点击展开/收起</span></summary><pre class="sql">-- ============================================================
+-- 模块 9：按历史成功放款次数的额度使用率、T0 提单率与息费
+-- 先执行模块 1。额度使用率 = Σ(apply_amt) / Σ(max_credit_apply_amt)。
+-- 仅提单金额、获额金额均 &gt;= 200 的 T0 提单订单参与额度使用率。
+-- ============================================================
+WITH segment_monthly AS (
+    SELECT
+        TO_CHAR(vir_date, 'YYYY-MM') AS 统计月份,
+        贷款次数分层,
+        COUNT(*) AS T0可提单样本数,
+        SUM(is_t0_apply) AS T0提单数,
+        SUM(is_t0_apply)::numeric / NULLIF(COUNT(*), 0) AS T0当天提单率,
+        SUM(CASE WHEN is_t0_remit = 1 AND remit_amt &gt; 0 THEN pre_amt + post_amt ELSE 0 END) AS 息费金额分子,
+        SUM(CASE WHEN is_t0_remit = 1 AND remit_amt &gt; 0 THEN remit_amt ELSE 0 END) AS 息费放款金额分母,
+        SUM(CASE WHEN is_t0_apply = 1 AND apply_amt &gt;= 200 AND max_credit_apply_amt &gt;= 200 THEN 1 ELSE 0 END) AS 额度使用率有效提单订单数,
+        SUM(CASE WHEN is_t0_apply = 1 AND apply_amt &gt;= 200 AND max_credit_apply_amt &gt;= 200 THEN apply_amt ELSE 0 END) AS 额度使用率提单金额分子,
+        SUM(CASE WHEN is_t0_apply = 1 AND apply_amt &gt;= 200 AND max_credit_apply_amt &gt;= 200 THEN max_credit_apply_amt ELSE 0 END) AS 额度使用率获额金额分母
+    FROM tmp_t0_balance_detail
+    WHERE vir_date &lt; DATE '2026-09-01'
+    GROUP BY
+        TO_CHAR(vir_date, 'YYYY-MM'),
+        贷款次数分层
+), segment_rate AS (
+    SELECT
+        *,
+        额度使用率提单金额分子::numeric / NULLIF(额度使用率获额金额分母, 0) AS 加权额度使用率,
+        息费金额分子::numeric / NULLIF(息费放款金额分母, 0) AS 加权息费率
+    FROM segment_monthly
+)
+SELECT
+    统计月份,
+    贷款次数分层,
+    T0可提单样本数,
+    T0提单数,
+    ROUND(T0当天提单率 * 100, 2) AS T0当天提单率_pct,
+    额度使用率有效提单订单数,
+    额度使用率提单金额分子,
+    额度使用率获额金额分母,
+    ROUND(加权额度使用率 * 100, 2) AS 加权额度使用率_pct,
+    息费金额分子,
+    息费放款金额分母,
+    ROUND(加权息费率 * 100, 2) AS 加权息费率_pct
+FROM segment_rate
+ORDER BY
+    统计月份,
+    CASE 贷款次数分层
+        WHEN '贷款1次' THEN 1
+        WHEN '贷款2次' THEN 2
+        WHEN '贷款3-5次' THEN 3
+        ELSE 4
+    END;
+
+-- 客群汇总、额度使用率与 T0/息费的月度相关性：复现报告汇总表与文字结论。
+WITH segment_monthly AS (
+    SELECT
+        TO_CHAR(vir_date, 'YYYY-MM') AS 统计月份,
+        贷款次数分层,
+        SUM(is_t0_apply)::numeric / NULLIF(COUNT(*), 0) AS T0当天提单率,
+        SUM(CASE WHEN is_t0_remit = 1 AND remit_amt &gt; 0 THEN pre_amt + post_amt ELSE 0 END)::numeric / NULLIF(SUM(CASE WHEN is_t0_remit = 1 AND remit_amt &gt; 0 THEN remit_amt ELSE 0 END), 0) AS 加权息费率,
+        SUM(CASE WHEN is_t0_apply = 1 AND apply_amt &gt;= 200 AND max_credit_apply_amt &gt;= 200 THEN apply_amt ELSE 0 END)::numeric / NULLIF(SUM(CASE WHEN is_t0_apply = 1 AND apply_amt &gt;= 200 AND max_credit_apply_amt &gt;= 200 THEN max_credit_apply_amt ELSE 0 END), 0) AS 加权额度使用率,
+        SUM(CASE WHEN is_t0_apply = 1 AND apply_amt &gt;= 200 AND max_credit_apply_amt &gt;= 200 THEN 1 ELSE 0 END) AS 额度使用率有效提单订单数,
+        SUM(CASE WHEN is_t0_apply = 1 AND apply_amt &gt;= 200 AND max_credit_apply_amt &gt;= 200 THEN apply_amt ELSE 0 END) AS 额度使用率提单金额分子,
+        SUM(CASE WHEN is_t0_apply = 1 AND apply_amt &gt;= 200 AND max_credit_apply_amt &gt;= 200 THEN max_credit_apply_amt ELSE 0 END) AS 额度使用率获额金额分母
+    FROM tmp_t0_balance_detail
+    WHERE vir_date &lt; DATE '2026-09-01'
+    GROUP BY TO_CHAR(vir_date, 'YYYY-MM'), 贷款次数分层
+)
+SELECT
+    贷款次数分层,
+    SUM(额度使用率有效提单订单数) AS 额度使用率有效提单订单数,
+    SUM(额度使用率提单金额分子) AS 提单金额分子,
+    SUM(额度使用率获额金额分母) AS 获额金额分母,
+    ROUND(SUM(额度使用率提单金额分子)::numeric / NULLIF(SUM(额度使用率获额金额分母), 0) * 100, 2) AS 汇总额度使用率_pct,
+    ROUND(CORR(加权额度使用率, T0当天提单率)::numeric, 4) AS 额度使用率_T0提单率相关系数,
+    ROUND(CORR(加权额度使用率, 加权息费率)::numeric, 4) AS 额度使用率_加权息费率相关系数
+FROM segment_monthly
+GROUP BY 贷款次数分层
+ORDER BY CASE 贷款次数分层
+    WHEN '贷款1次' THEN 1
+    WHEN '贷款2次' THEN 2
+    WHEN '贷款3-5次' THEN 3
+    ELSE 4
+END;</pre></details></div>
+<p class="foot">数据源：wangchuanliang.order_vir_f_copy、side_recycle_type_copy、order_loan_f_v2_copy、repayment_plan_v2_copy、coupon_user_detail_copy。金额单位：墨西哥比索。固定 30 天窗口用于月度 cohort 可比性；该指标不包含后续超过 30 天才到期的分期，不应替代完整生命周期利润或坏账评估。</p>
+</main><script>
+Chart.defaults.color='#c0d7e8';Chart.defaults.font.family='-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei",sans-serif';
+const profitL=["01月","02月","03月","04月","05月","06月"], profitApply=[51.45,50.61,45.04,45.65,44.03,42.47], margin=[6.67,4.99,11.23,11.84,12.07,8.45], unit=[100.52,65.54,118.4,116.05,110.5,73.62], profitFee=[49.58,48.94,50.52,51.46,54.24,58.3], couponYes=[42.12,32.77,37.3,31.46,14.25,6.34,8.46,6.57], couponNo=[49.64,48.86,43.1,43.44,45.24,44.83,43.36,39.53], couponShare=[5.16,3.82,3.54,3.26,4.94,10.21,16.34,7.99], feeL=["01月","02月","03月","04月","05月","06月","07月","08月"], feeApply=[51.45,50.61,45.04,45.65,44.03,42.47,40.39,38.19], fee=[49.58,48.94,50.52,51.46,54.24,58.3,58.18,60.24];
+const loanTimesFeeDatasets=[{"label":"贷款1次","data":[48.62,48.71,51.3,53.24,55.95,60.49,59.18,61.67],"borderColor":"#43c7e7","backgroundColor":"#43c7e7","tension":0.25,"pointRadius":3},{"label":"贷款2次","data":[49.35,49.14,51.89,54.04,56.91,60.31,59.75,61.16],"borderColor":"#ffc26b","backgroundColor":"#ffc26b","tension":0.25,"pointRadius":3},{"label":"贷款3-5次","data":[49.1,48.72,50.75,51.23,53.84,59.26,59.49,61.44],"borderColor":"#64dcae","backgroundColor":"#64dcae","tension":0.25,"pointRadius":3},{"label":"贷款6次及以上","data":[50.83,49.28,49.34,50.11,52.6,54.69,54.91,57.35],"borderColor":"#b49aff","backgroundColor":"#b49aff","tension":0.25,"pointRadius":3}], loanTimesApplyDatasets=[{"label":"贷款1次","data":[49.3,48.24,42.91,43.11,43.69,41.25,38.62,37.15],"borderColor":"#43c7e7","backgroundColor":"#43c7e7","tension":0.25,"pointRadius":3},{"label":"贷款2次","data":[52.15,49.49,41.87,45.3,43.38,41.03,38.96,36.46],"borderColor":"#ffc26b","backgroundColor":"#ffc26b","tension":0.25,"pointRadius":3},{"label":"贷款3-5次","data":[53.83,54.02,47.36,46.07,42.78,43.59,42.12,38.62],"borderColor":"#64dcae","backgroundColor":"#64dcae","tension":0.25,"pointRadius":3},{"label":"贷款6次及以上","data":[52.69,53.22,49.76,51.28,47.75,45.56,44.19,43.47],"borderColor":"#b49aff","backgroundColor":"#b49aff","tension":0.25,"pointRadius":3}];
+const utilizationDatasets=[{"label":"贷款1次","data":[95.07,93.46,95.69,96.38,96.75,95.25,93.61,95.01],"borderColor":"#43c7e7","backgroundColor":"#43c7e7","tension":0.25,"pointRadius":3},{"label":"贷款2次","data":[94.4,94.95,94.31,96.78,95.34,93.66,92.81,92.53],"borderColor":"#ffc26b","backgroundColor":"#ffc26b","tension":0.25,"pointRadius":3},{"label":"贷款3-5次","data":[89.94,90.15,91.17,91.71,90.14,89.1,90,87.95],"borderColor":"#64dcae","backgroundColor":"#64dcae","tension":0.25,"pointRadius":3},{"label":"贷款6次及以上","data":[86.06,86.72,87.06,88.97,87.43,87.18,87.75,86.24],"borderColor":"#b49aff","backgroundColor":"#b49aff","tension":0.25,"pointRadius":3}], overallUtilization=[90.32,90.55,90.9,91.94,91.14,90.65,90.68,89.78];
+const qualityL=["01月","02月","03月","04月","05月","06月","07月"], qualityT0=[51.45,50.61,45.04,45.65,44.03,42.47,40.39], qualityProfit=[3.54,1.34,7.61,8.03,7.85,4.22,5.8], qualityOrderOverdue=[36.75,37.35,36.42,36.63,37.76,42.16,42.41], qualityAmountOverdue=[36.39,37.34,34.15,34.61,36.08,40.13,39.54], qualityFee=[49.58,48.94,50.52,51.46,54.24,58.3,58.19], qualityProfitAmount=[1042963.14,400664.88,1786100.24,1648251.39,1746087.5,852212,1278997.48];
+const base={responsive:true,maintainAspectRatio:false,plugins:{legend:{labels:{boxWidth:12,padding:15}}},scales:{x:{grid:{color:'rgba(80,142,176,.16)'}},y:{grid:{color:'rgba(80,142,176,.16)'},beginAtZero:true}}};
+const pctAxis=(min,max)=>({...base,scales:{...base.scales,y:{...base.scales.y,min,max,ticks:{callback:v=>v+'%'}}},plugins:{...base.plugins,tooltip:{callbacks:{label:c=>c.dataset.label+': '+c.parsed.y.toFixed(2)+'%'}}}});
+new Chart(document.getElementById('rateMargin'),{type:'line',data:{labels:profitL,datasets:[{label:'T0 提单率',data:profitApply,borderColor:'#43c7e7',backgroundColor:'#43c7e7',tension:.25,pointRadius:4,yAxisID:'y'},{label:'30天折扣后盈利率',data:margin,borderColor:'#64dcae',backgroundColor:'#64dcae',tension:.25,pointRadius:4,yAxisID:'y1'}]},options:{...base,scales:{x:{grid:{color:'rgba(80,142,176,.16)'}},y:{position:'left',min:35,max:55,grid:{color:'rgba(80,142,176,.16)'},ticks:{callback:v=>v+'%'}},y1:{position:'right',min:0,max:15,grid:{drawOnChartArea:false},ticks:{callback:v=>v+'%'}}}}});
+new Chart(document.getElementById('unitProfit'),{type:'bar',data:{labels:profitL,datasets:[{label:'单个可提单样本盈利（MXN）',data:unit,backgroundColor:['#43c7e7','#ffc26b','#64dcae','#64dcae','#64dcae','#f68ab0'],borderRadius:5}]},options:{...base,plugins:{...base.plugins,legend:{display:false},tooltip:{callbacks:{label:c=>'MXN '+c.parsed.y.toFixed(2)}}}}});
+const unitProfitFeeT0Chart = {
+  type: 'line',
+  data: {
+    labels: profitL,
+    datasets: [
+      { label: '单个可提单样本盈利（左轴，MXN）', data: unit, borderColor: '#64dcae', backgroundColor: '#64dcae', tension: 0.25, pointRadius: 4, yAxisID: 'y' },
+      { label: '加权息费率（右轴）', data: profitFee, borderColor: '#ffc26b', backgroundColor: '#ffc26b', tension: 0.25, pointRadius: 4, yAxisID: 'y1' },
+      { label: 'T0 提单率（右轴）', data: profitApply, borderColor: '#43c7e7', backgroundColor: '#43c7e7', tension: 0.25, pointRadius: 4, yAxisID: 'y1' }
+    ]
+  },
+  options: {
+    ...base,
+    scales: {
+      x: { grid: { color: 'rgba(80,142,176,.16)' } },
+      y: { position: 'left', min: 0, max: 140, grid: { color: 'rgba(80,142,176,.16)' }, ticks: { callback: v => 'MXN ' + v }, title: { display: true, text: '单个可提单样本盈利（MXN）', color: '#64dcae', font: { size: 12, weight: '600' } } },
+      y1: { position: 'right', min: 35, max: 65, grid: { drawOnChartArea: false }, ticks: { callback: v => v + '%' }, title: { display: true, text: '加权息费率 / T0 提单率（%）', color: '#c7ddeb', font: { size: 12, weight: '600' } } }
+    }
+  }
+};
+new Chart(document.getElementById('unitProfitFeeT0'), unitProfitFeeT0Chart);
+new Chart(document.getElementById('feeTrend'),{type:'line',data:{labels:feeL,datasets:[{label:'加权息费率（左轴）',data:fee,borderColor:'#ffc26b',backgroundColor:'#ffc26b',tension:.25,pointRadius:4,yAxisID:'y'},{label:'T0 提单率（右轴）',data:feeApply,borderColor:'#43c7e7',backgroundColor:'#43c7e7',tension:.25,pointRadius:4,yAxisID:'y1'}]},options:{...base,layout:{padding:{right:16}},scales:{x:{grid:{color:'rgba(80,142,176,.16)'}},y:{position:'left',min:45,max:65,grid:{color:'rgba(80,142,176,.16)'},ticks:{callback:v=>v+'%'},title:{display:true,text:'加权息费率（%）',color:'#ffc26b',font:{size:12,weight:'600'},padding:{top:0,bottom:10}}},y1:{position:'right',min:30,max:55,grid:{drawOnChartArea:false},ticks:{callback:v=>v+'%',padding:8},title:{display:true,text:'T0 当天提单率（%）',color:'#43c7e7',font:{size:12,weight:'600'},padding:{top:0,bottom:14}}}}}});
+new Chart(document.getElementById('segmentFeeTrend'),{type:'line',data:{labels:feeL,datasets:loanTimesFeeDatasets},options:{...base,scales:{x:{grid:{color:'rgba(80,142,176,.16)'}},y:{min:45,max:65,grid:{color:'rgba(80,142,176,.16)'},ticks:{callback:v=>v+'%'},title:{display:true,text:'加权息费率（%）',color:'#ffc26b',font:{size:12,weight:'600'}}}}}});
+new Chart(document.getElementById('segmentApplyTrend'),{type:'line',data:{labels:feeL,datasets:loanTimesApplyDatasets},options:{...base,scales:{x:{grid:{color:'rgba(80,142,176,.16)'}},y:{min:30,max:60,grid:{color:'rgba(80,142,176,.16)'},ticks:{callback:v=>v+'%'},title:{display:true,text:'T0 当天提单率（%）',color:'#43c7e7',font:{size:12,weight:'600'}}}}}});
+new Chart(document.getElementById('utilizationTrend'),{type:'line',data:{labels:feeL,datasets:utilizationDatasets},options:{...base,scales:{x:{grid:{color:'rgba(80,142,176,.16)'}},y:{min:80,max:100,grid:{color:'rgba(80,142,176,.16)'},ticks:{callback:v=>v+'%'},title:{display:true,text:'额度使用率（%）',color:'#64dcae',font:{size:12,weight:'600'}}}}}});
+new Chart(document.getElementById('utilizationT0Fee'),{type:'line',data:{labels:feeL,datasets:[{label:'总体额度使用率（左轴）',data:overallUtilization,borderColor:'#64dcae',backgroundColor:'#64dcae',tension:.25,pointRadius:4,yAxisID:'y'},{label:'总体 T0 提单率（右轴）',data:feeApply,borderColor:'#43c7e7',backgroundColor:'#43c7e7',tension:.25,pointRadius:4,yAxisID:'y1'},{label:'总体加权息费率（右轴）',data:fee,borderColor:'#ffc26b',backgroundColor:'#ffc26b',tension:.25,pointRadius:4,yAxisID:'y1'}]},options:{...base,scales:{x:{grid:{color:'rgba(80,142,176,.16)'}},y:{position:'left',min:80,max:100,grid:{color:'rgba(80,142,176,.16)'},ticks:{callback:v=>v+'%'}},y1:{position:'right',min:30,max:65,grid:{drawOnChartArea:false},ticks:{callback:v=>v+'%'}}}}});
+new Chart(document.getElementById('qualityProfitTrend'),{type:'line',data:{labels:qualityL,datasets:[{label:'T0 提单率（左轴）',data:qualityT0,borderColor:'#43c7e7',backgroundColor:'#43c7e7',tension:.25,pointRadius:4,yAxisID:'y'},{label:'到期盈利率（右轴）',data:qualityProfit,borderColor:'#64dcae',backgroundColor:'#64dcae',tension:.25,pointRadius:4,yAxisID:'y1'}]},options:{...base,scales:{x:{grid:{color:'rgba(80,142,176,.16)'}},y:{position:'left',min:35,max:55,grid:{color:'rgba(80,142,176,.16)'},ticks:{callback:v=>v+'%'}},y1:{position:'right',min:0,max:10,grid:{drawOnChartArea:false},ticks:{callback:v=>v+'%'}}}}});
+new Chart(document.getElementById('qualityRiskTrend'),{type:'line',data:{labels:qualityL,datasets:[{label:'T0 提单率（左轴）',data:qualityT0,borderColor:'#43c7e7',backgroundColor:'#43c7e7',tension:.25,pointRadius:4,yAxisID:'y'},{label:'订单逾期率（右轴）',data:qualityOrderOverdue,borderColor:'#f68ab0',backgroundColor:'#f68ab0',tension:.25,pointRadius:4,yAxisID:'y1'},{label:'分期金额逾期率（右轴）',data:qualityAmountOverdue,borderColor:'#ffc26b',backgroundColor:'#ffc26b',tension:.25,pointRadius:4,yAxisID:'y1'}]},options:{...base,scales:{x:{grid:{color:'rgba(80,142,176,.16)'}},y:{position:'left',min:35,max:55,grid:{color:'rgba(80,142,176,.16)'},ticks:{callback:v=>v+'%'}},y1:{position:'right',min:30,max:45,grid:{drawOnChartArea:false},ticks:{callback:v=>v+'%'}}}}});
+new Chart(document.getElementById('qualityFeeProfitTrend'),{type:'line',data:{labels:qualityL,datasets:[{label:'加权息费率（左轴）',data:qualityFee,borderColor:'#ffc26b',backgroundColor:'#ffc26b',tension:.25,pointRadius:4,yAxisID:'y'},{label:'到期盈利率（右轴）',data:qualityProfit,borderColor:'#64dcae',backgroundColor:'#64dcae',tension:.25,pointRadius:4,yAxisID:'y1'}]},options:{...base,scales:{x:{grid:{color:'rgba(80,142,176,.16)'}},y:{position:'left',min:45,max:65,grid:{color:'rgba(80,142,176,.16)'},ticks:{callback:v=>v+'%'}},y1:{position:'right',min:0,max:10,grid:{drawOnChartArea:false},ticks:{callback:v=>v+'%'}}}}});
+new Chart(document.getElementById('qualityProfitAmount'),{type:'bar',data:{labels:qualityL,datasets:[{label:'到期盈利额（MXN）',data:qualityProfitAmount,backgroundColor:'#64dcae',borderRadius:5}]},options:{...base,plugins:{...base.plugins,legend:{display:false},tooltip:{callbacks:{label:c=>'MXN '+c.parsed.y.toLocaleString('en-US',{maximumFractionDigits:2})}}}}});
+const sqlFavoriteKey='t0-balance-sql-favorites';
+const favoriteModules=new Set(JSON.parse(localStorage.getItem(sqlFavoriteKey)||'[]'));
+const renderFavorite=(button)=>{const id=button.dataset.sqlFavorite;const active=favoriteModules.has(id);button.classList.toggle('active',active);button.textContent=active?'★':'☆';button.title=active?'取消收藏此模块':'收藏此模块';};
+document.querySelectorAll('[data-sql-favorite]').forEach((button)=>{renderFavorite(button);button.addEventListener('click',(event)=>{event.preventDefault();event.stopPropagation();const id=button.dataset.sqlFavorite;favoriteModules.has(id)?favoriteModules.delete(id):favoriteModules.add(id);localStorage.setItem(sqlFavoriteKey,JSON.stringify([...favoriteModules]));renderFavorite(button);});});
+document.getElementById('sqlExpandAll').addEventListener('click',()=>document.querySelectorAll('[data-sql-module]').forEach((item)=>item.open=true));
+document.getElementById('sqlCollapseAll').addEventListener('click',()=>document.querySelectorAll('[data-sql-module]').forEach((item)=>item.open=false));
+</script></body></html>
