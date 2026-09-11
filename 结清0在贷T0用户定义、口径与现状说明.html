@@ -1,0 +1,1122 @@
+<!doctype html><html lang="zh-CN"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>结清0在贷 T0 用户定义、口径与现状说明</title><style>:root{--p:#092944;--l:#2a5c7e;--t:#eff8ff;--m:#aac5da;--c:#43c7e7;--a:#ffc26b}*{box-sizing:border-box}body{margin:0;background:linear-gradient(135deg,#06192b,#0b2c47);color:var(--t);font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei",sans-serif}.wrap{max-width:1220px;margin:auto;padding:34px 38px 70px}.hero{text-align:center;border-bottom:1px solid var(--l);padding:30px}.hero h1{font-size:32px;margin:10px}.desc{color:var(--m);line-height:1.8}h2{font-size:24px;margin:42px 0 12px}.grid{display:grid;grid-template-columns:repeat(2,1fr);gap:16px}.card,.callout{background:var(--p);border:1px solid var(--l);padding:17px;border-radius:13px;line-height:1.8}.callout{border-left:4px solid var(--c);margin:14px 0}.warn{border-left-color:var(--a)}.flow,pre{font:12px/1.7 ui-monospace,SFMono-Regular,Menlo,monospace;white-space:pre-wrap;background:#041323;border:1px solid #275370;border-radius:10px;padding:16px;color:#d9edf9;overflow:auto}.table{overflow:auto}table{border-collapse:collapse;width:100%;font-size:14px}th,td{border:1px solid var(--l);padding:9px;text-align:left;vertical-align:top}th{background:#0e3a5c}.sql{background:#082740;border:1px solid var(--l);border-radius:10px;margin:10px 0}.sql summary{cursor:pointer;padding:13px;font-weight:700}.sql pre{margin:0;border:0;border-radius:0}.fav{float:right;border:0;background:none;color:var(--a);font-size:20px}.foot{text-align:center;color:var(--m);margin-top:36px}@media(max-width:780px){.grid{grid-template-columns:1fr}.wrap{padding:18px}}</style><main class="wrap"><header class="hero"><div style="color:#43c7e7;font-weight:700;letter-spacing:2px">T0 用户 · 统一定义与分析口径</div><h1>结清 0 在贷 T0 用户定义、口径与现状说明</h1><p class="desc">适用范围：结清后获额通过的循环贷用户 · 文档生成时间：2026 年 9 月 11 日</p></header><h2>一、文档目的</h2><p class="desc">统一结清 0 在贷 T0 用户的定义、当天提单判定、放款与后续质量/盈利边界。该口径用于统一数据提取、经营讨论和后续实验设计。</p><section class="grid"><article class="card"><h3>核心对象</h3><p>用户在某日完成结清，结清时不存在其他在途或在贷订单；之后同日获额通过。该获额通过订单就是一个 T0 可提单机会。</p></article><article class="card"><h3>核心问题</h3><p>用户是否在获额当日提单、是否成功放款，以及即时转化用户的息费、到期回收、逾期与盈利如何变化。</p></article></section><h2>二、T0 用户完整定义</h2><div class="table"><table><thead><tr><th>步骤</th><th>规则</th><th>目的</th></tr></thead><tbody><tr><td>获额通过</td><td><code>is_pass1 = 1</code> 且 <code>loan_type_code = 2</code></td><td>仅保留续贷获额通过订单。</td></tr><tr><td>循环类型</td><td><code>recycle_type = 3</code></td><td>限定结清 0 在贷的循环贷场景。</td></tr><tr><td>20 秒批次去重</td><td>按用户、获额时间分批；相邻记录间隔不超过 20 秒为同批，每批保留最大订单号。</td><td>避免同一次获额流程产生重复订单。</td></tr><tr><td>同日结清</td><td>获额日期 = 结清日期，且获额时间不早于结清时间。</td><td>确保机会发生在结清之后。</td></tr><tr><td>0 在贷判断</td><td>结清时点不存在其他已提单、仍在途或在贷的订单。</td><td>排除结清时仍有其他借款责任的情况。</td></tr><tr><td>日内唯一化</td><td>同一用户同日多笔满足条件的获额订单，仅取最早一笔。</td><td>一个用户、一天仅形成一个 T0 可提单机会。</td></tr></tbody></table></div><h2>三、T0 提单、放款与样本边界</h2><section class="grid"><article class="card"><h3>T0 当天提单率</h3><p>保留的获额订单在获额当天存在提单，记为 <code>is_t0_apply = 1</code>。</p><p><b>当天提单率 = 当天提单样本数 ÷ 结清 0 在贷可提单样本数。</b></p></article><article class="card"><h3>T0 成功放款</h3><p>该笔 T0 提单订单成功放款，记为 <code>is_t0_remit = 1</code>。该订单才进入息费、到期风险和盈利分析。</p></article></section><div class="callout warn"><b>关键边界：</b>获额当天未提单、之后才提单的用户仍留在当天提单率分母，但不进入 T0 当天提单订单的放款、息费、到期风险和盈利分析。</div><h2>四、伪代码：从获额到 T0 样本</h2><pre class="flow">INPUT:
+  获额表 order_vir_f_copy
+  订单表 order_loan_f_v2_copy
+  循环类型表 side_recycle_type_copy
+
+1. 候选获额订单
+  keep: is_pass1 = 1 AND loan_type_code = 2 AND recycle_type = 3
+
+2. 20 秒去重（按 user_id）
+  按 vir_time、serial_id 排序；相邻获额间隔 ≤ 20 秒视为同一批
+  每一批仅保留 serial_id 最大的一笔
+
+3. 同日结清匹配
+  在该用户历史成功放款订单中寻找：
+    repaid_date = vir_date
+    AND repaid_time ≤ vir_time
+    AND 结清时不存在其他已提单且仍在途/在贷订单
+
+4. 每用户每天唯一化
+  同一 user_id、vir_date 下，仅保留最早满足上述条件的获额通过订单
+  → 得到“结清 0 在贷可提单样本”
+
+5. T0 提单与 T0 放款
+  若保留获额订单在 vir_date 当天存在提单：is_t0_apply = 1
+  若该订单成功放款：is_t0_remit = 1
+
+6. 统计
+  T0 当天提单率 = SUM(is_t0_apply) / COUNT(可提单样本)
+  T0 成功放款率 = SUM(is_t0_remit) / COUNT(可提单样本)</pre><h2>五、后续指标口径</h2><div class="table"><table><thead><tr><th>指标</th><th>统计对象</th><th>计算方式与时间边界</th></tr></thead><tbody><tr><td>加权息费率</td><td>T0 当天提单且成功放款订单</td><td>SUM(post_amt + pre_amt) / SUM(remit_amt)，按提单月份归属；2026 年 1—8 月。</td></tr><tr><td>整笔到期盈利额/率</td><td>T0 当天提单且成功放款、截至统计日已整笔到期订单</td><td>还款流水仅累计提单日到整笔到期日；盈利额 = 实际还款流水 − 放款金额；盈利率 = 盈利额 / 放款金额。</td></tr><tr><td>订单逾期率</td><td>整笔已到期订单</td><td>分母为整笔到期订单数；还款日期为空、早于 2000-01-01 或晚于到期日，则到期时计逾期。</td></tr><tr><td>分期金额逾期率</td><td>整笔到期订单对应的分期</td><td>逾期分期放款金额 / 全部分期放款金额；分期逾期判定采用分期还款日期相对分期到期日。</td></tr><tr><td>额度使用率</td><td>有效 T0 当天提单订单</td><td>SUM(提单金额) / SUM(获额金额)，仅纳入两项金额均不低于 200 的订单。</td></tr></tbody></table></div><h2>六、当前现状与已观察趋势</h2><div class="callout"><ul><li>2026 年 1—8 月，T0 当天提单率由 <b>51.47%</b> 降至 <b>38.21%</b>，下降 13.26 个百分点。</li><li>同期 T0 成功放款订单加权息费率由 <b>49.58%</b> 升至 <b>60.24%</b>，上升 10.66 个百分点。</li><li>2026 年 1—7 月已到期 cohort 中，订单逾期率由 <b>36.73%</b> 升至 <b>42.27%</b>；分期金额逾期率由 <b>36.38%</b> 升至 <b>39.50%</b>。</li><li>整笔到期盈利率由 1 月 <b>3.56%</b> 至 7 月 <b>5.85%</b>，但月度波动明显，不能仅以息费上升推断经营效率改善。</li></ul></div><div class="callout warn"><b>解读：</b>息费上升、T0 当天提单率下降和到期风险抬升同时出现。现有数据提示需要警惕高息费下的逆向选择和机会流失；但月度观察不能证明息费是唯一原因，价格、券、准入及外部竞争仍需实验或分层对照验证。</div><h2>七、使用边界与建议</h2><section class="grid"><article class="card"><h3>可回答的问题</h3><ul><li>T0 即时转化是否变化；</li><li>即时转化用户的息费、额度使用、到期质量和回收表现；</li><li>不同历史成功放款次数客群的差异。</li></ul></article><article class="card"><h3>不可直接回答的问题</h3><ul><li>结清后最终是否会提单；</li><li>降息券是否提升 T0 提单率；</li><li>提高息费是否因果性地改善利润。</li></ul></article></section><div class="callout warn"><b>下一步建议：</b>在获额后尚未提单的用户中，按风险、额度、历史放款次数和活跃度分层设置对照或随机实验；同时观察增量提单、增量放款、到期回收、逾期与单个机会利润。</div><h2>附录 A：此前分析使用的完整 PGSQL</h2><p class="desc">按顺序执行以下模块。模块 1 创建统一 T0 明细；模块 3、5、8、9 输出转化、息费、历史放款次数与额度使用率；模块 6—7 输出整笔到期质量和还款流水盈利。可展开模块阅读，星标仅保存于当前浏览器。</p><details class="sql" open><summary>模块 1：统一 T0 样本底表与历史贷款次数<button class="fav" type="button">☆</button></summary><pre>-- ============================================================
+-- 结清 0 在贷 T0 提单率、降息券与盈利平衡点分析
+-- T0 提单率与息费：2026-01-01 至 2026-08-31；到期质量与流水盈利：
+-- 2026-01-01 至 2026-07-30 提单的 T0 成功放款订单，且整笔订单截至运行日已到期。
+-- 数据截至：运行当天；金额单位：墨西哥比索
+--
+-- 核心规则：
+-- 1. 获额通过、loan_type_code=2；先在用户维度按 20 秒批次去重，
+--    每批仅保留 serial_id 最大的获额订单；
+-- 2. 仅 recycle_type=3；同日结清、同日获额通过，且获额时间 &gt;= 结清时间；
+-- 3. 结清时不存在其他已提单且仍在途/在贷订单；
+-- 4. 同一用户同一天仅保留最早符合条件的获额订单；
+-- 5. T0 提单：该获额订单当日且获额后存在提单；
+-- 6. 到期盈利采用整笔订单：提单日至整笔到期日的实际还款流水 - 整笔放款金额；
+--    还款流水 amount 已是实际还款，故不再额外扣除折扣。
+-- ============================================================
+
+DROP TABLE IF EXISTS tmp_t0_balance_detail;
+
+CREATE TEMP TABLE tmp_t0_balance_detail AS
+WITH params AS (
+    SELECT
+        DATE '2026-01-01' AS start_date,
+        DATE '2026-09-01' AS end_date,
+        30 AS profit_window_days
+), raw_offer AS (
+    SELECT DISTINCT ON (
+        v.user_id,
+        v.serial_id
+    )
+        v.user_id,
+        v.serial_id,
+        v.vir_date::date AS vir_date,
+        TO_TIMESTAMP(v.vir_unix) AS vir_time,
+        v.max_credit_apply_amt,
+        r.recycle_type
+    FROM wangchuanliang.order_vir_f_copy AS v
+    INNER JOIN wangchuanliang.side_recycle_type_copy AS r
+        ON r.serial_id = v.serial_id
+    CROSS JOIN params AS p
+    WHERE v.is_pass1 = 1
+      AND v.loan_type_code = 2
+      -- 多取一天，仅用于正确识别 1 月 1 日边界处的 20 秒批次。
+      AND v.vir_date &gt;= p.start_date - 1
+      AND v.vir_date &lt; p.end_date
+    ORDER BY
+        v.user_id,
+        v.serial_id,
+        v.vir_unix DESC
+), lagged_offer AS (
+    SELECT
+        r.*,
+        LAG(r.vir_time) OVER (
+            PARTITION BY r.user_id
+            ORDER BY r.vir_time, r.serial_id
+        ) AS prev_vir_time
+    FROM raw_offer AS r
+), batched_offer AS (
+    SELECT
+        l.*,
+        SUM(
+            CASE
+                WHEN l.prev_vir_time IS NULL
+                  OR l.vir_time - l.prev_vir_time &gt; INTERVAL '20 seconds'
+                    THEN 1
+                ELSE 0
+            END
+        ) OVER (
+            PARTITION BY l.user_id
+            ORDER BY l.vir_time, l.serial_id
+            ROWS UNBOUNDED PRECEDING
+        ) AS batch_id
+    FROM lagged_offer AS l
+), dedup_offer AS (
+    SELECT
+        user_id,
+        serial_id,
+        vir_date,
+        vir_time,
+        max_credit_apply_amt,
+        recycle_type
+    FROM (
+        SELECT
+            b.*,
+            ROW_NUMBER() OVER (
+                PARTITION BY b.user_id, b.batch_id
+                ORDER BY b.serial_id DESC
+            ) AS batch_rn
+        FROM batched_offer AS b
+    ) AS x
+    CROSS JOIN params AS p
+    WHERE batch_rn = 1
+      AND recycle_type = 3
+      AND vir_date &gt;= p.start_date
+      AND vir_date &lt; p.end_date
+), candidate_users AS (
+    SELECT DISTINCT
+        user_id
+    FROM dedup_offer
+), all_orders AS (
+    SELECT
+        o.user_id,
+        o.serial_id,
+        o.apply_time,
+        o.apply_date,
+        o.repaid_time,
+        o.repaid_date::date AS repaid_date,
+        o.loan_status_code,
+        o.is_remit,
+        o.is_repaid
+    FROM wangchuanliang.order_loan_f_v2_copy AS o
+    INNER JOIN candidate_users AS u
+        ON u.user_id = o.user_id
+), clean_settlement AS (
+    SELECT
+        o.user_id,
+        o.serial_id,
+        o.repaid_time,
+        o.repaid_date
+    FROM all_orders AS o
+    WHERE o.is_remit = 1
+      AND (
+            o.is_repaid = 1
+         OR o.loan_status_code = 7
+      )
+      AND o.repaid_time &gt; TIMESTAMP '2000-01-01 00:00:00'
+      AND NOT EXISTS (
+          SELECT
+              1
+          FROM all_orders AS x
+          WHERE x.user_id = o.user_id
+            AND x.serial_id &lt;&gt; o.serial_id
+            AND x.apply_time &lt; o.repaid_time
+            AND (
+                  x.loan_status_code IN (5, 8)
+               OR (
+                      x.loan_status_code = 7
+                  AND x.repaid_time &gt; o.repaid_time
+                  )
+            )
+      )
+), offer_settlement_pair AS (
+    SELECT
+        e.user_id,
+        e.serial_id AS offer_serial_id,
+        e.vir_date,
+        e.vir_time,
+        e.max_credit_apply_amt,
+        s.serial_id AS settlement_serial_id,
+        s.repaid_time,
+        ROW_NUMBER() OVER (
+            PARTITION BY
+                e.user_id,
+                e.serial_id,
+                e.vir_time
+            ORDER BY
+                s.repaid_time DESC,
+                s.serial_id DESC
+        ) AS settlement_rn
+    FROM dedup_offer AS e
+    INNER JOIN clean_settlement AS s
+        ON s.user_id = e.user_id
+       AND s.repaid_date = e.vir_date
+       AND e.vir_time &gt;= s.repaid_time
+), t0_sample AS (
+    SELECT
+        user_id,
+        offer_serial_id,
+        vir_date,
+        vir_time,
+        max_credit_apply_amt,
+        settlement_serial_id,
+        repaid_time
+    FROM (
+        SELECT
+            p.*,
+            ROW_NUMBER() OVER (
+                PARTITION BY p.user_id, p.vir_date
+                ORDER BY p.vir_time, p.offer_serial_id DESC
+            ) AS day_rn
+        FROM offer_settlement_pair AS p
+        WHERE p.settlement_rn = 1
+    ) AS x
+    WHERE day_rn = 1
+), sample_apply AS (
+    SELECT
+        s.*,
+        o.apply_time,
+        o.apply_date,
+        o.is_remit,
+        o.pre_amt,
+        o.post_amt,
+        o.remit_amt,
+        o.repaid_date,
+        o.apply_amt,
+        CASE
+            WHEN o.apply_time IS NOT NULL THEN 1
+            ELSE 0
+        END AS is_t0_apply,
+        CASE
+            WHEN o.is_remit = 1 THEN 1
+            ELSE 0
+        END AS is_t0_remit
+    FROM t0_sample AS s
+    LEFT JOIN wangchuanliang.order_loan_f_v2_copy AS o
+       ON o.user_id = s.user_id
+       AND o.serial_id = s.offer_serial_id
+       AND o.apply_date = s.vir_date
+), interest_coupon AS (
+    SELECT
+        c.serial_id::bigint AS serial_id,
+        COUNT(DISTINCT c.coupon_no) AS interest_coupon_count,
+        SUM(COALESCE(c.coupon_amount, 0)) AS interest_coupon_amount
+    FROM wangchuanliang.coupon_user_detail_copy AS c
+    INNER JOIN sample_apply AS a
+        ON a.offer_serial_id = c.serial_id::bigint
+    WHERE c.type = 3
+    GROUP BY
+        c.serial_id
+), order_profit AS (
+    SELECT
+        a.offer_serial_id,
+        COUNT(*) AS due_term_count_30d,
+        SUM(COALESCE(rp.remit_amt_period, 0)) AS due_remit_amount_30d,
+        SUM(COALESCE(rp.repaid_amt_period, 0)) AS due_repaid_amount_30d,
+        SUM(COALESCE(rp.discount_amount_period, 0))
+            AS due_discount_amount_30d,
+        SUM(
+            COALESCE(rp.repaid_amt_period, 0)
+            - COALESCE(rp.remit_amt_period, 0)
+            - COALESCE(rp.discount_amount_period, 0)
+        ) AS profit_after_discount_30d
+    FROM sample_apply AS a
+    INNER JOIN wangchuanliang.repayment_plan_v2_copy AS rp
+        ON rp.serial_id = a.offer_serial_id
+       AND rp.is_remit = 1
+       AND rp.due_date_period &gt;= a.apply_date
+       AND rp.due_date_period &lt;= a.apply_date + 30
+    WHERE a.is_t0_remit = 1
+    GROUP BY
+        a.offer_serial_id
+), loan_history AS (
+    -- 贷款次数按获额通过时点之前已成功放款的订单数计算；
+    -- 当前待转化的 T0 获额订单不计入该次数。
+    SELECT
+        a.user_id,
+        a.offer_serial_id,
+        COUNT(DISTINCT h.serial_id) AS 历史成功放款次数
+    FROM sample_apply AS a
+    LEFT JOIN wangchuanliang.order_loan_f_v2_copy AS h
+        ON h.user_id = a.user_id
+       AND h.is_remit = 1
+       AND h.remit_time &lt; a.vir_time
+    GROUP BY
+        a.user_id,
+        a.offer_serial_id
+)
+SELECT
+    a.user_id,
+    a.offer_serial_id,
+    a.settlement_serial_id,
+    a.vir_date,
+    a.vir_time,
+    a.repaid_time,
+    a.repaid_date,
+    a.apply_time,
+    a.apply_date,
+    a.is_t0_apply,
+    a.is_t0_remit,
+    COALESCE(a.pre_amt, 0) AS pre_amt,
+    COALESCE(a.post_amt, 0) AS post_amt,
+    COALESCE(a.remit_amt, 0) AS remit_amt,
+    COALESCE(a.apply_amt, 0) AS apply_amt,
+    COALESCE(a.max_credit_apply_amt, 0) AS max_credit_apply_amt,
+    CASE
+        WHEN c.serial_id IS NOT NULL THEN '使用降息券'
+        ELSE '未使用降息券'
+    END AS 降息券分组,
+    COALESCE(c.interest_coupon_count, 0) AS 降息券数量,
+    COALESCE(c.interest_coupon_amount, 0) AS 降息券金额,
+    CASE
+        WHEN p.offer_serial_id IS NOT NULL THEN 1
+        ELSE 0
+    END AS 有30天到期盈利观察,
+    COALESCE(p.due_term_count_30d, 0) AS due_term_count_30d,
+    COALESCE(p.due_remit_amount_30d, 0) AS due_remit_amount_30d,
+    COALESCE(p.due_repaid_amount_30d, 0) AS due_repaid_amount_30d,
+    COALESCE(p.due_discount_amount_30d, 0) AS due_discount_amount_30d,
+    COALESCE(p.profit_after_discount_30d, 0) AS profit_after_discount_30d,
+    COALESCE(h.历史成功放款次数, 0) AS 历史成功放款次数,
+    CASE
+        WHEN COALESCE(h.历史成功放款次数, 0) &lt;= 1 THEN '贷款1次'
+        WHEN h.历史成功放款次数 = 2 THEN '贷款2次'
+        WHEN h.历史成功放款次数 BETWEEN 3 AND 5 THEN '贷款3-5次'
+        ELSE '贷款6次及以上'
+    END AS 贷款次数分层
+FROM sample_apply AS a
+LEFT JOIN interest_coupon AS c
+    ON c.serial_id = a.offer_serial_id
+LEFT JOIN order_profit AS p
+    ON p.offer_serial_id = a.offer_serial_id
+LEFT JOIN loan_history AS h
+    ON h.user_id = a.user_id
+   AND h.offer_serial_id = a.offer_serial_id;
+
+-- ============================================================
+</pre></details><details class="sql" ><summary>模块 2：T0 月度主表与辅助指标<button class="fav" type="button">☆</button></summary><pre>-- 模块 2：报告月度主表（提单率、固定 30 天折扣后盈利）
+-- ============================================================
+SELECT
+    TO_CHAR(vir_date, 'YYYY-MM') AS 统计月份,
+    COUNT(*) AS 结清0在贷可提单样本数,
+    SUM(is_t0_apply) AS T0提单数,
+    ROUND(
+        SUM(is_t0_apply)::numeric / NULLIF(COUNT(*), 0) * 100,
+        2
+    ) AS T0提单率_pct,
+    SUM(is_t0_remit) AS T0成功放款订单数,
+    SUM(有30天到期盈利观察) AS 盈利观察订单数,
+    SUM(due_term_count_30d) AS due_term_count_30d,
+    SUM(due_remit_amount_30d) AS due_remit_amount_30d,
+    SUM(due_repaid_amount_30d) AS due_repaid_amount_30d,
+    SUM(due_discount_amount_30d) AS due_discount_amount_30d,
+    SUM(profit_after_discount_30d) AS profit_after_discount_30d,
+    ROUND(
+        SUM(profit_after_discount_30d)
+        / NULLIF(SUM(due_remit_amount_30d), 0) * 100,
+        2
+    ) AS profit_rate_after_discount_30d_pct,
+    ROUND(
+        SUM(profit_after_discount_30d) / NULLIF(COUNT(*), 0),
+        2
+    ) AS 单个可提单样本盈利,
+    ROUND(
+        SUM(profit_after_discount_30d) / NULLIF(SUM(is_t0_remit), 0),
+        2
+    ) AS 单笔成功放款订单盈利,
+    SUM(
+        CASE
+            WHEN is_t0_remit = 1
+             AND remit_amt &gt; 0
+                THEN pre_amt + post_amt
+            ELSE 0
+        END
+    ) AS T0成功放款息费金额,
+    SUM(
+        CASE
+            WHEN is_t0_remit = 1
+             AND remit_amt &gt; 0
+                THEN remit_amt
+            ELSE 0
+        END
+    ) AS T0成功放款金额_息费口径,
+    ROUND(
+        SUM(
+            CASE
+                WHEN is_t0_remit = 1
+                 AND remit_amt &gt; 0
+                    THEN pre_amt + post_amt
+                ELSE 0
+            END
+        ) / NULLIF(
+            SUM(
+                CASE
+                    WHEN is_t0_remit = 1
+                     AND remit_amt &gt; 0
+                        THEN remit_amt
+                    ELSE 0
+                END
+            ),
+            0
+        ) * 100,
+        2
+    ) AS T0加权息费率_pct
+FROM tmp_t0_balance_detail
+WHERE vir_date &lt; DATE '2026-07-01'
+GROUP BY
+    TO_CHAR(vir_date, 'YYYY-MM')
+ORDER BY
+    统计月份;
+
+-- ============================================================
+</pre></details><details class="sql" ><summary>模块 3：T0 提单率与加权息费率<button class="fav" type="button">☆</button></summary><pre>-- 模块 3：2026 年 1—8 月 T0 提单率与加权息费率
+-- 加权息费率 = SUM(post_amt + pre_amt) / SUM(remit_amt)
+-- 仅统计 T0 成功放款订单，且 remit_amt &gt; 0。
+-- ============================================================
+SELECT
+    TO_CHAR(vir_date, 'YYYY-MM') AS 统计月份,
+    COUNT(*) AS 结清0在贷可提单样本数,
+    SUM(is_t0_apply) AS T0提单数,
+    ROUND(
+        SUM(is_t0_apply)::numeric / NULLIF(COUNT(*), 0) * 100,
+        2
+    ) AS T0提单率_pct,
+    SUM(
+        CASE
+            WHEN is_t0_remit = 1
+             AND remit_amt &gt; 0
+                THEN pre_amt + post_amt
+            ELSE 0
+        END
+    ) AS T0成功放款息费金额,
+    SUM(
+        CASE
+            WHEN is_t0_remit = 1
+             AND remit_amt &gt; 0
+                THEN remit_amt
+            ELSE 0
+        END
+    ) AS T0成功放款金额_息费口径,
+    ROUND(
+        SUM(
+            CASE
+                WHEN is_t0_remit = 1
+                 AND remit_amt &gt; 0
+                    THEN pre_amt + post_amt
+                ELSE 0
+            END
+        ) / NULLIF(
+            SUM(
+                CASE
+                    WHEN is_t0_remit = 1
+                     AND remit_amt &gt; 0
+                        THEN remit_amt
+                    ELSE 0
+                END
+            ),
+            0
+        ) * 100,
+        2
+    ) AS T0加权息费率_pct
+FROM tmp_t0_balance_detail
+WHERE vir_date &lt; DATE '2026-09-01'
+GROUP BY
+    TO_CHAR(vir_date, 'YYYY-MM')
+ORDER BY
+    统计月份;
+
+-- 降息券效果评估需要“发券/触达明细表”。coupon_user_detail_copy
+-- 仅记录提单时实际使用券，不能用作 T0 提单率的发券覆盖分母。
+
+-- ============================================================
+</pre></details><details class="sql" ><summary>模块 4：盈利汇总辅助查询<button class="fav" type="button">☆</button></summary><pre>-- 模块 4：2026 年 1—6 月盈利汇总，用于盈利模块的总计复现。
+-- ============================================================
+SELECT
+    COUNT(*) AS 结清0在贷可提单样本数,
+    SUM(is_t0_apply) AS T0提单数,
+    ROUND(
+        SUM(is_t0_apply)::numeric / NULLIF(COUNT(*), 0) * 100,
+        2
+    ) AS T0提单率_pct,
+    SUM(is_t0_remit) AS T0成功放款订单数,
+    SUM(due_remit_amount_30d) AS due_remit_amount_30d,
+    SUM(due_repaid_amount_30d) AS due_repaid_amount_30d,
+    SUM(due_discount_amount_30d) AS due_discount_amount_30d,
+    SUM(profit_after_discount_30d) AS profit_after_discount_30d,
+    ROUND(
+        SUM(profit_after_discount_30d)
+        / NULLIF(SUM(due_remit_amount_30d), 0) * 100,
+        2
+    ) AS profit_rate_after_discount_30d_pct,
+    ROUND(
+        SUM(profit_after_discount_30d) / NULLIF(COUNT(*), 0),
+        2
+    ) AS 单个可提单样本盈利
+FROM tmp_t0_balance_detail
+WHERE vir_date &lt; DATE '2026-07-01';
+
+-- ============================================================
+</pre></details><details class="sql" ><summary>模块 5：历史贷款次数分层<button class="fav" type="button">☆</button></summary><pre>-- 模块 5：2026 年 1—8 月，按历史成功放款次数分层的息费与 T0 提单率。
+-- 分层次数为获额通过时点之前的成功放款笔数：1 次、2 次、3—5 次、6 次及以上。
+-- ============================================================
+SELECT
+    TO_CHAR(vir_date, 'YYYY-MM') AS 统计月份,
+    贷款次数分层,
+    COUNT(*) AS 结清0在贷可提单样本数,
+    SUM(is_t0_apply) AS T0提单数,
+    ROUND(
+        SUM(is_t0_apply)::numeric / NULLIF(COUNT(*), 0) * 100,
+        2
+    ) AS T0提单率_pct,
+    SUM(
+        CASE
+            WHEN is_t0_remit = 1 AND remit_amt &gt; 0
+                THEN pre_amt + post_amt
+            ELSE 0
+        END
+    ) AS T0成功放款息费金额,
+    SUM(
+        CASE
+            WHEN is_t0_remit = 1 AND remit_amt &gt; 0
+                THEN remit_amt
+            ELSE 0
+        END
+    ) AS T0成功放款金额_息费口径,
+    ROUND(
+        SUM(CASE WHEN is_t0_remit = 1 AND remit_amt &gt; 0 THEN pre_amt + post_amt ELSE 0 END)
+        / NULLIF(SUM(CASE WHEN is_t0_remit = 1 AND remit_amt &gt; 0 THEN remit_amt ELSE 0 END), 0)
+        * 100,
+        2
+    ) AS T0加权息费率_pct
+FROM tmp_t0_balance_detail
+WHERE vir_date &lt; DATE '2026-09-01'
+GROUP BY
+    TO_CHAR(vir_date, 'YYYY-MM'),
+    贷款次数分层
+ORDER BY
+    统计月份,
+    CASE 贷款次数分层
+        WHEN '贷款1次' THEN 1
+        WHEN '贷款2次' THEN 2
+        WHEN '贷款3-5次' THEN 3
+        ELSE 4
+    END;
+
+-- ============================================================
+</pre></details><details class="sql" ><summary>模块 6：整笔到期质量与流水盈利<button class="fav" type="button">☆</button></summary><pre>-- 模块 6：整笔到期质量与流水盈利底表
+-- ============================================================
+DROP TABLE IF EXISTS tmp_t0_mature_quality_monthly;
+
+CREATE TEMP TABLE tmp_t0_mature_quality_monthly AS
+
+WITH raw_offer AS (
+    SELECT DISTINCT ON (
+        v.user_id,
+        v.serial_id
+    )
+        v.user_id,
+        v.serial_id,
+        v.vir_date::date AS vir_date,
+        TO_TIMESTAMP(v.vir_unix) AS vir_time,
+        v.max_credit_apply_amt,
+        r.recycle_type
+    FROM wangchuanliang.order_vir_f_copy AS v
+    INNER JOIN wangchuanliang.side_recycle_type_copy AS r
+        ON r.serial_id = v.serial_id
+    WHERE v.is_pass1 = 1
+      AND v.loan_type_code = 2
+      AND v.vir_date &gt;= DATE '2025-12-31'
+      AND v.vir_date &lt; DATE '2026-07-31'
+    ORDER BY
+        v.user_id,
+        v.serial_id,
+        v.vir_unix DESC
+), lagged_offer AS (
+    SELECT
+        r.*,
+        LAG(r.vir_time) OVER (
+            PARTITION BY r.user_id
+            ORDER BY r.vir_time, r.serial_id
+        ) AS prev_vir_time
+    FROM raw_offer AS r
+), batched_offer AS (
+    SELECT
+        l.*,
+        SUM(
+            CASE
+                WHEN l.prev_vir_time IS NULL
+                  OR l.vir_time - l.prev_vir_time &gt; INTERVAL '20 seconds'
+                    THEN 1
+                ELSE 0
+            END
+        ) OVER (
+            PARTITION BY l.user_id
+            ORDER BY l.vir_time, l.serial_id
+            ROWS UNBOUNDED PRECEDING
+        ) AS batch_id
+    FROM lagged_offer AS l
+), dedup_offer AS (
+    SELECT
+        user_id,
+        serial_id,
+        vir_date,
+        vir_time,
+        max_credit_apply_amt,
+        recycle_type
+    FROM (
+        SELECT
+            b.*,
+            ROW_NUMBER() OVER (
+                PARTITION BY b.user_id, b.batch_id
+                ORDER BY b.serial_id DESC
+            ) AS batch_rn
+        FROM batched_offer AS b
+    ) AS x
+    WHERE batch_rn = 1
+      AND recycle_type = 3
+      AND vir_date &gt;= DATE '2026-01-01'
+      AND vir_date &lt; DATE '2026-07-31'
+), candidate_users AS (
+    SELECT DISTINCT
+        user_id
+    FROM dedup_offer
+), all_orders AS (
+    SELECT
+        o.user_id,
+        o.serial_id,
+        o.apply_time,
+        o.apply_date,
+        o.repaid_time,
+        o.repaid_date::date AS repaid_date,
+        o.loan_status_code,
+        o.is_remit,
+        o.is_repaid
+    FROM wangchuanliang.order_loan_f_v2_copy AS o
+    INNER JOIN candidate_users AS u
+        ON u.user_id = o.user_id
+), clean_settlement AS (
+    SELECT
+        o.user_id,
+        o.serial_id,
+        o.repaid_time,
+        o.repaid_date
+    FROM all_orders AS o
+    WHERE o.is_remit = 1
+      AND (
+            o.is_repaid = 1
+         OR o.loan_status_code = 7
+      )
+      AND o.repaid_time &gt; TIMESTAMP '2000-01-01 00:00:00'
+      AND NOT EXISTS (
+          SELECT
+              1
+          FROM all_orders AS x
+          WHERE x.user_id = o.user_id
+            AND x.serial_id &lt;&gt; o.serial_id
+            AND x.apply_time &lt; o.repaid_time
+            AND (
+                  x.loan_status_code IN (5, 8)
+               OR (
+                      x.loan_status_code = 7
+                  AND x.repaid_time &gt; o.repaid_time
+                  )
+            )
+      )
+), offer_settlement_pair AS (
+    SELECT
+        e.user_id,
+        e.serial_id AS offer_serial_id,
+        e.vir_date,
+        e.vir_time,
+        e.max_credit_apply_amt,
+        s.serial_id AS settlement_serial_id,
+        s.repaid_time,
+        ROW_NUMBER() OVER (
+            PARTITION BY
+                e.user_id,
+                e.serial_id,
+                e.vir_time
+            ORDER BY
+                s.repaid_time DESC,
+                s.serial_id DESC
+        ) AS settlement_rn
+    FROM dedup_offer AS e
+    INNER JOIN clean_settlement AS s
+        ON s.user_id = e.user_id
+       AND s.repaid_date = e.vir_date
+       AND e.vir_time &gt;= s.repaid_time
+), t0_sample AS (
+    SELECT
+        user_id,
+        offer_serial_id,
+        vir_date,
+        vir_time,
+        max_credit_apply_amt,
+        settlement_serial_id,
+        repaid_time
+    FROM (
+        SELECT
+            p.*,
+            ROW_NUMBER() OVER (
+                PARTITION BY p.user_id, p.vir_date
+                ORDER BY p.vir_time, p.offer_serial_id DESC
+            ) AS day_rn
+        FROM offer_settlement_pair AS p
+        WHERE p.settlement_rn = 1
+    ) AS x
+    WHERE day_rn = 1
+), sample_apply AS (
+    SELECT
+        s.*,
+        o.apply_time,
+        o.apply_date,
+        o.is_remit,
+        o.pre_amt,
+        o.post_amt,
+        o.remit_amt,
+        o.repaid_date,
+        o.remit_date,
+        o.due_date,
+        o.due_time,
+        o.apply_amt,
+        CASE
+            WHEN o.apply_time IS NOT NULL THEN 1
+            ELSE 0
+        END AS is_t0_apply,
+        CASE
+            WHEN o.is_remit = 1 THEN 1
+            ELSE 0
+        END AS is_t0_remit
+    FROM t0_sample AS s
+    LEFT JOIN wangchuanliang.order_loan_f_v2_copy AS o
+       ON o.user_id = s.user_id
+       AND o.serial_id = s.offer_serial_id
+       AND o.apply_date = s.vir_date
+), coupon AS (
+    SELECT
+        c.serial_id::bigint AS serial_id,
+        COUNT(DISTINCT c.coupon_no) AS interest_coupon_count,
+        SUM(COALESCE(c.coupon_amount, 0)) AS interest_coupon_amount
+    FROM wangchuanliang.coupon_user_detail_copy AS c
+    INNER JOIN sample_apply AS a
+        ON a.offer_serial_id = c.serial_id::bigint
+    WHERE c.type = 3
+    GROUP BY
+        c.serial_id
+), order_profit AS (
+    SELECT
+        a.offer_serial_id,
+        COUNT(*) AS due_term_count_30d,
+        SUM(COALESCE(p.remit_amt_period, 0)) AS due_remit_amount_30d,
+        SUM(COALESCE(p.repaid_amt_period, 0)) AS due_repaid_amount_30d,
+        SUM(COALESCE(p.discount_amount_period, 0)) AS due_discount_amount_30d,
+        SUM(
+            COALESCE(p.repaid_amt_period, 0)
+            - COALESCE(p.remit_amt_period, 0)
+            - COALESCE(p.discount_amount_period, 0)
+        ) AS profit_after_discount_30d
+    FROM sample_apply AS a
+    INNER JOIN wangchuanliang.repayment_plan_v2_copy AS p
+        ON p.serial_id = a.offer_serial_id
+       AND p.is_remit = 1
+       AND p.due_date_period &gt;= a.apply_date
+       AND p.due_date_period &lt;= a.apply_date + 30
+    WHERE a.is_t0_remit = 1
+    GROUP BY
+        a.offer_serial_id
+), loan_history AS (
+    -- 以获额通过时点为截点，统计该用户此前已成功放款的订单次数。
+    -- 当前获额订单尚未发生 T0 提单/放款，因此不计入历史次数。
+    SELECT
+        a.user_id,
+        a.offer_serial_id,
+        COUNT(DISTINCT h.serial_id) AS prior_successful_loan_count
+    FROM sample_apply AS a
+    LEFT JOIN wangchuanliang.order_loan_f_v2_copy AS h
+        ON h.user_id = a.user_id
+       AND h.is_remit = 1
+       AND h.remit_time &lt; a.vir_time
+    GROUP BY
+        a.user_id,
+        a.offer_serial_id
+), detail AS (
+    SELECT
+        a.*,
+        CASE
+            WHEN c.serial_id IS NOT NULL THEN '使用降息券'
+            ELSE '未使用降息券'
+        END AS coupon_group,
+        COALESCE(c.interest_coupon_count, 0) AS interest_coupon_count,
+        COALESCE(c.interest_coupon_amount, 0) AS interest_coupon_amount,
+        p.offer_serial_id AS profit_observed_serial_id,
+        COALESCE(p.due_term_count_30d, 0) AS due_term_count_30d,
+        COALESCE(p.due_remit_amount_30d, 0) AS due_remit_amount_30d,
+        COALESCE(p.due_repaid_amount_30d, 0) AS due_repaid_amount_30d,
+        COALESCE(p.due_discount_amount_30d, 0) AS due_discount_amount_30d,
+        COALESCE(p.profit_after_discount_30d, 0) AS profit_after_discount_30d,
+        COALESCE(h.prior_successful_loan_count, 0) AS prior_successful_loan_count,
+        CASE
+            WHEN COALESCE(h.prior_successful_loan_count, 0) &lt;= 1 THEN '贷款1次'
+            WHEN h.prior_successful_loan_count = 2 THEN '贷款2次'
+            WHEN h.prior_successful_loan_count BETWEEN 3 AND 5 THEN '贷款3-5次'
+            ELSE '贷款6次及以上'
+        END AS loan_times_group
+    FROM sample_apply AS a
+    LEFT JOIN coupon AS c
+        ON c.serial_id = a.offer_serial_id
+    LEFT JOIN order_profit AS p
+        ON p.offer_serial_id = a.offer_serial_id
+    LEFT JOIN loan_history AS h
+        ON h.user_id = a.user_id
+       AND h.offer_serial_id = a.offer_serial_id
+)
+, t0_success_orders AS (
+    SELECT
+        offer_serial_id,
+        vir_date,
+        apply_date,
+        remit_date,
+        due_date,
+        due_time,
+        remit_amt,
+        repaid_date,
+        pre_amt,
+        post_amt
+    FROM detail
+    WHERE is_t0_remit = 1
+      AND apply_date &gt;= DATE '2026-01-01'
+      AND apply_date &lt; DATE '2026-07-31'
+), mature_orders AS (
+    SELECT
+        t.*
+    FROM t0_success_orders AS t
+    WHERE t.due_date &lt;= CURRENT_DATE
+), order_paid_by_due AS (
+    SELECT
+        m.offer_serial_id,
+        SUM(COALESCE(pay.amount, 0)) AS 到期前实际还款金额
+    FROM mature_orders AS m
+    LEFT JOIN wangchuanliang.repayment_plan_record_copy AS pay
+        ON pay.serial_id = m.offer_serial_id
+       AND pay.payin_date &gt;= m.apply_date
+       AND pay.payin_date &lt;= m.due_date
+    GROUP BY
+        m.offer_serial_id
+), mature_terms AS (
+    SELECT
+        m.offer_serial_id,
+        p.current_term,
+        p.remit_amt_period,
+        p.repaid_amt_period,
+        p.discount_amount_period,
+        p.repaid_date_period,
+        p.due_date_period,
+        m.remit_date
+    FROM mature_orders AS m
+    INNER JOIN wangchuanliang.repayment_plan_v2_copy AS p
+        ON p.serial_id = m.offer_serial_id
+       AND p.is_remit = 1
+       AND p.due_date_period &lt;= CURRENT_DATE
+), mature_order_metrics AS (
+    SELECT
+        m.offer_serial_id,
+        m.vir_date,
+        m.remit_amt,
+        COALESCE(op.到期前实际还款金额, 0) AS 到期前实际还款金额,
+        CASE
+            WHEN m.repaid_date IS NULL
+              OR m.repaid_date &lt; DATE '2000-01-01'
+              OR m.repaid_date &gt; m.due_date
+                THEN 1
+            ELSE 0
+        END AS 整笔订单到期逾期标记,
+        SUM(COALESCE(t.remit_amt_period, 0)) AS 到期分期放款金额,
+        SUM(
+            CASE
+                WHEN t.repaid_date_period IS NULL
+                  OR t.repaid_date_period &lt; DATE '2000-01-01'
+                  OR t.repaid_date_period &gt; t.due_date_period
+                    THEN COALESCE(t.remit_amt_period, 0)
+                ELSE 0
+            END
+        ) AS 到期逾期分期放款金额
+    FROM mature_orders AS m
+    LEFT JOIN order_paid_by_due AS op
+        ON op.offer_serial_id = m.offer_serial_id
+    LEFT JOIN mature_terms AS t
+        ON t.offer_serial_id = m.offer_serial_id
+    GROUP BY
+        m.offer_serial_id,
+        m.vir_date,
+        m.remit_amt,
+        m.repaid_date,
+        m.due_date,
+        op.到期前实际还款金额
+)
+SELECT
+    TO_CHAR(d.vir_date, 'YYYY-MM') AS stat_month,
+    COUNT(*) AS t0_eligible_sample_count,
+    SUM(d.is_t0_apply) AS t0_apply_count,
+    SUM(
+        CASE
+            WHEN d.is_t0_remit = 1
+             AND d.apply_date &gt;= DATE '2026-01-01'
+             AND d.apply_date &lt; DATE '2026-07-31'
+                THEN 1
+            ELSE 0
+        END
+    ) AS t0_remit_order_count,
+    SUM(
+        CASE
+            WHEN d.is_t0_remit = 1
+             AND d.apply_date &gt;= DATE '2026-01-01'
+             AND d.apply_date &lt; DATE '2026-07-31'
+             AND COALESCE(d.remit_amt, 0) &gt; 0
+                THEN COALESCE(d.pre_amt, 0) + COALESCE(d.post_amt, 0)
+            ELSE 0
+        END
+    ) AS fee_amount,
+    SUM(
+        CASE
+            WHEN d.is_t0_remit = 1
+             AND d.remit_date &gt;= DATE '2026-01-01'
+             AND d.remit_date &lt; DATE '2026-08-01'
+             AND COALESCE(d.remit_amt, 0) &gt; 0
+                THEN d.remit_amt
+            ELSE 0
+        END
+    ) AS fee_remit_amount,
+    COUNT(m.offer_serial_id) AS mature_order_count,
+    SUM(COALESCE(m.整笔订单到期逾期标记, 0)) AS overdue_order_count,
+    SUM(COALESCE(m.到期分期放款金额, 0)) AS due_term_remit_amount,
+    SUM(COALESCE(m.到期逾期分期放款金额, 0)) AS overdue_term_remit_amount,
+    SUM(COALESCE(m.remit_amt, 0)) AS mature_order_remit_amount,
+    SUM(COALESCE(m.到期前实际还款金额, 0)) AS mature_order_paid_amount,
+    SUM(
+        COALESCE(m.到期前实际还款金额, 0)
+        - COALESCE(m.remit_amt, 0)
+    ) AS mature_order_profit_amount
+FROM detail AS d
+LEFT JOIN mature_order_metrics AS m
+    ON m.offer_serial_id = d.offer_serial_id
+GROUP BY
+    TO_CHAR(d.vir_date, 'YYYY-MM')
+ORDER BY
+    stat_month;
+
+
+-- ============================================================
+</pre></details><details class="sql" ><summary>模块 7：到期质量与盈利输出<button class="fav" type="button">☆</button></summary><pre>-- 模块 7：报告“到期质量与流水盈利”月度指标及相关性
+-- 先执行模块 6；本模块直接输出报告表格、图表和文字结论所用指标。
+-- 整笔订单逾期：repaid_date 为空/早于 2000-01-01，或晚于 due_date。
+-- 分期金额逾期：repaid_date_period 为空/早于 2000-01-01，或晚于 due_date_period。
+-- 两项均以到期时是否已结清判定，不以还款金额或订单当前状态判定。
+-- ============================================================
+SELECT
+    stat_month AS 统计月份,
+    t0_eligible_sample_count AS T0可提单样本数,
+    t0_apply_count AS T0提单数,
+    ROUND(t0_apply_count::numeric / NULLIF(t0_eligible_sample_count, 0) * 100, 2)
+        AS T0当天提单率_pct,
+    t0_remit_order_count AS T0成功放款订单数,
+    fee_amount AS 息费金额分子,
+    fee_remit_amount AS 息费放款金额分母,
+    ROUND(fee_amount::numeric / NULLIF(fee_remit_amount, 0) * 100, 2)
+        AS 加权息费率_pct,
+    mature_order_count AS 整笔到期订单数,
+    overdue_order_count AS 整笔到期逾期订单数,
+    ROUND(overdue_order_count::numeric / NULLIF(mature_order_count, 0) * 100, 2)
+        AS 整笔订单逾期率_pct,
+    due_term_remit_amount AS 到期分期放款金额分母,
+    overdue_term_remit_amount AS 到期逾期分期放款金额分子,
+    ROUND(overdue_term_remit_amount::numeric / NULLIF(due_term_remit_amount, 0) * 100, 2)
+        AS 分期金额逾期率_pct,
+    mature_order_remit_amount AS 整笔到期放款金额,
+    mature_order_paid_amount AS 整笔到期前实际还款流水金额,
+    mature_order_profit_amount AS 到期盈利额,
+    ROUND(mature_order_profit_amount::numeric / NULLIF(mature_order_remit_amount, 0) * 100, 2)
+        AS 到期盈利率_pct,
+    ROUND(mature_order_profit_amount::numeric / NULLIF(t0_eligible_sample_count, 0), 2)
+        AS 单个可提单样本到期盈利
+FROM tmp_t0_mature_quality_monthly
+ORDER BY stat_month;
+
+-- 相关性复现：与报告“数据解读”和“是否应继续提升 T0”中的相关系数一致。
+WITH monthly_rate AS (
+    SELECT
+        t0_apply_count::numeric / NULLIF(t0_eligible_sample_count, 0) AS t0_apply_rate,
+        fee_amount::numeric / NULLIF(fee_remit_amount, 0) AS weighted_fee_rate,
+        overdue_order_count::numeric / NULLIF(mature_order_count, 0) AS order_overdue_rate,
+        overdue_term_remit_amount::numeric / NULLIF(due_term_remit_amount, 0) AS term_amount_overdue_rate,
+        mature_order_profit_amount::numeric / NULLIF(mature_order_remit_amount, 0) AS profit_rate
+    FROM tmp_t0_mature_quality_monthly
+)
+SELECT
+    ROUND(CORR(t0_apply_rate, profit_rate)::numeric, 4)
+        AS T0提单率_到期盈利率相关系数,
+    ROUND(CORR(t0_apply_rate, order_overdue_rate)::numeric, 4)
+        AS T0提单率_整笔订单逾期率相关系数,
+    ROUND(CORR(t0_apply_rate, term_amount_overdue_rate)::numeric, 4)
+        AS T0提单率_分期金额逾期率相关系数,
+    ROUND(CORR(t0_apply_rate, weighted_fee_rate)::numeric, 4)
+        AS T0提单率_加权息费率相关系数,
+    ROUND(CORR(weighted_fee_rate, profit_rate)::numeric, 4)
+        AS 加权息费率_到期盈利率相关系数,
+    ROUND(CORR(weighted_fee_rate, order_overdue_rate)::numeric, 4)
+        AS 加权息费率_整笔订单逾期率相关系数
+FROM monthly_rate;
+
+-- ============================================================
+</pre></details><details class="sql" ><summary>模块 8：分层相关性<button class="fav" type="button">☆</button></summary><pre>-- 模块 8：按历史成功放款次数分层的相关系数
+-- 先执行模块 1；用于复现报告“各客群均呈息费升、T0 降”的相关性结论。
+-- ============================================================
+WITH segment_monthly AS (
+    SELECT
+        TO_CHAR(vir_date, 'YYYY-MM') AS stat_month,
+        贷款次数分层,
+        SUM(is_t0_apply)::numeric / NULLIF(COUNT(*), 0) AS t0_apply_rate,
+        SUM(CASE WHEN is_t0_remit = 1 AND remit_amt &gt; 0 THEN pre_amt + post_amt ELSE 0 END)::numeric
+            / NULLIF(SUM(CASE WHEN is_t0_remit = 1 AND remit_amt &gt; 0 THEN remit_amt ELSE 0 END), 0)
+            AS weighted_fee_rate
+    FROM tmp_t0_balance_detail
+    WHERE vir_date &lt; DATE '2026-09-01'
+    GROUP BY
+        TO_CHAR(vir_date, 'YYYY-MM'),
+        贷款次数分层
+)
+SELECT
+    贷款次数分层,
+    ROUND(CORR(weighted_fee_rate, t0_apply_rate)::numeric, 4)
+        AS 加权息费率_T0当天提单率相关系数
+FROM segment_monthly
+GROUP BY 贷款次数分层
+ORDER BY
+    CASE 贷款次数分层
+        WHEN '贷款1次' THEN 1
+        WHEN '贷款2次' THEN 2
+        WHEN '贷款3-5次' THEN 3
+        ELSE 4
+    END;
+
+-- ============================================================
+</pre></details><details class="sql" ><summary>模块 9：额度使用率<button class="fav" type="button">☆</button></summary><pre>-- 模块 9：按历史成功放款次数的额度使用率、T0 提单率与息费
+-- 先执行模块 1。额度使用率 = Σ(apply_amt) / Σ(max_credit_apply_amt)。
+-- 仅提单金额、获额金额均 &gt;= 200 的 T0 提单订单参与额度使用率。
+-- ============================================================
+WITH segment_monthly AS (
+    SELECT
+        TO_CHAR(vir_date, 'YYYY-MM') AS 统计月份,
+        贷款次数分层,
+        COUNT(*) AS T0可提单样本数,
+        SUM(is_t0_apply) AS T0提单数,
+        SUM(is_t0_apply)::numeric / NULLIF(COUNT(*), 0) AS T0当天提单率,
+        SUM(CASE WHEN is_t0_remit = 1 AND remit_amt &gt; 0 THEN pre_amt + post_amt ELSE 0 END) AS 息费金额分子,
+        SUM(CASE WHEN is_t0_remit = 1 AND remit_amt &gt; 0 THEN remit_amt ELSE 0 END) AS 息费放款金额分母,
+        SUM(CASE WHEN is_t0_apply = 1 AND apply_amt &gt;= 200 AND max_credit_apply_amt &gt;= 200 THEN 1 ELSE 0 END) AS 额度使用率有效提单订单数,
+        SUM(CASE WHEN is_t0_apply = 1 AND apply_amt &gt;= 200 AND max_credit_apply_amt &gt;= 200 THEN apply_amt ELSE 0 END) AS 额度使用率提单金额分子,
+        SUM(CASE WHEN is_t0_apply = 1 AND apply_amt &gt;= 200 AND max_credit_apply_amt &gt;= 200 THEN max_credit_apply_amt ELSE 0 END) AS 额度使用率获额金额分母
+    FROM tmp_t0_balance_detail
+    WHERE vir_date &lt; DATE '2026-09-01'
+    GROUP BY
+        TO_CHAR(vir_date, 'YYYY-MM'),
+        贷款次数分层
+), segment_rate AS (
+    SELECT
+        *,
+        额度使用率提单金额分子::numeric / NULLIF(额度使用率获额金额分母, 0) AS 加权额度使用率,
+        息费金额分子::numeric / NULLIF(息费放款金额分母, 0) AS 加权息费率
+    FROM segment_monthly
+)
+SELECT
+    统计月份,
+    贷款次数分层,
+    T0可提单样本数,
+    T0提单数,
+    ROUND(T0当天提单率 * 100, 2) AS T0当天提单率_pct,
+    额度使用率有效提单订单数,
+    额度使用率提单金额分子,
+    额度使用率获额金额分母,
+    ROUND(加权额度使用率 * 100, 2) AS 加权额度使用率_pct,
+    息费金额分子,
+    息费放款金额分母,
+    ROUND(加权息费率 * 100, 2) AS 加权息费率_pct
+FROM segment_rate
+ORDER BY
+    统计月份,
+    CASE 贷款次数分层
+        WHEN '贷款1次' THEN 1
+        WHEN '贷款2次' THEN 2
+        WHEN '贷款3-5次' THEN 3
+        ELSE 4
+    END;
+
+-- 客群汇总、额度使用率与 T0/息费的月度相关性：复现报告汇总表与文字结论。
+WITH segment_monthly AS (
+    SELECT
+        TO_CHAR(vir_date, 'YYYY-MM') AS 统计月份,
+        贷款次数分层,
+        SUM(is_t0_apply)::numeric / NULLIF(COUNT(*), 0) AS T0当天提单率,
+        SUM(CASE WHEN is_t0_remit = 1 AND remit_amt &gt; 0 THEN pre_amt + post_amt ELSE 0 END)::numeric / NULLIF(SUM(CASE WHEN is_t0_remit = 1 AND remit_amt &gt; 0 THEN remit_amt ELSE 0 END), 0) AS 加权息费率,
+        SUM(CASE WHEN is_t0_apply = 1 AND apply_amt &gt;= 200 AND max_credit_apply_amt &gt;= 200 THEN apply_amt ELSE 0 END)::numeric / NULLIF(SUM(CASE WHEN is_t0_apply = 1 AND apply_amt &gt;= 200 AND max_credit_apply_amt &gt;= 200 THEN max_credit_apply_amt ELSE 0 END), 0) AS 加权额度使用率,
+        SUM(CASE WHEN is_t0_apply = 1 AND apply_amt &gt;= 200 AND max_credit_apply_amt &gt;= 200 THEN 1 ELSE 0 END) AS 额度使用率有效提单订单数,
+        SUM(CASE WHEN is_t0_apply = 1 AND apply_amt &gt;= 200 AND max_credit_apply_amt &gt;= 200 THEN apply_amt ELSE 0 END) AS 额度使用率提单金额分子,
+        SUM(CASE WHEN is_t0_apply = 1 AND apply_amt &gt;= 200 AND max_credit_apply_amt &gt;= 200 THEN max_credit_apply_amt ELSE 0 END) AS 额度使用率获额金额分母
+    FROM tmp_t0_balance_detail
+    WHERE vir_date &lt; DATE '2026-09-01'
+    GROUP BY TO_CHAR(vir_date, 'YYYY-MM'), 贷款次数分层
+)
+SELECT
+    贷款次数分层,
+    SUM(额度使用率有效提单订单数) AS 额度使用率有效提单订单数,
+    SUM(额度使用率提单金额分子) AS 提单金额分子,
+    SUM(额度使用率获额金额分母) AS 获额金额分母,
+    ROUND(SUM(额度使用率提单金额分子)::numeric / NULLIF(SUM(额度使用率获额金额分母), 0) * 100, 2) AS 汇总额度使用率_pct,
+    ROUND(CORR(加权额度使用率, T0当天提单率)::numeric, 4) AS 额度使用率_T0提单率相关系数,
+    ROUND(CORR(加权额度使用率, 加权息费率)::numeric, 4) AS 额度使用率_加权息费率相关系数
+FROM segment_monthly
+GROUP BY 贷款次数分层
+ORDER BY CASE 贷款次数分层
+    WHEN '贷款1次' THEN 1
+    WHEN '贷款2次' THEN 2
+    WHEN '贷款3-5次' THEN 3
+    ELSE 4
+END;
+</pre></details><p class="foot">数据源：wangchuanliang.order_vir_f_copy、side_recycle_type_copy、order_loan_f_v2_copy、repayment_plan_v2_copy、repayment_plan_record_copy、coupon_user_detail_copy。</p></main><script>document.querySelectorAll(".fav").forEach(function(b){b.onclick=function(e){e.preventDefault();b.textContent=b.textContent==="☆"?"★":"☆"}});</script></html>
