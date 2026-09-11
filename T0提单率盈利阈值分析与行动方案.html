@@ -1,0 +1,55 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>T0 提单率盈利阈值：验证与行动方案</title>
+  <style>
+    :root{--bg:#071b2f;--card:#0c2944;--line:#2a5c7e;--text:#eff8ff;--muted:#b0c9db;--blue:#48c7ea;--green:#68d6ad;--orange:#ffc56c;--red:#f58bae}*{box-sizing:border-box}body{margin:0;background:linear-gradient(135deg,#06192b,#0c2c47);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei",sans-serif;line-height:1.75}main{max-width:980px;margin:auto;padding:38px 30px 70px}.hero{text-align:center;border-bottom:1px solid var(--line);padding:30px 16px}.tag{color:var(--blue);font-weight:700;letter-spacing:2px}.hero h1{font-size:30px;margin:8px}.muted{color:var(--muted)}h2{font-size:22px;margin:40px 0 12px}.box{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:17px;margin:12px 0}.callout{background:#092a45;border-left:4px solid var(--blue);border-radius:9px;padding:14px 17px;margin:14px 0}.warn{border-color:var(--orange)}.risk{border-color:var(--red)}.good{border-color:var(--green)}table{width:100%;border-collapse:collapse;font-size:14px}th,td{border:1px solid var(--line);padding:10px;text-align:left;vertical-align:top}th{background:#103a5b}.formula{display:block;white-space:pre-wrap;background:#041323;border:1px solid #275370;border-radius:9px;padding:14px;color:#d8edf8;font:13px/1.7 ui-monospace,SFMono-Regular,Menlo,monospace}.steps{padding-left:23px}.steps li{margin:12px 0}.foot{text-align:center;color:var(--muted);font-size:13px;margin-top:38px}@media(max-width:700px){main{padding:20px}.hero h1{font-size:25px}}
+  </style>
+</head>
+<body><main>
+  <header class="hero"><div class="tag">T0 即时转化 · 经营验证方案</div><h1>T0 提单率盈利阈值：验证与行动方案</h1><p class="muted">先验证，再调价；目标是长期净利润，而不是单独追求提单率。</p></header>
+
+  <h2>一、当前已知事实</h2>
+  <div class="box">
+    <ul>
+      <li>T0 当日提单率下降，息费上升，到期逾期率也出现上升。</li>
+      <li>单笔到期盈利率同步上升；高息费收入可能暂时覆盖了部分风险损失。</li>
+      <li>但固定 30 天口径下，单个可提单机会盈利在 6 月下降，息费上升并未稳定提升机会产出。</li>
+    </ul>
+  </div>
+  <div class="callout risk"><b>明确边界：</b>以上只能说明几个指标同时变化，不能证明“高息费导致优质用户流失”，也不能证明“降低息费一定更赚钱”。当前大部分解释仍是猜想，必须验证。</div>
+
+  <h2>二、只分两类用户</h2>
+  <div class="box"><b>资质较好：</b>用 T0 前已发生的信息划分，例如历史按时结清率高、历史逾期低、风险评分较好、成功放款次数较多。<br><b>资质一般：</b>其余 T0 用户。具体阈值在取数前固定，不能用本次订单的结果倒推分类。</div>
+  <div class="callout warn"><b>要验证的猜想：</b>息费提高后，资质较好的用户更少在当天提单；提单和放款更多集中在资质一般用户，因此风险上升。这个判断目前只是猜想。</div>
+
+  <h2>三、月度只看四个指标</h2>
+  <table>
+    <thead><tr><th>指标</th><th>计算方式</th><th>用来回答什么</th></tr></thead>
+    <tbody>
+      <tr><td>优质用户占比</td><td>优质 T0 样本数 ÷ 全部 T0 样本数</td><td>可提单人群的质量结构是否变差。</td></tr>
+      <tr><td>优质用户 T0 提单率</td><td>优质用户当天提单数 ÷ 优质 T0 样本数</td><td>优质用户是否正在流失。</td></tr>
+      <tr><td>一般用户 T0 提单率</td><td>一般用户当天提单数 ÷ 一般 T0 样本数</td><td>整体下降是否也发生在一般用户。</td></tr>
+      <tr><td>提单用户中的优质占比</td><td>优质当天提单数 ÷ 全部当天提单数</td><td>最终提单/放款的人群是否向一般资质迁移。</td></tr>
+    </tbody>
+  </table>
+
+  <h2>四、判读逻辑</h2>
+  <ol class="steps">
+    <li><b>若优质用户提单率下降更快，且提单用户中的优质占比下降：</b>初步支持“优质用户流失、风险结构变差”的猜想。</li>
+    <li><b>若两类提单率均同步下降、构成基本不变：</b>问题更可能来自整体产品吸引力、竞品或链路，不应直接归因于资质结构。</li>
+    <li><b>若优质用户提单率稳定、一般用户占比上升：</b>风险上升主要是样本结构变化，应先核查准入和获额人群变化。</li>
+  </ol>
+
+  <h2>五、最小验证与行动</h2>
+  <div class="box"><b>验证：</b>按月画两类用户的提单率和占比；再在相同渠道、历史贷款次数、额度和期限下比较，避免渠道和产品结构变化造成误判。</div>
+  <div class="box"><b>试验：</b>仅对“资质较好且获额后 1 小时未提单”的用户，随机保留一部分原价、另一部分给予小幅降息或券。比较增量提单、到期逾期和到期利润。</div>
+  <div class="callout good"><b>决策：</b>只有优质组的新增到期利润能够覆盖让利和新增坏账时，才扩大优惠；若优质组没有明显增量，或风险恶化，则不以降息拉提单率。</div>
+
+  <h2>六、结论</h2>
+  <div class="callout good"><b>先确认 T0 提单率下降发生在哪类用户，再决定是否拉升；</b>最有价值的验证对象是资质较好、但获额后一小时仍未提单的用户。</div>
+  <p class="foot">T0：结清 0 在贷用户同日获额通过形成的即时可提单机会。本文为验证与决策框架，不将现有相关性作为因果结论。生成时间：2026 年 9 月 11 日。</p>
+</main></body></html>
+
