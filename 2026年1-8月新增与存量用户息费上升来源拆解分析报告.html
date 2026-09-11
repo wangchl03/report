@@ -1,0 +1,241 @@
+<!doctype html><html lang="zh-CN"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>2026年息费上升来源拆解分析报告</title><script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.8/dist/chart.umd.min.js"></script><style>
+:root{--bg:#071b2f;--p:#0c2944;--l:#2a5c7e;--t:#eff8ff;--m:#aac5da;--c:#43c7e7;--g:#64dcae;--a:#ffc26b;--r:#f68ab0}*{box-sizing:border-box}body{margin:0;background:linear-gradient(135deg,#06192b,#0b2c47);color:var(--t);font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei",sans-serif}.wrap{max-width:1460px;margin:auto;padding:32px 38px 76px}.hero{text-align:center;padding:35px;border-bottom:1px solid var(--l)}.hero h1{margin:10px;font-size:34px}.hero p,.desc,.sub{color:var(--m)}.tag{display:inline-block;color:#ccecff;border:1px solid #33779e;border-radius:20px;padding:5px 12px}.grid{display:grid;gap:18px}.g2{grid-template-columns:repeat(2,1fr)}.g4{grid-template-columns:repeat(4,1fr)}.card,.chart,.note{background:rgba(10,41,68,.95);border:1px solid var(--l);border-radius:16px;padding:19px}.num{font-size:28px;font-weight:800;margin:5px 0}.cyan{color:var(--c)}.green{color:var(--g)}.amber{color:var(--a)}.pink{color:var(--r)}h2{margin:46px 0 8px;font-size:25px}.box{height:330px}.callout{border-left:4px solid var(--c);padding:14px 18px;background:#0a2a45;border-radius:10px;line-height:1.8;margin:18px 0}.callout li{margin:8px 0}.label{color:var(--m);font-size:13px}.table{overflow:auto;margin:15px 0}table{border-collapse:collapse;width:100%;font-size:14px}th,td{border:1px solid var(--l);padding:9px;text-align:center;white-space:nowrap}th{background:#0e3a5c}details.sql{background:#082740;border:1px solid var(--l);border-radius:12px;margin:10px 0}details summary{cursor:pointer;padding:13px;font-weight:700}pre{white-space:pre;overflow:auto;padding:16px;margin:0;color:#d9edf9;background:#041323;font-size:12px;line-height:1.65}.fav{float:right;border:0;background:none;color:var(--a);font-size:21px}.foot{text-align:center;color:var(--m);margin-top:40px}@media(max-width:850px){.g2,.g4{grid-template-columns:1fr}.wrap{padding:18px}.hero h1{font-size:26px}}
+</style><main class="wrap"><header class="hero"><div style="color:var(--c);font-weight:700;letter-spacing:2px">放款订单 · 息费上升来源拆解</div><h1>2026 年 1—8 月新增与存量用户息费分析报告</h1><p>按提单月份统计成功放款订单 · 报告生成时间：2026 年 9 月 10 日</p><span class="tag">息费率 = Σ(pre_amt + post_amt) ÷ Σ(remit_amt)</span></header>
+<h2>核心结论</h2><section class="grid g4"><article class="card"><div class="label">整体加权息费率</div><div class="num amber">49.98% → 56.47%</div><div class="sub">1 月至 8 月 +6.49pp</div></article><article class="card"><div class="label">当月新增用户息费率</div><div class="num pink">50.15% → 58.80%</div><div class="sub">+8.65pp</div></article><article class="card"><div class="label">存量用户息费率</div><div class="num cyan">49.84% → 55.14%</div><div class="sub">+5.30pp</div></article><article class="card"><div class="label">标准化后 8 月息费率</div><div class="num green">54.76%</div><div class="sub">固定 3 月结构；原始值 56.47%</div></article></section>
+<div class="callout"><ul><li><b>不只是新增用户变贵：</b>新增用户息费率上升更快，但存量用户也从 49.84% 升至 55.14%。</li><li><b>不是新增用户占比上升驱动：</b>新增用户放款金额占比由 44.47% 降至 36.40%，整体息费仍上行。</li><li><b>结构与定价共同作用：</b>相对 3 月，8 月原始息费率提高 3.71pp；固定 3 月结构后仍提高 2.00pp，说明同类订单内部定价变化是主要部分，订单结构变化亦有贡献。</li><li><b>同人证据：</b>7.0% 的可比存量用户息费上升，3.6% 下降，约 89.4% 基本持平。</li></ul></div>
+<h2>一、整体趋势：3 月后息费抬升，6 月达到阶段高点</h2><section class="grid g2"><article class="chart"><h3>整体加权息费率与放款金额</h3><div class="box"><canvas id="overall"></canvas></div></article><article class="chart"><h3>新增与存量用户加权息费率</h3><div class="box"><canvas id="split"></canvas></div></article></section><div class="table"><table><thead><tr><th>提单月份</th><th>放款用户数</th><th>放款订单数</th><th>放款金额</th><th>息费金额</th><th>加权息费率</th><th>金额加权平均期限</th></tr></thead><tbody><tr><td>2026-01</td><td>35,630</td><td>55,712</td><td>140,481,067</td><td>70,206,842</td><td>49.98%</td><td>21.89</td></tr><tr><td>2026-02</td><td>37,980</td><td>58,372</td><td>146,689,956</td><td>74,010,264</td><td>50.45%</td><td>21.87</td></tr><tr><td>2026-03</td><td>34,954</td><td>53,245</td><td>131,070,023</td><td>69,148,139</td><td>52.76%</td><td>22.83</td></tr><tr><td>2026-04</td><td>38,810</td><td>58,539</td><td>135,360,277</td><td>72,960,868</td><td>53.90%</td><td>23.18</td></tr><tr><td>2026-05</td><td>41,634</td><td>64,896</td><td>153,025,420</td><td>84,525,029</td><td>55.24%</td><td>23.03</td></tr><tr><td>2026-06</td><td>46,478</td><td>70,841</td><td>177,717,564</td><td>101,860,819</td><td>57.32%</td><td>23.22</td></tr><tr><td>2026-07</td><td>46,490</td><td>70,670</td><td>182,735,760</td><td>101,532,081</td><td>55.56%</td><td>23.28</td></tr><tr><td>2026-08</td><td>49,846</td><td>76,571</td><td>197,226,887</td><td>111,375,742</td><td>56.47%</td><td>23.91</td></tr></tbody></table></div>
+<h2>二、新增与存量拆解：两类人群均被提高息费</h2><section class="grid g2"><article class="chart"><h3>新增/存量用户放款金额占比</h3><div class="box"><canvas id="share"></canvas></div></article><article class="chart"><h3>用户年龄层加权息费率</h3><div class="box"><canvas id="age"></canvas></div></article></section><div class="table"><table><thead><tr><th>月份</th><th>新增息费率</th><th>新增金额占比</th><th>存量息费率</th><th>存量金额占比</th></tr></thead><tbody><tr><td>2026-01</td><td>50.15%</td><td>44.47%</td><td>49.84%</td><td>55.53%</td></tr><tr><td>2026-02</td><td>50.74%</td><td>42.34%</td><td>50.24%</td><td>57.66%</td></tr><tr><td>2026-03</td><td>54.96%</td><td>32.34%</td><td>51.70%</td><td>67.66%</td></tr><tr><td>2026-04</td><td>56.96%</td><td>37.96%</td><td>52.03%</td><td>62.04%</td></tr><tr><td>2026-05</td><td>58.60%</td><td>39.03%</td><td>53.08%</td><td>60.97%</td></tr><tr><td>2026-06</td><td>59.28%</td><td>42.10%</td><td>55.89%</td><td>57.90%</td></tr><tr><td>2026-07</td><td>56.63%</td><td>37.60%</td><td>54.92%</td><td>62.40%</td></tr><tr><td>2026-08</td><td>58.80%</td><td>36.40%</td><td>55.14%</td><td>63.60%</td></tr></tbody></table></div><div class="callout"><ul><li>新增用户：1 月 50.15%，8 月 58.80%，上升 8.65pp。</li><li>存量用户：1 月 49.84%，8 月 55.14%，上升 5.30pp。</li><li>新增用户金额占比下降，故“新增用户占比提高”不能解释整体息费上涨；新增与存量两类内部息费上调均需纳入解释。</li></ul></div>
+<h2>三、同人前后验证与标准化：存量用户并非整体同步提价</h2><section class="grid g2"><article class="chart"><h3>同人首末笔息费变化分布</h3><div class="box"><canvas id="same"></canvas></div></article><article class="chart"><h3>原始与固定 3 月结构后的息费率</h3><div class="box"><canvas id="standard"></canvas></div></article></section><div class="callout"><ul><li>同人样本仅纳入分析期内至少两笔成功放款的存量用户；它验证“同一用户前后订单”的变化，不受用户进入/退出样本影响。</li><li>大多数可比存量用户息费基本持平，说明“所有老用户普遍同步提价”的说法不成立；但息费上升用户多于下降用户，且上升者的平均变化为 14.23%。</li><li>标准化结果显示，剔除用户年龄、历史次数、期限和金额档结构后的息费率仍上升，支持存在同类订单内部价格变化；该方法不等同于因果识别。</li></ul></div>
+<h2>四、经营建议</h2><div class="callout"><ul><li>新增用户息费上调幅度更大，应优先核查新客产品、渠道、额度和期限结构是否发生了定价变化。</li><li>存量用户整体也有上调，但同人结果存在明显异质性；后续应按历史贷款次数、风险档和用户年龄定位具体被提价的层级。</li><li>将息费、T0 提单率、到期盈利和逾期率放在同一分层实验中评估；不能只看息费率上升判断经营改善。</li></ul></div>
+<h2>附录 A：完整 PGSQL（可复现报告指标）</h2><p class="desc">按顺序执行模块 1—7。每个表和图表均可由模块 2—6 输出直接复现；模块 7 提供所有细分层的放款金额分母、息费金额分子及加权息费率。</p><details class="sql" open><summary>模块 1：统一放款订单底表与用户分层<button class="fav" type="button">☆</button></summary><pre>-- ============================================================
+-- 2026-01-01 至 2026-08-31 放款订单息费变化拆解
+-- 月度归属：apply_date（提单日期）；统计对象：成功放款订单 is_remit = 1。
+-- 息费率：SUM(pre_amt + post_amt) / SUM(remit_amt)，不使用订单息费率简单平均。
+-- ============================================================
+
+DROP TABLE IF EXISTS tmp_fee_base;
+
+CREATE TEMP TABLE tmp_fee_base AS
+WITH all_remitted AS (
+    SELECT
+        o.serial_id,
+        o.user_id,
+        o.apply_date,
+        o.apply_time,
+        o.remit_date,
+        o.remit_time,
+        o.remit_amt,
+        o.pre_amt,
+        o.post_amt,
+        o.loan_day,
+        ROW_NUMBER() OVER (
+            PARTITION BY o.user_id
+            ORDER BY o.remit_time, o.serial_id
+        ) AS 成功放款序号,
+        FIRST_VALUE(o.apply_date) OVER (
+            PARTITION BY o.user_id
+            ORDER BY o.remit_time, o.serial_id
+        ) AS 首次成功放款提单日,
+        FIRST_VALUE(o.remit_date) OVER (
+            PARTITION BY o.user_id
+            ORDER BY o.remit_time, o.serial_id
+        ) AS 首次成功放款日
+    FROM wangchuanliang.order_loan_f_v2_copy AS o
+    WHERE o.is_remit = 1
+      AND COALESCE(o.remit_amt, 0) &gt; 0
+), base AS (
+    SELECT
+        a.*,
+        a.成功放款序号 - 1 AS 当前订单前成功放款次数,
+        CASE
+            WHEN DATE_TRUNC('month', a.首次成功放款提单日)
+                 = DATE_TRUNC('month', a.apply_date)
+                THEN '当月新增用户'
+            ELSE '存量用户'
+        END AS 用户新老分组,
+        CASE
+            WHEN a.remit_date = a.首次成功放款日 THEN '首贷（0天）'
+            WHEN a.remit_date - a.首次成功放款日 BETWEEN 1 AND 30 THEN '新近复借（1-30天）'
+            WHEN a.remit_date - a.首次成功放款日 BETWEEN 31 AND 90 THEN '成长期复借（31-90天）'
+            WHEN a.remit_date - a.首次成功放款日 BETWEEN 91 AND 180 THEN '成熟复借（91-180天）'
+            ELSE '长期存量复借（180天以上）'
+        END AS 用户年龄分层,
+        CASE
+            WHEN a.成功放款序号 = 1 THEN '历史放款0次'
+            WHEN a.成功放款序号 = 2 THEN '历史放款1次'
+            WHEN a.成功放款序号 BETWEEN 3 AND 5 THEN '历史放款2-4次'
+            ELSE '历史放款5次及以上'
+        END AS 历史次数分层,
+        CASE
+            WHEN a.loan_day &lt;= 7 THEN '期限≤7天'
+            WHEN a.loan_day &lt;= 14 THEN '期限8-14天'
+            WHEN a.loan_day &lt;= 21 THEN '期限15-21天'
+            ELSE '期限22天以上'
+        END AS 期限分层,
+        CASE
+            WHEN a.remit_amt &lt; 500 THEN '金额&lt;500'
+            WHEN a.remit_amt &lt; 1000 THEN '金额500-999'
+            WHEN a.remit_amt &lt; 1500 THEN '金额1000-1499'
+            ELSE '金额1500及以上'
+        END AS 金额分层
+    FROM all_remitted AS a
+    WHERE a.apply_date &gt;= DATE '2026-01-01'
+      AND a.apply_date &lt; DATE '2026-09-01'
+)
+SELECT * FROM base;
+
+-- ============================================================
+</pre></details><details class="sql" ><summary>模块 2：总体月度趋势<button class="fav" type="button">☆</button></summary><pre>-- 模块 2：总体月度趋势（报告图表、汇总卡片）
+-- ============================================================
+SELECT
+    TO_CHAR(apply_date, 'YYYY-MM') AS 统计月份,
+    COUNT(DISTINCT user_id) AS 放款用户数,
+    COUNT(DISTINCT serial_id) AS 放款订单数,
+    SUM(remit_amt) AS 放款金额,
+    SUM(pre_amt + post_amt) AS 息费金额,
+    SUM(pre_amt + post_amt)::numeric / NULLIF(SUM(remit_amt), 0) AS 加权息费率,
+    SUM(remit_amt)::numeric / NULLIF(COUNT(DISTINCT serial_id), 0) AS 平均放款金额,
+    SUM(loan_day * remit_amt)::numeric / NULLIF(SUM(remit_amt), 0) AS 放款金额加权平均期限
+FROM tmp_fee_base
+GROUP BY TO_CHAR(apply_date, 'YYYY-MM')
+ORDER BY 统计月份;
+
+-- ============================================================
+</pre></details><details class="sql" ><summary>模块 3：新增 / 存量用户拆解<button class="fav" type="button">☆</button></summary><pre>-- 模块 3：当月新增 / 存量用户拆解
+-- ============================================================
+WITH monthly_total AS (
+    SELECT TO_CHAR(apply_date, 'YYYY-MM') AS 统计月份, SUM(remit_amt) AS 月总放款金额
+    FROM tmp_fee_base
+    GROUP BY TO_CHAR(apply_date, 'YYYY-MM')
+)
+SELECT
+    TO_CHAR(b.apply_date, 'YYYY-MM') AS 统计月份,
+    b.用户新老分组,
+    COUNT(DISTINCT b.user_id) AS 放款用户数,
+    COUNT(DISTINCT b.serial_id) AS 放款订单数,
+    SUM(b.remit_amt) AS 放款金额,
+    SUM(b.remit_amt)::numeric / NULLIF(t.月总放款金额, 0) AS 放款金额占比,
+    SUM(b.pre_amt + b.post_amt) AS 息费金额,
+    SUM(b.pre_amt + b.post_amt)::numeric / NULLIF(SUM(b.remit_amt), 0) AS 加权息费率,
+    SUM(b.remit_amt)::numeric / NULLIF(COUNT(DISTINCT b.serial_id), 0) AS 平均放款金额,
+    SUM(b.loan_day * b.remit_amt)::numeric / NULLIF(SUM(b.remit_amt), 0) AS 放款金额加权平均期限
+FROM tmp_fee_base AS b
+INNER JOIN monthly_total AS t
+    ON t.统计月份 = TO_CHAR(b.apply_date, 'YYYY-MM')
+GROUP BY TO_CHAR(b.apply_date, 'YYYY-MM'), b.用户新老分组, t.月总放款金额
+ORDER BY 统计月份, b.用户新老分组;
+
+-- ============================================================
+</pre></details><details class="sql" ><summary>模块 4：用户年龄分层<button class="fav" type="button">☆</button></summary><pre>-- 模块 4：用户年龄分层（月度息费与金额结构）
+-- ============================================================
+WITH monthly_total AS (
+    SELECT TO_CHAR(apply_date, 'YYYY-MM') AS 统计月份, SUM(remit_amt) AS 月总放款金额
+    FROM tmp_fee_base GROUP BY TO_CHAR(apply_date, 'YYYY-MM')
+)
+SELECT
+    TO_CHAR(b.apply_date, 'YYYY-MM') AS 统计月份,
+    b.用户年龄分层,
+    COUNT(DISTINCT b.user_id) AS 放款用户数,
+    COUNT(DISTINCT b.serial_id) AS 放款订单数,
+    SUM(b.remit_amt) AS 放款金额,
+    SUM(b.remit_amt)::numeric / NULLIF(t.月总放款金额, 0) AS 放款金额占比,
+    SUM(b.pre_amt + b.post_amt)::numeric / NULLIF(SUM(b.remit_amt), 0) AS 加权息费率
+FROM tmp_fee_base AS b
+JOIN monthly_total AS t ON t.统计月份 = TO_CHAR(b.apply_date, 'YYYY-MM')
+GROUP BY TO_CHAR(b.apply_date, 'YYYY-MM'), b.用户年龄分层, t.月总放款金额
+ORDER BY 统计月份, b.用户年龄分层;
+
+-- ============================================================
+</pre></details><details class="sql" ><summary>模块 5：存量用户同人前后比较<button class="fav" type="button">☆</button></summary><pre>-- 模块 5：存量用户同人前后比较
+-- 样本：分析期内至少有两笔成功放款、且首笔不是当月新增的用户。
+-- ============================================================
+WITH ranked AS (
+    SELECT
+        b.*,
+        ROW_NUMBER() OVER (PARTITION BY user_id ORDER BY apply_time, serial_id) AS rn_first,
+        ROW_NUMBER() OVER (PARTITION BY user_id ORDER BY apply_time DESC, serial_id DESC) AS rn_last,
+        COUNT(*) OVER (PARTITION BY user_id) AS 分析期放款订单数
+    FROM tmp_fee_base AS b
+), paired AS (
+    SELECT
+        user_id,
+        MAX(CASE WHEN rn_first = 1 THEN (pre_amt + post_amt)::numeric / NULLIF(remit_amt, 0) END) AS 首笔息费率,
+        MAX(CASE WHEN rn_last = 1 THEN (pre_amt + post_amt)::numeric / NULLIF(remit_amt, 0) END) AS 末笔息费率,
+        MAX(CASE WHEN rn_first = 1 THEN apply_date END) AS 首笔提单日,
+        MAX(CASE WHEN rn_last = 1 THEN apply_date END) AS 末笔提单日
+    FROM ranked
+    WHERE 用户新老分组 = '存量用户'
+      AND 分析期放款订单数 &gt;= 2
+    GROUP BY user_id
+)
+SELECT
+    CASE
+        WHEN 末笔息费率 - 首笔息费率 &gt; 0.005 THEN '息费上升（&gt;0.5pp）'
+        WHEN 末笔息费率 - 首笔息费率 &lt; -0.005 THEN '息费下降（&lt;-0.5pp）'
+        ELSE '基本持平（±0.5pp）'
+    END AS 同人息费变化分组,
+    COUNT(*) AS 用户数,
+    AVG(末笔息费率 - 首笔息费率) AS 人均息费率变化,
+    PERCENTILE_CONT(0.5) WITHIN GROUP (ORDER BY 末笔息费率 - 首笔息费率) AS 息费率变化中位数
+FROM paired
+GROUP BY 1
+ORDER BY 1;
+
+-- ============================================================
+</pre></details><details class="sql" ><summary>模块 6：三月结构标准化息费率<button class="fav" type="button">☆</button></summary><pre>-- 模块 6：固定 2026-03 结构的标准化息费率
+-- 结构维度：用户年龄 × 历史成功放款次数 × 期限 × 放款金额档。
+-- 原始与标准化的差额用于描述结构贡献，非严格因果分解。
+-- ============================================================
+WITH strata_month AS (
+    SELECT
+        TO_CHAR(apply_date, 'YYYY-MM') AS 统计月份,
+        用户年龄分层, 历史次数分层, 期限分层, 金额分层,
+        SUM(remit_amt) AS 分层放款金额,
+        SUM(pre_amt + post_amt)::numeric / NULLIF(SUM(remit_amt), 0) AS 分层加权息费率
+    FROM tmp_fee_base
+    GROUP BY 1,2,3,4,5
+), march_weights AS (
+    SELECT
+        用户年龄分层, 历史次数分层, 期限分层, 金额分层,
+        分层放款金额::numeric / NULLIF(SUM(分层放款金额) OVER (), 0) AS 三月固定结构权重
+    FROM strata_month
+    WHERE 统计月份 = '2026-03'
+), raw_month AS (
+    SELECT TO_CHAR(apply_date, 'YYYY-MM') AS 统计月份,
+           SUM(pre_amt + post_amt)::numeric / NULLIF(SUM(remit_amt), 0) AS 原始加权息费率
+    FROM tmp_fee_base GROUP BY 1
+)
+SELECT
+    r.统计月份,
+    r.原始加权息费率,
+    SUM(w.三月固定结构权重 * s.分层加权息费率) AS 三月结构标准化息费率,
+    r.原始加权息费率 - SUM(w.三月固定结构权重 * s.分层加权息费率) AS 结构变化近似贡献
+FROM raw_month AS r
+LEFT JOIN strata_month AS s ON s.统计月份 = r.统计月份
+LEFT JOIN march_weights AS w
+    ON w.用户年龄分层 = s.用户年龄分层
+   AND w.历史次数分层 = s.历史次数分层
+   AND w.期限分层 = s.期限分层
+   AND w.金额分层 = s.金额分层
+GROUP BY r.统计月份, r.原始加权息费率
+ORDER BY r.统计月份;
+
+-- ============================================================
+</pre></details><details class="sql" ><summary>模块 7：分层明细与分子分母<button class="fav" type="button">☆</button></summary><pre>-- 模块 7：报告使用的分层明细（用于复核每个图表的分子、分母）
+-- ============================================================
+SELECT
+    TO_CHAR(apply_date, 'YYYY-MM') AS 统计月份,
+    用户新老分组,
+    用户年龄分层,
+    历史次数分层,
+    期限分层,
+    金额分层,
+    COUNT(DISTINCT user_id) AS 放款用户数,
+    COUNT(DISTINCT serial_id) AS 放款订单数,
+    SUM(remit_amt) AS 放款金额分母,
+    SUM(pre_amt + post_amt) AS 息费金额分子,
+    SUM(pre_amt + post_amt)::numeric / NULLIF(SUM(remit_amt), 0) AS 加权息费率
+FROM tmp_fee_base
+GROUP BY 1,2,3,4,5,6
+ORDER BY 1,2,3,4,5,6;
+</pre></details><p class="foot">数据源：wangchuanliang.order_loan_f_v2_copy。统计对象：2026-01-01 至 2026-08-31 提单、且成功放款的订单。</p></main><script>Chart.defaults.color='#c0d7e8';const base={responsive:true,maintainAspectRatio:false,plugins:{legend:{labels:{boxWidth:12}}}};new Chart(document.getElementById('overall'),{type:'line',data:{labels:['01月','02月','03月','04月','05月','06月','07月','08月'],datasets:[{label:'加权息费率（左轴）',data:[49.98,50.45,52.76,53.90,55.24,57.32,55.56,56.47],borderColor:'#ffc56c',tension:.25,yAxisID:'y'},{label:'放款金额（右轴）',data:[140481067,146689956,131070023,135360277,153025420,177717564,182735760,197226887],borderColor:'#43c7e7',tension:.25,yAxisID:'y1'}]},options:{...base,scales:{y:{ticks:{callback:v=>v+'%'},min:45,max:60},y1:{position:'right',grid:{drawOnChartArea:false},ticks:{callback:v=>(v/1e6).toFixed(0)+'M'}}}}});new Chart(document.getElementById('split'),{type:'line',data:{labels:['01月','02月','03月','04月','05月','06月','07月','08月'],datasets:[{label:'当月新增',data:[50.14826869536034,50.74163694723175,54.96215930444919,56.96033458551594,58.60300161609406,59.28437320786042,56.63319138778788,58.7979527884829],borderColor:'#f68ab0',tension:.25},{label:'存量用户',data:[49.83809266920579,50.24199629406987,51.70255856327939,52.02939558883972,53.08089852708917,55.88512868462379,54.91696361746029,55.13916984225874],borderColor:'#43c7e7',tension:.25}]},options:{...base,scales:{y:{min:45,max:62,ticks:{callback:v=>v+'%'}}}}});new Chart(document.getElementById('share'),{type:'bar',data:{labels:['01月','02月','03月','04月','05月','06月','07月','08月'],datasets:[{label:'当月新增',data:[44.46648743065142,42.33758376749394,32.337719205252604,37.96121959768153,39.02573572416922,42.097445697601394,37.59851109602193,36.39739545247703],backgroundColor:'#f68ab0'},{label:'存量用户',data:[55.533512569348574,57.66241623250606,67.6622807947474,62.03878040231847,60.97426427583077,57.90255430239861,62.40148890397808,63.60260454752298],backgroundColor:'#43c7e7'}]},options:{...base,scales:{x:{stacked:true},y:{stacked:true,max:100,ticks:{callback:v=>v+'%'}}}}});new Chart(document.getElementById('age'),{type:'line',data:{labels:['01月','02月','03月','04月','05月','06月','07月','08月'],datasets:[{label:'首贷（0天）',data:[50.21,51.02,55.86,58.77,59.86,59.35,56.11,57.68],borderColor:'#40c4e6',tension:.25,pointRadius:3},{label:'新近复借（1-30天）',data:[49.54,49.88,52.52,53.16,55.43,58.05,57.15,59.04],borderColor:'#ffc56c',tension:.25,pointRadius:3},{label:'成长期复借（31-90天）',data:[49.20,49.72,50.81,50.91,51.80,54.67,53.64,53.98],borderColor:'#6fe0ad',tension:.25,pointRadius:3},{label:'成熟复借（91-180天）',data:[50.33,50.93,52.82,52.43,52.40,55.92,54.21,54.35],borderColor:'#b69bff',tension:.25,pointRadius:3},{label:'长期存量复借（180天以上）',data:[52.05,52.12,52.46,53.32,55.02,57.81,56.41,56.15],borderColor:'#fa8ab0',tension:.25,pointRadius:3}]},options:{...base,scales:{y:{min:45,max:65,ticks:{callback:v=>v+'%'}}}}});new Chart(document.getElementById('same'),{type:'bar',data:{labels:["基本持平（±0.5pp）","息费上升（>0.5pp）","息费下降（<-0.5pp）"],datasets:[{label:'用户数',data:[65155,5120,2622],backgroundColor:['#64dcae','#f68ab0','#ffc56c']}]},options:{...base,plugins:{legend:{display:false}}}});new Chart(document.getElementById('standard'),{type:'line',data:{labels:['01月','02月','03月','04月','05月','06月','07月','08月'],datasets:[{label:'原始加权息费率',data:[49.98,50.45,52.76,53.90,55.24,57.32,55.56,56.47],borderColor:'#ffc56c',tension:.25},{label:'固定3月结构标准化息费率',data:[49.44,51.30,52.76,53.16,54.12,55.80,54.63,54.76],borderColor:'#64dcae',tension:.25}]},options:{...base,scales:{y:{min:45,max:60,ticks:{callback:v=>v+'%'}}}}});document.querySelectorAll('.fav').forEach(b=>b.onclick=e=>{e.preventDefault();b.textContent=b.textContent==='☆'?'★':'☆'});</script></html>
