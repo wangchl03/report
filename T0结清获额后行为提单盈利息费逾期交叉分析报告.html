@@ -273,7 +273,7 @@ details{margin:14px 0}summary{cursor:pointer;color:var(--cy);font-size:14px;padd
 </div>
 
 <h2>附录：完整 PGsql 代码</h2>
-<p class="desc">以下 SQL 可复现报告所有指标（有/无行为结构、分窗口提单率、盈利率、息费、整笔逾期率）。一次跑完 2026-01-01～2026-09-01；查询 A1–A5 对应第一部分，B/C/D 对应盈利率、息费、逾期。</p>
+<p class="desc">以下 SQL 可复现报告全部指标：A1–A5 行为与提单率，B/C/D 盈利率/息费/逾期，E1–E5 第五部分交叉分析（当日四指标同表、窗口交叉、1→6月流失去向、分月环比、有/无行为×窗口质量）。一次跑完 2026-01-01～2026-09-01。</p>
 <details open><summary>展开/收起完整 SQL</summary>
 <pre class="sql">-- =============================================================================
 -- T0 结清0在贷获额后：当日5类行为 × 首次提单窗口 × 盈利率 / 息费 / 整笔逾期率
@@ -578,6 +578,173 @@ FROM tmp_base
 WHERE bucket &lt;&gt; 'never'
 GROUP BY ROLLUP (ym), bucket
 ORDER BY 1, 2;
+
+-- =============================================================================
+-- E 交叉分析（第五部分）：提单率 × 息费 × 逾期 × 盈利率 同表复现
+-- =============================================================================
+
+DROP TABLE IF EXISTS tmp_cross_month;
+CREATE TEMP TABLE tmp_cross_month AS
+SELECT
+  b.ym,
+  COUNT(*) AS t0,
+  SUM(b.has_beh) AS n_beh,
+  ROUND(100.0 * SUM(b.has_beh) / COUNT(*), 2) AS beh_pct,
+  ROUND(100.0 * SUM(CASE WHEN b.bucket &lt;&gt; 'never' THEN 1 ELSE 0 END) / COUNT(*), 2) AS apply_rate_pct,
+  ROUND(100.0 * SUM(CASE WHEN b.bucket = '当日' THEN 1 ELSE 0 END) / COUNT(*), 2) AS d0_apply_pct,
+  ROUND(100.0 * SUM(CASE WHEN b.bucket = '1-3日' THEN 1 ELSE 0 END) / COUNT(*), 2) AS d1_3_pct,
+  ROUND(100.0 * SUM(CASE WHEN b.bucket = '4-7日' THEN 1 ELSE 0 END) / COUNT(*), 2) AS d4_7_pct,
+  ROUND(100.0 * SUM(CASE WHEN b.bucket = '7日以后' THEN 1 ELSE 0 END) / COUNT(*), 2) AS d8p_pct,
+  ROUND(100.0 * SUM(CASE WHEN b.bucket = 'never' THEN 1 ELSE 0 END) / COUNT(*), 2) AS never_pct,
+  ROUND(100.0 * SUM(CASE WHEN b.has_beh = 1 AND b.bucket = '当日' THEN 1 ELSE 0 END)
+              / NULLIF(SUM(b.has_beh), 0), 2) AS beh_d0_apply_pct,
+  ROUND(100.0 * SUM(CASE WHEN b.has_beh = 0 AND b.bucket = '当日' THEN 1 ELSE 0 END)
+              / NULLIF(SUM(1 - b.has_beh), 0), 2) AS nobeh_d0_apply_pct,
+  ROUND(100.0 * SUM(CASE WHEN b.has_beh = 1 AND b.bucket = 'never' THEN 1 ELSE 0 END)
+              / NULLIF(SUM(b.has_beh), 0), 2) AS beh_never_pct,
+  ROUND(100.0 * SUM(CASE WHEN b.has_beh = 0 AND b.bucket = 'never' THEN 1 ELSE 0 END)
+              / NULLIF(SUM(1 - b.has_beh), 0), 2) AS nobeh_never_pct,
+  ROUND(100.0 * SUM(CASE WHEN b.has_beh = 1 AND b.bucket = '1-3日' THEN 1 ELSE 0 END)
+              / NULLIF(SUM(b.has_beh), 0), 2) AS beh_d1_3_pct,
+  ROUND(100.0 * SUM(CASE WHEN b.has_beh = 1 AND b.bucket = '4-7日' THEN 1 ELSE 0 END)
+              / NULLIF(SUM(b.has_beh), 0), 2) AS beh_d4_7_pct,
+  ROUND(100.0 * SUM(CASE WHEN b.bucket &lt;&gt; 'never' AND b.has_beh = 1 THEN 1 ELSE 0 END)
+              / NULLIF(SUM(CASE WHEN b.bucket &lt;&gt; 'never' THEN 1 ELSE 0 END), 0), 2) AS beh_share_apply,
+  ROUND(100.0 * SUM(CASE WHEN b.bucket = '当日' AND b.has_beh = 1 THEN 1 ELSE 0 END)
+              / NULLIF(SUM(CASE WHEN b.bucket = '当日' THEN 1 ELSE 0 END), 0), 2) AS beh_share_d0,
+  ROUND(100.0 * SUM(CASE WHEN b.bucket = '1-3日' AND b.has_beh = 1 THEN 1 ELSE 0 END)
+              / NULLIF(SUM(CASE WHEN b.bucket = '1-3日' THEN 1 ELSE 0 END), 0), 2) AS beh_share_d1_3,
+  ROUND(100.0 * SUM(CASE WHEN b.is_remit = 1 AND b.bucket = '当日' AND COALESCE(b.remit_amt, 0) &gt; 0
+                    THEN COALESCE(b.pre_amt, 0) + COALESCE(b.post_amt, 0) ELSE 0 END)
+              / NULLIF(SUM(CASE WHEN b.is_remit = 1 AND b.bucket = '当日' AND COALESCE(b.remit_amt, 0) &gt; 0 THEN b.remit_amt ELSE 0 END), 0), 2) AS d0_fee_pct,
+  ROUND(100.0 * SUM(CASE WHEN b.is_remit = 1 AND b.bucket = '当日' AND b.due_date &lt; CURRENT_DATE AND COALESCE(b.remit_amt, 0) &gt; 0
+                    AND (b.repaid_date IS NULL OR b.repaid_date &lt;= DATE '2000-01-01' OR b.repaid_date &gt; b.due_date) THEN 1 ELSE 0 END)
+              / NULLIF(SUM(CASE WHEN b.is_remit = 1 AND b.bucket = '当日' AND b.due_date &lt; CURRENT_DATE AND COALESCE(b.remit_amt, 0) &gt; 0 THEN 1 ELSE 0 END), 0), 2) AS d0_od_pct,
+  ROUND(100.0 * (
+    SUM(CASE WHEN b.is_remit = 1 AND b.bucket = '当日' AND b.due_date &lt; CURRENT_DATE AND COALESCE(b.remit_amt, 0) &gt; 0 THEN COALESCE(rp.repay_amt, 0) ELSE 0 END)
+    / NULLIF(SUM(CASE WHEN b.is_remit = 1 AND b.bucket = '当日' AND b.due_date &lt; CURRENT_DATE AND COALESCE(b.remit_amt, 0) &gt; 0 THEN b.remit_amt ELSE 0 END), 0)
+    - 1
+  ), 2) AS d0_profit_pct
+FROM tmp_base b
+LEFT JOIN tmp_repay rp ON rp.serial_id = b.serial_id
+GROUP BY b.ym;
+
+-- 【块E1】图8 / 表5.7 当日：提单率、息费、逾期、盈利率、有行为当日提单率
+SELECT
+  TO_CHAR(ym, 'YYYY-MM') AS ym,
+  d0_apply_pct AS 当日提单率,
+  d0_fee_pct AS 当日息费,
+  d0_od_pct AS 当日逾期,
+  d0_profit_pct AS 当日盈利率,
+  beh_d0_apply_pct AS 有行为当日提单率,
+  nobeh_d0_apply_pct AS 无行为当日提单率,
+  ROUND(d0_fee_pct - d0_profit_pct, 2) AS 当日息费与盈利缺口pp,
+  apply_rate_pct AS 月度提单率,
+  never_pct AS 未提单率,
+  beh_pct AS 有行为覆盖
+FROM tmp_cross_month
+ORDER BY ym;
+
+-- 【块E2】窗口合计交叉：占T0、息费、逾期、盈利率、缺口、有/无行为质量
+SELECT
+  b.bucket,
+  COUNT(*) AS n_t0,
+  ROUND(100.0 * COUNT(*) / (SELECT COUNT(*) FROM tmp_base), 2) AS 占T0,
+  ROUND(100.0 * SUM(CASE WHEN b.is_remit = 1 AND COALESCE(b.remit_amt, 0) &gt; 0 THEN COALESCE(b.pre_amt, 0) + COALESCE(b.post_amt, 0) ELSE 0 END)
+              / NULLIF(SUM(CASE WHEN b.is_remit = 1 AND COALESCE(b.remit_amt, 0) &gt; 0 THEN b.remit_amt ELSE 0 END), 0), 2) AS 息费,
+  ROUND(100.0 * SUM(CASE WHEN b.is_remit = 1 AND b.due_date &lt; CURRENT_DATE AND COALESCE(b.remit_amt, 0) &gt; 0
+                    AND (b.repaid_date IS NULL OR b.repaid_date &lt;= DATE '2000-01-01' OR b.repaid_date &gt; b.due_date) THEN 1 ELSE 0 END)
+              / NULLIF(SUM(CASE WHEN b.is_remit = 1 AND b.due_date &lt; CURRENT_DATE AND COALESCE(b.remit_amt, 0) &gt; 0 THEN 1 ELSE 0 END), 0), 2) AS 逾期,
+  ROUND(100.0 * (
+    SUM(CASE WHEN b.is_remit = 1 AND b.due_date &lt; CURRENT_DATE AND COALESCE(b.remit_amt, 0) &gt; 0 THEN COALESCE(rp.repay_amt, 0) ELSE 0 END)
+    / NULLIF(SUM(CASE WHEN b.is_remit = 1 AND b.due_date &lt; CURRENT_DATE AND COALESCE(b.remit_amt, 0) &gt; 0 THEN b.remit_amt ELSE 0 END), 0)
+    - 1
+  ), 2) AS 盈利率,
+  ROUND(
+    100.0 * SUM(CASE WHEN b.is_remit = 1 AND COALESCE(b.remit_amt, 0) &gt; 0 THEN COALESCE(b.pre_amt, 0) + COALESCE(b.post_amt, 0) ELSE 0 END)
+              / NULLIF(SUM(CASE WHEN b.is_remit = 1 AND COALESCE(b.remit_amt, 0) &gt; 0 THEN b.remit_amt ELSE 0 END), 0)
+    - 100.0 * (
+      SUM(CASE WHEN b.is_remit = 1 AND b.due_date &lt; CURRENT_DATE AND COALESCE(b.remit_amt, 0) &gt; 0 THEN COALESCE(rp.repay_amt, 0) ELSE 0 END)
+      / NULLIF(SUM(CASE WHEN b.is_remit = 1 AND b.due_date &lt; CURRENT_DATE AND COALESCE(b.remit_amt, 0) &gt; 0 THEN b.remit_amt ELSE 0 END), 0)
+      - 1
+    )
+  , 2) AS 息费减盈利率缺口pp,
+  ROUND(100.0 * SUM(CASE WHEN b.has_beh = 1 AND b.is_remit = 1 AND b.due_date &lt; CURRENT_DATE AND COALESCE(b.remit_amt, 0) &gt; 0
+                    AND (b.repaid_date IS NULL OR b.repaid_date &lt;= DATE '2000-01-01' OR b.repaid_date &gt; b.due_date) THEN 1 ELSE 0 END)
+              / NULLIF(SUM(CASE WHEN b.has_beh = 1 AND b.is_remit = 1 AND b.due_date &lt; CURRENT_DATE AND COALESCE(b.remit_amt, 0) &gt; 0 THEN 1 ELSE 0 END), 0), 2) AS 有行为逾期,
+  ROUND(100.0 * SUM(CASE WHEN b.has_beh = 0 AND b.is_remit = 1 AND b.due_date &lt; CURRENT_DATE AND COALESCE(b.remit_amt, 0) &gt; 0
+                    AND (b.repaid_date IS NULL OR b.repaid_date &lt;= DATE '2000-01-01' OR b.repaid_date &gt; b.due_date) THEN 1 ELSE 0 END)
+              / NULLIF(SUM(CASE WHEN b.has_beh = 0 AND b.is_remit = 1 AND b.due_date &lt; CURRENT_DATE AND COALESCE(b.remit_amt, 0) &gt; 0 THEN 1 ELSE 0 END), 0), 2) AS 无行为逾期,
+  ROUND(100.0 * (
+    SUM(CASE WHEN b.has_beh = 1 AND b.is_remit = 1 AND b.due_date &lt; CURRENT_DATE AND COALESCE(b.remit_amt, 0) &gt; 0 THEN COALESCE(rp.repay_amt, 0) ELSE 0 END)
+    / NULLIF(SUM(CASE WHEN b.has_beh = 1 AND b.is_remit = 1 AND b.due_date &lt; CURRENT_DATE AND COALESCE(b.remit_amt, 0) &gt; 0 THEN b.remit_amt ELSE 0 END), 0)
+    - 1
+  ), 2) AS 有行为盈利率,
+  ROUND(100.0 * (
+    SUM(CASE WHEN b.has_beh = 0 AND b.is_remit = 1 AND b.due_date &lt; CURRENT_DATE AND COALESCE(b.remit_amt, 0) &gt; 0 THEN COALESCE(rp.repay_amt, 0) ELSE 0 END)
+    / NULLIF(SUM(CASE WHEN b.has_beh = 0 AND b.is_remit = 1 AND b.due_date &lt; CURRENT_DATE AND COALESCE(b.remit_amt, 0) &gt; 0 THEN b.remit_amt ELSE 0 END), 0)
+    - 1
+  ), 2) AS 无行为盈利率
+FROM tmp_base b
+LEFT JOIN tmp_repay rp ON rp.serial_id = b.serial_id
+WHERE b.bucket &lt;&gt; 'never'
+GROUP BY b.bucket
+ORDER BY CASE b.bucket WHEN '当日' THEN 1 WHEN '1-3日' THEN 2 WHEN '4-7日' THEN 3 ELSE 4 END;
+
+-- 【块E3】表5.6：1月→6月当日提单流失去向
+WITH jan AS (SELECT * FROM tmp_cross_month WHERE ym = DATE '2026-01-01'),
+     jun AS (SELECT * FROM tmp_cross_month WHERE ym = DATE '2026-06-01'),
+     pairs AS (
+       SELECT '当日' AS 窗口, j.d0_apply_pct AS 一月, u.d0_apply_pct AS 六月, j.d0_apply_pct AS d0_jan, u.d0_apply_pct AS d0_jun FROM jan j CROSS JOIN jun u
+       UNION ALL SELECT '1-3日', j.d1_3_pct, u.d1_3_pct, j.d0_apply_pct, u.d0_apply_pct FROM jan j CROSS JOIN jun u
+       UNION ALL SELECT '4-7日', j.d4_7_pct, u.d4_7_pct, j.d0_apply_pct, u.d0_apply_pct FROM jan j CROSS JOIN jun u
+       UNION ALL SELECT '7日以后', j.d8p_pct, u.d8p_pct, j.d0_apply_pct, u.d0_apply_pct FROM jan j CROSS JOIN jun u
+       UNION ALL SELECT '未提单', j.never_pct, u.never_pct, j.d0_apply_pct, u.d0_apply_pct FROM jan j CROSS JOIN jun u
+       UNION ALL SELECT '月度提单率', j.apply_rate_pct, u.apply_rate_pct, j.d0_apply_pct, u.d0_apply_pct FROM jan j CROSS JOIN jun u
+     )
+SELECT
+  窗口, 一月, 六月, ROUND(六月 - 一月, 2) AS 变化pp,
+  ROUND(CASE WHEN 窗口 = '当日' THEN NULL ELSE 100.0 * (六月 - 一月) / NULLIF(d0_jan - d0_jun, 0) END, 1) AS 占当日流失份额pct
+FROM pairs;
+
+-- 【块E4】分月交叉环比：息费升 vs 当日提单降 vs 逾期升 vs 盈利率
+SELECT
+  TO_CHAR(ym, 'YYYY-MM') AS ym,
+  d0_apply_pct,
+  ROUND(d0_apply_pct - LAG(d0_apply_pct) OVER (ORDER BY ym), 2) AS 当日提单率环比pp,
+  d0_fee_pct,
+  ROUND(d0_fee_pct - LAG(d0_fee_pct) OVER (ORDER BY ym), 2) AS 当日息费环比pp,
+  d0_od_pct,
+  ROUND(d0_od_pct - LAG(d0_od_pct) OVER (ORDER BY ym), 2) AS 当日逾期环比pp,
+  d0_profit_pct,
+  ROUND(d0_profit_pct - LAG(d0_profit_pct) OVER (ORDER BY ym), 2) AS 当日盈利率环比pp,
+  beh_d0_apply_pct,
+  ROUND(beh_d0_apply_pct - LAG(beh_d0_apply_pct) OVER (ORDER BY ym), 2) AS 有行为当日环比pp,
+  never_pct,
+  nobeh_never_pct
+FROM tmp_cross_month
+ORDER BY ym;
+
+-- 【块E5】有/无行为 × 窗口：息费、逾期、盈利率
+SELECT
+  CASE WHEN b.has_beh = 1 THEN '有行为' ELSE '无行为' END AS 行为,
+  b.bucket,
+  COUNT(*) AS n,
+  ROUND(100.0 * SUM(CASE WHEN b.is_remit = 1 AND COALESCE(b.remit_amt, 0) &gt; 0 THEN COALESCE(b.pre_amt, 0) + COALESCE(b.post_amt, 0) ELSE 0 END)
+              / NULLIF(SUM(CASE WHEN b.is_remit = 1 AND COALESCE(b.remit_amt, 0) &gt; 0 THEN b.remit_amt ELSE 0 END), 0), 2) AS 息费,
+  ROUND(100.0 * SUM(CASE WHEN b.is_remit = 1 AND b.due_date &lt; CURRENT_DATE AND COALESCE(b.remit_amt, 0) &gt; 0
+                    AND (b.repaid_date IS NULL OR b.repaid_date &lt;= DATE '2000-01-01' OR b.repaid_date &gt; b.due_date) THEN 1 ELSE 0 END)
+              / NULLIF(SUM(CASE WHEN b.is_remit = 1 AND b.due_date &lt; CURRENT_DATE AND COALESCE(b.remit_amt, 0) &gt; 0 THEN 1 ELSE 0 END), 0), 2) AS 逾期,
+  ROUND(100.0 * (
+    SUM(CASE WHEN b.is_remit = 1 AND b.due_date &lt; CURRENT_DATE AND COALESCE(b.remit_amt, 0) &gt; 0 THEN COALESCE(rp.repay_amt, 0) ELSE 0 END)
+    / NULLIF(SUM(CASE WHEN b.is_remit = 1 AND b.due_date &lt; CURRENT_DATE AND COALESCE(b.remit_amt, 0) &gt; 0 THEN b.remit_amt ELSE 0 END), 0)
+    - 1
+  ), 2) AS 盈利率
+FROM tmp_base b
+LEFT JOIN tmp_repay rp ON rp.serial_id = b.serial_id
+WHERE b.bucket &lt;&gt; 'never'
+GROUP BY CASE WHEN b.has_beh = 1 THEN '有行为' ELSE '无行为' END, b.bucket
+ORDER BY 1, CASE b.bucket WHEN '当日' THEN 1 WHEN '1-3日' THEN 2 WHEN '4-7日' THEN 3 ELSE 4 END;
 </pre>
 </details>
 <p class="foot"><b>口径说明</b><br>
