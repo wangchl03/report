@@ -28,8 +28,9 @@ th,td{padding:8px 10px;border-bottom:1px solid rgba(42,92,126,.45);text-align:ri
 th{color:var(--muted);background:rgba(12,48,78,.65);font-weight:600}th:first-child,td:first-child{text-align:left}
 .total td{font-weight:700;border-top:2px solid #43c7e7}
 .bad{color:var(--pk)}.good{color:var(--gr)}
-pre.sql{background:#081726;border:1px solid var(--line);border-radius:12px;padding:16px;overflow:auto;max-height:720px;font-size:11.5px;line-height:1.55;color:#bfe0f2}
-.foot{color:#7fa6c2;font-size:12px;margin-top:40px;border-top:1px solid var(--line);padding-top:14px;line-height:1.8}
+pre.sql{background:#081726;border:1px solid var(--line);border-radius:14px;padding:18px;overflow:auto;max-height:820px;font-size:12px;line-height:1.6;color:#bfe0f2;font-family:"SF Mono",ui-monospace,Menlo,Consolas,monospace;white-space:pre;tab-size:2}
+details{margin:14px 0}summary{cursor:pointer;color:var(--cy);font-size:14px;padding:6px 0}
+.foot{color:#7fa6c2;font-size:12.5px;margin-top:50px;border-top:1px solid var(--line);padding-top:16px;line-height:1.9}
 .insight{border:1px solid var(--line);border-radius:10px;padding:12px 14px;margin:8px 0;background:#0a2a45}
 .insight b{color:var(--cy)}
 @media(max-width:900px){.g2,.g4,.g5{grid-template-columns:1fr}}
@@ -271,8 +272,9 @@ pre.sql{background:#081726;border:1px solid var(--line);border-radius:12px;paddi
 <b>5. 观察期完整后再看 7 日以后。</b> 8月未提单 19.93% 含截断，不宜直接当流失结论。以 1–6 月未提单 5.2%→10.3% 作为流失恶化的更稳估计。
 </div>
 
-<h2>附录 可复现 SQL（GaussDB）</h2>
-<p class="desc">一次跑完 2026-01-01～2026-09-01。查询 A1–A5 对应第一部分表；B/C/D 对应盈利率、息费、逾期（分月×窗口，含有/无行为）。埋点必须带 <code>create_date</code> 分区条件。同目录文件：<code>appendix_t0_first_apply_metrics.sql</code>。</p>
+<h2>附录：完整 PGsql 代码</h2>
+<p class="desc">以下 SQL 可复现报告所有指标（有/无行为结构、分窗口提单率、盈利率、息费、整笔逾期率）。一次跑完 2026-01-01～2026-09-01；查询 A1–A5 对应第一部分，B/C/D 对应盈利率、息费、逾期。</p>
+<details open><summary>展开/收起完整 SQL</summary>
 <pre class="sql">-- =============================================================================
 -- T0 结清0在贷获额后：当日5类行为 × 首次提单窗口 × 盈利率 / 息费 / 整笔逾期率
 -- 库：kaby_dw（GaussDB）  统计日：CURRENT_DATE
@@ -577,10 +579,17 @@ WHERE bucket &lt;&gt; 'never'
 GROUP BY ROLLUP (ym), bucket
 ORDER BY 1, 2;
 </pre>
-<div class="foot">
-样本 T0=177133 用户日 · 行为窗口=获额当日自然日 · 盈利率/逾期截止 2026-09-14 已到期 · 息费含未到期已放款<br>
-8月7日以后与未提单存在右截断 · 进页与停留已按需求剔除 · 确认提单不计入「有行为」
-</div>
+</details>
+<p class="foot"><b>口径说明</b><br>
+<b>分母</b>：T0 用户日（结清当日、结清0在贷、获额通过）共 177,133<br>
+<b>有行为</b>：获额当日、T 之后出现过改额/改期/看合同/看计划/选原因（不含确认提单、进页、停留）<br>
+<b>首次提单窗口</b>：自然日相对获额日，当日 / 1–3日 / 4–7日 / 7日以后；观察期内未提单单独列出<br>
+<b>月度提单率</b>：观察期内发生过首次提单人数 / T0<br>
+<b>盈利率</b>：首次提单且已放款、due_date &lt; CURRENT_DATE；Σrepayment_record_copy.amount / Σremit_amt − 1，payin_date ∈ [apply_date, due_date]<br>
+<b>息费</b>：首次提单且已放款（未到期也算）；Σ(pre_amt+post_amt)/Σremit_amt<br>
+<b>整笔逾期</b>：已放款且已到期；repaid_date &gt; due_date，或 repaid_date 空/≤2000-01-01<br>
+<b>数据源</b>：wangchuanliang 各表（kaby_dw，截止 2026-09-14）；8月「7日以后/未提单」存在右截断
+</p>
 </main>
 <script>
 const months=['1月','2月','3月','4月','5月','6月','7月','8月'];
