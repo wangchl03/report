@@ -1,0 +1,636 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>T0结清获额后行为、首次提单、盈利息费与逾期交叉分析报告</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+<style>
+:root{--bg:#071b2f;--p:#0c2944;--line:#2a5c7e;--text:#eff8ff;--muted:#aac5da;--cy:#43c7e7;--gr:#64dcae;--am:#ffc26b;--pk:#f68ab0;--vio:#b49aff;--rd:#ff7b72}
+*{box-sizing:border-box}body{margin:0;background:#06192b;color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei",sans-serif}
+.wrap{max-width:1480px;margin:auto;padding:32px 36px 80px}
+.hero{text-align:center;padding:28px 12px 22px;border-bottom:1px solid var(--line)}
+.kicker{color:var(--cy);font-size:13px;letter-spacing:2px;font-weight:700}
+.hero h1{font-size:28px;line-height:1.3;margin:10px 0}
+.hero-meta{display:inline-block;text-align:left;margin-top:12px;line-height:1.75;color:var(--muted);font-size:14px}
+h2{font-size:24px;margin:44px 0 10px}h3{font-size:17px;margin:22px 0 8px}
+.desc,.sub{color:var(--muted);margin:0 0 12px;line-height:1.75;font-size:14px}
+.grid{display:grid;gap:14px}.g2{grid-template-columns:repeat(2,minmax(0,1fr))}.g4{grid-template-columns:repeat(4,minmax(0,1fr))}.g5{grid-template-columns:repeat(5,minmax(0,1fr))}
+.card,.chart{background:rgba(10,41,68,.95);border:1px solid var(--line);border-radius:14px;padding:16px}
+.label{color:var(--muted);font-size:12px}.num{font-size:24px;font-weight:800;margin:4px 0 2px;line-height:1.2}
+.cyan{color:var(--cy)}.green{color:var(--gr)}.amber{color:var(--am)}.pink{color:var(--pk)}.red{color:var(--rd)}
+.box{height:300px;position:relative}.chart h3{margin:0 0 4px;font-size:15px}.chart p{font-size:12px;color:var(--muted);margin:0 0 10px}
+.callout{background:#0a2a45;border:1px solid #2a5c7e;border-left:4px solid #43c7e7;border-radius:10px;padding:14px 18px;margin:14px 0;line-height:1.75;font-size:14px}
+.callout.gold{border-left-color:#ffc26b}.callout.red{border-left-color:#f68ab0}.callout.green{border-left-color:#64dcae}
+.callout .ch{font-weight:800;margin-bottom:8px}
+.table{overflow-x:auto;margin:12px 0}table{width:100%;border-collapse:collapse;font-size:13px}
+th,td{padding:8px 10px;border-bottom:1px solid rgba(42,92,126,.45);text-align:right;white-space:nowrap}
+th{color:var(--muted);background:rgba(12,48,78,.65);font-weight:600}th:first-child,td:first-child{text-align:left}
+.total td{font-weight:700;border-top:2px solid #43c7e7}
+.bad{color:var(--pk)}.good{color:var(--gr)}
+pre.sql{background:#081726;border:1px solid var(--line);border-radius:12px;padding:16px;overflow:auto;max-height:720px;font-size:11.5px;line-height:1.55;color:#bfe0f2}
+.foot{color:#7fa6c2;font-size:12px;margin-top:40px;border-top:1px solid var(--line);padding-top:14px;line-height:1.8}
+.insight{border:1px solid var(--line);border-radius:10px;padding:12px 14px;margin:8px 0;background:#0a2a45}
+.insight b{color:var(--cy)}
+@media(max-width:900px){.g2,.g4,.g5{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<main class="wrap">
+<header class="hero">
+<div class="kicker">T0 用户日 · 2026-01～08 · 自然日首次提单</div>
+<h1>结清0在贷获额后：页内行为、首次提单节奏、盈利息费与整笔逾期交叉分析</h1>
+<div class="hero-meta">
+分母：T0 用户日（结清当日、结清0在贷、获额通过）共 177,133<br>
+有行为：获额当日出现过改额/改期/看合同/看计划/选原因（不含确认提单）<br>
+首次提单窗口：当日 / 1–3日 / 4–7日 / 7日以后；观察期内未提单单独列出<br>
+盈利率、逾期率：首次提单且已放款、整笔已到期；息费：首次提单且已放款<br>
+数据截止：库内 CURRENT_DATE = 2026-09-14；8月「7日以后/未提单」存在观察期截断
+</div>
+</header>
+
+<h2>核心数字（1–8月合计）</h2>
+<section class="grid g5" style="margin-top:14px">
+<article class="card"><div class="label">T0 当日提单率</div><div class="num pink">39.2%←52.9%</div><div class="sub">8月 vs 1月，-13.7pp</div></article>
+<article class="card"><div class="label">有行为覆盖</div><div class="num cyan">54.5%</div><div class="sub">5–8月稳定约55%，不是覆盖塌了</div></article>
+<article class="card"><div class="label">当日单息费</div><div class="num amber">60.2%←49.6%</div><div class="sub">8月 vs 1月，定价变贵</div></article>
+<article class="card"><div class="label">当日单盈利率</div><div class="num">5.3%</div><div class="sub">晚提窗口约14%</div></article>
+<article class="card"><div class="label">当日单整笔逾期</div><div class="num red">38.8%</div><div class="sub">1月36.6%→8月43.0%</div></article>
+</section>
+<div class="callout"><div class="ch">一句话</div>
+有行为人数占比几乎没掉（1月57%→8月55%），掉的是<strong>当天转化</strong>。同期当日单息费从50%升到60%，整笔逾期从36.6%升到43.0%。晚提人群息费和当日差不多，但盈利率高约9个点、逾期低约4个点。急着当天提、尤其当天完全不改条件的人，是规模最大、质量最差的一档。</div>
+
+<div class="grid g2">
+<div class="chart"><h3>图1 当日提单率 vs 当日单息费 vs 当日单逾期率</h3><p>T0 当日提单率（左轴%）；息费、逾期（左轴%）。来源：T0用户日 2026-01～08</p><div class="box"><canvas id="c1"></canvas></div></div>
+<div class="chart"><h3>图2 首次提单落点占 T0</h3><p>自然日窗口。8月7日以后/未提单受观察期截断。来源：同上</p><div class="box"><canvas id="c2"></canvas></div></div>
+</div>
+<div class="grid g2" style="margin-top:14px">
+<div class="chart"><h3>图3 有行为 vs 无行为：当日提单率</h3><p>组内占比。来源：同上</p><div class="box"><canvas id="c3"></canvas></div></div>
+<div class="chart"><h3>图4 各窗口盈利率（放款加权）</h3><p>已放款且整笔到期。来源：repayment_record_copy / remit_amt</p><div class="box"><canvas id="c4"></canvas></div></div>
+</div>
+
+<h2>第一部分 行为占比与提单率</h2>
+<p class="desc">月度提单率 = 观察期内发生过首次提单的人数 / T0。当天及后续窗口均为首次提单所在自然日占 T0 的比例。有行为提单人数占总提单人数 = 四个窗口合计中，获额当日做过5类动作的首次提单人数 / 全部首次提单人数。</p>
+
+<h3>1.1 有行为 / 无行为结构</h3>
+<div class="table"><table>
+<thead><tr><th>月</th><th>T0人日</th><th>有行为人数</th><th>有行为占比</th><th>无行为人数</th><th>无行为占比</th></tr></thead>
+<tbody>
+<tr><td>1月</td><td>19520</td><td>11174</td><td>57.24%</td><td>8346</td><td>42.76%</td></tr>
+<tr><td>2月</td><td>22739</td><td>12815</td><td>56.36%</td><td>9924</td><td>43.64%</td></tr>
+<tr><td>3月</td><td>22198</td><td>11398</td><td>51.35%</td><td>10800</td><td>48.65%</td></tr>
+<tr><td>4月</td><td>20780</td><td>10917</td><td>52.54%</td><td>9863</td><td>47.46%</td></tr>
+<tr><td>5月</td><td>23875</td><td>13071</td><td>54.75%</td><td>10804</td><td>45.25%</td></tr>
+<tr><td>6月</td><td>22635</td><td>12364</td><td>54.62%</td><td>10271</td><td>45.38%</td></tr>
+<tr><td>7月</td><td>23275</td><td>12698</td><td>54.56%</td><td>10577</td><td>45.44%</td></tr>
+<tr><td>8月</td><td>22111</td><td>12150</td><td>54.95%</td><td>9961</td><td>45.05%</td></tr>
+<tr class="total"><td>合计</td><td>177133</td><td>96587</td><td>54.53%</td><td>80546</td><td>45.47%</td></tr>
+</tbody></table></div>
+<div class="insight"><span>3月有行为占比探底 51.35%，之后回到约55%不再下行。页内动作覆盖不是当日提单率从53%掉到39%的主因。</span></div>
+
+<h3>1.2 月度提单率与分窗口首次提单率（占 T0）</h3>
+<div class="table"><table>
+<thead><tr><th>月</th><th>月度提单率</th><th>当日</th><th>1–3日</th><th>4–7日</th><th>7日以后</th><th>未提单</th></tr></thead>
+<tbody>
+<tr><td>1月</td><td class="good">94.84%</td><td>52.89%</td><td>18.55%</td><td>7.44%</td><td>15.96%</td><td>5.16%</td></tr>
+<tr><td>2月</td><td>94.45%</td><td>51.81%</td><td>18.93%</td><td>7.61%</td><td>16.11%</td><td>5.55%</td></tr>
+<tr><td>3月</td><td>93.04%</td><td>46.37%</td><td>20.12%</td><td>8.17%</td><td>18.38%</td><td>6.96%</td></tr>
+<tr><td>4月</td><td>92.78%</td><td>46.85%</td><td>19.98%</td><td>8.28%</td><td>17.67%</td><td>7.22%</td></tr>
+<tr><td>5月</td><td>91.31%</td><td>45.16%</td><td>18.86%</td><td>8.38%</td><td>18.90%</td><td>8.69%</td></tr>
+<tr><td>6月</td><td>89.72%</td><td>43.77%</td><td>18.87%</td><td>8.59%</td><td>18.50%</td><td>10.28%</td></tr>
+<tr><td>7月</td><td>86.15%</td><td>41.36%</td><td>18.69%</td><td>8.82%</td><td>17.28%</td><td>13.85%</td></tr>
+<tr><td>8月</td><td class="bad">80.07%</td><td>39.20%</td><td>18.86%</td><td>9.21%</td><td>12.80%</td><td>19.93%</td></tr>
+<tr class="total"><td>合计</td><td>90.21%</td><td>45.79%</td><td>19.10%</td><td>8.33%</td><td>16.98%</td><td>9.79%</td></tr>
+</tbody></table></div>
+<p class="desc">人数：当日 81118，1–3日 33839，4–7日 14750，7日以后 30082，未提单 17344。1–3日占 T0 八个月都在 18.5%～20.1%，当日流失没有平移到次日。</p>
+
+<h3>1.3 有行为组内各窗口率</h3>
+<div class="table"><table>
+<thead><tr><th>月</th><th>月度提单率</th><th>当日</th><th>1–3日</th><th>4–7日</th><th>7日以后</th><th>未提单</th></tr></thead>
+<tbody>
+<tr><td>1月</td><td>98.33%</td><td>70.96%</td><td>14.10%</td><td>4.92%</td><td>8.34%</td><td>1.67%</td></tr>
+<tr><td>2月</td><td>98.17%</td><td>70.49%</td><td>14.34%</td><td>4.99%</td><td>8.34%</td><td>1.83%</td></tr>
+<tr><td>3月</td><td>97.53%</td><td>67.68%</td><td>14.94%</td><td>5.29%</td><td>9.62%</td><td>2.47%</td></tr>
+<tr><td>4月</td><td>97.07%</td><td>64.73%</td><td>16.58%</td><td>5.73%</td><td>10.03%</td><td>2.93%</td></tr>
+<tr><td>5月</td><td>96.09%</td><td>59.23%</td><td>17.23%</td><td>6.89%</td><td>12.74%</td><td>3.91%</td></tr>
+<tr><td>6月</td><td>94.69%</td><td>56.87%</td><td>18.26%</td><td>7.26%</td><td>12.29%</td><td>5.31%</td></tr>
+<tr><td>7月</td><td>92.75%</td><td>54.52%</td><td>18.29%</td><td>7.47%</td><td>12.46%</td><td>7.25%</td></tr>
+<tr><td>8月</td><td>88.41%</td><td>53.05%</td><td>18.74%</td><td>7.93%</td><td>8.69%</td><td>11.59%</td></tr>
+<tr class="total"><td>合计</td><td>95.32%</td><td>62.00%</td><td>16.60%</td><td>6.35%</td><td>10.37%</td><td>4.68%</td></tr>
+</tbody></table></div>
+
+<h3>1.4 无行为组内各窗口率</h3>
+<div class="table"><table>
+<thead><tr><th>月</th><th>月度提单率</th><th>当日</th><th>1–3日</th><th>4–7日</th><th>7日以后</th><th>未提单</th></tr></thead>
+<tbody>
+<tr><td>1月</td><td>90.17%</td><td>28.71%</td><td>24.49%</td><td>10.82%</td><td>26.16%</td><td>9.83%</td></tr>
+<tr><td>2月</td><td>89.66%</td><td>27.68%</td><td>24.86%</td><td>10.98%</td><td>26.14%</td><td>10.34%</td></tr>
+<tr><td>3月</td><td>88.31%</td><td>23.88%</td><td>25.59%</td><td>11.21%</td><td>27.62%</td><td>11.69%</td></tr>
+<tr><td>4月</td><td>88.03%</td><td>27.06%</td><td>23.75%</td><td>11.10%</td><td>26.12%</td><td>11.97%</td></tr>
+<tr><td>5月</td><td>85.52%</td><td>28.15%</td><td>20.83%</td><td>10.18%</td><td>26.36%</td><td>14.48%</td></tr>
+<tr><td>6月</td><td>83.74%</td><td>27.99%</td><td>19.60%</td><td>10.18%</td><td>25.97%</td><td>16.26%</td></tr>
+<tr><td>7月</td><td>78.23%</td><td>25.56%</td><td>19.16%</td><td>10.43%</td><td>23.08%</td><td>21.77%</td></tr>
+<tr><td>8月</td><td>69.90%</td><td>22.31%</td><td>19.01%</td><td>10.77%</td><td>17.81%</td><td>30.10%</td></tr>
+<tr class="total"><td>合计</td><td>84.08%</td><td>26.36%</td><td>22.10%</td><td>10.70%</td><td>24.91%</td><td>15.92%</td></tr>
+</tbody></table></div>
+
+<h3>1.5 有行为提单人数占总提单人数</h3>
+<div class="table"><table>
+<thead><tr><th>月</th><th>全部首次提单中有行为占比</th><th>当日窗口</th><th>1–3日</th><th>4–7日</th><th>7日以后</th></tr></thead>
+<tbody>
+<tr><td>1月</td><td>59.35%</td><td>76.79%</td><td>43.54%</td><td>37.85%</td><td>29.92%</td></tr>
+<tr><td>2月</td><td>58.55%</td><td>76.68%</td><td>42.69%</td><td>36.99%</td><td>29.18%</td></tr>
+<tr><td>3月</td><td>53.85%</td><td>74.94%</td><td>38.12%</td><td>33.24%</td><td>26.89%</td></tr>
+<tr><td>4月</td><td>54.97%</td><td>72.59%</td><td>43.59%</td><td>36.34%</td><td>29.83%</td></tr>
+<tr><td>5月</td><td>57.63%</td><td>71.80%</td><td>50.01%</td><td>45.03%</td><td>36.89%</td></tr>
+<tr><td>6月</td><td>57.65%</td><td>70.98%</td><td>52.87%</td><td>46.19%</td><td>36.30%</td></tr>
+<tr><td>7月</td><td>58.73%</td><td>71.92%</td><td>53.40%</td><td>46.25%</td><td>39.32%</td></tr>
+<tr><td>8月</td><td>60.72%</td><td>74.37%</td><td>54.59%</td><td>47.30%</td><td>37.31%</td></tr>
+<tr class="total"><td>合计</td><td>57.61%</td><td>73.83%</td><td>47.39%</td><td>41.55%</td><td>33.30%</td></tr>
+</tbody></table></div>
+<div class="callout gold"><div class="ch">第一部分结论（数据）</div>
+① 有行为覆盖 1月57.24%→8月54.95%，仅-2.3pp。<br>
+② 有行为当日提单率 70.96%→53.05%（-17.9pp），无行为当日 28.71%→22.31%（-6.4pp）。主跌在有行为组的当天转化。<br>
+③ 1–3日占 T0 稳定约19%，不是「今天不提明天补」。<br>
+④ 当天提单里约74%做过5类动作；全部首次提单里该比例约58%，越晚提越不像当天比过价。</div>
+
+<h2>第二部分 盈利率</h2>
+<p class="desc">首次提单订单，已放款且 due_date &lt; 2026-09-14。还款为 repayment_record_copy.amount，payin_date 在申请日与整笔到期日之间（含）。盈利率 = Σ还款/Σ放款 − 1。</p>
+<div class="chart"><h3>图5 分月分窗口盈利率（全体）</h3><p>8月7日以后到期样本少。来源：已到期放款订单</p><div class="box"><canvas id="c5"></canvas></div></div>
+<div class="table"><table>
+<thead><tr><th>月</th><th>当日 全/有/无</th><th>1–3日 全/有/无</th><th>4–7日 全/有/无</th><th>7日以后 全/有/无</th></tr></thead>
+<tbody>
+<tr><td>1月</td><td>3.44% / 5.20% / <span class="bad">-4.06%</span></td><td>10.35% / 10.83% / 9.83%</td><td>15.68% / 16.54% / 15.01%</td><td>18.18% / 14.24% / 20.35%</td></tr>
+<tr><td>2月</td><td>1.20% / 2.71% / <span class="bad">-4.92%</span></td><td>14.24% / 14.41% / 14.08%</td><td>12.71% / 7.82% / 16.41%</td><td>14.09% / 7.82% / 17.03%</td></tr>
+<tr><td>3月</td><td>7.75% / 8.42% / 5.12%</td><td>15.97% / 15.28% / 16.61%</td><td>17.60% / 16.77% / 18.22%</td><td>19.79% / 19.05% / 20.12%</td></tr>
+<tr><td>4月</td><td>8.49% / 9.48% / 5.05%</td><td>19.02% / 21.61% / 16.19%</td><td>18.77% / 18.29% / 19.11%</td><td>20.28% / 22.03% / 19.31%</td></tr>
+<tr><td>5月</td><td>7.60% / 8.47% / 4.62%</td><td>16.64% / 16.64% / 16.64%</td><td>16.67% / 12.92% / 20.57%</td><td>14.74% / 12.69% / 16.21%</td></tr>
+<tr><td>6月</td><td>4.37% / 6.53% / <span class="bad">-3.38%</span></td><td>11.91% / 11.19% / 12.93%</td><td>11.55% / 11.69% / 11.40%</td><td>8.56% / 3.92% / 11.86%</td></tr>
+<tr><td>7月</td><td>5.23% / 7.54% / <span class="bad">-2.50%</span></td><td>9.67% / 8.18% / 11.97%</td><td>10.60% / 13.09% / 8.09%</td><td>8.50% / 6.95% / 9.71%</td></tr>
+<tr><td>8月</td><td>6.65% / 6.56% / 6.95%</td><td>12.11% / 10.44% / 14.38%</td><td>13.05% / 7.19% / 20.24%</td><td>6.85%* / 8.32%* / 6.00%*</td></tr>
+<tr class="total"><td>合计</td><td>5.27% / 6.61% / 0.32%</td><td>13.69% / 13.37% / 14.07%</td><td>14.46% / 13.02% / 15.75%</td><td>14.64% / 11.83% / 16.32%</td></tr>
+</tbody></table></div>
+<div class="callout"><div class="ch">第二部分结论</div>
+当日单合计盈利率仅 5.27%，晚提三档 13.7%～14.6%。无行为当日在 1/2/6/7 月为负。有行为把当日盈利率从 0.32% 抬到 6.61%，但仍远低于晚提。</div>
+
+<h2>第三部分 息费</h2>
+<p class="desc">已放款首次提单。息费 = Σ(pre_amt+post_amt)/Σ remit_amt。未到期也计入。</p>
+<div class="chart"><h3>图6 分月分窗口息费（全体）</h3><p>来源：order_loan_f_v2_copy 已放款订单</p><div class="box"><canvas id="c6"></canvas></div></div>
+<div class="table"><table>
+<thead><tr><th>月</th><th>当日 全/有/无</th><th>1–3日 全/有/无</th><th>4–7日 全/有/无</th><th>7日以后 全/有/无</th></tr></thead>
+<tbody>
+<tr><td>1月</td><td>49.57% / 49.37% / 50.44%</td><td>49.41% / 49.71% / 49.09%</td><td>47.76% / 47.34% / 48.08%</td><td>49.97% / 49.49% / 50.24%</td></tr>
+<tr><td>2月</td><td>48.91% / 48.66% / 49.89%</td><td>49.80% / 50.03% / 49.56%</td><td>49.43% / 49.16% / 49.64%</td><td>51.02% / 50.21% / 51.39%</td></tr>
+<tr><td>3月</td><td>50.50% / 50.20% / 51.70%</td><td>50.76% / 50.79% / 50.73%</td><td>50.33% / 51.07% / 49.78%</td><td>51.93% / 51.73% / 52.02%</td></tr>
+<tr><td>4月</td><td>51.45% / 51.12% / 52.61%</td><td>51.84% / 51.88% / 51.80%</td><td>50.90% / 50.39% / 51.26%</td><td>52.37% / 52.28% / 52.43%</td></tr>
+<tr><td>5月</td><td>54.16% / 54.06% / 54.49%</td><td>53.80% / 53.81% / 53.77%</td><td>53.57% / 52.75% / 54.42%</td><td>54.21% / 53.66% / 54.60%</td></tr>
+<tr><td>6月</td><td class="bad">58.27% / 58.23% / 58.41%</td><td>57.76% / 57.93% / 57.51%</td><td>56.45% / 55.92% / 57.02%</td><td>53.29% / 52.69% / 53.69%</td></tr>
+<tr><td>7月</td><td>58.18% / 58.26% / 57.92%</td><td>57.04% / 57.17% / 56.84%</td><td>53.70% / 53.96% / 53.42%</td><td>54.19% / 54.23% / 54.17%</td></tr>
+<tr><td>8月</td><td class="bad">60.21% / 60.33% / 59.77%</td><td>58.91% / 59.02% / 58.76%</td><td>56.20% / 56.19% / 56.21%</td><td>56.27% / 56.61% / 56.05%</td></tr>
+<tr class="total"><td>合计</td><td>53.39% / 53.19% / 54.12%</td><td>53.66% / 54.05% / 53.18%</td><td>52.53% / 52.64% / 52.43%</td><td>52.94% / 52.79% / 53.03%</td></tr>
+</tbody></table></div>
+<div class="callout"><div class="ch">第三部分结论</div>
+八个月合计四个窗口息费都在 52.5%～53.7%，有/无行为几乎无差。定价结构不是「当日单更便宜」。变化在时间：当日息费 1月49.57%→8月60.21%（+10.6pp），6月跳升最陡。</div>
+
+<h2>第四部分 整笔订单逾期率</h2>
+<p class="desc">样本与盈利率相同（已放款、已到期）。到期时逾期：repaid_date &gt; due_date，或 repaid_date 空/≤2000-01-01。正常：2000-01-01 之后且 ≤ due_date。</p>
+<div class="chart"><h3>图7 分月分窗口整笔逾期率（全体）</h3><p>来源：order_loan_f_v2_copy 已到期放款订单</p><div class="box"><canvas id="c7"></canvas></div></div>
+<div class="table"><table>
+<thead><tr><th>月</th><th>当日 全/有/无</th><th>1–3日 全/有/无</th><th>4–7日 全/有/无</th><th>7日以后 全/有/无</th></tr></thead>
+<tbody>
+<tr><td>1月</td><td>36.60% / 35.36% / 40.66%</td><td>32.38% / 30.78% / 33.62%</td><td>31.94% / 31.10% / 32.46%</td><td>31.74% / 30.94% / 32.09%</td></tr>
+<tr><td>2月</td><td>37.41% / 36.01% / 41.98%</td><td>32.31% / 31.18% / 33.17%</td><td>33.83% / 33.23% / 34.18%</td><td>31.34% / 30.25% / 31.81%</td></tr>
+<tr><td>3月</td><td>36.40% / 35.25% / 39.82%</td><td>30.85% / 30.65% / 30.98%</td><td>30.46% / 30.15% / 30.61%</td><td>32.69% / 32.09% / 32.92%</td></tr>
+<tr><td>4月</td><td>36.50% / 35.40% / 39.43%</td><td>31.68% / 29.88% / 33.07%</td><td>32.29% / 30.77% / 33.15%</td><td>33.42% / 30.02% / 34.91%</td></tr>
+<tr><td>5月</td><td>37.81% / 36.92% / 40.05%</td><td>31.73% / 30.48% / 32.98%</td><td>33.40% / 34.24% / 32.71%</td><td>36.02% / 36.44% / 35.76%</td></tr>
+<tr><td>6月</td><td class="bad">42.27% / 41.74% / 43.58%</td><td>36.62% / 36.24% / 37.04%</td><td>37.04% / 37.40% / 36.72%</td><td>37.70% / 38.62% / 37.15%</td></tr>
+<tr><td>7月</td><td>42.55% / 41.07% / 46.36%</td><td>39.11% / 38.19% / 40.16%</td><td>39.72% / 39.62% / 39.79%</td><td>40.58% / 38.00% / 42.28%</td></tr>
+<tr><td>8月</td><td>43.02% / 43.07% / 42.87%</td><td>39.39% / 39.14% / 39.68%</td><td>39.15% / 40.93% / 37.64%</td><td>40.33%* / 37.88%* / 41.62%*</td></tr>
+<tr class="total"><td>合计</td><td>38.80% / 37.73% / 41.80%</td><td>34.06% / 33.44% / 34.62%</td><td>34.69% / 35.01% / 34.47%</td><td>35.03% / 34.45% / 35.32%</td></tr>
+</tbody></table></div>
+<div class="callout red"><div class="ch">第四部分结论</div>
+当日单逾期合计 38.80%，晚提约 34%～35%（差约 4pp）。无行为当日 41.80% vs 有行为 37.73%。6月起全体逾期上一个台阶（当日 37.8%→42.3%），与息费跳升同步。</div>
+
+<h2>第五部分 交叉验证与业务解读</h2>
+<div class="chart"><h3>图8 当日：提单率、息费、逾期、盈利率同轴</h3><p>四个指标均为%。来源：本报告第一至四部分</p><div class="box"><canvas id="c8"></canvas></div></div>
+
+<h3>5.1 息费升高伴随当日提单率下降</h3>
+<p class="desc">当日息费 49.57%→60.21%（+10.64pp），当日提单率 52.89%→39.20%（-13.69pp）。6月息费从 5月54.16% 跳到 58.27%（+4.1pp），当月当日提单率从 45.16% 收到 43.77%。窗口之间息费几乎一样（合计 52.5%～53.7%），所以不是「当天单更便宜所以提单多」，而是<strong>同一套定价变贵后，当天提的人变少</strong>。</p>
+
+<h3>5.2 借得越急，逾期越高</h3>
+<p class="desc">合计整笔逾期：当日 38.80% &gt; 7日以后 35.03% &gt; 4–7日 34.69% &gt; 1–3日 34.06%。无行为当日 41.80%，是所有已算格子里最高的大样本档（1月40.66%、2月41.98%、7月46.36%）。业务上对应：获额当天不比价、直接提的人更缺钱/更不挑价，到期偿付更差。</p>
+
+<h3>5.3 资质恶化：息费涨、逾期涨、好用户当天不提</h3>
+<p class="desc">有行为组当日转化 71%→53%，但覆盖仍约55%——愿意比价的人还在，只是当天更少下单。同期当日逾期 36.6%→43.0%。留下当天提单的结构更差：无行为当日盈利率多个月为负（1月-4.06%、2月-4.92%、6月-3.38%、7月-2.50%）。这与「好用户被贵价挤出、留下更差客群」一致。</p>
+
+<h3>5.4 息费收益 vs 坏账：当前当日单仍可能「贵能补坏」，但空间在收窄</h3>
+<p class="desc">契约息费约 53%～60%，实还盈利率当日仅 5.3%——大部分名义息费没有变成现金。晚提盈利率 14% 说明同样息费下，晚提客群实收更好。6月后当日逾期升到 42%+，当日盈利率仍只有 4%～7%，没有随息费 58%～60% 同比例变厚。继续加价若再赶跑比价用户，增量坏账可能吃掉增量息费。</p>
+
+<h3>5.5 饮鸩止渴风险（数据化）</h3>
+<p class="desc">月度提单率（观察期内最终会提）1月94.84%→6月89.72%（相对完整观察期）。未提单 5.16%→10.28%。有行为未提单仅从 1.67% 到 5.31%，无行为未提单 9.83%→16.26%。流失加速集中在无行为/观望客群。若高息费把比价用户变成「晚提或不再提」，短期靠高息费撑当日利润，长期单用户生命周期缩短。</p>
+
+<h3>5.6 当日提单掉到哪里去了（1→6月，观察期相对完整）</h3>
+<p class="desc">1月到6月当日占 T0 从 52.89% 降到 43.77%（-9.12pp）。同期 1–3日仅 +0.32pp（18.55%→18.87%），4–7日 +1.15pp，7日以后 +2.54pp，未提单 +5.12pp（5.16%→10.28%）。<strong>当日流失的约 56% 变成观察期内未提单，约 28% 推迟到 8 日及以后，几乎没有平移到次日 1–3 日。</strong>因此「今天不提明天补」不成立；主要是不提，其次是拖很久再提。</p>
+<div class="table"><table>
+<thead><tr><th>窗口占T0</th><th>1月</th><th>6月</th><th>变化</th><th>占当日流失的份额</th></tr></thead>
+<tbody>
+<tr><td>当日</td><td>52.89%</td><td>43.77%</td><td class="bad">-9.12pp</td><td>—</td></tr>
+<tr><td>1–3日</td><td>18.55%</td><td>18.87%</td><td>+0.32pp</td><td>3.5%</td></tr>
+<tr><td>4–7日</td><td>7.44%</td><td>8.59%</td><td>+1.15pp</td><td>12.6%</td></tr>
+<tr><td>7日以后</td><td>15.96%</td><td>18.50%</td><td>+2.54pp</td><td>27.9%</td></tr>
+<tr><td>未提单</td><td>5.16%</td><td>10.28%</td><td class="bad">+5.12pp</td><td>56.1%</td></tr>
+<tr class="total"><td>月度提单率</td><td>94.84%</td><td>89.72%</td><td>-5.12pp</td><td>等于未提单增加</td></tr>
+</tbody></table></div>
+
+<h3>5.7 分月四指标对照（当日单）</h3>
+<p class="desc">把定价、意愿、质量、兑现放在同一张表。6月是拐点：息费一次跳到 58%，逾期同时站上 42%，盈利率从 5月 7.60% 落到 4.37%，并没有变厚。</p>
+<div class="table"><table>
+<thead><tr><th>月</th><th>当日提单率</th><th>当日息费</th><th>当日逾期</th><th>当日盈利率</th><th>有行为当日提单率</th></tr></thead>
+<tbody>
+<tr><td>1月</td><td>52.89%</td><td>49.57%</td><td>36.60%</td><td>3.44%</td><td>70.96%</td></tr>
+<tr><td>2月</td><td>51.81%</td><td>48.91%</td><td>37.41%</td><td>1.20%</td><td>70.49%</td></tr>
+<tr><td>3月</td><td>46.37%</td><td>50.50%</td><td>36.40%</td><td>7.75%</td><td>67.68%</td></tr>
+<tr><td>4月</td><td>46.85%</td><td>51.45%</td><td>36.50%</td><td>8.49%</td><td>64.73%</td></tr>
+<tr><td>5月</td><td>45.16%</td><td>54.16%</td><td>37.81%</td><td>7.60%</td><td>59.23%</td></tr>
+<tr><td>6月</td><td>43.77%</td><td class="bad">58.27%</td><td class="bad">42.27%</td><td>4.37%</td><td>56.87%</td></tr>
+<tr><td>7月</td><td>41.36%</td><td>58.18%</td><td>42.55%</td><td>5.23%</td><td>54.52%</td></tr>
+<tr><td>8月</td><td class="bad">39.20%</td><td class="bad">60.21%</td><td class="bad">43.02%</td><td>6.65%</td><td>53.05%</td></tr>
+</tbody></table></div>
+
+<h3>5.8 名义息费与实还利润的缺口</h3>
+<p class="desc">合计当日契约息费 53.39%，实还盈利率 5.27%，缺口约 48pp。晚提三档息费 52.5%～53.7%，盈利率 13.7%～14.6%，缺口约 39pp。同样定价下，晚提把大约 9pp 的利润多兑现出来——对应逾期低约 4pp，以及无行为当日多个月实还为负。加价若只抬契约息费、不改善到期实还结构，利润表上看不见对应增厚。</p>
+
+<h3>5.9 有行为延迟提单：质量更好的「可经营」人群</h3>
+<p class="desc">全部首次提单中有行为占比合计 57.61%；当日窗口 73.83%，1–3日 47.39%，越晚越低。但 1–3日窗口内有行为占比从 1月 43.54% 升到 8月 54.59%——越来越多比过价的人改到第 1～3 天再提。该档逾期合计 33.44%（有行为），低于当日有行为 37.73%。这是召回/券策略的优先对象，而不是继续用更高息费去抢他们当天点确认。</p>
+
+<div class="callout green"><div class="ch">业务建议（均绑定数据）</div>
+<b>1. 不要用当日提单率当唯一北极星。</b> 它从 52.9% 掉到 39.2% 的同时，当日逾期从 36.6% 升到 43.0%，盈利率仍只有约 5%。<br>
+<b>2. 定价分层，而不是一刀切加价。</b> 窗口间息费几乎无差，但逾期/盈利率差一截。对获额当日无5类行为的人（当日逾期合计 41.8%、盈利率 0.32%）应限制额度/期次或要求比价动作，而不是同等加息。<br>
+<b>3. 保护「有行为但当天不提」。</b> 该组 1–3日转化从 14.1% 升到约 18.7%，4–7日 4.9%→7.9%。他们在比价后延迟下单，逾期低于当日（1–3日有行为逾期合计 33.4% vs 当日 37.7%）。用券/额度锁定做 1–3 日召回，比继续抬价抢当日更划算。<br>
+<b>4. 把息费上限和逾期上限绑在一起看。</b> 6月息费跳到 58% 后，当日逾期站上 42%。建议监控：当日息费、当日提单率、当日到期逾期、当日盈利率四条线；息费再升而盈利率不升、逾期继续升，即停止加价。<br>
+<b>5. 观察期完整后再看 7 日以后。</b> 8月未提单 19.93% 含截断，不宜直接当流失结论。以 1–6 月未提单 5.2%→10.3% 作为流失恶化的更稳估计。
+</div>
+
+<h2>附录 可复现 SQL（GaussDB）</h2>
+<p class="desc">一次跑完 2026-01-01～2026-09-01。查询 A1–A5 对应第一部分表；B/C/D 对应盈利率、息费、逾期（分月×窗口，含有/无行为）。埋点必须带 <code>create_date</code> 分区条件。同目录文件：<code>appendix_t0_first_apply_metrics.sql</code>。</p>
+<pre class="sql">-- =============================================================================
+-- T0 结清0在贷获额后：当日5类行为 × 首次提单窗口 × 盈利率 / 息费 / 整笔逾期率
+-- 库：kaby_dw（GaussDB）  统计日：CURRENT_DATE
+-- 一次跑完 2026-01-01（含）～ 2026-09-01（不含），可复现报告全部月表与合计。
+--
+-- 口径
+--   T0：is_pass1=1 AND loan_type_code=2 AND recycle_type=3；20秒获额批次去重；
+--       同日结清且 vir_time&gt;=repaid_time；结清时无其他在途/在贷；用户×结清日最早一轮获额。
+--   有行为：获额当日、T 之后出现过改额/改期/看合同/看计划/选原因（不含确认提单、进页、停留）。
+--   首次提单窗口（自然日，相对获额日）：当日 / 1-3日 / 4-7日 / 7日以后 / never。
+--   月度提单率 = 1 - never/T0。
+--   盈利率、逾期率：首次提单且已放款、due_date &lt; CURRENT_DATE。
+--   还款：repayment_record_copy.amount，payin_date ∈ [apply_date, due_date]。
+--   盈利率 = Σamount/Σremit_amt - 1。
+--   息费：已放款（未到期也算）Σ(pre_amt+post_amt)/Σremit_amt。
+--   整笔逾期：repaid_date &gt; due_date，或 repaid_date 空/≤2000-01-01。
+-- 注意：event_track_record 必须带 create_date 分区条件。8月「7日以后/未提单」有右截断。
+-- =============================================================================
+
+SET statement_timeout = 420000;
+
+DROP TABLE IF EXISTS tmp_m_origin;
+CREATE TEMP TABLE tmp_m_origin AS
+WITH params AS (
+    SELECT DATE '2026-01-01' AS start_date, DATE '2026-09-01' AS end_date
+), raw_offer AS (
+    SELECT DISTINCT ON (v.user_id, v.serial_id)
+        v.user_id, v.serial_id, v.vir_date::date AS vir_date, TO_TIMESTAMP(v.vir_unix) AS vir_time
+    FROM wangchuanliang.order_vir_f_copy v
+    INNER JOIN wangchuanliang.side_recycle_type_copy r ON r.serial_id = v.serial_id
+    CROSS JOIN params p
+    WHERE v.is_pass1 = 1 AND v.loan_type_code = 2 AND r.recycle_type = 3
+      AND v.vir_date &gt;= p.start_date - 1 AND v.vir_date &lt; p.end_date
+    ORDER BY v.user_id, v.serial_id, v.vir_unix DESC
+), lagged AS (
+    SELECT r.*, LAG(r.vir_time) OVER (PARTITION BY r.user_id ORDER BY r.vir_time, r.serial_id) AS prev_vir_time
+    FROM raw_offer r
+), batched AS (
+    SELECT l.*, SUM(CASE WHEN l.prev_vir_time IS NULL OR l.vir_time - l.prev_vir_time &gt; INTERVAL '20 seconds' THEN 1 ELSE 0 END)
+      OVER (PARTITION BY l.user_id ORDER BY l.vir_time, l.serial_id ROWS UNBOUNDED PRECEDING) AS batch_id
+    FROM lagged l
+), dedup_offer AS (
+    SELECT user_id, serial_id, vir_date, vir_time
+    FROM (
+        SELECT b.*, ROW_NUMBER() OVER (PARTITION BY b.user_id, b.batch_id ORDER BY b.vir_time DESC, b.serial_id DESC) AS batch_rn
+        FROM batched b
+    ) x
+    CROSS JOIN params p
+    WHERE batch_rn = 1 AND vir_date &gt;= p.start_date AND vir_date &lt; p.end_date
+), candidate_users AS (SELECT DISTINCT user_id FROM dedup_offer),
+all_orders AS (
+    SELECT o.user_id, o.serial_id, o.apply_time, o.repaid_time, o.repaid_date::date AS repaid_date,
+           o.loan_status_code, o.is_remit, o.is_repaid
+    FROM wangchuanliang.order_loan_f_v2_copy o
+    INNER JOIN candidate_users u ON u.user_id = o.user_id
+), clean_settlement AS (
+    SELECT o.user_id, o.serial_id, o.repaid_time, o.repaid_date
+    FROM all_orders o
+    WHERE o.is_remit = 1 AND (o.is_repaid = 1 OR o.loan_status_code = 7)
+      AND o.repaid_time &gt; TIMESTAMP '2000-01-01 00:00:00'
+      AND NOT EXISTS (
+          SELECT 1 FROM all_orders x
+          WHERE x.user_id = o.user_id AND x.serial_id &lt;&gt; o.serial_id AND x.apply_time &lt; o.repaid_time
+            AND (x.loan_status_code IN (5, 8) OR (x.loan_status_code = 7 AND x.repaid_time &gt; o.repaid_time))
+      )
+), paired AS (
+    SELECT e.user_id, e.serial_id AS credit_serial_id, e.vir_date, e.vir_time,
+           ROW_NUMBER() OVER (PARTITION BY e.user_id, e.vir_date ORDER BY e.vir_time ASC, e.serial_id DESC) AS day_rn
+    FROM dedup_offer e
+    INNER JOIN clean_settlement s
+        ON s.user_id = e.user_id AND s.repaid_date = e.vir_date AND e.vir_time &gt;= s.repaid_time
+)
+SELECT user_id, credit_serial_id, vir_date, vir_time FROM paired WHERE day_rn = 1;
+
+DROP TABLE IF EXISTS tmp_first;
+CREATE TEMP TABLE tmp_first AS
+SELECT t.user_id, t.vir_date, t.vir_time,
+       o.serial_id, o.apply_date, o.apply_time, o.due_date, o.is_remit, o.remit_amt,
+       o.pre_amt, o.post_amt, o.repaid_date,
+       CASE
+         WHEN o.serial_id IS NULL THEN 'never'
+         WHEN o.apply_date = t.vir_date THEN '当日'
+         WHEN o.apply_date &gt;= t.vir_date + 1 AND o.apply_date &lt;= t.vir_date + 3 THEN '1-3日'
+         WHEN o.apply_date &gt;= t.vir_date + 4 AND o.apply_date &lt;= t.vir_date + 7 THEN '4-7日'
+         ELSE '7日以后'
+       END AS bucket
+FROM tmp_m_origin t
+LEFT JOIN (
+    SELECT user_id, vir_date, serial_id, apply_date, apply_time, due_date, is_remit, remit_amt, pre_amt, post_amt, repaid_date
+    FROM (
+        SELECT t.user_id, t.vir_date, a.serial_id, a.apply_date, a.apply_time, a.due_date, a.is_remit,
+               a.remit_amt, a.pre_amt, a.post_amt, a.repaid_date,
+               ROW_NUMBER() OVER (PARTITION BY t.user_id, t.vir_date ORDER BY a.apply_time, a.serial_id) AS rn
+        FROM tmp_m_origin t
+        INNER JOIN wangchuanliang.order_loan_f_v2_copy a
+          ON a.user_id = t.user_id AND a.apply_time &gt;= t.vir_time
+    ) z WHERE rn = 1
+) o ON o.user_id = t.user_id AND o.vir_date = t.vir_date;
+
+DROP TABLE IF EXISTS tmp_beh;
+CREATE TEMP TABLE tmp_beh AS
+SELECT t.user_id, t.vir_date, 1 AS has_beh
+FROM tmp_m_origin t
+INNER JOIN wangchuanliang.event_track_record e
+  ON e.user_id = t.user_id
+ AND e.create_date &gt;= DATE '2026-01-01'
+ AND e.create_date &lt;  DATE '2026-09-01'
+ AND e.create_date = t.vir_date
+ AND e.create_time &gt;= t.vir_time
+ AND e.create_time &lt; t.vir_date + 1
+ AND e.props_id IN (
+   'amount_modification','loan_form_loan_amount_selectionn_new','loan_form_loan_amount_selectionn_new_select',
+   'loan_form_term_selection_new','loan_form_term_selection_new_select',
+   'Loan_contract_newdetails','Loan_contract_newdetails_select',
+   'Loan_plan_newdetails','Loan_plan_newdetails_select',
+   'Loan_purpose_newdetails','Loan_purpose_newdetails_select'
+ )
+GROUP BY t.user_id, t.vir_date;
+
+DROP TABLE IF EXISTS tmp_base;
+CREATE TEMP TABLE tmp_base AS
+SELECT
+  f.user_id,
+  f.vir_date,
+  DATE_TRUNC('month', f.vir_date)::date AS ym,
+  f.bucket,
+  CASE WHEN b.has_beh = 1 THEN 1 ELSE 0 END AS has_beh,
+  f.serial_id,
+  f.apply_date,
+  f.due_date,
+  f.is_remit,
+  f.remit_amt,
+  f.pre_amt,
+  f.post_amt,
+  f.repaid_date
+FROM tmp_first f
+LEFT JOIN tmp_beh b ON b.user_id = f.user_id AND b.vir_date = f.vir_date;
+
+-- -----------------------------------------------------------------------------
+-- A1 有/无行为结构（分月 + 合计）
+-- -----------------------------------------------------------------------------
+SELECT
+  COALESCE(TO_CHAR(ym, 'YYYY-MM'), '合计') AS ym,
+  COUNT(*) AS t0,
+  SUM(has_beh) AS n_beh,
+  ROUND(100.0 * SUM(has_beh) / COUNT(*), 2) AS beh_pct,
+  SUM(1 - has_beh) AS n_nobeh,
+  ROUND(100.0 * SUM(1 - has_beh) / COUNT(*), 2) AS nobeh_pct
+FROM tmp_base
+GROUP BY ROLLUP (ym)
+ORDER BY 1;
+
+-- -----------------------------------------------------------------------------
+-- A2 首次提单窗口占 T0（分月 + 合计）
+-- 月度提单率 = 100 - never_pct
+-- -----------------------------------------------------------------------------
+SELECT
+  COALESCE(TO_CHAR(ym, 'YYYY-MM'), '合计') AS ym,
+  COUNT(*) AS t0,
+  ROUND(100.0 * SUM(CASE WHEN bucket &lt;&gt; 'never' THEN 1 ELSE 0 END) / COUNT(*), 2) AS apply_rate_pct,
+  ROUND(100.0 * SUM(CASE WHEN bucket = '当日' THEN 1 ELSE 0 END) / COUNT(*), 2) AS d0_pct,
+  ROUND(100.0 * SUM(CASE WHEN bucket = '1-3日' THEN 1 ELSE 0 END) / COUNT(*), 2) AS d1_3_pct,
+  ROUND(100.0 * SUM(CASE WHEN bucket = '4-7日' THEN 1 ELSE 0 END) / COUNT(*), 2) AS d4_7_pct,
+  ROUND(100.0 * SUM(CASE WHEN bucket = '7日以后' THEN 1 ELSE 0 END) / COUNT(*), 2) AS d8p_pct,
+  ROUND(100.0 * SUM(CASE WHEN bucket = 'never' THEN 1 ELSE 0 END) / COUNT(*), 2) AS never_pct,
+  SUM(CASE WHEN bucket = '当日' THEN 1 ELSE 0 END) AS n_d0,
+  SUM(CASE WHEN bucket = '1-3日' THEN 1 ELSE 0 END) AS n_d1_3,
+  SUM(CASE WHEN bucket = '4-7日' THEN 1 ELSE 0 END) AS n_d4_7,
+  SUM(CASE WHEN bucket = '7日以后' THEN 1 ELSE 0 END) AS n_d8p,
+  SUM(CASE WHEN bucket = 'never' THEN 1 ELSE 0 END) AS n_never
+FROM tmp_base
+GROUP BY ROLLUP (ym)
+ORDER BY 1;
+
+-- -----------------------------------------------------------------------------
+-- A3 有行为组内窗口率
+-- -----------------------------------------------------------------------------
+SELECT
+  COALESCE(TO_CHAR(ym, 'YYYY-MM'), '合计') AS ym,
+  COUNT(*) AS t0_beh,
+  ROUND(100.0 * SUM(CASE WHEN bucket &lt;&gt; 'never' THEN 1 ELSE 0 END) / COUNT(*), 2) AS apply_rate_pct,
+  ROUND(100.0 * SUM(CASE WHEN bucket = '当日' THEN 1 ELSE 0 END) / COUNT(*), 2) AS d0_pct,
+  ROUND(100.0 * SUM(CASE WHEN bucket = '1-3日' THEN 1 ELSE 0 END) / COUNT(*), 2) AS d1_3_pct,
+  ROUND(100.0 * SUM(CASE WHEN bucket = '4-7日' THEN 1 ELSE 0 END) / COUNT(*), 2) AS d4_7_pct,
+  ROUND(100.0 * SUM(CASE WHEN bucket = '7日以后' THEN 1 ELSE 0 END) / COUNT(*), 2) AS d8p_pct,
+  ROUND(100.0 * SUM(CASE WHEN bucket = 'never' THEN 1 ELSE 0 END) / COUNT(*), 2) AS never_pct
+FROM tmp_base
+WHERE has_beh = 1
+GROUP BY ROLLUP (ym)
+ORDER BY 1;
+
+-- -----------------------------------------------------------------------------
+-- A4 无行为组内窗口率
+-- -----------------------------------------------------------------------------
+SELECT
+  COALESCE(TO_CHAR(ym, 'YYYY-MM'), '合计') AS ym,
+  COUNT(*) AS t0_nobeh,
+  ROUND(100.0 * SUM(CASE WHEN bucket &lt;&gt; 'never' THEN 1 ELSE 0 END) / COUNT(*), 2) AS apply_rate_pct,
+  ROUND(100.0 * SUM(CASE WHEN bucket = '当日' THEN 1 ELSE 0 END) / COUNT(*), 2) AS d0_pct,
+  ROUND(100.0 * SUM(CASE WHEN bucket = '1-3日' THEN 1 ELSE 0 END) / COUNT(*), 2) AS d1_3_pct,
+  ROUND(100.0 * SUM(CASE WHEN bucket = '4-7日' THEN 1 ELSE 0 END) / COUNT(*), 2) AS d4_7_pct,
+  ROUND(100.0 * SUM(CASE WHEN bucket = '7日以后' THEN 1 ELSE 0 END) / COUNT(*), 2) AS d8p_pct,
+  ROUND(100.0 * SUM(CASE WHEN bucket = 'never' THEN 1 ELSE 0 END) / COUNT(*), 2) AS never_pct
+FROM tmp_base
+WHERE has_beh = 0
+GROUP BY ROLLUP (ym)
+ORDER BY 1;
+
+-- -----------------------------------------------------------------------------
+-- A5 有行为提单人数占总提单人数（总体 + 分窗口）
+-- -----------------------------------------------------------------------------
+SELECT
+  COALESCE(TO_CHAR(ym, 'YYYY-MM'), '合计') AS ym,
+  ROUND(100.0 * SUM(CASE WHEN bucket &lt;&gt; 'never' AND has_beh = 1 THEN 1 ELSE 0 END)
+              / NULLIF(SUM(CASE WHEN bucket &lt;&gt; 'never' THEN 1 ELSE 0 END), 0), 2) AS beh_share_all_apply,
+  ROUND(100.0 * SUM(CASE WHEN bucket = '当日' AND has_beh = 1 THEN 1 ELSE 0 END)
+              / NULLIF(SUM(CASE WHEN bucket = '当日' THEN 1 ELSE 0 END), 0), 2) AS beh_share_d0,
+  ROUND(100.0 * SUM(CASE WHEN bucket = '1-3日' AND has_beh = 1 THEN 1 ELSE 0 END)
+              / NULLIF(SUM(CASE WHEN bucket = '1-3日' THEN 1 ELSE 0 END), 0), 2) AS beh_share_d1_3,
+  ROUND(100.0 * SUM(CASE WHEN bucket = '4-7日' AND has_beh = 1 THEN 1 ELSE 0 END)
+              / NULLIF(SUM(CASE WHEN bucket = '4-7日' THEN 1 ELSE 0 END), 0), 2) AS beh_share_d4_7,
+  ROUND(100.0 * SUM(CASE WHEN bucket = '7日以后' AND has_beh = 1 THEN 1 ELSE 0 END)
+              / NULLIF(SUM(CASE WHEN bucket = '7日以后' THEN 1 ELSE 0 END), 0), 2) AS beh_share_d8p
+FROM tmp_base
+GROUP BY ROLLUP (ym)
+ORDER BY 1;
+
+-- -----------------------------------------------------------------------------
+-- B 盈利率：已放款且整笔已到期；还款 = repayment_record_copy.amount
+-- 盈利率 = repay_sum / remit_sum - 1
+-- -----------------------------------------------------------------------------
+DROP TABLE IF EXISTS tmp_repay;
+CREATE TEMP TABLE tmp_repay AS
+SELECT f.serial_id, SUM(r.amount) AS repay_amt
+FROM tmp_first f
+INNER JOIN wangchuanliang.repayment_record_copy r ON r.serial_id = f.serial_id
+WHERE f.is_remit = 1 AND f.due_date &lt; CURRENT_DATE AND COALESCE(f.remit_amt, 0) &gt; 0
+  AND r.payin_date &gt;= f.apply_date AND r.payin_date &lt;= f.due_date
+GROUP BY f.serial_id;
+
+SELECT
+  COALESCE(TO_CHAR(b.ym, 'YYYY-MM'), '合计') AS ym,
+  b.bucket,
+  SUM(CASE WHEN b.is_remit = 1 AND b.due_date &lt; CURRENT_DATE AND COALESCE(b.remit_amt, 0) &gt; 0 THEN 1 ELSE 0 END) AS n_due,
+  ROUND(100.0 * (
+    SUM(CASE WHEN b.is_remit = 1 AND b.due_date &lt; CURRENT_DATE AND COALESCE(b.remit_amt, 0) &gt; 0 THEN COALESCE(rp.repay_amt, 0) ELSE 0 END)
+    / NULLIF(SUM(CASE WHEN b.is_remit = 1 AND b.due_date &lt; CURRENT_DATE AND COALESCE(b.remit_amt, 0) &gt; 0 THEN b.remit_amt ELSE 0 END), 0)
+    - 1
+  ), 2) AS profit_all_pct,
+  ROUND(100.0 * (
+    SUM(CASE WHEN b.has_beh = 1 AND b.is_remit = 1 AND b.due_date &lt; CURRENT_DATE AND COALESCE(b.remit_amt, 0) &gt; 0 THEN COALESCE(rp.repay_amt, 0) ELSE 0 END)
+    / NULLIF(SUM(CASE WHEN b.has_beh = 1 AND b.is_remit = 1 AND b.due_date &lt; CURRENT_DATE AND COALESCE(b.remit_amt, 0) &gt; 0 THEN b.remit_amt ELSE 0 END), 0)
+    - 1
+  ), 2) AS profit_beh_pct,
+  ROUND(100.0 * (
+    SUM(CASE WHEN b.has_beh = 0 AND b.is_remit = 1 AND b.due_date &lt; CURRENT_DATE AND COALESCE(b.remit_amt, 0) &gt; 0 THEN COALESCE(rp.repay_amt, 0) ELSE 0 END)
+    / NULLIF(SUM(CASE WHEN b.has_beh = 0 AND b.is_remit = 1 AND b.due_date &lt; CURRENT_DATE AND COALESCE(b.remit_amt, 0) &gt; 0 THEN b.remit_amt ELSE 0 END), 0)
+    - 1
+  ), 2) AS profit_nobeh_pct
+FROM tmp_base b
+LEFT JOIN tmp_repay rp ON rp.serial_id = b.serial_id
+WHERE b.bucket &lt;&gt; 'never'
+GROUP BY ROLLUP (b.ym), b.bucket
+ORDER BY 1, 2;
+
+-- -----------------------------------------------------------------------------
+-- C 息费：已放款（含未到期）= Σ(pre_amt+post_amt)/Σremit_amt
+-- -----------------------------------------------------------------------------
+SELECT
+  COALESCE(TO_CHAR(ym, 'YYYY-MM'), '合计') AS ym,
+  bucket,
+  SUM(CASE WHEN is_remit = 1 AND COALESCE(remit_amt, 0) &gt; 0 THEN 1 ELSE 0 END) AS n_remit,
+  ROUND(100.0 * SUM(CASE WHEN is_remit = 1 AND COALESCE(remit_amt, 0) &gt; 0 THEN COALESCE(pre_amt, 0) + COALESCE(post_amt, 0) ELSE 0 END)
+              / NULLIF(SUM(CASE WHEN is_remit = 1 AND COALESCE(remit_amt, 0) &gt; 0 THEN remit_amt ELSE 0 END), 0), 2) AS fee_all_pct,
+  ROUND(100.0 * SUM(CASE WHEN has_beh = 1 AND is_remit = 1 AND COALESCE(remit_amt, 0) &gt; 0 THEN COALESCE(pre_amt, 0) + COALESCE(post_amt, 0) ELSE 0 END)
+              / NULLIF(SUM(CASE WHEN has_beh = 1 AND is_remit = 1 AND COALESCE(remit_amt, 0) &gt; 0 THEN remit_amt ELSE 0 END), 0), 2) AS fee_beh_pct,
+  ROUND(100.0 * SUM(CASE WHEN has_beh = 0 AND is_remit = 1 AND COALESCE(remit_amt, 0) &gt; 0 THEN COALESCE(pre_amt, 0) + COALESCE(post_amt, 0) ELSE 0 END)
+              / NULLIF(SUM(CASE WHEN has_beh = 0 AND is_remit = 1 AND COALESCE(remit_amt, 0) &gt; 0 THEN remit_amt ELSE 0 END), 0), 2) AS fee_nobeh_pct
+FROM tmp_base
+WHERE bucket &lt;&gt; 'never'
+GROUP BY ROLLUP (ym), bucket
+ORDER BY 1, 2;
+
+-- -----------------------------------------------------------------------------
+-- D 整笔订单逾期率：已放款且已到期
+-- -----------------------------------------------------------------------------
+SELECT
+  COALESCE(TO_CHAR(ym, 'YYYY-MM'), '合计') AS ym,
+  bucket,
+  SUM(CASE WHEN is_remit = 1 AND due_date &lt; CURRENT_DATE AND COALESCE(remit_amt, 0) &gt; 0 THEN 1 ELSE 0 END) AS n_due,
+  ROUND(100.0 * SUM(CASE WHEN is_remit = 1 AND due_date &lt; CURRENT_DATE AND COALESCE(remit_amt, 0) &gt; 0
+        AND (repaid_date IS NULL OR repaid_date &lt;= DATE '2000-01-01' OR repaid_date &gt; due_date) THEN 1 ELSE 0 END)
+              / NULLIF(SUM(CASE WHEN is_remit = 1 AND due_date &lt; CURRENT_DATE AND COALESCE(remit_amt, 0) &gt; 0 THEN 1 ELSE 0 END), 0), 2) AS od_all_pct,
+  ROUND(100.0 * SUM(CASE WHEN has_beh = 1 AND is_remit = 1 AND due_date &lt; CURRENT_DATE AND COALESCE(remit_amt, 0) &gt; 0
+        AND (repaid_date IS NULL OR repaid_date &lt;= DATE '2000-01-01' OR repaid_date &gt; due_date) THEN 1 ELSE 0 END)
+              / NULLIF(SUM(CASE WHEN has_beh = 1 AND is_remit = 1 AND due_date &lt; CURRENT_DATE AND COALESCE(remit_amt, 0) &gt; 0 THEN 1 ELSE 0 END), 0), 2) AS od_beh_pct,
+  ROUND(100.0 * SUM(CASE WHEN has_beh = 0 AND is_remit = 1 AND due_date &lt; CURRENT_DATE AND COALESCE(remit_amt, 0) &gt; 0
+        AND (repaid_date IS NULL OR repaid_date &lt;= DATE '2000-01-01' OR repaid_date &gt; due_date) THEN 1 ELSE 0 END)
+              / NULLIF(SUM(CASE WHEN has_beh = 0 AND is_remit = 1 AND due_date &lt; CURRENT_DATE AND COALESCE(remit_amt, 0) &gt; 0 THEN 1 ELSE 0 END), 0), 2) AS od_nobeh_pct
+FROM tmp_base
+WHERE bucket &lt;&gt; 'never'
+GROUP BY ROLLUP (ym), bucket
+ORDER BY 1, 2;
+</pre>
+<div class="foot">
+样本 T0=177133 用户日 · 行为窗口=获额当日自然日 · 盈利率/逾期截止 2026-09-14 已到期 · 息费含未到期已放款<br>
+8月7日以后与未提单存在右截断 · 进页与停留已按需求剔除 · 确认提单不计入「有行为」
+</div>
+</main>
+<script>
+const months=['1月','2月','3月','4月','5月','6月','7月','8月'];
+const opt=()=>({responsive:true,maintainAspectRatio:false,plugins:{legend:{labels:{color:'#aac5da'}}},scales:{x:{ticks:{color:'#aac5da'},grid:{color:'rgba(42,92,126,.25)'}},y:{ticks:{color:'#aac5da'},grid:{color:'rgba(42,92,126,.25)'}}}});
+new Chart(document.getElementById('c1'),{type:'line',data:{labels:months,datasets:[
+{label:'当日提单率%',data:[52.89,51.81,46.37,46.85,45.16,43.77,41.36,39.20],borderColor:'#43c7e7',backgroundColor:'transparent',tension:.2},
+{label:'当日息费%',data:[49.57,48.91,50.50,51.45,54.16,58.27,58.18,60.21],borderColor:'#ffc26b',backgroundColor:'transparent',tension:.2},
+{label:'当日逾期率%',data:[36.60,37.41,36.40,36.50,37.81,42.27,42.55,43.02],borderColor:'#f68ab0',backgroundColor:'transparent',tension:.2}
+]},options:opt()});
+new Chart(document.getElementById('c2'),{type:'bar',data:{labels:months,datasets:[
+{label:'当日',data:[52.89,51.81,46.37,46.85,45.16,43.77,41.36,39.20],backgroundColor:'#43c7e7'},
+{label:'1-3日',data:[18.55,18.93,20.12,19.98,18.86,18.87,18.69,18.86],backgroundColor:'#64dcae'},
+{label:'4-7日',data:[7.44,7.61,8.17,8.28,8.38,8.59,8.82,9.21],backgroundColor:'#ffc26b'},
+{label:'7日以后',data:[15.96,16.11,18.38,17.67,18.90,18.50,17.28,12.80],backgroundColor:'#b49aff'},
+{label:'未提单',data:[5.16,5.55,6.96,7.22,8.69,10.28,13.85,19.93],backgroundColor:'#f68ab0'}
+]},options:{...opt(),plugins:{legend:{labels:{color:'#aac5da'}}},scales:{x:{stacked:true,ticks:{color:'#aac5da'},grid:{color:'rgba(42,92,126,.25)'}},y:{stacked:true,max:100,ticks:{color:'#aac5da'},grid:{color:'rgba(42,92,126,.25)'}}}}});
+new Chart(document.getElementById('c3'),{type:'line',data:{labels:months,datasets:[
+{label:'有行为当日提单率%',data:[70.96,70.49,67.68,64.73,59.23,56.87,54.52,53.05],borderColor:'#64dcae',backgroundColor:'transparent',tension:.2},
+{label:'无行为当日提单率%',data:[28.71,27.68,23.88,27.06,28.15,27.99,25.56,22.31],borderColor:'#f68ab0',backgroundColor:'transparent',tension:.2},
+{label:'T0当日提单率%',data:[52.89,51.81,46.37,46.85,45.16,43.77,41.36,39.20],borderColor:'#43c7e7',backgroundColor:'transparent',tension:.2}
+]},options:opt()});
+new Chart(document.getElementById('c4'),{type:'bar',data:{labels:months,datasets:[
+{label:'当日',data:[3.44,1.20,7.75,8.49,7.60,4.37,5.23,6.65],backgroundColor:'#43c7e7'},
+{label:'1-3日',data:[10.35,14.24,15.97,19.02,16.64,11.91,9.67,12.11],backgroundColor:'#64dcae'},
+{label:'4-7日',data:[15.68,12.71,17.60,18.77,16.67,11.55,10.60,13.05],backgroundColor:'#ffc26b'},
+{label:'7日以后',data:[18.18,14.09,19.79,20.28,14.74,8.56,8.50,6.85],backgroundColor:'#b49aff'}
+]},options:opt()});
+new Chart(document.getElementById('c5'),{type:'line',data:{labels:months,datasets:[
+{label:'当日盈利率%',data:[3.44,1.20,7.75,8.49,7.60,4.37,5.23,6.65],borderColor:'#43c7e7',backgroundColor:'transparent',tension:.2},
+{label:'1-3日%',data:[10.35,14.24,15.97,19.02,16.64,11.91,9.67,12.11],borderColor:'#64dcae',backgroundColor:'transparent',tension:.2},
+{label:'4-7日%',data:[15.68,12.71,17.60,18.77,16.67,11.55,10.60,13.05],borderColor:'#ffc26b',backgroundColor:'transparent',tension:.2},
+{label:'7日以后%',data:[18.18,14.09,19.79,20.28,14.74,8.56,8.50,6.85],borderColor:'#b49aff',backgroundColor:'transparent',tension:.2}
+]},options:opt()});
+new Chart(document.getElementById('c6'),{type:'line',data:{labels:months,datasets:[
+{label:'当日息费%',data:[49.57,48.91,50.50,51.45,54.16,58.27,58.18,60.21],borderColor:'#43c7e7',backgroundColor:'transparent',tension:.2},
+{label:'1-3日%',data:[49.41,49.80,50.76,51.84,53.80,57.76,57.04,58.91],borderColor:'#64dcae',backgroundColor:'transparent',tension:.2},
+{label:'4-7日%',data:[47.76,49.43,50.33,50.90,53.57,56.45,53.70,56.20],borderColor:'#ffc26b',backgroundColor:'transparent',tension:.2},
+{label:'7日以后%',data:[49.97,51.02,51.93,52.37,54.21,53.29,54.19,56.27],borderColor:'#b49aff',backgroundColor:'transparent',tension:.2}
+]},options:opt()});
+new Chart(document.getElementById('c7'),{type:'line',data:{labels:months,datasets:[
+{label:'当日逾期%',data:[36.60,37.41,36.40,36.50,37.81,42.27,42.55,43.02],borderColor:'#f68ab0',backgroundColor:'transparent',tension:.2},
+{label:'1-3日%',data:[32.38,32.31,30.85,31.68,31.73,36.62,39.11,39.39],borderColor:'#64dcae',backgroundColor:'transparent',tension:.2},
+{label:'4-7日%',data:[31.94,33.83,30.46,32.29,33.40,37.04,39.72,39.15],borderColor:'#ffc26b',backgroundColor:'transparent',tension:.2},
+{label:'7日以后%',data:[31.74,31.34,32.69,33.42,36.02,37.70,40.58,40.33],borderColor:'#b49aff',backgroundColor:'transparent',tension:.2}
+]},options:opt()});
+new Chart(document.getElementById('c8'),{type:'line',data:{labels:months,datasets:[
+{label:'当日提单率',data:[52.89,51.81,46.37,46.85,45.16,43.77,41.36,39.20],borderColor:'#43c7e7',backgroundColor:'transparent',tension:.2},
+{label:'当日息费',data:[49.57,48.91,50.50,51.45,54.16,58.27,58.18,60.21],borderColor:'#ffc26b',backgroundColor:'transparent',tension:.2},
+{label:'当日逾期',data:[36.60,37.41,36.40,36.50,37.81,42.27,42.55,43.02],borderColor:'#f68ab0',backgroundColor:'transparent',tension:.2},
+{label:'当日盈利率',data:[3.44,1.20,7.75,8.49,7.60,4.37,5.23,6.65],borderColor:'#64dcae',backgroundColor:'transparent',tension:.2}
+]},options:opt()});
+</script>
+</body></html>
