@@ -1,0 +1,560 @@
+<!doctype html>
+<html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>首贷成功放款用户生命周期经营分析报告</title>
+<style>
+:root{--ink:#eff8ff;--muted:#aac5da;--line:#2a5c7e;--card:rgba(10,41,68,.95);--bg:#071b2f;--blue:#43c7e7;--green:#64dcae;--orange:#ffc26b;--red:#f68ab0}
+*{box-sizing:border-box}
+body{margin:0;background:linear-gradient(135deg,#06192b,#0b2c47 55%,#071a2d);color:var(--ink);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif;line-height:1.7}
+main{max-width:1450px;margin:auto;padding:32px 38px 76px}
+header{text-align:center;padding:38px 15px 28px;border-bottom:1px solid var(--line)}
+.eyebrow{color:var(--blue);font-weight:700;font-size:14px;letter-spacing:2px}
+h1{font-size:34px;line-height:1.25;margin:10px 0}
+h2{font-size:26px;margin:50px 0 8px;padding-bottom:10px;border-bottom:2px solid var(--line)}
+h3{font-size:16px;margin:20px 0 8px}
+.sub,.muted{color:var(--muted)}
+.card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:19px;margin:20px 0;box-shadow:none}
+.kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:13px;margin-top:20px}
+.kpi{border:1px solid var(--line);border-radius:12px;padding:14px;background:#0a2a45}
+.kpi b{display:block;font-size:25px;line-height:1.2}
+.kpi span{font-size:13px;color:var(--muted)}
+.note{padding:16px 20px;border:1px solid var(--line);border-left:4px solid var(--blue);background:#0a2a45;border-radius:12px;margin:18px 0}
+.warn{border-color:var(--orange);background:#0a2a45}
+table{width:100%;border-collapse:collapse;font-size:13.5px;margin:12px 0}
+th,td{border-bottom:1px solid rgba(42,92,126,.5);padding:9px 11px;text-align:right;vertical-align:middle}
+th{background:rgba(12,48,78,.6);color:var(--muted);font-weight:600}
+th:first-child,td:first-child{text-align:left}
+td small{display:block;color:var(--muted);font-size:11px}
+tr:hover td{background:rgba(67,199,231,.05)}
+.idle{color:var(--green)}
+.chart{overflow:auto;padding:6px 0}
+svg{min-width:790px;width:100%;height:auto}
+.cols{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+.conclusion{border:1px solid var(--line);border-left:4px solid var(--blue);border-radius:12px;padding:15px 17px;background:#0a2a45;margin:10px 0}
+.conclusion b{color:var(--blue)}
+details{border:1px solid var(--line);border-radius:12px;margin:11px 0;background:#0a2a45}
+summary{cursor:pointer;padding:12px 15px;font-weight:700}
+pre{margin:0;border-top:1px solid var(--line);padding:16px;overflow:auto;background:#101829;color:#dce8ff;font:12px/1.65 "SFMono-Regular",Consolas,monospace;white-space:pre}
+.foot{font-size:12.5px;color:#7fa6c2;margin-top:50px;border-top:1px solid var(--line);padding-top:16px}
+@media(max-width:760px){main{padding:25px 12px}
+.card{padding:20px 16px}
+.kpis,.cols{grid-template-columns:1fr 1fr}
+h1{font-size:26px}}
+</style></head><body><main>
+<header><div class="eyebrow">生命周期经营分析 · 截止 2026-09-14</div><h1>首贷成功放款用户生命周期经营分析报告</h1><p class="sub">统计对象：首贷提单日在 2024-01-01—2026-06-30 且首贷成功放款的用户。核心目标是识别各客群的无在途（可经营）时间：该时间段尚未形成借款，利润为 0；后续运营应在风险可控前提下，将其缩短并转化为健康在途时间。</p></header>
+
+<section class="card"><h2>一、核心结论</h2>
+<div class="kpis"><div class="kpi"><b>363,600</b><span>首贷成功放款用户数</span></div><div class="kpi"><b>79.77%</b><span>当前逾期状态用户占比</span></div><div class="kpi"><b>25.54%</b><span>在途状态用户平均可经营时间占比</span></div><div class="kpi"><b>11.19%</b><span>10次以上用户平均可经营时间占比</span></div></div>
+<div class="conclusion"><b>结论 1：报告的经营对象是无在途时间。</b>用户在无在途期间不处于逾期、在途或被拒链路，具备提单资格但尚未形成放款；该阶段不产生借款利润。经营的直接目标不是拉长生命周期，而是在风险可控前提下，把无在途天数转化为健康在途天数。</div>
+<div class="conclusion"><b>结论 2：可经营空间集中在已形成复贷行为的用户。</b>成功放款 1 次用户平均无在途仅 0.00 天、占比 0.00%，主要矛盾是首贷后的风险、结清与流失；成功放款 2 次、3 次、4—5 次用户的平均无在途天数依次为 6.37、9.45、15.13 天，开始出现明确的可经营回归空档。</div>
+<div class="conclusion"><b>结论 3：高频用户是缩短可经营时间的核心对象。</b>成功放款 6—10 次与 10 次以上用户的平均无在途时间分别为 22.99、35.52 天，占比分别为 11.47%、11.19%。这些用户已验证复贷能力，优先通过结清后分层触达、额度和定价匹配缩短空档，更可能提升生命周期利润。</div>
+</section>
+
+<section class="card"><h2>二、五类当前状态：生命周期及四段构成</h2><p class="muted">天数和占比均先在用户粒度计算，再在组内取平均；因此四段占比反映典型用户的时间结构，而非将全组天数直接相除。</p><div class="chart"><svg viewBox='0 0 900 335' role='img' aria-label='五类当前状态的生命周期时间构成'><line x1='72' y1='44' x2='878' y2='44' stroke='#2a5c7e'/><line x1='72' y1='244' x2='878' y2='244' stroke='#2a5c7e'/><rect x='92' y='243.6' width='92' height='0.4' fill='#f68ab0' rx='2'><title>逾期状态：逾期 0.21%</title></rect><rect x='92' y='56.5' width='92' height='187.1' fill='#43c7e7' rx='2'><title>逾期状态：在途 93.54%</title></rect><text x='138.0' y='154.0' text-anchor='middle' fill='white' font-size='12'>93.5%</text><rect x='92' y='52.8' width='92' height='3.7' fill='#ffc26b' rx='2'><title>逾期状态：被拒 1.86%</title></rect><rect x='92' y='44.0' width='92' height='8.8' fill='#64dcae' rx='2'><title>逾期状态：无在途 4.38%</title></rect><text x='138.0' y='266' text-anchor='middle' fill='#eff8ff' font-size='13'>逾期状态</text><text x='138.0' y='285' text-anchor='middle' fill='#aac5da' font-size='11'>均寿命 46.4 天</text><rect x='212' y='231.9' width='92' height='12.1' fill='#f68ab0' rx='2'><title>被拒状态：逾期 6.03%</title></rect><rect x='212' y='145.0' width='92' height='86.9' fill='#43c7e7' rx='2'><title>被拒状态：在途 43.47%</title></rect><text x='258.0' y='192.5' text-anchor='middle' fill='white' font-size='12'>43.5%</text><rect x='212' y='49.0' width='92' height='96.0' fill='#ffc26b' rx='2'><title>被拒状态：被拒 47.98%</title></rect><text x='258.0' y='101.0' text-anchor='middle' fill='white' font-size='12'>48.0%</text><rect x='212' y='44.0' width='92' height='5.0' fill='#64dcae' rx='2'><title>被拒状态：无在途 2.52%</title></rect><text x='258.0' y='266' text-anchor='middle' fill='#eff8ff' font-size='13'>被拒状态</text><text x='258.0' y='285' text-anchor='middle' fill='#aac5da' font-size='11'>均寿命 119.9 天</text><rect x='332' y='238.2' width='92' height='5.8' fill='#f68ab0' rx='2'><title>在途状态：逾期 2.89%</title></rect><rect x='332' y='108.9' width='92' height='129.3' fill='#43c7e7' rx='2'><title>在途状态：在途 64.66%</title></rect><text x='378.0' y='177.6' text-anchor='middle' fill='white' font-size='12'>64.7%</text><rect x='332' y='95.1' width='92' height='13.8' fill='#ffc26b' rx='2'><title>在途状态：被拒 6.90%</title></rect><rect x='332' y='44.0' width='92' height='51.1' fill='#64dcae' rx='2'><title>在途状态：无在途 25.54%</title></rect><text x='378.0' y='73.6' text-anchor='middle' fill='white' font-size='12'>25.5%</text><text x='378.0' y='266' text-anchor='middle' fill='#eff8ff' font-size='13'>在途状态</text><text x='378.0' y='285' text-anchor='middle' fill='#aac5da' font-size='11'>均寿命 205.0 天</text><rect x='452' y='233.1' width='92' height='10.9' fill='#f68ab0' rx='2'><title>流失状态：逾期 5.44%</title></rect><rect x='452' y='61.3' width='92' height='171.8' fill='#43c7e7' rx='2'><title>流失状态：在途 85.91%</title></rect><text x='498.0' y='151.2' text-anchor='middle' fill='white' font-size='12'>85.9%</text><rect x='452' y='58.9' width='92' height='2.4' fill='#ffc26b' rx='2'><title>流失状态：被拒 1.22%</title></rect><rect x='452' y='44.0' width='92' height='14.9' fill='#64dcae' rx='2'><title>流失状态：无在途 7.43%</title></rect><text x='498.0' y='266' text-anchor='middle' fill='#eff8ff' font-size='13'>流失状态</text><text x='498.0' y='285' text-anchor='middle' fill='#aac5da' font-size='11'>均寿命 47.4 天</text><rect x='572' y='235.3' width='92' height='8.7' fill='#f68ab0' rx='2'><title>正常结清状态：逾期 4.34%</title></rect><rect x='572' y='124.4' width='92' height='110.9' fill='#43c7e7' rx='2'><title>正常结清状态：在途 55.44%</title></rect><text x='618.0' y='183.9' text-anchor='middle' fill='white' font-size='12'>55.4%</text><rect x='572' y='105.3' width='92' height='19.1' fill='#ffc26b' rx='2'><title>正常结清状态：被拒 9.55%</title></rect><text x='618.0' y='118.9' text-anchor='middle' fill='white' font-size='12'>9.6%</text><rect x='572' y='44.0' width='92' height='61.3' fill='#64dcae' rx='2'><title>正常结清状态：无在途 30.67%</title></rect><text x='618.0' y='78.7' text-anchor='middle' fill='white' font-size='12'>30.7%</text><text x='618.0' y='266' text-anchor='middle' fill='#eff8ff' font-size='13'>正常结清状态</text><text x='618.0' y='285' text-anchor='middle' fill='#aac5da' font-size='11'>均寿命 183.1 天</text><text x='26' y='55' fill='#aac5da' font-size='12'>100%</text><text x='33' y='249' fill='#aac5da' font-size='12'>0%</text><g transform='translate(115,303)'><rect x='0' y='-10' width='12' height='12' rx='2' fill='#f68ab0'/><text x='18' y='0' fill='#aac5da' font-size='12'>逾期</text><rect x='155' y='-10' width='12' height='12' rx='2' fill='#43c7e7'/><text x='173' y='0' fill='#aac5da' font-size='12'>在途</text><rect x='310' y='-10' width='12' height='12' rx='2' fill='#ffc26b'/><text x='328' y='0' fill='#aac5da' font-size='12'>被拒</text><rect x='465' y='-10' width='12' height='12' rx='2' fill='#64dcae'/><text x='483' y='0' fill='#aac5da' font-size='12'>无在途</text></g></svg></div>
+<table><thead><tr><th>当前状态</th><th>用户数</th><th>样本占比</th><th>平均生命周期<br>（天）</th><th>平均逾期<br>天 / 占比</th><th>平均在途<br>天 / 占比</th><th>平均被拒<br>天 / 占比</th><th>平均无在途<br>天 / 占比</th></tr></thead><tbody><tr><td><b>逾期状态</b></td><td>290,034</td><td>79.77%</td><td>46.39</td><td>0.16<small>0.21%</small></td><td>35.88<small>93.54%</small></td><td>4.26<small>1.86%</small></td><td class='idle'>6.09<small>4.38%</small></td></tr><tr><td><b>被拒状态</b></td><td>36,302</td><td>9.98%</td><td>119.89</td><td>6.06<small>6.03%</small></td><td>26.21<small>43.47%</small></td><td>83.09<small>47.98%</small></td><td class='idle'>4.52<small>2.52%</small></td></tr><tr><td><b>在途状态</b></td><td>4,476</td><td>1.23%</td><td>204.97</td><td>4.65<small>2.89%</small></td><td>116.47<small>64.66%</small></td><td>23.38<small>6.90%</small></td><td class='idle'>60.48<small>25.54%</small></td></tr><tr><td><b>流失状态</b></td><td>32,247</td><td>8.87%</td><td>47.37</td><td>3.61<small>5.44%</small></td><td>29.71<small>85.91%</small></td><td>3.31<small>1.22%</small></td><td class='idle'>10.74<small>7.43%</small></td></tr><tr><td><b>正常结清状态</b></td><td>541</td><td>0.15%</td><td>183.12</td><td>8.40<small>4.34%</small></td><td>81.17<small>55.44%</small></td><td>32.20<small>9.55%</small></td><td class='idle'>61.35<small>30.67%</small></td></tr></tbody></table>
+<div class="note warn"><b>口径提醒：</b>当前逾期用户的生命周期终点是最早当前逾期订单的到期日。因此“当前未结清逾期”不被延展为截止日之前的逾期天数；本报告重点衡量用户进入当前受限状态之前的生命周期结构。</div></section>
+
+<section class="card"><h2>三、按成功放款次数：可经营时间如何变化</h2><p class="muted">无在途时间代表“具备提单资格、但未形成借款”的时间；该段不产生借款利润。下表和图形用于确定不同贷款次数客群的空档规模，后续以缩短该时间、增加健康在途为运营目标。</p><div class="chart"><svg viewBox='0 0 860 400' role='img' aria-label='按成功放款次数划分的可经营时间占比'><text x='20' y='54' fill='#eff8ff' font-size='14'>成功放款1次</text><rect x='180' y='35' width='570' height='27' rx='6' fill='#0c304e'/><rect x='180' y='35' width='0.0' height='27' rx='6' fill='#64dcae'><title>无在途占比 0.00%</title></rect><text x='190.0' y='54' fill='#64dcae' font-size='13' font-weight='700'>0.00% · 0.00 天</text><text x='20' y='111' fill='#eff8ff' font-size='14'>成功放款2次</text><rect x='180' y='92' width='570' height='27' rx='6' fill='#0c304e'/><rect x='180' y='92' width='244.0' height='27' rx='6' fill='#64dcae'><title>无在途占比 6.42%</title></rect><text x='434.0' y='111' fill='#64dcae' font-size='13' font-weight='700'>6.42% · 6.37 天</text><text x='20' y='168' fill='#eff8ff' font-size='14'>成功放款3次</text><rect x='180' y='149' width='570' height='27' rx='6' fill='#0c304e'/><rect x='180' y='149' width='313.9' height='27' rx='6' fill='#64dcae'><title>无在途占比 8.26%</title></rect><text x='503.9' y='168' fill='#64dcae' font-size='13' font-weight='700'>8.26% · 9.45 天</text><text x='20' y='225' fill='#eff8ff' font-size='14'>成功放款4-5次</text><rect x='180' y='206' width='570' height='27' rx='6' fill='#0c304e'/><rect x='180' y='206' width='392.5' height='27' rx='6' fill='#64dcae'><title>无在途占比 10.33%</title></rect><text x='582.5' y='225' fill='#64dcae' font-size='13' font-weight='700'>10.33% · 15.13 天</text><text x='20' y='282' fill='#eff8ff' font-size='14'>成功放款6-10次</text><rect x='180' y='263' width='570' height='27' rx='6' fill='#0c304e'/><rect x='180' y='263' width='435.9' height='27' rx='6' fill='#64dcae'><title>无在途占比 11.47%</title></rect><text x='625.9' y='282' fill='#64dcae' font-size='13' font-weight='700'>11.47% · 22.99 天</text><text x='20' y='339' fill='#eff8ff' font-size='14'>成功放款10次以上</text><rect x='180' y='320' width='570' height='27' rx='6' fill='#0c304e'/><rect x='180' y='320' width='425.2' height='27' rx='6' fill='#64dcae'><title>无在途占比 11.19%</title></rect><text x='615.2' y='339' fill='#64dcae' font-size='13' font-weight='700'>11.19% · 35.52 天</text><text x='20' y='370' fill='#aac5da' font-size='12'>横轴按 0%—15% 缩放；数值为用户层面“无在途天数 / 生命周期总天数”的平均值。</text></svg></div>
+<table><thead><tr><th>成功放款次数</th><th>用户数</th><th>平均生命周期<br>（天）</th><th>平均逾期<br>天 / 占比</th><th>平均在途<br>天 / 占比</th><th>平均被拒<br>天 / 占比</th><th>平均无在途<br>天 / 占比</th></tr></thead><tbody><tr><td><b>成功放款1次</b></td><td>164,810</td><td>24.46</td><td>0.99<small>1.54%</small></td><td>14.83<small>92.56%</small></td><td>8.65<small>5.90%</small></td><td class='idle'>0.00<small>0.00%</small></td></tr><tr><td><b>成功放款2次</b></td><td>70,444</td><td>49.14</td><td>1.21<small>1.38%</small></td><td>27.69<small>84.46%</small></td><td>13.87<small>7.74%</small></td><td class='idle'>6.37<small>6.42%</small></td></tr><tr><td><b>成功放款3次</b></td><td>42,987</td><td>62.88</td><td>1.04<small>1.06%</small></td><td>37.47<small>83.40%</small></td><td>14.93<small>7.29%</small></td><td class='idle'>9.45<small>8.26%</small></td></tr><tr><td><b>成功放款4-5次</b></td><td>44,430</td><td>88.37</td><td>1.19<small>0.94%</small></td><td>55.66<small>81.92%</small></td><td>16.38<small>6.81%</small></td><td class='idle'>15.13<small>10.33%</small></td></tr><tr><td><b>成功放款6-10次</b></td><td>31,906</td><td>132.73</td><td>1.35<small>0.80%</small></td><td>90.89<small>81.87%</small></td><td>17.50<small>5.86%</small></td><td class='idle'>22.99<small>11.47%</small></td></tr><tr><td><b>成功放款10次以上</b></td><td>9,023</td><td>220.89</td><td>2.21<small>0.98%</small></td><td>166.48<small>83.69%</small></td><td>16.68<small>4.13%</small></td><td class='idle'>35.52<small>11.19%</small></td></tr></tbody></table>
+<div class="cols"><div><h3>分层发现</h3><ul><li><b>成功放款 1 次：</b>占 45.33%，平均无在途 0.00 天。该组空档较短，不宜仅靠召回解释，应优先处理首贷风险、结清和早期流失。</li><li><b>成功放款 2—3 次：</b>无在途时间分别为 6.37 与 9.45 天，说明用户完成结清后已出现可压缩的回归空档。</li><li><b>成功放款 4—5 次：</b>平均无在途 15.13 天，是兼具规模和可经营空间的重点观察层。</li><li><b>成功放款 6 次以上：</b>平均无在途为 22.99—35.52 天，绝对空档最长；即使占比趋稳，缩短每次结清后的等待仍可累计增加在途与利润机会。</li></ul></div><div><h3>运营优先级</h3><ul><li><b>1 次：</b>先降低早期逾期和首贷后流失，再讨论扩大复贷转化。</li><li><b>2—3 次：</b>围绕结清后短窗口做回归引导，并识别被拒链路中可修复的原因。</li><li><b>4—5 次：</b>按结清后天数、额度、息费敏感度与历史履约分层触达，直接目标是缩短无在途时间。</li><li><b>6 次以上：</b>建立长期价值经营节奏，评估“减少 1 天无在途”带来的新增放款、逾期与净利润，而非只追求放款次数。</li></ul></div></div></section>
+
+<section class="card"><h2>四、状态 × 成功放款次数：可经营时间矩阵</h2><p class="muted">单元格依次为“用户数 / 平均无在途占比 / 平均无在途天数”。用于定位不同用户阶段的可经营空间。</p><table><thead><tr><th>成功放款次数</th><th>逾期状态</th><th>被拒状态</th><th>在途状态</th><th>流失状态</th><th>正常结清状态</th></tr></thead><tbody><tr><td><b>成功放款1次</b></td><td>129,302 人<br><b>0.00%</b><small>0.00 天</small></td><td>18,473 人<br><b>0.00%</b><small>0.00 天</small></td><td>—</td><td>17,023 人<br><b>0.00%</b><small>0.00 天</small></td><td>12 人<br><b>0.00%</b><small>0.00 天</small></td></tr><tr><td><b>成功放款2次</b></td><td>55,623 人<br><b>6.00%</b><small>5.71 天</small></td><td>8,200 人<br><b>3.30%</b><small>4.44 天</small></td><td>193 人<br><b>57.55%</b><small>105.24 天</small></td><td>6,363 人<br><b>12.06%</b><small>10.76 天</small></td><td>65 人<br><b>54.05%</b><small>90.06 天</small></td></tr><tr><td><b>成功放款3次</b></td><td>35,122 人<br><b>7.45%</b><small>7.96 天</small></td><td>4,094 人<br><b>5.07%</b><small>7.52 天</small></td><td>363 人<br><b>46.96%</b><small>82.70 天</small></td><td>3,323 人<br><b>15.74%</b><small>18.11 天</small></td><td>85 人<br><b>39.22%</b><small>64.61 天</small></td></tr><tr><td><b>成功放款4-5次</b></td><td>36,431 人<br><b>9.22%</b><small>12.69 天</small></td><td>3,653 人<br><b>7.07%</b><small>12.92 天</small></td><td>1,038 人<br><b>32.06%</b><small>63.74 天</small></td><td>3,122 人<br><b>18.82%</b><small>27.95 天</small></td><td>186 人<br><b>28.57%</b><small>51.41 天</small></td></tr><tr><td><b>成功放款6-10次</b></td><td>26,497 人<br><b>10.16%</b><small>18.89 天</small></td><td>1,609 人<br><b>9.38%</b><small>23.89 天</small></td><td>1,736 人<br><b>21.22%</b><small>53.45 天</small></td><td>1,916 人<br><b>21.64%</b><small>49.31 天</small></td><td>148 人<br><b>22.47%</b><small>51.14 天</small></td></tr><tr><td><b>成功放款10次以上</b></td><td>7,059 人<br><b>9.99%</b><small>29.37 天</small></td><td>273 人<br><b>10.42%</b><small>41.04 天</small></td><td>1,146 人<br><b>14.01%</b><small>53.61 天</small></td><td>500 人<br><b>20.86%</b><small>71.61 天</small></td><td>45 人<br><b>24.56%</b><small>104.76 天</small></td></tr></tbody></table>
+<div class="note"><b>使用方式：</b>先看用户规模，再看无在途占比与绝对天数。用户规模大但无在途占比低的群体，更应优先解决风险、结清和首次回归问题；无在途占比及绝对天数均较高的群体，才是触达、额度、定价和产品匹配的主要经营对象。</div></section>
+
+<section class="card"><h2>五、统计口径与解释边界</h2><ul><li><b>五类状态：</b>按 <code>逾期 &gt; 被拒 &gt; 在途 &gt; 流失 &gt; 正常结清</code> 顺序判定；生命周期终点随状态而变化。</li><li><b>日状态：</b>按 <code>逾期 &gt; 在途 &gt; 被拒 &gt; 无在途</code> 覆盖。逾期结清当日又提单，仍计逾期；被拒后同日成功放款，计在途。</li><li><b>可经营时间：</b>只有“结清后的下一次提单直接成功放款”时，结清次日至该成功放款提单日前一天才计为无在途；若下一次提单被拒，则从结清次日起至下一次成功放款提单日前一天均属于被拒链路，不计无在途。</li><li><b>解读边界：</b>本报告为当前状态和历史时间结构的描述性统计，不直接证明触达或让利一定带来净利润提升。策略上线需同时评估放款、逾期、让利和利润增量。</li></ul></section>
+
+<section class="card"><h2>附录：可复现全部指标的 PGSQL</h2><p class="muted">以下代码使用订单表 <code>wangchuanliang.order_loan_f_v2_copy</code>，输出报告所用的五类状态汇总、成功放款次数汇总及二者交叉汇总。</p><details><summary>模块 1：样本、状态与生命周期终点</summary><pre>-- ================================================================
+-- 首贷成功放款用户生命周期：当前状态 × 成功放款次数分层
+-- 统计截止日：CURRENT_DATE
+-- 统计对象：2024-01-01 至 2026-06-30 首贷提单且成功放款的用户
+-- 日状态优先级：逾期 &gt; 在途 &gt; 被拒 &gt; 无在途
+-- ================================================================
+
+WITH params AS (
+    SELECT CURRENT_DATE::date AS as_of_date
+),
+
+-- 1. 首贷成功放款 cohort：每个用户仅保留首贷成功放款订单。
+first_loan_cohort AS (
+    SELECT
+        o.user_id,
+        o.apply_date AS first_loan_apply_date
+    FROM wangchuanliang.order_loan_f_v2_copy AS o
+    WHERE o.is_remit = 1
+      AND o.loan_type = &#x27;firstloan&#x27;
+      AND o.apply_date BETWEEN DATE &#x27;2024-01-01&#x27; AND DATE &#x27;2026-06-30&#x27;
+),
+
+-- 2. 取得 cohort 用户的全量订单；apply_time、serial_id 共同保证“最后一笔提单”唯一。
+user_orders AS (
+    SELECT
+        c.user_id,
+        c.first_loan_apply_date,
+        o.serial_id,
+        o.apply_date,
+        o.apply_time,
+        o.due_date,
+        o.repaid_time,
+        o.repaid_date,
+        o.is_remit,
+        o.overdue_days,
+        o.loan_status_code,
+        ROW_NUMBER() OVER (
+            PARTITION BY c.user_id
+            ORDER BY o.apply_time DESC, o.serial_id DESC
+        ) AS apply_desc_rn,
+        MIN(CASE WHEN o.is_remit = 1 THEN o.apply_date END) OVER (
+            PARTITION BY c.user_id
+            ORDER BY o.apply_time, o.serial_id
+            ROWS BETWEEN 1 FOLLOWING AND UNBOUNDED FOLLOWING
+        ) AS next_success_apply_date
+    FROM first_loan_cohort AS c
+    INNER JOIN wangchuanliang.order_loan_f_v2_copy AS o
+        ON o.user_id = c.user_id
+),
+
+-- 3. 当前用户状态的必要信息。
+user_state_base AS (
+    SELECT
+        u.user_id,
+        MAX(u.first_loan_apply_date) AS first_loan_apply_date,
+        MIN(CASE WHEN u.loan_status_code = 8 THEN u.due_date END) AS earliest_current_overdue_due_date,
+        MAX(CASE WHEN u.loan_status_code = 5 THEN u.due_date END) AS latest_current_in_transit_due_date,
+        MAX(CASE
+            WHEN u.is_remit = 1
+             AND u.repaid_date &gt; DATE &#x27;2000-01-01&#x27;
+            THEN u.repaid_date
+        END) AS last_valid_repaid_date,
+        MAX(CASE WHEN u.apply_desc_rn = 1 THEN u.is_remit END) AS last_apply_is_remit,
+        MAX(CASE WHEN u.apply_desc_rn = 1 THEN u.apply_date END) AS last_apply_date
+    FROM user_orders AS u
+    GROUP BY u.user_id
+),
+
+-- 4. 五类当前状态与生命周期终点。
+lifecycle_base AS (
+    SELECT
+        s.user_id,
+        s.first_loan_apply_date AS lifecycle_start,
+        CASE
+            WHEN s.earliest_current_overdue_due_date IS NOT NULL THEN &#x27;逾期状态&#x27;
+            WHEN s.last_apply_is_remit = 0 THEN &#x27;被拒状态&#x27;
+            WHEN s.latest_current_in_transit_due_date IS NOT NULL THEN &#x27;在途状态&#x27;
+            WHEN s.last_valid_repaid_date &lt; p.as_of_date - 7 THEN &#x27;流失状态&#x27;
+            ELSE &#x27;正常结清状态&#x27;
+        END AS user_status,
+        CASE
+            WHEN s.earliest_current_overdue_due_date IS NOT NULL THEN s.earliest_current_overdue_due_date
+            WHEN s.last_apply_is_remit = 0 THEN s.last_apply_date
+            WHEN s.latest_current_in_transit_due_date IS NOT NULL THEN s.latest_current_in_transit_due_date
+            ELSE s.last_valid_repaid_date
+        END AS lifecycle_end
+    FROM user_state_base AS s
+    CROSS JOIN params AS p
+),
+
+-- 防御性过滤：只保留生命周期终点不早于首贷提单日的用户。
+lifecycle_users AS (
+    SELECT
+        l.*,
+        (l.lifecycle_end - l.lifecycle_start + 1)::bigint AS lifecycle_days
+    FROM lifecycle_base AS l
+    WHERE l.lifecycle_end &gt;= l.lifecycle_start
+),
+
+</pre></details><details><summary>模块 2：成功放款次数与四类区间</summary><pre>-- 5. 成功放款次数：统计生命周期终点及以前的成功放款整笔订单。
+user_loan_count AS (
+    SELECT
+        l.user_id,
+        COUNT(DISTINCT CASE
+            WHEN o.is_remit = 1
+             AND o.apply_date &lt;= l.lifecycle_end
+            THEN o.serial_id
+        END) AS success_loan_cnt
+    FROM lifecycle_users AS l
+    INNER JOIN user_orders AS o
+        ON o.user_id = l.user_id
+    GROUP BY l.user_id
+),
+
+lifecycle_population AS (
+    SELECT
+        l.*,
+        CASE
+            WHEN c.success_loan_cnt = 1 THEN &#x27;成功放款1次&#x27;
+            WHEN c.success_loan_cnt = 2 THEN &#x27;成功放款2次&#x27;
+            WHEN c.success_loan_cnt = 3 THEN &#x27;成功放款3次&#x27;
+            WHEN c.success_loan_cnt BETWEEN 4 AND 5 THEN &#x27;成功放款4-5次&#x27;
+            WHEN c.success_loan_cnt BETWEEN 6 AND 10 THEN &#x27;成功放款6-10次&#x27;
+            WHEN c.success_loan_cnt &gt; 10 THEN &#x27;成功放款10次以上&#x27;
+        END AS success_loan_group
+    FROM lifecycle_users AS l
+    INNER JOIN user_loan_count AS c
+        ON c.user_id = l.user_id
+),
+
+-- 6. 三类可被日状态覆盖的区间。每个区间均裁剪到生命周期内。
+-- 6.1 历史逾期且已结清：到期日次日开始，结清日仍计逾期。
+overdue_intervals AS (
+    SELECT
+        p.user_id,
+        GREATEST(o.due_date + 1, p.lifecycle_start) AS start_date,
+        CASE
+            WHEN o.repaid_date &gt; DATE &#x27;2000-01-01&#x27;
+            THEN LEAST(o.repaid_date, p.lifecycle_end)
+            ELSE p.lifecycle_end
+        END AS end_date,
+        1 AS overdue_delta,
+        0 AS in_transit_delta,
+        0 AS rejected_delta,
+        0 AS idle_delta
+    FROM lifecycle_population AS p
+    INNER JOIN user_orders AS o
+        ON o.user_id = p.user_id
+    WHERE o.is_remit = 1
+      AND o.loan_status_code &lt;&gt; 8
+      AND (
+          (o.overdue_days &gt; 0
+           AND o.repaid_date &gt; DATE &#x27;2000-01-01&#x27;
+           AND o.repaid_date &gt; o.due_date)
+          -- 数据质量兜底：状态非8但结清日期仍为时间戳0，视为未结清逾期。
+          OR (o.repaid_date &lt;= DATE &#x27;2000-01-01&#x27;
+              AND o.due_date &lt; p.lifecycle_end)
+      )
+),
+
+-- 6.2 成功放款在途：提单日和到期日均计入；提前结清则结清日为最后在途日。
+in_transit_intervals AS (
+    SELECT
+        p.user_id,
+        GREATEST(o.apply_date, p.lifecycle_start) AS start_date,
+        LEAST(
+            CASE
+                -- 当前状态为 8 时，即使明细里出现异常的历史结清日，
+                -- 仍按未结清订单处理：在途持续到到期日，再由逾期状态覆盖到期日。
+                WHEN o.loan_status_code &lt;&gt; 8
+                 AND o.repaid_date &gt; DATE &#x27;2000-01-01&#x27;
+                 AND o.repaid_date &lt; o.due_date
+                THEN o.repaid_date
+                ELSE o.due_date
+            END,
+            p.lifecycle_end
+        ) AS end_date,
+        0 AS overdue_delta,
+        1 AS in_transit_delta,
+        0 AS rejected_delta,
+        0 AS idle_delta
+    FROM lifecycle_population AS p
+    INNER JOIN user_orders AS o
+        ON o.user_id = p.user_id
+    WHERE o.is_remit = 1
+),
+
+-- 6.3 被拒链路：从上一笔成功订单结清次日开始，直至下一次成功放款提单日前一天。
+-- 因此，结清后最终发生被拒提单前的空档也属于被拒，而非无在途。
+previous_settlement_before_rejection AS (
+    SELECT
+        r.user_id,
+        r.serial_id,
+        MAX(s.repaid_date) AS previous_repaid_date
+    FROM user_orders AS r
+    INNER JOIN user_orders AS s
+        ON s.user_id = r.user_id
+       AND s.is_remit = 1
+       AND s.repaid_date &gt; DATE &#x27;2000-01-01&#x27;
+       AND s.repaid_time &lt; r.apply_time
+    WHERE r.is_remit = 0
+    GROUP BY r.user_id, r.serial_id
+),
+
+rejected_intervals AS (
+    SELECT
+        p.user_id,
+        GREATEST(previous.previous_repaid_date + 1, p.lifecycle_start) AS start_date,
+        LEAST(
+            COALESCE(o.next_success_apply_date - 1, p.lifecycle_end),
+            p.lifecycle_end
+        ) AS end_date,
+        0 AS overdue_delta,
+        0 AS in_transit_delta,
+        1 AS rejected_delta,
+        0 AS idle_delta
+    FROM lifecycle_population AS p
+    INNER JOIN user_orders AS o
+        ON o.user_id = p.user_id
+    INNER JOIN previous_settlement_before_rejection AS previous
+        ON previous.user_id = o.user_id
+       AND previous.serial_id = o.serial_id
+    WHERE o.is_remit = 0
+),
+
+-- 6.4 每笔已结清订单对应的“下一笔提单”及其结果；不用 LATERAL，兼容当前数据库方言。
+next_apply_candidates AS (
+    SELECT
+        o.user_id,
+        o.serial_id AS settled_serial_id,
+        o2.apply_date AS next_apply_date,
+        o2.is_remit AS next_apply_is_remit,
+        ROW_NUMBER() OVER (
+            PARTITION BY o.user_id, o.serial_id
+            ORDER BY o2.apply_time, o2.serial_id
+        ) AS next_apply_rn
+    FROM user_orders AS o
+    INNER JOIN user_orders AS o2
+        ON o2.user_id = o.user_id
+       AND o2.apply_date &gt; o.repaid_date
+    WHERE o.is_remit = 1
+      AND o.repaid_date &gt; DATE &#x27;2000-01-01&#x27;
+),
+
+next_apply_after_repayment AS (
+    SELECT
+        user_id,
+        settled_serial_id,
+        next_apply_date,
+        next_apply_is_remit
+    FROM next_apply_candidates
+    WHERE next_apply_rn = 1
+),
+
+-- 6.5 无在途：只有下一次提单直接成功放款时，才统计结清次日至该提单日前一天。
+-- 若下一次提单被拒，则整段属于被拒链路，绝不归为无在途。
+idle_intervals AS (
+    SELECT
+        p.user_id,
+        GREATEST(o.repaid_date + 1, p.lifecycle_start) AS start_date,
+        LEAST(
+            COALESCE(next_apply.next_apply_date - 1, p.lifecycle_end),
+            p.lifecycle_end
+        ) AS end_date,
+        0 AS overdue_delta,
+        0 AS in_transit_delta,
+        0 AS rejected_delta,
+        1 AS idle_delta
+    FROM lifecycle_population AS p
+    INNER JOIN user_orders AS o
+        ON o.user_id = p.user_id
+    LEFT JOIN next_apply_after_repayment AS next_apply
+        ON next_apply.user_id = o.user_id
+       AND next_apply.settled_serial_id = o.serial_id
+    WHERE o.is_remit = 1
+      AND o.repaid_date &gt; DATE &#x27;2000-01-01&#x27;
+      AND next_apply.next_apply_is_remit = 1
+),
+
+valid_intervals AS (
+    SELECT * FROM overdue_intervals WHERE start_date &lt;= end_date
+    UNION ALL
+    SELECT * FROM in_transit_intervals WHERE start_date &lt;= end_date
+    UNION ALL
+    SELECT * FROM rejected_intervals WHERE start_date &lt;= end_date
+    UNION ALL
+    SELECT * FROM idle_intervals WHERE start_date &lt;= end_date
+),
+
+</pre></details><details><summary>模块 3：事件流拆分、汇总与输出</summary><pre>-- 7. 事件流法：避免生成用户 × 每天的明细，也能合并重叠区间。
+-- 每个状态区间 [start_date, end_date] 转成 start +1、end_date+1 -1 两个事件。
+raw_events AS (
+    SELECT
+        p.user_id,
+        p.lifecycle_start AS event_date,
+        0::bigint AS overdue_delta,
+        0::bigint AS in_transit_delta,
+        0::bigint AS rejected_delta,
+        0::bigint AS idle_delta
+    FROM lifecycle_population AS p
+    UNION ALL
+    SELECT
+        p.user_id,
+        p.lifecycle_end + 1 AS event_date,
+        0::bigint,
+        0::bigint,
+        0::bigint,
+        0::bigint
+    FROM lifecycle_population AS p
+    UNION ALL
+    SELECT
+        i.user_id,
+        i.start_date,
+        i.overdue_delta::bigint,
+        i.in_transit_delta::bigint,
+        i.rejected_delta::bigint,
+        i.idle_delta::bigint
+    FROM valid_intervals AS i
+    UNION ALL
+    SELECT
+        i.user_id,
+        i.end_date + 1,
+        -i.overdue_delta::bigint,
+        -i.in_transit_delta::bigint,
+        -i.rejected_delta::bigint,
+        -i.idle_delta::bigint
+    FROM valid_intervals AS i
+),
+
+event_deltas AS (
+    SELECT
+        user_id,
+        event_date,
+        SUM(overdue_delta) AS overdue_delta,
+        SUM(in_transit_delta) AS in_transit_delta,
+        SUM(rejected_delta) AS rejected_delta,
+        SUM(idle_delta) AS idle_delta
+    FROM raw_events
+    GROUP BY user_id, event_date
+),
+
+running_events AS (
+    SELECT
+        e.user_id,
+        e.event_date,
+        LEAD(e.event_date) OVER (
+            PARTITION BY e.user_id ORDER BY e.event_date
+        ) AS next_event_date,
+        SUM(e.overdue_delta) OVER (
+            PARTITION BY e.user_id ORDER BY e.event_date
+            ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW
+        ) AS active_overdue_cnt,
+        SUM(e.in_transit_delta) OVER (
+            PARTITION BY e.user_id ORDER BY e.event_date
+            ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW
+        ) AS active_in_transit_cnt,
+        SUM(e.rejected_delta) OVER (
+            PARTITION BY e.user_id ORDER BY e.event_date
+            ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW
+        ) AS active_rejected_cnt,
+        SUM(e.idle_delta) OVER (
+            PARTITION BY e.user_id ORDER BY e.event_date
+            ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW
+        ) AS active_idle_cnt
+    FROM event_deltas AS e
+),
+
+user_day_segments AS (
+    SELECT
+        r.user_id,
+        (r.next_event_date - r.event_date)::bigint AS segment_days,
+        CASE
+            WHEN r.active_overdue_cnt &gt; 0 THEN &#x27;逾期天数&#x27;
+            WHEN r.active_in_transit_cnt &gt; 0 THEN &#x27;在途天数&#x27;
+            WHEN r.active_rejected_cnt &gt; 0 THEN &#x27;被拒天数&#x27;
+            WHEN r.active_idle_cnt &gt; 0 THEN &#x27;无在途天数&#x27;
+            ELSE &#x27;未归类天数&#x27;
+        END AS day_status
+    FROM running_events AS r
+    WHERE r.next_event_date &gt; r.event_date
+),
+
+user_metrics AS (
+    SELECT
+        p.user_id,
+        p.user_status,
+        p.success_loan_group,
+        p.lifecycle_days,
+        COALESCE(SUM(CASE WHEN s.day_status = &#x27;逾期天数&#x27; THEN s.segment_days END), 0) AS overdue_days,
+        COALESCE(SUM(CASE WHEN s.day_status = &#x27;在途天数&#x27; THEN s.segment_days END), 0) AS in_transit_days,
+        COALESCE(SUM(CASE WHEN s.day_status = &#x27;被拒天数&#x27; THEN s.segment_days END), 0) AS rejected_days,
+        COALESCE(SUM(CASE WHEN s.day_status = &#x27;无在途天数&#x27; THEN s.segment_days END), 0) AS idle_days
+    FROM lifecycle_population AS p
+    LEFT JOIN user_day_segments AS s
+        ON s.user_id = p.user_id
+    GROUP BY p.user_id, p.user_status, p.success_loan_group, p.lifecycle_days
+),
+
+-- 8. 输出：五类用户总计，以及五类用户 × 成功放款次数。
+summary_rows AS (
+    SELECT
+        &#x27;五类用户总计&#x27; AS report_layer,
+        user_status,
+        &#x27;全部成功放款次数&#x27; AS success_loan_group,
+        COUNT(*) AS user_cnt,
+        AVG(lifecycle_days)::numeric(18,2) AS avg_lifecycle_days,
+        AVG(overdue_days)::numeric(18,2) AS avg_overdue_days,
+        AVG(in_transit_days)::numeric(18,2) AS avg_in_transit_days,
+        AVG(rejected_days)::numeric(18,2) AS avg_rejected_days,
+        AVG(idle_days)::numeric(18,2) AS avg_idle_days,
+        AVG(overdue_days::numeric / NULLIF(lifecycle_days, 0)) AS avg_overdue_ratio,
+        AVG(in_transit_days::numeric / NULLIF(lifecycle_days, 0)) AS avg_in_transit_ratio,
+        AVG(rejected_days::numeric / NULLIF(lifecycle_days, 0)) AS avg_rejected_ratio,
+        AVG(idle_days::numeric / NULLIF(lifecycle_days, 0)) AS avg_idle_ratio
+    FROM user_metrics
+    GROUP BY user_status
+
+    UNION ALL
+
+    SELECT
+        &#x27;成功放款次数总计&#x27; AS report_layer,
+        &#x27;全部当前状态&#x27; AS user_status,
+        success_loan_group,
+        COUNT(*) AS user_cnt,
+        AVG(lifecycle_days)::numeric(18,2) AS avg_lifecycle_days,
+        AVG(overdue_days)::numeric(18,2) AS avg_overdue_days,
+        AVG(in_transit_days)::numeric(18,2) AS avg_in_transit_days,
+        AVG(rejected_days)::numeric(18,2) AS avg_rejected_days,
+        AVG(idle_days)::numeric(18,2) AS avg_idle_days,
+        AVG(overdue_days::numeric / NULLIF(lifecycle_days, 0)) AS avg_overdue_ratio,
+        AVG(in_transit_days::numeric / NULLIF(lifecycle_days, 0)) AS avg_in_transit_ratio,
+        AVG(rejected_days::numeric / NULLIF(lifecycle_days, 0)) AS avg_rejected_ratio,
+        AVG(idle_days::numeric / NULLIF(lifecycle_days, 0)) AS avg_idle_ratio
+    FROM user_metrics
+    GROUP BY success_loan_group
+
+    UNION ALL
+
+    SELECT
+        &#x27;五类用户×成功放款次数&#x27; AS report_layer,
+        user_status,
+        success_loan_group,
+        COUNT(*) AS user_cnt,
+        AVG(lifecycle_days)::numeric(18,2),
+        AVG(overdue_days)::numeric(18,2),
+        AVG(in_transit_days)::numeric(18,2),
+        AVG(rejected_days)::numeric(18,2),
+        AVG(idle_days)::numeric(18,2),
+        AVG(overdue_days::numeric / NULLIF(lifecycle_days, 0)),
+        AVG(in_transit_days::numeric / NULLIF(lifecycle_days, 0)),
+        AVG(rejected_days::numeric / NULLIF(lifecycle_days, 0)),
+        AVG(idle_days::numeric / NULLIF(lifecycle_days, 0))
+    FROM user_metrics
+    GROUP BY user_status, success_loan_group
+)
+
+SELECT
+    report_layer,
+    user_status,
+    success_loan_group,
+    user_cnt,
+    avg_lifecycle_days,
+    avg_overdue_days,
+    avg_in_transit_days,
+    avg_rejected_days,
+    avg_idle_days,
+    ROUND(avg_overdue_ratio * 100, 2) AS avg_overdue_ratio_pct,
+    ROUND(avg_in_transit_ratio * 100, 2) AS avg_in_transit_ratio_pct,
+    ROUND(avg_rejected_ratio * 100, 2) AS avg_rejected_ratio_pct,
+    ROUND(avg_idle_ratio * 100, 2) AS avg_idle_ratio_pct
+FROM summary_rows
+ORDER BY
+    CASE report_layer
+        WHEN &#x27;五类用户总计&#x27; THEN 1
+        WHEN &#x27;成功放款次数总计&#x27; THEN 2
+        ELSE 3
+    END,
+    CASE user_status
+        WHEN &#x27;逾期状态&#x27; THEN 1
+        WHEN &#x27;被拒状态&#x27; THEN 2
+        WHEN &#x27;在途状态&#x27; THEN 3
+        WHEN &#x27;流失状态&#x27; THEN 4
+        WHEN &#x27;正常结清状态&#x27; THEN 5
+    END,
+    CASE success_loan_group
+        WHEN &#x27;全部成功放款次数&#x27; THEN 0
+        WHEN &#x27;成功放款1次&#x27; THEN 1
+        WHEN &#x27;成功放款2次&#x27; THEN 2
+        WHEN &#x27;成功放款3次&#x27; THEN 3
+        WHEN &#x27;成功放款4-5次&#x27; THEN 4
+        WHEN &#x27;成功放款6-10次&#x27; THEN 5
+        WHEN &#x27;成功放款10次以上&#x27; THEN 6
+    END;
+</pre></details></section>
+<p class="foot">报告生成时间：2026-09-14。统计截止日由 SQL 中 <code>CURRENT_DATE</code> 控制；如需固定历史快照，请将其替换为指定日期。</p>
+</main></body></html>
