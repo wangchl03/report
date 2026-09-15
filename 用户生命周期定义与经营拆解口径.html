@@ -1,0 +1,206 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>用户生命周期定义与经营拆解口径</title>
+  <style>
+    :root{--bg:#f8f9fb;--card:#fff;--text:#182033;--sub:#5d6879;--line:#e3e8ef;--blue:#2f66d0;--orange:#e78a14;--green:#0c9c68;--red:#d84b4b;--purple:#8254d8;}
+    *{box-sizing:border-box} body{margin:0;background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif;line-height:1.75}
+    .wrap{max-width:1080px;margin:0 auto;padding:42px 24px 70px}.hero{padding:14px 4px 28px;border-bottom:1px solid var(--line);margin-bottom:24px}.badge{display:inline-block;background:#eaf0ff;color:var(--blue);padding:3px 10px;border-radius:99px;font-weight:700;font-size:12px;letter-spacing:.4px}.hero h1{margin:12px 0 8px;font-size:30px;line-height:1.3}.hero p{margin:0;color:var(--sub)}
+    .card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:28px 32px;margin:20px 0;box-shadow:0 2px 8px #17203308}.card h2{font-size:21px;margin:0 0 18px;padding-bottom:11px;border-bottom:2px solid var(--line)}.card h3{font-size:16px;margin:22px 0 8px}.card p{margin:9px 0}.lead{color:var(--sub)}
+    .note{border-left:4px solid var(--blue);padding:12px 16px;background:#f3f6ff;border-radius:0 8px 8px 0;margin:15px 0}.warn{border-left-color:var(--orange);background:#fff8ef}.good{border-left-color:var(--green);background:#effaf5}
+    table{width:100%;border-collapse:collapse;margin:14px 0;font-size:14px}th,td{border:1px solid var(--line);padding:11px 13px;vertical-align:top;text-align:left}th{background:#f1f4f8;font-weight:700}code,.code{font-family:"SFMono-Regular",Consolas,monospace;font-size:.92em;background:#f0f3f7;padding:1px 4px;border-radius:4px}.sql{background:#111a2b;color:#d7e4ff;border-radius:9px;padding:17px 19px;white-space:pre-wrap;overflow:auto;font:13px/1.65 "SFMono-Regular",Consolas,monospace;margin:14px 0}.formula{background:#f7f9fc;border:1px dashed #cdd6e2;border-radius:9px;padding:14px 17px;white-space:pre-wrap;font-family:"SFMono-Regular",Consolas,monospace;font-size:13px;margin:14px 0}
+    .grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}.mini{border:1px solid var(--line);border-radius:10px;padding:16px}.mini b{display:block;font-size:16px;margin-bottom:4px}.tag{display:inline-block;padding:2px 8px;border-radius:99px;font-size:12px;font-weight:700}.t-red{color:#a83131;background:#ffeded}.t-blue{color:#2159bf;background:#eaf0ff}.t-orange{color:#a85d00;background:#fff3df}.t-green{color:#08734d;background:#e7f8ef}.t-purple{color:#5e32ad;background:#f0eaff}
+    .flow{overflow:auto;border:1px dashed #ccd5e1;background:#fbfcfd;border-radius:10px;padding:18px;font:13px/1.65 "SFMono-Regular",Consolas,monospace;white-space:pre;line-height:1.75}.red{color:var(--red);font-weight:700}.blue{color:var(--blue);font-weight:700}.orange{color:var(--orange);font-weight:700}.green{color:var(--green);font-weight:700}.purple{color:var(--purple);font-weight:700}
+    ol,ul{padding-left:22px}li{margin:5px 0}.toc a{color:var(--blue);text-decoration:none}.foot{color:var(--sub);font-size:13px;margin-top:20px}@media(max-width:720px){.wrap{padding:25px 13px}.card{padding:21px 17px}.hero h1{font-size:25px}.grid{grid-template-columns:1fr}table{font-size:13px}}
+  </style>
+</head>
+<body>
+<main class="wrap">
+  <header class="hero">
+    <span class="badge">指标口径文档</span>
+    <h1>用户生命周期定义与经营拆解口径</h1>
+    <p>以首贷成功放款用户为对象，按当前状态确定生命周期终点，并将生命周期拆解为逾期、在途、被拒与无在途四段。</p>
+  </header>
+
+  <section class="card toc">
+    <h2>目录</h2>
+    <ol>
+      <li><a href="#scope">统计对象与分析范围</a></li>
+      <li><a href="#life">生命周期定义、五类用户与伪代码</a></li>
+      <li><a href="#segments">四段生命周期的边界、优先级与伪代码</a></li>
+      <li><a href="#purpose">计算生命周期的目的与经营含义</a></li>
+    </ol>
+  </section>
+
+  <section class="card" id="scope">
+    <h2>一、统计对象与分析范围</h2>
+    <table>
+      <tr><th style="width:170px">项目</th><th>口径</th></tr>
+      <tr><td>源表</td><td>订单表；订单、放款、结清、到期及当前订单状态均从订单表取得。</td></tr>
+      <tr><td>统计用户</td><td>首贷提单日期在 <code>2024-01-01</code> 至 <code>2026-06-30</code>（含）之间，且首贷订单成功放款的用户。</td></tr>
+      <tr><td>用户粒度</td><td>按 <code>user_id</code> 去重；只要用户存在一笔满足范围的首贷成功放款订单，即进入样本。</td></tr>
+      <tr><td>不纳入用户</td><td>只有提单、但首贷未成功放款的用户，不进入生命周期统计样本。</td></tr>
+      <tr><td>生命周期起点</td><td>用户的首贷提单日期 <code>first_loan_apply_date</code>，而非首贷放款日。</td></tr>
+    </table>
+    <div class="note">本口径以“首贷成功放款用户”为分析起点；后续生命周期状态则基于该用户截至统计时点的全部订单表现进行判断。</div>
+  </section>
+
+  <section class="card" id="life">
+    <h2>二、生命周期定义与五类当前状态</h2>
+    <p class="lead">生命周期从首贷提单日开始，到用户当前状态对应的终点日结束，按自然日含首尾计算。</p>
+    <div class="formula">生命周期总天数 = 生命周期终点 - 首贷提单日期 + 1</div>
+
+    <h3>2.1 五类用户分类与生命周期终点</h3>
+    <table>
+      <tr><th>状态</th><th>用户分类口径</th><th>生命周期终点</th></tr>
+      <tr><td><span class="tag t-red">逾期状态</span></td><td>当前存在至少一笔整笔订单状态为 <code>8</code>。</td><td>所有当前逾期订单中，最早的 <code>due_date</code>。</td></tr>
+      <tr><td><span class="tag t-orange">被拒状态</span></td><td>不存在状态为 <code>8</code> 的订单，且最后一笔提单订单未成功放款。</td><td>最后一笔被拒订单的 <code>apply_date</code>。</td></tr>
+      <tr><td><span class="tag t-blue">在途状态</span></td><td>不存在状态为 <code>8</code> 的订单、最后一笔提单不是被拒，且存在至少一笔状态为 <code>5</code> 的订单。</td><td>所有在途订单中，最晚的 <code>due_date</code>。</td></tr>
+      <tr><td><span class="tag t-purple">流失状态</span></td><td>不存在逾期、被拒、在途；最后一笔订单已结清，结清后未再提单，且最后结清日距统计日大于 7 天。</td><td>最后一笔已结清订单的 <code>repaid_date</code>。</td></tr>
+      <tr><td><span class="tag t-green">正常结清状态</span></td><td>订单均已结清，且不属于逾期、被拒、在途或流失；最后结清日距统计日小于等于 7 天。</td><td>最后一笔已结清订单的 <code>repaid_date</code>。</td></tr>
+    </table>
+    <div class="note warn">状态判定按表中顺序依次执行，以保证互斥。例如同时有在途与逾期订单时，归为逾期状态；最后一笔被拒而仍有旧在途订单时，归为被拒状态。</div>
+
+    <h3>2.2 五类用户分类伪代码</h3>
+    <div class="sql">FOR EACH user_id:
+    first_loan_apply_date = 首贷成功放款订单的首贷提单日期
+    last_apply_order      = 按 apply_time、serial_id 倒序的最后一笔提单
+    last_settled_order    = 最后一笔有效结清订单
+
+    IF EXISTS(当前订单状态 = 8):
+        user_status   = '逾期状态'
+        lifecycle_end = MIN(当前状态8订单.due_date)
+
+    ELSE IF last_apply_order 未成功放款:
+        user_status   = '被拒状态'
+        lifecycle_end = last_apply_order.apply_date
+
+    ELSE IF EXISTS(当前订单状态 = 5):
+        user_status   = '在途状态'
+        lifecycle_end = MAX(当前状态5订单.due_date)
+
+    ELSE IF last_settled_order.repaid_date 距统计日 > 7 天
+         AND last_settled_order 结清后无新的提单:
+        user_status   = '流失状态'
+        lifecycle_end = last_settled_order.repaid_date
+
+    ELSE:
+        user_status   = '正常结清状态'
+        lifecycle_end = last_settled_order.repaid_date</div>
+
+    <h3>2.3 生命周期终点图示</h3>
+    <div class="flow">首贷提单日                                                        生命周期终点
+    │                                                                │
+    ▼                                                                ▼
+────┼────────────────────────────────────────────────────────────────┼────
+
+逾期状态：  当前有多笔状态8订单 → 取 <span class="red">最早到期日</span>
+被拒状态：  最后一笔提单未放款 → 取 <span class="orange">被拒提单日</span>
+在途状态：  有多笔状态5订单   → 取 <span class="blue">最晚到期日</span>
+已结清状态：正常结清或流失     → 取 <span class="green">最后结清日</span></div>
+  </section>
+
+  <section class="card" id="segments">
+    <h2>三、生命周期四段拆解</h2>
+    <p>在每位用户的 <code>[首贷提单日，生命周期终点]</code> 内，对每一个自然日赋予唯一状态。四段天数之和必须严格等于生命周期总天数。</p>
+    <div class="formula">生命周期总天数 = 逾期天数 + 被拒天数 + 在途天数 + 无在途天数</div>
+    <div class="note good">日状态优先级：<strong>逾期 &gt; 在途 &gt; 被拒 &gt; 无在途</strong>。优先级用于处理同日提单、结清、放款等交叠情形。</div>
+
+    <div class="grid">
+      <div class="mini"><b><span class="tag t-red">逾期天数</span></b><p>历史逾期后已结清订单：<code>overdue_days &gt; 0</code> 且当前订单状态不为 <code>8</code>。</p><p><strong>开始：</strong><code>due_date + 1 天</code></p><p><strong>结束：</strong><code>repaid_date</code>，结清日计入逾期。</p></div>
+      <div class="mini"><b><span class="tag t-blue">在途天数</span></b><p>至少有一笔成功放款订单处于正常借款期，且当天不属于逾期。</p><p><strong>开始：</strong>成功放款订单的 <code>apply_date</code>。</p><p><strong>结束：</strong><code>MIN(repaid_date, due_date)</code>；提单日与到期日均计入。</p></div>
+      <div class="mini"><b><span class="tag t-orange">被拒天数</span></b><p>非逾期、非在途期间，结清后发生被拒提单所形成的整段等待链路。</p><p><strong>开始：</strong>被拒提单之前最近一笔成功订单的结清次日。</p><p><strong>结束：</strong>下一笔成功放款订单 <code>apply_date - 1 天</code>；若无下次成功放款，取生命周期终点。</p></div>
+      <div class="mini"><b><span class="tag t-green">无在途天数</span></b><p>仅指订单结清后、下一次提单直接成功放款前的可提单空档；只要下一次提单被拒，整段均不属于无在途。</p><p><strong>开始：</strong>已结清订单 <code>repaid_date + 1 天</code>。</p><p><strong>结束：</strong>下一次<strong>直接成功放款</strong>提单 <code>apply_date - 1 天</code>；期间还须无逾期、无在途、无被拒。</p></div>
+    </div>
+
+    <h3>3.1 四段边界图示</h3>
+    <div class="flow">时间轴  ─────────────────────────────────────────────────────────────→
+
+成功放款提单                    到期日       结清日 / 再次放款
+   │                              │              │
+   ▼                              ▼              ▼
+───┼══════ <span class="blue">在途</span> ══════┼══════ <span class="red">逾期</span> ══════┼───
+   ↑ 提单日计入在途               ↑ 到期日仍计在途  ↑ 结清日仍计逾期
+                                  ↑ 次日开始逾期
+
+订单结清日后的次日 ──（被拒提单前空档）── 被拒提单 ── 下次成功放款提单前一天
+   │                                                │                         │
+   ▼                                                ▼                         ▼
+───┼════════════════════ <span class="orange">被拒链路（整段均计被拒）</span> ═══════════════════┼───
+   ↑ 下一次提单被拒时，结清至被拒前的空档也计被拒；成功放款提单日改计在途
+
+订单结清日后的次日 ─────── 下一次<strong>直接成功放款</strong>提单日前一天
+   │                                                    │
+   ▼                                                    ▼
+───┼══════════════ <span class="green">无在途（可提单但未提单）</span> ══════════════════┼───
+   ↑ 仅下一次提单直接成功放款时成立；必须无逾期、无在途、无被拒</div>
+
+    <h3>3.2 关键同日规则</h3>
+    <table>
+      <tr><th>情形</th><th>当天归属</th><th>原因</th></tr>
+      <tr><td>逾期订单结清当日，又发生被拒或成功放款</td><td>逾期</td><td>结清日仍属于该笔逾期区间，逾期优先级最高。</td></tr>
+      <tr><td>先被拒、同日又成功放款</td><td>在途</td><td>成功放款提单日属于在途；被拒区间在成功放款当日前结束。</td></tr>
+      <tr><td>多笔在途订单并发</td><td>在途只计 1 天</td><td>按用户—日期去重，不能将并发订单天数相加。</td></tr>
+      <tr><td>多笔逾期区间交叠或连续</td><td>逾期只计 1 天</td><td>先合并逾期区间，再按用户—日期计算。</td></tr>
+    </table>
+
+    <h3>3.3 四段计算伪代码</h3>
+    <div class="sql">FOR EACH user_id:
+    calendar_days = 首贷提单日 至 lifecycle_end 的全部自然日
+
+    overdue_intervals = 合并所有历史逾期已结清订单的区间
+        [due_date + 1 天, repaid_date]
+
+    in_transit_intervals = 合并所有成功放款订单的区间
+        [apply_date, MIN(valid_repaid_date, due_date)]
+
+    rejected_intervals = 对每笔被拒订单：
+        [被拒前最近成功订单的 repaid_date + 1 天,
+         下一笔成功放款 apply_date - 1 天]
+        若不存在下一笔成功放款，则结束日 = lifecycle_end
+
+    idle_intervals = 对每笔已结清订单：
+        仅当下一次提单直接成功放款时：
+        [repaid_date + 1 天, 下一次成功放款提单 apply_date - 1 天]
+        仅保留无逾期、无在途且不在被拒等待期的日期
+
+    FOR day IN calendar_days:
+        IF day IN overdue_intervals:
+            day_status = '逾期'
+        ELSE IF day IN in_transit_intervals:
+            day_status = '在途'
+        ELSE IF day IN rejected_intervals:
+            day_status = '被拒'
+        ELSE IF day IN idle_intervals:
+            day_status = '无在途'
+
+    lifecycle_days = COUNT(calendar_days)
+    overdue_days   = COUNT(day_status = '逾期')
+    in_transit_days= COUNT(day_status = '在途')
+    rejected_days  = COUNT(day_status = '被拒')
+    idle_days      = COUNT(day_status = '无在途')
+
+    ASSERT lifecycle_days = overdue_days + in_transit_days
+                          + rejected_days + idle_days</div>
+  </section>
+
+  <section class="card" id="purpose">
+    <h2>四、为什么要计算生命周期</h2>
+    <p>本课题的目的不是只计算用户“存活多久”，而是识别生命周期中哪些时间可通过经营转化为新的借款机会与未来盈利。</p>
+    <table>
+      <tr><th>时间段</th><th>经营解释</th><th>主要动作方向</th></tr>
+      <tr><td>逾期</td><td>用户暂不具备正常提单资格，生命周期损失主要来自风险与未结清。</td><td>催收、还款修复、风险策略，不把它误认为转化不足。</td></tr>
+      <tr><td>被拒</td><td>用户表达了需求，但没有形成放款。</td><td>核查拒绝原因、授信额度、审批策略与产品匹配。</td></tr>
+      <tr><td>在途</td><td>用户已成功借款，正在承接收入与潜在利润。</td><td>保障履约体验、控制风险，并为后续回归创造条件。</td></tr>
+      <tr><td>无在途</td><td>用户具备提单资格却没有形成新的借款。</td><td>这是重点经营空间：触达、产品匹配、额度与定价优化。</td></tr>
+    </table>
+    <div class="note good"><strong>核心经营指标：</strong><code>无在途天数占比 = 无在途天数 / 生命周期总天数</code>。在风险、让利和审批质量可控的前提下，降低该占比、提升可提单用户转化为成功放款的比例，才能增加用户生命周期内的放款与盈利机会。</div>
+    <p>需要注意：将无在途时间转化为在途时间，代表增加放款机会，而不等于自动增加最终净利润；仍需同时观察通过率、逾期、让利成本和单笔利润。</p>
+  </section>
+
+  <p class="foot">版本：生命周期总长度与四段日状态拆解口径。统计截止日需在实际 SQL 中作为参数明确指定。</p>
+</main>
+</body>
+</html>
