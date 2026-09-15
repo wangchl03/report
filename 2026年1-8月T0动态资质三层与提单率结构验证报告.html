@@ -1,0 +1,1194 @@
+<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>2026年1—8月T0动态资质三层与提单率结构验证报告</title><style>
+:root{--bg:#071b2f;--p:#0c2944;--line:#2a5c7e;--text:#eff8ff;--muted:#aac5da;--cy:#43c7e7;--gr:#64dcae;--am:#ffc26b;--pk:#f68ab0}*{box-sizing:border-box}body{margin:0;background:linear-gradient(135deg,#06192b,#0b2c47 55%,#071a2d);color:var(--text);font:15px/1.7 -apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei",sans-serif}main{max-width:1220px;margin:auto;padding:46px 28px 72px}h1{font-size:32px;line-height:1.25;margin:0 0 10px}h2{font-size:22px;margin:42px 0 15px;border-left:4px solid var(--cy);padding-left:12px}h3{font-size:17px;margin:0 0 8px}.sub,.muted{color:var(--muted)}.sub{margin:0 0 28px}.grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}.card,.panel{background:rgba(12,41,68,.9);border:1px solid var(--line);border-radius:10px;padding:18px}.value{font-size:26px;font-weight:700;color:var(--cy)}.label{color:var(--muted);font-size:13px}.panel{margin:16px 0}.legend{display:flex;gap:20px;flex-wrap:wrap;color:var(--muted);font-size:13px;margin-bottom:8px}.legend i{display:inline-block;width:10px;height:10px;border-radius:50%;margin-right:6px}svg{width:100%;height:auto}svg text{fill:#aac5da;font-size:12px}table{width:100%;border-collapse:collapse;background:rgba(12,41,68,.9);font-size:13px}th,td{padding:9px 10px;text-align:right;border-bottom:1px solid rgba(42,92,126,.55);white-space:nowrap}th{background:#103453;color:#dff5ff}th:first-child,td:first-child{text-align:left}.tablewrap{overflow:auto;border:1px solid var(--line);border-radius:10px}.note{border-left:4px solid var(--am);background:rgba(255,194,107,.10);padding:14px 18px;border-radius:6px;margin:14px 0}li{margin:8px 0}details.code{background:#061526;border:1px solid #285575;border-radius:8px;margin:12px 0}summary{cursor:pointer;padding:13px 16px;color:#dff5ff;font-weight:600}pre{margin:0;padding:16px;overflow:auto;border-top:1px solid #285575;color:#d4eaf7;font:12px/1.55 ui-monospace,SFMono-Regular,Menlo,monospace;white-space:pre}@media(max-width:760px){main{padding:28px 15px}.grid{grid-template-columns:repeat(2,1fr)}h1{font-size:25px}}
+</style></head><body><main>
+<h1>2026 年 1—8 月 T0 动态资质三层与提单率结构验证</h1><p class="sub">对象：结清 0 在贷、当日获额通过的 T0 用户；按获额日分月。评分仅使用该次获额时点之前的信息，评分越低代表预测下一笔订单逾期风险越低。</p>
+<div class="grid"><div class="card"><div class="label">整体 T0 当日提单率</div><div class="value">51.45% → 38.19%</div><div class="muted">1 月至 8 月</div></div><div class="card"><div class="label">资质最好用户占比</div><div class="value">19.79% → 13.69%</div><div class="muted">风险最低P30 · 1月-8月</div></div><div class="card"><div class="label">资质最好用户提单率</div><div class="value">50.30% → 39.89%</div><div class="muted">风险最低P30 · 1月-8月</div></div><div class="card"><div class="label">资质一般用户占比</div><div class="value">16.84% → 7.98%</div><div class="muted">风险一般P30-P60 · 1月-8月</div></div><div class="card"><div class="label">资质一般用户提单率</div><div class="value">53.64% → 33.33%</div><div class="muted">风险一般P30-P60 · 1月-8月</div></div><div class="card"><div class="label">资质较差用户占比</div><div class="value">63.37% → 78.34%</div><div class="muted">风险最高P40 · 1月-8月</div></div><div class="card"><div class="label">资质较差用户提单率</div><div class="value">51.24% → 38.39%</div><div class="muted">风险最高P40 · 1月-8月</div></div><div class="card"><div class="label">时间外验证 AUC</div><div class="value">0.527</div><div class="muted">仅作探索性分层</div></div></div>
+<h2>一、三层分层定义</h2><div class="note"><b>在 2025 年训练样本中按预测风险由低到高排序，固定 P30 和 P60 阈值，并应用于 2026 年所有 T0 用户。</b><br>风险 ≤ 35.63%：资质最好（风险最低 30%）；35.63% &lt; 风险 ≤ 37.11%：资质一般（中间 30%）；风险 &gt; 37.11%：资质较差（风险最高 40%）。2026 年各层占比不必等于 30% / 30% / 40%，偏离本身反映人群风险结构变化。</div>
+<h2>二、初步结论</h2><ul><li><b>整体提单率下降：</b>51.45% 降至 38.19%，变化 -13.26 个百分点。</li><li><b>资质结构变差：</b>资质最好占比从 19.79% 降至 13.69%；资质较差占比从 63.37% 升至 78.34%。</li><li><b>三层提单率均下降：</b>故不能把总提单率降低完全归因为任一风险层单独流失；但较差层的占比抬升会使后续订单风险承压。</li><li><b>不能直接归因息费：</b>AUC 为 0.527，模型区分度偏弱，当前只提供探索性线索。须在同一动态资质层内控制渠道、额度、历史贷款次数后比较息费，或通过随机让利试验验证。</li></ul>
+<h2>三、月度趋势</h2><section class="panel"><h3>T0 当日提单率：三类动态资质用户</h3><div class="legend"><span><i style="background:#64dcae"></i>资质最好（P0-P30）</span><span><i style="background:#ffc26b"></i>资质一般（P30-P60）</span><span><i style="background:#f68ab0"></i>资质较差（P60-P100）</span></div><svg viewBox="0 0 760 290"><line x1="42" y1="42.0" x2="718" y2="42.0" stroke="#2a5c7e" opacity=".55"/><line x1="42" y1="92.5" x2="718" y2="92.5" stroke="#2a5c7e" opacity=".55"/><line x1="42" y1="143.0" x2="718" y2="143.0" stroke="#2a5c7e" opacity=".55"/><line x1="42" y1="193.5" x2="718" y2="193.5" stroke="#2a5c7e" opacity=".55"/><line x1="42" y1="244.0" x2="718" y2="244.0" stroke="#2a5c7e" opacity=".55"/><polyline points="42.0,80.2 138.6,76.1 235.1,105.2 331.7,100.8 428.3,128.1 524.9,149.9 621.4,175.8 718.0,180.7" fill="none" stroke="#64dcae" stroke-width="3"/><polyline points="42.0,48.0 138.6,54.0 235.1,117.6 331.7,109.9 428.3,143.3 524.9,153.3 621.4,171.7 718.0,244.0" fill="none" stroke="#ffc26b" stroke-width="3"/><polyline points="42.0,71.2 138.6,83.2 235.1,142.9 331.7,135.4 428.3,143.5 524.9,157.3 621.4,176.3 718.0,195.2" fill="none" stroke="#f68ab0" stroke-width="3"/><circle cx="42.0" cy="80.2" r="4" fill="#64dcae"><title>资质最好（P0-P30） 2026-01：50.30%</title></circle><circle cx="138.6" cy="76.1" r="4" fill="#64dcae"><title>资质最好（P0-P30） 2026-02：50.72%</title></circle><circle cx="235.1" cy="105.2" r="4" fill="#64dcae"><title>资质最好（P0-P30） 2026-03：47.71%</title></circle><circle cx="331.7" cy="100.8" r="4" fill="#64dcae"><title>资质最好（P0-P30） 2026-04：48.17%</title></circle><circle cx="428.3" cy="128.1" r="4" fill="#64dcae"><title>资质最好（P0-P30） 2026-05：45.33%</title></circle><circle cx="524.9" cy="149.9" r="4" fill="#64dcae"><title>资质最好（P0-P30） 2026-06：43.08%</title></circle><circle cx="621.4" cy="175.8" r="4" fill="#64dcae"><title>资质最好（P0-P30） 2026-07：40.40%</title></circle><circle cx="718.0" cy="180.7" r="4" fill="#64dcae"><title>资质最好（P0-P30） 2026-08：39.89%</title></circle><circle cx="42.0" cy="48.0" r="4" fill="#ffc26b"><title>资质一般（P30-P60） 2026-01：53.64%</title></circle><circle cx="138.6" cy="54.0" r="4" fill="#ffc26b"><title>资质一般（P30-P60） 2026-02：53.02%</title></circle><circle cx="235.1" cy="117.6" r="4" fill="#ffc26b"><title>资质一般（P30-P60） 2026-03：46.43%</title></circle><circle cx="331.7" cy="109.9" r="4" fill="#ffc26b"><title>资质一般（P30-P60） 2026-04：47.23%</title></circle><circle cx="428.3" cy="143.3" r="4" fill="#ffc26b"><title>资质一般（P30-P60） 2026-05：43.76%</title></circle><circle cx="524.9" cy="153.3" r="4" fill="#ffc26b"><title>资质一般（P30-P60） 2026-06：42.73%</title></circle><circle cx="621.4" cy="171.7" r="4" fill="#ffc26b"><title>资质一般（P30-P60） 2026-07：40.82%</title></circle><circle cx="718.0" cy="244.0" r="4" fill="#ffc26b"><title>资质一般（P30-P60） 2026-08：33.33%</title></circle><circle cx="42.0" cy="71.2" r="4" fill="#f68ab0"><title>资质较差（P60-P100） 2026-01：51.24%</title></circle><circle cx="138.6" cy="83.2" r="4" fill="#f68ab0"><title>资质较差（P60-P100） 2026-02：49.99%</title></circle><circle cx="235.1" cy="142.9" r="4" fill="#f68ab0"><title>资质较差（P60-P100） 2026-03：43.81%</title></circle><circle cx="331.7" cy="135.4" r="4" fill="#f68ab0"><title>资质较差（P60-P100） 2026-04：44.59%</title></circle><circle cx="428.3" cy="143.5" r="4" fill="#f68ab0"><title>资质较差（P60-P100） 2026-05：43.74%</title></circle><circle cx="524.9" cy="157.3" r="4" fill="#f68ab0"><title>资质较差（P60-P100） 2026-06：42.32%</title></circle><circle cx="621.4" cy="176.3" r="4" fill="#f68ab0"><title>资质较差（P60-P100） 2026-07：40.34%</title></circle><circle cx="718.0" cy="195.2" r="4" fill="#f68ab0"><title>资质较差（P60-P100） 2026-08：38.39%</title></circle><text x="42.0" y="270" text-anchor="middle">01月</text><text x="138.6" y="270" text-anchor="middle">02月</text><text x="235.1" y="270" text-anchor="middle">03月</text><text x="331.7" y="270" text-anchor="middle">04月</text><text x="428.3" y="270" text-anchor="middle">05月</text><text x="524.9" y="270" text-anchor="middle">06月</text><text x="621.4" y="270" text-anchor="middle">07月</text><text x="718.0" y="270" text-anchor="middle">08月</text><text x="42" y="23">53.64%</text><text x="42" y="247">33.33%</text></svg></section><section class="panel"><h3>T0 获额用户结构：三类动态资质占比</h3><div class="legend"><span><i style="background:#64dcae"></i>资质最好（P0-P30）</span><span><i style="background:#ffc26b"></i>资质一般（P30-P60）</span><span><i style="background:#f68ab0"></i>资质较差（P60-P100）</span></div><svg viewBox="0 0 760 290"><line x1="42" y1="42.0" x2="718" y2="42.0" stroke="#2a5c7e" opacity=".55"/><line x1="42" y1="92.5" x2="718" y2="92.5" stroke="#2a5c7e" opacity=".55"/><line x1="42" y1="143.0" x2="718" y2="143.0" stroke="#2a5c7e" opacity=".55"/><line x1="42" y1="193.5" x2="718" y2="193.5" stroke="#2a5c7e" opacity=".55"/><line x1="42" y1="244.0" x2="718" y2="244.0" stroke="#2a5c7e" opacity=".55"/><polyline points="42.0,211.1 138.6,216.2 235.1,208.3 331.7,209.1 428.3,215.3 524.9,226.5 621.4,228.7 718.0,228.1" fill="none" stroke="#64dcae" stroke-width="3"/><polyline points="42.0,219.3 138.6,220.7 235.1,221.1 331.7,230.9 428.3,236.1 524.9,239.1 621.4,242.1 718.0,244.0" fill="none" stroke="#ffc26b" stroke-width="3"/><polyline points="42.0,89.7 138.6,83.1 235.1,90.7 331.7,80.0 428.3,68.7 524.9,54.5 621.4,49.4 718.0,48.0" fill="none" stroke="#f68ab0" stroke-width="3"/><circle cx="42.0" cy="211.1" r="4" fill="#64dcae"><title>资质最好（P0-P30） 2026-01：19.79%</title></circle><circle cx="138.6" cy="216.2" r="4" fill="#64dcae"><title>资质最好（P0-P30） 2026-02：17.96%</title></circle><circle cx="235.1" cy="208.3" r="4" fill="#64dcae"><title>资质最好（P0-P30） 2026-03：20.79%</title></circle><circle cx="331.7" cy="209.1" r="4" fill="#64dcae"><title>资质最好（P0-P30） 2026-04：20.50%</title></circle><circle cx="428.3" cy="215.3" r="4" fill="#64dcae"><title>资质最好（P0-P30） 2026-05：18.27%</title></circle><circle cx="524.9" cy="226.5" r="4" fill="#64dcae"><title>资质最好（P0-P30） 2026-06：14.27%</title></circle><circle cx="621.4" cy="228.7" r="4" fill="#64dcae"><title>资质最好（P0-P30） 2026-07：13.49%</title></circle><circle cx="718.0" cy="228.1" r="4" fill="#64dcae"><title>资质最好（P0-P30） 2026-08：13.69%</title></circle><circle cx="42.0" cy="219.3" r="4" fill="#ffc26b"><title>资质一般（P30-P60） 2026-01：16.84%</title></circle><circle cx="138.6" cy="220.7" r="4" fill="#ffc26b"><title>资质一般（P30-P60） 2026-02：16.32%</title></circle><circle cx="235.1" cy="221.1" r="4" fill="#ffc26b"><title>资质一般（P30-P60） 2026-03：16.20%</title></circle><circle cx="331.7" cy="230.9" r="4" fill="#ffc26b"><title>资质一般（P30-P60） 2026-04：12.67%</title></circle><circle cx="428.3" cy="236.1" r="4" fill="#ffc26b"><title>资质一般（P30-P60） 2026-05：10.81%</title></circle><circle cx="524.9" cy="239.1" r="4" fill="#ffc26b"><title>资质一般（P30-P60） 2026-06：9.72%</title></circle><circle cx="621.4" cy="242.1" r="4" fill="#ffc26b"><title>资质一般（P30-P60） 2026-07：8.66%</title></circle><circle cx="718.0" cy="244.0" r="4" fill="#ffc26b"><title>资质一般（P30-P60） 2026-08：7.98%</title></circle><circle cx="42.0" cy="89.7" r="4" fill="#f68ab0"><title>资质较差（P60-P100） 2026-01：63.37%</title></circle><circle cx="138.6" cy="83.1" r="4" fill="#f68ab0"><title>资质较差（P60-P100） 2026-02：65.72%</title></circle><circle cx="235.1" cy="90.7" r="4" fill="#f68ab0"><title>资质较差（P60-P100） 2026-03：63.01%</title></circle><circle cx="331.7" cy="80.0" r="4" fill="#f68ab0"><title>资质较差（P60-P100） 2026-04：66.83%</title></circle><circle cx="428.3" cy="68.7" r="4" fill="#f68ab0"><title>资质较差（P60-P100） 2026-05：70.92%</title></circle><circle cx="524.9" cy="54.5" r="4" fill="#f68ab0"><title>资质较差（P60-P100） 2026-06：76.02%</title></circle><circle cx="621.4" cy="49.4" r="4" fill="#f68ab0"><title>资质较差（P60-P100） 2026-07：77.85%</title></circle><circle cx="718.0" cy="48.0" r="4" fill="#f68ab0"><title>资质较差（P60-P100） 2026-08：78.34%</title></circle><text x="42.0" y="270" text-anchor="middle">01月</text><text x="138.6" y="270" text-anchor="middle">02月</text><text x="235.1" y="270" text-anchor="middle">03月</text><text x="331.7" y="270" text-anchor="middle">04月</text><text x="428.3" y="270" text-anchor="middle">05月</text><text x="524.9" y="270" text-anchor="middle">06月</text><text x="621.4" y="270" text-anchor="middle">07月</text><text x="718.0" y="270" text-anchor="middle">08月</text><text x="42" y="23">78.34%</text><text x="42" y="247">7.98%</text></svg></section><section class="panel"><h3>实际订单逾期率：三类动态资质用户</h3><div class="legend"><span><i style="background:#64dcae"></i>资质最好（P0-P30）</span><span><i style="background:#ffc26b"></i>资质一般（P30-P60）</span><span><i style="background:#f68ab0"></i>资质较差（P60-P100）</span></div><svg viewBox="0 0 760 290"><line x1="42" y1="42.0" x2="718" y2="42.0" stroke="#2a5c7e" opacity=".55"/><line x1="42" y1="92.5" x2="718" y2="92.5" stroke="#2a5c7e" opacity=".55"/><line x1="42" y1="143.0" x2="718" y2="143.0" stroke="#2a5c7e" opacity=".55"/><line x1="42" y1="193.5" x2="718" y2="193.5" stroke="#2a5c7e" opacity=".55"/><line x1="42" y1="244.0" x2="718" y2="244.0" stroke="#2a5c7e" opacity=".55"/><polyline points="42.0,187.2 138.6,219.3 235.1,216.7 331.7,240.5 428.3,244.0 524.9,166.8 621.4,166.4 718.0,139.2" fill="none" stroke="#64dcae" stroke-width="3"/><polyline points="42.0,175.8 138.6,166.6 235.1,199.8 331.7,205.9 428.3,176.3 524.9,89.3 621.4,133.4 718.0,140.2" fill="none" stroke="#ffc26b" stroke-width="3"/><polyline points="42.0,141.0 138.6,121.7 235.1,130.1 331.7,120.8 428.3,107.9 524.9,56.5 621.4,48.5 718.0,48.0" fill="none" stroke="#f68ab0" stroke-width="3"/><circle cx="42.0" cy="187.2" r="4" fill="#64dcae"><title>资质最好（P0-P30） 2026-01：34.65%</title></circle><circle cx="138.6" cy="219.3" r="4" fill="#64dcae"><title>资质最好（P0-P30） 2026-02：32.49%</title></circle><circle cx="235.1" cy="216.7" r="4" fill="#64dcae"><title>资质最好（P0-P30） 2026-03：32.66%</title></circle><circle cx="331.7" cy="240.5" r="4" fill="#64dcae"><title>资质最好（P0-P30） 2026-04：31.06%</title></circle><circle cx="428.3" cy="244.0" r="4" fill="#64dcae"><title>资质最好（P0-P30） 2026-05：30.82%</title></circle><circle cx="524.9" cy="166.8" r="4" fill="#64dcae"><title>资质最好（P0-P30） 2026-06：36.02%</title></circle><circle cx="621.4" cy="166.4" r="4" fill="#64dcae"><title>资质最好（P0-P30） 2026-07：36.05%</title></circle><circle cx="718.0" cy="139.2" r="4" fill="#64dcae"><title>资质最好（P0-P30） 2026-08：37.88%</title></circle><circle cx="42.0" cy="175.8" r="4" fill="#ffc26b"><title>资质一般（P30-P60） 2026-01：35.42%</title></circle><circle cx="138.6" cy="166.6" r="4" fill="#ffc26b"><title>资质一般（P30-P60） 2026-02：36.04%</title></circle><circle cx="235.1" cy="199.8" r="4" fill="#ffc26b"><title>资质一般（P30-P60） 2026-03：33.80%</title></circle><circle cx="331.7" cy="205.9" r="4" fill="#ffc26b"><title>资质一般（P30-P60） 2026-04：33.39%</title></circle><circle cx="428.3" cy="176.3" r="4" fill="#ffc26b"><title>资质一般（P30-P60） 2026-05：35.38%</title></circle><circle cx="524.9" cy="89.3" r="4" fill="#ffc26b"><title>资质一般（P30-P60） 2026-06：41.23%</title></circle><circle cx="621.4" cy="133.4" r="4" fill="#ffc26b"><title>资质一般（P30-P60） 2026-07：38.27%</title></circle><circle cx="718.0" cy="140.2" r="4" fill="#ffc26b"><title>资质一般（P30-P60） 2026-08：37.81%</title></circle><circle cx="42.0" cy="141.0" r="4" fill="#f68ab0"><title>资质较差（P60-P100） 2026-01：37.76%</title></circle><circle cx="138.6" cy="121.7" r="4" fill="#f68ab0"><title>资质较差（P60-P100） 2026-02：39.06%</title></circle><circle cx="235.1" cy="130.1" r="4" fill="#f68ab0"><title>资质较差（P60-P100） 2026-03：38.49%</title></circle><circle cx="331.7" cy="120.8" r="4" fill="#f68ab0"><title>资质较差（P60-P100） 2026-04：39.12%</title></circle><circle cx="428.3" cy="107.9" r="4" fill="#f68ab0"><title>资质较差（P60-P100） 2026-05：39.99%</title></circle><circle cx="524.9" cy="56.5" r="4" fill="#f68ab0"><title>资质较差（P60-P100） 2026-06：43.45%</title></circle><circle cx="621.4" cy="48.5" r="4" fill="#f68ab0"><title>资质较差（P60-P100） 2026-07：43.98%</title></circle><circle cx="718.0" cy="48.0" r="4" fill="#f68ab0"><title>资质较差（P60-P100） 2026-08：44.02%</title></circle><text x="42.0" y="270" text-anchor="middle">01月</text><text x="138.6" y="270" text-anchor="middle">02月</text><text x="235.1" y="270" text-anchor="middle">03月</text><text x="331.7" y="270" text-anchor="middle">04月</text><text x="428.3" y="270" text-anchor="middle">05月</text><text x="524.9" y="270" text-anchor="middle">06月</text><text x="621.4" y="270" text-anchor="middle">07月</text><text x="718.0" y="270" text-anchor="middle">08月</text><text x="42" y="23">44.02%</text><text x="42" y="247">30.82%</text></svg></section><section class="panel"><h3>已到期放款订单加权息费率：三类动态资质用户</h3><div class="legend"><span><i style="background:#64dcae"></i>资质最好（P0-P30）</span><span><i style="background:#ffc26b"></i>资质一般（P30-P60）</span><span><i style="background:#f68ab0"></i>资质较差（P60-P100）</span></div><svg viewBox="0 0 760 290"><line x1="42" y1="42.0" x2="718" y2="42.0" stroke="#2a5c7e" opacity=".55"/><line x1="42" y1="92.5" x2="718" y2="92.5" stroke="#2a5c7e" opacity=".55"/><line x1="42" y1="143.0" x2="718" y2="143.0" stroke="#2a5c7e" opacity=".55"/><line x1="42" y1="193.5" x2="718" y2="193.5" stroke="#2a5c7e" opacity=".55"/><line x1="42" y1="244.0" x2="718" y2="244.0" stroke="#2a5c7e" opacity=".55"/><polyline points="42.0,215.3 138.6,244.0 235.1,223.9 331.7,211.3 428.3,172.3 524.9,117.4 621.4,149.0 718.0,152.7" fill="none" stroke="#64dcae" stroke-width="3"/><polyline points="42.0,221.6 138.6,233.9 235.1,211.7 331.7,202.0 428.3,159.6 524.9,115.9 621.4,116.7 718.0,96.0" fill="none" stroke="#ffc26b" stroke-width="3"/><polyline points="42.0,218.3 138.6,220.8 235.1,190.0 331.7,170.7 428.3,128.8 524.9,64.7 621.4,70.2 718.0,48.0" fill="none" stroke="#f68ab0" stroke-width="3"/><circle cx="42.0" cy="215.3" r="4" fill="#64dcae"><title>资质最好（P0-P30） 2026-01：49.76%</title></circle><circle cx="138.6" cy="244.0" r="4" fill="#64dcae"><title>资质最好（P0-P30） 2026-02：47.91%</title></circle><circle cx="235.1" cy="223.9" r="4" fill="#64dcae"><title>资质最好（P0-P30） 2026-03：49.20%</title></circle><circle cx="331.7" cy="211.3" r="4" fill="#64dcae"><title>资质最好（P0-P30） 2026-04：50.01%</title></circle><circle cx="428.3" cy="172.3" r="4" fill="#64dcae"><title>资质最好（P0-P30） 2026-05：52.52%</title></circle><circle cx="524.9" cy="117.4" r="4" fill="#64dcae"><title>资质最好（P0-P30） 2026-06：56.05%</title></circle><circle cx="621.4" cy="149.0" r="4" fill="#64dcae"><title>资质最好（P0-P30） 2026-07：54.02%</title></circle><circle cx="718.0" cy="152.7" r="4" fill="#64dcae"><title>资质最好（P0-P30） 2026-08：53.78%</title></circle><circle cx="42.0" cy="221.6" r="4" fill="#ffc26b"><title>资质一般（P30-P60） 2026-01：49.35%</title></circle><circle cx="138.6" cy="233.9" r="4" fill="#ffc26b"><title>资质一般（P30-P60） 2026-02：48.56%</title></circle><circle cx="235.1" cy="211.7" r="4" fill="#ffc26b"><title>资质一般（P30-P60） 2026-03：49.99%</title></circle><circle cx="331.7" cy="202.0" r="4" fill="#ffc26b"><title>资质一般（P30-P60） 2026-04：50.61%</title></circle><circle cx="428.3" cy="159.6" r="4" fill="#ffc26b"><title>资质一般（P30-P60） 2026-05：53.34%</title></circle><circle cx="524.9" cy="115.9" r="4" fill="#ffc26b"><title>资质一般（P30-P60） 2026-06：56.14%</title></circle><circle cx="621.4" cy="116.7" r="4" fill="#ffc26b"><title>资质一般（P30-P60） 2026-07：56.09%</title></circle><circle cx="718.0" cy="96.0" r="4" fill="#ffc26b"><title>资质一般（P30-P60） 2026-08：57.42%</title></circle><circle cx="42.0" cy="218.3" r="4" fill="#f68ab0"><title>资质较差（P60-P100） 2026-01：49.56%</title></circle><circle cx="138.6" cy="220.8" r="4" fill="#f68ab0"><title>资质较差（P60-P100） 2026-02：49.40%</title></circle><circle cx="235.1" cy="190.0" r="4" fill="#f68ab0"><title>资质较差（P60-P100） 2026-03：51.38%</title></circle><circle cx="331.7" cy="170.7" r="4" fill="#f68ab0"><title>资质较差（P60-P100） 2026-04：52.62%</title></circle><circle cx="428.3" cy="128.8" r="4" fill="#f68ab0"><title>资质较差（P60-P100） 2026-05：55.31%</title></circle><circle cx="524.9" cy="64.7" r="4" fill="#f68ab0"><title>资质较差（P60-P100） 2026-06：59.43%</title></circle><circle cx="621.4" cy="70.2" r="4" fill="#f68ab0"><title>资质较差（P60-P100） 2026-07：59.08%</title></circle><circle cx="718.0" cy="48.0" r="4" fill="#f68ab0"><title>资质较差（P60-P100） 2026-08：60.51%</title></circle><text x="42.0" y="270" text-anchor="middle">01月</text><text x="138.6" y="270" text-anchor="middle">02月</text><text x="235.1" y="270" text-anchor="middle">03月</text><text x="331.7" y="270" text-anchor="middle">04月</text><text x="428.3" y="270" text-anchor="middle">05月</text><text x="524.9" y="270" text-anchor="middle">06月</text><text x="621.4" y="270" text-anchor="middle">07月</text><text x="718.0" y="270" text-anchor="middle">08月</text><text x="42" y="23">60.51%</text><text x="42" y="247">47.91%</text></svg></section><div class="note"><b>实际订单逾期率口径：</b>分层后，以 T0 获额后同日真实提单且成功放款、并在 2026-09-10 前到期的整笔订单为分母；若结清日为空/早于 2000-01-01，或结清日晚于到期日，则该订单计为逾期。图表和表格均同时展示成熟订单数，避免将未到期订单误算为正常。<br><b>加权息费口径：</b>使用同一批已到期订单，<code>sum(pre_amt + post_amt) / sum(remit_amt)</code>；放款金额与息费金额分别作为分母、分子展示。</div><div class="tablewrap"><table><thead><tr><th>获额月份</th><th>T0获额用户数</th><th>整体当日提单率</th><th>最好占比</th><th>一般占比</th><th>较差占比</th><th>最好层提单率</th><th>一般层提单率</th><th>较差层提单率</th><th>实际已到期订单数</th><th>实际逾期订单数</th><th>整体实际订单逾期率</th></tr></thead><tbody><tr><td>2026-01</td><td>19,520</td><td>51.45%</td><td>19.79%</td><td>16.84%</td><td>63.37%</td><td>50.30%</td><td>53.64%</td><td>51.24%</td><td>9,936</td><td>3,651</td><td>36.75%</td></tr><tr><td>2026-02</td><td>22,739</td><td>50.61%</td><td>17.96%</td><td>16.32%</td><td>65.72%</td><td>50.72%</td><td>53.02%</td><td>49.99%</td><td>11,342</td><td>4,236</td><td>37.35%</td></tr><tr><td>2026-03</td><td>22,198</td><td>45.04%</td><td>20.79%</td><td>16.20%</td><td>63.01%</td><td>47.71%</td><td>46.43%</td><td>43.81%</td><td>9,877</td><td>3,597</td><td>36.42%</td></tr><tr><td>2026-04</td><td>20,780</td><td>45.65%</td><td>20.50%</td><td>12.67%</td><td>66.83%</td><td>48.17%</td><td>47.23%</td><td>44.59%</td><td>9,422</td><td>3,451</td><td>36.63%</td></tr><tr><td>2026-05</td><td>23,875</td><td>44.03%</td><td>18.27%</td><td>10.81%</td><td>70.92%</td><td>45.33%</td><td>43.76%</td><td>43.74%</td><td>10,318</td><td>3,896</td><td>37.76%</td></tr><tr><td>2026-06</td><td>22,635</td><td>42.47%</td><td>14.27%</td><td>9.72%</td><td>76.02%</td><td>43.08%</td><td>42.73%</td><td>42.32%</td><td>9,396</td><td>3,961</td><td>42.16%</td></tr><tr><td>2026-07</td><td>23,275</td><td>40.39%</td><td>13.49%</td><td>8.66%</td><td>77.85%</td><td>40.40%</td><td>40.82%</td><td>40.34%</td><td>9,242</td><td>3,921</td><td>42.43%</td></tr><tr><td>2026-08</td><td>22,111</td><td>38.19%</td><td>13.69%</td><td>7.98%</td><td>78.34%</td><td>39.89%</td><td>33.33%</td><td>38.39%</td><td>5,467</td><td>2,341</td><td>42.82%</td></tr></tbody></table></div><h3 style="margin-top:24px">已到期放款订单加权息费率明细</h3><div class="tablewrap"><table><thead><tr><th>获额月份</th><th>整体放款金额（分母）</th><th>整体息费金额（分子）</th><th>整体加权息费率</th><th>最好层加权息费率</th><th>一般层加权息费率</th><th>较差层加权息费率</th></tr></thead><tbody><tr><td>2026-01</td><td>29,435,639.00</td><td>14,593,939.00</td><td>49.58%</td><td>49.76%</td><td>49.35%</td><td>49.56%</td></tr><tr><td>2026-02</td><td>29,885,580.00</td><td>14,626,880.00</td><td>48.94%</td><td>47.91%</td><td>48.56%</td><td>49.40%</td></tr><tr><td>2026-03</td><td>23,471,786.00</td><td>11,857,889.00</td><td>50.52%</td><td>49.20%</td><td>49.99%</td><td>51.38%</td></tr><tr><td>2026-04</td><td>20,533,969.00</td><td>10,566,674.00</td><td>51.46%</td><td>50.01%</td><td>50.61%</td><td>52.62%</td></tr><tr><td>2026-05</td><td>22,236,302.00</td><td>12,060,206.00</td><td>54.24%</td><td>52.52%</td><td>53.34%</td><td>55.31%</td></tr><tr><td>2026-06</td><td>20,171,272.00</td><td>11,760,309.00</td><td>58.30%</td><td>56.05%</td><td>56.14%</td><td>59.43%</td></tr><tr><td>2026-07</td><td>22,125,900.00</td><td>12,780,305.00</td><td>57.76%</td><td>54.02%</td><td>56.09%</td><td>59.08%</td></tr><tr><td>2026-08</td><td>10,999,089.00</td><td>6,468,674.00</td><td>58.81%</td><td>53.78%</td><td>57.42%</td><td>60.51%</td></tr></tbody></table></div>
+<h2>四、模型效果复核：真实逾期率是否呈风险梯度</h2><div class="note"><b>结论：严格时点修正后，三层在累计真实到期订单中仍呈现清晰风险梯度。</b><br>资质最好、一般、较差三层的累计实际订单逾期率依次为 33.32%、35.88%、40.68%；资质较差与资质最好的差异为 7.36 个百分点。资质较差层在 1—8 月每月均为最高风险；资质最好与一般层在多数月份保持梯度，8 月因成熟样本量较小而出现轻微交叉。因此模型能提供后续真实风险的分层信号，但不应被解读为每月均严格排序的高精度模型。</div><div class="tablewrap"><table><thead><tr><th>动态资质层</th><th>真实已到期订单数</th><th>真实逾期订单数</th><th>累计实际订单逾期率</th></tr></thead><tbody><tr><td>资质最好（P0-P30）</td><td>13,401</td><td>4,465</td><td>33.32%</td></tr><tr><td>资质一般（P30-P60）</td><td>9,802</td><td>3,517</td><td>35.88%</td></tr><tr><td>资质较差（P60-P100）</td><td>51,797</td><td>21,072</td><td>40.68%</td></tr></tbody></table></div><p class="muted">评价样本为 2026 年 1—8 月的 T0 同日真实提单且成功放款订单；仅统计截至 2026-09-10 已到期订单。模型本身的时间外 AUC 为 0.527，因此该结果证明其具备分层信号，但仍不宜视为高精度授信模型。</p>
+<h2>五、模型与统计口径</h2><ul><li><b>T0 快照：</b>同一用户 20 秒内多次获额，只保留订单编号最大的最后一笔；同一用户同日保留最早有效 T0 获额。<code>vir_unix</code> 显式转换为 <code>America/Belize</code> 业务本地时间后，与订单本地时间比较。</li><li><b>训练标签：</b>该次获额对应的下一笔成功放款订单到期时是否逾期；结清日为空/早于 2000-01-01 或晚于到期日，均视为逾期。</li><li><b>特征：</b>仅使用获额前已结清订单的成功放款、历史逾期、金额、加权息费、贷款时长、上一笔订单表现与当次获额额度；不使用获额后、提单后、尚未结清订单的最终结果或今天的未来信息。</li><li><b>T0 当日提单率：</b>获额后同一自然日提交订单的用户数 / T0 获额用户数；不拆分 0—1 小时。</li></ul>
+<h2>六、下一步验证</h2><ol><li>三层内继续按实际息费、额度、渠道、历史放款次数分桶，比较同桶内息费变化与 T0 提单率。</li><li>追踪“资质最好但未提单”用户后续 7/30 天的提单、放款和风险，区分长期流失与延后转化。</li><li>对资质最好且未提单用户开展随机降息/不降息对照，测量增量提单、放款、逾期和利润，决定是否拉升提单率。</li></ol>
+<h2>附录：可复现代码</h2><div class="note"><b>执行顺序：</b><br>1. 设置环境变量 <code>KABY_DB_HOST</code>、<code>KABY_DB_PORT</code>、<code>KABY_DB_NAME</code>、<code>KABY_DB_USER</code>、<code>KABY_DB_PASSWORD</code>；<br>2. 执行 <code>python work/run_t0_dynamic_quality_model.py</code>，产出训练样本、时间外验证指标、P30/P60 阈值和模型参数；<br>3. 执行 <code>python work/score_t0_dynamic_quality_2026.py</code>，产出嵌入模型参数的完整 SQL 及 2026 年 1—8 月全量月度结果；<br>4. 执行 <code>python work/build_t0_dynamic_quality_report.py</code>，生成本报告。数据库密码不写入任何附录代码。</div><p class="muted">模块一负责严格时点特征和标签；模块二完成训练；模块三将训练参数回填全量 T0 数据；模块四按结果生成可视化报告；模块五是可直接运行的最终 PostgreSQL 汇总 SQL。</p><details class="code"><summary>模块一：T0 事件、历史特征与训练标签（SQL）</summary><pre><code>-- ================================================================
+-- 结清 0 在贷 T0 动态资质模型：特征快照与训练标签
+-- 评分对象：2026-01-01 至 2026-08-31 的 T0 获额通过用户。
+-- 训练样本：2024-01-01 至 2025-12-31 的 T0 样本，且后续成功放款订单
+--          已于 2026-06-30 前到期；标签为该订单到期时是否逾期。
+-- 所有 feature 均严格限制为 vir_time（获额通过时点）之前已经结清的订单。
+-- 订单时间字段为业务本地无时区时间；vir_unix 显式转为 America/Belize，
+-- 避免数据库会话时区变化造成获额前后顺序错判。
+-- ================================================================
+WITH params AS (
+    SELECT
+        DATE &#x27;2025-01-01&#x27; AS feature_start_date,
+        DATE &#x27;2026-09-01&#x27; AS feature_end_date,
+        DATE &#x27;2026-01-01&#x27; AS score_start_date,
+        DATE &#x27;2025-12-31&#x27; AS train_end_date,
+        DATE &#x27;2026-06-30&#x27; AS label_due_cutoff,
+        DATE &#x27;2026-09-10&#x27; AS analysis_as_of_date
+),
+raw_offer AS (
+    SELECT DISTINCT ON (v.user_id, v.serial_id)
+        v.user_id,
+        v.serial_id,
+        v.vir_date::date AS vir_date,
+        TO_TIMESTAMP(v.vir_unix) AT TIME ZONE &#x27;America/Belize&#x27; AS vir_time,
+        v.max_credit_apply_amt,
+        r.recycle_type
+    FROM wangchuanliang.order_vir_f_copy AS v
+    INNER JOIN wangchuanliang.side_recycle_type_copy AS r
+        ON r.serial_id = v.serial_id
+    CROSS JOIN params AS p
+    WHERE v.is_pass1 = 1
+      AND v.loan_type_code = 2
+      AND v.vir_date &gt;= p.feature_start_date - 1
+      AND v.vir_date &lt; p.feature_end_date
+    ORDER BY v.user_id, v.serial_id, v.vir_unix DESC
+),
+offer_batch AS (
+    SELECT
+        x.*,
+        SUM(CASE
+                WHEN x.prev_vir_time IS NULL
+                  OR x.vir_time - x.prev_vir_time &gt; INTERVAL &#x27;20 seconds&#x27;
+                THEN 1 ELSE 0
+            END) OVER (
+                PARTITION BY x.user_id
+                ORDER BY x.vir_time, x.serial_id
+                ROWS UNBOUNDED PRECEDING
+            ) AS batch_id
+    FROM (
+        SELECT
+            r.*,
+            LAG(r.vir_time) OVER (
+                PARTITION BY r.user_id
+                ORDER BY r.vir_time, r.serial_id
+            ) AS prev_vir_time
+        FROM raw_offer AS r
+    ) AS x
+),
+dedup_offer AS (
+    SELECT user_id, serial_id, vir_date, vir_time, max_credit_apply_amt
+    FROM (
+        SELECT
+            b.*,
+            ROW_NUMBER() OVER (
+                PARTITION BY b.user_id, b.batch_id
+                ORDER BY b.serial_id DESC
+            ) AS batch_rn
+        FROM offer_batch AS b
+        CROSS JOIN params AS p
+        WHERE b.recycle_type = 3
+          AND b.vir_date &gt;= p.feature_start_date
+          AND b.vir_date &lt; p.feature_end_date
+    ) AS x
+    WHERE batch_rn = 1
+),
+candidate_users AS (
+    SELECT DISTINCT user_id FROM dedup_offer
+),
+all_orders AS (
+    SELECT
+        o.user_id, o.serial_id, o.apply_time, o.apply_date,
+        o.remit_amt, o.pre_amt, o.post_amt,
+        o.due_date, o.repaid_time, o.repaid_date,
+        o.is_remit, o.is_repaid, o.overdue_days, o.loan_status_code
+    FROM wangchuanliang.order_loan_f_v2_copy AS o
+    INNER JOIN candidate_users AS u ON u.user_id = o.user_id
+),
+clean_settlement AS (
+    SELECT o.user_id, o.serial_id, o.repaid_time, o.repaid_date
+    FROM all_orders AS o
+    WHERE o.is_remit = 1
+      AND (o.is_repaid = 1 OR o.loan_status_code = 7)
+      AND o.repaid_time &gt; TIMESTAMP &#x27;2000-01-01 00:00:00&#x27;
+      AND NOT EXISTS (
+          SELECT 1
+          FROM all_orders AS x
+          WHERE x.user_id = o.user_id
+            AND x.serial_id &lt;&gt; o.serial_id
+            AND x.apply_time &lt; o.repaid_time
+            AND (
+                  x.loan_status_code IN (5, 8)
+               OR (x.loan_status_code = 7 AND x.repaid_time &gt; o.repaid_time)
+            )
+      )
+),
+t0_pairs AS (
+    SELECT
+        e.user_id,
+        e.serial_id AS offer_serial_id,
+        e.vir_date,
+        e.vir_time,
+        e.max_credit_apply_amt,
+        s.serial_id AS settlement_serial_id,
+        s.repaid_time AS settlement_time,
+        ROW_NUMBER() OVER (
+            PARTITION BY e.user_id, e.serial_id, e.vir_time
+            ORDER BY s.repaid_time DESC, s.serial_id DESC
+        ) AS settlement_rn
+    FROM dedup_offer AS e
+    INNER JOIN clean_settlement AS s
+        ON s.user_id = e.user_id
+       AND s.repaid_date = e.vir_date
+       AND e.vir_time &gt;= s.repaid_time
+),
+t0_events AS (
+    SELECT *
+    FROM (
+        SELECT
+            p.*,
+            ROW_NUMBER() OVER (
+                PARTITION BY p.user_id, p.vir_date
+                ORDER BY p.vir_time, p.offer_serial_id DESC
+            ) AS day_rn
+        FROM t0_pairs AS p
+        WHERE p.settlement_rn = 1
+    ) AS x
+    WHERE day_rn = 1
+),
+historical_features AS (
+    SELECT
+        t.user_id,
+        t.offer_serial_id,
+        t.vir_time,
+        COUNT(DISTINCT CASE WHEN h.is_remit = 1 THEN h.serial_id END) AS hist_remit_cnt,
+        COUNT(DISTINCT CASE
+            WHEN h.is_remit = 1
+             AND h.repaid_date &gt; DATE &#x27;2000-01-01&#x27;
+            THEN h.serial_id
+        END) AS hist_settled_cnt,
+        COUNT(DISTINCT CASE
+            WHEN h.is_remit = 1
+             AND (
+                   h.repaid_date &lt;= DATE &#x27;2000-01-01&#x27;
+                OR h.repaid_date &gt; h.due_date
+             )
+            THEN h.serial_id
+        END) AS hist_overdue_order_cnt,
+        COALESCE(MAX(CASE WHEN h.is_remit = 1 THEN h.overdue_days END), 0) AS hist_max_overdue_days,
+        COALESCE(AVG(CASE WHEN h.is_remit = 1 THEN h.remit_amt END), 0) AS hist_avg_remit_amt,
+        COALESCE(SUM(CASE WHEN h.is_remit = 1 THEN h.remit_amt END), 0) AS hist_total_remit_amt,
+        COALESCE(
+            SUM(CASE WHEN h.is_remit = 1 THEN h.pre_amt + h.post_amt ELSE 0 END)
+            / NULLIF(SUM(CASE WHEN h.is_remit = 1 THEN h.remit_amt ELSE 0 END), 0),
+            0
+        ) AS hist_weighted_interest_rate,
+        MIN(CASE WHEN h.is_remit = 1 THEN h.apply_date END) AS first_hist_apply_date,
+        MAX(CASE WHEN h.is_remit = 1 THEN h.repaid_date END) AS last_hist_repaid_date
+    FROM t0_events AS t
+    LEFT JOIN all_orders AS h
+        ON h.user_id = t.user_id
+       AND h.apply_time &lt; t.vir_time
+       AND h.is_remit = 1
+       AND h.repaid_time IS NOT NULL
+       AND h.repaid_time &lt; t.vir_time
+    GROUP BY t.user_id, t.offer_serial_id, t.vir_time
+),
+feature_base AS (
+    SELECT
+        t.user_id,
+        t.offer_serial_id,
+        t.vir_date,
+        t.vir_time,
+        t.max_credit_apply_amt,
+        t.settlement_serial_id,
+        t.settlement_time,
+        f.hist_remit_cnt,
+        f.hist_settled_cnt,
+        f.hist_overdue_order_cnt,
+        f.hist_max_overdue_days,
+        f.hist_avg_remit_amt,
+        f.hist_total_remit_amt,
+        f.hist_weighted_interest_rate,
+        (t.vir_date - f.first_hist_apply_date) AS user_loan_tenure_days,
+        (t.vir_date - f.last_hist_repaid_date) AS days_since_last_repaid,
+        CASE WHEN f.hist_remit_cnt &gt; 0
+             THEN f.hist_overdue_order_cnt::numeric / f.hist_remit_cnt
+             ELSE 0 END AS hist_overdue_order_rate,
+        CASE WHEN prior.repaid_date &gt; DATE &#x27;2000-01-01&#x27;
+                   AND prior.repaid_date &lt;= prior.due_date
+             THEN 0 ELSE 1 END AS previous_order_overdue_flag,
+        COALESCE(prior.remit_amt, 0) AS previous_remit_amt,
+        CASE WHEN prior.remit_amt &gt; 0
+             THEN (prior.pre_amt + prior.post_amt) / prior.remit_amt
+             ELSE 0 END AS previous_interest_rate,
+        target.is_remit AS next_order_is_remit,
+        COALESCE(target.remit_amt, 0) AS t0_order_remit_amt,
+        COALESCE(target.pre_amt + target.post_amt, 0) AS t0_order_interest_amt,
+        CASE
+            WHEN target.apply_time &gt;= t.vir_time
+             AND target.apply_date = t.vir_date
+            THEN 1 ELSE 0
+        END AS is_t0_apply,
+        target.due_date AS next_order_due_date,
+        CASE
+            WHEN target.is_remit = 1
+             AND target.due_date &lt;= p.label_due_cutoff
+            THEN 1 ELSE 0
+        END AS is_mature_label_sample,
+        CASE
+            WHEN target.is_remit = 1
+             AND target.due_date &lt;= p.label_due_cutoff
+             AND (
+                   target.repaid_date &lt;= DATE &#x27;2000-01-01&#x27;
+                OR target.repaid_date &gt; target.due_date
+             )
+            THEN 1
+            WHEN target.is_remit = 1
+             AND target.due_date &lt;= p.label_due_cutoff
+            THEN 0
+            ELSE NULL
+        END AS next_order_overdue_label,
+        -- 报告中的实际订单逾期率：只统计 T0 当日真实提单且成功放款、
+        -- 并在统计截止日已到期的整笔订单。
+        CASE
+            WHEN target.is_remit = 1
+             AND target.apply_time &gt;= t.vir_time
+             AND target.apply_date = t.vir_date
+             AND target.due_date &lt;= p.analysis_as_of_date
+            THEN 1 ELSE 0
+        END AS is_actual_t0_mature_order,
+        CASE
+            WHEN target.is_remit = 1
+             AND target.apply_time &gt;= t.vir_time
+             AND target.apply_date = t.vir_date
+             AND target.due_date &lt;= p.analysis_as_of_date
+             AND (
+                    target.repaid_date IS NULL
+                 OR target.repaid_date &lt;= DATE &#x27;2000-01-01&#x27;
+                 OR target.repaid_date &gt; target.due_date
+             )
+            THEN 1
+            WHEN target.is_remit = 1
+             AND target.apply_time &gt;= t.vir_time
+             AND target.apply_date = t.vir_date
+             AND target.due_date &lt;= p.analysis_as_of_date
+            THEN 0
+            ELSE NULL
+        END AS actual_t0_order_overdue_label
+    FROM t0_events AS t
+    INNER JOIN historical_features AS f
+        ON f.user_id = t.user_id
+       AND f.offer_serial_id = t.offer_serial_id
+       AND f.vir_time = t.vir_time
+    LEFT JOIN all_orders AS prior
+        ON prior.user_id = t.user_id
+       AND prior.serial_id = t.settlement_serial_id
+    LEFT JOIN all_orders AS target
+        ON target.user_id = t.user_id
+       AND target.serial_id = t.offer_serial_id
+    CROSS JOIN params AS p
+)
+SELECT
+    b.*,
+    CASE WHEN b.vir_date BETWEEN p.feature_start_date AND p.train_end_date
+         THEN 1 ELSE 0 END AS is_train_period,
+    CASE WHEN b.vir_date &gt;= p.score_start_date
+          AND b.vir_date &lt; p.feature_end_date
+         THEN 1 ELSE 0 END AS is_score_period
+FROM feature_base AS b
+CROSS JOIN params AS p
+ORDER BY b.vir_time, b.user_id, b.offer_serial_id;
+</code></pre></details><details class="code"><summary>模块二：模型训练、验证与参数导出（Python）</summary><pre><code>&quot;&quot;&quot;构建结清0在贷 T0 时点动态资质评分，并输出 2026 年 1—8 月分层结果。&quot;&quot;&quot;
+import ast
+import os
+from pathlib import Path
+
+import numpy as np
+import pandas as pd
+import psycopg2
+from sklearn.impute import SimpleImputer
+from sklearn.linear_model import LogisticRegression
+from sklearn.metrics import brier_score_loss, roc_auc_score
+from sklearn.pipeline import Pipeline
+from sklearn.preprocessing import StandardScaler
+
+
+ROOT = Path(__file__).resolve().parents[1]
+SQL_PATH = ROOT / &quot;work&quot; / &quot;t0_dynamic_quality_feature_extract.sql&quot;
+FEATURE_PATH = ROOT / &quot;work&quot; / &quot;t0_dynamic_quality_features.csv&quot;
+SCORE_PATH = ROOT / &quot;work&quot; / &quot;t0_dynamic_quality_scores_2026_01_08.csv&quot;
+MONTHLY_PATH = ROOT / &quot;work&quot; / &quot;t0_dynamic_quality_monthly_2026_01_08.csv&quot;
+METRICS_PATH = ROOT / &quot;work&quot; / &quot;t0_dynamic_quality_model_metrics.csv&quot;
+
+FEATURES = [
+    &quot;max_credit_apply_amt&quot;,
+    &quot;hist_remit_cnt&quot;,
+    &quot;hist_settled_cnt&quot;,
+    &quot;hist_overdue_order_cnt&quot;,
+    &quot;hist_max_overdue_days&quot;,
+    &quot;hist_avg_remit_amt&quot;,
+    &quot;hist_total_remit_amt&quot;,
+    &quot;hist_weighted_interest_rate&quot;,
+    &quot;user_loan_tenure_days&quot;,
+    &quot;days_since_last_repaid&quot;,
+    &quot;hist_overdue_order_rate&quot;,
+    &quot;previous_order_overdue_flag&quot;,
+    &quot;previous_remit_amt&quot;,
+    &quot;previous_interest_rate&quot;,
+]
+
+
+def load_db():
+    &quot;&quot;&quot;优先读取环境变量，便于脱离当前工作目录复现。
+
+    KABY_DB_HOST / KABY_DB_PORT / KABY_DB_NAME / KABY_DB_USER / KABY_DB_PASSWORD
+    均已设置时直接使用；本地已有安全配置时才使用兼容性回退。
+    &quot;&quot;&quot;
+    keys = {
+        &quot;host&quot;: &quot;KABY_DB_HOST&quot;, &quot;port&quot;: &quot;KABY_DB_PORT&quot;, &quot;dbname&quot;: &quot;KABY_DB_NAME&quot;,
+        &quot;user&quot;: &quot;KABY_DB_USER&quot;, &quot;password&quot;: &quot;KABY_DB_PASSWORD&quot;,
+    }
+    env_db = {key: os.environ.get(env_key) for key, env_key in keys.items()}
+    if all(env_db.values()):
+        env_db[&quot;port&quot;] = int(env_db[&quot;port&quot;])
+        env_db[&quot;options&quot;] = &quot;-c statement_timeout=900000&quot;
+        return env_db
+    tree = ast.parse((ROOT / &quot;work&quot; / &quot;query_t4_0804_0807_full.py&quot;).read_text())
+    db = next(
+        ast.literal_eval(n.value)
+        for n in tree.body
+        if isinstance(n, ast.Assign)
+        and any(isinstance(t, ast.Name) and t.id == &quot;DB&quot; for t in n.targets)
+    )
+    db[&quot;options&quot;] = &quot;-c statement_timeout=900000&quot;
+    return db
+
+
+def export_features():
+    sql = SQL_PATH.read_text().strip().rstrip(&quot;;&quot;)
+    # 仅用于拟合参数的 2025 年成熟样本，按 user_id 等距抽取 10%；
+    # 2026 月度结论后续由数据库对全量 T0 事件回填同一套模型参数。
+    sql = (
+        &quot;WITH feature_data AS (&quot; + sql + &quot;) &quot;
+        &quot;SELECT max_credit_apply_amt, hist_remit_cnt, hist_settled_cnt, &quot;
+        &quot;hist_overdue_order_cnt, hist_max_overdue_days, hist_avg_remit_amt, &quot;
+        &quot;hist_total_remit_amt, hist_weighted_interest_rate, user_loan_tenure_days, &quot;
+        &quot;days_since_last_repaid, hist_overdue_order_rate, previous_order_overdue_flag, &quot;
+        &quot;previous_remit_amt, previous_interest_rate, next_order_overdue_label, vir_date &quot;
+        &quot;FROM feature_data &quot;
+        &quot;WHERE is_train_period = 1 AND is_mature_label_sample = 1 &quot;
+        &quot;AND MOD(user_id, 10) = 0&quot;
+    )
+    with psycopg2.connect(**load_db()) as conn:
+        with conn.cursor() as cur, FEATURE_PATH.open(&quot;w&quot;, encoding=&quot;utf-8&quot;, newline=&quot;&quot;) as f:
+            cur.copy_expert(f&quot;COPY ({sql}) TO STDOUT WITH CSV HEADER&quot;, f)
+
+
+def prepare(df):
+    for col in FEATURES + [&quot;next_order_overdue_label&quot;]:
+        df[col] = pd.to_numeric(df[col], errors=&quot;coerce&quot;)
+    df[&quot;vir_date&quot;] = pd.to_datetime(df[&quot;vir_date&quot;])
+    return df
+
+
+def fit_and_score(df):
+    train = df[df.next_order_overdue_label.notna()].copy()
+    train[&quot;month&quot;] = train.vir_date.dt.to_period(&quot;M&quot;).astype(str)
+
+    # 用 2025 年 10—12 月作为时间外验证集，避免随机切分高估效果。
+    fit = train[train.vir_date &lt; pd.Timestamp(&quot;2025-10-01&quot;)]
+    valid = train[train.vir_date &gt;= pd.Timestamp(&quot;2025-10-01&quot;)]
+    model = Pipeline([
+        (&quot;impute&quot;, SimpleImputer(strategy=&quot;median&quot;)),
+        (&quot;scale&quot;, StandardScaler()),
+        (&quot;logit&quot;, LogisticRegression(max_iter=1000, C=0.5, solver=&quot;lbfgs&quot;)),
+    ])
+    model.fit(fit[FEATURES], fit.next_order_overdue_label.astype(int))
+
+    def evaluate(name, part):
+        p = model.predict_proba(part[FEATURES])[:, 1]
+        return {
+            &quot;样本&quot;: name,
+            &quot;样本量&quot;: len(part),
+            &quot;逾期率&quot;: part.next_order_overdue_label.mean(),
+            &quot;AUC&quot;: roc_auc_score(part.next_order_overdue_label, p),
+            &quot;Brier&quot;: brier_score_loss(part.next_order_overdue_label, p),
+        }
+
+    metrics = pd.DataFrame([evaluate(&quot;训练期_2025_01_09&quot;, fit), evaluate(&quot;时间外验证_2025_10_12&quot;, valid)])
+
+    # 重新用全部 2025 年成熟样本拟合，给 2026 年 T0 快照评分。
+    final_model = Pipeline([
+        (&quot;impute&quot;, SimpleImputer(strategy=&quot;median&quot;)),
+        (&quot;scale&quot;, StandardScaler()),
+        (&quot;logit&quot;, LogisticRegression(max_iter=1000, C=0.5, solver=&quot;lbfgs&quot;)),
+    ])
+    final_model.fit(train[FEATURES], train.next_order_overdue_label.astype(int))
+
+    # 阈值固定为训练样本预测风险的 P30 / P60：
+    # P30 以下为资质最好，P30—P60 为资质一般，其余为资质较差。
+    train_risk = final_model.predict_proba(train[FEATURES])[:, 1]
+    best_threshold = float(np.quantile(train_risk, 0.30))
+    normal_threshold = float(np.quantile(train_risk, 0.60))
+    metrics[&quot;资质最好阈值_预测逾期风险P30&quot;] = best_threshold
+    metrics[&quot;资质一般上限_预测逾期风险P60&quot;] = normal_threshold
+    return final_model, best_threshold, normal_threshold, metrics
+
+
+if __name__ == &quot;__main__&quot;:
+    export_features()
+    raw = prepare(pd.read_csv(FEATURE_PATH))
+    model, best_threshold, normal_threshold, metrics = fit_and_score(raw)
+    logit = model.named_steps[&quot;logit&quot;]
+    scaler = model.named_steps[&quot;scale&quot;]
+    imputer = model.named_steps[&quot;impute&quot;]
+    params = pd.DataFrame({
+        &quot;feature&quot;: FEATURES,
+        &quot;impute_median&quot;: imputer.statistics_,
+        &quot;mean&quot;: scaler.mean_,
+        &quot;scale&quot;: scaler.scale_,
+        &quot;coefficient&quot;: logit.coef_[0],
+    })
+    params.loc[len(params)] = [&quot;intercept&quot;, 0, 0, 1, logit.intercept_[0]]
+    params.to_csv(ROOT / &quot;work&quot; / &quot;t0_dynamic_quality_model_parameters.csv&quot;, index=False, encoding=&quot;utf-8-sig&quot;)
+    metrics.to_csv(METRICS_PATH, index=False, encoding=&quot;utf-8-sig&quot;)
+    print(f&quot;特征快照：{FEATURE_PATH}，{len(raw):,} 条&quot;)
+    print(metrics.to_string(index=False))
+    print(f&quot;P30（资质最好上限）：{best_threshold:.6f}&quot;)
+    print(f&quot;P60（资质一般上限）：{normal_threshold:.6f}&quot;)
+    print(params.to_string(index=False))
+</code></pre></details><details class="code"><summary>模块三：模型参数回填与月度分层汇总（Python）</summary><pre><code>&quot;&quot;&quot;用已拟合的动态资质模型，在数据库内回填 2026 年 1—8 月全量 T0 用户。&quot;&quot;&quot;
+import ast
+import os
+from pathlib import Path
+
+import pandas as pd
+import psycopg2
+
+
+ROOT = Path(__file__).resolve().parents[1]
+BASE_SQL_PATH = ROOT / &quot;work&quot; / &quot;t0_dynamic_quality_feature_extract.sql&quot;
+PARAMS_PATH = ROOT / &quot;work&quot; / &quot;t0_dynamic_quality_model_parameters.csv&quot;
+METRICS_PATH = ROOT / &quot;work&quot; / &quot;t0_dynamic_quality_model_metrics.csv&quot;
+OUT_SQL_PATH = ROOT / &quot;work&quot; / &quot;t0_dynamic_quality_score_2026.sql&quot;
+OUT_CSV_PATH = ROOT / &quot;work&quot; / &quot;t0_dynamic_quality_monthly_2026_01_08.csv&quot;
+
+
+def load_db():
+    &quot;&quot;&quot;优先读取环境变量，避免将数据库密钥写入可分享的分析代码。&quot;&quot;&quot;
+    keys = {
+        &quot;host&quot;: &quot;KABY_DB_HOST&quot;, &quot;port&quot;: &quot;KABY_DB_PORT&quot;, &quot;dbname&quot;: &quot;KABY_DB_NAME&quot;,
+        &quot;user&quot;: &quot;KABY_DB_USER&quot;, &quot;password&quot;: &quot;KABY_DB_PASSWORD&quot;,
+    }
+    env_db = {key: os.environ.get(env_key) for key, env_key in keys.items()}
+    if all(env_db.values()):
+        env_db[&quot;port&quot;] = int(env_db[&quot;port&quot;])
+        env_db[&quot;options&quot;] = &quot;-c statement_timeout=900000&quot;
+        return env_db
+    tree = ast.parse((ROOT / &quot;work&quot; / &quot;query_t4_0804_0807_full.py&quot;).read_text())
+    db = next(
+        ast.literal_eval(n.value)
+        for n in tree.body
+        if isinstance(n, ast.Assign)
+        and any(isinstance(t, ast.Name) and t.id == &quot;DB&quot; for t in n.targets)
+    )
+    db[&quot;options&quot;] = &quot;-c statement_timeout=900000&quot;
+    return db
+
+
+def build_sql():
+    params = pd.read_csv(PARAMS_PATH, encoding=&quot;utf-8-sig&quot;)
+    metrics = pd.read_csv(METRICS_PATH, encoding=&quot;utf-8-sig&quot;)
+    best_threshold = float(metrics[&quot;资质最好阈值_预测逾期风险P30&quot;].iloc[0])
+    normal_threshold = float(metrics[&quot;资质一般上限_预测逾期风险P60&quot;].iloc[0])
+    intercept = float(params.loc[params.feature == &quot;intercept&quot;, &quot;coefficient&quot;].iloc[0])
+    pieces = [str(intercept)]
+    for row in params[params.feature != &quot;intercept&quot;].itertuples(index=False):
+        # 评分阶段缺失值与训练阶段一致：以训练样本中位数替代。
+        # 本批特征已大部分 COALESCE；该写法用于兜底并保持模型可复现。
+        median = float(row.impute_median)
+        pieces.append(
+            f&quot;({float(row.coefficient)} * &quot;
+            f&quot;((COALESCE({row.feature}, {median}) - {float(row.mean)}) / {float(row.scale)}))&quot;
+        )
+    linear = &quot;\n          + &quot;.join(pieces)
+    base_sql = BASE_SQL_PATH.read_text(encoding=&quot;utf-8&quot;).strip().rstrip(&quot;;&quot;)
+    return f&quot;&quot;&quot;-- 自动生成：2026 年 1—8 月 T0 动态资质评分及月度分层汇总
+-- 评分越低代表预测下一笔成熟放款订单的逾期风险越低。
+WITH feature_data AS (
+{base_sql}
+),
+scored AS (
+    SELECT
+        vir_date,
+        is_t0_apply,
+        next_order_is_remit,
+        t0_order_remit_amt,
+        t0_order_interest_amt,
+        is_actual_t0_mature_order,
+        actual_t0_order_overdue_label,
+        1.0 / (1.0 + EXP(-(
+          {linear}
+        ))) AS predicted_overdue_risk
+    FROM feature_data
+    WHERE is_score_period = 1
+),
+scored_tier AS (
+    SELECT
+        TO_CHAR(vir_date, &#x27;YYYY-MM&#x27;) AS 提单月份,
+        CASE
+            WHEN predicted_overdue_risk &lt;= {best_threshold} THEN &#x27;资质最好（P0-P30）&#x27;
+            WHEN predicted_overdue_risk &lt;= {normal_threshold} THEN &#x27;资质一般（P30-P60）&#x27;
+            ELSE &#x27;资质较差（P60-P100）&#x27;
+        END AS 动态资质分层,
+        is_t0_apply,
+        next_order_is_remit,
+        t0_order_remit_amt,
+        t0_order_interest_amt,
+        is_actual_t0_mature_order,
+        actual_t0_order_overdue_label,
+        predicted_overdue_risk
+    FROM scored
+),
+monthly_tier AS (
+    SELECT
+        提单月份,
+        动态资质分层,
+        COUNT(*) AS T0获额用户数,
+        SUM(is_t0_apply) AS T0当日提单用户数,
+        SUM(is_t0_apply)::numeric / NULLIF(COUNT(*), 0) AS T0当日提单率,
+        SUM(CASE WHEN is_actual_t0_mature_order = 1
+                 THEN t0_order_remit_amt ELSE 0 END) AS T0当日提单放款金额,
+        SUM(CASE WHEN is_actual_t0_mature_order = 1
+                 THEN t0_order_interest_amt ELSE 0 END) AS T0当日提单息费金额,
+        SUM(CASE WHEN is_actual_t0_mature_order = 1
+                 THEN t0_order_interest_amt ELSE 0 END)::numeric
+            / NULLIF(SUM(CASE WHEN is_actual_t0_mature_order = 1
+                              THEN t0_order_remit_amt ELSE 0 END), 0) AS T0当日提单放款加权息费率,
+        SUM(is_actual_t0_mature_order) AS 实际已到期订单数,
+        SUM(actual_t0_order_overdue_label) AS 实际逾期订单数,
+        SUM(actual_t0_order_overdue_label)::numeric
+            / NULLIF(SUM(is_actual_t0_mature_order), 0) AS 实际订单逾期率,
+        AVG(predicted_overdue_risk) AS 平均预测逾期风险
+    FROM scored_tier
+    GROUP BY 提单月份, 动态资质分层
+),
+monthly_total AS (
+    SELECT
+        提单月份,
+        &#x27;全部T0用户&#x27; AS 动态资质分层,
+        COUNT(*) AS T0获额用户数,
+        SUM(is_t0_apply) AS T0当日提单用户数,
+        SUM(is_t0_apply)::numeric / NULLIF(COUNT(*), 0) AS T0当日提单率,
+        SUM(CASE WHEN is_actual_t0_mature_order = 1
+                 THEN t0_order_remit_amt ELSE 0 END) AS T0当日提单放款金额,
+        SUM(CASE WHEN is_actual_t0_mature_order = 1
+                 THEN t0_order_interest_amt ELSE 0 END) AS T0当日提单息费金额,
+        SUM(CASE WHEN is_actual_t0_mature_order = 1
+                 THEN t0_order_interest_amt ELSE 0 END)::numeric
+            / NULLIF(SUM(CASE WHEN is_actual_t0_mature_order = 1
+                              THEN t0_order_remit_amt ELSE 0 END), 0) AS T0当日提单放款加权息费率,
+        SUM(is_actual_t0_mature_order) AS 实际已到期订单数,
+        SUM(actual_t0_order_overdue_label) AS 实际逾期订单数,
+        SUM(actual_t0_order_overdue_label)::numeric
+            / NULLIF(SUM(is_actual_t0_mature_order), 0) AS 实际订单逾期率,
+        AVG(predicted_overdue_risk) AS 平均预测逾期风险
+    FROM scored_tier
+    GROUP BY 提单月份
+),
+monthly_quality_share AS (
+    SELECT
+        提单月份,
+        SUM(CASE WHEN 动态资质分层 = &#x27;资质最好（P0-P30）&#x27; THEN 1 ELSE 0 END)::numeric
+            / NULLIF(COUNT(*), 0) AS 资质最好用户占比,
+        SUM(CASE WHEN 动态资质分层 = &#x27;资质一般（P30-P60）&#x27; THEN 1 ELSE 0 END)::numeric
+            / NULLIF(COUNT(*), 0) AS 资质一般用户占比,
+        SUM(CASE WHEN 动态资质分层 = &#x27;资质较差（P60-P100）&#x27; THEN 1 ELSE 0 END)::numeric
+            / NULLIF(COUNT(*), 0) AS 资质较差用户占比
+    FROM scored_tier
+    GROUP BY 提单月份
+)
+SELECT
+    a.提单月份,
+    a.动态资质分层,
+    a.T0获额用户数,
+    a.T0当日提单用户数,
+    a.T0当日提单率,
+    a.T0当日提单放款金额,
+    a.T0当日提单息费金额,
+    a.T0当日提单放款加权息费率,
+    a.实际已到期订单数,
+    a.实际逾期订单数,
+    a.实际订单逾期率,
+    a.平均预测逾期风险,
+    s.资质最好用户占比,
+    s.资质一般用户占比,
+    s.资质较差用户占比
+FROM (
+    SELECT * FROM monthly_total
+    UNION ALL
+    SELECT * FROM monthly_tier
+) AS a
+INNER JOIN monthly_quality_share AS s
+    ON a.提单月份 = s.提单月份
+ORDER BY a.提单月份,
+         CASE a.动态资质分层
+              WHEN &#x27;全部T0用户&#x27; THEN 1
+              WHEN &#x27;资质最好（P0-P30）&#x27; THEN 2
+              WHEN &#x27;资质一般（P30-P60）&#x27; THEN 3 ELSE 4 END;
+&quot;&quot;&quot;
+
+
+if __name__ == &quot;__main__&quot;:
+    sql = build_sql()
+    OUT_SQL_PATH.write_text(sql, encoding=&quot;utf-8&quot;)
+    with psycopg2.connect(**load_db()) as conn:
+        result = pd.read_sql_query(sql, conn)
+    result.to_csv(OUT_CSV_PATH, index=False, encoding=&quot;utf-8-sig&quot;)
+    print(result.to_string(index=False))
+    print(f&quot;\nSQL：{OUT_SQL_PATH}\n结果：{OUT_CSV_PATH}&quot;)
+</code></pre></details><details class="code"><summary>模块四：报告生成与全部指标展示（Python）</summary><pre><code>&quot;&quot;&quot;生成 2026 年 1—8 月 T0 动态资质三层与提单率结构验证报告。&quot;&quot;&quot;
+from html import escape
+from pathlib import Path
+
+import pandas as pd
+
+
+ROOT = Path(__file__).resolve().parents[1]
+MONTHLY = ROOT / &quot;work&quot; / &quot;t0_dynamic_quality_monthly_2026_01_08.csv&quot;
+METRICS = ROOT / &quot;work&quot; / &quot;t0_dynamic_quality_model_metrics.csv&quot;
+FEATURE_SQL = ROOT / &quot;work&quot; / &quot;t0_dynamic_quality_feature_extract.sql&quot;
+SCORE_SQL = ROOT / &quot;work&quot; / &quot;t0_dynamic_quality_score_2026.sql&quot;
+TRAIN_PY = ROOT / &quot;work&quot; / &quot;run_t0_dynamic_quality_model.py&quot;
+SCORE_PY = ROOT / &quot;work&quot; / &quot;score_t0_dynamic_quality_2026.py&quot;
+REPORT_PY = Path(__file__).resolve()
+MODEL_PARAMS_CSV = ROOT / &quot;work&quot; / &quot;t0_dynamic_quality_model_parameters.csv&quot;
+MODEL_METRICS_CSV = ROOT / &quot;work&quot; / &quot;t0_dynamic_quality_model_metrics.csv&quot;
+OUT_DIR = ROOT / &quot;outputs&quot; / &quot;T0动态资质与提单率结构验证报告&quot;
+OUT = OUT_DIR / &quot;2026年1-8月T0动态资质三层与提单率结构验证报告.html&quot;
+TIERS = [&quot;资质最好（P0-P30）&quot;, &quot;资质一般（P30-P60）&quot;, &quot;资质较差（P60-P100）&quot;]
+COLORS = [&quot;#64dcae&quot;, &quot;#ffc26b&quot;, &quot;#f68ab0&quot;]
+
+
+def pct(v):
+    return f&quot;{v * 100:.2f}%&quot;
+
+
+def chart(title, series, months):
+    width, height = 760, 290
+    values = [v for _, x in series for v in x]
+    lo, hi = min(values), max(values)
+    span = hi - lo or 1
+    grids = &quot;&quot;.join(
+        f&#x27;&lt;line x1=&quot;42&quot; y1=&quot;{42 + j * (height - 88) / 4:.1f}&quot; x2=&quot;718&quot; y2=&quot;{42 + j * (height - 88) / 4:.1f}&quot; stroke=&quot;#2a5c7e&quot; opacity=&quot;.55&quot;/&gt;&#x27;
+        for j in range(5)
+    )
+    lines, dots, legends = [], [], []
+    for j, (name, vals) in enumerate(series):
+        color = COLORS[j]
+        pts = [(42 + i * (width - 84) / (len(vals) - 1), height - 46 - (v - lo) * (height - 94) / span) for i, v in enumerate(vals)]
+        lines.append(f&#x27;&lt;polyline points=&quot;{&quot; &quot;.join(f&quot;{x:.1f},{y:.1f}&quot; for x,y in pts)}&quot; fill=&quot;none&quot; stroke=&quot;{color}&quot; stroke-width=&quot;3&quot;/&gt;&#x27;)
+        dots += [f&#x27;&lt;circle cx=&quot;{x:.1f}&quot; cy=&quot;{y:.1f}&quot; r=&quot;4&quot; fill=&quot;{color}&quot;&gt;&lt;title&gt;{name} {months[i]}：{pct(vals[i])}&lt;/title&gt;&lt;/circle&gt;&#x27; for i,(x,y) in enumerate(pts)]
+        legends.append(f&#x27;&lt;span&gt;&lt;i style=&quot;background:{color}&quot;&gt;&lt;/i&gt;{name}&lt;/span&gt;&#x27;)
+    labels = &quot;&quot;.join(f&#x27;&lt;text x=&quot;{42+i*(width-84)/(len(months)-1):.1f}&quot; y=&quot;270&quot; text-anchor=&quot;middle&quot;&gt;{m[5:]}月&lt;/text&gt;&#x27; for i,m in enumerate(months))
+    return f&#x27;&#x27;&#x27;&lt;section class=&quot;panel&quot;&gt;&lt;h3&gt;{title}&lt;/h3&gt;&lt;div class=&quot;legend&quot;&gt;{&quot;&quot;.join(legends)}&lt;/div&gt;&lt;svg viewBox=&quot;0 0 {width} {height}&quot;&gt;{grids}{&quot;&quot;.join(lines)}{&quot;&quot;.join(dots)}{labels}&lt;text x=&quot;42&quot; y=&quot;23&quot;&gt;{pct(hi)}&lt;/text&gt;&lt;text x=&quot;42&quot; y=&quot;247&quot;&gt;{pct(lo)}&lt;/text&gt;&lt;/svg&gt;&lt;/section&gt;&#x27;&#x27;&#x27;
+
+
+def code_block(name, source):
+    return f&#x27;&lt;details class=&quot;code&quot;&gt;&lt;summary&gt;{name}&lt;/summary&gt;&lt;pre&gt;&lt;code&gt;{escape(source)}&lt;/code&gt;&lt;/pre&gt;&lt;/details&gt;&#x27;
+
+
+def main():
+    d = pd.read_csv(MONTHLY, encoding=&quot;utf-8-sig&quot;)
+    d.columns = [str(c).lower() if str(c).isascii() else c for c in d.columns]
+    month, tier_name = &quot;提单月份&quot;, &quot;动态资质分层&quot;
+    count, rate = &quot;t0获额用户数&quot;, &quot;t0当日提单率&quot;
+    shares = [&quot;资质最好用户占比&quot;, &quot;资质一般用户占比&quot;, &quot;资质较差用户占比&quot;]
+    mature_count, overdue_count, overdue_rate = &quot;实际已到期订单数&quot;, &quot;实际逾期订单数&quot;, &quot;实际订单逾期率&quot;
+    mature_remit, mature_interest, mature_fee_rate = &quot;t0当日提单放款金额&quot;, &quot;t0当日提单息费金额&quot;, &quot;t0当日提单放款加权息费率&quot;
+    total = d[d[tier_name] == &quot;全部T0用户&quot;].sort_values(month).copy()
+    tiers = {x: d[d[tier_name] == x].sort_values(month).copy() for x in TIERS}
+    months = total[month].tolist()
+    m = pd.read_csv(METRICS, encoding=&quot;utf-8-sig&quot;)
+    valid = m[m[&quot;样本&quot;] == &quot;时间外验证_2025_10_12&quot;].iloc[0]
+    p30 = float(valid[&quot;资质最好阈值_预测逾期风险P30&quot;])
+    p60 = float(valid[&quot;资质一般上限_预测逾期风险P60&quot;])
+    first, last = total.iloc[0], total.iloc[-1]
+    evaluation_rows = []
+    evaluation_rates = []
+    for label in TIERS:
+        frame = tiers[label]
+        matured = int(frame[mature_count].sum())
+        overdue = int(frame[overdue_count].sum())
+        actual_rate = overdue / matured
+        evaluation_rates.append(actual_rate)
+        evaluation_rows.append(
+            f&quot;&lt;tr&gt;&lt;td&gt;{label}&lt;/td&gt;&lt;td&gt;{matured:,}&lt;/td&gt;&lt;td&gt;{overdue:,}&lt;/td&gt;&lt;td&gt;{pct(actual_rate)}&lt;/td&gt;&lt;/tr&gt;&quot;
+        )
+    tier_spread = evaluation_rates[-1] - evaluation_rates[0]
+
+    rows = []
+    fee_rows = []
+    for ym in months:
+        p = d[d[month] == ym].set_index(tier_name)
+        t = p.loc[&quot;全部T0用户&quot;]
+        rows.append(f&quot;&lt;tr&gt;&lt;td&gt;{ym}&lt;/td&gt;&lt;td&gt;{int(t[count]):,}&lt;/td&gt;&lt;td&gt;{pct(t[rate])}&lt;/td&gt;&lt;td&gt;{pct(p.loc[TIERS[0], shares[0]])}&lt;/td&gt;&lt;td&gt;{pct(p.loc[TIERS[1], shares[1]])}&lt;/td&gt;&lt;td&gt;{pct(p.loc[TIERS[2], shares[2]])}&lt;/td&gt;&lt;td&gt;{pct(p.loc[TIERS[0], rate])}&lt;/td&gt;&lt;td&gt;{pct(p.loc[TIERS[1], rate])}&lt;/td&gt;&lt;td&gt;{pct(p.loc[TIERS[2], rate])}&lt;/td&gt;&lt;td&gt;{int(t[mature_count]):,}&lt;/td&gt;&lt;td&gt;{int(t[overdue_count]):,}&lt;/td&gt;&lt;td&gt;{pct(t[overdue_rate])}&lt;/td&gt;&lt;/tr&gt;&quot;)
+        fee_rows.append(f&quot;&lt;tr&gt;&lt;td&gt;{ym}&lt;/td&gt;&lt;td&gt;{float(t[mature_remit]):,.2f}&lt;/td&gt;&lt;td&gt;{float(t[mature_interest]):,.2f}&lt;/td&gt;&lt;td&gt;{pct(t[mature_fee_rate])}&lt;/td&gt;&lt;td&gt;{pct(p.loc[TIERS[0], mature_fee_rate])}&lt;/td&gt;&lt;td&gt;{pct(p.loc[TIERS[1], mature_fee_rate])}&lt;/td&gt;&lt;td&gt;{pct(p.loc[TIERS[2], mature_fee_rate])}&lt;/td&gt;&lt;/tr&gt;&quot;)
+    charts = chart(&quot;T0 当日提单率：三类动态资质用户&quot;, [(x, tiers[x][rate].tolist()) for x in TIERS], months) + chart(&quot;T0 获额用户结构：三类动态资质占比&quot;, list(zip(TIERS, [total[x].tolist() for x in shares])), months) + chart(&quot;实际订单逾期率：三类动态资质用户&quot;, [(x, tiers[x][overdue_rate].tolist()) for x in TIERS], months) + chart(&quot;已到期放款订单加权息费率：三类动态资质用户&quot;, [(x, tiers[x][mature_fee_rate].tolist()) for x in TIERS], months)
+    feature_sql = FEATURE_SQL.read_text(encoding=&quot;utf-8&quot;)
+    score_sql = SCORE_SQL.read_text(encoding=&quot;utf-8&quot;)
+    train_py = TRAIN_PY.read_text(encoding=&quot;utf-8&quot;)
+    score_py = SCORE_PY.read_text(encoding=&quot;utf-8&quot;)
+    report_py = REPORT_PY.read_text(encoding=&quot;utf-8&quot;)
+    model_params_csv = MODEL_PARAMS_CSV.read_text(encoding=&quot;utf-8-sig&quot;)
+    model_metrics_csv = MODEL_METRICS_CSV.read_text(encoding=&quot;utf-8-sig&quot;)
+    html = f&#x27;&#x27;&#x27;&lt;!doctype html&gt;&lt;html lang=&quot;zh-CN&quot;&gt;&lt;head&gt;&lt;meta charset=&quot;utf-8&quot;&gt;&lt;meta name=&quot;viewport&quot; content=&quot;width=device-width,initial-scale=1&quot;&gt;&lt;title&gt;2026年1—8月T0动态资质三层与提单率结构验证报告&lt;/title&gt;&lt;style&gt;
+:root{{--bg:#071b2f;--p:#0c2944;--line:#2a5c7e;--text:#eff8ff;--muted:#aac5da;--cy:#43c7e7;--gr:#64dcae;--am:#ffc26b;--pk:#f68ab0}}*{{box-sizing:border-box}}body{{margin:0;background:linear-gradient(135deg,#06192b,#0b2c47 55%,#071a2d);color:var(--text);font:15px/1.7 -apple-system,BlinkMacSystemFont,&quot;PingFang SC&quot;,&quot;Microsoft YaHei&quot;,sans-serif}}main{{max-width:1220px;margin:auto;padding:46px 28px 72px}}h1{{font-size:32px;line-height:1.25;margin:0 0 10px}}h2{{font-size:22px;margin:42px 0 15px;border-left:4px solid var(--cy);padding-left:12px}}h3{{font-size:17px;margin:0 0 8px}}.sub,.muted{{color:var(--muted)}}.sub{{margin:0 0 28px}}.grid{{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}}.card,.panel{{background:rgba(12,41,68,.9);border:1px solid var(--line);border-radius:10px;padding:18px}}.value{{font-size:26px;font-weight:700;color:var(--cy)}}.label{{color:var(--muted);font-size:13px}}.panel{{margin:16px 0}}.legend{{display:flex;gap:20px;flex-wrap:wrap;color:var(--muted);font-size:13px;margin-bottom:8px}}.legend i{{display:inline-block;width:10px;height:10px;border-radius:50%;margin-right:6px}}svg{{width:100%;height:auto}}svg text{{fill:#aac5da;font-size:12px}}table{{width:100%;border-collapse:collapse;background:rgba(12,41,68,.9);font-size:13px}}th,td{{padding:9px 10px;text-align:right;border-bottom:1px solid rgba(42,92,126,.55);white-space:nowrap}}th{{background:#103453;color:#dff5ff}}th:first-child,td:first-child{{text-align:left}}.tablewrap{{overflow:auto;border:1px solid var(--line);border-radius:10px}}.note{{border-left:4px solid var(--am);background:rgba(255,194,107,.10);padding:14px 18px;border-radius:6px;margin:14px 0}}li{{margin:8px 0}}details.code{{background:#061526;border:1px solid #285575;border-radius:8px;margin:12px 0}}summary{{cursor:pointer;padding:13px 16px;color:#dff5ff;font-weight:600}}pre{{margin:0;padding:16px;overflow:auto;border-top:1px solid #285575;color:#d4eaf7;font:12px/1.55 ui-monospace,SFMono-Regular,Menlo,monospace;white-space:pre}}@media(max-width:760px){{main{{padding:28px 15px}}.grid{{grid-template-columns:repeat(2,1fr)}}h1{{font-size:25px}}}}
+&lt;/style&gt;&lt;/head&gt;&lt;body&gt;&lt;main&gt;
+&lt;h1&gt;2026 年 1—8 月 T0 动态资质三层与提单率结构验证&lt;/h1&gt;&lt;p class=&quot;sub&quot;&gt;对象：结清 0 在贷、当日获额通过的 T0 用户；按获额日分月。评分仅使用该次获额时点之前的信息，评分越低代表预测下一笔订单逾期风险越低。&lt;/p&gt;
+&lt;div class=&quot;grid&quot;&gt;&lt;div class=&quot;card&quot;&gt;&lt;div class=&quot;label&quot;&gt;整体 T0 当日提单率&lt;/div&gt;&lt;div class=&quot;value&quot;&gt;{pct(first[rate])} → {pct(last[rate])}&lt;/div&gt;&lt;div class=&quot;muted&quot;&gt;1 月至 8 月&lt;/div&gt;&lt;/div&gt;&lt;div class=&quot;card&quot;&gt;&lt;div class=&quot;label&quot;&gt;资质最好用户占比&lt;/div&gt;&lt;div class=&quot;value&quot;&gt;{pct(first[shares[0]])} → {pct(last[shares[0]])}&lt;/div&gt;&lt;div class=&quot;muted&quot;&gt;风险最低P30 · 1月-8月&lt;/div&gt;&lt;/div&gt;&lt;div class=&quot;card&quot;&gt;&lt;div class=&quot;label&quot;&gt;资质最好用户提单率&lt;/div&gt;&lt;div class=&quot;value&quot;&gt;{pct(tiers[TIERS[0]].iloc[0][rate])} → {pct(tiers[TIERS[0]].iloc[-1][rate])}&lt;/div&gt;&lt;div class=&quot;muted&quot;&gt;风险最低P30 · 1月-8月&lt;/div&gt;&lt;/div&gt;&lt;div class=&quot;card&quot;&gt;&lt;div class=&quot;label&quot;&gt;资质一般用户占比&lt;/div&gt;&lt;div class=&quot;value&quot;&gt;{pct(first[shares[1]])} → {pct(last[shares[1]])}&lt;/div&gt;&lt;div class=&quot;muted&quot;&gt;风险一般P30-P60 · 1月-8月&lt;/div&gt;&lt;/div&gt;&lt;div class=&quot;card&quot;&gt;&lt;div class=&quot;label&quot;&gt;资质一般用户提单率&lt;/div&gt;&lt;div class=&quot;value&quot;&gt;{pct(tiers[TIERS[1]].iloc[0][rate])} → {pct(tiers[TIERS[1]].iloc[-1][rate])}&lt;/div&gt;&lt;div class=&quot;muted&quot;&gt;风险一般P30-P60 · 1月-8月&lt;/div&gt;&lt;/div&gt;&lt;div class=&quot;card&quot;&gt;&lt;div class=&quot;label&quot;&gt;资质较差用户占比&lt;/div&gt;&lt;div class=&quot;value&quot;&gt;{pct(first[shares[2]])} → {pct(last[shares[2]])}&lt;/div&gt;&lt;div class=&quot;muted&quot;&gt;风险最高P40 · 1月-8月&lt;/div&gt;&lt;/div&gt;&lt;div class=&quot;card&quot;&gt;&lt;div class=&quot;label&quot;&gt;资质较差用户提单率&lt;/div&gt;&lt;div class=&quot;value&quot;&gt;{pct(tiers[TIERS[2]].iloc[0][rate])} → {pct(tiers[TIERS[2]].iloc[-1][rate])}&lt;/div&gt;&lt;div class=&quot;muted&quot;&gt;风险最高P40 · 1月-8月&lt;/div&gt;&lt;/div&gt;&lt;div class=&quot;card&quot;&gt;&lt;div class=&quot;label&quot;&gt;时间外验证 AUC&lt;/div&gt;&lt;div class=&quot;value&quot;&gt;{valid[&#x27;AUC&#x27;]:.3f}&lt;/div&gt;&lt;div class=&quot;muted&quot;&gt;仅作探索性分层&lt;/div&gt;&lt;/div&gt;&lt;/div&gt;
+&lt;h2&gt;一、三层分层定义&lt;/h2&gt;&lt;div class=&quot;note&quot;&gt;&lt;b&gt;在 2025 年训练样本中按预测风险由低到高排序，固定 P30 和 P60 阈值，并应用于 2026 年所有 T0 用户。&lt;/b&gt;&lt;br&gt;风险 ≤ {pct(p30)}：资质最好（风险最低 30%）；{pct(p30)} &amp;lt; 风险 ≤ {pct(p60)}：资质一般（中间 30%）；风险 &amp;gt; {pct(p60)}：资质较差（风险最高 40%）。2026 年各层占比不必等于 30% / 30% / 40%，偏离本身反映人群风险结构变化。&lt;/div&gt;
+&lt;h2&gt;二、初步结论&lt;/h2&gt;&lt;ul&gt;&lt;li&gt;&lt;b&gt;整体提单率下降：&lt;/b&gt;{pct(first[rate])} 降至 {pct(last[rate])}，变化 {(last[rate]-first[rate])*100:.2f} 个百分点。&lt;/li&gt;&lt;li&gt;&lt;b&gt;资质结构变差：&lt;/b&gt;资质最好占比从 {pct(first[shares[0]])} 降至 {pct(last[shares[0]])}；资质较差占比从 {pct(first[shares[2]])} 升至 {pct(last[shares[2]])}。&lt;/li&gt;&lt;li&gt;&lt;b&gt;三层提单率均下降：&lt;/b&gt;故不能把总提单率降低完全归因为任一风险层单独流失；但较差层的占比抬升会使后续订单风险承压。&lt;/li&gt;&lt;li&gt;&lt;b&gt;不能直接归因息费：&lt;/b&gt;AUC 为 {valid[&#x27;AUC&#x27;]:.3f}，模型区分度偏弱，当前只提供探索性线索。须在同一动态资质层内控制渠道、额度、历史贷款次数后比较息费，或通过随机让利试验验证。&lt;/li&gt;&lt;/ul&gt;
+&lt;h2&gt;三、月度趋势&lt;/h2&gt;{charts}&lt;div class=&quot;note&quot;&gt;&lt;b&gt;实际订单逾期率口径：&lt;/b&gt;分层后，以 T0 获额后同日真实提单且成功放款、并在 2026-09-10 前到期的整笔订单为分母；若结清日为空/早于 2000-01-01，或结清日晚于到期日，则该订单计为逾期。图表和表格均同时展示成熟订单数，避免将未到期订单误算为正常。&lt;br&gt;&lt;b&gt;加权息费口径：&lt;/b&gt;使用同一批已到期订单，&lt;code&gt;sum(pre_amt + post_amt) / sum(remit_amt)&lt;/code&gt;；放款金额与息费金额分别作为分母、分子展示。&lt;/div&gt;&lt;div class=&quot;tablewrap&quot;&gt;&lt;table&gt;&lt;thead&gt;&lt;tr&gt;&lt;th&gt;获额月份&lt;/th&gt;&lt;th&gt;T0获额用户数&lt;/th&gt;&lt;th&gt;整体当日提单率&lt;/th&gt;&lt;th&gt;最好占比&lt;/th&gt;&lt;th&gt;一般占比&lt;/th&gt;&lt;th&gt;较差占比&lt;/th&gt;&lt;th&gt;最好层提单率&lt;/th&gt;&lt;th&gt;一般层提单率&lt;/th&gt;&lt;th&gt;较差层提单率&lt;/th&gt;&lt;th&gt;实际已到期订单数&lt;/th&gt;&lt;th&gt;实际逾期订单数&lt;/th&gt;&lt;th&gt;整体实际订单逾期率&lt;/th&gt;&lt;/tr&gt;&lt;/thead&gt;&lt;tbody&gt;{&#x27;&#x27;.join(rows)}&lt;/tbody&gt;&lt;/table&gt;&lt;/div&gt;&lt;h3 style=&quot;margin-top:24px&quot;&gt;已到期放款订单加权息费率明细&lt;/h3&gt;&lt;div class=&quot;tablewrap&quot;&gt;&lt;table&gt;&lt;thead&gt;&lt;tr&gt;&lt;th&gt;获额月份&lt;/th&gt;&lt;th&gt;整体放款金额（分母）&lt;/th&gt;&lt;th&gt;整体息费金额（分子）&lt;/th&gt;&lt;th&gt;整体加权息费率&lt;/th&gt;&lt;th&gt;最好层加权息费率&lt;/th&gt;&lt;th&gt;一般层加权息费率&lt;/th&gt;&lt;th&gt;较差层加权息费率&lt;/th&gt;&lt;/tr&gt;&lt;/thead&gt;&lt;tbody&gt;{&#x27;&#x27;.join(fee_rows)}&lt;/tbody&gt;&lt;/table&gt;&lt;/div&gt;
+&lt;h2&gt;四、模型效果复核：真实逾期率是否呈风险梯度&lt;/h2&gt;&lt;div class=&quot;note&quot;&gt;&lt;b&gt;结论：严格时点修正后，三层在累计真实到期订单中仍呈现清晰风险梯度。&lt;/b&gt;&lt;br&gt;资质最好、一般、较差三层的累计实际订单逾期率依次为 {pct(evaluation_rates[0])}、{pct(evaluation_rates[1])}、{pct(evaluation_rates[2])}；资质较差与资质最好的差异为 {tier_spread*100:.2f} 个百分点。资质较差层在 1—8 月每月均为最高风险；资质最好与一般层在多数月份保持梯度，8 月因成熟样本量较小而出现轻微交叉。因此模型能提供后续真实风险的分层信号，但不应被解读为每月均严格排序的高精度模型。&lt;/div&gt;&lt;div class=&quot;tablewrap&quot;&gt;&lt;table&gt;&lt;thead&gt;&lt;tr&gt;&lt;th&gt;动态资质层&lt;/th&gt;&lt;th&gt;真实已到期订单数&lt;/th&gt;&lt;th&gt;真实逾期订单数&lt;/th&gt;&lt;th&gt;累计实际订单逾期率&lt;/th&gt;&lt;/tr&gt;&lt;/thead&gt;&lt;tbody&gt;{&#x27;&#x27;.join(evaluation_rows)}&lt;/tbody&gt;&lt;/table&gt;&lt;/div&gt;&lt;p class=&quot;muted&quot;&gt;评价样本为 2026 年 1—8 月的 T0 同日真实提单且成功放款订单；仅统计截至 2026-09-10 已到期订单。模型本身的时间外 AUC 为 {valid[&#x27;AUC&#x27;]:.3f}，因此该结果证明其具备分层信号，但仍不宜视为高精度授信模型。&lt;/p&gt;
+&lt;h2&gt;五、模型与统计口径&lt;/h2&gt;&lt;ul&gt;&lt;li&gt;&lt;b&gt;T0 快照：&lt;/b&gt;同一用户 20 秒内多次获额，只保留订单编号最大的最后一笔；同一用户同日保留最早有效 T0 获额。&lt;code&gt;vir_unix&lt;/code&gt; 显式转换为 &lt;code&gt;America/Belize&lt;/code&gt; 业务本地时间后，与订单本地时间比较。&lt;/li&gt;&lt;li&gt;&lt;b&gt;训练标签：&lt;/b&gt;该次获额对应的下一笔成功放款订单到期时是否逾期；结清日为空/早于 2000-01-01 或晚于到期日，均视为逾期。&lt;/li&gt;&lt;li&gt;&lt;b&gt;特征：&lt;/b&gt;仅使用获额前已结清订单的成功放款、历史逾期、金额、加权息费、贷款时长、上一笔订单表现与当次获额额度；不使用获额后、提单后、尚未结清订单的最终结果或今天的未来信息。&lt;/li&gt;&lt;li&gt;&lt;b&gt;T0 当日提单率：&lt;/b&gt;获额后同一自然日提交订单的用户数 / T0 获额用户数；不拆分 0—1 小时。&lt;/li&gt;&lt;/ul&gt;
+&lt;h2&gt;六、下一步验证&lt;/h2&gt;&lt;ol&gt;&lt;li&gt;三层内继续按实际息费、额度、渠道、历史放款次数分桶，比较同桶内息费变化与 T0 提单率。&lt;/li&gt;&lt;li&gt;追踪“资质最好但未提单”用户后续 7/30 天的提单、放款和风险，区分长期流失与延后转化。&lt;/li&gt;&lt;li&gt;对资质最好且未提单用户开展随机降息/不降息对照，测量增量提单、放款、逾期和利润，决定是否拉升提单率。&lt;/li&gt;&lt;/ol&gt;
+&lt;h2&gt;附录：可复现代码&lt;/h2&gt;&lt;div class=&quot;note&quot;&gt;&lt;b&gt;执行顺序：&lt;/b&gt;&lt;br&gt;1. 设置环境变量 &lt;code&gt;KABY_DB_HOST&lt;/code&gt;、&lt;code&gt;KABY_DB_PORT&lt;/code&gt;、&lt;code&gt;KABY_DB_NAME&lt;/code&gt;、&lt;code&gt;KABY_DB_USER&lt;/code&gt;、&lt;code&gt;KABY_DB_PASSWORD&lt;/code&gt;；&lt;br&gt;2. 执行 &lt;code&gt;python work/run_t0_dynamic_quality_model.py&lt;/code&gt;，产出训练样本、时间外验证指标、P30/P60 阈值和模型参数；&lt;br&gt;3. 执行 &lt;code&gt;python work/score_t0_dynamic_quality_2026.py&lt;/code&gt;，产出嵌入模型参数的完整 SQL 及 2026 年 1—8 月全量月度结果；&lt;br&gt;4. 执行 &lt;code&gt;python work/build_t0_dynamic_quality_report.py&lt;/code&gt;，生成本报告。数据库密码不写入任何附录代码。&lt;/div&gt;&lt;p class=&quot;muted&quot;&gt;模块一负责严格时点特征和标签；模块二完成训练；模块三将训练参数回填全量 T0 数据；模块四按结果生成可视化报告；模块五是可直接运行的最终 PostgreSQL 汇总 SQL。&lt;/p&gt;{code_block(&#x27;模块一：T0 事件、历史特征与训练标签（SQL）&#x27;, feature_sql)}{code_block(&#x27;模块二：模型训练、验证与参数导出（Python）&#x27;, train_py)}{code_block(&#x27;模块三：模型参数回填与月度分层汇总（Python）&#x27;, score_py)}{code_block(&#x27;模块四：报告生成与全部指标展示（Python）&#x27;, report_py)}{code_block(&#x27;模块五：全量评分、真实逾期率与月度汇总（PostgreSQL）&#x27;, score_sql)}{code_block(&#x27;训练输出：模型系数、标准化参数与截距（CSV）&#x27;, model_params_csv)}{code_block(&#x27;训练输出：训练期与时间外验证指标、P30/P60 阈值（CSV）&#x27;, model_metrics_csv)}
+&lt;/main&gt;&lt;/body&gt;&lt;/html&gt;&#x27;&#x27;&#x27;
+    OUT_DIR.mkdir(parents=True, exist_ok=True)
+    OUT.write_text(html, encoding=&quot;utf-8&quot;)
+    print(OUT)
+
+
+if __name__ == &quot;__main__&quot;:
+    main()
+</code></pre></details><details class="code"><summary>模块五：全量评分、真实逾期率与月度汇总（PostgreSQL）</summary><pre><code>-- 自动生成：2026 年 1—8 月 T0 动态资质评分及月度分层汇总
+-- 评分越低代表预测下一笔成熟放款订单的逾期风险越低。
+WITH feature_data AS (
+-- ================================================================
+-- 结清 0 在贷 T0 动态资质模型：特征快照与训练标签
+-- 评分对象：2026-01-01 至 2026-08-31 的 T0 获额通过用户。
+-- 训练样本：2024-01-01 至 2025-12-31 的 T0 样本，且后续成功放款订单
+--          已于 2026-06-30 前到期；标签为该订单到期时是否逾期。
+-- 所有 feature 均严格限制为 vir_time（获额通过时点）之前已经结清的订单。
+-- 订单时间字段为业务本地无时区时间；vir_unix 显式转为 America/Belize，
+-- 避免数据库会话时区变化造成获额前后顺序错判。
+-- ================================================================
+WITH params AS (
+    SELECT
+        DATE &#x27;2025-01-01&#x27; AS feature_start_date,
+        DATE &#x27;2026-09-01&#x27; AS feature_end_date,
+        DATE &#x27;2026-01-01&#x27; AS score_start_date,
+        DATE &#x27;2025-12-31&#x27; AS train_end_date,
+        DATE &#x27;2026-06-30&#x27; AS label_due_cutoff,
+        DATE &#x27;2026-09-10&#x27; AS analysis_as_of_date
+),
+raw_offer AS (
+    SELECT DISTINCT ON (v.user_id, v.serial_id)
+        v.user_id,
+        v.serial_id,
+        v.vir_date::date AS vir_date,
+        TO_TIMESTAMP(v.vir_unix) AT TIME ZONE &#x27;America/Belize&#x27; AS vir_time,
+        v.max_credit_apply_amt,
+        r.recycle_type
+    FROM wangchuanliang.order_vir_f_copy AS v
+    INNER JOIN wangchuanliang.side_recycle_type_copy AS r
+        ON r.serial_id = v.serial_id
+    CROSS JOIN params AS p
+    WHERE v.is_pass1 = 1
+      AND v.loan_type_code = 2
+      AND v.vir_date &gt;= p.feature_start_date - 1
+      AND v.vir_date &lt; p.feature_end_date
+    ORDER BY v.user_id, v.serial_id, v.vir_unix DESC
+),
+offer_batch AS (
+    SELECT
+        x.*,
+        SUM(CASE
+                WHEN x.prev_vir_time IS NULL
+                  OR x.vir_time - x.prev_vir_time &gt; INTERVAL &#x27;20 seconds&#x27;
+                THEN 1 ELSE 0
+            END) OVER (
+                PARTITION BY x.user_id
+                ORDER BY x.vir_time, x.serial_id
+                ROWS UNBOUNDED PRECEDING
+            ) AS batch_id
+    FROM (
+        SELECT
+            r.*,
+            LAG(r.vir_time) OVER (
+                PARTITION BY r.user_id
+                ORDER BY r.vir_time, r.serial_id
+            ) AS prev_vir_time
+        FROM raw_offer AS r
+    ) AS x
+),
+dedup_offer AS (
+    SELECT user_id, serial_id, vir_date, vir_time, max_credit_apply_amt
+    FROM (
+        SELECT
+            b.*,
+            ROW_NUMBER() OVER (
+                PARTITION BY b.user_id, b.batch_id
+                ORDER BY b.serial_id DESC
+            ) AS batch_rn
+        FROM offer_batch AS b
+        CROSS JOIN params AS p
+        WHERE b.recycle_type = 3
+          AND b.vir_date &gt;= p.feature_start_date
+          AND b.vir_date &lt; p.feature_end_date
+    ) AS x
+    WHERE batch_rn = 1
+),
+candidate_users AS (
+    SELECT DISTINCT user_id FROM dedup_offer
+),
+all_orders AS (
+    SELECT
+        o.user_id, o.serial_id, o.apply_time, o.apply_date,
+        o.remit_amt, o.pre_amt, o.post_amt,
+        o.due_date, o.repaid_time, o.repaid_date,
+        o.is_remit, o.is_repaid, o.overdue_days, o.loan_status_code
+    FROM wangchuanliang.order_loan_f_v2_copy AS o
+    INNER JOIN candidate_users AS u ON u.user_id = o.user_id
+),
+clean_settlement AS (
+    SELECT o.user_id, o.serial_id, o.repaid_time, o.repaid_date
+    FROM all_orders AS o
+    WHERE o.is_remit = 1
+      AND (o.is_repaid = 1 OR o.loan_status_code = 7)
+      AND o.repaid_time &gt; TIMESTAMP &#x27;2000-01-01 00:00:00&#x27;
+      AND NOT EXISTS (
+          SELECT 1
+          FROM all_orders AS x
+          WHERE x.user_id = o.user_id
+            AND x.serial_id &lt;&gt; o.serial_id
+            AND x.apply_time &lt; o.repaid_time
+            AND (
+                  x.loan_status_code IN (5, 8)
+               OR (x.loan_status_code = 7 AND x.repaid_time &gt; o.repaid_time)
+            )
+      )
+),
+t0_pairs AS (
+    SELECT
+        e.user_id,
+        e.serial_id AS offer_serial_id,
+        e.vir_date,
+        e.vir_time,
+        e.max_credit_apply_amt,
+        s.serial_id AS settlement_serial_id,
+        s.repaid_time AS settlement_time,
+        ROW_NUMBER() OVER (
+            PARTITION BY e.user_id, e.serial_id, e.vir_time
+            ORDER BY s.repaid_time DESC, s.serial_id DESC
+        ) AS settlement_rn
+    FROM dedup_offer AS e
+    INNER JOIN clean_settlement AS s
+        ON s.user_id = e.user_id
+       AND s.repaid_date = e.vir_date
+       AND e.vir_time &gt;= s.repaid_time
+),
+t0_events AS (
+    SELECT *
+    FROM (
+        SELECT
+            p.*,
+            ROW_NUMBER() OVER (
+                PARTITION BY p.user_id, p.vir_date
+                ORDER BY p.vir_time, p.offer_serial_id DESC
+            ) AS day_rn
+        FROM t0_pairs AS p
+        WHERE p.settlement_rn = 1
+    ) AS x
+    WHERE day_rn = 1
+),
+historical_features AS (
+    SELECT
+        t.user_id,
+        t.offer_serial_id,
+        t.vir_time,
+        COUNT(DISTINCT CASE WHEN h.is_remit = 1 THEN h.serial_id END) AS hist_remit_cnt,
+        COUNT(DISTINCT CASE
+            WHEN h.is_remit = 1
+             AND h.repaid_date &gt; DATE &#x27;2000-01-01&#x27;
+            THEN h.serial_id
+        END) AS hist_settled_cnt,
+        COUNT(DISTINCT CASE
+            WHEN h.is_remit = 1
+             AND (
+                   h.repaid_date &lt;= DATE &#x27;2000-01-01&#x27;
+                OR h.repaid_date &gt; h.due_date
+             )
+            THEN h.serial_id
+        END) AS hist_overdue_order_cnt,
+        COALESCE(MAX(CASE WHEN h.is_remit = 1 THEN h.overdue_days END), 0) AS hist_max_overdue_days,
+        COALESCE(AVG(CASE WHEN h.is_remit = 1 THEN h.remit_amt END), 0) AS hist_avg_remit_amt,
+        COALESCE(SUM(CASE WHEN h.is_remit = 1 THEN h.remit_amt END), 0) AS hist_total_remit_amt,
+        COALESCE(
+            SUM(CASE WHEN h.is_remit = 1 THEN h.pre_amt + h.post_amt ELSE 0 END)
+            / NULLIF(SUM(CASE WHEN h.is_remit = 1 THEN h.remit_amt ELSE 0 END), 0),
+            0
+        ) AS hist_weighted_interest_rate,
+        MIN(CASE WHEN h.is_remit = 1 THEN h.apply_date END) AS first_hist_apply_date,
+        MAX(CASE WHEN h.is_remit = 1 THEN h.repaid_date END) AS last_hist_repaid_date
+    FROM t0_events AS t
+    LEFT JOIN all_orders AS h
+        ON h.user_id = t.user_id
+       AND h.apply_time &lt; t.vir_time
+       AND h.is_remit = 1
+       AND h.repaid_time IS NOT NULL
+       AND h.repaid_time &lt; t.vir_time
+    GROUP BY t.user_id, t.offer_serial_id, t.vir_time
+),
+feature_base AS (
+    SELECT
+        t.user_id,
+        t.offer_serial_id,
+        t.vir_date,
+        t.vir_time,
+        t.max_credit_apply_amt,
+        t.settlement_serial_id,
+        t.settlement_time,
+        f.hist_remit_cnt,
+        f.hist_settled_cnt,
+        f.hist_overdue_order_cnt,
+        f.hist_max_overdue_days,
+        f.hist_avg_remit_amt,
+        f.hist_total_remit_amt,
+        f.hist_weighted_interest_rate,
+        (t.vir_date - f.first_hist_apply_date) AS user_loan_tenure_days,
+        (t.vir_date - f.last_hist_repaid_date) AS days_since_last_repaid,
+        CASE WHEN f.hist_remit_cnt &gt; 0
+             THEN f.hist_overdue_order_cnt::numeric / f.hist_remit_cnt
+             ELSE 0 END AS hist_overdue_order_rate,
+        CASE WHEN prior.repaid_date &gt; DATE &#x27;2000-01-01&#x27;
+                   AND prior.repaid_date &lt;= prior.due_date
+             THEN 0 ELSE 1 END AS previous_order_overdue_flag,
+        COALESCE(prior.remit_amt, 0) AS previous_remit_amt,
+        CASE WHEN prior.remit_amt &gt; 0
+             THEN (prior.pre_amt + prior.post_amt) / prior.remit_amt
+             ELSE 0 END AS previous_interest_rate,
+        target.is_remit AS next_order_is_remit,
+        COALESCE(target.remit_amt, 0) AS t0_order_remit_amt,
+        COALESCE(target.pre_amt + target.post_amt, 0) AS t0_order_interest_amt,
+        CASE
+            WHEN target.apply_time &gt;= t.vir_time
+             AND target.apply_date = t.vir_date
+            THEN 1 ELSE 0
+        END AS is_t0_apply,
+        target.due_date AS next_order_due_date,
+        CASE
+            WHEN target.is_remit = 1
+             AND target.due_date &lt;= p.label_due_cutoff
+            THEN 1 ELSE 0
+        END AS is_mature_label_sample,
+        CASE
+            WHEN target.is_remit = 1
+             AND target.due_date &lt;= p.label_due_cutoff
+             AND (
+                   target.repaid_date &lt;= DATE &#x27;2000-01-01&#x27;
+                OR target.repaid_date &gt; target.due_date
+             )
+            THEN 1
+            WHEN target.is_remit = 1
+             AND target.due_date &lt;= p.label_due_cutoff
+            THEN 0
+            ELSE NULL
+        END AS next_order_overdue_label,
+        -- 报告中的实际订单逾期率：只统计 T0 当日真实提单且成功放款、
+        -- 并在统计截止日已到期的整笔订单。
+        CASE
+            WHEN target.is_remit = 1
+             AND target.apply_time &gt;= t.vir_time
+             AND target.apply_date = t.vir_date
+             AND target.due_date &lt;= p.analysis_as_of_date
+            THEN 1 ELSE 0
+        END AS is_actual_t0_mature_order,
+        CASE
+            WHEN target.is_remit = 1
+             AND target.apply_time &gt;= t.vir_time
+             AND target.apply_date = t.vir_date
+             AND target.due_date &lt;= p.analysis_as_of_date
+             AND (
+                    target.repaid_date IS NULL
+                 OR target.repaid_date &lt;= DATE &#x27;2000-01-01&#x27;
+                 OR target.repaid_date &gt; target.due_date
+             )
+            THEN 1
+            WHEN target.is_remit = 1
+             AND target.apply_time &gt;= t.vir_time
+             AND target.apply_date = t.vir_date
+             AND target.due_date &lt;= p.analysis_as_of_date
+            THEN 0
+            ELSE NULL
+        END AS actual_t0_order_overdue_label
+    FROM t0_events AS t
+    INNER JOIN historical_features AS f
+        ON f.user_id = t.user_id
+       AND f.offer_serial_id = t.offer_serial_id
+       AND f.vir_time = t.vir_time
+    LEFT JOIN all_orders AS prior
+        ON prior.user_id = t.user_id
+       AND prior.serial_id = t.settlement_serial_id
+    LEFT JOIN all_orders AS target
+        ON target.user_id = t.user_id
+       AND target.serial_id = t.offer_serial_id
+    CROSS JOIN params AS p
+)
+SELECT
+    b.*,
+    CASE WHEN b.vir_date BETWEEN p.feature_start_date AND p.train_end_date
+         THEN 1 ELSE 0 END AS is_train_period,
+    CASE WHEN b.vir_date &gt;= p.score_start_date
+          AND b.vir_date &lt; p.feature_end_date
+         THEN 1 ELSE 0 END AS is_score_period
+FROM feature_base AS b
+CROSS JOIN params AS p
+ORDER BY b.vir_time, b.user_id, b.offer_serial_id
+),
+scored AS (
+    SELECT
+        vir_date,
+        is_t0_apply,
+        next_order_is_remit,
+        t0_order_remit_amt,
+        t0_order_interest_amt,
+        is_actual_t0_mature_order,
+        actual_t0_order_overdue_label,
+        1.0 / (1.0 + EXP(-(
+          -0.5652802238981256
+          + (0.0182714389842564 * ((COALESCE(max_credit_apply_amt, 2000.0) - 3708.813462885154) / 4435.428746809324))
+          + (-0.0356718241001912 * ((COALESCE(hist_remit_cnt, 2.0) - 3.0983018207282913) / 4.477071675286755))
+          + (-0.0356718241001912 * ((COALESCE(hist_settled_cnt, 2.0) - 3.0983018207282913) / 4.477071675286755))
+          + (0.010166844650504 * ((COALESCE(hist_overdue_order_cnt, 0.0) - 0.1287640056022408) / 0.4008468962367186))
+          + (-0.0010884378745081 * ((COALESCE(hist_max_overdue_days, 0.0) - -1.3855042016806722) / 3.2734854877909365))
+          + (-0.0897233469271387 * ((COALESCE(hist_avg_remit_amt, 1000.0) - 1642.5042745050282) / 1835.077924028703))
+          + (-0.0648771907524624 * ((COALESCE(hist_total_remit_amt, 1800.0) - 8366.807598039215) / 23495.151922501816))
+          + (0.0235588554139508 * ((COALESCE(hist_weighted_interest_rate, 0.4151226038513839) - 0.3830001672326967) / 0.1357819678071449))
+          + (-0.0836188087025032 * ((COALESCE(user_loan_tenure_days, 22.0) - 53.39189425770308) / 95.45111751130464))
+          + (-0.0240646425788879 * ((COALESCE(days_since_last_repaid, 0.0) - 2.0390406162464987) / 14.127627627627538))
+          + (0.0162338489661254 * ((COALESCE(hist_overdue_order_rate, 0.0) - 0.0358033506570425) / 0.1354266535459552))
+          + (0.0780277043361126 * ((COALESCE(previous_order_overdue_flag, 0.0) - 0.0340511204481792) / 0.181360529455565))
+          + (0.1458843338381181 * ((COALESCE(previous_remit_amt, 1100.0) - 2249.5487570028013) / 2893.8625669892053))
+          + (0.043155211445057 * ((COALESCE(previous_interest_rate, 0.4542857142857142) - 0.4200950330686726) / 0.1152955399117681))
+        ))) AS predicted_overdue_risk
+    FROM feature_data
+    WHERE is_score_period = 1
+),
+scored_tier AS (
+    SELECT
+        TO_CHAR(vir_date, &#x27;YYYY-MM&#x27;) AS 提单月份,
+        CASE
+            WHEN predicted_overdue_risk &lt;= 0.3563149222988503 THEN &#x27;资质最好（P0-P30）&#x27;
+            WHEN predicted_overdue_risk &lt;= 0.3711136188813171 THEN &#x27;资质一般（P30-P60）&#x27;
+            ELSE &#x27;资质较差（P60-P100）&#x27;
+        END AS 动态资质分层,
+        is_t0_apply,
+        next_order_is_remit,
+        t0_order_remit_amt,
+        t0_order_interest_amt,
+        is_actual_t0_mature_order,
+        actual_t0_order_overdue_label,
+        predicted_overdue_risk
+    FROM scored
+),
+monthly_tier AS (
+    SELECT
+        提单月份,
+        动态资质分层,
+        COUNT(*) AS T0获额用户数,
+        SUM(is_t0_apply) AS T0当日提单用户数,
+        SUM(is_t0_apply)::numeric / NULLIF(COUNT(*), 0) AS T0当日提单率,
+        SUM(CASE WHEN is_actual_t0_mature_order = 1
+                 THEN t0_order_remit_amt ELSE 0 END) AS T0当日提单放款金额,
+        SUM(CASE WHEN is_actual_t0_mature_order = 1
+                 THEN t0_order_interest_amt ELSE 0 END) AS T0当日提单息费金额,
+        SUM(CASE WHEN is_actual_t0_mature_order = 1
+                 THEN t0_order_interest_amt ELSE 0 END)::numeric
+            / NULLIF(SUM(CASE WHEN is_actual_t0_mature_order = 1
+                              THEN t0_order_remit_amt ELSE 0 END), 0) AS T0当日提单放款加权息费率,
+        SUM(is_actual_t0_mature_order) AS 实际已到期订单数,
+        SUM(actual_t0_order_overdue_label) AS 实际逾期订单数,
+        SUM(actual_t0_order_overdue_label)::numeric
+            / NULLIF(SUM(is_actual_t0_mature_order), 0) AS 实际订单逾期率,
+        AVG(predicted_overdue_risk) AS 平均预测逾期风险
+    FROM scored_tier
+    GROUP BY 提单月份, 动态资质分层
+),
+monthly_total AS (
+    SELECT
+        提单月份,
+        &#x27;全部T0用户&#x27; AS 动态资质分层,
+        COUNT(*) AS T0获额用户数,
+        SUM(is_t0_apply) AS T0当日提单用户数,
+        SUM(is_t0_apply)::numeric / NULLIF(COUNT(*), 0) AS T0当日提单率,
+        SUM(CASE WHEN is_actual_t0_mature_order = 1
+                 THEN t0_order_remit_amt ELSE 0 END) AS T0当日提单放款金额,
+        SUM(CASE WHEN is_actual_t0_mature_order = 1
+                 THEN t0_order_interest_amt ELSE 0 END) AS T0当日提单息费金额,
+        SUM(CASE WHEN is_actual_t0_mature_order = 1
+                 THEN t0_order_interest_amt ELSE 0 END)::numeric
+            / NULLIF(SUM(CASE WHEN is_actual_t0_mature_order = 1
+                              THEN t0_order_remit_amt ELSE 0 END), 0) AS T0当日提单放款加权息费率,
+        SUM(is_actual_t0_mature_order) AS 实际已到期订单数,
+        SUM(actual_t0_order_overdue_label) AS 实际逾期订单数,
+        SUM(actual_t0_order_overdue_label)::numeric
+            / NULLIF(SUM(is_actual_t0_mature_order), 0) AS 实际订单逾期率,
+        AVG(predicted_overdue_risk) AS 平均预测逾期风险
+    FROM scored_tier
+    GROUP BY 提单月份
+),
+monthly_quality_share AS (
+    SELECT
+        提单月份,
+        SUM(CASE WHEN 动态资质分层 = &#x27;资质最好（P0-P30）&#x27; THEN 1 ELSE 0 END)::numeric
+            / NULLIF(COUNT(*), 0) AS 资质最好用户占比,
+        SUM(CASE WHEN 动态资质分层 = &#x27;资质一般（P30-P60）&#x27; THEN 1 ELSE 0 END)::numeric
+            / NULLIF(COUNT(*), 0) AS 资质一般用户占比,
+        SUM(CASE WHEN 动态资质分层 = &#x27;资质较差（P60-P100）&#x27; THEN 1 ELSE 0 END)::numeric
+            / NULLIF(COUNT(*), 0) AS 资质较差用户占比
+    FROM scored_tier
+    GROUP BY 提单月份
+)
+SELECT
+    a.提单月份,
+    a.动态资质分层,
+    a.T0获额用户数,
+    a.T0当日提单用户数,
+    a.T0当日提单率,
+    a.T0当日提单放款金额,
+    a.T0当日提单息费金额,
+    a.T0当日提单放款加权息费率,
+    a.实际已到期订单数,
+    a.实际逾期订单数,
+    a.实际订单逾期率,
+    a.平均预测逾期风险,
+    s.资质最好用户占比,
+    s.资质一般用户占比,
+    s.资质较差用户占比
+FROM (
+    SELECT * FROM monthly_total
+    UNION ALL
+    SELECT * FROM monthly_tier
+) AS a
+INNER JOIN monthly_quality_share AS s
+    ON a.提单月份 = s.提单月份
+ORDER BY a.提单月份,
+         CASE a.动态资质分层
+              WHEN &#x27;全部T0用户&#x27; THEN 1
+              WHEN &#x27;资质最好（P0-P30）&#x27; THEN 2
+              WHEN &#x27;资质一般（P30-P60）&#x27; THEN 3 ELSE 4 END;
+</code></pre></details><details class="code"><summary>训练输出：模型系数、标准化参数与截距（CSV）</summary><pre><code>feature,impute_median,mean,scale,coefficient
+max_credit_apply_amt,2000.0,3708.813462885154,4435.428746809324,0.018271438984256483
+hist_remit_cnt,2.0,3.0983018207282913,4.477071675286755,-0.03567182410019129
+hist_settled_cnt,2.0,3.0983018207282913,4.477071675286755,-0.03567182410019129
+hist_overdue_order_cnt,0.0,0.12876400560224088,0.4008468962367186,0.01016684465050405
+hist_max_overdue_days,0.0,-1.3855042016806722,3.2734854877909365,-0.001088437874508138
+hist_avg_remit_amt,1000.0,1642.5042745050282,1835.0779240287027,-0.08972334692713874
+hist_total_remit_amt,1800.0,8366.807598039215,23495.151922501816,-0.06487719075246245
+hist_weighted_interest_rate,0.41512260385138394,0.38300016723269675,0.1357819678071449,0.023558855413950863
+user_loan_tenure_days,22.0,53.39189425770308,95.45111751130464,-0.0836188087025032
+days_since_last_repaid,0.0,2.0390406162464987,14.127627627627538,-0.02406464257888796
+hist_overdue_order_rate,0.0,0.035803350657042564,0.1354266535459552,0.016233848966125466
+previous_order_overdue_flag,0.0,0.03405112044817927,0.181360529455565,0.07802770433611264
+previous_remit_amt,1100.0,2249.5487570028013,2893.8625669892053,0.1458843338381181
+previous_interest_rate,0.45428571428571424,0.4200950330686726,0.11529553991176812,0.04315521144505705
+intercept,0.0,0.0,1.0,-0.5652802238981256
+</code></pre></details><details class="code"><summary>训练输出：训练期与时间外验证指标、P30/P60 阈值（CSV）</summary><pre><code>样本,样本量,逾期率,AUC,Brier,资质最好阈值_预测逾期风险P30,资质一般上限_预测逾期风险P60
+训练期_2025_01_09,8674,0.3645376988701868,0.5496385495300231,0.22972017273915918,0.35631492229885037,0.3711136188813171
+时间外验证_2025_10_12,2750,0.3610909090909091,0.5268644885284068,0.2303898303227528,0.35631492229885037,0.3711136188813171
+</code></pre></details>
+</main></body></html>
