@@ -352,7 +352,7 @@ FROM tmp_base b
 LEFT JOIN tmp_repay rp ON rp.serial_id = b.serial_id
 GROUP BY b.ym;
 
--- 【块E1】图8 / 表5.7 当日：提单率、息费、逾期、盈利率、有行为当日提单率
+-- 【块E1】图1 当日四指标同表：提单率、息费、逾期、盈利率（另含有/无行为当日提单率）
 SELECT
   TO_CHAR(ym, 'YYYY-MM') AS ym,
   d0_apply_pct AS 当日提单率,

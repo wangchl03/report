@@ -62,7 +62,7 @@ details{margin:14px 0}summary{cursor:pointer;color:var(--cy);font-size:14px;padd
 有行为人数占比几乎没掉（1月57%→8月55%），掉的是<strong>当天转化</strong>。同期当日单息费从50%升到60%，整笔逾期从36.6%升到43.0%。晚提人群息费和当日差不多，但盈利率高约9个点、逾期低约4个点。急着当天提、尤其当天完全不改条件的人，是规模最大、质量最差的一档。</div>
 
 <div class="grid g2">
-<div class="chart"><h3>图1 当日提单率 vs 当日单息费 vs 当日单逾期率</h3><p>T0 当日提单率（左轴%）；息费、逾期（左轴%）。来源：T0用户日 2026-01～08</p><div class="box"><canvas id="c1"></canvas></div></div>
+<div class="chart"><h3>图1 当日提单率、息费、逾期率、盈利率</h3><p>四个指标均为%。来源：T0用户日 2026-01～08；息费=已放款；逾期/盈利率=已放款且已到期</p><div class="box"><canvas id="c1"></canvas></div></div>
 <div class="chart"><h3>图2 首次提单落点占 T0</h3><p>自然日窗口。8月7日以后/未提单受观察期截断。来源：同上</p><div class="box"><canvas id="c2"></canvas></div></div>
 </div>
 <div class="grid g2" style="margin-top:14px">
@@ -671,7 +671,7 @@ FROM tmp_base b
 LEFT JOIN tmp_repay rp ON rp.serial_id = b.serial_id
 GROUP BY b.ym;
 
--- 【块E1】图8 / 表5.7 当日：提单率、息费、逾期、盈利率、有行为当日提单率
+-- 【块E1】图1 当日四指标同表：提单率、息费、逾期、盈利率（另含有/无行为当日提单率）
 SELECT
   TO_CHAR(ym, 'YYYY-MM') AS ym,
   d0_apply_pct AS 当日提单率,
@@ -1748,7 +1748,8 @@ const opt=()=>({responsive:true,maintainAspectRatio:false,plugins:{legend:{label
 new Chart(document.getElementById('c1'),{type:'line',data:{labels:months,datasets:[
 {label:'当日提单率%',data:[52.89,51.81,46.37,46.85,45.16,43.77,41.36,39.20],borderColor:'#43c7e7',backgroundColor:'transparent',tension:.2},
 {label:'当日息费%',data:[49.57,48.91,50.50,51.45,54.16,58.27,58.18,60.21],borderColor:'#ffc26b',backgroundColor:'transparent',tension:.2},
-{label:'当日逾期率%',data:[36.60,37.41,36.40,36.50,37.81,42.27,42.55,43.02],borderColor:'#f68ab0',backgroundColor:'transparent',tension:.2}
+{label:'当日逾期率%',data:[36.60,37.41,36.40,36.50,37.81,42.27,42.55,43.02],borderColor:'#f68ab0',backgroundColor:'transparent',tension:.2},
+{label:'当日盈利率%',data:[3.44,1.20,7.75,8.49,7.60,4.37,5.23,6.65],borderColor:'#64dcae',backgroundColor:'transparent',tension:.2}
 ]},options:opt()});
 new Chart(document.getElementById('c2'),{type:'bar',data:{labels:months,datasets:[
 {label:'当日',data:[52.89,51.81,46.37,46.85,45.16,43.77,41.36,39.20],backgroundColor:'#43c7e7'},
