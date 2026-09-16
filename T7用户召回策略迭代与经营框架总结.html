@@ -1,0 +1,127 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>T7 Plus 用户召回策略迭代与经营框架总结</title>
+  <style>
+    :root{--bg:#071b2d;--panel:#0b2740;--panel2:#0d304d;--line:#204762;--text:#e9f3fb;--muted:#a9c3d5;--mint:#65d5ad;--cyan:#4cbfe0;--gold:#ffc46a;--pink:#ef7baa;--red:#ff8c79}
+    *{box-sizing:border-box} body{margin:0;background:linear-gradient(180deg,#071b2d 0%,#08243b 52%,#071b2d 100%);color:var(--text);font:16px/1.72 -apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei",sans-serif}
+    a{color:#73d8ff;text-decoration:none}a:hover{text-decoration:underline}.wrap{max-width:1240px;margin:auto;padding:0 28px 72px}.hero{padding:70px 0 42px;border-bottom:1px solid var(--line)}.eyebrow{color:var(--mint);font-weight:700;letter-spacing:.12em;font-size:13px}.hero h1{font-size:42px;line-height:1.25;margin:12px 0 12px;letter-spacing:.02em}.hero p{max-width:860px;font-size:18px;color:var(--muted);margin:0}.meta{color:#7ea5ba;font-size:14px;margin-top:17px}
+    .hero{text-align:center}.hero p{margin-left:auto;margin-right:auto}.nav{position:sticky;top:0;z-index:2;background:rgba(7,27,45,.94);backdrop-filter:blur(10px);border-bottom:1px solid var(--line);padding:13px 0;display:flex;gap:22px;overflow:auto}.nav a{white-space:nowrap;color:#c6dae7;font-size:14px}
+    section{padding:45px 0 8px}h2{font-size:27px;line-height:1.35;margin:0 0 18px}h3{font-size:19px;margin:28px 0 10px}.lead{font-size:18px;color:#d8e8f2;max-width:1000px}.grid{display:grid;gap:16px}.g4{grid-template-columns:repeat(4,minmax(0,1fr))}.g3{grid-template-columns:repeat(3,minmax(0,1fr))}.g2{grid-template-columns:repeat(2,minmax(0,1fr))}.card{background:linear-gradient(145deg,rgba(17,57,85,.88),rgba(8,38,61,.92));border:1px solid var(--line);border-radius:12px;padding:20px}.card h3{margin:0 0 7px;font-size:16px;color:#cfe3ef}.value{font-size:32px;font-weight:750;line-height:1.2}.sub{color:var(--muted);font-size:14px;margin-top:7px}.mint{color:var(--mint)}.cyan{color:var(--cyan)}.gold{color:var(--gold)}.pink{color:var(--pink)}
+    .note{border-left:3px solid var(--mint);padding:13px 17px;background:rgba(101,213,173,.08);color:#d5f0e6;margin:18px 0;border-radius:0 8px 8px 0}.risk{border-left-color:var(--gold);background:rgba(255,196,106,.08);color:#d5e3ed}.decision-lines{display:grid;gap:8px}.decision-lines div+div{padding-top:8px;border-top:1px solid rgba(255,196,106,.22)}.decision-lines .decision-title{color:var(--gold);font-weight:750}.key-decision{margin:19px 0 25px;padding:20px 22px;border:1px solid rgba(255,196,106,.65);border-left:5px solid var(--gold);background:linear-gradient(100deg,rgba(255,196,106,.16),rgba(255,196,106,.06));border-radius:10px}.key-decision h3{color:var(--gold);margin:0 0 8px}.key-decision p{margin:6px 0;color:#f7e4bc;font-size:17px}.conclusion-lines{display:grid;gap:9px;margin:18px 0 22px}.conclusion-lines div{padding:12px 16px;border-left:3px solid var(--cyan);background:rgba(76,191,224,.08);border-radius:0 8px 8px 0;color:#d8e8f2}.list{padding-left:22px;margin:10px 0}.list li{margin:7px 0}.step{display:grid;grid-template-columns:38px 1fr;gap:12px;margin:15px 0}.num{width:30px;height:30px;border-radius:50%;display:grid;place-items:center;background:#164969;color:var(--mint);font-weight:750}.figure{margin:18px 0 28px;background:#082238;border:1px solid var(--line);border-radius:12px;overflow:hidden}.figure img{width:100%;display:block;background:#0a2b45}.caption{padding:10px 16px;color:var(--muted);font-size:14px}.table{width:100%;border-collapse:collapse;margin:16px 0 25px;font-size:15px}.table th{background:#123a58;color:#dff3ff;text-align:left}.table th,.table td{padding:12px 13px;border:1px solid var(--line);vertical-align:top}.table td{color:#c8dae6}.table tr:nth-child(even) td{background:rgba(22,73,105,.18)}.tag{display:inline-block;border:1px solid #306484;padding:1px 8px;border-radius:99px;font-size:12px;color:#b6d8e9;margin-right:5px}.footer{padding:30px 0;color:#87a7ba;border-top:1px solid var(--line);margin-top:44px;font-size:14px}
+    @media(max-width:840px){.hero{padding-top:44px}.hero h1{font-size:31px}.g4,.g3,.g2{grid-template-columns:1fr}.wrap{padding:0 17px 48px}section{padding-top:34px}.nav{padding-left:17px}.table{font-size:13px}.table th,.table td{padding:9px}.value{font-size:29px}}
+  </style>
+</head>
+<body>
+  <main class="wrap">
+    <header class="hero">
+      <div class="eyebrow">T7+ 用户经营总结</div>
+      <h1>T7 用户召回策略迭代与经营框架总结</h1>
+      <p>本报告整理召回策略、生命周期经营、T0 提单率阈值和动态资质分层四部分工作，明确当前验证结论与后续可执行方向。</p>
+      <div class="meta">整理日期：2026 年 9 月 16 日</div>
+    </header>
+    <nav class="nav"><a href="#summary">核心结论</a><a href="#recall">召回策略</a><a href="#life">生命周期经营</a><a href="#threshold">提单率阈值</a><a href="#quality">资质分层验证</a><a href="#plan">下一步行动</a><a href="#refs">关联报告</a></nav>
+
+    <section id="summary">
+      <h2>一、核心结论</h2>
+      <div class="conclusion-lines">
+        <div><strong>召回：</strong>从“是否活跃”的粗分方式，升级为“提单意愿评分 + 分层触达”。</div>
+        <div><strong>用户经营：</strong>核心是缩短结清后的无在途时间。</div>
+        <div><strong>T0 转化：</strong>当前先不去拉升当天提单率，优先提升结清当天之后仍未提单用户的提单率。</div>
+      </div>
+      <div class="note"><strong>经营主线：</strong>以模型识别高意向与高资质用户，优先把“无在途、可提单但未提单”的时间转化为在途时间，从而提升借款次数和长期盈利。</div>
+    </section>
+
+    <section id="recall">
+      <h2>二、召回策略：从全量触达到意愿分层</h2>
+      <div class="card"><h3>策略演进逻辑</h3><p>8 月 15 日前采用全量流失用户召回。对流失超过 180 天且 90 天未活跃的人群，两周提单率低于 1%，营销效率偏低。后续策略依次经历“高意向筛选触达”与“意愿模型分层召回”两个阶段。</p></div>
+      <h3>阶段一：高意向筛选触达，降低营销成本</h3>
+      <p>8 月 18 日起，先覆盖全量样本中 <strong>68.5%</strong> 的高意向用户，共触达 11,585 人。该批次在 26 天内获得 19.0% 提单率，且其提单人数覆盖整体样本提单人数的 96.3%。</p>
+      <div class="grid g3">
+        <div class="card"><h3>高意向样本覆盖</h3><div class="value mint">68.5%</div><div class="sub">仅触达全量样本中的高意向用户</div></div>
+        <div class="card"><h3>8 月 18 日触达人群</h3><div class="value cyan">11,585</div><div class="sub">高提单意愿用户</div></div>
+        <div class="card"><h3>26 天提单率</h3><div class="value gold">19.0%</div><div class="sub">被过滤低意向用户仅为 1.60%</div></div>
+      </div>
+      <div class="note"><strong>该批次结果：</strong>覆盖 68.5% 高意向样本，即覆盖了整体样本 <strong>96.3%</strong> 的提单人数，显著提升了单位触达效率。</div>
+      <h3>阶段二：仅触达新增活跃用户会漏掉未活跃的高意愿用户</h3>
+      <div class="card"><p>对 8 月 18 日触达但未提单用户，后续曾按“新增活跃用户”进行触达。但若只召回一周内新增活跃用户，会遗漏大量未活跃但仍有提单意愿的 T7+ 用户；新增活跃用户的提单人数仅占全部提单人数约 <strong>40%—45%</strong>。</p></div>
+      <h3>阶段三：以提单意愿模型替代单一活跃标签</h3>
+      <p>因此，当前不再只按是否活跃召回，而是通过提单意愿模型评分进行分层。模型筛选后，仅召回 31.7% 的用户，即可覆盖总体提单人数的 83.2%。</p>
+      <div class="grid g2">
+        <div class="card"><h3>模型筛选后触达用户占比</h3><div class="value pink">31.7%</div><div class="sub">按提单意愿评分筛选触达</div></div>
+        <div class="card"><h3>总体提单人数覆盖</h3><div class="value mint">83.2%</div><div class="sub">覆盖模型全量样本的提单人数</div></div>
+      </div>
+      <h3>原有周期策略</h3>
+      <div class="grid g2">
+        <div class="step"><div class="num">1</div><div><strong>第 1 周：</strong>召回全量高意向用户。</div></div>
+        <div class="step"><div class="num">2</div><div><strong>第 2 周：</strong>召回第 1 周新增活跃用户。</div></div>
+        <div class="step"><div class="num">3</div><div><strong>第 3 周：</strong>回召两周前触达但未提单用户，同时覆盖近两周新增 T7+ 流失用户。</div></div>
+        <div class="step"><div class="num">4</div><div><strong>第 4 周：</strong>召回前三周新增活跃用户；新增流失用户按两周集中回召。</div></div>
+      </div>
+      <div class="note"><strong>迭代方向：</strong>不再把“是否活跃”作为唯一召回标准，而是按用户提单意愿模型评分分层，优先召回高意向用户。</div>
+      <div class="grid g2"><figure class="figure"><img src="T7用户召回策略迭代与经营框架总结-assets/image1.png" alt="旧 tier 提单率"><figcaption class="caption">旧分层下，S、A、B、C 提单率存在区分，但中间层区分有限。</figcaption></figure><figure class="figure"><img src="T7用户召回策略迭代与经营框架总结-assets/image2.png" alt="新 score 分段提单率"><figcaption class="caption">重新分段后，提单率由高分至低分呈更清晰的递减。</figcaption></figure></div>
+    </section>
+
+    <section id="life">
+      <h2>三、生命周期经营：寻找可转化的无在途时间</h2>
+      <p class="lead">生命周期分析的目的不是只计算用户“存活多久”，而是定位其中可经营、可转化为新借款机会的时间。无在途时间不产生利润；将其转化为在途时间，才能增加借款次数与盈利。</p>
+      <div class="grid g2"><figure class="figure"><img src="T7用户召回策略迭代与经营框架总结-assets/image3.png" alt="生命周期端点"><figcaption class="caption">生命周期从首贷提单日起算，终点按当前状态确定：逾期取最早到期日、被拒取最后提单日、在途取最晚到期日、已结清取最后结清日。</figcaption></figure><figure class="figure"><img src="T7用户召回策略迭代与经营框架总结-assets/image4.png" alt="四段边界"><figcaption class="caption">生命周期可拆为逾期、在途、被拒和无在途四段；无在途是重点经营对象。</figcaption></figure></div>
+      <table class="table"><thead><tr><th>当前用户状态</th><th>分类口径</th><th>生命周期终点</th></tr></thead><tbody>
+        <tr><td><span class="tag">逾期</span></td><td>当前存在至少一笔逾期未结清订单。</td><td>多笔逾期时取最早到期日。</td></tr>
+        <tr><td><span class="tag">被拒</span></td><td>无逾期未结清订单，且最后一笔提单未成功放款。</td><td>最后一笔提单日期。</td></tr>
+        <tr><td><span class="tag">在途</span></td><td>有未到期在途订单，且不属于逾期或被拒状态。</td><td>多笔在途时取最晚到期日。</td></tr>
+        <tr><td><span class="tag">流失</span></td><td>无逾期、被拒、在途订单；最后结清后未再提单，且距统计日超过 7 天。</td><td>最后结清日。</td></tr>
+        <tr><td><span class="tag">正常结清</span></td><td>订单均已结清，且不属于上述状态；最后结清距统计日不超过 7 天。</td><td>最后结清日。</td></tr>
+      </tbody></table>
+      <figure class="figure"><img src="T7用户召回策略迭代与经营框架总结-assets/image5.png" alt="按成功放款次数的可经营时间"><figcaption class="caption">成功放款次数增加后，可经营时间显著增加：成功放款 3 次以上的用户，平均可经营时间超过 15 天，是重点的持续经营对象。</figcaption></figure>
+      <div class="note"><strong>运营目标：</strong>缩短结清到下次提单的间隔，提升 T0、T1、T2……T7+ 的提单率，减少用户无在途时间占比。</div>
+    </section>
+
+    <section id="threshold">
+      <h2>四、T0 提单率阈值：不能只看转化</h2>
+      <p class="lead">降低无在途时间的第一抓手是提高结清获额后的提单率。但提单率提升可能依赖降息、让利或提额，也可能带来风险变化；因此需要在“转化、息费、坏账和盈利”之间确定可接受的阈值。</p>
+      <figure class="figure"><img src="T7用户召回策略迭代与经营框架总结-assets/image6.png" alt="T0 提单率息费逾期盈利趋势"><figcaption class="caption">2026 年 1—8 月：T0 当日提单率与息费整体呈负相关；息费与坏账率呈正相关；盈利表现为先升后降。8 月到期订单成熟度约为 25%，其逾期与盈利仅供方向性参考。</figcaption></figure>
+      <div class="grid g3"><div class="card"><h3>早期假设</h3><p>息费增加带来的收入，可能暂时抵消部分坏账损失，因此盈利上升。</p></div><div class="card"><h3>后期风险</h3><p>当坏账损失增幅超过息费增益时，息费继续提高可能导致盈利下降。</p></div><div class="card"><h3>客群结构假设</h3><p>高息费可能加剧优质用户流失，导致留下的提单人群风险上升。</p></div></div>
+      <div class="note risk"><strong>关键判断：</strong>不能直接以“提高 T0 提单率”为目标；先确认不同资质用户的转化和风险，再决定是否给优惠、给多少优惠。</div>
+    </section>
+
+    <section id="quality">
+      <h2>五、动态资质分层：验证客群结构变化</h2>
+      <p class="lead">模型评估的是用户在“结清 0 在贷、获得额度”那一刻的动态资质，而非今天的静态资质。模型仅使用获额之前已发生的数据，避免使用获额后、提单后或尚未结清订单的未来信息。</p>
+      <table class="table"><thead><tr><th>环节</th><th>定义</th></tr></thead><tbody>
+        <tr><td>T0 快照</td><td>同一用户 20 秒内多次获额，仅保留订单编号最大的最后一笔；同一用户同日保留最早有效 T0 获额。vir_unix 转为 America/Belize 业务本地时间后再与订单本地时间比较。</td></tr>
+        <tr><td>训练标签</td><td>该次获额对应的下一笔成功放款订单到期时是否逾期；结清日为空、早于 2000-01-01 或晚于到期日，均视为逾期。</td></tr>
+        <tr><td>特征范围</td><td>获额前已结清订单的成功放款、历史逾期、金额、加权息费、贷款时长、上一笔订单表现和当次获额额度。</td></tr>
+        <tr><td>T0 当日提单率</td><td>获额后同一自然日提交订单的用户数 / T0 获额用户数。</td></tr>
+      </tbody></table>
+      <div class="grid g2"><figure class="figure"><img src="T7用户召回策略迭代与经营框架总结-assets/image7.png" alt="三类动态资质 T0 提单率"><figcaption class="caption">三类动态资质用户的月度 T0 当日提单率。</figcaption></figure><figure class="figure"><img src="T7用户召回策略迭代与经营框架总结-assets/image8.png" alt="三类动态资质订单逾期率"><figcaption class="caption">三类用户的实际订单逾期率：资质较差层整体更高；资质最好与一般层在少数月会因成熟样本量较小而交叉。</figcaption></figure></div>
+      <div class="grid g2"><figure class="figure"><img src="T7用户召回策略迭代与经营框架总结-assets/image9.png" alt="三类动态资质息费率"><figcaption class="caption">三类用户的已到期放款订单加权息费率。</figcaption></figure><figure class="figure"><img src="T7用户召回策略迭代与经营框架总结-assets/image10.png" alt="三类动态资质用户结构"><figcaption class="caption">T0 获额用户结构：资质较差用户占比从 1 月 63.4% 上升至 8 月 78.3%。</figcaption></figure></div>
+      <div class="grid g3"><div class="card"><h3>资质最好</h3><div class="value mint">33.32%</div><div class="sub">累计实际订单逾期率</div></div><div class="card"><h3>资质一般</h3><div class="value gold">35.88%</div><div class="sub">累计实际订单逾期率</div></div><div class="card"><h3>资质较差</h3><div class="value pink">40.68%</div><div class="sub">累计实际订单逾期率，较最好层高 7.36 个百分点</div></div></div>
+      <div class="note"><strong>模型价值与边界：</strong>模型能提供后续真实风险的分层信号，且资质较差层在 1—8 月每月风险最高；但它不是每个月严格排序的高精度模型，月度小样本和成熟度差异需要一起解读。</div>
+    </section>
+
+    <section id="plan">
+      <h2>六、下一步行动方案</h2>
+      <div class="note risk decision-lines"><div class="decision-title">为什么不优先大幅拉升 T0</div><div>T0 当天提单用户的盈利仅为非当天提单用户的 35%—50%。当天提单盈利低，若通过降息或提额拉升提单率，让利后亏损风险较高。</div><div>当前优先提升结清当天之后仍未提单用户的提单率，将资源投入更具盈利空间的后续可经营时段。</div></div>
+      <div class="grid g3"><div class="card"><h3>高资质用户</h3><p>优先验证降低息费是否能有效拉升提单率，并观察真实逾期与到期盈利变化；目标是提升高资质用户在提单人群中的占比。</p></div><div class="card"><h3>一般资质用户</h3><p>保持当前策略，持续观察意愿模型分层、提单率、到期逾期率和盈利的联动变化。</p></div><div class="card"><h3>较差资质用户</h3><p>避免高额优惠和提额，控制转化提升可能带来的风险外溢；以风险和到期盈利为约束。</p></div></div>
+      <h3>基于上述判断的召回优先级</h3><ul class="list"><li>重点经营 T1 及之后未提单用户，缩短结清后的无在途时间。</li><li>优先对 T3、T5 用户召回，减少其进入 T7+ 的比例。</li><li>针对 T7+ 用户，以意愿模型筛选而非全量触达，兼顾覆盖和成本。</li><li>与策略团队共同验证：是否应为高资质用户提供更低息费的产品。</li></ul>
+      <div class="note"><strong>衡量标准：</strong>每次策略变动均需同时追踪提单率、成功放款率、已到期订单逾期率、加权息费和到期盈利，避免只优化短期转化。</div>
+    </section>
+
+    <section id="refs">
+      <h2>七、关联分析报告</h2>
+      <table class="table"><thead><tr><th>主题</th><th>报告链接</th></tr></thead><tbody>
+        <tr><td>新策略召回效果评估</td><td><a href="https://wangchl03.github.io/report/%E5%8F%AC%E5%9B%9E%E8%A7%A6%E8%BE%BE%E6%A8%A1%E5%9E%8B%E6%95%88%E6%9E%9C%E8%AF%84%E4%BC%B0%E6%8A%A5%E5%91%8A.html" target="_blank" rel="noopener">召回触达模型效果评估报告</a></td></tr>
+        <tr><td>意愿模型分层设计</td><td><a href="https://wangchl03.github.io/report/%E5%8F%AC%E5%9B%9E%E6%8F%90%E5%8D%95%E6%84%8F%E6%84%BF%E6%A8%A1%E5%9E%8B%E8%AE%BE%E8%AE%A1%E8%AF%B4%E6%98%8E%E4%B8%8E%E6%95%88%E6%9E%9C%E8%AF%84%E4%BC%B0%E6%8A%A5%E5%91%8A.html" target="_blank" rel="noopener">召回提单意愿模型设计说明与效果评估报告</a></td></tr>
+        <tr><td>意愿模型 V2</td><td><a href="https://wangchl03.github.io/report/%E5%8F%AC%E5%9B%9E%E6%8F%90%E5%8D%95%E6%84%8F%E6%84%BF%E6%A8%A1%E5%9E%8BV2%E4%BC%98%E5%8C%96%E5%88%86%E6%9E%90%E6%8A%A5%E5%91%8A.html" target="_blank" rel="noopener">召回提单意愿模型 V2 优化分析报告</a></td></tr>
+        <tr><td>用户生命周期口径</td><td><a href="https://wangchl03.github.io/report/%E7%94%A8%E6%88%B7%E7%94%9F%E5%91%BD%E5%91%A8%E6%9C%9F%E5%AE%9A%E4%B9%89%E4%B8%8E%E7%BB%8F%E8%90%A5%E6%8B%86%E8%A7%A3%E5%8F%A3%E5%BE%84.html" target="_blank" rel="noopener">用户生命周期定义与经营拆解口径</a></td></tr>
+        <tr><td>生命周期经营分析</td><td><a href="https://wangchl03.github.io/report/%E9%A6%96%E8%B4%B7%E6%88%90%E5%8A%9F%E6%94%BE%E6%AC%BE%E7%94%A8%E6%88%B7%E7%94%9F%E5%91%BD%E5%91%A8%E6%9C%9F%E7%BB%8F%E8%90%A5%E5%88%86%E6%9E%90%E6%8A%A5%E5%91%8A.html" target="_blank" rel="noopener">首贷成功放款用户生命周期经营分析报告</a></td></tr>
+        <tr><td>T0 动态资质验证</td><td><a href="https://wangchl03.github.io/report/2026%E5%B9%B41-8%E6%9C%88T0%E5%8A%A8%E6%80%81%E8%B5%84%E8%B4%A8%E4%B8%89%E5%B1%82%E4%B8%8E%E6%8F%90%E5%8D%95%E7%8E%87%E7%BB%93%E6%9E%84%E9%AA%8C%E8%AF%81%E6%8A%A5%E5%91%8A.html" target="_blank" rel="noopener">2026 年 1—8 月 T0 动态资质三层与提单率结构验证报告</a></td></tr>
+      </tbody></table>
+    </section>
+    <footer class="footer">本网页根据《T7 用户召回总结》整理。图表为原文档图表，结论和统计口径以各关联专题报告为准。</footer>
+  </main>
+</body>
+</html>
