@@ -158,10 +158,10 @@ const opt=(extra={})=>({responsive:true,maintainAspectRatio:false,plugins:{legen
 const line=()=>({backgroundColor:'transparent',tension:.2,pointRadius:3});
 const tierLine=(label,data,color)=>({label,data,borderColor:color,...line()});
 function lineChart(id, datasets, yMax, yMin){
-  const y={ticks:{color:'#aac5da'},grid:{color:'rgba(42,92,126,.25)'}};
-  if(yMin==null){y.beginAtZero=true;}else{y.min=yMin;}
-  if(yMax!=null) y.suggestedMax=yMax;
-  new Chart(document.getElementById(id),{type:'line',data:{labels:months,datasets},options:opt({scales:{x:{ticks:{color:'#aac5da'},grid:{color:'rgba(42,92,126,.25)'}},y}})});
+  const y={beginAtZero:false,ticks:{color:'#aac5da'},grid:{color:'rgba(42,92,126,.25)'}};
+  if(yMin==null){y.beginAtZero=true;}else{y.min=yMin;y.beginAtZero=false;}
+  if(yMax!=null) y.max=yMax;
+  new Chart(document.getElementById(id),{type:'line',data:{labels:months,datasets},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{labels:{color:'#aac5da'}}},scales:{x:{ticks:{color:'#aac5da'},grid:{color:'rgba(42,92,126,.25)'}},y}}});
 }
 function scatter(id, yKey, yTitle){
   const mk=(obj,color,name)=>({label:name,data:obj.fee.map((x,i)=>({x,y:obj[yKey][i]})),backgroundColor:color,borderColor:color,pointRadius:6,showLine:true,tension:.2,fill:false});
