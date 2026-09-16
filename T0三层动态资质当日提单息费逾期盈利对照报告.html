@@ -1420,68 +1420,27 @@ ORDER BY 2, 1;
 <p class="foot">T0 用户日与交叉分析报告一致。分层模型 2025 年训练、2026 年评分。图1四指标仅统计当日首次提单订单。</p>
 </main>
 <script>
-const labels = ["1月", "2月", "3月", "4月", "5月", "6月", "7月", "8月"];
-
-new Chart(document.getElementById('c_best'), {
-  type:'line',
-  data:{
-    labels:['1月', '2月', '3月', '4月', '5月', '6月', '7月', '8月'],
-    datasets:[
-      {label:'当日提单率%', data:[51.83,52.05,49.20,49.47,46.77,44.43,41.95,41.22], borderColor:'#43c7e7', backgroundColor:'transparent', tension:.2},
-      {label:'当日息费%', data:[49.80,47.83,49.16,49.93,52.34,56.11,55.99,57.94], borderColor:'#ffc26b', backgroundColor:'transparent', tension:.2},
-      {label:'当日逾期率%', data:[34.43,32.73,32.77,30.87,30.76,36.11,36.74,38.12], borderColor:'#f68ab0', backgroundColor:'transparent', tension:.2},
-      {label:'当日盈利率%', data:[10.61,8.70,11.86,13.60,15.19,13.86,14.00,11.98], borderColor:'#64dcae', backgroundColor:'transparent', tension:.2}
-    ]
-  },
-  options:{
-    responsive:true, maintainAspectRatio:false,
-    plugins:{legend:{labels:{color:'#aac5da'}}},
-    scales:{
-      x:{ticks:{color:'#aac5da'}, grid:{color:'rgba(42,92,126,.35)'}},
-      y:{ticks:{color:'#aac5da', callback:v=>v+'%'}, grid:{color:'rgba(42,92,126,.35)'}}
-    }
-  }
-});
-new Chart(document.getElementById('c_mid'), {
-  type:'line',
-  data:{
-    labels:['1月', '2月', '3月', '4月', '5月', '6月', '7月', '8月'],
-    datasets:[
-      {label:'当日提单率%', data:[55.97,54.24,47.95,48.36,45.85,44.02,42.02,34.99], borderColor:'#43c7e7', backgroundColor:'transparent', tension:.2},
-      {label:'当日息费%', data:[49.38,48.61,49.91,50.69,53.37,56.50,55.41,57.54], borderColor:'#ffc26b', backgroundColor:'transparent', tension:.2},
-      {label:'当日逾期率%', data:[35.02,35.82,33.23,33.57,35.62,41.21,37.44,38.68], borderColor:'#f68ab0', backgroundColor:'transparent', tension:.2},
-      {label:'当日盈利率%', data:[2.54,2.53,9.51,6.01,8.72,-1.27,7.59,4.75], borderColor:'#64dcae', backgroundColor:'transparent', tension:.2}
-    ]
-  },
-  options:{
-    responsive:true, maintainAspectRatio:false,
-    plugins:{legend:{labels:{color:'#aac5da'}}},
-    scales:{
-      x:{ticks:{color:'#aac5da'}, grid:{color:'rgba(42,92,126,.35)'}},
-      y:{ticks:{color:'#aac5da', callback:v=>v+'%'}, grid:{color:'rgba(42,92,126,.35)'}}
-    }
-  }
-});
-new Chart(document.getElementById('c_poor'), {
-  type:'line',
-  data:{
-    labels:['1月', '2月', '3月', '4月', '5月', '6月', '7月', '8月'],
-    datasets:[
-      {label:'当日提单率%', data:[52.51,51.18,45.05,45.78,44.65,43.62,41.19,39.29], borderColor:'#43c7e7', backgroundColor:'transparent', tension:.2},
-      {label:'当日息费%', data:[49.52,49.37,51.41,52.67,55.30,59.31,59.23,61.36], borderColor:'#ffc26b', backgroundColor:'transparent', tension:.2},
-      {label:'当日逾期率%', data:[37.64,39.09,38.54,38.93,40.04,43.57,44.10,44.26], borderColor:'#f68ab0', backgroundColor:'transparent', tension:.2},
-      {label:'当日盈利率%', data:[0.82,-1.85,5.00,5.67,3.23,1.57,2.21,5.56], borderColor:'#64dcae', backgroundColor:'transparent', tension:.2}
-    ]
-  },
-  options:{
-    responsive:true, maintainAspectRatio:false,
-    plugins:{legend:{labels:{color:'#aac5da'}}},
-    scales:{
-      x:{ticks:{color:'#aac5da'}, grid:{color:'rgba(42,92,126,.35)'}},
-      y:{ticks:{color:'#aac5da', callback:v=>v+'%'}, grid:{color:'rgba(42,92,126,.35)'}}
-    }
-  }
-});
+const months=['1月','2月','3月','4月','5月','6月','7月','8月'];
+const opt=()=>({responsive:true,maintainAspectRatio:false,plugins:{legend:{labels:{color:'#aac5da'}}},scales:{x:{ticks:{color:'#aac5da'},grid:{color:'rgba(42,92,126,.25)'}},y:{beginAtZero:true,suggestedMax:65,ticks:{color:'#aac5da'},grid:{color:'rgba(42,92,126,.25)'}}}});
+const line=()=>({backgroundColor:'transparent',tension:.2,pointRadius:3});
+new Chart(document.getElementById('c_best'),{type:'line',data:{labels:months,datasets:[
+{label:'当日提单率%',data:[51.83,52.05,49.20,49.47,46.77,44.43,41.95,41.22],borderColor:'#43c7e7',...line()},
+{label:'当日息费%',data:[49.80,47.83,49.16,49.93,52.34,56.11,55.99,57.94],borderColor:'#ffc26b',...line()},
+{label:'当日逾期率%',data:[34.43,32.73,32.77,30.87,30.76,36.11,36.74,38.12],borderColor:'#f68ab0',...line()},
+{label:'当日盈利率%',data:[10.61,8.70,11.86,13.60,15.19,13.86,14.00,11.98],borderColor:'#64dcae',...line()}
+]},options:opt()});
+new Chart(document.getElementById('c_mid'),{type:'line',data:{labels:months,datasets:[
+{label:'当日提单率%',data:[55.97,54.24,47.95,48.36,45.85,44.02,42.02,34.99],borderColor:'#43c7e7',...line()},
+{label:'当日息费%',data:[49.38,48.61,49.91,50.69,53.37,56.50,55.41,57.54],borderColor:'#ffc26b',...line()},
+{label:'当日逾期率%',data:[35.02,35.82,33.23,33.57,35.62,41.21,37.44,38.68],borderColor:'#f68ab0',...line()},
+{label:'当日盈利率%',data:[2.54,2.53,9.51,6.01,8.72,-1.27,7.59,4.75],borderColor:'#64dcae',...line()}
+]},options:opt()});
+new Chart(document.getElementById('c_poor'),{type:'line',data:{labels:months,datasets:[
+{label:'当日提单率%',data:[52.51,51.18,45.05,45.78,44.65,43.62,41.19,39.29],borderColor:'#43c7e7',...line()},
+{label:'当日息费%',data:[49.52,49.37,51.41,52.67,55.30,59.31,59.23,61.36],borderColor:'#ffc26b',...line()},
+{label:'当日逾期率%',data:[37.64,39.09,38.54,38.93,40.04,43.57,44.10,44.26],borderColor:'#f68ab0',...line()},
+{label:'当日盈利率%',data:[0.82,-1.85,5.00,5.67,3.23,1.57,2.21,5.56],borderColor:'#64dcae',...line()}
+]},options:opt()});
 </script>
 </body>
 </html>
