@@ -157,8 +157,11 @@ const C={best:'#64dcae',mid:'#ffc26b',poor:'#f68ab0',apply:'#43c7e7',fee:'#ffc26
 const opt=(extra={})=>({responsive:true,maintainAspectRatio:false,plugins:{legend:{labels:{color:'#aac5da'}}},scales:{x:{ticks:{color:'#aac5da'},grid:{color:'rgba(42,92,126,.25)'}},y:{beginAtZero:true,ticks:{color:'#aac5da'},grid:{color:'rgba(42,92,126,.25)'}}},...extra});
 const line=()=>({backgroundColor:'transparent',tension:.2,pointRadius:3});
 const tierLine=(label,data,color)=>({label,data,borderColor:color,...line()});
-function lineChart(id, datasets, yMax){
-  new Chart(document.getElementById(id),{type:'line',data:{labels:months,datasets},options:opt({scales:{x:{ticks:{color:'#aac5da'},grid:{color:'rgba(42,92,126,.25)'}},y:{beginAtZero:true,suggestedMax:yMax,ticks:{color:'#aac5da'},grid:{color:'rgba(42,92,126,.25)'}}}})});
+function lineChart(id, datasets, yMax, yMin){
+  const y={ticks:{color:'#aac5da'},grid:{color:'rgba(42,92,126,.25)'}};
+  if(yMin==null){y.beginAtZero=true;}else{y.min=yMin;}
+  if(yMax!=null) y.suggestedMax=yMax;
+  new Chart(document.getElementById(id),{type:'line',data:{labels:months,datasets},options:opt({scales:{x:{ticks:{color:'#aac5da'},grid:{color:'rgba(42,92,126,.25)'}},y}})});
 }
 function scatter(id, yKey, yTitle){
   const mk=(obj,color,name)=>({label:name,data:obj.fee.map((x,i)=>({x,y:obj[yKey][i]})),backgroundColor:color,borderColor:color,pointRadius:6,showLine:true,tension:.2,fill:false});
@@ -172,9 +175,9 @@ new Chart(document.getElementById('c_stack'),{type:'bar',data:{labels:months,dat
   {label:'较差',data:poor.share,backgroundColor:C.poor,stack:'s'}
 ]},options:opt({scales:{x:{stacked:true,ticks:{color:'#aac5da'},grid:{color:'rgba(42,92,126,.25)'}},y:{stacked:true,max:100,ticks:{color:'#aac5da'},grid:{color:'rgba(42,92,126,.25)'}}}})});
 
-lineChart('c_apply',[tierLine('最好',best.apply,C.best),tierLine('一般',mid.apply,C.mid),tierLine('较差',poor.apply,C.poor)],60);
-lineChart('c_fee',[tierLine('最好',best.fee,C.best),tierLine('一般',mid.fee,C.mid),tierLine('较差',poor.fee,C.poor)],70);
-lineChart('c_od',[tierLine('最好',best.od,C.best),tierLine('一般',mid.od,C.mid),tierLine('较差',poor.od,C.poor)],50);
+lineChart('c_apply',[tierLine('最好',best.apply,C.best),tierLine('一般',mid.apply,C.mid),tierLine('较差',poor.apply,C.poor)],60,25);
+lineChart('c_fee',[tierLine('最好',best.fee,C.best),tierLine('一般',mid.fee,C.mid),tierLine('较差',poor.fee,C.poor)],65,25);
+lineChart('c_od',[tierLine('最好',best.od,C.best),tierLine('一般',mid.od,C.mid),tierLine('较差',poor.od,C.poor)],50,25);
 lineChart('c_profit',[tierLine('最好',best.profit,C.best),tierLine('一般',mid.profit,C.mid),tierLine('较差',poor.profit,C.poor)],20);
 
 function four(id, obj){
