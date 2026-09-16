@@ -1,0 +1,225 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>T0三层资质：当日提单息费逾期盈利交叉分析</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+<style>
+:root{--bg:#071b2f;--p:#0c2944;--line:#2a5c7e;--text:#eff8ff;--muted:#aac5da;--cy:#43c7e7;--gr:#64dcae;--am:#ffc26b;--pk:#f68ab0}
+*{box-sizing:border-box}body{margin:0;background:#06192b;color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei",sans-serif}
+.wrap{max-width:1480px;margin:auto;padding:32px 36px 80px}
+.hero{text-align:center;padding:28px 12px 22px;border-bottom:1px solid var(--line)}
+.kicker{color:var(--cy);font-size:13px;letter-spacing:2px;font-weight:700}
+.hero h1{font-size:28px;line-height:1.3;margin:10px 0}
+.hero-meta{display:inline-block;text-align:left;margin-top:12px;line-height:1.75;color:var(--muted);font-size:14px}
+h2{font-size:24px;margin:44px 0 10px}h3{font-size:17px;margin:22px 0 8px}
+.desc,.sub{color:var(--muted);margin:0 0 12px;line-height:1.75;font-size:14px}
+.grid{display:grid;gap:14px}.g2{grid-template-columns:repeat(2,minmax(0,1fr))}.g3{grid-template-columns:repeat(3,minmax(0,1fr))}.g4{grid-template-columns:repeat(4,minmax(0,1fr))}
+.card,.chart{background:rgba(10,41,68,.95);border:1px solid var(--line);border-radius:14px;padding:16px}
+.label{color:var(--muted);font-size:12px}.num{font-size:22px;font-weight:800;margin:4px 0 2px;line-height:1.2;color:var(--cy)}
+.num.pink{color:var(--pk)}.num.green{color:var(--gr)}.num.amber{color:var(--am)}
+.box{height:300px;position:relative}.box.tall{height:340px}
+.chart h3{margin:0 0 4px;font-size:15px}.chart p{font-size:12px;color:var(--muted);margin:0 0 10px}
+.callout{background:#0a2a45;border:1px solid #2a5c7e;border-left:4px solid #43c7e7;border-radius:10px;padding:14px 18px;margin:14px 0;line-height:1.75;font-size:14px}
+.callout.gold{border-left-color:#ffc26b}.callout.red{border-left-color:#f68ab0}.callout.green{border-left-color:#64dcae}
+.callout .ch{font-weight:800;margin-bottom:8px}
+.table{overflow-x:auto;margin:12px 0}table{width:100%;border-collapse:collapse;font-size:13px}
+th,td{padding:8px 10px;border-bottom:1px solid rgba(42,92,126,.45);text-align:right;white-space:nowrap}
+th{color:var(--muted);background:rgba(12,48,78,.65);font-weight:600}th:first-child,td:first-child{text-align:left}
+.bad{color:var(--pk)}.good{color:var(--gr)}
+.phase{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px;margin:14px 0}
+.phase .card h3{margin:0 0 8px;font-size:15px;color:var(--am)}
+.foot{color:#7fa6c2;font-size:12.5px;margin-top:50px;border-top:1px solid var(--line);padding-top:16px;line-height:1.9}
+@media(max-width:900px){.g2,.g3,.g4,.phase{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<main class="wrap">
+<header class="hero">
+<div class="kicker">T0 用户日 · 2026-01～08 · 交叉分析</div>
+<h1>高 / 一般 / 较差资质：当日提单、息费、逾期、盈利怎么一起变</h1>
+<div class="hero-meta">
+样本：结清 0 在贷、当日获额通过，T0 用户日 177,133<br>
+分层：2025 年训练逻辑回归，训练样本预测风险 P30/P60（30%/30%/40%）锁阈值后套 2026<br>
+四指标：当日自然日首次提单；息费=当日已放款；逾期与盈利率=当日已放款且已到期<br>
+截止：CURRENT_DATE = 2026-09-15；8 月到期样本不成熟，逾期和盈利只看方向
+</div>
+</header>
+
+<section class="grid g4" style="margin-top:18px">
+<article class="card"><div class="label">一般层当日提单（掉最多）</div><div class="num pink">56.0%→35.0%</div><div class="sub">−20.98pp · 对加价最敏感</div></article>
+<article class="card"><div class="label">较差层当日息费（升最多）</div><div class="num amber">49.5%→61.4%</div><div class="sub">+11.84pp · 6 月跳到 59%</div></article>
+<article class="card"><div class="label">较差层当日逾期（始终最高）</div><div class="num pink">37.6%→44.3%</div><div class="sub">6 月后钉在 43%–44%</div></article>
+<article class="card"><div class="label">最好层当日盈利（唯一跟住息费）</div><div class="num green">10.6%→12.0%</div><div class="sub">5 月最高 15.2% · 多数月份 11%–15%</div></article>
+</section>
+
+<div class="callout"><div class="ch">结论先行</div>
+三层都是「息费升高、当天更不提」，所以总提单率下降不能写成「只有好客走了」。真正拉开的是逾期和利润：最好层加价后当天单仍能赚约 9%–15%；较差层人数从 65% 涨到 79%，当天单多数月份只剩 0%–6%。一般层人在变薄，当天提单掉得最狠，6 月还亏了钱。</div>
+
+<h2>一、结构先变差，再看当天四指标</h2>
+<p class="desc">30%/30%/40% 只在 2025 训练样本上成立。2026 年阈值锁死，较差层占比持续抬升，后面几个月的整体数越来越就是较差层在说话。</p>
+<div class="grid g2">
+<div class="chart"><h3>图1 三层人数占比</h3><p>占当月 T0。较差层 65.2%→79.1%，最好 19.8%→13.1%，一般 15.0%→7.9%</p><div class="box"><canvas id="c_share"></canvas></div></div>
+<div class="chart"><h3>图2 三层人数堆叠</h3><p>同一套占比，看较差层如何吞掉最好和一般</p><div class="box"><canvas id="c_stack"></canvas></div></div>
+</div>
+
+<h2>二、四条指标：三层同图画趋势</h2>
+<p class="desc">下面每张图是一个指标、三条客群。1–2 月定价还齐；3 月提单先下台阶；5–6 月息费和逾期一起跳；6 月后较差层息费和逾期锁在高位。</p>
+<div class="grid g2">
+<div class="chart"><h3>图3 当日提单率</h3><p>一般层 1 月最高、8 月最低。三层同向下，一般层 −21pp</p><div class="box"><canvas id="c_apply"></canvas></div></div>
+<div class="chart"><h3>图4 当日息费</h3><p>1–2 月三层都在 48%–50%。5 月起较差层领涨，8 月 61.4%</p><div class="box"><canvas id="c_fee"></canvas></div></div>
+</div>
+<div class="grid g2" style="margin-top:14px">
+<div class="chart"><h3>图5 当日逾期率</h3><p>较差层每月都是最高。最好层 5 月前还在改善，6 月才上台阶</p><div class="box"><canvas id="c_od"></canvas></div></div>
+<div class="chart"><h3>图6 当日盈利率</h3><p>最好层 9%–15%；较差层贴地，2 月为负；一般层 6 月 −1.3%</p><div class="box"><canvas id="c_profit"></canvas></div></div>
+</div>
+
+<div class="phase">
+<div class="card"><h3>1–2 月 · 定价齐，结构已偏</h3><p class="desc" style="margin:0">息费都在 48%–50%，提单都还在 51%–56%。较差层已占约 65%，逾期已高 3 个点，2 月当天盈利 −1.85%。不是 2 月才开始差，是好客本来少、差客当天单本来就不赚钱。</p></div>
+<div class="card"><h3>3–5 月 · 提单先掉，息费后跟</h3><p class="desc" style="margin:0">3 月三层提单一起下台阶。5 月息费抬头，较差层到 55.3%。最好层逾期仍约 31%，当天盈利升到 15.2%——同一轮加价，好客把息费留成了利润。</p></div>
+<div class="card"><h3>6–8 月 · 加价、逾期、结构一起恶化</h3><p class="desc" style="margin:0">较差层息费 59%→61%，逾期钉在 43%–44%。一般层 6 月逾期 41%、盈利为负。最好层逾期也抬，但盈利仍有 12%–14%。较差层占比升到 79%。</p></div>
+</div>
+
+<h2>三、同层看四条线：加价有没有变成利润</h2>
+<p class="desc">与对照报告相同的图1口径。左轴四条线都是 %。最好层息费升、盈利仍在；较差层息费升、盈利不跟。</p>
+<div class="grid g2">
+<div class="chart"><h3>图7 最好层：提单 / 息费 / 逾期 / 盈利</h3><p>少提但仍赚钱。5 月盈利 15.2% 为全年高点</p><div class="box"><canvas id="c_best"></canvas></div></div>
+<div class="chart"><h3>图8 一般层：提单 / 息费 / 逾期 / 盈利</h3><p>提单掉最狠。6 月逾期 41.2%，盈利 −1.27%</p><div class="box"><canvas id="c_mid"></canvas></div></div>
+</div>
+<div class="grid g2" style="margin-top:14px">
+<div class="chart"><h3>图9 较差层：提单 / 息费 / 逾期 / 盈利</h3><p>人数主体。息费升幅最大，逾期始终最高，盈利贴地</p><div class="box"><canvas id="c_poor"></canvas></div></div>
+<div class="chart"><h3>图10 息费−盈利缺口</h3><p>名义息费没有变成现金的部分。较差层缺口最大且 6 月后扩张</p><div class="box"><canvas id="c_gap"></canvas></div></div>
+</div>
+
+<h2>四、交叉：息费升高时，提单、逾期、盈利怎么动</h2>
+<p class="desc">每个点是一个月。向右是更贵，向上分别是更高提单 / 更高逾期 / 更高盈利。三层若在同一条斜线上，说明加价对三层是同一件事；分开了，说明定价效果不同。</p>
+<div class="grid g3">
+<div class="chart"><h3>图11 息费 vs 当日提单</h3><p>整体右下：越贵越不当天提。一般层下滑最陡</p><div class="box"><canvas id="sc_apply"></canvas></div></div>
+<div class="chart"><h3>图12 息费 vs 当日逾期</h3><p>整体右上。较差层整条都在最好层上方</p><div class="box"><canvas id="sc_od"></canvas></div></div>
+<div class="chart"><h3>图13 息费 vs 当日盈利</h3><p>最好层在上方；较差层加价后仍贴着 0–6%</p><div class="box"><canvas id="sc_profit"></canvas></div></div>
+</div>
+<div class="grid g2" style="margin-top:14px">
+<div class="chart"><h3>图14 1月→8月变化（百分点）</h3><p>提单全是负的。息费、逾期全是正的。盈利变化掩盖了水平差：较差层是从 0.8% 涨到 5.6%，仍远低于最好层</p><div class="box"><canvas id="c_delta"></canvas></div></div>
+<div class="chart"><h3>图15 1月 vs 8月 当日盈利水平</h3><p>看水平，不看变化。最好层两端都在 10% 以上；较差层两端都在 6% 以下</p><div class="box"><canvas id="c_pbar"></canvas></div></div>
+</div>
+
+<div class="callout gold"><div class="ch">交叉怎么读</div>
+<strong>息费 ↑ × 提单 ↓</strong>：三层同向，一般层最敏感（−21pp）。<br>
+<strong>息费 ↑ × 逾期 ↑</strong>：较差层最高、最先钉死；最好层 5 月前逾期还在降，6 月才跟着息费跳。<br>
+<strong>息费 ↑ × 盈利</strong>：只有最好层跟得上。较差层 60% 息费只剩几个点利润，加价主要在补坏账。<br>
+<strong>结构 × 当天质量</strong>：较差层变多会拉高整体逾期、拉低整体盈利；同时三层当天都不提，所以不是「好用户走光」一句话能概括。</div>
+
+<h2>五、三类客群：规律和问题</h2>
+<div class="grid g3">
+<div class="card">
+<h3 style="color:var(--gr)">高资质</h3>
+<p class="desc"><b>规律</b> 当天不一定最爱提（1 月还低于一般层）；一旦提了，逾期最低、盈利稳定最高。5 月前加价几乎被利润吃进。</p>
+<p class="desc"><b>问题</b> 人在变少（19.8%→13.1%），当天提单 52%→41%。继续统一定价往上加，会继续打掉这部分当天转化。他们不是利润问题，是规模在流失。8 月逾期已到 38%，要盯当天单是不是也开始变脏。</p>
+</div>
+<div class="card">
+<h3 style="color:var(--am)">一般资质</h3>
+<p class="desc"><b>规律</b> 1 月当天最肯提，对息费最敏感；3 月和 8 月各掉一截。盈利不稳：3 月、5 月能到 8%–10%，6 月转负。</p>
+<p class="desc"><b>问题</b> 中间带被加价挤薄（15%→8%），当天提单 56%→35%。既不像最好层能把息费变成利润，又比最差层更容易不提。6 月是警报：息费 56.5%、逾期 41%、盈利 −1.3%。</p>
+</div>
+<div class="card">
+<h3 style="color:var(--pk)">较差资质</h3>
+<p class="desc"><b>规律</b> 人数主体（65%→79%）。当天提单降幅中等，息费升幅最大，逾期每月最高，盈利长期贴地。</p>
+<p class="desc"><b>问题</b> 整体恶化的主引擎。统一定价加价在这层主要变成更高逾期，而不是更高利润。T0 越来越由这层构成，所以整体「息费升、逾期升、盈利不厚」。</p>
+</div>
+</div>
+
+<div class="callout red"><div class="ch">经营上该盯什么</div>
+1. 不要用总当日提单率当唯一北极星。它往下掉的同时，较差层占比升到近八成，当天利润没有跟着息费变厚。<br>
+2. 加价对三层不是同一件事：最好层「少提但仍赚钱」，一般层「最不提、利润不稳」，较差层「还在提、但提了也不怎么赚」。<br>
+3. 6 月是拐点：较差/一般逾期上台阶，一般层盈利转负；之后较差层息费锁在 59%–61%、逾期锁在 44% 附近。<br>
+4. 最好层优先保转化，不要再统一定价上加；较差层要控额、控价或控通过；一般层避免再出现 6 月那种息费和逾期一起跳。</div>
+
+<h2>六、分月明细</h2>
+<div class="table">
+<table>
+<thead>
+<tr><th>月</th><th>层</th><th>T0</th><th>占比</th><th>当日提单率</th><th>当日息费</th><th>到期单</th><th>当日逾期</th><th>当日盈利</th><th>息费−盈利缺口</th></tr>
+</thead>
+<tbody id="tbl"></tbody>
+</table>
+</div>
+<p class="desc">分层模型时间外 AUC 约 0.53，只能当探索性分层。2026 年到期订单上三层真实逾期仍呈 33% / 36% / 41% 梯度，方向可用。复现代码见同目录对照报告附录，或 <code>appendix_t0_tier_fig1.py</code>。</p>
+
+<p class="foot">数据：kaby_dw · T0 用户日 2026-01-01～2026-09-01（不含）· 动态资质 P30=0.3563 / P60=0.3711 · 四指标仅统计当日首次提单订单</p>
+</main>
+<script>
+const months=['1月','2月','3月','4月','5月','6月','7月','8月'];
+const best={apply:[51.83,52.05,49.20,49.47,46.77,44.43,41.95,41.22],fee:[49.80,47.83,49.16,49.93,52.34,56.11,55.99,57.94],od:[34.43,32.73,32.77,30.87,30.76,36.11,36.74,38.12],profit:[10.61,8.70,11.86,13.60,15.19,13.86,14.00,11.98],share:[19.83,17.96,20.74,20.38,18.02,14.03,13.11,13.06],t0:[3870,4083,4604,4235,4302,3176,3051,2887],due:[1981,2105,2240,2080,1983,1382,1244,787]};
+const mid={apply:[55.97,54.24,47.95,48.36,45.85,44.02,42.02,34.99],fee:[49.38,48.61,49.91,50.69,53.37,56.50,55.41,57.54],od:[35.02,35.82,33.23,33.57,35.62,41.21,37.44,38.68],profit:[2.54,2.53,9.51,6.01,8.72,-1.27,7.59,4.75],share:[15.01,15.29,15.82,12.59,10.90,9.64,8.43,7.85],t0:[2930,3477,3512,2616,2602,2181,1961,1735],due:[1616,1865,1667,1251,1168,927,812,455]};
+const poor={apply:[52.51,51.18,45.05,45.78,44.65,43.62,41.19,39.29],fee:[49.52,49.37,51.41,52.67,55.30,59.31,59.23,61.36],od:[37.64,39.09,38.54,38.93,40.04,43.57,44.10,44.26],profit:[0.82,-1.85,5.00,5.67,3.23,1.57,2.21,5.56],share:[65.16,66.75,63.44,67.03,71.08,76.33,78.47,79.10],t0:[12720,15179,14082,13929,16971,17278,18263,17489],due:[6600,7628,6253,6329,7418,7366,7403,5257]};
+const C={best:'#64dcae',mid:'#ffc26b',poor:'#f68ab0',apply:'#43c7e7',fee:'#ffc26b',od:'#f68ab0',profit:'#64dcae'};
+const opt=(extra={})=>({responsive:true,maintainAspectRatio:false,plugins:{legend:{labels:{color:'#aac5da'}}},scales:{x:{ticks:{color:'#aac5da'},grid:{color:'rgba(42,92,126,.25)'}},y:{beginAtZero:true,ticks:{color:'#aac5da'},grid:{color:'rgba(42,92,126,.25)'}}},...extra});
+const line=()=>({backgroundColor:'transparent',tension:.2,pointRadius:3});
+const tierLine=(label,data,color)=>({label,data,borderColor:color,...line()});
+function lineChart(id, datasets, yMax){
+  new Chart(document.getElementById(id),{type:'line',data:{labels:months,datasets},options:opt({scales:{x:{ticks:{color:'#aac5da'},grid:{color:'rgba(42,92,126,.25)'}},y:{beginAtZero:true,suggestedMax:yMax,ticks:{color:'#aac5da'},grid:{color:'rgba(42,92,126,.25)'}}}})});
+}
+function scatter(id, yKey, yTitle){
+  const mk=(obj,color,name)=>({label:name,data:obj.fee.map((x,i)=>({x,y:obj[yKey][i]})),backgroundColor:color,borderColor:color,pointRadius:6,showLine:true,tension:.2,fill:false});
+  new Chart(document.getElementById(id),{type:'scatter',data:{datasets:[mk(best,C.best,'最好'),mk(mid,C.mid,'一般'),mk(poor,C.poor,'较差')]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{labels:{color:'#aac5da'}}},scales:{x:{title:{display:true,text:'当日息费%',color:'#aac5da'},ticks:{color:'#aac5da'},grid:{color:'rgba(42,92,126,.25)'}},y:{title:{display:true,text:yTitle,color:'#aac5da'},ticks:{color:'#aac5da'},grid:{color:'rgba(42,92,126,.25)'}}}}});
+}
+
+new Chart(document.getElementById('c_share'),{type:'line',data:{labels:months,datasets:[tierLine('最好',best.share,C.best),tierLine('一般',mid.share,C.mid),tierLine('较差',poor.share,C.poor)]},options:opt({scales:{x:{ticks:{color:'#aac5da'},grid:{color:'rgba(42,92,126,.25)'}},y:{min:0,max:100,ticks:{color:'#aac5da'},grid:{color:'rgba(42,92,126,.25)'}}}})});
+new Chart(document.getElementById('c_stack'),{type:'bar',data:{labels:months,datasets:[
+  {label:'最好',data:best.share,backgroundColor:C.best,stack:'s'},
+  {label:'一般',data:mid.share,backgroundColor:C.mid,stack:'s'},
+  {label:'较差',data:poor.share,backgroundColor:C.poor,stack:'s'}
+]},options:opt({scales:{x:{stacked:true,ticks:{color:'#aac5da'},grid:{color:'rgba(42,92,126,.25)'}},y:{stacked:true,max:100,ticks:{color:'#aac5da'},grid:{color:'rgba(42,92,126,.25)'}}}})});
+
+lineChart('c_apply',[tierLine('最好',best.apply,C.best),tierLine('一般',mid.apply,C.mid),tierLine('较差',poor.apply,C.poor)],60);
+lineChart('c_fee',[tierLine('最好',best.fee,C.best),tierLine('一般',mid.fee,C.mid),tierLine('较差',poor.fee,C.poor)],70);
+lineChart('c_od',[tierLine('最好',best.od,C.best),tierLine('一般',mid.od,C.mid),tierLine('较差',poor.od,C.poor)],50);
+lineChart('c_profit',[tierLine('最好',best.profit,C.best),tierLine('一般',mid.profit,C.mid),tierLine('较差',poor.profit,C.poor)],20);
+
+function four(id, obj){
+  lineChart(id,[
+    {label:'当日提单率%',data:obj.apply,borderColor:C.apply,...line()},
+    {label:'当日息费%',data:obj.fee,borderColor:C.fee,...line()},
+    {label:'当日逾期率%',data:obj.od,borderColor:C.od,...line()},
+    {label:'当日盈利率%',data:obj.profit,borderColor:C.profit,...line()}
+  ],65);
+}
+four('c_best',best); four('c_mid',mid); four('c_poor',poor);
+lineChart('c_gap',[
+  tierLine('最好',best.fee.map((v,i)=>+(v-best.profit[i]).toFixed(2)),C.best),
+  tierLine('一般',mid.fee.map((v,i)=>+(v-mid.profit[i]).toFixed(2)),C.mid),
+  tierLine('较差',poor.fee.map((v,i)=>+(v-poor.profit[i]).toFixed(2)),C.poor)
+],70);
+
+scatter('sc_apply','apply','当日提单率%');
+scatter('sc_od','od','当日逾期率%');
+scatter('sc_profit','profit','当日盈利率%');
+
+const dlt=(a)=>+(a[7]-a[0]).toFixed(2);
+new Chart(document.getElementById('c_delta'),{type:'bar',data:{labels:['当日提单','当日息费','当日逾期','当日盈利'],datasets:[
+  {label:'最好',data:[dlt(best.apply),dlt(best.fee),dlt(best.od),dlt(best.profit)],backgroundColor:C.best},
+  {label:'一般',data:[dlt(mid.apply),dlt(mid.fee),dlt(mid.od),dlt(mid.profit)],backgroundColor:C.mid},
+  {label:'较差',data:[dlt(poor.apply),dlt(poor.fee),dlt(poor.od),dlt(poor.profit)],backgroundColor:C.poor}
+]},options:opt()});
+new Chart(document.getElementById('c_pbar'),{type:'bar',data:{labels:['1月','8月'],datasets:[
+  {label:'最好',data:[best.profit[0],best.profit[7]],backgroundColor:C.best},
+  {label:'一般',data:[mid.profit[0],mid.profit[7]],backgroundColor:C.mid},
+  {label:'较差',data:[poor.profit[0],poor.profit[7]],backgroundColor:C.poor}
+]},options:opt()});
+
+const names=['最好','一般','较差'], rows=[best,mid,poor];
+const ym=['2026-01','2026-02','2026-03','2026-04','2026-05','2026-06','2026-07','2026-08'];
+const tb=document.getElementById('tbl');
+for(let i=0;i<8;i++){
+  for(let t=0;t<3;t++){
+    const o=rows[t];
+    const gap=(o.fee[i]-o.profit[i]).toFixed(2);
+    const tr=document.createElement('tr');
+    tr.innerHTML=`<td>${ym[i]}</td><td>${names[t]}</td><td>${o.t0[i].toLocaleString()}</td><td>${o.share[i].toFixed(2)}%</td><td>${o.apply[i].toFixed(2)}%</td><td>${o.fee[i].toFixed(2)}%</td><td>${o.due[i].toLocaleString()}</td><td>${o.od[i].toFixed(2)}%</td><td>${o.profit[i].toFixed(2)}%</td><td>${gap}pp</td>`;
+    tb.appendChild(tr);
+  }
+}
+</script>
+</body>
+</html>
