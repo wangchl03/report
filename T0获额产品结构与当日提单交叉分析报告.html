@@ -1,0 +1,557 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>T0获额产品结构、息费日息与当日提单交叉分析</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+<style>
+:root{--bg:#071b2f;--p:#0c2944;--line:#2a5c7e;--text:#eff8ff;--muted:#aac5da;--cy:#43c7e7;--gr:#64dcae;--am:#ffc26b;--pk:#f68ab0;--vio:#b49aff}
+*{box-sizing:border-box}body{margin:0;background:#06192b;color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei",sans-serif}
+.wrap{max-width:1480px;margin:auto;padding:32px 36px 80px}
+.hero{text-align:center;padding:28px 12px 22px;border-bottom:1px solid var(--line)}
+.kicker{color:var(--cy);font-size:13px;letter-spacing:2px;font-weight:700}
+.hero h1{font-size:28px;line-height:1.3;margin:10px 0}
+.hero-meta{display:inline-block;text-align:left;margin-top:12px;line-height:1.75;color:var(--muted);font-size:14px}
+h2{font-size:24px;margin:44px 0 10px}h3{font-size:17px;margin:22px 0 8px}
+.desc,.sub{color:var(--muted);margin:0 0 12px;line-height:1.75;font-size:14px}
+.grid{display:grid;gap:14px}.g2{grid-template-columns:repeat(2,minmax(0,1fr))}.g3{grid-template-columns:repeat(3,minmax(0,1fr))}.g4{grid-template-columns:repeat(4,minmax(0,1fr))}
+.card,.chart{background:rgba(10,41,68,.95);border:1px solid var(--line);border-radius:14px;padding:16px}
+.label{color:var(--muted);font-size:12px}.num{font-size:22px;font-weight:800;margin:4px 0 2px;line-height:1.2;color:var(--cy)}
+.num.pink{color:var(--pk)}.num.green{color:var(--gr)}.num.amber{color:var(--am)}
+.box{height:300px;position:relative}.box.tall{height:340px}
+.chart h3{margin:0 0 4px;font-size:15px}.chart p{font-size:12px;color:var(--muted);margin:0 0 10px}
+.callout{background:#0a2a45;border:1px solid #2a5c7e;border-left:4px solid #43c7e7;border-radius:10px;padding:14px 18px;margin:14px 0;line-height:1.75;font-size:14px}
+.callout.gold{border-left-color:#ffc26b}.callout.red{border-left-color:#f68ab0}.callout.green{border-left-color:#64dcae}
+.callout .ch{font-weight:800;margin-bottom:8px}
+.table{overflow-x:auto;margin:12px 0}table{width:100%;border-collapse:collapse;font-size:13px}
+th,td{padding:8px 10px;border-bottom:1px solid rgba(42,92,126,.45);text-align:right;white-space:nowrap}
+th{color:var(--muted);background:rgba(12,48,78,.65);font-weight:600}th:first-child,td:first-child{text-align:left}
+.bad{color:var(--pk)}.good{color:var(--gr)}
+.phase{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px;margin:14px 0}
+.phase .card h3{margin:0 0 8px;font-size:15px;color:var(--am)}
+details{margin:14px 0}summary{cursor:pointer;color:var(--cy);font-size:14px;padding:6px 0;font-weight:600}
+pre.sql{background:#081726;border:1px solid var(--line);border-radius:14px;padding:18px;overflow:auto;max-height:820px;font-size:12px;line-height:1.6;color:#bfe0f2;font-family:"SF Mono",ui-monospace,Menlo,Consolas,monospace;white-space:pre;tab-size:2}
+.foot{color:#7fa6c2;font-size:12.5px;margin-top:50px;border-top:1px solid var(--line);padding-top:16px;line-height:1.9}
+@media(max-width:900px){.g2,.g3,.g4,.phase{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<main class="wrap">
+<header class="hero">
+<div class="kicker">T0 用户日 · 2026-01～08 · 产品结构</div>
+<h1>获额给什么产品、当天提什么产品、息费和提单率怎么一起变</h1>
+<div class="hero-meta">
+样本：结清 0 在贷、当日获额通过，T0 用户日 177,133；当天首次提单 81,118 笔、21 个产品号<br>
+获额产品：order_vir_f_copy.risk_product 拆槽；期次按产品号唯一 total_term 映射，加权平均期次按槽位加权<br>
+息费 = Σ(pre+post)/Σremit；日息率 = Σ((pre+post)/remit)/Σloan_day。8 月月度提单有右截断，交叉主看当日提单
+</div>
+</header>
+
+<section class="grid g4" style="margin-top:18px">
+<article class="card"><div class="label">双产品获额占比</div><div class="num pink">66.7%→0%</div><div class="sub">1 月 vs 6–7 月；8 月回升到 14.7%</div></article>
+<article class="card"><div class="label">加权平均期次</div><div class="num amber">2.54→2.94</div><div class="sub">3 月最低，之后拉长，槽位加权</div></article>
+<article class="card"><div class="label">当日提单主力</div><div class="num">302125 37%</div><div class="sub">1 月只占 1.3%，8 月变成第一大单</div></article>
+<article class="card"><div class="label">当日提单率</div><div class="num pink">52.9%→39.2%</div><div class="sub">与便宜双产品退出同期下行</div></article>
+</section>
+
+<div class="callout"><div class="ch">结论先行</div>
+当日提单率掉 13.7 个点，<strong>主因不是同一产品全面加价，而是获额和提单的主力产品换了一套更贵、更长周期的货</strong>。1 月当天提单里约 83% 是相对便宜的 20149 / 30212 / 4028 / 20148（整笔息费大约 31%–48%）；8 月这四档只剩 14%，<strong>302125 + 40285 + 100741</strong> 等贵档占到约 74%。把 1 月各产品息费锁住、只换成 8 月结构，整笔息费大约会升到 58%；把结构锁在 1 月、只换各产品自己的价，几乎还在 49%。同号日息率多数走平，真正改价的是 <strong>20149 / 302125 的 3 月小台阶</strong>和 <strong>30213 的 5–6 月大改价</strong>。</div>
+
+<h2>一、获额端：从「一次给两档」变成「一次给一档」</h2>
+<p class="desc">产品个数 = 该次 T0 获额 risk_product 拆开后的槽数。从未出现 3 个及以上。加权平均期次 = Σ槽位期次 / Σ槽位数，双产品 2 期+4 期计 3 期，月度按槽加权，不是先对每个用户取均值再平均。</p>
+<div class="grid g2">
+<div class="chart"><h3>图1 平均获额产品个数与双产品占比</h3><p>左轴个数，右轴双产品%。6–7 月几乎全是单产品</p><div class="box"><canvas id="c1"></canvas></div></div>
+<div class="chart"><h3>图2 加权平均期次</h3><p>双产品消失后平均期次不降反升：单产品本身在变长</p><div class="box"><canvas id="c2"></canvas></div></div>
+</div>
+<div class="grid g2" style="margin-top:14px">
+<div class="chart"><h3>图3 获额槽位期次构成</h3><p>2 期槽 1 月 54% → 8 月 12%；3 期 27% → 50%</p><div class="box"><canvas id="c3"></canvas></div></div>
+<div class="chart"><h3>图4 主力获额组合占 T0</h3><p>20148,30212 与 20148,4028 在 6 月归零；302125 单品接棒</p><div class="box"><canvas id="c4"></canvas></div></div>
+</div>
+
+<div class="table"><table>
+<thead><tr><th>月</th><th>T0</th><th>平均产品个数</th><th>单产品%</th><th>双产品%</th><th>加权平均期次</th><th>1期槽%</th><th>2期槽%</th><th>3期槽%</th><th>4期槽%</th></tr></thead>
+<tbody>
+<tr><td>1月</td><td>19,520</td><td>1.6671</td><td>33.29</td><td>66.71</td><td>2.6364</td><td>0.65</td><td>53.78</td><td>26.87</td><td>18.71</td></tr>
+<tr><td>2月</td><td>22,739</td><td>1.6209</td><td>37.91</td><td>62.09</td><td>2.5545</td><td>4.71</td><td>53.01</td><td>24.41</td><td>17.87</td></tr>
+<tr><td>3月</td><td>22,198</td><td>1.4834</td><td>51.66</td><td>48.34</td><td>2.5434</td><td>10.21</td><td>46.68</td><td>21.66</td><td>21.45</td></tr>
+<tr><td>4月</td><td>20,780</td><td>1.4115</td><td>58.85</td><td>41.15</td><td>2.5877</td><td>10.39</td><td>41.69</td><td>26.67</td><td>21.25</td></tr>
+<tr><td>5月</td><td>23,875</td><td>1.1848</td><td>81.52</td><td>18.48</td><td>2.6672</td><td>11.64</td><td>31.39</td><td>35.58</td><td>21.39</td></tr>
+<tr><td>6月</td><td>22,635</td><td>1.0000</td><td class="bad">100.00</td><td class="bad">0.00</td><td>2.7245</td><td>14.19</td><td>19.84</td><td>45.32</td><td>20.66</td></tr>
+<tr><td>7月</td><td>23,275</td><td>1.0028</td><td>99.72</td><td>0.28</td><td>2.7586</td><td>12.41</td><td>19.87</td><td>47.17</td><td>20.55</td></tr>
+<tr><td>8月</td><td>22,111</td><td>1.1467</td><td>85.33</td><td>14.67</td><td>2.9410</td><td>10.80</td><td class="bad">11.99</td><td class="bad">49.51</td><td>27.69</td></tr>
+<tr><td>合计</td><td>177,133</td><td>1.3057</td><td>69.43</td><td>30.57</td><td>2.6620</td><td>—</td><td>—</td><td>—</td><td>—</td></tr>
+</tbody></table></div>
+<p class="desc">8 月双产品回升到 14.7%，但不是 1 月那两对：<code>20148,30212</code> 和 <code>20148,4028</code> 仍为 0。回来的是别的组合，同时 4 期槽升到 28%。</p>
+
+<h2>二、提单端：主力产品换档</h2>
+<p class="desc">当天首次提单 81,118 笔。前 5 个产品合计约 73%。一个产品号对应一个固定期次（T0 这 21 个号全库无例外）。</p>
+<div class="grid g2">
+<div class="chart"><h3>图5 当日提单产品占比（堆叠）</h3><p>1 月是 20149+30212+4028；5 月起 302125 独大；8 月 40285 跳到 18%</p><div class="box tall"><canvas id="c5"></canvas></div></div>
+<div class="chart"><h3>图6 便宜档 vs 贵档占当天提单</h3><p>便宜=20149/30212/4028/20148；贵=302125/100741/40285/30213/100742</p><div class="box tall"><canvas id="c6"></canvas></div></div>
+</div>
+
+<div class="table"><table>
+<thead><tr><th>产品号</th><th>当天提单</th><th>占比</th><th>期次/天数</th><th>息费</th><th>日息（元/天）</th><th>日息率</th></tr></thead>
+<tbody>
+<tr><td>20149</td><td>15,928</td><td>19.64%</td><td>2 / 14</td><td>47.22%</td><td>83.14</td><td>3.40%</td></tr>
+<tr><td>302125</td><td>15,655</td><td>19.30%</td><td>3 / 21</td><td>60.78%</td><td>51.62</td><td>2.91%</td></tr>
+<tr><td>4028</td><td>11,105</td><td>13.69%</td><td>4 / 28</td><td>48.60%</td><td>80.63</td><td>1.74%</td></tr>
+<tr><td>30212</td><td>9,183</td><td>11.32%</td><td>3 / 21</td><td>46.99%</td><td>27.66</td><td>2.25%</td></tr>
+<tr><td>100741</td><td>7,694</td><td>9.48%</td><td>1 / 7</td><td>62.28%</td><td>55.10</td><td>8.91%</td></tr>
+<tr><td>20148</td><td>5,913</td><td>7.29%</td><td>2 / 14</td><td class="good">31.31%</td><td>34.41</td><td>2.25%</td></tr>
+<tr><td>40285</td><td>5,118</td><td>6.31%</td><td>4 / 28</td><td>66.52%</td><td>88.48</td><td>2.39%</td></tr>
+<tr><td>30213</td><td>4,093</td><td>5.05%</td><td>3 / 21</td><td>62.52%</td><td>83.55</td><td>3.12%</td></tr>
+<tr><td>40284</td><td>3,205</td><td>3.95%</td><td>4 / 28</td><td>54.54%</td><td>64.53</td><td>1.96%</td></tr>
+<tr><td>100742</td><td>1,065</td><td>1.31%</td><td>1 / 7</td><td>77.00%</td><td>62.90</td><td>11.00%</td></tr>
+</tbody></table></div>
+<p class="desc">整笔最贵的不一定日息最高：100741 / 100742 是 7 天 1 期，日息率 9%–11%；4028 摊 28 天只有 1.74%。20148 是量里最便宜的一档（31%），6 月后几乎提不到了。</p>
+
+<h2>三、同产品定价：多数走平，少数改价</h2>
+<p class="desc">日息率按 Σ((pre+post)/remit)/Σ(loan_day)。Top10 里 9 个波幅很小；30213 是例外。</p>
+<div class="grid g2">
+<div class="chart"><h3>图7 主力产品整笔息费</h3><p>20148 锁在 31%；4028 锁在 48%；302125 3 月后锁在 61%；30213 6 月跳到 73%</p><div class="box"><canvas id="c7"></canvas></div></div>
+<div class="chart"><h3>图8 主力产品日息率</h3><p>100741 约 8.9% 水平最高但月波动小；30213 2.82%→3.50%</p><div class="box"><canvas id="c8"></canvas></div></div>
+</div>
+<div class="grid g2" style="margin-top:14px">
+<div class="chart"><h3>图9 当日整体息费 vs 日息率</h3><p>整笔息费 8 月继续升到 60%；日息率 6 月见顶 3.05% 后略回</p><div class="box"><canvas id="c9"></canvas></div></div>
+<div class="chart"><h3>图10 当日息费 vs 302125 当天占比</h3><p>3 月起两条线一起上。同品只加了一小档，量上去才把整盘息费托起</p><div class="box"><canvas id="c10"></canvas></div></div>
+</div>
+
+<div class="callout gold"><div class="ch">定价结论</div>
+<strong>20149</strong>：3 月日息率 3.23%→3.48%，之后钉住，量从 25% 掉到 8 月 10%。<br>
+<strong>302125</strong>：同样 3 月加一档到约 2.91%，但量从 1% 涨到 37%——加价的同时被做成了主推单品。<br>
+<strong>30213</strong>：5–6 月整笔息费 60%→73%，日息率波幅 0.71pp，是同号里改价最狠的。<br>
+<strong>20148 / 4028 / 30212</strong>：价几乎锁死，退出靠的是停供，不是加价把人赶跑。</div>
+
+<h2>四、交叉：提单率跟着产品结构走，不跟着「全面加价」走</h2>
+<p class="desc">把当日提单、双产品占比、贵档占比画在一起。3 月是第一道坎（双产品掉到一半、当日提单从 52% 掉到 46%）；6 月是第二道坎（双产品归零、302125 超过三分之一、整笔息费跳到 58%）。6 月之后双产品不再下降，当日提单仍在掉——后半段不能再用「少给一个产品」解释。</p>
+<div class="grid g2">
+<div class="chart"><h3>图11 当日提单率 vs 双产品占比</h3><p>1–6 月同向下。6 月后双产品触底，提单继续掉</p><div class="box"><canvas id="c11"></canvas></div></div>
+<div class="chart"><h3>图12 当日提单率 vs 贵档占比</h3><p>贵档 17%→74%，提单 53%→39%。结构越贵，当天越不提</p><div class="box"><canvas id="c12"></canvas></div></div>
+</div>
+<div class="grid g2" style="margin-top:14px">
+<div class="chart"><h3>图13 散点：双产品% vs 当日提单</h3><p>每个点一个月。右上是 1–2 月，左下是 6–8 月；8 月双产品回升但提单仍最低</p><div class="box"><canvas id="c13"></canvas></div></div>
+<div class="chart"><h3>图14 散点：贵档% vs 当日息费</h3><p>几乎一条右上斜线：换货就能解释整笔息费抬升</p><div class="box"><canvas id="c14"></canvas></div></div>
+</div>
+<div class="chart" style="margin-top:14px"><h3>图15 302125 获额槽位 vs 当天提单占比</h3><p>供给和提走的份额几乎贴在一起，不是「给了但不提」，是货本身换成了这一档</p><div class="box"><canvas id="c15"></canvas></div></div>
+
+<div class="phase">
+<div class="card"><h3>1–2 月 · 双产品、便宜货、高当日提单</h3><p class="desc" style="margin:0">66%/62% 的人一次给两档，主要是 20148+30212、20148+4028。当天提单 53%/52%。整笔息费 49%–50%。结构已经偏双产品，但货还便宜。</p></div>
+<div class="card"><h3>3–5 月 · 停双产品、切 302125</h3><p class="desc" style="margin:0">3 月当日提单一次掉到 46%。100741（7 天、日息率 9%）冲到约 13%。5 月 302125 当天提单占比 30%，双产品只剩 18%。息费跟结构走，升到 54%。</p></div>
+<div class="card"><h3>6–8 月 · 单产品贵档固化</h3><p class="desc" style="margin:0">6–7 月双产品≈0，302125 占当天约 35%–37%，息费 58%。8 月 40285（4 期、息费 67%）跳到 18%，加权期次 2.94，当日提单 39%。8 月双产品回升没有带回便宜的 20148。</p></div>
+</div>
+
+<div class="callout red"><div class="ch">提单率和产品变化：能说清的、不能说清的</div>
+<strong>能说清</strong>：1→6 月当日提单 −9.1pp，与双产品 −67pp、便宜档 83%→23% 同步。停掉 20148/30212 等于拿走最便宜、最好选的那一档，当天转化必然掉。<br>
+<strong>能说清</strong>：整体息费 +10.6pp 主要是换货。302125 自己只加了约 0.2pp 日息率，但它从 1% 变成 37%，就把整盘息费托起来。<br>
+<strong>不能把后半段也算进双产品</strong>：6 月之后已经没有双产品可砍，当日提单仍从 43.8% 掉到 39.2%。这一截要叠资质变差、30213/40285 继续变贵、以及 8 月截断，不能写成「再少给一个产品」。<br>
+<strong>选择集变窄</strong>：1 月多数人能在 2 期便宜档和 3/4 期之间挑；6 月往往只剩一个 3 期 61% 息费的 302125。提单率下降里有定价，也有「没得比」。</div>
+
+<h2>五、结论和建议</h2>
+<div class="grid g3">
+<div class="card"><h3 style="color:var(--gr)">结构结论</h3><p class="desc">获额从双产品变成单产品，槽位从 2 期换成 3/4 期。平均期次按槽加权从 2.54 升到 2.94。这是供给策略，不是用户自己选长了。</p></div>
+<div class="card"><h3 style="color:var(--am)">定价结论</h3><p class="desc">同号日息多数锁死。例外：20149/302125 的 3 月台阶，30213 的 6 月大改价。整盘变贵 = 主力换成 302125 和 40285。</p></div>
+<div class="card"><h3 style="color:var(--pk)">转化结论</h3><p class="desc">便宜可比较的选择集收掉，当天提单跟着掉。要拉回当日提单，优先恢复一档接近 20148/20149 的低息短周期选项，而不是在 302125 上继续加价。</p></div>
+</div>
+<div class="callout green"><div class="ch">建议（绑在这张表上）</div>
+<b>1.</b> 把「获额产品个数、加权期次、302125 占比、便宜档占比」和当日提单、当日息费放同一张监控屏。双产品已死、贵档继续升，就是 6 月那种跳档。<br>
+<b>2.</b> 不要用整体息费 49%→60% 当成「全面加价成功」。拆成同品价格 + 产品 mix。mix 贡献了绝大部分。<br>
+<b>3.</b> 若要做实验：对一部分 T0 恢复双产品（一档 2 期低息 + 一档 3 期），看当日提单能不能从 39% 往 46% 回，而不是只对 302125 发券。<br>
+<b>4.</b> 30213 的 6 月改价单独看逾期和利润，不要和 302125 混在一个「3 期」里平均。</div>
+
+<h2>附录 · 完整 PGSQL</h2>
+<p class="desc">GaussDB。T0 口径与交叉分析报告一致。产品槽用 <code>generate_series + split_part</code>，不用 <code>unnest</code> 关联外表。块 A 加权期次、块 E 当日提单与息费、块 G 分月产品。</p>
+<details open><summary>点击收起 / 展开 SQL</summary>
+<pre class="sql">-- =============================================================================
+-- T0 结清0在贷获额：产品结构、加权期次、当日提单产品、息费与日息率
+-- 库：kaby_dw（GaussDB）
+-- 窗口：2026-01-01（含）～ 2026-09-01（不含）
+-- 一次跑完可复现报告全部月表。GaussDB 不用 unnest 关联外表，产品槽用 split_part。
+--
+-- 口径
+--   T0：is_pass1=1 AND loan_type_code=2 AND recycle_type=3；20 秒批次去重留最新 serial；
+--       同日结清且 vir_time&gt;=repaid_time；结清时无其他在途/在贷；用户×日最早一轮获额。
+--   获额产品槽：order_vir_f_copy.risk_product 去空格后按逗号拆开，1 个或 2 个 product_no。
+--   产品期次：order_loan_f_v2_copy 上 MAX(total_term)（T0 当日提单产品号均为一品一期）。
+--   加权平均期次 = Σ(槽位期次) / Σ(槽位数)，双产品 2 期+4 期计 3 期，月度按槽加权。
+--   当日提单：获额后首次提单且 apply_date = vir_date。
+--   息费（已放款 remit_amt&gt;0）= Σ(pre_amt+post_amt) / Σ(remit_amt)。
+--   日息额 = Σ(pre_amt+post_amt) / Σ(loan_day)。
+--   日息率 = Σ((pre_amt+post_amt)/remit_amt) / Σ(loan_day)。
+-- =============================================================================
+
+SET statement_timeout = 900000;
+
+DROP TABLE IF EXISTS tmp_m_origin;
+CREATE TEMP TABLE tmp_m_origin AS
+WITH params AS (
+    SELECT DATE &#x27;2026-01-01&#x27; AS start_date, DATE &#x27;2026-09-01&#x27; AS end_date
+), raw_offer AS (
+    SELECT DISTINCT ON (v.user_id, v.serial_id)
+        v.user_id, v.serial_id, v.vir_date::date AS vir_date, TO_TIMESTAMP(v.vir_unix) AS vir_time,
+        v.risk_product
+    FROM wangchuanliang.order_vir_f_copy v
+    INNER JOIN wangchuanliang.side_recycle_type_copy r ON r.serial_id = v.serial_id
+    CROSS JOIN params p
+    WHERE v.is_pass1 = 1 AND v.loan_type_code = 2 AND r.recycle_type = 3
+      AND v.vir_date &gt;= p.start_date - 1 AND v.vir_date &lt; p.end_date
+    ORDER BY v.user_id, v.serial_id, v.vir_unix DESC
+), lagged AS (
+    SELECT r.*, LAG(r.vir_time) OVER (PARTITION BY r.user_id ORDER BY r.vir_time, r.serial_id) AS prev_vir_time
+    FROM raw_offer r
+), batched AS (
+    SELECT l.*, SUM(CASE WHEN l.prev_vir_time IS NULL OR l.vir_time - l.prev_vir_time &gt; INTERVAL &#x27;20 seconds&#x27; THEN 1 ELSE 0 END)
+      OVER (PARTITION BY l.user_id ORDER BY l.vir_time, l.serial_id ROWS UNBOUNDED PRECEDING) AS batch_id
+    FROM lagged l
+), dedup_offer AS (
+    SELECT user_id, serial_id, vir_date, vir_time, risk_product
+    FROM (
+        SELECT b.*, ROW_NUMBER() OVER (PARTITION BY b.user_id, b.batch_id ORDER BY b.vir_time DESC, b.serial_id DESC) AS batch_rn
+        FROM batched b
+    ) x
+    CROSS JOIN params p
+    WHERE batch_rn = 1 AND vir_date &gt;= p.start_date AND vir_date &lt; p.end_date
+), candidate_users AS (SELECT DISTINCT user_id FROM dedup_offer),
+all_orders AS (
+    SELECT o.user_id, o.serial_id, o.apply_time, o.repaid_time, o.repaid_date::date AS repaid_date,
+           o.loan_status_code, o.is_remit, o.is_repaid
+    FROM wangchuanliang.order_loan_f_v2_copy o
+    INNER JOIN candidate_users u ON u.user_id = o.user_id
+), clean_settlement AS (
+    SELECT o.user_id, o.serial_id, o.repaid_time, o.repaid_date
+    FROM all_orders o
+    WHERE o.is_remit = 1 AND (o.is_repaid = 1 OR o.loan_status_code = 7)
+      AND o.repaid_time &gt; TIMESTAMP &#x27;2000-01-01 00:00:00&#x27;
+      AND NOT EXISTS (
+          SELECT 1 FROM all_orders x
+          WHERE x.user_id = o.user_id AND x.serial_id &lt;&gt; o.serial_id AND x.apply_time &lt; o.repaid_time
+            AND (x.loan_status_code IN (5, 8) OR (x.loan_status_code = 7 AND x.repaid_time &gt; o.repaid_time))
+      )
+), paired AS (
+    SELECT e.user_id, e.serial_id AS credit_serial_id, e.vir_date, e.vir_time, e.risk_product,
+           ROW_NUMBER() OVER (PARTITION BY e.user_id, e.vir_date ORDER BY e.vir_time ASC, e.serial_id DESC) AS day_rn
+    FROM dedup_offer e
+    INNER JOIN clean_settlement s
+        ON s.user_id = e.user_id AND s.repaid_date = e.vir_date AND e.vir_time &gt;= s.repaid_time
+)
+SELECT user_id, credit_serial_id, vir_date, vir_time, risk_product FROM paired WHERE day_rn = 1;
+
+DROP TABLE IF EXISTS tmp_first;
+CREATE TEMP TABLE tmp_first AS
+SELECT t.user_id, t.vir_date, t.vir_time,
+       o.serial_id, o.apply_date, o.product_no, o.total_term, o.loan_day,
+       o.is_remit, o.remit_amt, o.pre_amt, o.post_amt,
+       CASE
+         WHEN o.serial_id IS NULL THEN &#x27;never&#x27;
+         WHEN o.apply_date = t.vir_date THEN &#x27;当日&#x27;
+         WHEN o.apply_date &gt;= t.vir_date + 1 AND o.apply_date &lt;= t.vir_date + 3 THEN &#x27;1-3日&#x27;
+         WHEN o.apply_date &gt;= t.vir_date + 4 AND o.apply_date &lt;= t.vir_date + 7 THEN &#x27;4-7日&#x27;
+         ELSE &#x27;7日以后&#x27;
+       END AS bucket
+FROM tmp_m_origin t
+LEFT JOIN (
+    SELECT user_id, vir_date, serial_id, apply_date, product_no, total_term, loan_day,
+           is_remit, remit_amt, pre_amt, post_amt
+    FROM (
+        SELECT t.user_id, t.vir_date, a.serial_id, a.apply_date, a.product_no, a.total_term,
+               a.loan_day, a.is_remit, a.remit_amt, a.pre_amt, a.post_amt,
+               ROW_NUMBER() OVER (PARTITION BY t.user_id, t.vir_date ORDER BY a.apply_time, a.serial_id) AS rn
+        FROM tmp_m_origin t
+        INNER JOIN wangchuanliang.order_loan_f_v2_copy a
+          ON a.user_id = t.user_id AND a.apply_time &gt;= t.vir_time
+    ) z WHERE rn = 1
+) o ON o.user_id = t.user_id AND o.vir_date = t.vir_date;
+
+DROP TABLE IF EXISTS tmp_prod_term;
+CREATE TEMP TABLE tmp_prod_term AS
+SELECT product_no::text AS product_no, MAX(total_term) AS term, MAX(loan_day) AS loan_day
+FROM wangchuanliang.order_loan_f_v2_copy
+WHERE product_no IS NOT NULL
+GROUP BY 1;
+
+-- 获额产品槽：最多 2 个号，用 generate_series + split_part，避免 unnest 关联外表
+DROP TABLE IF EXISTS tmp_slots;
+CREATE TEMP TABLE tmp_slots AS
+SELECT
+  t.user_id,
+  t.vir_date,
+  DATE_TRUNC(&#x27;month&#x27;, t.vir_date)::date AS ym,
+  TRIM(split_part(regexp_replace(COALESCE(t.risk_product, &#x27;&#x27;), &#x27;\s&#x27;, &#x27;&#x27;, &#x27;g&#x27;), &#x27;,&#x27;, gs.n)) AS product_no,
+  regexp_replace(COALESCE(t.risk_product, &#x27;&#x27;), &#x27;\s&#x27;, &#x27;&#x27;, &#x27;g&#x27;) AS combo
+FROM tmp_m_origin t
+CROSS JOIN generate_series(1, 2) AS gs(n)
+WHERE NULLIF(TRIM(split_part(regexp_replace(COALESCE(t.risk_product, &#x27;&#x27;), &#x27;\s&#x27;, &#x27;&#x27;, &#x27;g&#x27;), &#x27;,&#x27;, gs.n)), &#x27;&#x27;) IS NOT NULL;
+
+-- -----------------------------------------------------------------------------
+-- A 月度获额结构：产品个数、单/双产品、加权平均期次
+-- -----------------------------------------------------------------------------
+SELECT
+  COALESCE(TO_CHAR(m.ym, &#x27;YYYY-MM&#x27;), &#x27;合计&#x27;) AS ym,
+  COUNT(*) AS t0,
+  ROUND(AVG(m.n_prod)::numeric, 4) AS avg_n_prod,
+  ROUND(100.0 * SUM(CASE WHEN m.n_prod = 1 THEN 1 ELSE 0 END) / COUNT(*), 2) AS pct_single,
+  ROUND(100.0 * SUM(CASE WHEN m.n_prod = 2 THEN 1 ELSE 0 END) / COUNT(*), 2) AS pct_dual,
+  ROUND(SUM(m.sum_term)::numeric / NULLIF(SUM(m.n_prod), 0), 4) AS avg_term_weighted
+FROM (
+    SELECT
+      DATE_TRUNC(&#x27;month&#x27;, s.vir_date)::date AS ym,
+      s.user_id,
+      s.vir_date,
+      COUNT(*) AS n_prod,
+      SUM(p.term) AS sum_term
+    FROM tmp_slots s
+    LEFT JOIN tmp_prod_term p ON p.product_no = s.product_no
+    GROUP BY 1, 2, 3
+) m
+GROUP BY ROLLUP (m.ym)
+ORDER BY 1;
+
+-- -----------------------------------------------------------------------------
+-- B 获额槽位期次构成
+-- -----------------------------------------------------------------------------
+SELECT
+  TO_CHAR(s.ym, &#x27;YYYY-MM&#x27;) AS ym,
+  p.term,
+  COUNT(*) AS n_slots,
+  ROUND(100.0 * COUNT(*) / SUM(COUNT(*)) OVER (PARTITION BY s.ym), 2) AS slot_pct
+FROM tmp_slots s
+LEFT JOIN tmp_prod_term p ON p.product_no = s.product_no
+GROUP BY s.ym, p.term
+ORDER BY 1, 2;
+
+-- -----------------------------------------------------------------------------
+-- C 获额槽位产品号占比（按月）
+-- -----------------------------------------------------------------------------
+SELECT
+  TO_CHAR(s.ym, &#x27;YYYY-MM&#x27;) AS ym,
+  s.product_no,
+  COUNT(*) AS n_slots,
+  ROUND(100.0 * COUNT(*) / SUM(COUNT(*)) OVER (PARTITION BY s.ym), 2) AS slot_pct
+FROM tmp_slots s
+GROUP BY s.ym, s.product_no
+ORDER BY s.ym, n_slots DESC;
+
+-- -----------------------------------------------------------------------------
+-- D 获额组合 combo 占比（按月）
+-- -----------------------------------------------------------------------------
+SELECT
+  TO_CHAR(DATE_TRUNC(&#x27;month&#x27;, t.vir_date), &#x27;YYYY-MM&#x27;) AS ym,
+  regexp_replace(COALESCE(t.risk_product, &#x27;&#x27;), &#x27;\s&#x27;, &#x27;&#x27;, &#x27;g&#x27;) AS combo,
+  COUNT(*) AS n,
+  ROUND(100.0 * COUNT(*) / SUM(COUNT(*)) OVER (PARTITION BY DATE_TRUNC(&#x27;month&#x27;, t.vir_date)), 2) AS pct
+FROM tmp_m_origin t
+GROUP BY 1, 2
+ORDER BY 1, n DESC;
+
+-- -----------------------------------------------------------------------------
+-- E 当日提单率、月度提单率、当日整笔息费、日息额、日息率
+-- -----------------------------------------------------------------------------
+SELECT
+  COALESCE(TO_CHAR(DATE_TRUNC(&#x27;month&#x27;, vir_date), &#x27;YYYY-MM&#x27;), &#x27;合计&#x27;) AS ym,
+  COUNT(*) AS t0,
+  SUM(CASE WHEN bucket = &#x27;当日&#x27; THEN 1 ELSE 0 END) AS n_d0,
+  ROUND(100.0 * SUM(CASE WHEN bucket = &#x27;当日&#x27; THEN 1 ELSE 0 END) / COUNT(*), 2) AS d0_apply_pct,
+  ROUND(100.0 * SUM(CASE WHEN bucket &lt;&gt; &#x27;never&#x27; THEN 1 ELSE 0 END) / COUNT(*), 2) AS apply_rate_pct,
+  ROUND(100.0 * SUM(CASE WHEN bucket = &#x27;当日&#x27; AND is_remit = 1 AND COALESCE(remit_amt, 0) &gt; 0
+                         THEN COALESCE(pre_amt, 0) + COALESCE(post_amt, 0) ELSE 0 END)
+              / NULLIF(SUM(CASE WHEN bucket = &#x27;当日&#x27; AND is_remit = 1 AND COALESCE(remit_amt, 0) &gt; 0
+                                THEN remit_amt ELSE 0 END), 0), 2) AS d0_fee_pct,
+  ROUND(SUM(CASE WHEN bucket = &#x27;当日&#x27; AND is_remit = 1 AND COALESCE(loan_day, 0) &gt; 0
+                 THEN COALESCE(pre_amt, 0) + COALESCE(post_amt, 0) ELSE 0 END)
+        / NULLIF(SUM(CASE WHEN bucket = &#x27;当日&#x27; AND is_remit = 1 AND COALESCE(loan_day, 0) &gt; 0
+                          THEN loan_day ELSE 0 END), 0), 4) AS d0_daily_amt,
+  ROUND(100.0 * SUM(CASE WHEN bucket = &#x27;当日&#x27; AND is_remit = 1 AND COALESCE(loan_day, 0) &gt; 0 AND COALESCE(remit_amt, 0) &gt; 0
+                         THEN (COALESCE(pre_amt, 0) + COALESCE(post_amt, 0)) / remit_amt ELSE 0 END)
+              / NULLIF(SUM(CASE WHEN bucket = &#x27;当日&#x27; AND is_remit = 1 AND COALESCE(loan_day, 0) &gt; 0 AND COALESCE(remit_amt, 0) &gt; 0
+                                THEN loan_day ELSE 0 END), 0), 4) AS d0_daily_rate_pct
+FROM tmp_first
+GROUP BY ROLLUP (DATE_TRUNC(&#x27;month&#x27;, vir_date))
+ORDER BY 1;
+
+-- -----------------------------------------------------------------------------
+-- F 当日提单产品号：笔数、期次、息费、日息额、日息率（合计）
+-- -----------------------------------------------------------------------------
+SELECT
+  COALESCE(f.product_no::text, &#x27;(空)&#x27;) AS product_no,
+  COUNT(*) AS n,
+  ROUND(100.0 * COUNT(*) / SUM(COUNT(*)) OVER (), 2) AS pct,
+  MIN(f.total_term) AS term,
+  MIN(f.loan_day) AS loan_day,
+  SUM(CASE WHEN f.is_remit = 1 AND COALESCE(f.remit_amt, 0) &gt; 0 THEN 1 ELSE 0 END) AS n_remit,
+  ROUND(100.0 * SUM(CASE WHEN f.is_remit = 1 AND COALESCE(f.remit_amt, 0) &gt; 0
+                         THEN COALESCE(f.pre_amt, 0) + COALESCE(f.post_amt, 0) ELSE 0 END)
+              / NULLIF(SUM(CASE WHEN f.is_remit = 1 AND COALESCE(f.remit_amt, 0) &gt; 0
+                                THEN f.remit_amt ELSE 0 END), 0), 2) AS fee_pct,
+  ROUND(SUM(CASE WHEN f.is_remit = 1 AND COALESCE(f.loan_day, 0) &gt; 0
+                 THEN COALESCE(f.pre_amt, 0) + COALESCE(f.post_amt, 0) ELSE 0 END)
+        / NULLIF(SUM(CASE WHEN f.is_remit = 1 AND COALESCE(f.loan_day, 0) &gt; 0
+                          THEN f.loan_day ELSE 0 END), 0), 4) AS daily_amt,
+  ROUND(100.0 * SUM(CASE WHEN f.is_remit = 1 AND COALESCE(f.loan_day, 0) &gt; 0 AND COALESCE(f.remit_amt, 0) &gt; 0
+                         THEN (COALESCE(f.pre_amt, 0) + COALESCE(f.post_amt, 0)) / f.remit_amt ELSE 0 END)
+              / NULLIF(SUM(CASE WHEN f.is_remit = 1 AND COALESCE(f.loan_day, 0) &gt; 0 AND COALESCE(f.remit_amt, 0) &gt; 0
+                                THEN f.loan_day ELSE 0 END), 0), 4) AS daily_rate_pct
+FROM tmp_first f
+WHERE f.bucket = &#x27;当日&#x27;
+GROUP BY f.product_no
+ORDER BY n DESC;
+
+-- -----------------------------------------------------------------------------
+-- G 当日提单产品号分月：占比、息费、日息率
+-- -----------------------------------------------------------------------------
+SELECT
+  TO_CHAR(DATE_TRUNC(&#x27;month&#x27;, f.vir_date), &#x27;YYYY-MM&#x27;) AS ym,
+  COALESCE(f.product_no::text, &#x27;(空)&#x27;) AS product_no,
+  COUNT(*) AS n,
+  ROUND(100.0 * COUNT(*) / SUM(COUNT(*)) OVER (PARTITION BY DATE_TRUNC(&#x27;month&#x27;, f.vir_date)), 2) AS share_pct,
+  ROUND(100.0 * SUM(CASE WHEN f.is_remit = 1 AND COALESCE(f.remit_amt, 0) &gt; 0
+                         THEN COALESCE(f.pre_amt, 0) + COALESCE(f.post_amt, 0) ELSE 0 END)
+              / NULLIF(SUM(CASE WHEN f.is_remit = 1 AND COALESCE(f.remit_amt, 0) &gt; 0
+                                THEN f.remit_amt ELSE 0 END), 0), 2) AS fee_pct,
+  ROUND(100.0 * SUM(CASE WHEN f.is_remit = 1 AND COALESCE(f.loan_day, 0) &gt; 0 AND COALESCE(f.remit_amt, 0) &gt; 0
+                         THEN (COALESCE(f.pre_amt, 0) + COALESCE(f.post_amt, 0)) / f.remit_amt ELSE 0 END)
+              / NULLIF(SUM(CASE WHEN f.is_remit = 1 AND COALESCE(f.loan_day, 0) &gt; 0 AND COALESCE(f.remit_amt, 0) &gt; 0
+                                THEN f.loan_day ELSE 0 END), 0), 4) AS daily_rate_pct
+FROM tmp_first f
+WHERE f.bucket = &#x27;当日&#x27;
+GROUP BY 1, 2
+ORDER BY 1, n DESC;
+</pre>
+</details>
+
+<div class="foot">
+数据：kaby_dw · wangchuanliang.order_vir_f_copy / order_loan_f_v2_copy / side_recycle_type_copy<br>
+T0 177,133；当天提单 81,118。加权期次按槽位，不平权平均用户均值。<br>
+8 月月度提单率有观察期截断；交叉结论以当日提单、当日已放款息费为主。
+</div>
+</main>
+<script>
+const labels = ['1月', '2月', '3月', '4月', '5月', '6月', '7月', '8月'];
+const dualY = {type:'linear', position:'right', grid:{drawOnChartArea:false}, ticks:{color:'#aac5da'}};
+const yL = {ticks:{color:'#aac5da'}, grid:{color:'rgba(42,92,126,.25)'}};
+function lineOpts(ymin){return {responsive:true,maintainAspectRatio:false,plugins:{legend:{labels:{color:'#d7ecf8',boxWidth:10}}},
+  scales:{x:{ticks:{color:'#aac5da'},grid:{color:'rgba(42,92,126,.2)'}},y:Object.assign({min:ymin,ticks:{color:'#aac5da'},grid:{color:'rgba(42,92,126,.25)'}}, ymin==null?{}:{})}};}
+function ds(label,data,color,extra){return Object.assign({label,data,borderColor:color,backgroundColor:color,tension:.25,fill:false,pointRadius:3}, extra||{});}
+
+new Chart(document.getElementById('c1'),{type:'line',data:{labels,datasets:[
+  ds('平均产品个数',[1.6671, 1.6209, 1.4834, 1.4115, 1.1848, 1.0, 1.0028, 1.1467],'#43c7e7',{yAxisID:'y'}),
+  ds('双产品%',[66.71, 62.09, 48.34, 41.15, 18.48, 0.0, 0.28, 14.67],'#f68ab0',{yAxisID:'y2'})
+]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{labels:{color:'#d7ecf8',boxWidth:10}}},
+  scales:{x:{ticks:{color:'#aac5da'},grid:{color:'rgba(42,92,126,.2)'}},
+          y:{title:{display:true,text:'个数',color:'#aac5da'},min:0.9,max:1.8,ticks:{color:'#aac5da'},grid:{color:'rgba(42,92,126,.25)'}},
+          y2:{position:'right',title:{display:true,text:'%',color:'#aac5da'},min:0,max:80,ticks:{color:'#aac5da'},grid:{drawOnChartArea:false}}}}});
+
+new Chart(document.getElementById('c2'),{type:'line',data:{labels,datasets:[ds('加权平均期次',[2.6364, 2.5545, 2.5434, 2.5877, 2.6672, 2.7245, 2.7586, 2.941],'#ffc26b')]},
+  options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{labels:{color:'#d7ecf8',boxWidth:10}}},
+    scales:{x:{ticks:{color:'#aac5da'},grid:{color:'rgba(42,92,126,.2)'}},y:{min:2.4,max:3.1,ticks:{color:'#aac5da'},grid:{color:'rgba(42,92,126,.25)'}}}}});
+
+new Chart(document.getElementById('c3'),{type:'bar',data:{labels,datasets:[
+  {label:'1期',data:[0.65, 4.71, 10.21, 10.39, 11.64, 14.19, 12.41, 10.8],backgroundColor:'#43c7e7',stack:'t'},
+  {label:'2期',data:[53.78, 53.01, 46.68, 41.69, 31.39, 19.84, 19.87, 11.99],backgroundColor:'#64dcae',stack:'t'},
+  {label:'3期',data:[26.87, 24.41, 21.66, 26.67, 35.58, 45.32, 47.17, 49.51],backgroundColor:'#ffc26b',stack:'t'},
+  {label:'4期',data:[18.71, 17.87, 21.45, 21.25, 21.39, 20.66, 20.55, 27.69],backgroundColor:'#f68ab0',stack:'t'}
+]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{labels:{color:'#d7ecf8',boxWidth:10}}},
+  scales:{x:{stacked:true,ticks:{color:'#aac5da'},grid:{display:false}},y:{stacked:true,max:100,ticks:{color:'#aac5da'},grid:{color:'rgba(42,92,126,.25)'}}}}});
+
+new Chart(document.getElementById('c4'),{type:'line',data:{labels,datasets:[
+  ds('20148,30212',[32.02, 31.01, 21.7, 19.73, 9.14, 0.0, 0.0, 0.0],'#64dcae'),
+  ds('20148,4028',[23.47, 23.14, 22.65, 17.96, 7.59, 0.0, 0.0, 0.0],'#43c7e7'),
+  ds('20149',[22.22, 23.59, 20.71, 17.56, 18.32, 18.58, 18.98, 10.85],'#ffc26b'),
+  ds('302125',[1.22, 0.62, 6.43, 14.45, 30.93, 35.01, 37.73, 34.52],'#f68ab0'),
+  ds('20149,30213',[11.21, 7.95, 3.99, 3.46, 1.75, 0.0, 0.0, 0.01],'#b49aff'),
+  ds('100741',[1.08, 7.63, 15.15, 14.29, 12.92, 11.04, 10.01, 8.11],'#9ad0f5')
+]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{labels:{color:'#d7ecf8',boxWidth:10,font:{size:11}}}},
+  scales:{x:{ticks:{color:'#aac5da'},grid:{color:'rgba(42,92,126,.2)'}},y:{ticks:{color:'#aac5da'},grid:{color:'rgba(42,92,126,.25)'}}}}});
+
+new Chart(document.getElementById('c5'),{type:'bar',data:{labels,datasets:[
+  {label:'20149',data:[25.13, 26.56, 22.7, 17.19, 17.25, 17.37, 18.15, 9.98],backgroundColor:'#ffc26b',stack:'s'},
+  {label:'30212',data:[23.09, 23.21, 16.27, 15.4, 8.22, 0.03, 0.0, 0.02],backgroundColor:'#64dcae',stack:'s'},
+  {label:'4028',data:[20.08, 19.24, 19.66, 18.65, 14.98, 5.22, 5.08, 3.52],backgroundColor:'#43c7e7',stack:'s'},
+  {label:'20148',data:[14.21, 14.04, 12.07, 9.74, 4.53, 0.7, 0.36, 0.12],backgroundColor:'#9ad0f5',stack:'s'},
+  {label:'302125',data:[1.25, 0.59, 6.05, 13.73, 30.46, 34.73, 36.9, 37.13],backgroundColor:'#f68ab0',stack:'s'},
+  {label:'100741',data:[0.78, 6.13, 13.05, 13.87, 12.61, 11.2, 10.47, 8.31],backgroundColor:'#b49aff',stack:'s'},
+  {label:'40285',data:[6.2, 4.17, 3.82, 2.91, 3.01, 6.94, 7.73, 17.93],backgroundColor:'#ff7b72',stack:'s'},
+  {label:'其他',data:[9.26, 6.06, 6.38, 8.51, 8.94, 23.81, 21.31, 22.99],backgroundColor:'#2a5c7e',stack:'s'}
+]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{labels:{color:'#d7ecf8',boxWidth:10,font:{size:11}}}},
+  scales:{x:{stacked:true,ticks:{color:'#aac5da'},grid:{display:false}},y:{stacked:true,max:100,ticks:{color:'#aac5da'},grid:{color:'rgba(42,92,126,.25)'}}}}});
+
+new Chart(document.getElementById('c6'),{type:'line',data:{labels,datasets:[
+  ds('便宜档%',[82.51, 83.05, 70.7, 60.98, 44.98, 23.32, 23.59, 13.64],'#64dcae'),
+  ds('贵档%',[16.65, 16.69, 26.3, 33.51, 48.58, 61.77, 64.05, 74.36],'#f68ab0'),
+  ds('当日提单%',[52.89, 51.81, 46.37, 46.85, 45.16, 43.77, 41.36, 39.2],'#43c7e7')
+]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{labels:{color:'#d7ecf8',boxWidth:10}}},
+  scales:{x:{ticks:{color:'#aac5da'},grid:{color:'rgba(42,92,126,.2)'}},y:{min:0,max:90,ticks:{color:'#aac5da'},grid:{color:'rgba(42,92,126,.25)'}}}}});
+
+new Chart(document.getElementById('c7'),{type:'line',data:{labels,datasets:[
+  ds('20148',[31.08, 31.34, 31.41, 31.41, 31.42, 31.38, 31.09, 31.4],'#64dcae'),
+  ds('20149',[45.08, 45.58, 48.63, 48.58, 48.59, 48.48, 48.54, 48.67],'#ffc26b'),
+  ds('4028',[48.36, 48.68, 48.69, 48.61, 48.73, 48.62, 48.39, 48.64],'#43c7e7'),
+  ds('302125',[57.2, 57.55, 60.94, 60.78, 60.9, 60.94, 60.8, 60.82],'#f68ab0'),
+  ds('40285',[65.32, 66.55, 66.76, 66.72, 66.81, 66.94, 66.82, 66.88],'#ff7b72'),
+  ds('30213',[59.09, 59.44, 59.53, 59.65, 60.49, 73.18, 72.85, 73.27],'#b49aff'),
+  ds('100741',[61.9, 62.41, 62.18, 62.15, 62.51, 62.31, 62.06, 62.48],'#9ad0f5')
+]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{labels:{color:'#d7ecf8',boxWidth:10,font:{size:11}}}},
+  scales:{x:{ticks:{color:'#aac5da'},grid:{color:'rgba(42,92,126,.2)'}},y:{min:25,max:80,ticks:{color:'#aac5da'},grid:{color:'rgba(42,92,126,.25)'}}}}});
+
+new Chart(document.getElementById('c8'),{type:'line',data:{labels,datasets:[
+  ds('100741',[8.8478, 8.9146, 8.9028, 8.8928, 8.9356, 8.9015, 8.8695, 8.9318],'#9ad0f5'),
+  ds('20149',[3.2269, 3.2628, 3.4833, 3.484, 3.4893, 3.4839, 3.4771, 3.4887],'#ffc26b'),
+  ds('30213',[2.8188, 2.8368, 2.8432, 2.8434, 2.9294, 3.4956, 3.4888, 3.5011],'#b49aff'),
+  ds('302125',[2.7244, 2.7484, 2.9165, 2.9116, 2.9148, 2.915, 2.9086, 2.9128],'#f68ab0'),
+  ds('40285',[2.3491, 2.386, 2.3893, 2.3891, 2.4037, 2.4035, 2.3958, 2.4032],'#ff7b72'),
+  ds('20148',[2.2372, 2.2563, 2.2581, 2.2589, 2.2579, 2.2519, 2.2119, 2.2429],'#64dcae'),
+  ds('4028',[1.7329, 1.7462, 1.7492, 1.7462, 1.75, 1.7443, 1.7364, 1.7461],'#43c7e7')
+]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{labels:{color:'#d7ecf8',boxWidth:10,font:{size:11}}}},
+  scales:{x:{ticks:{color:'#aac5da'},grid:{color:'rgba(42,92,126,.2)'}},y:{min:1.5,ticks:{color:'#aac5da'},grid:{color:'rgba(42,92,126,.25)'}}}}});
+
+new Chart(document.getElementById('c9'),{type:'line',data:{labels,datasets:[
+  ds('当日息费%',[49.57, 48.91, 50.5, 51.45, 54.16, 58.27, 58.18, 60.21],'#ffc26b',{yAxisID:'y'}),
+  ds('当日日息率%',[2.3545, 2.5066, 2.703, 2.7054, 2.8124, 3.0537, 3.0396, 2.9914],'#43c7e7',{yAxisID:'y2'})
+]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{labels:{color:'#d7ecf8',boxWidth:10}}},
+  scales:{x:{ticks:{color:'#aac5da'},grid:{color:'rgba(42,92,126,.2)'}},
+          y:{min:45,max:65,ticks:{color:'#aac5da'},grid:{color:'rgba(42,92,126,.25)'}},
+          y2:{position:'right',min:2.2,max:3.2,ticks:{color:'#aac5da'},grid:{drawOnChartArea:false}}}}});
+
+new Chart(document.getElementById('c10'),{type:'line',data:{labels,datasets:[
+  ds('当日息费%',[49.57, 48.91, 50.5, 51.45, 54.16, 58.27, 58.18, 60.21],'#ffc26b',{yAxisID:'y'}),
+  ds('302125当天占比%',[1.25, 0.59, 6.05, 13.73, 30.46, 34.73, 36.9, 37.13],'#f68ab0',{yAxisID:'y2'})
+]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{labels:{color:'#d7ecf8',boxWidth:10}}},
+  scales:{x:{ticks:{color:'#aac5da'},grid:{color:'rgba(42,92,126,.2)'}},
+          y:{min:45,max:65,ticks:{color:'#aac5da'},grid:{color:'rgba(42,92,126,.25)'}},
+          y2:{position:'right',min:0,max:45,ticks:{color:'#aac5da'},grid:{drawOnChartArea:false}}}}});
+
+new Chart(document.getElementById('c11'),{type:'line',data:{labels,datasets:[
+  ds('当日提单%',[52.89, 51.81, 46.37, 46.85, 45.16, 43.77, 41.36, 39.2],'#43c7e7',{yAxisID:'y'}),
+  ds('双产品%',[66.71, 62.09, 48.34, 41.15, 18.48, 0.0, 0.28, 14.67],'#f68ab0',{yAxisID:'y2'})
+]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{labels:{color:'#d7ecf8',boxWidth:10}}},
+  scales:{x:{ticks:{color:'#aac5da'},grid:{color:'rgba(42,92,126,.2)'}},
+          y:{min:35,max:58,ticks:{color:'#aac5da'},grid:{color:'rgba(42,92,126,.25)'}},
+          y2:{position:'right',min:0,max:80,ticks:{color:'#aac5da'},grid:{drawOnChartArea:false}}}}});
+
+new Chart(document.getElementById('c12'),{type:'line',data:{labels,datasets:[
+  ds('当日提单%',[52.89, 51.81, 46.37, 46.85, 45.16, 43.77, 41.36, 39.2],'#43c7e7'),
+  ds('贵档占比%',[16.65, 16.69, 26.3, 33.51, 48.58, 61.77, 64.05, 74.36],'#f68ab0')
+]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{labels:{color:'#d7ecf8',boxWidth:10}}},
+  scales:{x:{ticks:{color:'#aac5da'},grid:{color:'rgba(42,92,126,.2)'}},y:{min:10,max:80,ticks:{color:'#aac5da'},grid:{color:'rgba(42,92,126,.25)'}}}}});
+
+new Chart(document.getElementById('c13'),{type:'scatter',data:{datasets:[{label:'月',
+  data:[{x:66.71,y:52.89},{x:62.09,y:51.81},{x:48.34,y:46.37},{x:41.15,y:46.85},{x:18.48,y:45.16},{x:0,y:43.77},{x:0.28,y:41.36},{x:14.67,y:39.20}],
+  backgroundColor:'#43c7e7',borderColor:'#43c7e7'}]},
+options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{callbacks:{label:ctx=>'双产品 '+ctx.raw.x+'% , 当日提单 '+ctx.raw.y+'%'}}},
+  scales:{x:{title:{display:true,text:'双产品%',color:'#aac5da'},ticks:{color:'#aac5da'},grid:{color:'rgba(42,92,126,.25)'}},
+          y:{min:36,max:56,title:{display:true,text:'当日提单%',color:'#aac5da'},ticks:{color:'#aac5da'},grid:{color:'rgba(42,92,126,.25)'}}}}});
+
+new Chart(document.getElementById('c14'),{type:'scatter',data:{datasets:[{label:'月',
+  data:[{x:16.65,y:49.57},{x:16.69,y:48.91},{x:26.30,y:50.50},{x:33.51,y:51.45},{x:48.58,y:54.16},{x:61.77,y:58.27},{x:64.05,y:58.18},{x:74.36,y:60.21}],
+  backgroundColor:'#ffc26b',borderColor:'#ffc26b'}]},
+options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{callbacks:{label:ctx=>'贵档 '+ctx.raw.x+'% , 息费 '+ctx.raw.y+'%'}}},
+  scales:{x:{title:{display:true,text:'贵档占比%',color:'#aac5da'},ticks:{color:'#aac5da'},grid:{color:'rgba(42,92,126,.25)'}},
+          y:{min:47,max:62,title:{display:true,text:'当日息费%',color:'#aac5da'},ticks:{color:'#aac5da'},grid:{color:'rgba(42,92,126,.25)'}}}}});
+
+new Chart(document.getElementById('c15'),{type:'line',data:{labels,datasets:[
+  ds('302125 获额槽位%',[0.73,0.38,4.34,10.23,26.11,35.01,37.62,41.52],'#f68ab0'),
+  ds('302125 当天提单%',[1.25, 0.59, 6.05, 13.73, 30.46, 34.73, 36.9, 37.13],'#43c7e7')
+]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{labels:{color:'#d7ecf8',boxWidth:10}}},
+  scales:{x:{ticks:{color:'#aac5da'},grid:{color:'rgba(42,92,126,.2)'}},y:{min:0,max:45,ticks:{color:'#aac5da'},grid:{color:'rgba(42,92,126,.25)'}}}}});
+</script>
+</body></html>
