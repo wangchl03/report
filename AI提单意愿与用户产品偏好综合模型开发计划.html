@@ -1,0 +1,136 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>AI 提单意愿与用户产品偏好综合模型开发计划</title>
+  <style>
+    :root{--bg:#071c2d;--panel:#0b2a40;--panel2:#0e344e;--line:#28536e;--text:#e7f1f7;--muted:#9db5c7;--cyan:#43c7e7;--green:#64dcae;--amber:#ffc26b;--pink:#f68ab0;--violet:#b49aff}
+    *{box-sizing:border-box} body{margin:0;background:linear-gradient(180deg,#071c2d,#082238 45%,#061724);color:var(--text);font:15px/1.75 -apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei",sans-serif}
+    .wrap{max-width:1200px;margin:auto;padding:26px 28px 64px}.hero{padding:44px 28px 34px;text-align:center;border-bottom:1px solid var(--line)}.eyebrow{color:var(--cyan);font-weight:700;letter-spacing:1px}.hero h1{font-size:35px;line-height:1.3;margin:12px 0}.hero p{margin:0;color:var(--muted)}
+    .nav{position:sticky;top:0;z-index:20;display:flex;flex-wrap:wrap;justify-content:center;gap:10px;margin:0 -28px;padding:14px 28px;background:rgba(7,28,45,.94);border-bottom:1px solid rgba(40,83,110,.9);backdrop-filter:blur(12px);box-shadow:0 7px 16px rgba(0,0,0,.17)}.nav a{color:#cce6f3;text-decoration:none;border:1px solid var(--line);border-radius:18px;padding:3px 12px;font-size:13px;transition:.18s ease}.nav a:hover,.nav a:focus{border-color:var(--cyan);color:var(--cyan);background:#103852}
+    section{margin-top:30px;scroll-margin-top:68px}.card,.callout,.flow,.table-wrap{background:rgba(11,42,64,.92);border:1px solid var(--line);border-radius:12px}.card{padding:20px}.grid{display:grid;gap:16px}.g2{grid-template-columns:repeat(2,minmax(0,1fr))}.g3{grid-template-columns:repeat(3,minmax(0,1fr))}.g4{grid-template-columns:repeat(4,minmax(0,1fr))}
+    h2{font-size:24px;margin:0 0 15px;color:#fff}h3{font-size:17px;margin:0 0 8px;color:#fff}h4{font-size:15px;margin:0 0 6px;color:var(--cyan)}p{margin:8px 0}.muted{color:var(--muted)}.lead{color:#c3d8e5;font-size:16px}.tag{display:inline-block;border-radius:12px;padding:2px 9px;font-size:12px;font-weight:700;background:#153d58;color:var(--cyan)}.tag.green{color:var(--green)}.tag.amber{color:var(--amber)}.tag.pink{color:var(--pink)}.num{font-size:29px;font-weight:800;color:var(--cyan);line-height:1.25}.small{font-size:13px;color:var(--muted)}
+    .flow{padding:22px;display:grid;grid-template-columns:repeat(5,1fr);gap:10px;align-items:stretch}.node{padding:14px 11px;border-radius:9px;background:#103852;border:1px solid #30637f;text-align:center;font-weight:700}.node:nth-child(2){border-color:var(--cyan)}.node:nth-child(3){border-color:var(--violet)}.node:nth-child(4){border-color:var(--green)}.node:nth-child(5){border-color:var(--amber)}.arrow{align-self:center;text-align:center;color:var(--cyan);font-size:22px}
+    .table-wrap{overflow:auto}.table{width:100%;border-collapse:collapse;min-width:720px}.table th,.table td{padding:11px 13px;border-bottom:1px solid rgba(40,83,110,.8);vertical-align:top;text-align:left}.table th{color:#bfe6f5;background:#10344c;font-size:13px}.table td:first-child{font-weight:700}.table tr:last-child td{border-bottom:0}
+    .callout{padding:18px 20px;border-left:4px solid var(--amber)}.callout.green{border-left-color:var(--green)}.callout.pink{border-left-color:var(--pink)}.callout h3{color:var(--amber)}.callout.green h3{color:var(--green)}.callout.pink h3{color:var(--pink)}
+    ol,ul{margin:8px 0 0;padding-left:22px}li{margin:5px 0}.phase{position:relative;padding:17px 18px 17px 62px;border-left:2px solid var(--cyan);margin-left:18px}.phase:before{content:attr(data-no);position:absolute;left:-18px;top:17px;width:34px;height:34px;border-radius:50%;display:grid;place-items:center;background:var(--cyan);color:#082238;font-weight:800}.phase h3{margin:0}.kpi{padding:17px}.kpi strong{display:block;font-size:20px;color:var(--green);margin-top:5px}.footer{text-align:center;color:#7997aa;font-size:13px;margin-top:45px}
+    @media(max-width:780px){.wrap{padding:16px}.hero{padding:34px 16px}.hero h1{font-size:27px}.nav{margin:0 -16px;padding:11px 12px;gap:7px}.nav a{font-size:12px;padding:2px 8px}.g2,.g3,.g4{grid-template-columns:1fr}.flow{grid-template-columns:1fr}.arrow{transform:rotate(90deg)}}
+  </style>
+</head>
+<body><main class="wrap">
+  <header class="hero">
+    <div class="eyebrow">AI PRODUCT GROWTH · DEVELOPMENT PLAN</div>
+    <h1>AI 用户价值、提单意愿与产品匹配综合模型开发计划</h1>
+    <p>目标：识别高价值可经营用户，匹配合适产品，在风险可控下缩短无在途空窗期并最大化生命周期增量利润。</p>
+    <p class="small" style="margin-top:8px">报告生成时间：2026 年 9 月 17 日</p>
+  </header>
+  <nav class="nav"><a href="#goal">目标</a><a href="#architecture">模型架构</a><a href="#data">数据与特征</a><a href="#roadmap">开发路径</a><a href="#execution">实操步骤</a><a href="#experiment">实验验证</a><a href="#efficiency">工程效率</a><a href="#risk">难点与风险</a><a href="#result">预期结果</a></nav>
+
+  <section id="goal"><h2>一、课题目的：从“找人发券”升级为“用户价值最大化”</h2>
+    <div class="callout"><h3>最终目的，而非中间指标</h3><p>提单意愿预测和产品匹配都是为了<strong>提量</strong>；提量本身不是最终目标。最终目标是在让利、营销成本和风险可控的前提下，提高用户生命周期价值：把高价值用户结清后的无在途空窗期，更多地转化为能够产生利润的在途时间。</p></div>
+    <div class="grid g3" style="margin-top:16px"><article class="card"><span class="tag">提量：意愿线</span><h3 style="margin-top:10px">识别高意愿用户</h3><p class="muted">预测用户在触达后一定窗口内的提单概率，优先触达更可能转化的用户，压缩低意愿用户上的无效营销成本。</p></article><article class="card"><span class="tag green">提量：产品线</span><h3 style="margin-top:10px">匹配用户想要的产品</h3><p class="muted">识别额度需求、息费接受度和期次偏好；以更匹配的产品方案推动用户提单，而非一律发券。</p></article><article class="card"><span class="tag amber">价值：风险线</span><h3 style="margin-top:10px">控制风险并评估收益</h3><p class="muted">预测用户的动态风险水平，将预期坏账、优惠成本、触达成本和回款利润纳入方案选择。</p></article></div>
+    <p class="lead" style="margin-top:18px">最终决策不再是全量触达或统一发券，而是选择<strong>风险调整后预期增量利润最高</strong>的“用户 × 产品方案 × 触达策略”。</p>
+  </section>
+
+  <section id="architecture"><h2>二、总体方案：三类评分 + 风险调整后的收益决策</h2>
+    <div class="flow"><div class="node">可经营用户<br><span class="small">结清、无在途、可提单</span></div><div class="node">意愿分<br><span class="small">谁更可能提单</span></div><div class="node">产品需求参数<br><span class="small">额度、息费、期次</span></div><div class="node">风险评级分<br><span class="small">逾期与回款风险</span></div><div class="node">收益决策<br><span class="small">触达、方案、力度</span></div></div>
+    <div class="callout green" style="margin-top:16px"><h3>统一决策公式（经营目标）</h3><p><strong>风险调整后预期增量利润</strong> = 增量提单概率 × 放款概率 × 预期放款金额 ×（预期回款收益 − 本金 − 优惠成本 − 预期风险损失）− 触达成本。</p><p class="muted">第一阶段可先用“提单意愿分 × 产品匹配分 × 风险评级”做规则化决策；积累随机实验数据后，再以 uplift 模型直接估计不同方案的增量收益。</p></div>
+    <div class="table-wrap" style="margin-top:16px"><table class="table"><thead><tr><th>层级</th><th>需要回答的问题</th><th>主要输出</th><th>业务用途</th></tr></thead><tbody>
+      <tr><td>0. 准入层</td><td>用户是否可触达、可提单、可享受某种权益？</td><td>可经营名单、合规与风险拦截标记</td><td>排除逾期、在途、不可触达及风险不可接受用户</td></tr>
+      <tr><td>1. 意愿层</td><td>用户在未来 7/15 天内提单的概率是多少？</td><td>提单概率、意愿分层、排序</td><td>决定触达优先级与频次</td></tr>
+      <tr><td>2. 产品需求层</td><td>用户更匹配哪种额度、息费和期次？</td><td>额度需求参数、价格敏感度、期次偏好、方案匹配分</td><td>决定展示什么产品、给什么优惠</td></tr>
+      <tr><td>3. 风险评级层</td><td>用户若再次放款，逾期、低回款或亏损的风险多高？</td><td>动态风险分、风险等级、预期损失</td><td>风险拦截、额度/优惠力度上限及定价约束</td></tr>
+      <tr><td>4. 增量层</td><td>发券/提额是否会带来额外提单？</td><td>优惠 uplift，即处理组相对对照组的增量转化</td><td>避免把权益给到“本来就会提单”或“怎么发都不提”的人</td></tr>
+      <tr><td>5. 收益决策层</td><td>在风险、让利后，哪个方案的预期收益最高？</td><td>单用户预期增量利润、最优方案及触达优先级</td><td>最终投放与预算分配</td></tr>
+    </tbody></table></div>
+  </section>
+
+  <section id="data"><h2>三、数据与特征：不做静态均值，而是学习用户的响应规律</h2>
+    <p class="lead">所有特征必须是预测时点 T 之前已发生的数据；标签必须在 T 之后产生。每一个用户、每一次召回都形成一条带 <strong>as_of_time</strong> 的快照样本。</p>
+    <div class="table-wrap"><table class="table"><thead><tr><th>特征主题</th><th>应构造的动态特征</th><th>业务解释</th><th>注意事项</th></tr></thead><tbody>
+      <tr><td>近期意愿与行为</td><td>近 1/3/7/14/30 天活跃天数、活跃时长、页面深度、关键行为链路、连续活跃、行为时间衰减</td><td>识别现在是否仍有借款关注和转化信号</td><td>不能使用 T 后行为；提单、合同确认等深层动作须严格防止与标签重叠</td></tr>
+      <tr><td>额度需求与匹配</td><td>历史获额均值/趋势、最近获额、历史额度使用率、当前获额相对历史实际借款额的偏差、用满额度次数</td><td>识别用户是否有资金需求、当前额度是否合适</td><td>区分“获额高但不用”与“获额后稳定高使用”的用户</td></tr>
+      <tr><td>息费接受度</td><td>历史提单息费率、近期息费变化、不同息费下的提单率/提单间隔/使用率、当前报价相对历史报价的偏离</td><td>识别价格敏感度，而非只用全体平均息费</td><td>需要控制额度、期次、时间和用户资质变化，避免把相关性误认为价格因果</td></tr>
+      <tr><td>期次偏好</td><td>历史期次选择分布、最近期次、不同期次下的提单频率与复借表现、当前期次与历史偏好的距离</td><td>识别用户偏好短期还是长期产品</td><td>期次常与息费、额度绑定，需联合建模而非单独解释</td></tr>
+      <tr><td>复借节奏</td><td>生命周期提单次数、近 30/60/90 天频率、结清—获额—提单间隔、最近间隔相对个人历史间隔的异常程度</td><td>识别稳定复借、延迟提单及流失风险</td><td>按用户历史自身基线标准化，不能只与全体均值相比</td></tr>
+      <tr><td>还款与风险轨迹</td><td>每期还款明细、历史整笔/分期逾期次数、最大逾期天数、逾期后结清速度、按期还款率、历史回款率、最近风险趋势</td><td>预测用户在当前时点再次放款后的动态风险水平，而不是使用今天的静态风险画像</td><td>风险标签需用已成熟订单构建；不得用当前待决策订单的未来还款或逾期结果</td></tr>
+      <tr><td>价值与生命周期</td><td>历史放款、回款、风险调整后利润、累计提单/放款次数、无在途天数及占比、渠道与获客成本</td><td>识别可经营空窗期与用户长期价值，避免只优化当期提单</td><td>无在途时间仅在非逾期、非被拒、无在途且可提单时计算</td></tr>
+    </tbody></table></div>
+    <div class="callout green" style="margin-top:16px"><h3>应重点学习“响应曲线”</h3><p>例如，同一用户在息费上升、额度变化、期次变化时，提单间隔、额度使用率和提单概率如何改变。模型学习的不是“平均息费”，而是：</p><p><strong>P(提单 | 用户历史状态，额度，息费，期次，触达策略)</strong></p></div>
+  </section>
+
+  <section id="roadmap"><h2>四、开发计划与具体做法</h2>
+    <div class="phase" data-no="1"><h3>阶段 1：定义决策与成功标准</h3><p><strong>为什么：</strong>如果没有统一标签、观察窗口和利润口径，模型再复杂也无法比较效果。</p><p><strong>怎么做：</strong>确定经营场景（T1+、T7+、结清获额后等）、预测时点 T、7/15 天提单标签、触达动作、候选产品方案、优惠成本、到期盈利与逾期口径。建立“是否触达、给什么方案、不触达”的明确决策表。</p><p><strong>产出：</strong>指标字典、样本口径、产品方案字典、实验分层规则。</p></div>
+    <div class="phase" data-no="2"><h3>阶段 2：建设时点快照特征宽表</h3><p><strong>为什么：</strong>动态用户模型的核心是还原“当时看到的用户”，否则会产生时间泄漏。</p><p><strong>怎么做：</strong>按用户 × 预测时点生成 feature mart；每个字段写入 as_of_time、数据截止时间和计算 SQL。将订单、获额、事件、券、触达、产品报价、回款/逾期、渠道成本关联起来；对特征做缺失、极值、分布漂移和时间一致性校验。</p><p><strong>产出：</strong>可复跑的 SQL/Python 特征管道，特征血缘文档及训练/验证/测试数据集。</p></div>
+    <div class="phase" data-no="3"><h3>阶段 3：建立意愿模型基线并滚动验证</h3><p><strong>为什么：</strong>先证明“谁更可能提单”可以稳定排序，才有必要进入个性化产品优化。</p><p><strong>怎么做：</strong>以逻辑回归作为可解释基线，以 LightGBM / XGBoost / CatBoost 作为主模型候选；采用滚动时间切分训练与验证。评估 AUC、PR-AUC、Lift、Top-K 提单覆盖率、校准度及不同人群稳定性。</p><p><strong>产出：</strong>稳定意愿分、特征重要性、分层阈值及触达名单压缩策略。</p></div>
+    <div class="phase" data-no="4"><h3>阶段 4：建立产品需求与匹配模型</h3><p><strong>为什么：</strong>“高意愿”不代表当前产品就匹配；用户可能需要更合适的额度、息费或期次。</p><p><strong>怎么做：</strong>建立方案级样本：对同一用户构造其时点历史、实际可见报价和最终选择；分别学习额度使用、提单、期次选择及价格敏感度。优先采取“候选方案排序”而非直接生成任意报价，保证可解释、可控和可落地。</p><p><strong>产出：</strong>用户额度需求参数、息费敏感度、期次偏好，以及用户—方案匹配分。</p></div>
+    <div class="phase" data-no="5"><h3>阶段 5：建立动态风险评级与预期损失模型</h3><p><strong>为什么：</strong>提单和放款增长不等于价值增长。需要在结清、无在途的当前时点，使用用户此前的还款轨迹预测其再次放款后的风险。</p><p><strong>怎么做：</strong>仅选取已到期、标签成熟的历史放款订单；用整笔订单到期是否逾期、分期金额逾期率、实际回款率和到期收益构建标签。特征使用此前的还款明细、逾期次数/天数、结清速度、历史额度使用、复借节奏和行为数据；采用时间外验证并输出风险等级与预期损失。</p><p><strong>产出：</strong>动态风险评级分、风险等级、预期损失及额度/让利上限规则。</p></div>
+    <div class="phase" data-no="6"><h3>阶段 6：用随机实验训练 uplift 与收益决策模型</h3><p><strong>为什么：</strong>历史发券、提额对象通常不是随机的，不能直接证明优惠本身带来了提单。高意愿用户也可能不优惠就会提单。</p><p><strong>怎么做：</strong>在意愿 × 产品需求 × 风险分层中，随机设置不触达、普通触达、不同券力度、提额/期次方案等对照组；估计各方案的增量提单、增量放款、风险和增量利润，并输出最优方案。</p><p><strong>产出：</strong>可解释的 uplift、单用户风险调整后预期增量利润、最优优惠力度和预算分配策略。</p></div>
+    <div class="phase" data-no="7"><h3>阶段 7：灰度上线、监控与持续训练</h3><p><strong>怎么做：</strong>先在小比例人群灰度，设置利润、逾期、投诉、触达频次等硬性护栏；按周监控特征漂移、分数分布、转化、Lift、增量利润和风险；按月或在产品价格策略变更后重新训练。</p><p><strong>产出：</strong>模型版本管理、监控看板、回滚策略及自动化重训流程。</p></div>
+  </section>
+
+  <section id="execution"><h2>五、实操落地清单：按顺序完成，不跳步</h2>
+    <div class="table-wrap"><table class="table"><thead><tr><th>步骤</th><th>实际操作</th><th>交付物/验收点</th><th>责任协作</th></tr></thead><tbody>
+      <tr><td>1. 确认经营场景</td><td>明确第一期只覆盖的用户场景，例如 T7+ 无在途可经营用户；确认触达渠道、可选优惠券、可提额度、可选期次及不可触达规则。</td><td>一页场景说明；候选产品/优惠方案清单；准入与风险拦截规则。</td><td>策略、产品、风控、运营</td></tr>
+      <tr><td>2. 确认时间与标签</td><td>为每个样本确定预测时点 <code>as_of_time</code>；固定“未来 7 天是否提单”“未来 15 天是否提单”标签；风险标签只使用已到期成熟订单。</td><td>标签 SQL；样本量、正样本率及成熟度检查结果。</td><td>数据、风控</td></tr>
+      <tr><td>3. 建三张基础表</td><td>创建用户时点快照特征表、训练标签表、评分结果表；按 <code>as_of_date</code> 分区，对 <code>(user_id, as_of_date)</code> 建索引。</td><td>建表 SQL、字段字典、特征血缘、首批历史快照数据。</td><td>数据工程、分析</td></tr>
+      <tr><td>4. 建特征管道</td><td>将订单、获额、提单、还款流水、逾期、埋点、券和触达记录按 T 前聚合；每个特征记录来源、窗口、空值规则和版本号。</td><td>可重复运行的 SQL/Python；时间泄漏检查、缺失/极值/分布报告。</td><td>数据、算法</td></tr>
+      <tr><td>5. 训练三类基础评分</td><td>先训练意愿模型、产品需求模型和风险模型；均采用时间滚动切分，并与逻辑回归基线比较。</td><td>模型文件、特征重要性、时间外 AUC/PR-AUC/Lift、校准图、分层业务画像。</td><td>算法、分析、风控</td></tr>
+      <tr><td>6. 形成首版策略矩阵</td><td>将意愿、需求、风险三分组合成规则：不触达/普通触达/小额降息/提额/产品期次推荐；明确每格的预算和风险上限。</td><td>策略矩阵、名单样例、预期成本与收益测算。</td><td>策略、产品、运营、风控</td></tr>
+      <tr><td>7. 随机对照实验</td><td>在每个关键分层内随机保留对照组；记录触达时间、渠道、实际展示产品、券金额、提单、放款、回款和逾期。</td><td>实验设计书、随机名单、样本量测算、埋点与结果回写表。</td><td>运营、产品、数据、风控</td></tr>
+      <tr><td>8. 评估并迭代</td><td>比较策略组与同层对照组的增量提单、增量放款、到期风险、让利后利润和空窗期变化；只扩大通过护栏的方案。</td><td>周报、实验复盘、模型/策略版本升级或回滚结论。</td><td>全体协作</td></tr>
+    </tbody></table></div>
+    <div class="callout" style="margin-top:16px"><h3>第一期务实边界</h3><p>第一期不直接追求“完全自动定价”。先完成可经营用户的意愿分、风险分和产品匹配规则，采用有限且可控的候选方案，通过随机对照验证增量收益；在数据积累后再升级为 uplift 与利润最优化模型。</p></div>
+  </section>
+
+  <section id="experiment"><h2>六、算法、训练与实验设计</h2>
+    <div class="grid g2"><article class="card"><h3>模型选择</h3><ul><li><strong>逻辑回归：</strong>作为稳定、可解释的意愿/风险基线。</li><li><strong>LightGBM / XGBoost / CatBoost：</strong>意愿、产品匹配与风险评级主模型，处理非线性、交互和缺失值。</li><li><strong>多分类/排序模型：</strong>用于产品方案排序与期次偏好。</li><li><strong>二分类风险模型：</strong>预测整笔订单到期逾期、分期金额逾期或低回款；只用已成熟 cohort 训练。</li><li><strong>Uplift / Causal Forest / DR Learner：</strong>用于估计优惠或触达的增量效果，前提是有随机对照。</li></ul></article><article class="card"><h3>训练原则</h3><ul><li>严格按时间滚动切分，不随机打散未来与过去。</li><li>特征只取 T 前；提单标签固定为 T 后 7/15 天；风险标签只用成熟订单。</li><li>同一用户重复出现在多个时点时，处理样本相关性，并防止未来记录泄漏。</li><li>类别不平衡使用样本权重、阈值优化或 focal loss；不只追求 AUC。</li><li>概率输出做时间外校准，保证“0.2 分”能被理解为约 20% 的真实概率。</li><li>意愿、需求、风险分别训练与评估，最终由决策层组合，避免一个黑箱分数混淆不同业务含义。</li></ul></article></div>
+    <div class="table-wrap" style="margin-top:16px"><table class="table"><thead><tr><th>评估层面</th><th>指标</th><th>通过标准示例</th></tr></thead><tbody>
+      <tr><td>排序能力</td><td>时间外 AUC、PR-AUC、Lift、Top-K 覆盖率</td><td>Top 20% 的提单率和提单覆盖显著高于随机及旧策略</td></tr>
+      <tr><td>概率可信度</td><td>校准曲线、Brier score、分箱预测率 vs 实际率</td><td>各分层预测概率与真实提单率差异在容忍范围内</td></tr>
+      <tr><td>产品匹配</td><td>方案接受率、额度使用率、期次选择命中率</td><td>匹配方案相对默认方案有稳定提升</td></tr>
+      <tr><td>风险评级</td><td>时间外 AUC/KS、校准度、分层订单逾期率、金额逾期率、回款率</td><td>风险等级由低到高呈稳定风险区分，且满足风控准入要求</td></tr>
+      <tr><td>因果增量</td><td>增量提单率、增量放款、增量利润</td><td>触达/优惠组相对同层对照组有统计显著的正增量</td></tr>
+      <tr><td>经营安全</td><td>订单逾期率、金额逾期率、到期利润、投诉/退订</td><td>不突破预设风险、利润和体验护栏</td></tr>
+    </tbody></table></div>
+  </section>
+
+  <section id="ai"><h2>七、AI 如何参与整个开发过程</h2>
+    <div class="grid g4"><article class="card kpi"><span class="tag">数据</span><strong>AI 辅助特征探索</strong><p class="small">自动生成候选特征、SQL 草稿、字段血缘与质量校验规则，但需由数据人员审核口径。</p></article><article class="card kpi"><span class="tag green">建模</span><strong>AI 辅助实验编排</strong><p class="small">批量比较模型、特征集、阈值与训练窗口，生成可复现代码和实验记录。</p></article><article class="card kpi"><span class="tag amber">决策</span><strong>AI 辅助方案生成</strong><p class="small">根据用户分层提出候选触达和产品方案；最终由利润、风险规则和实验结果约束。</p></article><article class="card kpi"><span class="tag pink">运营</span><strong>AI 辅助监控解释</strong><p class="small">发现分数漂移、转化异常和策略失效，并生成面向业务的归因说明。</p></article></div>
+    <div class="callout pink" style="margin-top:16px"><h3>AI 的边界</h3><p>AI 可以加快特征开发、代码编写、分析和监控，但不能替代真实的实验设计。优惠是否带来“增量提单和增量利润”，必须由随机对照数据验证。</p></div>
+  </section>
+
+  <section id="efficiency"><h2>八、开发与训练效率：把一次性分析沉淀为可持续生产流程</h2>
+    <p class="lead">复杂模型的瓶颈通常不在算法，而在每次都要扫描大表、重新拼接特征、手工改口径和难以复现实验。应优先建设轻量、可迭代的数据与训练基础设施。</p>
+    <div class="table-wrap"><table class="table"><thead><tr><th>建设项</th><th>具体做法</th><th>为什么能提升效率</th><th>优先级</th></tr></thead><tbody>
+      <tr><td>用户时点快照特征表</td><td>建立 <code>user_product_feature_snapshot</code>：一行对应“用户 × 预测时点 T × 场景”，存储 T 前可用的行为、额度、息费、期次、频率、风险和价值特征。</td><td>避免每次训练都从订单、获额、行为明细表重新聚合；训练、验证和线上评分共用同一特征口径。</td><td><span class="tag amber">最高</span></td></tr>
+      <tr><td>标签与训练样本表</td><td>建立 <code>model_training_dataset</code>：在快照成熟后补写未来 7/15 天提单、放款、到期风险和利润标签，并保留 <code>feature_version</code>。</td><td>固定训练/验证/测试集，支持任意历史时点复跑；避免标签窗口随查询当天变化。</td><td><span class="tag amber">最高</span></td></tr>
+      <tr><td>分区、索引与增量更新</td><td>快照表按 <code>as_of_date</code> 月度或日度分区；对 <code>(user_id, as_of_date)</code> 建唯一索引，对场景、版本建组合索引；每日仅计算新增时点和变化用户。</td><td>大幅减少全表扫描；避免每日重复计算完整历史。</td><td><span class="tag amber">最高</span></td></tr>
+      <tr><td>中间聚合层</td><td>沉淀用户日粒度行为汇总、订单生命周期汇总、获额历史汇总、券/触达历史汇总；特征表从这些聚合表二次计算。</td><td>将最重的明细聚合拆开，缩短特征 SQL、减少重复逻辑并便于排错。</td><td><span class="tag">高</span></td></tr>
+      <tr><td>Parquet 训练数据集</td><td>从数据库一次性抽取版本化特征数据至 Parquet；Python 在本地或训练环境读取 Parquet 完成多轮训练、调参和消融实验。</td><td>避免每一次模型试验都连接数据库；Parquet 读取快、体积小、易归档。</td><td><span class="tag">高</span></td></tr>
+      <tr><td>实验追踪与模型版本</td><td>每次训练保存数据版本、特征版本、训练时间、参数、阈值、AUC/Lift/利润指标、模型文件及名单结果。</td><td>可以比较模型版本、回滚模型，并知道结果差异来自数据、特征还是算法。</td><td><span class="tag green">中</span></td></tr>
+      <tr><td>自动化调度与质量校验</td><td>按日生成快照、按周训练/评分；在任务中自动检查行数、空值、极值、特征漂移、时间穿越和标签成熟度。</td><td>减少人工操作，及时发现源表异常与模型失效。</td><td><span class="tag green">中</span></td></tr>
+    </tbody></table></div>
+    <div class="grid g2" style="margin-top:16px"><article class="card"><h3>最小可用数据结构</h3><p><code>user_product_feature_snapshot</code><br><span class="muted">user_id、as_of_date、scenario、行为/额度/息费/期次/节奏特征、风险价值特征、feature_version</span></p><p><code>model_training_dataset</code><br><span class="muted">用户时点快照 + label_apply_7d/15d、风险、利润标签</span></p><p><code>model_score_result</code><br><span class="muted">意愿分、产品匹配分、推荐方案、预期 uplift、预期利润和模型版本</span></p></article><article class="card"><h3>运行链路</h3><ol><li><strong>每日：</strong>增量更新用户行为、订单、获额和触达中间汇总。</li><li><strong>召回前：</strong>生成预测时点 T 的特征快照，完成时间泄漏检查。</li><li><strong>每周：</strong>将成熟样本写入训练表，进行滚动验证及候选模型比较。</li><li><strong>每次评分：</strong>读取同版本特征，输出意愿分、产品匹配分与经营建议。</li><li><strong>实验后：</strong>回写触达、券、产品方案及结果，为 uplift 模型积累随机样本。</li></ol><p class="muted">先完成“特征快照表 + 标签表 + 增量任务”，即可支撑第一版稳定训练；无需一开始建设过重的平台。</p></article></div>
+    <div class="callout green" style="margin-top:16px"><h3>建表的原则</h3><p>不复制全部原始明细，也不把模型计算完全放在 Python 中。原始订单、获额、行为流水保留在源表；数据库负责按时点聚合与存储特征，Python 负责训练、调参、评估与生成分数。这样兼顾计算效率、口径一致性和开发灵活性。</p></div>
+  </section>
+
+  <section id="risk"><h2>九、主要难点、劣势与解决方案</h2>
+    <div class="table-wrap"><table class="table"><thead><tr><th>难点/劣势</th><th>为什么会发生</th><th>解决方案</th></tr></thead><tbody>
+      <tr><td>时间泄漏</td><td>用户当前行为、后续订单或更新后的宽表字段混入 T 时点特征</td><td>强制 as_of_time；冻结快照；每个字段记录数据截止时间；自动化时间穿越检查</td></tr>
+      <tr><td>历史策略选择偏差</td><td>过去发券不是随机的，难以判断券本身是否有效</td><td>分层随机对照实验；再训练 uplift/因果模型</td></tr>
+      <tr><td>产品变量相互绑定</td><td>额度、息费、期次常同时变化，历史相关性不等于因果作用</td><td>候选方案实验、控制变量分析、因果估计；先做可控的小范围实验</td></tr>
+      <tr><td>后期风险未成熟</td><td>近期订单尚未到期，逾期和利润标签不完整</td><td>分开使用短期提单标签与成熟期风险/利润标签；采用成熟 cohort 训练风险</td></tr>
+      <tr><td>高意愿用户的让利浪费</td><td>部分用户即使不发券也会提单</td><td>以 uplift 和增量利润取代单纯意愿分，设置不触达对照组</td></tr>
+      <tr><td>模型漂移</td><td>产品价格、期次、渠道和用户结构持续变化</td><td>周度监控、月度/策略变更后重训、Champion–Challenger 双模型机制</td></tr>
+      <tr><td>复杂模型不可解释</td><td>树模型和多模型组合不如线性模型直观</td><td>使用 SHAP、局部原因码、规则护栏；保留逻辑回归基线作对照</td></tr>
+    </tbody></table></div>
+  </section>
+
+  <section id="result"><h2>十、预期结果、判断标准与阶段性结论</h2>
+    <div class="grid g3"><article class="card"><span class="tag">短期</span><h3 style="margin-top:10px">缩短高价值用户空窗期</h3><p>以意愿分定位可转化用户，优先经营结清后无在途且可提单的时间段，使更多空窗日转化为在途日。</p></article><article class="card"><span class="tag green">中期</span><h3 style="margin-top:10px">提升产品匹配提量</h3><p>通过额度、息费、期次匹配，提高用户接受方案后的提单率、额度使用率和复借效率。</p></article><article class="card"><span class="tag amber">长期</span><h3 style="margin-top:10px">提升风险调整后 LTV</h3><p>在让利、坏账、获客与触达成本约束下，提高单用户生命周期利润，而不是只提升短期提单量。</p></article></div>
+    <div class="callout green" style="margin-top:16px"><h3>到底能不能达到目的？</h3><p><strong>可以显著提高决策质量，但不能仅靠模型分数保证利润增长。</strong>意愿模型证明“筛人是否有效”；产品需求模型证明“匹配是否提高接受度”；风险模型保证提量不以风险恶化为代价；只有经过随机对照实验并叠加成熟回款、逾期和利润数据后，才能证明某种让利或提额策略创造了增量价值。</p><p>因此，成功标准不是模型 AUC 多高，而是：在风险护栏内，模型策略相对基准策略带来了可重复、可归因的<strong>增量提单、增量放款、无在途天数下降与增量生命周期利润</strong>。</p></div>
+  </section>
+  <footer class="footer">版本 1.0 · 本计划用于模型立项、数据建设、实验设计与持续迭代</footer>
+</main></body></html>
