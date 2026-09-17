@@ -1,0 +1,143 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>2026年1—8月结清0在贷 T0 最早提单分段趋势分析报告</title>
+<style>
+:root{--bg:#071b2d;--panel:#0b2740;--line:#204762;--text:#e9f3fb;--muted:#a9c3d5;--mint:#65d5ad;--cyan:#4cbfe0;--gold:#ffc46a;--pink:#ef7baa;--blue:#8fa9ff}
+*{box-sizing:border-box}body{margin:0;background:linear-gradient(180deg,#071b2d,#08243b 55%,#071b2d);color:var(--text);font:16px/1.72 -apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei",sans-serif}.wrap{max-width:1200px;margin:auto;padding:0 28px 72px}.hero{text-align:center;padding:64px 0 38px;border-bottom:1px solid var(--line)}.eyebrow{color:var(--mint);font-weight:700;font-size:13px;letter-spacing:.14em}.hero h1{font-size:40px;line-height:1.25;margin:12px 0}.hero p,.meta{color:var(--muted);margin:0 auto;max-width:820px}.meta{font-size:14px;margin-top:14px}.nav{position:sticky;top:0;z-index:4;background:rgba(7,27,45,.95);border-bottom:1px solid var(--line);padding:12px 0;display:flex;gap:22px;overflow:auto}.nav a{color:#c6dae7;text-decoration:none;white-space:nowrap;font-size:14px}section{padding:44px 0 3px}h2{font-size:27px;margin:0 0 16px}h3{font-size:19px;margin:22px 0 10px}.lead{font-size:18px;color:#d8e8f2}.grid{display:grid;gap:16px}.g4{grid-template-columns:repeat(4,1fr)}.g2{grid-template-columns:repeat(2,1fr)}.card,.chart,.sql{background:linear-gradient(145deg,rgba(17,57,85,.9),rgba(8,38,61,.94));border:1px solid var(--line);border-radius:12px;padding:20px}.card h3{font-size:15px;color:#cfe3ef;margin:0 0 7px}.value{font-size:31px;font-weight:750;line-height:1.2}.sub{color:var(--muted);font-size:14px;margin-top:7px}.mint{color:var(--mint)}.cyan{color:var(--cyan)}.gold{color:var(--gold)}.pink{color:var(--pink)}.note{margin:18px 0;padding:14px 17px;border-left:4px solid var(--mint);background:rgba(101,213,173,.09);border-radius:0 8px 8px 0;color:#d8eee5}.warn{border-left-color:var(--gold);background:rgba(255,196,106,.09);color:#f0dfbc}.lines{display:grid;gap:9px}.lines div{padding:12px 15px;border-left:3px solid var(--cyan);background:rgba(76,191,224,.08);border-radius:0 8px 8px 0}.table{width:100%;border-collapse:collapse;font-size:14px;margin:16px 0 24px}.table th{background:#123a58;color:#e0f4ff;text-align:right}.table th:first-child,.table td:first-child{text-align:left}.table th,.table td{padding:10px 11px;border:1px solid var(--line);text-align:right}.table td{color:#c8dae6}.table tr:nth-child(even)td{background:rgba(22,73,105,.16)}.legend{display:flex;gap:16px;flex-wrap:wrap;color:var(--muted);font-size:13px;margin:0 0 8px}.dot{width:10px;height:10px;border-radius:50%;display:inline-block;margin-right:5px}.chart{padding:18px;overflow:auto}.chart svg{display:block;width:100%;min-width:700px;height:auto}.caption{color:var(--muted);font-size:13px;margin:9px 0 0}details{margin:12px 0;border:1px solid var(--line);border-radius:10px;background:#082238}summary{cursor:pointer;padding:13px 16px;color:#d9edf8;font-weight:650}pre{margin:0;padding:18px;overflow:auto;color:#cbe5ef;font:12px/1.6 ui-monospace,SFMono-Regular,Menlo,monospace;border-top:1px solid var(--line)}code{font-family:inherit}.footer{margin-top:45px;border-top:1px solid var(--line);padding:25px 0;color:#8eafc0;font-size:13px}@media(max-width:820px){.wrap{padding:0 16px 48px}.hero{padding:44px 0 30px}.hero h1{font-size:30px}.g4,.g2{grid-template-columns:1fr}.table{font-size:12px}.table th,.table td{padding:8px 7px}}
+</style>
+</head>
+<body><main class="wrap">
+<header class="hero"><div class="eyebrow">T0 转化结构分析</div><h1>2026 年 1—8 月结清 0 在贷<br>T0 最早提单分段趋势分析报告</h1><p>以结清后同日获额通过的 T0 样本为 cohort，观察用户获额后的最早提单发生在哪个时间段，并识别整体转化下滑的主要来源。</p><div class="meta">统计区间：2026-01-01 — 2026-08-31　·　生成日期：2026-09-16</div></header>
+<nav class="nav"><a href="#conclusion">核心结论</a><a href="#trend">月度趋势</a><a href="#data">明细数据</a><a href="#scope">统计口径</a><a href="#sql">PGSQL 附录</a></nav>
+
+<section id="conclusion"><h2>一、核心结论</h2><div class="grid g4"><div class="card"><h3>1 月当天提单率</h3><div class="value mint">52.90%</div><div class="sub">10,326 / 19,521</div></div><div class="card"><h3>8 月当天提单率</h3><div class="value pink">39.20%</div><div class="sub">8,668 / 22,111</div></div><div class="card"><h3>当天提单率变化</h3><div class="value gold">-13.70pp</div><div class="sub">1 月至 8 月</div></div><div class="card"><h3>1—7 天提单率变化</h3><div class="value cyan">+2.08pp</div><div class="sub">25.99% → 28.07%</div></div></div>
+<div class="lines"><div><strong>主要原因：</strong>整体提单率下滑主要来自<strong>当天最早提单率</strong>下降；其从 1 月的 52.90% 降至 8 月的 39.20%。</div><div><strong>并非后移完全消失：</strong>1—7 天最早提单率保持在 26%—28%，8—15 天最早提单率由 5.67% 升至 7.93%，说明当日未提单用户中仍有一部分会在后续窗口完成提单。</div><div><strong>经营含义：</strong>应优先定位获额后当日未提单的用户为何未转化，并针对其后续 1—15 天的可经营窗口优化触达、产品和体验，而不能仅用全量让利追求当天转化。</div></div>
+<div class="note warn"><strong>成熟度说明：</strong>截至 2026-09-16，8 月下旬 cohort 的 16—30 天窗口尚未全部走完；因此，8 月该段及以其为基础的 30 天累计指标仅供方向性参考。当天、1—7 天、8—15 天窗口已基本成熟。</div></section>
+
+<section id="trend"><h2>二、月度提单率趋势</h2><p class="lead">先看累计提单率，再将其拆为互斥的最早提单时间段。两类图的分母均为当月结清 0 在贷且获额通过的 T0 样本数。</p>
+<h3>2.1 当天、7 天、15 天、30 天累计提单率</h3><div class="chart"><div class="legend"><span><i class="dot" style="background:#65d5ad"></i>当天</span><span><i class="dot" style="background:#4cbfe0"></i>7 天内累计</span><span><i class="dot" style="background:#ffc46a"></i>15 天内累计</span><span><i class="dot" style="background:#ef7baa"></i>30 天内累计</span></div><svg viewBox="0 0 1000 440" role="img" aria-label="月度累计提单率折线图"><rect x="0" y="0" width="1000" height="440" fill="#082238"/><g stroke="#28536e" stroke-width="1"><line x1="70" y1="50" x2="950" y2="50"/><line x1="70" y1="120" x2="950" y2="120"/><line x1="70" y1="190" x2="950" y2="190"/><line x1="70" y1="260" x2="950" y2="260"/><line x1="70" y1="330" x2="950" y2="330"/></g><g fill="#9db9c9" font-size="15"><text x="20" y="55">90%</text><text x="20" y="125">75%</text><text x="20" y="195">60%</text><text x="20" y="265">45%</text><text x="35" y="335">30%</text><text x="83" y="365">1月</text><text x="205" y="365">2月</text><text x="327" y="365">3月</text><text x="449" y="365">4月</text><text x="571" y="365">5月</text><text x="693" y="365">6月</text><text x="815" y="365">7月</text><text x="927" y="365">8月</text></g><polyline fill="none" stroke="#65d5ad" stroke-width="4" points="90,223 212,228 334,253 456,251 578,259 700,265 822,277 944,287"/><polyline fill="none" stroke="#4cbfe0" stroke-width="4" points="90,102 212,105 334,122 456,120 578,133 700,139 822,150 944,157"/><polyline fill="none" stroke="#ffc46a" stroke-width="4" points="90,76 212,77 334,91 456,88 578,98 700,104 822,116 944,125"/><polyline fill="none" stroke="#ef7baa" stroke-width="4" points="90,57 212,57 334,68 456,66 578,73 700,79 822,87 944,97"/><g fill="#ef7baa" font-size="13" font-weight="700" text-anchor="middle"><text x="90" y="46">88.50%</text><text x="212" y="46">88.46%</text><text x="334" y="57">86.07%</text><text x="456" y="55">86.50%</text><text x="578" y="62">85.04%</text><text x="700" y="68">83.88%</text><text x="822" y="76">82.11%</text><text x="944" y="86">80.03%</text></g><g fill="#65d5ad" font-size="13" font-weight="700" text-anchor="middle"><text x="90" y="242">52.90%</text><text x="212" y="247">51.81%</text><text x="334" y="272">46.37%</text><text x="456" y="270">46.85%</text><text x="578" y="278">45.16%</text><text x="700" y="284">43.77%</text><text x="822" y="296">41.36%</text><text x="944" y="306">39.20%</text></g></svg><p class="caption">当天、7 天、15 天、30 天累计提单率均呈下降趋势；其中当天提单率降幅最大。图中仅标注当天与 30 天累计提单率数值。</p></div>
+<h3>2.2 最早提单发生时间拆解</h3><p class="lead">四个时间段相互排斥：当天、1—7 天、8—15 天、16—30 天。</p><div class="chart"><div class="legend"><span><i class="dot" style="background:#65d5ad"></i>当天</span><span><i class="dot" style="background:#4cbfe0"></i>1—7 天</span><span><i class="dot" style="background:#ffc46a"></i>8—15 天</span><span><i class="dot" style="background:#ef7baa"></i>16—30 天</span></div><svg viewBox="0 0 1000 440" role="img" aria-label="月度最早提单率折线图"><rect x="0" y="0" width="1000" height="440" fill="#082238"/><g stroke="#28536e" stroke-width="1"><line x1="70" y1="50" x2="950" y2="50"/><line x1="70" y1="120" x2="950" y2="120"/><line x1="70" y1="190" x2="950" y2="190"/><line x1="70" y1="260" x2="950" y2="260"/><line x1="70" y1="330" x2="950" y2="330"/></g><g fill="#9db9c9" font-size="15"><text x="20" y="55">60%</text><text x="20" y="125">45%</text><text x="20" y="195">30%</text><text x="20" y="265">15%</text><text x="35" y="335">0%</text><text x="83" y="365">1月</text><text x="205" y="365">2月</text><text x="327" y="365">3月</text><text x="449" y="365">4月</text><text x="571" y="365">5月</text><text x="693" y="365">6月</text><text x="815" y="365">7月</text><text x="927" y="365">8月</text></g><polyline fill="none" stroke="#65d5ad" stroke-width="4" points="90,83 212,88 334,114 456,111 578,119 700,126 822,137 944,147"/><polyline fill="none" stroke="#4cbfe0" stroke-width="4" points="90,209 212,206 334,198 456,198 578,203 700,202 822,201 944,199"/><polyline fill="none" stroke="#ffc46a" stroke-width="4" points="90,304 212,302 334,299 456,298 578,296 700,294 822,295 944,293"/><polyline fill="none" stroke="#ef7baa" stroke-width="4" points="90,312 212,311 334,308 456,309 578,305 700,307 822,303 944,308"/><g fill="#65d5ad"><circle cx="90" cy="83" r="5"/><circle cx="212" cy="88" r="5"/><circle cx="334" cy="114" r="5"/><circle cx="456" cy="111" r="5"/><circle cx="578" cy="119" r="5"/><circle cx="700" cy="126" r="5"/><circle cx="822" cy="137" r="5"/><circle cx="944" cy="147" r="5"/></g></svg><p class="caption">当天提单率持续下行；其他时间段没有对应幅度的下降，尤其 1—7 天保持稳定。</p></div>
+<div class="grid g2"><div class="card"><h3>解读一：当日即时转化显著变弱</h3><p>3 月后，当天提单率的下降更明显；5—8 月连续从 45.16% 降至 39.20%。这是整体累计提单率走低的第一解释变量。</p></div><div class="card"><h3>解读二：后续窗口仍有经营价值</h3><p>8 月仍有 28.07% 的 T0 样本在 1—7 天首次提单，7.93% 在 8—15 天首次提单。后续窗口并未失去价值，应作为精细化经营重点。</p></div></div></section>
+
+<section id="data"><h2>三、月度数据明细</h2><table class="table"><thead><tr><th>结清获额月</th><th>T0 样本数</th><th>当天提单率</th><th>1—7 天提单率</th><th>8—15 天提单率</th><th>16—30 天提单率</th></tr></thead><tbody><tr><td>2026-01</td><td>19,521</td><td>52.90%</td><td>25.99%</td><td>5.67%</td><td>3.95%</td></tr><tr><td>2026-02</td><td>22,741</td><td>51.81%</td><td>26.54%</td><td>5.98%</td><td>4.12%</td></tr><tr><td>2026-03</td><td>22,200</td><td>46.37%</td><td>28.30%</td><td>6.66%</td><td>4.75%</td></tr><tr><td>2026-04</td><td>20,781</td><td>46.85%</td><td>28.26%</td><td>6.83%</td><td>4.55%</td></tr><tr><td>2026-05</td><td>23,876</td><td>45.16%</td><td>27.24%</td><td>7.29%</td><td>5.34%</td></tr><tr><td>2026-06</td><td>22,636</td><td>43.77%</td><td>27.46%</td><td>7.64%</td><td>5.01%</td></tr><tr><td>2026-07</td><td>23,277</td><td>41.36%</td><td>27.51%</td><td>7.47%</td><td>5.78%</td></tr><tr><td>2026-08</td><td>22,111</td><td>39.20%</td><td>28.07%</td><td>7.93%</td><td>4.82%</td></tr><tr><td><strong>总计</strong></td><td><strong>177,143</strong></td><td><strong>45.80%</strong></td><td><strong>27.43%</strong></td><td><strong>6.96%</strong></td><td><strong>4.82%</strong></td></tr></tbody></table><div class="note"><strong>分段含义：</strong>每个 T0 样本只看获额后的<strong>最早一笔提单</strong>。例如用户第 3 天首次提单，仅计入“1—7 天”，不会同时计入当天、8—15 天或 16—30 天。</div></section>
+
+<section id="scope"><h2>四、统计口径</h2><table class="table"><thead><tr><th>对象</th><th>口径</th></tr></thead><tbody><tr><td>T0 分母</td><td>2026-01-01 至 2026-08-31 正常结清的订单中，结清时不存在其他在途或逾期订单；且用户在结清当日、结清后获得通过额度。</td></tr><tr><td>获额去重</td><td>同一用户连续 20 秒内多次获额，通过业务本地时间排序后仅保留 <code>serial_id</code> 最大的一笔；同一用户同日存在多个有效结清获额事件时，保留结清后的最早有效获额。</td></tr><tr><td>提单定义</td><td>获额时间之后 31 天内的最早一笔 <code>apply_time</code>。不要求该订单最终放款成功；被拒订单也属于提单。</td></tr><tr><td>分段定义</td><td>按最早提单日期与结清获额日期的自然日差：0 天、1—7 天、8—15 天、16—30 天；四段互斥。</td></tr><tr><td>分母与分子</td><td>各段提单率 = 该段最早提单用户数 ÷ 当月 T0 样本数。按结清获额月份分组，而不是按后续提单月份分组。</td></tr></tbody></table></section>
+
+<section id="sql"><h2>五、附录：可复现 PGSQL</h2><p class="lead">以下代码按模块构建 T0 样本并输出报告的全部月度指标。执行前请确认表名、字段权限及业务时区与当前环境一致。</p><details open><summary>模块 1：构建结清 0 在贷样本与获额去重</summary><pre><code>SET TIME ZONE 'America/Belize';
+
+CREATE TEMP TABLE settled_orders AS
+SELECT o.user_id, o.serial_id, o.apply_time, o.repaid_time, o.repaid_date::date AS repaid_date
+FROM wangchuanliang.order_loan_f_v2_copy o
+WHERE o.is_remit = 1
+  AND o.loan_status_code = 7
+  AND o.repaid_time &gt; TIMESTAMP '2000-01-01 00:00:00'
+  AND o.repaid_date &gt;= DATE '2026-01-01'
+  AND o.repaid_date &lt;= DATE '2026-08-31';
+
+CREATE TEMP TABLE candidate_users AS SELECT DISTINCT user_id FROM settled_orders;
+
+CREATE TEMP TABLE all_orders AS
+SELECT o.user_id, o.serial_id, o.apply_time, o.repaid_time, o.loan_status_code
+FROM wangchuanliang.order_loan_f_v2_copy o
+JOIN candidate_users u ON u.user_id = o.user_id;
+
+CREATE TEMP TABLE clean_settles AS
+SELECT s.*
+FROM settled_orders s
+WHERE NOT EXISTS (
+  SELECT 1 FROM all_orders o
+  WHERE o.user_id = s.user_id
+    AND o.serial_id &lt;&gt; s.serial_id
+    AND o.apply_time &lt; s.repaid_time
+    AND (o.loan_status_code IN (5, 8)
+         OR (o.loan_status_code = 7 AND o.repaid_time &gt; s.repaid_time))
+);
+
+CREATE TEMP TABLE credit_days AS
+SELECT DISTINCT user_id, repaid_date - 1 AS vir_date FROM clean_settles
+UNION
+SELECT DISTINCT user_id, repaid_date AS vir_date FROM clean_settles;
+
+CREATE TEMP TABLE raw_credit_pass AS
+SELECT v.user_id, v.serial_id, v.vir_date::date AS vir_date,
+       (TO_TIMESTAMP(v.vir_unix) AT TIME ZONE 'America/Belize') AS vir_time
+FROM wangchuanliang.order_vir_f_copy v
+JOIN credit_days d ON d.user_id = v.user_id AND d.vir_date = v.vir_date
+WHERE v.is_pass1 = 1;
+
+CREATE TEMP TABLE dedup_credit_pass AS
+WITH ordered AS (
+  SELECT *, LAG(vir_time) OVER(PARTITION BY user_id ORDER BY vir_time, serial_id) AS prev_vir_time
+  FROM raw_credit_pass
+), batched AS (
+  SELECT *, SUM(CASE WHEN prev_vir_time IS NULL OR vir_time-prev_vir_time &gt; INTERVAL '20 seconds'
+                       THEN 1 ELSE 0 END)
+           OVER(PARTITION BY user_id ORDER BY vir_time, serial_id ROWS UNBOUNDED PRECEDING) AS batch_id
+  FROM ordered
+)
+SELECT user_id, serial_id, vir_date, vir_time
+FROM (
+  SELECT *, ROW_NUMBER() OVER(PARTITION BY user_id, batch_id ORDER BY serial_id DESC) AS rn
+  FROM batched
+) x WHERE rn = 1;</code></pre></details>
+<details><summary>模块 2：匹配同日有效获额及获额后最早提单</summary><pre><code>CREATE TEMP TABLE t0_samples AS
+SELECT user_id, repaid_date, credit_vir_time
+FROM (
+  SELECT c.user_id, c.repaid_date, cp.vir_time AS credit_vir_time,
+         ROW_NUMBER() OVER(
+           PARTITION BY c.user_id, c.repaid_date
+           ORDER BY cp.vir_time, cp.serial_id DESC, c.repaid_time
+         ) AS rn
+  FROM clean_settles c
+  JOIN dedup_credit_pass cp
+    ON cp.user_id = c.user_id
+   AND cp.vir_date = c.repaid_date
+   AND cp.vir_time &gt;= c.repaid_time
+) x WHERE rn = 1;
+
+CREATE TEMP TABLE first_apply AS
+SELECT user_id, repaid_date, first_apply_date
+FROM (
+  SELECT t.user_id, t.repaid_date, a.apply_time::date AS first_apply_date,
+         ROW_NUMBER() OVER(
+           PARTITION BY t.user_id, t.repaid_date ORDER BY a.apply_time, a.serial_id
+         ) AS rn
+  FROM t0_samples t
+  JOIN all_orders a
+    ON a.user_id = t.user_id
+   AND a.apply_time &gt;= t.credit_vir_time
+   AND a.apply_time &lt; t.credit_vir_time + INTERVAL '31 days'
+) x WHERE rn = 1;</code></pre></details>
+<details><summary>模块 3：输出报告月度指标</summary><pre><code>WITH monthly AS (
+  SELECT TO_CHAR(DATE_TRUNC('month', t.repaid_date), 'YYYY-MM') AS cohort_month,
+         COUNT(*) AS t0_sample_cnt,
+         SUM(CASE WHEN f.first_apply_date = t.repaid_date THEN 1 ELSE 0 END) AS day0_apply_cnt,
+         SUM(CASE WHEN f.first_apply_date - t.repaid_date BETWEEN 1 AND 7 THEN 1 ELSE 0 END) AS day1_7_apply_cnt,
+         SUM(CASE WHEN f.first_apply_date - t.repaid_date BETWEEN 8 AND 15 THEN 1 ELSE 0 END) AS day8_15_apply_cnt,
+         SUM(CASE WHEN f.first_apply_date - t.repaid_date BETWEEN 16 AND 30 THEN 1 ELSE 0 END) AS day16_30_apply_cnt
+  FROM t0_samples t
+  LEFT JOIN first_apply f ON f.user_id = t.user_id AND f.repaid_date = t.repaid_date
+  GROUP BY 1
+), report AS (
+  SELECT * FROM monthly
+  UNION ALL
+  SELECT '总计', SUM(t0_sample_cnt), SUM(day0_apply_cnt), SUM(day1_7_apply_cnt),
+         SUM(day8_15_apply_cnt), SUM(day16_30_apply_cnt)
+  FROM monthly
+)
+SELECT cohort_month AS 结清获额月份,
+       t0_sample_cnt AS 结清0在贷获额用户数,
+       day0_apply_cnt AS 当天最早提单用户数,
+       ROUND(day0_apply_cnt::numeric / NULLIF(t0_sample_cnt,0) * 100,2) AS 当天提单率_pct,
+       day1_7_apply_cnt AS 一至七天最早提单用户数,
+       ROUND(day1_7_apply_cnt::numeric / NULLIF(t0_sample_cnt,0) * 100,2) AS 一至七天提单率_pct,
+       day8_15_apply_cnt AS 八至十五天最早提单用户数,
+       ROUND(day8_15_apply_cnt::numeric / NULLIF(t0_sample_cnt,0) * 100,2) AS 八至十五天提单率_pct,
+       day16_30_apply_cnt AS 十六至三十天最早提单用户数,
+       ROUND(day16_30_apply_cnt::numeric / NULLIF(t0_sample_cnt,0) * 100,2) AS 十六至三十天提单率_pct
+FROM report
+ORDER BY CASE WHEN cohort_month='总计' THEN 0 ELSE 1 END, cohort_month;</code></pre></details></section>
+<footer class="footer">本报告只讨论 T0 样本的最早提单率及时间分布；未纳入盈利率、逾期率或资质模型指标。</footer></main></body></html>
