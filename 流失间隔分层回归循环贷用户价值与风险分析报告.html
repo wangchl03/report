@@ -1,0 +1,318 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>流失间隔分层回归循环贷用户价值与风险分析报告</title>
+<style>
+:root{--ink:#15263e;--muted:#60738b;--bg:#f5f8fc;--panel:#fff;--line:#dae4ef;--blue:#1d5fa7;--cyan:#169bb5;--orange:#e17c24;--red:#d94d55;--green:#138a66;--nav:#12243d;}
+*{box-sizing:border-box} body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.7 -apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei",sans-serif}
+.hero{background:linear-gradient(125deg,#102745,#1c5a8e);color:#fff;padding:54px max(24px,calc((100vw - 1180px)/2));}
+.hero h1{font-size:34px;line-height:1.25;margin:6px 0 10px;letter-spacing:.2px} .hero p{margin:0;color:#d9e7f5} .eyebrow{font-weight:700;letter-spacing:1.2px;color:#8cd9ee}
+.nav{position:sticky;top:0;z-index:10;background:rgba(18,36,61,.97);display:flex;justify-content:center;gap:22px;padding:10px 18px;box-shadow:0 2px 12px #0c1e3422}.nav a{color:#dcebf9;text-decoration:none;font-size:13px}.nav a:hover{color:#fff}
+main{max-width:1180px;margin:auto;padding:28px 20px 60px} section{margin:34px 0} h2{font-size:23px;margin:0 0 14px} h3{font-size:17px;margin:0 0 8px} .lead{color:var(--muted);margin:0 0 18px}
+.cards{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}.card{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:18px;box-shadow:0 5px 20px #274d7510}.card .k{color:var(--muted);font-size:13px}.card strong{display:block;font-size:29px;line-height:1.25;margin-top:4px}.card .s{font-size:12px;color:var(--muted)}
+.callout{background:#eaf4ff;border-left:4px solid var(--blue);padding:16px 18px;border-radius:8px}.warn{background:#fff5e9;border-left-color:var(--orange)}.risk{background:#fff0f1;border-left-color:var(--red)}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:18px}.chartbox{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:16px;min-height:340px}canvas{width:100%;height:270px;display:block}.legend{display:flex;gap:14px;flex-wrap:wrap;font-size:12px;color:var(--muted);margin-top:4px}.dot{width:9px;height:9px;border-radius:50%;display:inline-block;margin-right:5px}
+table{width:100%;border-collapse:separate;border-spacing:0;background:#fff;border:1px solid var(--line);border-radius:10px;overflow:hidden;font-size:13px}th{background:#eaf1f8;color:#29445f;white-space:nowrap}th,td{padding:10px 9px;border-bottom:1px solid var(--line);text-align:right}th:first-child,td:first-child{text-align:left}tr:last-child td{border-bottom:0}.neg{color:var(--red);font-weight:700}
+details{background:#fff;border:1px solid var(--line);border-radius:10px;margin:12px 0}summary{cursor:pointer;padding:14px 16px;font-weight:700}pre{margin:0;padding:18px;overflow:auto;background:#0f1e31;color:#d9e7f5;font:12px/1.55 ui-monospace,SFMono-Regular,Menlo,monospace;white-space:pre}
+.foot{color:var(--muted);font-size:12px;margin-top:24px}@media(max-width:800px){.cards,.grid{grid-template-columns:1fr 1fr}.hero h1{font-size:27px}.nav{justify-content:flex-start;overflow:auto}}@media(max-width:560px){.cards,.grid{grid-template-columns:1fr}main{padding:22px 12px}}
+/* 与既有 T0 报告统一的深色视觉体系 */
+:root{--ink:#e9f3fb;--muted:#a9c3d5;--bg:#071b2d;--panel:rgba(11,39,64,.96);--line:#204762;--blue:#4cbfe0;--cyan:#65d5ad;--orange:#ffc46a;--red:#ef7baa;--green:#65d5ad;--nav:#071b2d;}
+body{background:linear-gradient(180deg,#071b2d,#08243b 55%,#071b2d);color:var(--ink)}
+.hero{text-align:center;background:transparent;padding:64px max(24px,calc((100vw - 1180px)/2)) 38px;border-bottom:1px solid var(--line)}.hero h1{font-size:40px}.hero p{color:var(--muted);max-width:900px;margin:auto}.eyebrow{color:var(--green)}
+.nav{background:rgba(7,27,45,.96);border-bottom:1px solid var(--line);box-shadow:none}.nav a{color:#c6dae7}main{padding-top:12px}section{padding-top:28px}h2{font-size:27px}.lead{font-size:17px;color:#d8e8f2}
+.card,.chartbox{background:linear-gradient(145deg,rgba(17,57,85,.9),rgba(8,38,61,.94));border-color:var(--line);box-shadow:none}.card .k,.card .s,.legend{color:var(--muted)}.card strong{font-size:28px}.chartbox{min-height:350px;position:relative}.scatter-tip{position:absolute;z-index:4;min-width:205px;padding:11px 13px;border:1px solid #65d5ad;border-radius:8px;background:rgba(4,22,38,.97);box-shadow:0 8px 24px #0008;color:#dcecf5;font-size:12px;line-height:1.6;pointer-events:none}.scatter-tip b{color:#9bf0ca}
+.callout{background:rgba(76,191,224,.09);border-left-color:var(--blue);color:#dbeaf5}.warn{background:rgba(255,196,106,.09);border-left-color:var(--orange)}.risk{background:rgba(239,123,170,.10);border-left-color:var(--red)}
+table{background:#082238;border-color:var(--line)}th{background:#123a58;color:#e0f4ff}th,td{border-bottom-color:var(--line)}td{color:#c8dae6}tr:nth-child(even) td{background:rgba(22,73,105,.16)}.neg{color:#ff9abf}
+details{background:#082238;border-color:var(--line)}summary{color:#d9edf8}pre{background:#061626;color:#cbe5ef}.foot{color:#8eafc0}
+.heatmap{display:grid;grid-template-columns:150px repeat(10,minmax(54px,1fr));gap:4px;margin-top:16px;min-width:780px}.heatmap div{padding:9px 6px;text-align:center;border-radius:5px;font-size:12px}.hm-head{color:var(--muted);background:transparent!important}.hm-label{text-align:left!important;color:#d7e7f3;background:#123a58}.hm-note{font-size:12px;color:var(--muted);margin-top:10px}#riskScatterChart{height:330px}.chartbox:has(#riskScatterChart){min-height:410px}
+</style>
+</head>
+<body>
+<header class="hero"><div class="eyebrow">用户价值与循环贷风险分析</div><h1>流失间隔分层下回归循环贷用户价值与风险分析报告</h1><p>统计对象：整笔结清进入 0 在贷后，间隔超过阈值回归放款，且首笔有效期内再次成功放款循环贷的订单对<br>报告生成时间：2026 年 9 月 20 日</p></header>
+<nav class="nav"><a href="#conclusion">核心结论</a><a href="#value">价值趋势</a><a href="#risk">风险趋势</a><a href="#matrix">指标明细</a><a href="#method">统计口径</a><a href="#sql">PGSQL 附录</a></nav>
+<main>
+<section id="conclusion"><h2>一、核心结论</h2><div class="cards"><div class="card"><div class="k">高价值基准</div><strong>10%</strong><div class="s">大盘平均盈利率</div></div><div class="card"><div class="k">各阈值两笔合计盈利率</div><strong>23.77%—30.47%</strong><div class="s">均显著高于大盘基准</div></div><div class="card"><div class="k">循环贷订单逾期率</div><strong>29.79%—33.40%</strong><div class="s">始终高于回归首笔</div></div><div class="card"><div class="k">双当前逾期订单对盈利率</div><strong>-43.78% 至 -53.91%</strong><div class="s">必须单独控制的损失尾部</div></div></div>
+<div class="callout" style="margin-top:18px"><b>价值判断：</b>以 10% 大盘盈利率为标准，所有流失间隔层的平均两笔合计盈利率均达到高价值水平。用户即使流失较久，能够回归并在首笔有效期内再次形成循环贷，仍呈现较强的平均收益贡献。</div>
+<div class="callout warn" style="margin-top:12px"><b>风险边界：</b>“平均高价值”不等于可无差别开放循环贷。流失达到 180 天后，循环贷第二笔盈利率开始明显下降，订单逾期率同步抬升；双当前逾期订单对始终是约 -44% 至 -54% 的明显亏损场景。</div></section>
+
+<section id="value"><h2>二、价值趋势：首笔贡献稳定，第二笔决定长期回报</h2><p class="lead">横轴为“回归首笔提单距 0 在贷结清时间超过的天数”。虚线为 10% 大盘盈利率基准。</p><div class="grid"><div class="chartbox"><h3>首笔、循环贷与合计盈利率</h3><canvas id="profitChart"></canvas><div class="legend"><span><i class="dot" style="background:#4cbfe0"></i>首笔回归订单</span><span><i class="dot" style="background:#ffc46a"></i>循环贷第二笔</span><span><i class="dot" style="background:#65d5ad"></i>两笔合计</span><span><i class="dot" style="background:#a9c3d5"></i>大盘基准 10%</span></div></div><div class="chartbox"><h3>各流失层两笔合计盈利率（柱状）</h3><canvas id="profitBarChart"></canvas><div class="legend"><span><i class="dot" style="background:#65d5ad"></i>两笔合计盈利率</span><span><i class="dot" style="background:#ffc46a"></i>10% 高价值基准线</span></div></div></div>
+<div class="callout" style="margin-top:18px"><b>趋势解读：</b>7—150 天层的两笔合计盈利率基本稳定在 29.60%—30.47%，是大盘基准的约 3.7 倍；超过 180 天后，合计盈利率降至 28.56%，在 240 天和 360 天进一步降至 25.15% 和 23.77%。下降主要来自循环贷第二笔盈利率由约 19% 降至约 14%，而非首笔订单突然失去收益能力。</div></section>
+
+<section id="risk"><h2>三、风险趋势：循环贷第二笔是主要风险增量</h2><div class="grid"><div class="chartbox"><h3>首笔、循环贷与合计订单逾期率</h3><canvas id="riskChart"></canvas><div class="legend"><span><i class="dot" style="background:#4cbfe0"></i>首笔</span><span><i class="dot" style="background:#ffc46a"></i>循环贷第二笔</span><span><i class="dot" style="background:#ef7baa"></i>两笔合计</span></div></div><div class="chartbox"><h3>风险—收益散点图</h3><canvas id="riskScatterChart"></canvas><div class="legend"><span><i class="dot" style="background:#65d5ad"></i>每个点：一个流失阈值层</span><span>点内数字＝流失天数；点击散点查看完整指标</span></div></div></div>
+<div class="callout risk" style="margin-top:18px"><b>风险解读：</b>各阈值下循环贷第二笔订单逾期率约 30%—33%，显著高于首笔的 15%—18%。超过 180 天后，双当前逾期订单对占成熟订单对的比例升至 17%—18%，且该组两笔合计盈利率均低于 -50%。因此，长流失用户的循环贷策略应从“是否整体有利润”转向“是否识别并隔离双逾期尾部风险”。</div></section>
+
+<section id="matrix"><h2>四、阈值分层指标明细</h2><p class="lead">逾期按当前订单状态 `loan_status_code = 8`。盈利率统计两笔均已到期的订单对，使用截至运行日的 `repaid_amt`。</p><div style="overflow:auto"><table><thead><tr><th>流失阈值</th><th>符合条件订单对</th><th>成熟订单对</th><th>首笔逾期率</th><th>循环贷逾期率</th><th>合计订单逾期率</th><th>首笔盈利率</th><th>循环贷盈利率</th><th>合计盈利率</th><th>双逾期对数 / 占比</th><th>双逾期盈利率</th></tr></thead><tbody><tr><td>7 天以上</td><td>15,834</td><td>14,312</td><td>14.67%</td><td>30.13%</td><td>22.40%</td><td>42.63%</td><td>18.33%</td><td>29.60%</td><td>2,043 / 14.27%</td><td class='neg'>-46.00%</td></tr><tr><td>15 天以上</td><td>9,856</td><td>8,827</td><td>14.77%</td><td>29.79%</td><td>22.28%</td><td>42.83%</td><td>19.39%</td><td>30.24%</td><td>1,272 / 14.41%</td><td class='neg'>-45.42%</td></tr><tr><td>30 天以上</td><td>5,834</td><td>5,221</td><td>15.21%</td><td>30.24%</td><td>22.73%</td><td>42.66%</td><td>19.11%</td><td>29.98%</td><td>774 / 14.82%</td><td class='neg'>-44.35%</td></tr><tr><td>60 天以上</td><td>3,159</td><td>2,829</td><td>15.66%</td><td>30.36%</td><td>23.01%</td><td>42.99%</td><td>19.18%</td><td>30.12%</td><td>434 / 15.34%</td><td class='neg'>-43.78%</td></tr><tr><td>90 天以上</td><td>2,084</td><td>1,851</td><td>16.15%</td><td>30.36%</td><td>23.26%</td><td>43.35%</td><td>19.52%</td><td>30.47%</td><td>292 / 15.78%</td><td class='neg'>-45.00%</td></tr><tr><td>120 天以上</td><td>1,461</td><td>1,305</td><td>16.40%</td><td>30.65%</td><td>23.52%</td><td>43.46%</td><td>19.07%</td><td>30.34%</td><td>210 / 16.09%</td><td class='neg'>-49.65%</td></tr><tr><td>150 天以上</td><td>1,091</td><td>978</td><td>16.36%</td><td>30.47%</td><td>23.42%</td><td>42.70%</td><td>19.39%</td><td>30.19%</td><td>158 / 16.16%</td><td class='neg'>-50.40%</td></tr><tr><td>180 天以上</td><td>849</td><td>767</td><td>17.47%</td><td>31.55%</td><td>24.51%</td><td>41.67%</td><td>17.33%</td><td>28.56%</td><td>133 / 17.34%</td><td class='neg'>-51.77%</td></tr><tr><td>240 天以上</td><td>535</td><td>485</td><td>18.35%</td><td>33.40%</td><td>25.88%</td><td>39.19%</td><td>13.86%</td><td>25.15%</td><td>88 / 18.14%</td><td class='neg'>-51.39%</td></tr><tr><td>360 天以上</td><td>252</td><td>225</td><td>17.78%</td><td>32.44%</td><td>25.11%</td><td>37.26%</td><td>13.99%</td><td>23.77%</td><td>39 / 17.33%</td><td class='neg'>-53.91%</td></tr></tbody></table></div><h3 style="margin-top:24px">收益与风险热力矩阵</h3><p class="lead">颜色越亮表示数值越高；双逾期盈利率为负，颜色越红表示损失越大。</p><div style="overflow:auto"><div id="heatmap" class="heatmap"></div></div><div class="hm-note">该矩阵用于同时看流失时长、循环贷第二笔收益、合计收益和风险尾部，避免只用单条折线解读策略。</div></section>
+
+<section id="method"><h2>五、统计口径与使用边界</h2><div class="callout"><b>订单对定义：</b>用户整笔结清进入 0 在贷后，取真实下一笔成功放款订单。该订单提单时间距结清时点超过设定阈值，即为回归首笔；若首笔已结清，则循环贷订单提单时间必须早于首笔结清时间；若首笔未结清，则必须早于首笔到期时间。循环贷订单要求 `recycle_type = 2` 且成功放款。</div><div class="callout" style="margin-top:12px"><b>价值判定：</b>10% 是大盘平均盈利率，不是单笔订单的风险阈值。报告中的“高价值”指该层的金额加权平均盈利率超过 10%；实际策略仍需以当前逾期、双逾期尾部及可接受风险预算共同约束。</div><div class="callout" style="margin-top:12px"><b>样本边界：</b>阈值越长，样本量越小。超过 240 天和 360 天的成熟订单对分别为 485 和 225 组，应重点观察趋势，但不宜仅凭小样本进行大幅策略调整。</div></section>
+
+<section id="sql"><h2>附录：可复现全部指标的 PostgreSQL 代码</h2><p class="lead">以下代码一次运行即可输出报告所用的全部阈值指标，包括整体当前逾期率、成熟订单的首笔/循环贷/合计盈利与逾期指标，以及双当前逾期订单对表现。</p><details open><summary>完整 PGSQL（点击收起或展开）</summary><pre>/*
+  流失间隔分层：回归首笔 + 首笔有效期内循环贷订单的价值与风险
+
+  输出 3 个结果集：
+  1) 各阈值全部符合条件订单对的规模与当前订单逾期率；
+  2) 两笔均到期样本的首笔、循环贷第二笔、合计逾期率及盈利率；
+  3) 两笔均当前逾期的订单对数量、占比及合计盈利率。
+
+  口径：
+  - 0 在贷：某笔成功放款订单结清时，用户不存在其他未结清的已放款订单；
+  - 回归首笔：0 在贷后的真实下一笔成功放款订单，且提单间隔超过阈值；
+  - 循环贷第二笔：recycle_type=2，且发生在首笔有效期内；
+  - 首笔已结清：第二笔 apply_time &lt; 首笔 repaid_time；
+  - 首笔未结清：第二笔 apply_time &lt; 首笔 due_time；
+  - 当前逾期：loan_status_code=8；
+  - 盈利率：截至运行日 (sum(repaid_amt)-sum(remit_amt))/sum(remit_amt)。
+*/
+
+SET TIME ZONE &#x27;America/Belize&#x27;;
+
+DROP TABLE IF EXISTS tmp_long_churn_cycle_pairs_by_threshold;
+
+CREATE TEMP TABLE tmp_long_churn_cycle_pairs_by_threshold AS
+WITH thresholds AS (
+    SELECT churn_days
+    FROM (
+        VALUES (7), (15), (30), (60), (90),
+               (120), (150), (180), (240), (360)
+    ) t(churn_days)
+),
+loan_orders AS (
+    SELECT
+        o.user_id::BIGINT AS user_id,
+        o.serial_id,
+        o.apply_time,
+        o.remit_time,
+        o.repaid_time,
+        o.repaid_date,
+        o.due_time,
+        o.due_date,
+        COALESCE(o.remit_amt, 0)::NUMERIC AS remit_amt,
+        COALESCE(o.repaid_amt, 0)::NUMERIC AS repaid_amt,
+        o.loan_status_code,
+        COALESCE(r.recycle_type, 0) AS recycle_type
+    FROM wangchuanliang.order_loan_f_v2_copy o
+    LEFT JOIN wangchuanliang.side_recycle_type_copy r
+        ON r.serial_id = o.serial_id
+    WHERE o.is_remit = 1
+      AND o.remit_time IS NOT NULL
+),
+zero_outstanding_events AS (
+    SELECT DISTINCT
+        a.user_id,
+        a.repaid_time AS zero_outstanding_time
+    FROM loan_orders a
+    WHERE a.repaid_date &gt; DATE &#x27;2000-01-01&#x27;
+      AND NOT EXISTS (
+          SELECT 1
+          FROM loan_orders b
+          WHERE b.user_id = a.user_id
+            AND b.serial_id &lt;&gt; a.serial_id
+            AND b.remit_time &lt;= a.repaid_time
+            AND (
+                b.repaid_date IS NULL
+                OR b.repaid_date &lt; DATE &#x27;2000-01-01&#x27;
+                OR b.repaid_time &gt; a.repaid_time
+            )
+      )
+),
+next_funded_order_candidates AS (
+    SELECT
+        z.user_id,
+        z.zero_outstanding_time,
+        f.serial_id AS first_order_id,
+        f.apply_time AS first_apply_time,
+        f.remit_time AS first_remit_time,
+        f.repaid_time AS first_repaid_time,
+        f.repaid_date AS first_repaid_date,
+        f.due_time AS first_due_time,
+        f.due_date AS first_due_date,
+        f.remit_amt AS first_remit_amt,
+        f.repaid_amt AS first_repaid_amt,
+        f.loan_status_code AS first_status,
+        ROW_NUMBER() OVER (
+            PARTITION BY z.user_id, z.zero_outstanding_time
+            ORDER BY f.apply_time, f.serial_id
+        ) AS next_funded_rn
+    FROM zero_outstanding_events z
+    JOIN loan_orders f
+        ON f.user_id = z.user_id
+       AND f.apply_time &gt; z.zero_outstanding_time
+),
+long_churn_return_first AS (
+    SELECT
+        t.churn_days,
+        n.*
+    FROM next_funded_order_candidates n
+    JOIN thresholds t ON n.first_apply_time &gt; n.zero_outstanding_time
+                                          + t.churn_days * INTERVAL &#x27;1 day&#x27;
+    WHERE n.next_funded_rn = 1
+),
+qualified_cycle_pairs AS (
+    SELECT
+        f.churn_days,
+        f.user_id,
+        f.first_order_id,
+        f.first_due_date,
+        f.first_remit_amt,
+        f.first_repaid_amt,
+        f.first_status,
+        s.serial_id AS cycle_order_id,
+        s.due_date AS cycle_due_date,
+        s.remit_amt AS cycle_remit_amt,
+        s.repaid_amt AS cycle_repaid_amt,
+        s.loan_status_code AS cycle_status
+    FROM long_churn_return_first f
+    JOIN loan_orders s
+        ON s.user_id = f.user_id
+       AND s.recycle_type = 2
+       AND s.apply_time &gt; f.first_apply_time
+       AND s.remit_time &gt; f.first_remit_time
+    WHERE (
+            f.first_repaid_date &gt; DATE &#x27;2000-01-01&#x27;
+            AND s.apply_time &lt; f.first_repaid_time
+          )
+       OR (
+            (f.first_repaid_date IS NULL
+             OR f.first_repaid_date &lt; DATE &#x27;2000-01-01&#x27;)
+            AND s.apply_time &lt; f.first_due_time
+          )
+)
+SELECT *
+FROM qualified_cycle_pairs;
+
+
+/* 结果集 1：所有符合条件订单对（包含尚未到期订单）的当前逾期率。 */
+SELECT
+    churn_days AS churn_threshold_days,
+    COUNT(*) AS qualified_pair_count,
+    COUNT(*) * 2 AS qualified_order_count,
+    SUM(CASE WHEN first_status = 8 THEN 1 ELSE 0 END)
+        + SUM(CASE WHEN cycle_status = 8 THEN 1 ELSE 0 END)
+        AS current_overdue_order_count,
+    (
+        SUM(CASE WHEN first_status = 8 THEN 1 ELSE 0 END)
+        + SUM(CASE WHEN cycle_status = 8 THEN 1 ELSE 0 END)
+    )::NUMERIC / NULLIF(COUNT(*) * 2, 0) AS current_order_overdue_rate
+FROM tmp_long_churn_cycle_pairs_by_threshold
+GROUP BY churn_days
+ORDER BY churn_days;
+
+
+/* 结果集 2：两笔均已到期样本的首笔、循环贷第二笔、合计指标。 */
+WITH matured_pairs AS (
+    SELECT *
+    FROM tmp_long_churn_cycle_pairs_by_threshold
+    WHERE first_due_date &lt;= CURRENT_DATE
+      AND cycle_due_date &lt;= CURRENT_DATE
+),
+metrics AS (
+    SELECT
+        churn_days,
+        &#x27;首笔回归订单&#x27; AS metric_scope,
+        COUNT(*) AS order_count,
+        SUM(CASE WHEN first_status = 8 THEN 1 ELSE 0 END) AS current_overdue_order_count,
+        SUM(CASE WHEN first_status = 8 THEN 1 ELSE 0 END)::NUMERIC
+            / NULLIF(COUNT(*), 0) AS current_order_overdue_rate,
+        SUM(first_remit_amt) AS remit_amt,
+        SUM(first_repaid_amt) AS repaid_amt,
+        SUM(first_repaid_amt - first_remit_amt)
+            / NULLIF(SUM(first_remit_amt), 0) AS profit_rate
+    FROM matured_pairs
+    GROUP BY churn_days
+
+    UNION ALL
+
+    SELECT
+        churn_days,
+        &#x27;第二笔循环贷订单&#x27;,
+        COUNT(*),
+        SUM(CASE WHEN cycle_status = 8 THEN 1 ELSE 0 END),
+        SUM(CASE WHEN cycle_status = 8 THEN 1 ELSE 0 END)::NUMERIC
+            / NULLIF(COUNT(*), 0),
+        SUM(cycle_remit_amt),
+        SUM(cycle_repaid_amt),
+        SUM(cycle_repaid_amt - cycle_remit_amt)
+            / NULLIF(SUM(cycle_remit_amt), 0)
+    FROM matured_pairs
+    GROUP BY churn_days
+
+    UNION ALL
+
+    SELECT
+        churn_days,
+        &#x27;两笔订单合计&#x27;,
+        COUNT(*) * 2,
+        SUM(CASE WHEN first_status = 8 THEN 1 ELSE 0 END)
+            + SUM(CASE WHEN cycle_status = 8 THEN 1 ELSE 0 END),
+        (
+            SUM(CASE WHEN first_status = 8 THEN 1 ELSE 0 END)
+            + SUM(CASE WHEN cycle_status = 8 THEN 1 ELSE 0 END)
+        )::NUMERIC / NULLIF(COUNT(*) * 2, 0),
+        SUM(first_remit_amt + cycle_remit_amt),
+        SUM(first_repaid_amt + cycle_repaid_amt),
+        SUM(first_repaid_amt + cycle_repaid_amt - first_remit_amt - cycle_remit_amt)
+            / NULLIF(SUM(first_remit_amt + cycle_remit_amt), 0)
+    FROM matured_pairs
+    GROUP BY churn_days
+)
+SELECT *
+FROM metrics
+ORDER BY churn_days,
+         CASE metric_scope
+             WHEN &#x27;首笔回归订单&#x27; THEN 1
+             WHEN &#x27;第二笔循环贷订单&#x27; THEN 2
+             WHEN &#x27;两笔订单合计&#x27; THEN 3
+         END;
+
+
+/* 结果集 3：两笔均当前逾期的订单对。 */
+WITH matured_pairs AS (
+    SELECT *
+    FROM tmp_long_churn_cycle_pairs_by_threshold
+    WHERE first_due_date &lt;= CURRENT_DATE
+      AND cycle_due_date &lt;= CURRENT_DATE
+)
+SELECT
+    churn_days AS churn_threshold_days,
+    COUNT(*) AS matured_pair_count,
+    SUM(CASE WHEN first_status = 8 AND cycle_status = 8 THEN 1 ELSE 0 END)
+        AS both_current_overdue_pair_count,
+    AVG(CASE WHEN first_status = 8 AND cycle_status = 8 THEN 1.0 ELSE 0.0 END)
+        AS both_current_overdue_pair_share,
+    SUM(
+        CASE WHEN first_status = 8 AND cycle_status = 8
+             THEN first_repaid_amt + cycle_repaid_amt
+                - first_remit_amt - cycle_remit_amt
+             ELSE 0 END
+    ) / NULLIF(
+        SUM(
+            CASE WHEN first_status = 8 AND cycle_status = 8
+                 THEN first_remit_amt + cycle_remit_amt
+                 ELSE 0 END
+        ),
+        0
+    ) AS both_current_overdue_pair_profit_rate
+FROM matured_pairs
+GROUP BY churn_days
+ORDER BY churn_days;
+
+DROP TABLE tmp_long_churn_cycle_pairs_by_threshold;
+</pre></details></section>
+<p class="foot">说明：报告为历史观察性分层分析。盈利率反映截至运行日的回款表现；不能直接推断调整循环贷资格或利率的因果效果，策略上线前应进行分层对照实验。</p>
+</main>
+<script>
+const data=[{d:7,pairs:15834,orders:31668,allOdr:21.79,mature:14312,firstOdr:14.67,cycleOdr:30.13,totalOdr:22.4,firstProfit:42.63,cycleProfit:18.33,totalProfit:29.6,doublePairs:2043,doubleShare:14.27,doubleProfit:-46.0},{d:15,pairs:9856,orders:19712,allOdr:21.65,mature:8827,firstOdr:14.77,cycleOdr:29.79,totalOdr:22.28,firstProfit:42.83,cycleProfit:19.39,totalProfit:30.24,doublePairs:1272,doubleShare:14.41,doubleProfit:-45.42},{d:30,pairs:5834,orders:11668,allOdr:22.01,mature:5221,firstOdr:15.21,cycleOdr:30.24,totalOdr:22.73,firstProfit:42.66,cycleProfit:19.11,totalProfit:29.98,doublePairs:774,doubleShare:14.82,doubleProfit:-44.35},{d:60,pairs:3159,orders:6318,allOdr:22.32,mature:2829,firstOdr:15.66,cycleOdr:30.36,totalOdr:23.01,firstProfit:42.99,cycleProfit:19.18,totalProfit:30.12,doublePairs:434,doubleShare:15.34,doubleProfit:-43.78},{d:90,pairs:2084,orders:4168,allOdr:22.24,mature:1851,firstOdr:16.15,cycleOdr:30.36,totalOdr:23.26,firstProfit:43.35,cycleProfit:19.52,totalProfit:30.47,doublePairs:292,doubleShare:15.78,doubleProfit:-45.0},{d:120,pairs:1461,orders:2922,allOdr:22.38,mature:1305,firstOdr:16.4,cycleOdr:30.65,totalOdr:23.52,firstProfit:43.46,cycleProfit:19.07,totalProfit:30.34,doublePairs:210,doubleShare:16.09,doubleProfit:-49.65},{d:150,pairs:1091,orders:2182,allOdr:22.41,mature:978,firstOdr:16.36,cycleOdr:30.47,totalOdr:23.42,firstProfit:42.7,cycleProfit:19.39,totalProfit:30.19,doublePairs:158,doubleShare:16.16,doubleProfit:-50.4},{d:180,pairs:849,orders:1698,allOdr:23.38,mature:767,firstOdr:17.47,cycleOdr:31.55,totalOdr:24.51,firstProfit:41.67,cycleProfit:17.33,totalProfit:28.56,doublePairs:133,doubleShare:17.34,doubleProfit:-51.77},{d:240,pairs:535,orders:1070,allOdr:24.39,mature:485,firstOdr:18.35,cycleOdr:33.4,totalOdr:25.88,firstProfit:39.19,cycleProfit:13.86,totalProfit:25.15,doublePairs:88,doubleShare:18.14,doubleProfit:-51.39},{d:360,pairs:252,orders:504,allOdr:23.81,mature:225,firstOdr:17.78,cycleOdr:32.44,totalOdr:25.11,firstProfit:37.26,cycleProfit:13.99,totalProfit:23.77,doublePairs:39,doubleShare:17.33,doubleProfit:-53.91}];
+function lineChart(id, series, opts={}){
+ const c=document.getElementById(id),ctx=c.getContext('2d');const dpr=devicePixelRatio||1;const w=c.clientWidth,h=c.clientHeight;c.width=w*dpr;c.height=h*dpr;ctx.scale(dpr,dpr);ctx.clearRect(0,0,w,h);
+ const m={l:42,r:opts.rightAxis?44:18,t:16,b:34},pw=w-m.l-m.r,ph=h-m.t-m.b;let vals=series.flatMap(s=>data.map(x=>s.key?x[s.key]:s.value)); if(opts.rightAxis) vals=series.filter(s=>!s.axis).flatMap(s=>data.map(x=>x[s.key])); let min=opts.min??Math.min(...vals),max=opts.max??Math.max(...vals);if(max===min)max=min+1;const y=v=>m.t+(max-v)/(max-min)*ph;const x=i=>m.l+i*pw/(data.length-1);
+ ctx.font='11px Aptos, sans-serif';ctx.strokeStyle='#28536e';ctx.fillStyle='#a9c3d5';ctx.lineWidth=1;for(let i=0;i<=4;i++){let v=min+(max-min)*i/4,yy=y(v);ctx.beginPath();ctx.moveTo(m.l,yy);ctx.lineTo(w-m.r,yy);ctx.stroke();ctx.fillText(v.toFixed(0)+'%',4,yy+4)}
+ data.forEach((p,i)=>{ctx.fillText(p.d+'天',x(i)-10,h-9)});
+ series.forEach(s=>{const axis=s.axis==='right';const max2=axis?(opts.rightMax??Math.max(...data.map(x=>x[s.key]))):max;const min2=axis?(opts.rightMin??Math.min(...data.map(x=>x[s.key]))):min;const yy=v=>m.t+(max2-v)/(max2-min2||1)*ph;ctx.strokeStyle=s.color;ctx.fillStyle=s.color;ctx.lineWidth=1.8;ctx.setLineDash(s.dash?[5,4]:[]);ctx.beginPath();data.forEach((p,i)=>{let px=x(i),py=yy(s.key?p[s.key]:s.value);i?ctx.lineTo(px,py):ctx.moveTo(px,py)});ctx.stroke();ctx.setLineDash([]);data.forEach((p,i)=>{ctx.beginPath();ctx.arc(x(i),yy(s.key?p[s.key]:s.value),3,0,Math.PI*2);ctx.fill()}); if(s.labels) data.forEach((p,i)=>{ctx.font='10px Aptos';const v=s.key?p[s.key]:s.value,dx=s.labelDx??-12,dy=s.labelDy??-7;ctx.fillText(v.toFixed(1)+'%',x(i)+dx,Math.max(12,Math.min(h-m.b-2,yy(v)+dy)))});if(axis){ctx.fillStyle='#a9c3d5';ctx.fillText(max2.toFixed(0),w-m.r+5,m.t+4);ctx.fillText(min2.toFixed(0),w-m.r+5,h-m.b)} });
+}
+function profitBars(id){const c=document.getElementById(id),ctx=c.getContext('2d'),dpr=devicePixelRatio||1,w=c.clientWidth,h=c.clientHeight;c.width=w*dpr;c.height=h*dpr;ctx.scale(dpr,dpr);const m={l:42,r:18,t:18,b:38},pw=w-m.l-m.r,ph=h-m.t-m.b,max=36,y=v=>m.t+(max-v)/max*ph;ctx.font='11px Aptos';ctx.strokeStyle='#28536e';ctx.fillStyle='#a9c3d5';for(let i=0;i<=4;i++){const v=i*9,yy=y(v);ctx.beginPath();ctx.moveTo(m.l,yy);ctx.lineTo(w-m.r,yy);ctx.stroke();ctx.fillText(v+'%',5,yy+4)}const step=pw/data.length,bw=Math.min(31,step*.62);data.forEach((p,i)=>{const xx=m.l+i*step+(step-bw)/2,yy=y(p.totalProfit);ctx.fillStyle='#65d5ad';ctx.fillRect(xx,yy,bw,m.t+ph-yy);ctx.fillStyle='#d6f5e8';ctx.fillText(p.totalProfit.toFixed(1)+'%',xx-5,yy-7);ctx.fillStyle='#a9c3d5';ctx.fillText(p.d+'天',xx-4,h-10)});ctx.setLineDash([5,4]);ctx.strokeStyle='#ffc46a';ctx.beginPath();ctx.moveTo(m.l,y(10));ctx.lineTo(w-m.r,y(10));ctx.stroke();ctx.setLineDash([]);ctx.fillStyle='#ffc46a';ctx.fillText('10% 基准',w-70,y(10)-6)}
+function riskScatter(id){const c=document.getElementById(id),ctx=c.getContext('2d'),dpr=devicePixelRatio||1,w=c.clientWidth,h=c.clientHeight;c.width=w*dpr;c.height=h*dpr;ctx.scale(dpr,dpr);const m={l:62,r:34,t:38,b:66},pw=w-m.l-m.r,ph=h-m.t-m.b,xmin=22,xmax=26,ymin=23,ymax=31,x=v=>m.l+(v-xmin)/(xmax-xmin)*pw,y=v=>m.t+(ymax-v)/(ymax-ymin)*ph;ctx.font='12px Aptos';ctx.strokeStyle='#284d66';ctx.lineWidth=.55;ctx.fillStyle='#a9c3d5';for(let i=0;i<=4;i++){let xv=22+i,yv=23+i*2;ctx.beginPath();ctx.moveTo(x(xv),m.t);ctx.lineTo(x(xv),h-m.b);ctx.stroke();ctx.beginPath();ctx.moveTo(m.l,y(yv));ctx.lineTo(w-m.r,y(yv));ctx.stroke();ctx.fillText(xv+'%',x(xv)-11,h-39);ctx.fillText(yv+'%',14,y(yv)+4)}ctx.strokeStyle='#7f9eb2';ctx.lineWidth=1.2;ctx.beginPath();ctx.moveTo(m.l,m.t);ctx.lineTo(m.l,h-m.b);ctx.lineTo(w-m.r,h-m.b);ctx.stroke();ctx.fillStyle='#d8e8f2';ctx.font='12px Aptos';ctx.fillText('两笔合计盈利率（%）',m.l,m.t-16);ctx.fillText('两笔合计逾期率（%）',w/2-53,h-9);const colors=['#00c2ff','#25dfc0','#9ad93a','#f5dc37','#ffab2e','#ff7f50','#ff5470','#d86cff','#a487ff','#ff55c8'],textColors=['#071b2d','#071b2d','#071b2d','#071b2d','#071b2d','#071b2d','#ffffff','#ffffff','#ffffff','#071b2d'],pts=data.map(p=>({px:x(p.totalOdr),py:y(p.totalProfit)}));data.forEach((p,i)=>{const {px,py}=pts[i],label=String(p.d),radius=p.d>=100?16:14;ctx.beginPath();ctx.arc(px,py,radius,0,Math.PI*2);ctx.fillStyle=colors[i];ctx.fill();ctx.lineWidth=1.5;ctx.strokeStyle='#e9f3fb';ctx.stroke();ctx.fillStyle=textColors[i];ctx.font=`bold ${p.d>=100?9:10}px Aptos`;ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText(label,px,py+.5);ctx.textAlign='start';ctx.textBaseline='alphabetic'});c.onclick=e=>{const r=c.getBoundingClientRect(),mx=e.clientX-r.left,my=e.clientY-r.top,hit=pts.map((q,i)=>({i,dist:Math.hypot(mx-q.px,my-q.py)})).sort((a,b)=>a.dist-b.dist)[0],tip=document.getElementById('scatterTip');if(!hit||hit.dist>22){if(tip)tip.remove();return}const p=data[hit.i],box=c.parentElement;let popup=tip||document.createElement('div');popup.id='scatterTip';popup.className='scatter-tip';popup.innerHTML=`<b>流失阈值：${p.d} 天以上</b><br>符合条件订单对：${p.pairs.toLocaleString()}<br>成熟订单对：${p.mature.toLocaleString()}<br>首笔 / 循环贷 / 合计盈利率：${p.firstProfit.toFixed(2)}% / ${p.cycleProfit.toFixed(2)}% / ${p.totalProfit.toFixed(2)}%<br>首笔 / 循环贷 / 合计逾期率：${p.firstOdr.toFixed(2)}% / ${p.cycleOdr.toFixed(2)}% / ${p.totalOdr.toFixed(2)}%<br>双当前逾期订单对：${p.doublePairs.toLocaleString()}（${p.doubleShare.toFixed(2)}%）`;if(!tip)box.appendChild(popup);popup.style.left=Math.min(box.clientWidth-222,c.offsetLeft+pts[hit.i].px+14)+'px';popup.style.top=Math.min(box.clientHeight-126,c.offsetTop+pts[hit.i].py+14)+'px'}}
+function buildHeatmap(){const el=document.getElementById('heatmap');let h='<div class="hm-head">指标 / 流失阈值</div>'+data.map(p=>'<div class="hm-head">'+p.d+'天</div>').join('');const defs=[['两笔合计盈利率','totalProfit',0,35,'green'],['循环贷第二笔盈利率','cycleProfit',0,22,'cyan'],['两笔合计逾期率','totalOdr',20,28,'orange'],['双当前逾期对占比','doubleShare',12,20,'red'],['双当前逾期对盈利率','doubleProfit',-60,-35,'loss']];defs.forEach(([name,key,min,max,type])=>{h+='<div class="hm-label">'+name+'</div>';data.forEach(p=>{let v=p[key],t=Math.max(0,Math.min(1,(v-min)/(max-min)));let bg=type==='loss'?`rgba(239,123,170,${.22+.68*(1-t)})`:type==='orange'?`rgba(255,196,106,${.16+.67*t})`:type==='red'?`rgba(239,123,170,${.16+.67*t})`:type==='cyan'?`rgba(76,191,224,${.16+.67*t})`:`rgba(101,213,173,${.16+.67*t})`;h+='<div style="background:'+bg+'">'+v.toFixed(1)+'%</div>'})});el.innerHTML=h}
+function drawAll(){lineChart('profitChart',[{key:'firstProfit',color:'#4cbfe0',labels:true,labelDy:-8},{key:'cycleProfit',color:'#ffc46a',labels:true,labelDy:15},{key:'totalProfit',color:'#65d5ad',labels:true,labelDy:-19},{value:10,color:'#a9c3d5',dash:true}],{min:0,max:50});profitBars('profitBarChart');lineChart('riskChart',[{key:'firstOdr',color:'#4cbfe0',labels:true,labelDy:-9},{key:'cycleOdr',color:'#ffc46a',labels:true,labelDy:-20},{key:'totalOdr',color:'#ef7baa',labels:true,labelDy:15}],{min:10,max:36});riskScatter('riskScatterChart');buildHeatmap()}
+drawAll();addEventListener('resize',drawAll);
+</script></body></html>
