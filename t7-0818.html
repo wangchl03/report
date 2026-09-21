@@ -39,7 +39,7 @@ details.code pre{overflow:auto;max-height:520px;font-size:11px;line-height:1.45;
 <div class="top">
   <div class="kicker">DASHBOARD · T7+ RECALL · 2026-08-18</div>
   <h1>流失 7 天以上召回 · 看板</h1>
-  <p class="meta">名单 11,585 人 · 统计至 2026-09-20 · 本周 2026-09-14 起（周一）</p>
+  <p class="meta">名单 11,585 人（仅 recall_date=2026-08-18，不含同表 8/19 批次） · 统计至 2026-09-20 · 本周 2026-09-14 起（周一）</p>
 </div>
 <section class="kpis">
   <article class="card"><div class="label">提单率</div><div class="num a">21.24%</div><div class="sub">2,461 / 11,585 · 8/18至今去重用户</div></article>
@@ -74,7 +74,7 @@ details.code pre{overflow:auto;max-height:520px;font-size:11px;line-height:1.45;
 <section class="appendix" id="method">
 <h2>口径说明</h2>
 <ul>
-<li>名单：<code>wangchuanliang.t7recalllist_0818_0819</code>，批次日 <code>2026-08-18</code>，按 <code>churn_user_id</code> 去重。筛选 <code>recall_date = 2026-08-18</code>。</li>
+<li>名单：<code>wangchuanliang.t7recalllist_0818_0819</code>，批次日 <code>2026-08-18</code>，按 <code>churn_user_id</code> 去重。仅 <code>recall_date = 2026-08-18</code>，不含同表 2026-08-19 批次。</li>
 <li>提单：<code>apply_date ≥ 2026-08-18</code>。总提单人数=召回后任意提单用户去重；本周提单=本周任意提单用户去重；本周新增提单=召回后首次提单日期落在本周（周一 <code>DATE_TRUNC('week', CURRENT_DATE)</code> 至库内 <code>CURRENT_DATE</code>）。</li>
 <li>放款：<code>is_remit = 1</code> 且 <code>remit_amt &gt; 0</code>；本周新增放款按放款日（本页为 <code>o.remit_date::date</code>）落在本周的订单数。</li>
 <li>到期盈利 / 逾期：召回后提单且 <code>is_due = 1</code>、<code>is_remit = 1</code>、<code>remit_amt &gt; 0</code>。盈利率 = <code>(repaid_amt − remit_amt) / remit_amt</code>；逾期率 = <code>loan_status_code = 8</code> 占到期放款单。</li>
@@ -111,7 +111,8 @@ SELECT DISTINCT churn_user_id::bigint AS user_id,
        churn_days
 FROM wangchuanliang.t7recalllist_0818_0819
 WHERE churn_user_id IS NOT NULL
-  AND recall_date = DATE &#x27;2026-08-18&#x27;;
+  AND recall_date = DATE &#x27;2026-08-18&#x27;
+  AND recall_date &lt;&gt; DATE &#x27;2026-08-19&#x27;;
 
 -- ---------------------------------------------------------------------------
 -- 2) KPI（提单率、本周提单/新增提单、放款、到期盈利与逾期）
@@ -336,7 +337,10 @@ BATCHES = [
 def list_cte(batch) -&gt; str:
     extra = &quot;&quot;
     if batch.get(&quot;filter_recall_date&quot;):
-        extra = f&quot;\n  AND recall_date = DATE &#x27;{batch[&#x27;recall_date&#x27;]}&#x27;&quot;
+        extra = (
+            f&quot;\n  AND recall_date = DATE &#x27;{batch[&#x27;recall_date&#x27;]}&#x27;&quot;
+            &quot;\n  AND recall_date &lt;&gt; DATE &#x27;2026-08-19&#x27;&quot;
+        )
     return f&quot;&quot;&quot;
 SELECT DISTINCT churn_user_id::bigint AS user_id,
        COALESCE(strat, &#x27;NA&#x27;) AS strat,
@@ -893,6 +897,11 @@ def write_html(data, batch):
     LIST_TABLE = batch[&quot;table&quot;]
     RECALL_DATE = batch[&quot;recall_date&quot;]
     md = md_label(RECALL_DATE)
+    list_note = (
+        &quot;（仅 recall_date=2026-08-18，不含同表 8/19 批次）&quot;
+        if batch.get(&quot;filter_recall_date&quot;)
+        else &quot;&quot;
+    )
     HTML_PATH = HERE / f&quot;t7-{batch[&#x27;slug&#x27;]}.html&quot;
     json_name = f&quot;t7_{batch[&#x27;slug&#x27;]}_dashboard_data.json&quot;
 
@@ -943,7 +952,7 @@ details.code pre{{overflow:auto;max-height:520px;font-size:11px;line-height:1.45
 &lt;div class=&quot;top&quot;&gt;
   &lt;div class=&quot;kicker&quot;&gt;DASHBOARD · T7+ RECALL · {RECALL_DATE}&lt;/div&gt;
   &lt;h1&gt;流失 7 天以上召回 · 看板&lt;/h1&gt;
-  &lt;p class=&quot;meta&quot;&gt;名单 {fmt(k[&#x27;n_user&#x27;])} 人 · 统计至 {k[&#x27;as_of&#x27;]} · 本周 {k[&#x27;week_start&#x27;]} 起（周一）&lt;/p&gt;
+  &lt;p class=&quot;meta&quot;&gt;名单 {fmt(k[&#x27;n_user&#x27;])} 人{list_note} · 统计至 {k[&#x27;as_of&#x27;]} · 本周 {k[&#x27;week_start&#x27;]} 起（周一）&lt;/p&gt;
 &lt;/div&gt;
 &lt;section class=&quot;kpis&quot;&gt;
   &lt;article class=&quot;card&quot;&gt;&lt;div class=&quot;label&quot;&gt;提单率&lt;/div&gt;&lt;div class=&quot;num a&quot;&gt;{pct(k[&#x27;apply_rate&#x27;])}&lt;/div&gt;&lt;div class=&quot;sub&quot;&gt;{fmt(k[&#x27;n_apply&#x27;])} / {fmt(k[&#x27;n_user&#x27;])} · {md}至今去重用户&lt;/div&gt;&lt;/article&gt;
@@ -1088,7 +1097,7 @@ new Chart(document.getElementById(&#x27;c10&#x27;), {type:&#x27;bar&#x27;, data:
         &quot;&lt;ul&gt;\n&quot;
         f&quot;&lt;li&gt;名单：&lt;code&gt;{LIST_TABLE}&lt;/code&gt;，批次日 &lt;code&gt;{RECALL_DATE}&lt;/code&gt;，按 &lt;code&gt;churn_user_id&lt;/code&gt; 去重。&quot;
         + (
-            f&quot;筛选 &lt;code&gt;recall_date = {RECALL_DATE}&lt;/code&gt;。&quot;
+            &quot;仅 &lt;code&gt;recall_date = 2026-08-18&lt;/code&gt;，不含同表 2026-08-19 批次。&quot;
             if batch.get(&quot;filter_recall_date&quot;)
             else &quot;该表无可用召回日日期字段，以整表为该批次名单。&quot;
         )
@@ -1143,10 +1152,15 @@ def panel_body(data, batch, pfx):
     k = data[&quot;kpi&quot;]
     md = md_label(batch[&quot;recall_date&quot;])
     rd = batch[&quot;recall_date&quot;]
+    list_note = (
+        &quot;（仅 recall_date=2026-08-18，不含同表 8/19 批次）&quot;
+        if batch.get(&quot;filter_recall_date&quot;)
+        else &quot;&quot;
+    )
     return f&quot;&quot;&quot;
 &lt;div class=&quot;top&quot;&gt;
   &lt;div class=&quot;kicker&quot;&gt;DASHBOARD · T7+ RECALL · {rd}&lt;/div&gt;
-  &lt;p class=&quot;meta&quot;&gt;名单 {_fmt(k[&#x27;n_user&#x27;])} 人 · 统计至 {k[&#x27;as_of&#x27;]} · 本周 {k[&#x27;week_start&#x27;]} 起（周一）&lt;/p&gt;
+  &lt;p class=&quot;meta&quot;&gt;名单 {_fmt(k[&#x27;n_user&#x27;])} 人{list_note} · 统计至 {k[&#x27;as_of&#x27;]} · 本周 {k[&#x27;week_start&#x27;]} 起（周一）&lt;/p&gt;
 &lt;/div&gt;
 &lt;section class=&quot;kpis&quot;&gt;
   &lt;article class=&quot;card&quot;&gt;&lt;div class=&quot;label&quot;&gt;提单率&lt;/div&gt;&lt;div class=&quot;num a&quot;&gt;{_pct(k[&#x27;apply_rate&#x27;])}&lt;/div&gt;&lt;div class=&quot;sub&quot;&gt;{_fmt(k[&#x27;n_apply&#x27;])} / {_fmt(k[&#x27;n_user&#x27;])} · {md}至今去重用户&lt;/div&gt;&lt;/article&gt;
@@ -1456,7 +1470,7 @@ details.code pre{overflow:auto;max-height:520px;font-size:11px;line-height:1.45;
 &lt;div class=&quot;top&quot;&gt;
   &lt;div class=&quot;kicker&quot;&gt;DASHBOARD · T7+ RECALL · 2026-08-18&lt;/div&gt;
   &lt;h1&gt;流失 7 天以上召回 · 看板&lt;/h1&gt;
-  &lt;p class=&quot;meta&quot;&gt;名单 11,585 人 · 统计至 2026-09-20 · 本周 2026-09-14 起（周一）&lt;/p&gt;
+  &lt;p class=&quot;meta&quot;&gt;名单 11,585 人（仅 recall_date=2026-08-18，不含同表 8/19 批次） · 统计至 2026-09-20 · 本周 2026-09-14 起（周一）&lt;/p&gt;
 &lt;/div&gt;
 &lt;section class=&quot;kpis&quot;&gt;
   &lt;article class=&quot;card&quot;&gt;&lt;div class=&quot;label&quot;&gt;提单率&lt;/div&gt;&lt;div class=&quot;num a&quot;&gt;21.24%&lt;/div&gt;&lt;div class=&quot;sub&quot;&gt;2,461 / 11,585 · 8/18至今去重用户&lt;/div&gt;&lt;/article&gt;

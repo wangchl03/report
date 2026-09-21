@@ -51,7 +51,10 @@ BATCHES = [
 def list_cte(batch) -> str:
     extra = ""
     if batch.get("filter_recall_date"):
-        extra = f"\n  AND recall_date = DATE '{batch['recall_date']}'"
+        extra = (
+            f"\n  AND recall_date = DATE '{batch['recall_date']}'"
+            "\n  AND recall_date <> DATE '2026-08-19'"
+        )
     return f"""
 SELECT DISTINCT churn_user_id::bigint AS user_id,
        COALESCE(strat, 'NA') AS strat,
@@ -802,6 +805,11 @@ def write_html(data, batch):
     LIST_TABLE = batch["table"]
     RECALL_DATE = batch["recall_date"]
     md = md_label(RECALL_DATE)
+    list_note = (
+        "（仅 recall_date=2026-08-18，不含同表 8/19 批次）"
+        if batch.get("filter_recall_date")
+        else ""
+    )
     HTML_PATH = HERE / f"t7-{batch['slug']}-credit.html"
     json_name = f"t7_{batch['slug']}_credit_data.json"
 
@@ -852,7 +860,7 @@ details.code pre{{overflow:auto;max-height:520px;font-size:11px;line-height:1.45
 <div class="top">
   <div class="kicker">DASHBOARD · T7+ RECALL · CREDIT PASS · {RECALL_DATE}</div>
   <h1>流失 7 天以上召回 · 获额通过口径看板</h1>
-  <p class="meta">名单 {fmt(k['n_user'])} 人 · 获额通过 {fmt(k['n_pass'])} 人 · 统计至 {k['as_of']} · 本周 {k['week_start']} 起（周一）</p>
+  <p class="meta">名单 {fmt(k['n_user'])} 人{list_note} · 获额通过 {fmt(k['n_pass'])} 人 · 统计至 {k['as_of']} · 本周 {k['week_start']} 起（周一）</p>
 </div>
 <section class="kpis">
   <article class="card"><div class="label">获额人数</div><div class="num">{fmt(k['n_vir'])}</div><div class="sub">{md}至今发起获额</div></article>
@@ -994,7 +1002,7 @@ new Chart(document.getElementById('c10'), {type:'bar', data:{labels:D.churn.map(
         "<ul>\n"
         f"<li>名单：<code>{LIST_TABLE}</code>，批次日 <code>{RECALL_DATE}</code>，按 <code>churn_user_id</code> 去重。"
         + (
-            f"筛选 <code>recall_date = {RECALL_DATE}</code>。"
+            "仅 <code>recall_date = 2026-08-18</code>，不含同表 2026-08-19 批次。"
             if batch.get("filter_recall_date")
             else "该表无可用召回日日期字段，以整表为该批次名单。"
         )
@@ -1044,10 +1052,15 @@ def panel_body(data, batch, pfx):
     k = data["kpi"]
     md = md_label(batch["recall_date"])
     rd = batch["recall_date"]
+    list_note = (
+        "（仅 recall_date=2026-08-18，不含同表 8/19 批次）"
+        if batch.get("filter_recall_date")
+        else ""
+    )
     return f"""
 <div class="top">
   <div class="kicker">DASHBOARD · T7+ RECALL · {rd}</div>
-  <p class="meta">名单 {_fmt(k['n_user'])} 人 · 获额通过 {_fmt(k['n_pass'])} 人 · 统计至 {k['as_of']} · 本周 {k['week_start']} 起（周一）</p>
+  <p class="meta">名单 {_fmt(k['n_user'])} 人{list_note} · 获额通过 {_fmt(k['n_pass'])} 人 · 统计至 {k['as_of']} · 本周 {k['week_start']} 起（周一）</p>
 </div>
 <section class="kpis">
   <article class="card"><div class="label">获额人数</div><div class="num">{_fmt(k['n_vir'])}</div><div class="sub">{md}至今发起获额</div></article>

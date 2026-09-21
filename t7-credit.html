@@ -47,13 +47,13 @@ details.code pre{overflow:auto;max-height:520px;font-size:11px;line-height:1.45;
 <div class="page-top">
   <div class="kicker">T7+ RECALL · MULTI-BATCH · CREDIT PASS</div>
   <h1>流失 7 天以上召回 · 获额通过口径看板</h1>
-  <p class="meta">提单率分母为召回日至今日获额通过人数 · 本机每天下午 17:30 自动刷新</p>
+  <p class="meta">折线提单率 = 截至当日累计提单人数 / 截至当日累计获额通过人数 · 本机每天下午 17:30 自动刷新</p>
   <div class="tabs"><button type="button" data-tab="0818" class="on">8月18日批次</button><button type="button" data-tab="0902" class="">9月2日批次</button><button type="button" data-tab="0910" class="">9月10日批次</button><button type="button" data-tab="0917" class="">9月17日批次</button></div>
 </div>
 <section class="panel on" id="p-0818">
 <div class="top">
   <div class="kicker">DASHBOARD · T7+ RECALL · 2026-08-18</div>
-  <p class="meta">名单 11,585 人 · 获额通过 3,319 人 · 统计至 2026-09-21 · 本周 2026-09-21 起（周一）</p>
+  <p class="meta">名单 11,585 人（仅 recall_date=2026-08-18，不含同表 8/19 批次） · 获额通过 3,319 人 · 统计至 2026-09-21 · 本周 2026-09-21 起（周一）</p>
 </div>
 <section class="kpis">
   <article class="card"><div class="label">获额人数</div><div class="num">3,437</div><div class="sub">8/18至今发起获额</div></article>
@@ -251,7 +251,8 @@ SELECT DISTINCT churn_user_id::bigint AS user_id,
        churn_days
 FROM wangchuanliang.t7recalllist_0818_0819
 WHERE churn_user_id IS NOT NULL
-  AND recall_date = DATE &#x27;2026-08-18&#x27;;
+  AND recall_date = DATE &#x27;2026-08-18&#x27;
+  AND recall_date &lt;&gt; DATE &#x27;2026-08-19&#x27;;
 
 -- ---------------------------------------------------------------------------
 -- 2) KPI（获额、获额通过、通过后提单、放款、到期盈利与逾期）

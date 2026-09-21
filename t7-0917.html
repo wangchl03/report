@@ -335,7 +335,10 @@ BATCHES = [
 def list_cte(batch) -&gt; str:
     extra = &quot;&quot;
     if batch.get(&quot;filter_recall_date&quot;):
-        extra = f&quot;\n  AND recall_date = DATE &#x27;{batch[&#x27;recall_date&#x27;]}&#x27;&quot;
+        extra = (
+            f&quot;\n  AND recall_date = DATE &#x27;{batch[&#x27;recall_date&#x27;]}&#x27;&quot;
+            &quot;\n  AND recall_date &lt;&gt; DATE &#x27;2026-08-19&#x27;&quot;
+        )
     return f&quot;&quot;&quot;
 SELECT DISTINCT churn_user_id::bigint AS user_id,
        COALESCE(strat, &#x27;NA&#x27;) AS strat,
@@ -892,6 +895,11 @@ def write_html(data, batch):
     LIST_TABLE = batch[&quot;table&quot;]
     RECALL_DATE = batch[&quot;recall_date&quot;]
     md = md_label(RECALL_DATE)
+    list_note = (
+        &quot;（仅 recall_date=2026-08-18，不含同表 8/19 批次）&quot;
+        if batch.get(&quot;filter_recall_date&quot;)
+        else &quot;&quot;
+    )
     HTML_PATH = HERE / f&quot;t7-{batch[&#x27;slug&#x27;]}.html&quot;
     json_name = f&quot;t7_{batch[&#x27;slug&#x27;]}_dashboard_data.json&quot;
 
@@ -942,7 +950,7 @@ details.code pre{{overflow:auto;max-height:520px;font-size:11px;line-height:1.45
 &lt;div class=&quot;top&quot;&gt;
   &lt;div class=&quot;kicker&quot;&gt;DASHBOARD · T7+ RECALL · {RECALL_DATE}&lt;/div&gt;
   &lt;h1&gt;流失 7 天以上召回 · 看板&lt;/h1&gt;
-  &lt;p class=&quot;meta&quot;&gt;名单 {fmt(k[&#x27;n_user&#x27;])} 人 · 统计至 {k[&#x27;as_of&#x27;]} · 本周 {k[&#x27;week_start&#x27;]} 起（周一）&lt;/p&gt;
+  &lt;p class=&quot;meta&quot;&gt;名单 {fmt(k[&#x27;n_user&#x27;])} 人{list_note} · 统计至 {k[&#x27;as_of&#x27;]} · 本周 {k[&#x27;week_start&#x27;]} 起（周一）&lt;/p&gt;
 &lt;/div&gt;
 &lt;section class=&quot;kpis&quot;&gt;
   &lt;article class=&quot;card&quot;&gt;&lt;div class=&quot;label&quot;&gt;提单率&lt;/div&gt;&lt;div class=&quot;num a&quot;&gt;{pct(k[&#x27;apply_rate&#x27;])}&lt;/div&gt;&lt;div class=&quot;sub&quot;&gt;{fmt(k[&#x27;n_apply&#x27;])} / {fmt(k[&#x27;n_user&#x27;])} · {md}至今去重用户&lt;/div&gt;&lt;/article&gt;
@@ -1087,7 +1095,7 @@ new Chart(document.getElementById(&#x27;c10&#x27;), {type:&#x27;bar&#x27;, data:
         &quot;&lt;ul&gt;\n&quot;
         f&quot;&lt;li&gt;名单：&lt;code&gt;{LIST_TABLE}&lt;/code&gt;，批次日 &lt;code&gt;{RECALL_DATE}&lt;/code&gt;，按 &lt;code&gt;churn_user_id&lt;/code&gt; 去重。&quot;
         + (
-            f&quot;筛选 &lt;code&gt;recall_date = {RECALL_DATE}&lt;/code&gt;。&quot;
+            &quot;仅 &lt;code&gt;recall_date = 2026-08-18&lt;/code&gt;，不含同表 2026-08-19 批次。&quot;
             if batch.get(&quot;filter_recall_date&quot;)
             else &quot;该表无可用召回日日期字段，以整表为该批次名单。&quot;
         )
@@ -1142,10 +1150,15 @@ def panel_body(data, batch, pfx):
     k = data[&quot;kpi&quot;]
     md = md_label(batch[&quot;recall_date&quot;])
     rd = batch[&quot;recall_date&quot;]
+    list_note = (
+        &quot;（仅 recall_date=2026-08-18，不含同表 8/19 批次）&quot;
+        if batch.get(&quot;filter_recall_date&quot;)
+        else &quot;&quot;
+    )
     return f&quot;&quot;&quot;
 &lt;div class=&quot;top&quot;&gt;
   &lt;div class=&quot;kicker&quot;&gt;DASHBOARD · T7+ RECALL · {rd}&lt;/div&gt;
-  &lt;p class=&quot;meta&quot;&gt;名单 {_fmt(k[&#x27;n_user&#x27;])} 人 · 统计至 {k[&#x27;as_of&#x27;]} · 本周 {k[&#x27;week_start&#x27;]} 起（周一）&lt;/p&gt;
+  &lt;p class=&quot;meta&quot;&gt;名单 {_fmt(k[&#x27;n_user&#x27;])} 人{list_note} · 统计至 {k[&#x27;as_of&#x27;]} · 本周 {k[&#x27;week_start&#x27;]} 起（周一）&lt;/p&gt;
 &lt;/div&gt;
 &lt;section class=&quot;kpis&quot;&gt;
   &lt;article class=&quot;card&quot;&gt;&lt;div class=&quot;label&quot;&gt;提单率&lt;/div&gt;&lt;div class=&quot;num a&quot;&gt;{_pct(k[&#x27;apply_rate&#x27;])}&lt;/div&gt;&lt;div class=&quot;sub&quot;&gt;{_fmt(k[&#x27;n_apply&#x27;])} / {_fmt(k[&#x27;n_user&#x27;])} · {md}至今去重用户&lt;/div&gt;&lt;/article&gt;

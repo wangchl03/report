@@ -39,7 +39,7 @@ details.code pre{overflow:auto;max-height:520px;font-size:11px;line-height:1.45;
 <div class="top">
   <div class="kicker">DASHBOARD · T7+ RECALL · CREDIT PASS · 2026-08-18</div>
   <h1>流失 7 天以上召回 · 获额通过口径看板</h1>
-  <p class="meta">名单 11,585 人 · 获额通过 3,319 人 · 统计至 2026-09-21 · 本周 2026-09-21 起（周一）</p>
+  <p class="meta">名单 11,585 人（仅 recall_date=2026-08-18，不含同表 8/19 批次） · 获额通过 3,319 人 · 统计至 2026-09-21 · 本周 2026-09-21 起（周一）</p>
 </div>
 <section class="kpis">
   <article class="card"><div class="label">获额人数</div><div class="num">3,437</div><div class="sub">8/18至今发起获额</div></article>
@@ -78,7 +78,7 @@ details.code pre{overflow:auto;max-height:520px;font-size:11px;line-height:1.45;
 <section class="appendix" id="method">
 <h2>口径说明</h2>
 <ul>
-<li>名单：<code>wangchuanliang.t7recalllist_0818_0819</code>，批次日 <code>2026-08-18</code>，按 <code>churn_user_id</code> 去重。筛选 <code>recall_date = 2026-08-18</code>。</li>
+<li>名单：<code>wangchuanliang.t7recalllist_0818_0819</code>，批次日 <code>2026-08-18</code>，按 <code>churn_user_id</code> 去重。仅 <code>recall_date = 2026-08-18</code>，不含同表 2026-08-19 批次。</li>
 <li>获额：名单用户在 <code>order_vir_f_copy</code> 上 <code>vir_date ≥ 2026-08-18</code> 去重为获额人数；<code>is_pass1 = 1</code> 去重为获额通过人数。获额通过率 = 获额通过人数 / 获额人数。</li>
 <li>提单：获额通过后 <code>apply_time ≥ 首次通过时间</code> 且 <code>apply_date ≥ 2026-08-18</code>。提单人数=通过后任意提单用户去重；KPI 提单率 = 截至统计日累计提单人数 / 累计获额通过人数。折线图按日滚动同一口径。提单订单量=通过后提单订单数。</li>
 <li>放款：<code>is_remit = 1</code> 且 <code>remit_amt &gt; 0</code>，召回日后提单订单（与原看板一致）；本周新增放款按放款日（本页为 <code>o.remit_date::date</code>）落在本周的订单数。</li>
@@ -121,7 +121,8 @@ SELECT DISTINCT churn_user_id::bigint AS user_id,
        churn_days
 FROM wangchuanliang.t7recalllist_0818_0819
 WHERE churn_user_id IS NOT NULL
-  AND recall_date = DATE &#x27;2026-08-18&#x27;;
+  AND recall_date = DATE &#x27;2026-08-18&#x27;
+  AND recall_date &lt;&gt; DATE &#x27;2026-08-19&#x27;;
 
 -- ---------------------------------------------------------------------------
 -- 2) KPI（获额、获额通过、通过后提单、放款、到期盈利与逾期）
