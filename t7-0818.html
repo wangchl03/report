@@ -992,7 +992,7 @@ Chart.defaults.color=&#x27;#aac5da&#x27;;
 function base(y2) {
   const scales = {
     x: {ticks:{color:&#x27;#aac5da&#x27;, maxRotation:45, autoSkip:true, autoSkipPadding:6}, grid:{display:false}},
-    y: {type:&#x27;linear&#x27;, position:&#x27;left&#x27;, ticks:{color:&#x27;#aac5da&#x27;}, grid:{color:&#x27;rgba(42,92,126,.25)&#x27;}}
+    y: {type:&#x27;linear&#x27;, position:&#x27;left&#x27;, ticks:{color:&#x27;#aac5da&#x27;}, grid:{color:&#x27;rgba(42,92,126,.25)&#x27;}, beginAtZero:true, grace:&#x27;18%&#x27;}
   };
   if (y2) scales.y2 = {type:&#x27;linear&#x27;, position:&#x27;right&#x27;, ticks:{color:&#x27;#ffc26b&#x27;}, grid:{drawOnChartArea:false}};
   return {responsive:true, maintainAspectRatio:false, interaction:{mode:&#x27;index&#x27;, intersect:false},
@@ -1019,7 +1019,8 @@ if (typeof Chart !== &#x27;undefined&#x27; &amp;&amp; Chart.Tooltip &amp;&amp; !
     let x = nearest.x, y = nearest.y;
     const cut = area.left + (area.right - area.left) * 0.62;
     if (x &gt; cut) x = Math.max(area.left + 8, x - 120);
-    y = Math.min(Math.max(y, area.top + 8), area.bottom - 8);
+    if (y &lt; area.top + 48) y = Math.min(area.bottom - 8, y + 56);
+    else y = Math.min(Math.max(y, area.top + 8), area.bottom - 8);
     return {x, y};
   };
 }
@@ -1052,9 +1053,20 @@ function drawRateLabels(chart) {
 }
 const fd = D.first_daily, ad = D.apply_daily, rd = D.remit_daily, dd = D.due_daily, k=D.kpi;
 line(&#x27;c1&#x27;, fd.map(x=&gt;x.d.slice(5)), [
-  {label:&#x27;累计提单人数&#x27;, data:fd.map(x=&gt;x.cum), borderColor:col.cy, backgroundColor:&#x27;rgba(67,199,231,.12)&#x27;, fill:true, tension:.25, yAxisID:&#x27;y&#x27;, pointRadius:2},
-  {label:&#x27;提单率%&#x27;, data:fd.map(x=&gt;x.rate), borderColor:col.am, tension:.25, yAxisID:&#x27;y2&#x27;, pointRadius:2}
-], true);
+  {label:&#x27;累计提单人数&#x27;, data:fd.map(x=&gt;x.cum), borderColor:col.cy, backgroundColor:&#x27;rgba(67,199,231,.12)&#x27;, fill:true, tension:.25, yAxisID:&#x27;y&#x27;, pointRadius:3, pointHoverRadius:5, pointHitRadius:18, borderWidth:2, clip:false},
+  {label:&#x27;提单率%&#x27;, data:fd.map(x=&gt;x.rate), borderColor:col.am, tension:.25, yAxisID:&#x27;y2&#x27;, pointRadius:3, pointHoverRadius:5, pointHitRadius:18, borderWidth:2, clip:false}
+], true, {
+  plugins: Object.assign({}, base(true).plugins, {
+    tooltip: Object.assign({}, base(true).plugins.tooltip, {
+      callbacks: {
+        title(items) {
+          const i = items[0].dataIndex;
+          return (fd[i] &amp;&amp; fd[i].d) ? fd[i].d : items[0].label;
+        }
+      }
+    })
+  })
+});
 new Chart(document.getElementById(&#x27;c2&#x27;), {type:&#x27;bar&#x27;, data:{labels:fd.map(x=&gt;x.d.slice(5)), datasets:[
   {label:&#x27;当日首次提单&#x27;, data:fd.map(x=&gt;x.n), backgroundColor:col.gr}
 ]}, options:base(false)});
@@ -1225,9 +1237,20 @@ def charts_js_for(pfx: str) -&gt; str:
     js = r&quot;&quot;&quot;
 const fd = D.first_daily, ad = D.apply_daily, rd = D.remit_daily, dd = D.due_daily, k=D.kpi;
 line(&#x27;__P__c1&#x27;, fd.map(x=&gt;x.d.slice(5)), [
-  {label:&#x27;累计提单人数&#x27;, data:fd.map(x=&gt;x.cum), borderColor:col.cy, backgroundColor:&#x27;rgba(67,199,231,.12)&#x27;, fill:true, tension:.25, yAxisID:&#x27;y&#x27;, pointRadius:2},
-  {label:&#x27;提单率%&#x27;, data:fd.map(x=&gt;x.rate), borderColor:col.am, tension:.25, yAxisID:&#x27;y2&#x27;, pointRadius:2}
-], true);
+  {label:&#x27;累计提单人数&#x27;, data:fd.map(x=&gt;x.cum), borderColor:col.cy, backgroundColor:&#x27;rgba(67,199,231,.12)&#x27;, fill:true, tension:.25, yAxisID:&#x27;y&#x27;, pointRadius:3, pointHoverRadius:5, pointHitRadius:18, borderWidth:2, clip:false},
+  {label:&#x27;提单率%&#x27;, data:fd.map(x=&gt;x.rate), borderColor:col.am, tension:.25, yAxisID:&#x27;y2&#x27;, pointRadius:3, pointHoverRadius:5, pointHitRadius:18, borderWidth:2, clip:false}
+], true, {
+  plugins: Object.assign({}, base(true).plugins, {
+    tooltip: Object.assign({}, base(true).plugins.tooltip, {
+      callbacks: {
+        title(items) {
+          const i = items[0].dataIndex;
+          return (fd[i] &amp;&amp; fd[i].d) ? fd[i].d : items[0].label;
+        }
+      }
+    })
+  })
+});
 new Chart(document.getElementById(&#x27;__P__c2&#x27;), {type:&#x27;bar&#x27;, data:{labels:fd.map(x=&gt;x.d.slice(5)), datasets:[
   {label:&#x27;当日首次提单&#x27;, data:fd.map(x=&gt;x.n), backgroundColor:col.gr}
 ]}, options:base(false)});
@@ -1367,7 +1390,7 @@ Chart.register({{
 function base(y2) {{
   const scales = {{
     x: {{ticks:{{color:&#x27;#aac5da&#x27;, maxRotation:45, autoSkip:true, autoSkipPadding:6}}, grid:{{display:false}}}},
-    y: {{type:&#x27;linear&#x27;, position:&#x27;left&#x27;, ticks:{{color:&#x27;#aac5da&#x27;}}, grid:{{color:&#x27;rgba(42,92,126,.25)&#x27;}}}}
+    y: {{type:&#x27;linear&#x27;, position:&#x27;left&#x27;, ticks:{{color:&#x27;#aac5da&#x27;}}, grid:{{color:&#x27;rgba(42,92,126,.25)&#x27;}}, beginAtZero:true, grace:&#x27;18%&#x27;}}
   }};
   if (y2) scales.y2 = {{type:&#x27;linear&#x27;, position:&#x27;right&#x27;, ticks:{{color:&#x27;#ffc26b&#x27;}}, grid:{{drawOnChartArea:false}}}};
   return {{responsive:true, maintainAspectRatio:false, interaction:{{mode:&#x27;index&#x27;, intersect:false}},
@@ -1393,7 +1416,8 @@ if (typeof Chart !== &#x27;undefined&#x27; &amp;&amp; Chart.Tooltip &amp;&amp; !
     let x = nearest.x, y = nearest.y;
     const cut = area.left + (area.right - area.left) * 0.62;
     if (x &gt; cut) x = Math.max(area.left + 8, x - 120);
-    y = Math.min(Math.max(y, area.top + 8), area.bottom - 8);
+    if (y &lt; area.top + 48) y = Math.min(area.bottom - 8, y + 56);
+    else y = Math.min(Math.max(y, area.top + 8), area.bottom - 8);
     return {{x, y}};
   }};
 }}
@@ -1565,7 +1589,7 @@ Chart.defaults.color=&#x27;#aac5da&#x27;;
 function base(y2) {
   const scales = {
     x: {ticks:{color:&#x27;#aac5da&#x27;, maxRotation:45, autoSkip:true, autoSkipPadding:6}, grid:{display:false}},
-    y: {type:&#x27;linear&#x27;, position:&#x27;left&#x27;, ticks:{color:&#x27;#aac5da&#x27;}, grid:{color:&#x27;rgba(42,92,126,.25)&#x27;}}
+    y: {type:&#x27;linear&#x27;, position:&#x27;left&#x27;, ticks:{color:&#x27;#aac5da&#x27;}, grid:{color:&#x27;rgba(42,92,126,.25)&#x27;}, beginAtZero:true, grace:&#x27;18%&#x27;}
   };
   if (y2) scales.y2 = {type:&#x27;linear&#x27;, position:&#x27;right&#x27;, ticks:{color:&#x27;#ffc26b&#x27;}, grid:{drawOnChartArea:false}};
   return {responsive:true, maintainAspectRatio:false, interaction:{mode:&#x27;index&#x27;, intersect:false},
@@ -1592,7 +1616,8 @@ if (typeof Chart !== &#x27;undefined&#x27; &amp;&amp; Chart.Tooltip &amp;&amp; !
     let x = nearest.x, y = nearest.y;
     const cut = area.left + (area.right - area.left) * 0.62;
     if (x &gt; cut) x = Math.max(area.left + 8, x - 120);
-    y = Math.min(Math.max(y, area.top + 8), area.bottom - 8);
+    if (y &lt; area.top + 48) y = Math.min(area.bottom - 8, y + 56);
+    else y = Math.min(Math.max(y, area.top + 8), area.bottom - 8);
     return {x, y};
   };
 }
@@ -1625,9 +1650,20 @@ function drawRateLabels(chart) {
 }
 const fd = D.first_daily, ad = D.apply_daily, rd = D.remit_daily, dd = D.due_daily, k=D.kpi;
 line(&#x27;c1&#x27;, fd.map(x=&gt;x.d.slice(5)), [
-  {label:&#x27;累计提单人数&#x27;, data:fd.map(x=&gt;x.cum), borderColor:col.cy, backgroundColor:&#x27;rgba(67,199,231,.12)&#x27;, fill:true, tension:.25, yAxisID:&#x27;y&#x27;, pointRadius:2},
-  {label:&#x27;提单率%&#x27;, data:fd.map(x=&gt;x.rate), borderColor:col.am, tension:.25, yAxisID:&#x27;y2&#x27;, pointRadius:2}
-], true);
+  {label:&#x27;累计提单人数&#x27;, data:fd.map(x=&gt;x.cum), borderColor:col.cy, backgroundColor:&#x27;rgba(67,199,231,.12)&#x27;, fill:true, tension:.25, yAxisID:&#x27;y&#x27;, pointRadius:3, pointHoverRadius:5, pointHitRadius:18, borderWidth:2, clip:false},
+  {label:&#x27;提单率%&#x27;, data:fd.map(x=&gt;x.rate), borderColor:col.am, tension:.25, yAxisID:&#x27;y2&#x27;, pointRadius:3, pointHoverRadius:5, pointHitRadius:18, borderWidth:2, clip:false}
+], true, {
+  plugins: Object.assign({}, base(true).plugins, {
+    tooltip: Object.assign({}, base(true).plugins.tooltip, {
+      callbacks: {
+        title(items) {
+          const i = items[0].dataIndex;
+          return (fd[i] &amp;&amp; fd[i].d) ? fd[i].d : items[0].label;
+        }
+      }
+    })
+  })
+});
 new Chart(document.getElementById(&#x27;c2&#x27;), {type:&#x27;bar&#x27;, data:{labels:fd.map(x=&gt;x.d.slice(5)), datasets:[
   {label:&#x27;当日首次提单&#x27;, data:fd.map(x=&gt;x.n), backgroundColor:col.gr}
 ]}, options:base(false)});
@@ -1694,7 +1730,7 @@ Chart.defaults.color='#aac5da';
 function base(y2) {
   const scales = {
     x: {ticks:{color:'#aac5da', maxRotation:45, autoSkip:true, autoSkipPadding:6}, grid:{display:false}},
-    y: {type:'linear', position:'left', ticks:{color:'#aac5da'}, grid:{color:'rgba(42,92,126,.25)'}}
+    y: {type:'linear', position:'left', ticks:{color:'#aac5da'}, grid:{color:'rgba(42,92,126,.25)'}, beginAtZero:true, grace:'18%'}
   };
   if (y2) scales.y2 = {type:'linear', position:'right', ticks:{color:'#ffc26b'}, grid:{drawOnChartArea:false}};
   return {responsive:true, maintainAspectRatio:false, interaction:{mode:'index', intersect:false},
@@ -1721,7 +1757,8 @@ if (typeof Chart !== 'undefined' && Chart.Tooltip && !Chart.Tooltip.positioners.
     let x = nearest.x, y = nearest.y;
     const cut = area.left + (area.right - area.left) * 0.62;
     if (x > cut) x = Math.max(area.left + 8, x - 120);
-    y = Math.min(Math.max(y, area.top + 8), area.bottom - 8);
+    if (y < area.top + 48) y = Math.min(area.bottom - 8, y + 56);
+    else y = Math.min(Math.max(y, area.top + 8), area.bottom - 8);
     return {x, y};
   };
 }
@@ -1754,9 +1791,20 @@ function drawRateLabels(chart) {
 }
 const fd = D.first_daily, ad = D.apply_daily, rd = D.remit_daily, dd = D.due_daily, k=D.kpi;
 line('c1', fd.map(x=>x.d.slice(5)), [
-  {label:'累计提单人数', data:fd.map(x=>x.cum), borderColor:col.cy, backgroundColor:'rgba(67,199,231,.12)', fill:true, tension:.25, yAxisID:'y', pointRadius:2},
-  {label:'提单率%', data:fd.map(x=>x.rate), borderColor:col.am, tension:.25, yAxisID:'y2', pointRadius:2}
-], true);
+  {label:'累计提单人数', data:fd.map(x=>x.cum), borderColor:col.cy, backgroundColor:'rgba(67,199,231,.12)', fill:true, tension:.25, yAxisID:'y', pointRadius:3, pointHoverRadius:5, pointHitRadius:18, borderWidth:2, clip:false},
+  {label:'提单率%', data:fd.map(x=>x.rate), borderColor:col.am, tension:.25, yAxisID:'y2', pointRadius:3, pointHoverRadius:5, pointHitRadius:18, borderWidth:2, clip:false}
+], true, {
+  plugins: Object.assign({}, base(true).plugins, {
+    tooltip: Object.assign({}, base(true).plugins.tooltip, {
+      callbacks: {
+        title(items) {
+          const i = items[0].dataIndex;
+          return (fd[i] && fd[i].d) ? fd[i].d : items[0].label;
+        }
+      }
+    })
+  })
+});
 new Chart(document.getElementById('c2'), {type:'bar', data:{labels:fd.map(x=>x.d.slice(5)), datasets:[
   {label:'当日首次提单', data:fd.map(x=>x.n), backgroundColor:col.gr}
 ]}, options:base(false)});
