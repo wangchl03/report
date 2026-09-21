@@ -1094,6 +1094,7 @@ def write_hub(items):
     btns = []
     panels = []
     draws = []
+    sql_blocks = []
     for i, (batch, data) in enumerate(items):
         slug = batch["slug"]
         on = " on" if i == 0 else ""
@@ -1109,6 +1110,12 @@ def write_hub(items):
             f"if(slug==={json.dumps(slug)}){{\nconst D = DATA[{json.dumps(slug)}];\n"
             + charts_js_for(pfx)
             + "\n}"
+        )
+        sql_txt = build_sql(batch, data["kpi"]["remit_day"])
+        sql_blocks.append(
+            f'<details class="code"><summary>{TAB_LABEL[slug]} · 完整 PGSQL（点击展开）</summary><pre>'
+            + html_lib.escape(sql_txt)
+            + "</pre></details>"
         )
     html = f"""<!doctype html>
 <html lang="zh-CN">
@@ -1142,17 +1149,39 @@ h1{{font-size:24px;margin:8px 0 6px}}
 .chart h3{{margin:0 0 4px;font-size:15px}}
 .chart p{{margin:0 0 10px;font-size:12px;color:var(--muted)}}
 .box{{height:300px;position:relative;overflow:hidden}}
+.box.pie{{height:280px}}
+.foot{{color:#7fa6c2;font-size:12px;margin-top:28px;border-top:1px solid var(--line);padding-top:14px;line-height:1.8}}
+.appendix{{margin-top:36px;border-top:1px solid var(--line);padding-top:8px;text-align:left}}
+.appendix h2{{font-size:18px;margin:22px 0 10px}}
+.appendix p,.appendix li{{color:var(--muted);font-size:13px;line-height:1.8}}
+.appendix ul{{padding-left:1.2em}}
+details.code{{margin:10px 0;background:rgba(10,41,68,.95);border:1px solid var(--line);border-radius:12px;padding:10px 14px}}
+details.code summary{{cursor:pointer;color:var(--cy);font-weight:700;font-size:13px}}
+details.code pre{{overflow:auto;max-height:520px;font-size:11px;line-height:1.45;color:#d7ecf8;white-space:pre-wrap;word-break:break-word}}
 @media(max-width:900px){{.kpis,.grid{{grid-template-columns:1fr}}}}
 </style>
 </head>
 <body>
 <main class="wrap">
 <div class="page-top">
-  <div class="kicker">T7+ RECALL · MULTI-BATCH</div>
+  <div class="kicker">T7+ RECALL · MULTI-BATCH · CREDIT PASS</div>
   <h1>流失 7 天以上召回 · 获额通过口径看板</h1>
+  <p class="meta">提单率分母为召回日至今日获额通过人数 · 本机每天下午 17:30 自动刷新</p>
   <div class="tabs">{"".join(btns)}</div>
 </div>
 {"".join(panels)}
+<section class="appendix" id="method">
+<h2>口径说明</h2>
+<ul>
+<li>名单与原看板相同：0818 / 0902 / 0910 / 0917 四个召回批次，按 <code>churn_user_id</code> 去重。</li>
+<li>获额：<code>order_vir_f_copy.vir_date ≥ 召回日</code> 去重为获额人数；<code>is_pass1 = 1</code> 去重为获额通过人数。获额通过率 = 通过 / 获额。</li>
+<li>提单：获额通过后 <code>apply_time ≥ 首次通过时间</code> 且 <code>apply_date ≥ 召回日</code>。提单率 = 提单人数 / 获额通过人数；提单订单量 = 通过后提单订单数。</li>
+<li>放款、到期盈利率、逾期率：与 <a href="t7.html" style="color:var(--cy)">名单分母看板</a> 相同，仍按召回日后提单订单统计。</li>
+</ul>
+<h2>附录：完整 PGSQL</h2>
+{"".join(sql_blocks)}
+</section>
+<p class="foot">数据：kaby_dw · 获额通过口径 · 四个批次合一 · 17:30 本机刷新后推送 GitHub Pages</p>
 </main>
 <script>
 const DATA = {json.dumps(payload, ensure_ascii=False)};

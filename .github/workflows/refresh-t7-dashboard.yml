@@ -20,14 +20,19 @@ jobs:
       - name: Query warehouse and rebuild HTML
         env:
           PGPASSWORD: ${{ secrets.PGPASSWORD }}
-        run: python3 appendix_t7_0818_dashboard.py
+        run: |
+          python3 appendix_t7_0818_dashboard.py
+          python3 appendix_t7_credit_pass_dashboard.py
       - name: Commit and push Pages
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add t7.html t7-0818.html t7-0902.html t7-0910.html t7-0917.html \
             t7_0818_dashboard_data.json t7_0902_dashboard_data.json t7_0910_dashboard_data.json t7_0917_dashboard_data.json \
-            appendix_t7_0818_dashboard.sql appendix_t7_0902_dashboard.sql appendix_t7_0910_dashboard.sql appendix_t7_0917_dashboard.sql
+            appendix_t7_0818_dashboard.sql appendix_t7_0902_dashboard.sql appendix_t7_0910_dashboard.sql appendix_t7_0917_dashboard.sql \
+            t7-credit.html t7-0818-credit.html t7-0902-credit.html t7-0910-credit.html t7-0917-credit.html \
+            t7_0818_credit_data.json t7_0902_credit_data.json t7_0910_credit_data.json t7_0917_credit_data.json \
+            appendix_t7_0818_credit.sql appendix_t7_0902_credit.sql appendix_t7_0910_credit.sql appendix_t7_0917_credit.sql
           if git diff --cached --quiet; then
             echo "no changes"
             exit 0
