@@ -60,8 +60,8 @@ details.code pre{overflow:auto;max-height:520px;font-size:11px;line-height:1.45;
   <div class="card chart"><h3>每日放款单量与累计</h3><p>已放款订单；本周新增见 KPI</p><div class="box"><canvas id="c4"></canvas></div></div>
 </div>
 <div class="grid" style="margin-top:14px">
-  <div class="card chart"><h3>按到期日的盈利率</h3><p>当日到期放款单 (repaid−remit)/remit</p><div class="box"><canvas id="c5"></canvas></div></div>
-  <div class="card chart"><h3>按到期日的逾期率</h3><p>当日到期单中 loan_status_code=8 占比</p><div class="box"><canvas id="c6"></canvas></div></div>
+  <div class="card chart"><h3>按到期日的盈利率</h3><p>当天到期单 vs 截至当日累计到期单，(repaid−remit)/remit</p><div class="box"><canvas id="c5"></canvas></div></div>
+  <div class="card chart"><h3>按到期日的逾期率</h3><p>当天到期单 vs 截至当日累计到期单，loan_status_code=8 占比</p><div class="box"><canvas id="c6"></canvas></div></div>
 </div>
 <div class="grid" style="margin-top:14px">
   <div class="card chart"><h3>转化结构</h3><p>已提单 vs 尚未提单</p><div class="box pie"><canvas id="c7"></canvas></div></div>
@@ -230,7 +230,7 @@ GROUP BY 1
 ORDER BY 1;
 
 -- ---------------------------------------------------------------------------
--- 6) 按到期日的盈利率、逾期率
+-- 6) 按到期日的当天盈利率、逾期率（累计值由按 due_date 顺序滚动 repaid/remit、逾期单量计算）
 -- ---------------------------------------------------------------------------
 SELECT o.due_date::text AS d,
        COUNT(*) AS n_due,
@@ -348,6 +348,31 @@ WHERE churn_user_id IS NOT NULL{extra}
 def md_label(recall_date: str) -&gt; str:
     _y, m, d = recall_date.split(&quot;-&quot;)
     return f&quot;{int(m)}/{int(d)}&quot;
+
+
+def attach_due_cum(due_daily):
+    cum_repaid = 0.0
+    cum_remit = 0.0
+    cum_due = 0
+    cum_od = 0
+    for r in due_daily:
+        n_due = int(r.get(&quot;n_due&quot;) or 0)
+        n_od = int(r.get(&quot;n_od&quot;) or 0)
+        remit = float(r.get(&quot;remit&quot;) or 0)
+        repaid = float(r.get(&quot;repaid&quot;) or 0)
+        r[&quot;n_due&quot;] = n_due
+        r[&quot;n_od&quot;] = n_od
+        r[&quot;profit_pct&quot;] = round(100.0 * (repaid - remit) / remit, 2) if remit else None
+        r[&quot;overdue_pct&quot;] = round(100.0 * n_od / n_due, 2) if n_due else None
+        cum_repaid += repaid
+        cum_remit += remit
+        cum_due += n_due
+        cum_od += n_od
+        r[&quot;cum_profit_pct&quot;] = (
+            round(100.0 * (cum_repaid - cum_remit) / cum_remit, 2) if cum_remit else None
+        )
+        r[&quot;cum_overdue_pct&quot;] = round(100.0 * cum_od / cum_due, 2) if cum_due else None
+    return due_daily
 
 
 def connect():
@@ -584,13 +609,7 @@ def fetch(batch):
         GROUP BY 1 ORDER BY 1
         &quot;&quot;&quot;,
     )
-    for r in due_daily:
-        r[&quot;n_due&quot;] = int(r[&quot;n_due&quot;])
-        r[&quot;n_od&quot;] = int(r[&quot;n_od&quot;])
-        remit = float(r[&quot;remit&quot;] or 0)
-        repaid = float(r[&quot;repaid&quot;] or 0)
-        r[&quot;profit_pct&quot;] = round(100.0 * (repaid - remit) / remit, 2) if remit else None
-        r[&quot;overdue_pct&quot;] = round(100.0 * r[&quot;n_od&quot;] / r[&quot;n_due&quot;], 2) if r[&quot;n_due&quot;] else None
+    attach_due_cum(due_daily)
 
     strat = rows(
         cur,
@@ -810,7 +829,7 @@ GROUP BY 1
 ORDER BY 1;
 
 -- ---------------------------------------------------------------------------
--- 6) 按到期日的盈利率、逾期率
+-- 6) 按到期日的当天盈利率、逾期率（累计值由按 due_date 顺序滚动 repaid/remit、逾期单量计算）
 -- ---------------------------------------------------------------------------
 SELECT o.due_date::text AS d,
        COUNT(*) AS n_due,
@@ -867,6 +886,7 @@ GROUP BY 1;
 
 
 def write_html(data, batch):
+    attach_due_cum(data.get(&quot;due_daily&quot;) or [])
     k = data[&quot;kpi&quot;]
     payload = json.dumps(data, ensure_ascii=False)
     LIST_TABLE = batch[&quot;table&quot;]
@@ -943,8 +963,8 @@ details.code pre{{overflow:auto;max-height:520px;font-size:11px;line-height:1.45
   &lt;div class=&quot;card chart&quot;&gt;&lt;h3&gt;每日放款单量与累计&lt;/h3&gt;&lt;p&gt;已放款订单；本周新增见 KPI&lt;/p&gt;&lt;div class=&quot;box&quot;&gt;&lt;canvas id=&quot;c4&quot;&gt;&lt;/canvas&gt;&lt;/div&gt;&lt;/div&gt;
 &lt;/div&gt;
 &lt;div class=&quot;grid&quot; style=&quot;margin-top:14px&quot;&gt;
-  &lt;div class=&quot;card chart&quot;&gt;&lt;h3&gt;按到期日的盈利率&lt;/h3&gt;&lt;p&gt;当日到期放款单 (repaid−remit)/remit&lt;/p&gt;&lt;div class=&quot;box&quot;&gt;&lt;canvas id=&quot;c5&quot;&gt;&lt;/canvas&gt;&lt;/div&gt;&lt;/div&gt;
-  &lt;div class=&quot;card chart&quot;&gt;&lt;h3&gt;按到期日的逾期率&lt;/h3&gt;&lt;p&gt;当日到期单中 loan_status_code=8 占比&lt;/p&gt;&lt;div class=&quot;box&quot;&gt;&lt;canvas id=&quot;c6&quot;&gt;&lt;/canvas&gt;&lt;/div&gt;&lt;/div&gt;
+  &lt;div class=&quot;card chart&quot;&gt;&lt;h3&gt;按到期日的盈利率&lt;/h3&gt;&lt;p&gt;当天到期单 vs 截至当日累计到期单，(repaid−remit)/remit&lt;/p&gt;&lt;div class=&quot;box&quot;&gt;&lt;canvas id=&quot;c5&quot;&gt;&lt;/canvas&gt;&lt;/div&gt;&lt;/div&gt;
+  &lt;div class=&quot;card chart&quot;&gt;&lt;h3&gt;按到期日的逾期率&lt;/h3&gt;&lt;p&gt;当天到期单 vs 截至当日累计到期单，loan_status_code=8 占比&lt;/p&gt;&lt;div class=&quot;box&quot;&gt;&lt;canvas id=&quot;c6&quot;&gt;&lt;/canvas&gt;&lt;/div&gt;&lt;/div&gt;
 &lt;/div&gt;
 &lt;div class=&quot;grid&quot; style=&quot;margin-top:14px&quot;&gt;
   &lt;div class=&quot;card chart&quot;&gt;&lt;h3&gt;转化结构&lt;/h3&gt;&lt;p&gt;已提单 vs 尚未提单&lt;/p&gt;&lt;div class=&quot;box pie&quot;&gt;&lt;canvas id=&quot;c7&quot;&gt;&lt;/canvas&gt;&lt;/div&gt;&lt;/div&gt;
@@ -1010,12 +1030,13 @@ line(&#x27;c4&#x27;, rd.map(x=&gt;x.d.slice(5)), [
   {label:&#x27;累计放款单&#x27;, data:rd.map(x=&gt;x.cum), borderColor:col.am, tension:.25, yAxisID:&#x27;y2&#x27;, pointRadius:2}
 ], true);
 line(&#x27;c5&#x27;, dd.map(x=&gt;x.d.slice(5)), [
-  {label:&#x27;到期盈利率%&#x27;, data:dd.map(x=&gt;x.profit_pct), borderColor:col.gr, tension:.25, pointRadius:2, spanGaps:true}
+  {label:&#x27;当天盈利率%&#x27;, data:dd.map(x=&gt;x.profit_pct), borderColor:col.gr, tension:.25, pointRadius:2, spanGaps:true},
+  {label:&#x27;累计盈利率%&#x27;, data:dd.map(x=&gt;x.cum_profit_pct), borderColor:col.am, tension:.25, pointRadius:2, spanGaps:true}
 ], false);
 line(&#x27;c6&#x27;, dd.map(x=&gt;x.d.slice(5)), [
-  {label:&#x27;到期逾期率%&#x27;, data:dd.map(x=&gt;x.overdue_pct), borderColor:col.pk, tension:.25, pointRadius:2, spanGaps:true},
-  {label:&#x27;到期单量&#x27;, data:dd.map(x=&gt;x.n_due), borderColor:col.cy, tension:.25, yAxisID:&#x27;y2&#x27;, pointRadius:2}
-], true);
+  {label:&#x27;当天逾期率%&#x27;, data:dd.map(x=&gt;x.overdue_pct), borderColor:col.pk, tension:.25, pointRadius:2, spanGaps:true},
+  {label:&#x27;累计逾期率%&#x27;, data:dd.map(x=&gt;x.cum_overdue_pct), borderColor:col.cy, tension:.25, pointRadius:2, spanGaps:true}
+], false);
 new Chart(document.getElementById(&#x27;c7&#x27;), {type:&#x27;doughnut&#x27;, data:{labels:[&#x27;已提单&#x27;,&#x27;尚未提单&#x27;], datasets:[{data:[k.n_apply, k.n_user-k.n_apply], backgroundColor:[col.gr, &#x27;rgba(42,92,126,.55)&#x27;], borderWidth:0}]},
   options:{responsive:true, maintainAspectRatio:false, cutout:&#x27;55%&#x27;, layout:{padding:{top:4,bottom:8,left:4,right:8}}, plugins:{legend:{position:&#x27;right&#x27;, labels:{color:&#x27;#eff8ff&#x27;, padding:12, boxWidth:12}}}},
   plugins:[{id:&#x27;pieLabel&#x27;, afterDatasetsDraw(chart){
@@ -1145,8 +1166,8 @@ def panel_body(data, batch, pfx):
   &lt;div class=&quot;card chart&quot;&gt;&lt;h3&gt;每日放款单量与累计&lt;/h3&gt;&lt;p&gt;已放款订单；本周新增见 KPI&lt;/p&gt;&lt;div class=&quot;box&quot;&gt;&lt;canvas id=&quot;{pfx}c4&quot;&gt;&lt;/canvas&gt;&lt;/div&gt;&lt;/div&gt;
 &lt;/div&gt;
 &lt;div class=&quot;grid&quot; style=&quot;margin-top:14px&quot;&gt;
-  &lt;div class=&quot;card chart&quot;&gt;&lt;h3&gt;按到期日的盈利率&lt;/h3&gt;&lt;p&gt;当日到期放款单 (repaid−remit)/remit&lt;/p&gt;&lt;div class=&quot;box&quot;&gt;&lt;canvas id=&quot;{pfx}c5&quot;&gt;&lt;/canvas&gt;&lt;/div&gt;&lt;/div&gt;
-  &lt;div class=&quot;card chart&quot;&gt;&lt;h3&gt;按到期日的逾期率&lt;/h3&gt;&lt;p&gt;当日到期单中 loan_status_code=8 占比&lt;/p&gt;&lt;div class=&quot;box&quot;&gt;&lt;canvas id=&quot;{pfx}c6&quot;&gt;&lt;/canvas&gt;&lt;/div&gt;&lt;/div&gt;
+  &lt;div class=&quot;card chart&quot;&gt;&lt;h3&gt;按到期日的盈利率&lt;/h3&gt;&lt;p&gt;当天到期单 vs 截至当日累计到期单，(repaid−remit)/remit&lt;/p&gt;&lt;div class=&quot;box&quot;&gt;&lt;canvas id=&quot;{pfx}c5&quot;&gt;&lt;/canvas&gt;&lt;/div&gt;&lt;/div&gt;
+  &lt;div class=&quot;card chart&quot;&gt;&lt;h3&gt;按到期日的逾期率&lt;/h3&gt;&lt;p&gt;当天到期单 vs 截至当日累计到期单，loan_status_code=8 占比&lt;/p&gt;&lt;div class=&quot;box&quot;&gt;&lt;canvas id=&quot;{pfx}c6&quot;&gt;&lt;/canvas&gt;&lt;/div&gt;&lt;/div&gt;
 &lt;/div&gt;
 &lt;div class=&quot;grid&quot; style=&quot;margin-top:14px&quot;&gt;
   &lt;div class=&quot;card chart&quot;&gt;&lt;h3&gt;转化结构&lt;/h3&gt;&lt;p&gt;已提单 vs 尚未提单&lt;/p&gt;&lt;div class=&quot;box pie&quot;&gt;&lt;canvas id=&quot;{pfx}c7&quot;&gt;&lt;/canvas&gt;&lt;/div&gt;&lt;/div&gt;
@@ -1177,12 +1198,13 @@ line(&#x27;__P__c4&#x27;, rd.map(x=&gt;x.d.slice(5)), [
   {label:&#x27;累计放款单&#x27;, data:rd.map(x=&gt;x.cum), borderColor:col.am, tension:.25, yAxisID:&#x27;y2&#x27;, pointRadius:2}
 ], true);
 line(&#x27;__P__c5&#x27;, dd.map(x=&gt;x.d.slice(5)), [
-  {label:&#x27;到期盈利率%&#x27;, data:dd.map(x=&gt;x.profit_pct), borderColor:col.gr, tension:.25, pointRadius:2, spanGaps:true}
+  {label:&#x27;当天盈利率%&#x27;, data:dd.map(x=&gt;x.profit_pct), borderColor:col.gr, tension:.25, pointRadius:2, spanGaps:true},
+  {label:&#x27;累计盈利率%&#x27;, data:dd.map(x=&gt;x.cum_profit_pct), borderColor:col.am, tension:.25, pointRadius:2, spanGaps:true}
 ], false);
 line(&#x27;__P__c6&#x27;, dd.map(x=&gt;x.d.slice(5)), [
-  {label:&#x27;到期逾期率%&#x27;, data:dd.map(x=&gt;x.overdue_pct), borderColor:col.pk, tension:.25, pointRadius:2, spanGaps:true},
-  {label:&#x27;到期单量&#x27;, data:dd.map(x=&gt;x.n_due), borderColor:col.cy, tension:.25, yAxisID:&#x27;y2&#x27;, pointRadius:2}
-], true);
+  {label:&#x27;当天逾期率%&#x27;, data:dd.map(x=&gt;x.overdue_pct), borderColor:col.pk, tension:.25, pointRadius:2, spanGaps:true},
+  {label:&#x27;累计逾期率%&#x27;, data:dd.map(x=&gt;x.cum_overdue_pct), borderColor:col.cy, tension:.25, pointRadius:2, spanGaps:true}
+], false);
 new Chart(document.getElementById(&#x27;__P__c7&#x27;), {type:&#x27;doughnut&#x27;, data:{labels:[&#x27;已提单&#x27;,&#x27;尚未提单&#x27;], datasets:[{data:[k.n_apply, k.n_user-k.n_apply], backgroundColor:[col.gr, &#x27;rgba(42,92,126,.55)&#x27;], borderWidth:0}]},
   options:{responsive:true, maintainAspectRatio:false, cutout:&#x27;55%&#x27;, layout:{padding:{top:4,bottom:8,left:4,right:8}}, plugins:{legend:{position:&#x27;right&#x27;, labels:{color:&#x27;#eff8ff&#x27;, padding:12, boxWidth:12}}}},
   plugins:[{id:&#x27;pieLabel&#x27;, afterDatasetsDraw(chart){
@@ -1372,6 +1394,8 @@ def write_hub_from_disk():
             print(&quot;skip hub, missing&quot;, p.name, flush=True)
             return
         items.append((batch, json.loads(p.read_text(encoding=&quot;utf-8&quot;))))
+    for batch, data in items:
+        attach_due_cum(data.get(&quot;due_daily&quot;) or [])
     write_hub(items)
 
 
@@ -1452,8 +1476,8 @@ details.code pre{overflow:auto;max-height:520px;font-size:11px;line-height:1.45;
   &lt;div class=&quot;card chart&quot;&gt;&lt;h3&gt;每日放款单量与累计&lt;/h3&gt;&lt;p&gt;已放款订单；本周新增见 KPI&lt;/p&gt;&lt;div class=&quot;box&quot;&gt;&lt;canvas id=&quot;c4&quot;&gt;&lt;/canvas&gt;&lt;/div&gt;&lt;/div&gt;
 &lt;/div&gt;
 &lt;div class=&quot;grid&quot; style=&quot;margin-top:14px&quot;&gt;
-  &lt;div class=&quot;card chart&quot;&gt;&lt;h3&gt;按到期日的盈利率&lt;/h3&gt;&lt;p&gt;当日到期放款单 (repaid−remit)/remit&lt;/p&gt;&lt;div class=&quot;box&quot;&gt;&lt;canvas id=&quot;c5&quot;&gt;&lt;/canvas&gt;&lt;/div&gt;&lt;/div&gt;
-  &lt;div class=&quot;card chart&quot;&gt;&lt;h3&gt;按到期日的逾期率&lt;/h3&gt;&lt;p&gt;当日到期单中 loan_status_code=8 占比&lt;/p&gt;&lt;div class=&quot;box&quot;&gt;&lt;canvas id=&quot;c6&quot;&gt;&lt;/canvas&gt;&lt;/div&gt;&lt;/div&gt;
+  &lt;div class=&quot;card chart&quot;&gt;&lt;h3&gt;按到期日的盈利率&lt;/h3&gt;&lt;p&gt;当天到期单 vs 截至当日累计到期单，(repaid−remit)/remit&lt;/p&gt;&lt;div class=&quot;box&quot;&gt;&lt;canvas id=&quot;c5&quot;&gt;&lt;/canvas&gt;&lt;/div&gt;&lt;/div&gt;
+  &lt;div class=&quot;card chart&quot;&gt;&lt;h3&gt;按到期日的逾期率&lt;/h3&gt;&lt;p&gt;当天到期单 vs 截至当日累计到期单，loan_status_code=8 占比&lt;/p&gt;&lt;div class=&quot;box&quot;&gt;&lt;canvas id=&quot;c6&quot;&gt;&lt;/canvas&gt;&lt;/div&gt;&lt;/div&gt;
 &lt;/div&gt;
 &lt;div class=&quot;grid&quot; style=&quot;margin-top:14px&quot;&gt;
   &lt;div class=&quot;card chart&quot;&gt;&lt;h3&gt;转化结构&lt;/h3&gt;&lt;p&gt;已提单 vs 尚未提单&lt;/p&gt;&lt;div class=&quot;box pie&quot;&gt;&lt;canvas id=&quot;c7&quot;&gt;&lt;/canvas&gt;&lt;/div&gt;&lt;/div&gt;
@@ -1523,12 +1547,13 @@ line(&#x27;c4&#x27;, rd.map(x=&gt;x.d.slice(5)), [
   {label:&#x27;累计放款单&#x27;, data:rd.map(x=&gt;x.cum), borderColor:col.am, tension:.25, yAxisID:&#x27;y2&#x27;, pointRadius:2}
 ], true);
 line(&#x27;c5&#x27;, dd.map(x=&gt;x.d.slice(5)), [
-  {label:&#x27;到期盈利率%&#x27;, data:dd.map(x=&gt;x.profit_pct), borderColor:col.gr, tension:.25, pointRadius:2, spanGaps:true}
+  {label:&#x27;当天盈利率%&#x27;, data:dd.map(x=&gt;x.profit_pct), borderColor:col.gr, tension:.25, pointRadius:2, spanGaps:true},
+  {label:&#x27;累计盈利率%&#x27;, data:dd.map(x=&gt;x.cum_profit_pct), borderColor:col.am, tension:.25, pointRadius:2, spanGaps:true}
 ], false);
 line(&#x27;c6&#x27;, dd.map(x=&gt;x.d.slice(5)), [
-  {label:&#x27;到期逾期率%&#x27;, data:dd.map(x=&gt;x.overdue_pct), borderColor:col.pk, tension:.25, pointRadius:2, spanGaps:true},
-  {label:&#x27;到期单量&#x27;, data:dd.map(x=&gt;x.n_due), borderColor:col.cy, tension:.25, yAxisID:&#x27;y2&#x27;, pointRadius:2}
-], true);
+  {label:&#x27;当天逾期率%&#x27;, data:dd.map(x=&gt;x.overdue_pct), borderColor:col.pk, tension:.25, pointRadius:2, spanGaps:true},
+  {label:&#x27;累计逾期率%&#x27;, data:dd.map(x=&gt;x.cum_overdue_pct), borderColor:col.cy, tension:.25, pointRadius:2, spanGaps:true}
+], false);
 new Chart(document.getElementById(&#x27;c7&#x27;), {type:&#x27;doughnut&#x27;, data:{labels:[&#x27;已提单&#x27;,&#x27;尚未提单&#x27;], datasets:[{data:[k.n_apply, k.n_user-k.n_apply], backgroundColor:[col.gr, &#x27;rgba(42,92,126,.55)&#x27;], borderWidth:0}]},
   options:{responsive:true, maintainAspectRatio:false, cutout:&#x27;55%&#x27;, layout:{padding:{top:4,bottom:8,left:4,right:8}}, plugins:{legend:{position:&#x27;right&#x27;, labels:{color:&#x27;#eff8ff&#x27;, padding:12, boxWidth:12}}}},
   plugins:[{id:&#x27;pieLabel&#x27;, afterDatasetsDraw(chart){
@@ -1625,12 +1650,13 @@ line('c4', rd.map(x=>x.d.slice(5)), [
   {label:'累计放款单', data:rd.map(x=>x.cum), borderColor:col.am, tension:.25, yAxisID:'y2', pointRadius:2}
 ], true);
 line('c5', dd.map(x=>x.d.slice(5)), [
-  {label:'到期盈利率%', data:dd.map(x=>x.profit_pct), borderColor:col.gr, tension:.25, pointRadius:2, spanGaps:true}
+  {label:'当天盈利率%', data:dd.map(x=>x.profit_pct), borderColor:col.gr, tension:.25, pointRadius:2, spanGaps:true},
+  {label:'累计盈利率%', data:dd.map(x=>x.cum_profit_pct), borderColor:col.am, tension:.25, pointRadius:2, spanGaps:true}
 ], false);
 line('c6', dd.map(x=>x.d.slice(5)), [
-  {label:'到期逾期率%', data:dd.map(x=>x.overdue_pct), borderColor:col.pk, tension:.25, pointRadius:2, spanGaps:true},
-  {label:'到期单量', data:dd.map(x=>x.n_due), borderColor:col.cy, tension:.25, yAxisID:'y2', pointRadius:2}
-], true);
+  {label:'当天逾期率%', data:dd.map(x=>x.overdue_pct), borderColor:col.pk, tension:.25, pointRadius:2, spanGaps:true},
+  {label:'累计逾期率%', data:dd.map(x=>x.cum_overdue_pct), borderColor:col.cy, tension:.25, pointRadius:2, spanGaps:true}
+], false);
 new Chart(document.getElementById('c7'), {type:'doughnut', data:{labels:['已提单','尚未提单'], datasets:[{data:[k.n_apply, k.n_user-k.n_apply], backgroundColor:[col.gr, 'rgba(42,92,126,.55)'], borderWidth:0}]},
   options:{responsive:true, maintainAspectRatio:false, cutout:'55%', layout:{padding:{top:4,bottom:8,left:4,right:8}}, plugins:{legend:{position:'right', labels:{color:'#eff8ff', padding:12, boxWidth:12}}}},
   plugins:[{id:'pieLabel', afterDatasetsDraw(chart){
