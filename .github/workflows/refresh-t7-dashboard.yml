@@ -1,0 +1,36 @@
+name: Refresh T7 dashboard
+
+on:
+  schedule:
+    # 北京时间每天 18:00 = UTC 10:00
+    - cron: "0 10 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  refresh:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Install deps
+        run: pip install psycopg2-binary
+      - name: Query warehouse and rebuild HTML
+        env:
+          PGPASSWORD: ${{ secrets.PGPASSWORD }}
+        run: python3 appendix_t7_0818_dashboard.py
+      - name: Commit and push Pages
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add "T7召回0818前端看板.html" t7_0818_dashboard_data.json
+          if git diff --cached --quiet; then
+            echo "no changes"
+            exit 0
+          fi
+          git commit -m "Refresh T7 0818 dashboard for $(date -u +%Y-%m-%d)."
+          git push
