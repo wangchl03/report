@@ -1,0 +1,112 @@
+<!doctype html>
+<html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>红包分类、使用方法与统计口径说明</title>
+<style>
+:root{--bg:#071d34;--panel:#0b2a46;--line:#286082;--text:#eef6ff;--muted:#a7c3da;--cyan:#39c6e8;--green:#62d6a7;--orange:#ffb45e;--pink:#eb7db5}*{box-sizing:border-box}body{margin:0;background:linear-gradient(160deg,#061b31,#082744,#061b31);color:var(--text);font:15px/1.7 -apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei",Arial,sans-serif}.wrap{max-width:1240px;margin:auto;padding:44px 28px 76px}.hero{text-align:center;border-bottom:1px solid #2b6285;padding:22px 10px 32px}.eyebrow{font-size:13px;letter-spacing:2.4px;color:var(--cyan);font-weight:800}.hero h1{font-size:34px;margin:8px 0}.hero p,.sub{margin:0;color:var(--muted)}.section{margin-top:38px}.section h2{font-size:25px;margin:0 0 8px}.section h3{font-size:18px;margin:0 0 7px}.grid{display:grid;gap:16px}.three{grid-template-columns:repeat(3,1fr)}.two{grid-template-columns:repeat(2,1fr)}.card{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:18px}.type{font-size:22px;font-weight:800;margin-bottom:8px}.t2{color:var(--orange)}.t3{color:var(--cyan)}.t4{color:var(--green)}.flow{display:grid;grid-template-columns:1fr auto 1fr auto 1fr;gap:10px;align-items:center;margin-top:14px}.node{padding:15px;background:var(--panel);border:1px solid var(--line);border-radius:12px;text-align:center}.arrow{color:var(--cyan);font-size:24px;font-weight:800}.tag{display:inline-block;border:1px solid #39769b;border-radius:99px;padding:2px 9px;color:var(--muted);font-size:12px}.callout{border-left:4px solid var(--cyan);background:#0c3150;border-radius:0 12px 12px 0;padding:16px 18px}.warn{border-left-color:var(--orange)}.formula{font-size:16px;font-weight:800;color:#7de2ba;padding:12px 14px;background:#0a2540;border:1px solid #245b7c;border-radius:9px;margin:10px 0}.table-wrap{overflow:auto;border:1px solid var(--line);border-radius:12px}table{width:100%;min-width:820px;border-collapse:collapse}th{background:#18486d;padding:11px;text-align:left;white-space:nowrap}td{padding:11px;border-top:1px solid #22516f;vertical-align:top}tr:nth-child(even) td{background:rgba(100,149,237,.05)}code{color:#9ae7ff;font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace}pre{margin:12px 0;overflow:auto;background:#05192b;border:1px solid #1f5777;border-radius:12px;padding:18px;color:#cde8fa;font:12px/1.62 ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;white-space:pre}.good{color:#7de2ba;font-weight:800}.bad{color:#ffb0a9;font-weight:800}@media(max-width:760px){.wrap{padding:28px 15px 60px}.hero h1{font-size:27px}.three,.two,.flow{grid-template-columns:1fr}.arrow{transform:rotate(90deg);text-align:center}}
+</style></head>
+<body><main class="wrap">
+<header class="hero"><div class="eyebrow">COUPON DATA · CLASSIFICATION &amp; MEASUREMENT</div><h1>红包分类、使用方法与统计口径说明</h1><p>适用表：<code>coupon_user_detail_copy</code>、<code>order_loan_f_v2_copy</code>、<code>repayment_plan_v2_copy</code></p></header>
+
+<section class="section"><h2>一、核心结论：统计前必须统一数据粒度</h2><p class="sub">红包表的一行不是天然的一张券，也不是天然的一笔订单。多期订单会产生多条红包明细，因此需先聚合、后关联。</p>
+<div class="flow"><div class="node"><b>红包明细</b><br><span class="tag">user_id + serial_id + coupon_no + current_term</span><br>一张券可拆成多期记录</div><div class="arrow">→</div><div class="node"><b>订单级红包</b><br><span class="tag">user_id + serial_id</span><br>用于提单、放款、盈利、逾期</div><div class="arrow">→</div><div class="node"><b>分期级红包</b><br><span class="tag">serial_id + current_term</span><br>用于每期还款、逾期、优惠</div></div>
+<div class="callout warn" style="margin-top:18px"><b>统一原则：</b>订单级分析先汇总至 <code>user_id + serial_id</code>；分期级分析先汇总至 <code>serial_id + current_term</code>。直接将订单或分期表关联红包明细，会导致订单数、分期数和金额被重复计算。</div></section>
+
+<section class="section"><h2>二、红包分类及每类红包的统计方式</h2><div class="grid three">
+<div class="card"><div class="type t3">type = 3｜降息券</div><p>对利息或息费按比例减免，主要是 10%，也包括 5%、20%、30% 等。</p><p><b>规则：</b>一笔订单理论上只有一个 <code>coupon_no</code>；多期订单有多条明细，但券号相同。</p><p><b>订单红包金额：</b><code>SUM(coupon_amount)</code>，即所有期数金额之和。</p></div>
+<div class="card"><div class="type t4">type = 4｜提额券</div><p>用于提升可获额度，例如 5%、10%、20% 提额。</p><p><b>规则：</b>一笔订单理论上只有一个 <code>coupon_no</code>；多期订单按期产生多条明细。</p><p><b>订单红包金额：</b><code>SUM(coupon_amount)</code>。</p></div>
+<div class="card"><div class="type t2">type = 2｜提前还款折扣券</div><p>用户提前还款时享受的优惠或折扣。</p><p><b>规则：</b>一笔订单可以有多张券，<code>coupon_no</code> 不唯一。</p><p><b>订单券数：</b><code>COUNT(DISTINCT coupon_no)</code>；<b>总金额：</b><code>SUM(coupon_amount)</code>。</p></div>
+</div></section>
+
+<section class="section"><h2>三、字段口径与关联键</h2><div class="table-wrap"><table><thead><tr><th>字段</th><th>含义</th><th>统计用途</th></tr></thead><tbody>
+<tr><td><code>user_id</code></td><td>用户标识</td><td>订单级关联建议与 <code>serial_id</code> 同时使用，保障订单归属一致。</td></tr>
+<tr><td><code>serial_id</code></td><td>订单标识</td><td>订单表与红包表的核心关联键。</td></tr>
+<tr><td><code>current_term</code></td><td>当前期数</td><td>分期表与红包表关联键；订单级统计时不分期，而是汇总所有期。</td></tr>
+<tr><td><code>coupon_no</code></td><td>红包编号</td><td>一张独立券的标识。type=2 必须使用它去重计算券数。</td></tr>
+<tr><td><code>coupon_amount</code></td><td>红包金额</td><td>按订单或分期粒度汇总后的优惠金额。</td></tr>
+<tr><td><code>create_time</code></td><td>红包创建时间</td><td>用于分析发券至提单、还款的时间间隔；订单级通常取 <code>MIN(create_time)</code>。</td></tr>
+</tbody></table></div></section>
+
+<section class="section"><h2>四、订单级统计：识别哪些提单／放款订单使用红包</h2><p class="sub">订单级的目标是一笔订单只保留一行，适用于提单、放款、盈利、风险等指标。</p>
+<div class="formula">提单订单 = order_loan_f_v2_copy 中 apply_date IS NOT NULL 的订单</div>
+<div class="formula">放款订单 = 提单订单中 is_remit = 1 的订单</div>
+<h3>1. 订单级聚合伪代码</h3><pre>输入：coupon_user_detail_copy（红包明细）
+输出：每笔订单一行的 coupon_order_wide
+
+降息券订单汇总(type=3) =
+    红包明细 where type=3
+    group by user_id, serial_id
+    calculate:
+        coupon_no       = MAX(coupon_no)          -- 每单理论上一张
+        coupon_amt      = SUM(coupon_amount)      -- 多期金额相加
+        create_time     = MIN(create_time)
+
+提额券订单汇总(type=4) =
+    红包明细 where type=4
+    group by user_id, serial_id
+    calculate:
+        coupon_no       = MAX(coupon_no)
+        coupon_amt      = SUM(coupon_amount)
+        create_time     = MIN(create_time)
+
+还款优惠券订单汇总(type=2) =
+    红包明细 where type=2
+    group by user_id, serial_id
+    calculate:
+        coupon_cnt      = COUNT(DISTINCT coupon_no)
+        coupon_amt      = SUM(coupon_amount)
+        create_time     = MIN(create_time)
+
+提单订单红包宽表 =
+    提单订单
+    LEFT JOIN 还款优惠券订单汇总 ON user_id + serial_id
+    LEFT JOIN 降息券订单汇总     ON user_id + serial_id
+    LEFT JOIN 提额券订单汇总     ON user_id + serial_id
+    derive:
+        has_repay_coupon    = IF(匹配到type=2, 1, 0)
+        has_interest_coupon = IF(匹配到type=3, 1, 0)
+        has_quota_coupon    = IF(匹配到type=4, 1, 0)</pre>
+<h3>2. 建议保留的订单级字段</h3><div class="table-wrap"><table><thead><tr><th>字段</th><th>定义</th><th>可用于的分析</th></tr></thead><tbody>
+<tr><td><code>has_interest_coupon</code></td><td>匹配 type=3 则为 1</td><td>降息券关联订单、提单率、放款率、盈利率</td></tr>
+<tr><td><code>interest_coupon_amt</code></td><td>type=3 的全期 <code>SUM(coupon_amount)</code></td><td>降息总成本、券力度分层</td></tr>
+<tr><td><code>has_quota_coupon</code></td><td>匹配 type=4 则为 1</td><td>提额券订单与额度使用率、提单金额关系</td></tr>
+<tr><td><code>quota_coupon_amt</code></td><td>type=4 的全期 <code>SUM(coupon_amount)</code></td><td>提额价值或成本分析</td></tr>
+<tr><td><code>has_repay_coupon</code></td><td>匹配 type=2 则为 1</td><td>还款优惠券覆盖和还款表现</td></tr>
+<tr><td><code>repay_coupon_cnt / amt</code></td><td>type=2 的券数 / 总金额</td><td>多券使用、优惠成本与提前还款关系</td></tr>
+</tbody></table></div></section>
+
+<section class="section"><h2>五、分期级统计：识别每一期红包使用</h2><p class="sub">分析每期逾期、每期还款、提前还款优惠时，必须使用期级关联，订单级聚合结果不能直接替代。</p>
+<div class="formula">分期级关联键 = repayment_plan_v2_copy.serial_id + repayment_plan_v2_copy.current_term</div>
+<pre>分期级还款优惠券(type=2) =
+    红包明细 where type=2
+    group by serial_id, current_term
+    calculate:
+        coupon_cnt   = COUNT(DISTINCT coupon_no)
+        coupon_amt   = SUM(coupon_amount)
+        create_time  = MIN(create_time)
+
+分期红包宽表 =
+    repayment_plan_v2_copy
+    LEFT JOIN 分期级还款优惠券
+        ON serial_id + current_term
+
+-- type=3、type=4 也按 serial_id + current_term 关联，
+-- 可得到每期降息金额、每期提额券金额。</pre>
+<div class="callout"><b>金额边界：</b>“某一期红包金额”是该期的 <code>SUM(coupon_amount)</code>；“一笔订单红包金额”是订单所有期红包金额之和。两类金额不能直接相加或相互替代。</div></section>
+
+<section class="section"><h2>六、核心统计指标及公式</h2><div class="grid two">
+<div class="card"><h3>红包覆盖与金额</h3><div class="formula">降息券提单订单占比 = 使用降息券的提单订单数 ÷ 全部提单订单数</div><div class="formula">降息券放款率 = 使用降息券且放款订单数 ÷ 使用降息券提单订单数</div><div class="formula">单笔降息券金额 = SUM(interest_coupon_amt) ÷ 使用降息券订单数</div></div>
+<div class="card"><h3>转化、风险与盈利</h3><div class="formula">券组提单率 = 使用该券的提单用户数 ÷ 对应可触达或获券用户数</div><div class="formula">券组逾期率 = 使用该券且状态为8的放款订单数 ÷ 使用该券放款订单数</div><div class="formula">券组盈利率 = 状态为7、8的SUM(repaid_amt) ÷ SUM(remit_amt) − 1</div></div>
+</div>
+<div class="callout warn" style="margin-top:16px"><b>“使用”的解释边界：</b>当前口径将“红包表存在与订单关联的记录”视为该订单使用/关联该红包。如果后续需要严格区分“已发放、已绑定、已核销、已作废”，则需要红包表中的核销状态、使用时间或作废状态字段，并将其加入筛选条件。</div></section>
+
+<section class="section"><h2>七、常见错误与数据核对规则</h2><div class="table-wrap"><table><thead><tr><th>风险点</th><th>错误做法</th><th>正确做法</th></tr></thead><tbody>
+<tr><td>多期重复</td><td class="bad">订单表直接关联红包明细后统计订单数</td><td class="good">先按 user_id + serial_id 聚合，再关联订单表</td></tr>
+<tr><td>type=2 多券</td><td class="bad">用 COUNT(*) 代表红包张数</td><td class="good">使用 COUNT(DISTINCT coupon_no)</td></tr>
+<tr><td>期级重复</td><td class="bad">分期表直接关联 type=2 明细</td><td class="good">先按 serial_id + current_term 聚合</td></tr>
+<tr><td>金额混用</td><td class="bad">把单期红包金额当作订单总红包金额</td><td class="good">订单级汇总所有期；分期级只统计本期</td></tr>
+<tr><td>唯一性核对</td><td class="bad">忽略 type=3 / type=4 是否出现多券</td><td class="good">核对 COUNT(DISTINCT coupon_no)；正常应不大于1</td></tr>
+</tbody></table></div></section>
+
+<section class="section"><h2>八、建议的后续分析路径</h2><ol><li><b>降息券：</b>按 5%、10%、20%、30% 力度分层，比较提单率、放款率、逾期率、盈利率和单位增量成本。</li><li><b>提额券：</b>比较提额券用户的提单金额、额度使用率、放款率与后续风险表现。</li><li><b>还款优惠券：</b>在分期级比较提前还款、逾期结清、复借及优惠成本。</li><li><b>组合券：</b>形成“仅降息、仅提额、仅还款、组合券、无券”等互斥分组，统一比较全链路转化和风险质量。</li></ol>
+<div class="callout"><b>标准执行顺序：</b>确定订单级或分期级 → 先按目标粒度聚合红包 → 再关联订单/分期表 → 最后统计提单、放款、逾期、盈利与红包成本。</div></section>
+</main></body></html>
