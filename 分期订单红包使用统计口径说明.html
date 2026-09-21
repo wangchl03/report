@@ -1,0 +1,239 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>分期订单红包使用统计口径说明</title>
+<style>
+  :root{--bg:#071928;--panel:#112b44;--panel2:#0d2740;--line:#315471;--blue:#70c8f4;--teal:#5bd6d1;--orange:#ffbd63;--pink:#ff9cc4;--ink:#edf6ff;--muted:#b5c6d8}
+  *{box-sizing:border-box} body{margin:0;background:radial-gradient(circle at 50% -10%,#163956 0,#071928 46%,#061522 100%);color:var(--ink);font-family:Arial,"Microsoft YaHei",sans-serif;line-height:1.65}
+  .page{width:min(1180px,calc(100% - 42px));margin:auto;padding:42px 0 72px}.hero{text-align:center;padding:34px 20px 28px;border-bottom:1px solid var(--line)}.eyebrow{font-size:13px;letter-spacing:.14em;color:var(--blue);font-weight:700}.hero h1{margin:8px 0 10px;font-size:32px}.hero p{max-width:860px;margin:auto;color:#cadbeb}.meta{display:flex;justify-content:center;gap:18px;flex-wrap:wrap;margin-top:16px;color:#a9c0d3;font-size:13px}
+  section{margin-top:26px;padding:28px;background:linear-gradient(145deg,rgba(20,48,74,.98),rgba(13,35,56,.98));border:1px solid var(--line);border-radius:16px;box-shadow:0 18px 40px rgba(1,12,23,.22)}h2{margin:0 0 12px;color:#fff;font-size:23px}h3{margin:0;color:#f4f9ff;font-size:17px}h4{margin:0 0 6px;color:var(--blue);font-size:15px}.tag{display:inline-block;margin-bottom:9px;border:1px solid #3d6c91;border-radius:999px;background:#173d5e;color:#8cd9ff;padding:4px 10px;font-size:12px;font-weight:700}.lead{margin:0;color:#c4d5e5}.grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px;margin-top:18px}.card{padding:16px;background:#0d2942;border:1px solid #315471;border-radius:12px;border-top:4px solid var(--blue)}.card.orange{border-top-color:var(--orange)}.card.teal{border-top-color:var(--teal)}.card p{margin:5px 0 0;color:#bfd1e1;font-size:13px}.card strong{color:#fff;font-size:16px}
+  .flow{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin-top:18px}.flow .step{position:relative;padding:14px;background:#0d2942;border:1px solid #315471;border-radius:10px}.flow .step:not(:last-child)::after{content:"→";position:absolute;right:-17px;top:50%;transform:translateY(-50%);color:var(--blue);font-size:22px;font-weight:700;z-index:2}.flow .step p{margin:5px 0 0;color:#b9ccdd;font-size:12px}.table-wrap{overflow:auto;border:1px solid var(--line);border-radius:10px;margin-top:16px}table{width:100%;border-collapse:collapse;min-width:820px}th{background:#1d4c75;color:#fff;text-align:left;padding:11px;font-size:13px}td{border-top:1px solid #284a64;padding:11px;vertical-align:top;color:#dbe7f2;font-size:13px}tr:nth-child(even) td{background:#102c45}code{background:#092138;color:#bce5ff;padding:1px 4px;border-radius:4px;font-family:Menlo,Consolas,monospace}ul,ol{padding-left:22px;margin:12px 0 0}li{margin:8px 0;color:#c5d5e3}.notice{margin-top:16px;padding:14px 16px;border-left:4px solid var(--orange);border-radius:0 8px 8px 0;background:#2b281f;color:#f4dcaa}.notice strong{color:#fff}.module{margin-top:14px;padding:15px 16px;border:1px solid #315471;border-radius:10px;background:#0d2740}.module p{margin:5px 0 0;color:#bfd2e2;font-size:13px}details{margin-top:18px;border:1px solid #3a6281;border-radius:10px;background:#091d31}summary{cursor:pointer;padding:14px 16px;color:#9bdbff;font-weight:700}pre{margin:0;padding:16px;overflow:auto;max-height:980px;border-top:1px solid #315471;background:#061522;color:#d8e8f6;font:12px/1.55 Menlo,Consolas,monospace;white-space:pre}.footer{text-align:center;margin-top:22px;color:#98afc3;font-size:12px}@media(max-width:800px){.page{width:min(100% - 24px,1180px);padding-top:18px}.hero h1{font-size:25px}.grid,.flow{grid-template-columns:1fr}.flow .step:not(:last-child)::after{content:"↓";right:50%;top:auto;bottom:-23px;transform:translateX(50%)}section{padding:20px}}
+</style>
+</head>
+<body><main class="page">
+  <header class="hero"><div class="eyebrow">INSTALLMENT COUPON METHODOLOGY</div><h1>分期订单红包使用统计口径说明</h1><p>用于统一分期订单场景下还款优惠券、降息券和提额券的样本范围、数量、金额与防重规则。</p><div class="meta"><span>金额粒度：分期订单（serial_id + current_term）</span><span>数量粒度：整笔订单（serial_id + coupon_no）</span><span>版本：2026-09-08</span></div></header>
+
+  <section><span class="tag">一、适用范围</span><h2>统计对象与时间范围</h2><p class="lead">本口径针对已放款的分期订单。每一条分期记录由 <code>serial_id + current_term</code> 唯一识别；整笔订单由 <code>serial_id</code> 唯一识别。示例 SQL 的窗口为 2025-07-01 至 2026-06-30，可替换为任意目标观察期。</p><div class="grid"><div class="card"><strong>分期订单样本</strong><p>来源：<code>wangchuanliang.repayment_plan_v2_copy</code>；要求 <code>is_remit = 1</code>。</p></div><div class="card orange"><strong>提单与到期窗口</strong><p>整笔订单 <code>apply_date</code> 在窗口内，且该分期的 <code>due_date_period</code> 也在窗口内。</p></div><div class="card teal"><strong>首贷 / 续贷分层</strong><p>首贷：<code>loan_type = 'firstloan'</code>；续贷：<code>loan_type = 'reloan'</code>；总样本不限制贷款类型。</p></div></div><div class="notice"><strong>重要：</strong>样本条件同时限制“整笔订单提单日期”和“该分期到期日期”。窗口内提单、但该分期尚未在窗口内到期的记录，不会进入本分期订单统计样本。</div></section>
+
+  <section><span class="tag">二、统计流程</span><h2>先确定分期样本，再按不同粒度计算指标</h2><div class="flow"><div class="step"><h4>1. 筛选分期样本</h4><p>保留已放款、提单日在窗口内、到期日在窗口内的分期记录。</p></div><div class="step"><h4>2. 复合键关联红包</h4><p>通过 <code>serial_id + current_term</code> 关联红包明细，金额归属到对应分期。</p></div><div class="step"><h4>3. 分别计算数量与金额</h4><p>数量回到整笔订单去重；金额、放款、折扣、还款保留分期粒度。</p></div><div class="step"><h4>4. 汇总输出</h4><p>可输出总计、提单月份、首贷/续贷等分层结果；比例均按汇总分子 / 汇总分母计算。</p></div></div></section>
+
+  <section><span class="tag">三、红包关联与分类</span><h2>红包以分期复合键归属，数量以整笔订单去重</h2><div class="table-wrap"><table><thead><tr><th>红包类别</th><th>条件</th><th>数量统计口径</th><th>金额统计口径</th><th>业务说明</th></tr></thead><tbody>
+  <tr><td>还款优惠券</td><td><code>type = 2</code></td><td>在符合样本的红包记录中，<code>COUNT(DISTINCT serial_id + ':' + coupon_no)</code></td><td>按 <code>serial_id + current_term</code> 关联后，<code>SUM(coupon_amount)</code></td><td>同一整笔订单的不同期可存在不同 <code>coupon_no</code>；不同券号应分别计 1 张。</td></tr>
+  <tr><td>降息券</td><td><code>type = 3</code></td><td>按整笔订单 <code>serial_id + coupon_no</code> 去重</td><td>按分期订单 <code>serial_id + current_term</code> 汇总</td><td>通常一笔订单仅一个券号，但其降息金额可由系统等额或按规则分配到各期。</td></tr>
+  <tr><td>提额券</td><td><code>type = 4</code></td><td>按整笔订单 <code>serial_id + coupon_no</code> 去重</td><td>按分期订单 <code>serial_id + current_term</code> 汇总</td><td>一笔订单可同时使用提额券与降息券；两类券分别统计，不互相排斥。</td></tr>
+  </tbody></table></div><div class="notice"><strong>数量与金额不能使用同一粒度：</strong>若一张降息券被拆分至多期，直接在分期粒度计数会重复计算券张数；但金额必须按分期相加，才能正确反映进入统计窗口的分期成本。</div></section>
+
+  <section><span class="tag">四、与红包统计的边界</span><h2>本口径不统计折扣、还款与盈利</h2><div class="grid"><div class="card orange"><strong>不包含分期折扣</strong><p><code>discount_amount_period</code> 属于订单折扣字段，不属于 <code>coupon_user_detail_copy</code> 中的红包明细，本说明和附录 SQL 均不汇总该字段。</p></div><div class="card"><strong>不包含还款金额</strong><p><code>repaid_amt_period</code> 和还款流水 <code>amount</code> 不参与红包数量、红包金额的统计，也不在本附录 SQL 中输出。</p></div><div class="card teal"><strong>不包含盈利指标</strong><p>不计算盈利率、折扣后盈利率、降息券调整后盈利率或任何与放款、还款相关的比例。</p></div></div></section>
+
+  <section><span class="tag">五、防止重复统计</span><h2>关键控制点</h2><ol><li><strong>先筛分期样本：</strong>所有红包数量与金额只能基于符合窗口条件的 <code>eligible_terms</code>，不能从全量红包表直接统计。</li><li><strong>红包金额使用复合键：</strong>关联条件必须同时包含 <code>serial_id</code> 和 <code>current_term</code>，使券金额只归属到实际对应的分期。</li><li><strong>红包数量使用整笔订单维度：</strong>同一订单同一券号在多期出现时只计一次；不同券号则分别计数。</li><li><strong>总计重新聚合：</strong>总计中的去重券数应对全样本重新 <code>DISTINCT</code>，不应简单相加月度去重值。</li><li><strong>不同红包类型独立计量：</strong>同一订单同时使用降息券和提额券时，分别计入 type=3 与 type=4，不做互斥排除。</li></ol></section>
+
+  <section><span class="tag">附录 A</span><h2>完整可执行 PGSQL</h2><p class="lead">以下代码仅输出总样本、首贷、续贷的总计和按提单月份分组的三类红包数量与金额，以及对应的样本分期订单数和整笔订单数。修改第一段窗口日期即可复用。</p><details open><summary>展开完整 PGSQL</summary><pre>WITH eligible_terms_raw AS (
+    SELECT
+        p.serial_id,
+        p.current_term,
+        p.user_id,
+        p.loan_type,
+        TO_CHAR(p.apply_date, 'YYYY-MM') AS apply_month
+    FROM wangchuanliang.repayment_plan_v2_copy p
+    WHERE p.is_remit = 1
+      AND p.apply_date &gt;= DATE '2025-07-01'
+      AND p.apply_date &lt;= DATE '2026-06-30'
+      AND p.due_date_period &gt;= DATE '2025-07-01'
+      AND p.due_date_period &lt;= DATE '2026-06-30'
+),
+eligible_terms AS (
+    SELECT
+        '总样本'::text AS loan_segment,
+        serial_id,
+        current_term,
+        user_id,
+        apply_month
+    FROM eligible_terms_raw
+
+    UNION ALL
+
+    SELECT
+        CASE
+            WHEN loan_type = 'firstloan' THEN '首贷'
+            WHEN loan_type = 'reloan' THEN '续贷'
+        END AS loan_segment,
+        serial_id,
+        current_term,
+        user_id,
+        apply_month
+    FROM eligible_terms_raw
+    WHERE loan_type IN ('firstloan', 'reloan')
+),
+term_coupon_amount AS (
+    SELECT
+        e.loan_segment,
+        e.serial_id,
+        e.current_term,
+        SUM(
+            CASE
+                WHEN c.type = 2 THEN COALESCE(c.coupon_amount, 0)
+                ELSE 0
+            END
+        ) AS repayment_coupon_amt,
+        SUM(
+            CASE
+                WHEN c.type = 3 THEN COALESCE(c.coupon_amount, 0)
+                ELSE 0
+            END
+        ) AS interest_coupon_amt,
+        SUM(
+            CASE
+                WHEN c.type = 4 THEN COALESCE(c.coupon_amount, 0)
+                ELSE 0
+            END
+        ) AS quota_coupon_amt
+    FROM eligible_terms e
+    LEFT JOIN wangchuanliang.coupon_user_detail_copy c
+      ON e.serial_id = c.serial_id
+     AND e.current_term = c.current_term
+    GROUP BY
+        e.loan_segment,
+        e.serial_id,
+        e.current_term
+),
+coupon_monthly_count AS (
+    SELECT
+        e.loan_segment,
+        e.apply_month,
+        COUNT(
+            DISTINCT CASE
+                WHEN c.type = 2
+                 AND c.coupon_no IS NOT NULL
+                THEN e.serial_id::text || ':' || c.coupon_no
+            END
+        ) AS repayment_coupon_cnt,
+        COUNT(
+            DISTINCT CASE
+                WHEN c.type = 3
+                 AND c.coupon_no IS NOT NULL
+                THEN e.serial_id::text || ':' || c.coupon_no
+            END
+        ) AS interest_coupon_cnt,
+        COUNT(
+            DISTINCT CASE
+                WHEN c.type = 4
+                 AND c.coupon_no IS NOT NULL
+                THEN e.serial_id::text || ':' || c.coupon_no
+            END
+        ) AS quota_coupon_cnt
+    FROM eligible_terms e
+    LEFT JOIN wangchuanliang.coupon_user_detail_copy c
+      ON e.serial_id = c.serial_id
+     AND e.current_term = c.current_term
+    GROUP BY
+        e.loan_segment,
+        e.apply_month
+),
+monthly_result AS (
+    SELECT
+        e.loan_segment,
+        e.apply_month,
+        COUNT(*) AS installment_cnt,
+        COUNT(DISTINCT e.serial_id) AS order_cnt,
+        COALESCE(SUM(a.repayment_coupon_amt), 0) AS repayment_coupon_amt,
+        COALESCE(SUM(a.interest_coupon_amt), 0) AS interest_coupon_amt,
+        COALESCE(SUM(a.quota_coupon_amt), 0) AS quota_coupon_amt
+    FROM eligible_terms e
+    LEFT JOIN term_coupon_amount a
+      ON e.loan_segment = a.loan_segment
+     AND e.serial_id = a.serial_id
+     AND e.current_term = a.current_term
+    GROUP BY
+        e.loan_segment,
+        e.apply_month
+),
+total_coupon_count AS (
+    SELECT
+        e.loan_segment,
+        COUNT(
+            DISTINCT CASE
+                WHEN c.type = 2
+                 AND c.coupon_no IS NOT NULL
+                THEN e.serial_id::text || ':' || c.coupon_no
+            END
+        ) AS repayment_coupon_cnt,
+        COUNT(
+            DISTINCT CASE
+                WHEN c.type = 3
+                 AND c.coupon_no IS NOT NULL
+                THEN e.serial_id::text || ':' || c.coupon_no
+            END
+        ) AS interest_coupon_cnt,
+        COUNT(
+            DISTINCT CASE
+                WHEN c.type = 4
+                 AND c.coupon_no IS NOT NULL
+                THEN e.serial_id::text || ':' || c.coupon_no
+            END
+        ) AS quota_coupon_cnt
+    FROM eligible_terms e
+    LEFT JOIN wangchuanliang.coupon_user_detail_copy c
+      ON e.serial_id = c.serial_id
+     AND e.current_term = c.current_term
+    GROUP BY e.loan_segment
+),
+total_result AS (
+    SELECT
+        e.loan_segment,
+        COUNT(*) AS installment_cnt,
+        COUNT(DISTINCT e.serial_id) AS order_cnt,
+        COALESCE(SUM(a.repayment_coupon_amt), 0) AS repayment_coupon_amt,
+        COALESCE(SUM(a.interest_coupon_amt), 0) AS interest_coupon_amt,
+        COALESCE(SUM(a.quota_coupon_amt), 0) AS quota_coupon_amt
+    FROM eligible_terms e
+    LEFT JOIN term_coupon_amount a
+      ON e.loan_segment = a.loan_segment
+     AND e.serial_id = a.serial_id
+     AND e.current_term = a.current_term
+    GROUP BY e.loan_segment
+)
+SELECT
+    t.loan_segment,
+    '总计'::text AS apply_month,
+    t.installment_cnt,
+    t.order_cnt,
+    c.repayment_coupon_cnt,
+    t.repayment_coupon_amt,
+    c.interest_coupon_cnt,
+    t.interest_coupon_amt,
+    c.quota_coupon_cnt,
+    t.quota_coupon_amt
+FROM total_result t
+INNER JOIN total_coupon_count c
+  ON t.loan_segment = c.loan_segment
+
+UNION ALL
+
+SELECT
+    m.loan_segment,
+    m.apply_month,
+    m.installment_cnt,
+    m.order_cnt,
+    c.repayment_coupon_cnt,
+    m.repayment_coupon_amt,
+    c.interest_coupon_cnt,
+    m.interest_coupon_amt,
+    c.quota_coupon_cnt,
+    m.quota_coupon_amt
+FROM monthly_result m
+INNER JOIN coupon_monthly_count c
+  ON m.loan_segment = c.loan_segment
+ AND m.apply_month = c.apply_month
+ORDER BY
+    CASE loan_segment
+        WHEN '总样本' THEN 1
+        WHEN '首贷' THEN 2
+        WHEN '续贷' THEN 3
+        ELSE 4
+    END,
+    CASE WHEN apply_month = '总计' THEN 0 ELSE 1 END,
+    apply_month;</pre></details></section>
+  <div class="footer">本说明仅定义分期订单红包使用统计口径；实际结果取决于查询执行时源表的最新数据。</div>
+</main></body></html>
