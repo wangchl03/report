@@ -1,34 +1,67 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-T7+ 召回前端看板 · 后端
-名单：wangchuanliang.t7recalllist_0818_0819
-触达日：recall_date = 2026-08-18
+T7+ 召回看板 · 后端
+默认跑 0818 / 0902 / 0910 / 0917 四个批次。
 
   export PGPASSWORD='...'
   python3 appendix_t7_0818_dashboard.py
+  python3 appendix_t7_0818_dashboard.py 0902 0910 0917
 """
 from __future__ import annotations
 
 import html as html_lib
 import json
 import os
+import sys
 from pathlib import Path
 
 HERE = Path(__file__).resolve().parent
-HTML_PATH = HERE / "t7-0818.html"
-JSON_PATH = HERE / "t7_0818_dashboard_data.json"
-RECALL_DATE = "2026-08-18"
-LIST_TABLE = "wangchuanliang.t7recalllist_0818_0819"
 
-U = f"""
+BATCHES = [
+    {
+        "slug": "0818",
+        "table": "wangchuanliang.t7recalllist_0818_0819",
+        "recall_date": "2026-08-18",
+        "filter_recall_date": True,
+    },
+    {
+        "slug": "0902",
+        "table": "wangchuanliang.t7recalllist_0902",
+        "recall_date": "2026-09-02",
+        "filter_recall_date": False,
+    },
+    {
+        "slug": "0910",
+        "table": "wangchuanliang.t7recalllist_0910",
+        "recall_date": "2026-09-10",
+        "filter_recall_date": False,
+    },
+    {
+        "slug": "0917",
+        "table": "wangchuanliang.t7recalllist_0917",
+        "recall_date": "2026-09-17",
+        "filter_recall_date": False,
+    },
+]
+
+
+def list_cte(batch) -> str:
+    extra = ""
+    if batch.get("filter_recall_date"):
+        extra = f"\n  AND recall_date = DATE '{batch['recall_date']}'"
+    return f"""
 SELECT DISTINCT churn_user_id::bigint AS user_id,
        COALESCE(strat, 'NA') AS strat,
        churn_days
-FROM {LIST_TABLE}
-WHERE churn_user_id IS NOT NULL
-  AND recall_date = DATE '{RECALL_DATE}'
+FROM {batch['table']}
+WHERE churn_user_id IS NOT NULL{extra}
 """
+
+
+def md_label(recall_date: str) -> str:
+    _y, m, d = recall_date.split("-")
+    return f"{int(m)}/{int(d)}"
 
 
 def connect():
@@ -70,7 +103,9 @@ def one(cur, sql):
     return rows(cur, sql)[0]
 
 
-def fetch():
+def fetch(batch):
+    U = list_cte(batch)
+    RECALL_DATE = batch["recall_date"]
     conn = connect()
     cur = conn.cursor()
     cur.execute("SET search_path TO wangchuanliang, public")
@@ -82,7 +117,7 @@ def fetch():
         """
     )
     remit_day = "o.remit_date::date" if cur.fetchone() else "o.apply_date::date"
-    print("remit day expr", remit_day, flush=True)
+    print("batch", batch["slug"], "remit day expr", remit_day, flush=True)
 
     kpi = one(
         cur,
@@ -340,8 +375,11 @@ def fetch():
     }
 
 
-def build_sql(remit_day: str) -> str:
-    return f"""-- T7 召回前端看板 · 可复现 PGSQL
+def build_sql(batch, remit_day: str) -> str:
+    LIST_TABLE = batch["table"]
+    RECALL_DATE = batch["recall_date"]
+    u_body = list_cte(batch).strip()
+    return f"""-- T7 召回看板 · 可复现 PGSQL
 -- 库：kaby_dw · schema：wangchuanliang
 -- 名单：{LIST_TABLE}
 -- 触达日：{RECALL_DATE}
@@ -366,12 +404,7 @@ WHERE table_schema = 'wangchuanliang'
 -- ---------------------------------------------------------------------------
 DROP TABLE IF EXISTS tmp_t7_u;
 CREATE TEMP TABLE tmp_t7_u AS
-SELECT DISTINCT churn_user_id::bigint AS user_id,
-       COALESCE(strat, 'NA') AS strat,
-       churn_days
-FROM {LIST_TABLE}
-WHERE churn_user_id IS NOT NULL
-  AND recall_date = DATE '{RECALL_DATE}';
+{u_body};
 
 -- ---------------------------------------------------------------------------
 -- 2) KPI（提单率、本周提单/新增提单、放款、到期盈利与逾期）
@@ -547,9 +580,14 @@ GROUP BY 1;
 """
 
 
-def write_html(data):
+def write_html(data, batch):
     k = data["kpi"]
     payload = json.dumps(data, ensure_ascii=False)
+    LIST_TABLE = batch["table"]
+    RECALL_DATE = batch["recall_date"]
+    md = md_label(RECALL_DATE)
+    HTML_PATH = HERE / f"t7-{batch['slug']}.html"
+    json_name = f"t7_{batch['slug']}_dashboard_data.json"
 
     def fmt(n):
         return f"{int(n):,}"
@@ -562,7 +600,7 @@ def write_html(data):
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>T7 召回看板 · 2026-08-18</title>
+<title>T7 召回看板 · {RECALL_DATE}</title>
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
 <style>
 :root{{--bg:#071b2f;--card:#0c2944;--line:#2a5c7e;--text:#eff8ff;--muted:#aac5da;--cy:#43c7e7;--gr:#64dcae;--am:#ffc26b;--pk:#f68ab0}}
@@ -596,16 +634,16 @@ details.code pre{{overflow:auto;max-height:520px;font-size:11px;line-height:1.45
 <body>
 <main class="wrap">
 <div class="top">
-  <div class="kicker">FRONTEND DASHBOARD · T7+ RECALL · 2026-08-18</div>
+  <div class="kicker">DASHBOARD · T7+ RECALL · {RECALL_DATE}</div>
   <h1>流失 7 天以上召回 · 看板</h1>
   <p class="meta">名单 {fmt(k['n_user'])} 人 · 统计至 {k['as_of']} · 本周 {k['week_start']} 起（周一）</p>
 </div>
 <section class="kpis">
-  <article class="card"><div class="label">提单率</div><div class="num a">{pct(k['apply_rate'])}</div><div class="sub">{fmt(k['n_apply'])} / {fmt(k['n_user'])} · 8/18至今去重用户</div></article>
-  <article class="card"><div class="label">总提单人数</div><div class="num g">{fmt(k['n_apply'])}</div><div class="sub">8/18至今任意提单用户</div></article>
+  <article class="card"><div class="label">提单率</div><div class="num a">{pct(k['apply_rate'])}</div><div class="sub">{fmt(k['n_apply'])} / {fmt(k['n_user'])} · {md}至今去重用户</div></article>
+  <article class="card"><div class="label">总提单人数</div><div class="num g">{fmt(k['n_apply'])}</div><div class="sub">{md}至今任意提单用户</div></article>
   <article class="card"><div class="label">本周提单人数</div><div class="num">{fmt(k['n_apply_week'])}</div><div class="sub">本周有过提单的去重用户</div></article>
   <article class="card"><div class="label">本周新增提单人数</div><div class="num p">{fmt(k['n_first_week'])}</div><div class="sub">召回后首次提单落在本周</div></article>
-  <article class="card"><div class="label">放款单量</div><div class="num g">{fmt(k['n_remit'])}</div><div class="sub">8/18至今已放款订单数</div></article>
+  <article class="card"><div class="label">放款单量</div><div class="num g">{fmt(k['n_remit'])}</div><div class="sub">{md}至今已放款订单数</div></article>
   <article class="card"><div class="label">本周新增放款单量</div><div class="num">{fmt(k['n_remit_week'])}</div><div class="sub">本周新放款订单数</div></article>
   <article class="card"><div class="label">订单盈利率</div><div class="num a">{pct(k['profit_pct'])}</div><div class="sub">到期订单</div></article>
   <article class="card"><div class="label">订单逾期率</div><div class="num p">{pct(k['overdue_pct'])}</div><div class="sub">到期订单</div></article>
@@ -728,20 +766,26 @@ new Chart(document.getElementById('c10'), {type:'bar', data:{labels:D.churn.map(
 </script>
 </body></html>
 """
-    sql_txt = build_sql(k["remit_day"])
+    sql_txt = build_sql(batch, k["remit_day"])
     py_txt = Path(__file__).read_text(encoding="utf-8")
     front_src = (
         html_head
         + "\n<!-- 口径与附录见页面底部 -->\n</main>\n"
-        + "<script>\nconst D = /* 由后端写入，对象结构同 t7_0818_dashboard_data.json */;\n"
+        + f"<script>\nconst D = /* 由后端写入，对象结构同 {json_name} */;\n"
         + html_js
     )
     appendix = (
         '<section class="appendix" id="method">\n'
         "<h2>口径说明</h2>\n"
         "<ul>\n"
-        f"<li>名单：<code>{LIST_TABLE}</code>，<code>recall_date = {RECALL_DATE}</code>，按 <code>churn_user_id</code> 去重。</li>\n"
-        "<li>提单：<code>apply_date ≥ 2026-08-18</code>。总提单人数=召回后任意提单用户去重；本周提单=本周任意提单用户去重；本周新增提单=召回后首次提单日期落在本周（周一 <code>DATE_TRUNC('week', CURRENT_DATE)</code> 至库内 <code>CURRENT_DATE</code>）。</li>\n"
+        f"<li>名单：<code>{LIST_TABLE}</code>，批次日 <code>{RECALL_DATE}</code>，按 <code>churn_user_id</code> 去重。"
+        + (
+            f"筛选 <code>recall_date = {RECALL_DATE}</code>。"
+            if batch.get("filter_recall_date")
+            else "该表无可用召回日日期字段，以整表为该批次名单。"
+        )
+        + "</li>\n"
+        f"<li>提单：<code>apply_date ≥ {RECALL_DATE}</code>。总提单人数=召回后任意提单用户去重；本周提单=本周任意提单用户去重；本周新增提单=召回后首次提单日期落在本周（周一 <code>DATE_TRUNC('week', CURRENT_DATE)</code> 至库内 <code>CURRENT_DATE</code>）。</li>\n"
         "<li>放款：<code>is_remit = 1</code> 且 <code>remit_amt &gt; 0</code>；本周新增放款按放款日（本页为 <code>"
         + html_lib.escape(str(k["remit_day"]))
         + "</code>）落在本周的订单数。</li>\n"
@@ -766,13 +810,21 @@ new Chart(document.getElementById('c10'), {type:'bar', data:{labels:D.churn.map(
         + ";\n"
     )
     HTML_PATH.write_text(html_head + appendix + html_js, encoding="utf-8")
-    SQL_PATH = HERE / "appendix_t7_0818_dashboard.sql"
-    SQL_PATH.write_text(sql_txt, encoding="utf-8")
+    sql_path = HERE / f"appendix_t7_{batch['slug']}_dashboard.sql"
+    sql_path.write_text(sql_txt, encoding="utf-8")
+    print("HTML", HTML_PATH)
 
 
 if __name__ == "__main__":
-    data = fetch()
-    JSON_PATH.write_text(json.dumps(data, ensure_ascii=False, indent=2), encoding="utf-8")
-    write_html(data)
-    print("kpi", data["kpi"])
-    print("HTML", HTML_PATH)
+    by = {b["slug"]: b for b in BATCHES}
+    slugs = sys.argv[1:] or [b["slug"] for b in BATCHES]
+    for slug in slugs:
+        if slug not in by:
+            raise SystemExit(f"未知批次 {slug}，可选：{', '.join(by)}")
+        batch = by[slug]
+        print("batch", slug, batch["table"], batch["recall_date"], flush=True)
+        data = fetch(batch)
+        json_path = HERE / f"t7_{slug}_dashboard_data.json"
+        json_path.write_text(json.dumps(data, ensure_ascii=False, indent=2), encoding="utf-8")
+        write_html(data, batch)
+        print("kpi", data["kpi"], flush=True)

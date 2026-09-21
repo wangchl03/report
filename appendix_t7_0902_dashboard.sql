@@ -1,7 +1,7 @@
 -- T7 召回看板 · 可复现 PGSQL
 -- 库：kaby_dw · schema：wangchuanliang
--- 名单：wangchuanliang.t7recalllist_0818_0819
--- 触达日：2026-08-18
+-- 名单：wangchuanliang.t7recalllist_0902
+-- 触达日：2026-09-02
 -- 放款日：优先 o.remit_date::date（无该列时用 o.apply_date::date）
 -- 本文件当前放款日表达式：o.remit_date::date
 -- 本周：DATE_TRUNC('week', CURRENT_DATE)::date（周一）
@@ -26,15 +26,14 @@ CREATE TEMP TABLE tmp_t7_u AS
 SELECT DISTINCT churn_user_id::bigint AS user_id,
        COALESCE(strat, 'NA') AS strat,
        churn_days
-FROM wangchuanliang.t7recalllist_0818_0819
-WHERE churn_user_id IS NOT NULL
-  AND recall_date = DATE '2026-08-18';
+FROM wangchuanliang.t7recalllist_0902
+WHERE churn_user_id IS NOT NULL;
 
 -- ---------------------------------------------------------------------------
 -- 2) KPI（提单率、本周提单/新增提单、放款、到期盈利与逾期）
 -- ---------------------------------------------------------------------------
 WITH params AS (
-    SELECT DATE '2026-08-18' AS recall_dt,
+    SELECT DATE '2026-09-02' AS recall_dt,
            DATE_TRUNC('week', CURRENT_DATE)::date AS week_start,
            CURRENT_DATE AS as_of
 ),
@@ -115,7 +114,7 @@ WITH fa AS (
   SELECT o.user_id, MIN(o.apply_date) AS first_apply
   FROM tmp_t7_u u
   INNER JOIN order_loan_f_v2_copy o
-    ON o.user_id = u.user_id AND o.apply_date >= DATE '2026-08-18'
+    ON o.user_id = u.user_id AND o.apply_date >= DATE '2026-09-02'
   GROUP BY 1
 )
 SELECT first_apply::text AS d, COUNT(*) AS n
@@ -131,7 +130,7 @@ SELECT o.apply_date::text AS d,
        COUNT(DISTINCT o.user_id) AS n_user
 FROM tmp_t7_u u
 INNER JOIN order_loan_f_v2_copy o
-  ON o.user_id = u.user_id AND o.apply_date >= DATE '2026-08-18'
+  ON o.user_id = u.user_id AND o.apply_date >= DATE '2026-09-02'
 GROUP BY 1
 ORDER BY 1;
 
@@ -141,7 +140,7 @@ ORDER BY 1;
 SELECT o.remit_date::date::text AS d, COUNT(*) AS n
 FROM tmp_t7_u u
 INNER JOIN order_loan_f_v2_copy o ON o.user_id = u.user_id
-WHERE o.apply_date >= DATE '2026-08-18'
+WHERE o.apply_date >= DATE '2026-09-02'
   AND o.is_remit = 1 AND COALESCE(o.remit_amt, 0) > 0
   AND o.remit_date::date IS NOT NULL
 GROUP BY 1
@@ -157,7 +156,7 @@ SELECT o.due_date::text AS d,
        SUM(o.remit_amt) AS remit
 FROM tmp_t7_u u
 INNER JOIN order_loan_f_v2_copy o ON o.user_id = u.user_id
-WHERE o.apply_date >= DATE '2026-08-18'
+WHERE o.apply_date >= DATE '2026-09-02'
   AND o.is_due = 1 AND o.is_remit = 1 AND COALESCE(o.remit_amt, 0) > 0
   AND o.due_date IS NOT NULL
 GROUP BY 1
@@ -174,7 +173,7 @@ LEFT JOIN (
   SELECT DISTINCT o.user_id
   FROM tmp_t7_u u
   INNER JOIN order_loan_f_v2_copy o
-    ON o.user_id = u.user_id AND o.apply_date >= DATE '2026-08-18'
+    ON o.user_id = u.user_id AND o.apply_date >= DATE '2026-09-02'
 ) a ON a.user_id = u.user_id
 GROUP BY 1
 ORDER BY n_user DESC;
@@ -198,6 +197,6 @@ LEFT JOIN (
   SELECT DISTINCT o.user_id
   FROM tmp_t7_u u
   INNER JOIN order_loan_f_v2_copy o
-    ON o.user_id = u.user_id AND o.apply_date >= DATE '2026-08-18'
+    ON o.user_id = u.user_id AND o.apply_date >= DATE '2026-09-02'
 ) a ON a.user_id = u.user_id
 GROUP BY 1;

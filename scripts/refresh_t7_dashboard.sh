@@ -16,10 +16,12 @@ if [[ -z "${PGPASSWORD:-}" ]]; then
   exit 1
 fi
 python3 appendix_t7_0818_dashboard.py
-git add t7-0818.html t7_0818_dashboard_data.json appendix_t7_0818_dashboard.sql
+git add t7-0818.html t7-0902.html t7-0910.html t7-0917.html \
+  t7_0818_dashboard_data.json t7_0902_dashboard_data.json t7_0910_dashboard_data.json t7_0917_dashboard_data.json \
+  appendix_t7_0818_dashboard.sql appendix_t7_0902_dashboard.sql appendix_t7_0910_dashboard.sql appendix_t7_0917_dashboard.sql
 if git diff --cached --quiet; then
   echo "no changes in wangchl03/report"
   exit 0
 fi
-git commit -m "Refresh T7 0818 dashboard for $(date +%Y-%m-%d)."
+git commit -m "Refresh T7 recall dashboards for $(date +%Y-%m-%d)."
 git push origin HEAD
