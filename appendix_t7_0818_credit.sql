@@ -137,7 +137,8 @@ SELECT
 -- 逾期率 = n_due_od / n_due
 
 -- ---------------------------------------------------------------------------
--- 3) 获额通过后首次提单日分布（累计人数、累计提单率；分母=获额通过人数）
+-- 3) 首次获额通过日、获额通过后首次提单日
+--    图：按日滚动 累计提单人数 / 累计获额通过人数
 -- ---------------------------------------------------------------------------
 WITH pass_u AS (
   SELECT v.user_id,
@@ -156,10 +157,13 @@ fa AS (
    AND o.apply_time >= pu.pass_time
   GROUP BY o.user_id
 )
-SELECT first_apply::text AS d, COUNT(*) AS n
+SELECT 'pass'::text AS kind, (pass_u.pass_time::date)::text AS d, COUNT(*) AS n
+FROM pass_u
+GROUP BY pass_u.pass_time::date
+UNION ALL
+SELECT 'apply'::text AS kind, fa.first_apply::text AS d, COUNT(*) AS n
 FROM fa
-GROUP BY first_apply
-ORDER BY first_apply;
+GROUP BY fa.first_apply;
 
 -- ---------------------------------------------------------------------------
 -- 4) 每日提单用户（获额通过后当日有过提单的去重用户）与当日提单订单数

@@ -7,7 +7,7 @@ T7+ 召回看板 · 获额通过口径
   python3 appendix_t7_credit_pass_dashboard.py
   python3 appendix_t7_credit_pass_dashboard.py 0902 0910 0917
 
-提单率分母 = 召回日至今日获额通过人数。
+提单率分母 = 截至该日累计获额通过人数（不是统计截止日的全部通过人数）。
 """
 from __future__ import annotations
 
@@ -15,6 +15,7 @@ import html as html_lib
 import json
 import os
 import sys
+from datetime import date, timedelta
 from pathlib import Path
 
 HERE = Path(__file__).resolve().parent
@@ -275,7 +276,7 @@ def fetch(batch):
     }
 
     print("daily series", flush=True)
-    first_daily = rows(
+    mix = rows(
         cur,
         f"""
         WITH u AS ({U}),
@@ -296,16 +297,48 @@ def fetch(batch):
            AND o.apply_time >= pu.pass_time
           GROUP BY o.user_id
         )
-        SELECT first_apply::text AS d, COUNT(*) AS n
-        FROM fa GROUP BY first_apply ORDER BY first_apply
+        SELECT 'pass'::text AS kind, (pass_u.pass_time::date)::text AS d, COUNT(*) AS n
+        FROM pass_u
+        GROUP BY pass_u.pass_time::date
+        UNION ALL
+        SELECT 'apply'::text AS kind, fa.first_apply::text AS d, COUNT(*) AS n
+        FROM fa
+        GROUP BY fa.first_apply
         """,
     )
-    cum = 0
-    for r in first_daily:
-        r["n"] = int(r["n"])
-        cum += r["n"]
-        r["cum"] = cum
-        r["rate"] = round(100.0 * cum / n_pass, 2) if n_pass else 0
+    pass_n = {}
+    apply_n = {}
+    for r in mix:
+        n = int(r["n"])
+        d = str(r["d"])[:10]
+        if str(r["kind"]).strip() == "pass":
+            pass_n[d] = pass_n.get(d, 0) + n
+        else:
+            apply_n[d] = apply_n.get(d, 0) + n
+    as_of = str(kpi_out["as_of"])[:10]
+    start = date.fromisoformat(RECALL_DATE)
+    end = date.fromisoformat(as_of)
+    first_daily = []
+    cum_apply = 0
+    cum_pass = 0
+    cur_d = start
+    while cur_d <= end:
+        ds = cur_d.isoformat()
+        n_apply = apply_n.get(ds, 0)
+        n_pass_d = pass_n.get(ds, 0)
+        cum_apply += n_apply
+        cum_pass += n_pass_d
+        first_daily.append(
+            {
+                "d": ds,
+                "n": n_apply,
+                "n_pass": n_pass_d,
+                "cum": cum_apply,
+                "cum_pass": cum_pass,
+                "rate": round(100.0 * cum_apply / cum_pass, 2) if cum_pass else 0,
+            }
+        )
+        cur_d += timedelta(days=1)
 
     apply_daily = rows(
         cur,
@@ -611,7 +644,8 @@ SELECT
 -- 逾期率 = n_due_od / n_due
 
 -- ---------------------------------------------------------------------------
--- 3) 获额通过后首次提单日分布（累计人数、累计提单率；分母=获额通过人数）
+-- 3) 首次获额通过日、获额通过后首次提单日
+--    图：按日滚动 累计提单人数 / 累计获额通过人数
 -- ---------------------------------------------------------------------------
 WITH pass_u AS (
   SELECT v.user_id,
@@ -630,10 +664,13 @@ fa AS (
    AND o.apply_time >= pu.pass_time
   GROUP BY o.user_id
 )
-SELECT first_apply::text AS d, COUNT(*) AS n
+SELECT 'pass'::text AS kind, (pass_u.pass_time::date)::text AS d, COUNT(*) AS n
+FROM pass_u
+GROUP BY pass_u.pass_time::date
+UNION ALL
+SELECT 'apply'::text AS kind, fa.first_apply::text AS d, COUNT(*) AS n
 FROM fa
-GROUP BY first_apply
-ORDER BY first_apply;
+GROUP BY fa.first_apply;
 
 -- ---------------------------------------------------------------------------
 -- 4) 每日提单用户（获额通过后当日有过提单的去重用户）与当日提单订单数
@@ -832,7 +869,7 @@ details.code pre{{overflow:auto;max-height:520px;font-size:11px;line-height:1.45
   <article class="card"><div class="label">订单逾期率</div><div class="num p">{pct(k['overdue_pct'])}</div><div class="sub">到期订单</div></article>
 </section>
 <div class="grid">
-  <div class="card chart"><h3>累计提单人数与提单率</h3><p>按获额通过后首次提单日累计，分母=获额通过 {fmt(k['n_pass'])}</p><div class="box"><canvas id="c1"></canvas></div></div>
+  <div class="card chart"><h3>累计提单人数与提单率</h3><p>截至当日累计提单人数 / 截至当日累计获额通过人数</p><div class="box"><canvas id="c1"></canvas></div></div>
   <div class="card chart"><h3>每日新增首次提单</h3><p>每人只记通过后第一笔提单所在日</p><div class="box"><canvas id="c2"></canvas></div></div>
 </div>
 <div class="grid" style="margin-top:14px">
@@ -963,7 +1000,7 @@ new Chart(document.getElementById('c10'), {type:'bar', data:{labels:D.churn.map(
         )
         + "</li>\n"
         f"<li>获额：名单用户在 <code>order_vir_f_copy</code> 上 <code>vir_date ≥ {RECALL_DATE}</code> 去重为获额人数；<code>is_pass1 = 1</code> 去重为获额通过人数。获额通过率 = 获额通过人数 / 获额人数。</li>\n"
-        f"<li>提单：获额通过后 <code>apply_time ≥ 首次通过时间</code> 且 <code>apply_date ≥ {RECALL_DATE}</code>。提单人数=通过后任意提单用户去重；提单率 = 提单人数 / 获额通过人数；提单订单量=通过后提单订单数。本周提单 / 本周新增提单均在通过后口径下统计。</li>\n"
+        f"<li>提单：获额通过后 <code>apply_time ≥ 首次通过时间</code> 且 <code>apply_date ≥ {RECALL_DATE}</code>。提单人数=通过后任意提单用户去重；KPI 提单率 = 截至统计日累计提单人数 / 累计获额通过人数。折线图按日滚动同一口径。提单订单量=通过后提单订单数。</li>\n"
         "<li>放款：<code>is_remit = 1</code> 且 <code>remit_amt &gt; 0</code>，召回日后提单订单（与原看板一致）；本周新增放款按放款日（本页为 <code>"
         + html_lib.escape(str(k["remit_day"]))
         + "</code>）落在本周的订单数。</li>\n"
@@ -1027,7 +1064,7 @@ def panel_body(data, batch, pfx):
   <article class="card"><div class="label">订单逾期率</div><div class="num p">{_pct(k['overdue_pct'])}</div><div class="sub">到期订单</div></article>
 </section>
 <div class="grid">
-  <div class="card chart"><h3>累计提单人数与提单率</h3><p>按获额通过后首次提单日累计，分母=获额通过 {_fmt(k['n_pass'])}</p><div class="box"><canvas id="{pfx}c1"></canvas></div></div>
+  <div class="card chart"><h3>累计提单人数与提单率</h3><p>截至当日累计提单人数 / 截至当日累计获额通过人数</p><div class="box"><canvas id="{pfx}c1"></canvas></div></div>
   <div class="card chart"><h3>每日新增首次提单</h3><p>每人只记通过后第一笔提单所在日</p><div class="box"><canvas id="{pfx}c2"></canvas></div></div>
 </div>
 <div class="grid" style="margin-top:14px">
@@ -1188,7 +1225,7 @@ details.code pre{{overflow:auto;max-height:520px;font-size:11px;line-height:1.45
 <div class="page-top">
   <div class="kicker">T7+ RECALL · MULTI-BATCH · CREDIT PASS</div>
   <h1>流失 7 天以上召回 · 获额通过口径看板</h1>
-  <p class="meta">提单率分母为召回日至今日获额通过人数 · 本机每天下午 17:30 自动刷新</p>
+  <p class="meta">折线提单率 = 截至当日累计提单人数 / 截至当日累计获额通过人数 · 本机每天下午 17:30 自动刷新</p>
   <div class="tabs">{"".join(btns)}</div>
 </div>
 {"".join(panels)}
@@ -1197,7 +1234,7 @@ details.code pre{{overflow:auto;max-height:520px;font-size:11px;line-height:1.45
 <ul>
 <li>名单与原看板相同：0818 / 0902 / 0910 / 0917 四个召回批次，按 <code>churn_user_id</code> 去重。</li>
 <li>获额：<code>order_vir_f_copy.vir_date ≥ 召回日</code> 去重为获额人数；<code>is_pass1 = 1</code> 去重为获额通过人数。获额通过率 = 通过 / 获额。</li>
-<li>提单：获额通过后 <code>apply_time ≥ 首次通过时间</code> 且 <code>apply_date ≥ 召回日</code>。提单率 = 提单人数 / 获额通过人数；提单订单量 = 通过后提单订单数。</li>
+<li>提单：获额通过后 <code>apply_time ≥ 首次通过时间</code> 且 <code>apply_date ≥ 召回日</code>。累计图提单率 = 截至当日累计提单人数 / 截至当日累计获额通过人数；KPI 提单率为统计截止日的同一口径。提单订单量 = 通过后提单订单数。</li>
 <li>放款、到期盈利率、逾期率：与 <a href="t7.html" style="color:var(--cy)">名单分母看板</a> 相同，仍按召回日后提单订单统计。</li>
 </ul>
 <h2>附录：完整 PGSQL</h2>
