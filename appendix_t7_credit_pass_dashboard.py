@@ -964,8 +964,8 @@ function drawRateLabels(chart) {
 }
 const fd = D.first_daily, ad = D.apply_daily, rd = D.remit_daily, dd = D.due_daily, k=D.kpi;
 line('c1', fd.map(x=>x.d.slice(5)), [
-  {label:'累计提单人数', data:fd.map(x=>x.cum), borderColor:col.cy, backgroundColor:'rgba(67,199,231,.12)', fill:true, tension:.25, yAxisID:'y', pointRadius:3, pointHoverRadius:5, pointHitRadius:18, borderWidth:2, clip:false},
-  {label:'提单率%', data:fd.map(x=>x.rate), borderColor:col.am, tension:.25, yAxisID:'y2', pointRadius:3, pointHoverRadius:5, pointHitRadius:18, borderWidth:2, clip:false}
+  {label:'累计提单人数', data:fd.map(x=>x.cum), borderColor:col.cy, backgroundColor:'rgba(67,199,231,.12)', fill:true, tension:.25, yAxisID:'y', pointRadius:4, pointHoverRadius:6, pointHitRadius:20, borderWidth:2, clip:false},
+  {label:'提单率%', data:fd.map(x=>x.rate), borderColor:col.am, tension:.25, yAxisID:'y2', pointRadius:4, pointHoverRadius:6, pointHitRadius:20, borderWidth:2, clip:false}
 ], true, {
   plugins: Object.assign({}, base(true).plugins, {
     tooltip: Object.assign({}, base(true).plugins.tooltip, {
@@ -1154,8 +1154,8 @@ def charts_js_for(pfx: str) -> str:
     js = r"""
 const fd = D.first_daily, ad = D.apply_daily, rd = D.remit_daily, dd = D.due_daily, k=D.kpi;
 line('__P__c1', fd.map(x=>x.d.slice(5)), [
-  {label:'累计提单人数', data:fd.map(x=>x.cum), borderColor:col.cy, backgroundColor:'rgba(67,199,231,.12)', fill:true, tension:.25, yAxisID:'y', pointRadius:3, pointHoverRadius:5, pointHitRadius:18, borderWidth:2, clip:false},
-  {label:'提单率%', data:fd.map(x=>x.rate), borderColor:col.am, tension:.25, yAxisID:'y2', pointRadius:3, pointHoverRadius:5, pointHitRadius:18, borderWidth:2, clip:false}
+  {label:'累计提单人数', data:fd.map(x=>x.cum), borderColor:col.cy, backgroundColor:'rgba(67,199,231,.12)', fill:true, tension:.25, yAxisID:'y', pointRadius:4, pointHoverRadius:6, pointHitRadius:20, borderWidth:2, clip:false},
+  {label:'提单率%', data:fd.map(x=>x.rate), borderColor:col.am, tension:.25, yAxisID:'y2', pointRadius:4, pointHoverRadius:6, pointHitRadius:20, borderWidth:2, clip:false}
 ], true, {
   plugins: Object.assign({}, base(true).plugins, {
     tooltip: Object.assign({}, base(true).plugins.tooltip, {
@@ -1242,7 +1242,6 @@ def write_hub(items):
     btns = []
     panels = []
     draws = []
-    sql_blocks = []
     for i, (batch, data) in enumerate(items):
         slug = batch["slug"]
         on = " on" if i == 0 else ""
@@ -1258,12 +1257,6 @@ def write_hub(items):
             f"if(slug==={json.dumps(slug)}){{\nconst D = DATA[{json.dumps(slug)}];\n"
             + charts_js_for(pfx)
             + "\n}"
-        )
-        sql_txt = build_sql(batch, data["kpi"]["remit_day"])
-        sql_blocks.append(
-            f'<details class="code"><summary>{TAB_LABEL[slug]} · 完整 PGSQL（点击展开）</summary><pre>'
-            + html_lib.escape(sql_txt)
-            + "</pre></details>"
         )
     html = f"""<!doctype html>
 <html lang="zh-CN">
@@ -1297,15 +1290,9 @@ h1{{font-size:24px;margin:8px 0 6px}}
 .chart h3{{margin:0 0 4px;font-size:15px}}
 .chart p{{margin:0 0 10px;font-size:12px;color:var(--muted)}}
 .box{{height:300px;position:relative;overflow:visible}}
-.box.pie{{height:280px}}
+.chart-tip{{position:absolute;z-index:20;pointer-events:none;opacity:0;background:#0c2944;border:1px solid #2a5c7e;color:#eff8ff;padding:8px 10px;border-radius:8px;font-size:12px;line-height:1.55;white-space:nowrap;box-shadow:0 8px 20px rgba(0,0,0,.35)}}
+.chart-tip .t{{color:var(--cy);font-weight:700;margin-bottom:4px}}
 .foot{{color:#7fa6c2;font-size:12px;margin-top:28px;border-top:1px solid var(--line);padding-top:14px;line-height:1.8}}
-.appendix{{margin-top:36px;border-top:1px solid var(--line);padding-top:8px;text-align:left}}
-.appendix h2{{font-size:18px;margin:22px 0 10px}}
-.appendix p,.appendix li{{color:var(--muted);font-size:13px;line-height:1.8}}
-.appendix ul{{padding-left:1.2em}}
-details.code{{margin:10px 0;background:rgba(10,41,68,.95);border:1px solid var(--line);border-radius:12px;padding:10px 14px}}
-details.code summary{{cursor:pointer;color:var(--cy);font-weight:700;font-size:13px}}
-details.code pre{{overflow:auto;max-height:520px;font-size:11px;line-height:1.45;color:#d7ecf8;white-space:pre-wrap;word-break:break-word}}
 @media(max-width:900px){{.kpis,.grid{{grid-template-columns:1fr}}}}
 </style>
 </head>
@@ -1318,17 +1305,6 @@ details.code pre{{overflow:auto;max-height:520px;font-size:11px;line-height:1.45
   <div class="tabs">{"".join(btns)}</div>
 </div>
 {"".join(panels)}
-<section class="appendix" id="method">
-<h2>口径说明</h2>
-<ul>
-<li>名单与原看板相同：0818 / 0902 / 0910 / 0917 四个召回批次，按 <code>churn_user_id</code> 去重。</li>
-<li>获额：<code>order_vir_f_copy.vir_date ≥ 召回日</code> 去重为获额人数；<code>is_pass1 = 1</code> 去重为获额通过人数。获额通过率 = 通过 / 获额。</li>
-<li>提单：获额通过后 <code>apply_time ≥ 首次通过时间</code> 且 <code>apply_date ≥ 召回日</code>。累计图提单率 = 截至当日累计提单人数 / 截至当日累计获额通过人数；KPI 提单率为统计截止日的同一口径。提单订单量 = 通过后提单订单数。</li>
-<li>放款、到期盈利率、逾期率：与 <a href="t7.html" style="color:var(--cy)">名单分母看板</a> 相同，仍按召回日后提单订单统计。</li>
-</ul>
-<h2>附录：完整 PGSQL</h2>
-{"".join(sql_blocks)}
-</section>
 <p class="foot">数据：kaby_dw · 获额通过口径 · 四个批次合一 · 17:30 本机刷新后推送 GitHub Pages</p>
 </main>
 <script>
@@ -1336,52 +1312,58 @@ const DATA = {json.dumps(payload, ensure_ascii=False)};
 const col = {{cy:'#43c7e7', gr:'#64dcae', am:'#ffc26b', pk:'#f68ab0'}};
 Chart.defaults.font.family='-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei",sans-serif';
 Chart.defaults.color='#aac5da';
-Chart.register({{
-  id: 'legendPlotGap',
-  afterLayout(chart) {{
-    const legend = chart.legend;
-    const area = chart.chartArea;
-    if (!legend || !legend.options.display || !area) return;
-    if (chart.config.type === 'pie' || chart.config.type === 'doughnut') return;
-    const hasRateLbl = (chart.data.datasets || []).some(d => String(d.label || '').includes('提单率'));
-    area.top += hasRateLbl ? 34 : 8;
+function htmlTip(ctx) {{
+  const {{chart, tooltip}} = ctx;
+  const wrap = chart.canvas.parentNode;
+  let el = wrap.querySelector('.chart-tip');
+  if (!el) {{
+    el = document.createElement('div');
+    el.className = 'chart-tip';
+    wrap.appendChild(el);
   }}
-}});
+  if (!tooltip || tooltip.opacity === 0) {{
+    el.style.opacity = '0';
+    return;
+  }}
+  const title = (tooltip.title || []).join(' ');
+  const lines = (tooltip.body || []).map(b => (b.lines || []).join(' '));
+  const foot = (tooltip.afterBody || []).join('<br>');
+  el.innerHTML = '<div class="t">' + title + '</div>' + lines.map(l => '<div>' + l + '</div>').join('') +
+    (foot ? '<div>' + foot + '</div>' : '');
+  const w = el.offsetWidth || 180, h = el.offsetHeight || 70;
+  let left = tooltip.caretX + 14;
+  if (left + w > wrap.clientWidth - 6) left = tooltip.caretX - w - 14;
+  if (left < 6) left = 6;
+  let top = tooltip.caretY - h - 12;
+  if (top < 6) top = tooltip.caretY + 16;
+  el.style.left = left + 'px';
+  el.style.top = top + 'px';
+  el.style.opacity = '1';
+}}
 function base(y2) {{
   const scales = {{
     x: {{ticks:{{color:'#aac5da', maxRotation:45, autoSkip:true, autoSkipPadding:6}}, grid:{{display:false}}}},
-    y: {{type:'linear', position:'left', ticks:{{color:'#aac5da'}}, grid:{{color:'rgba(42,92,126,.25)'}}, beginAtZero:true, grace:'18%'}}
+    y: {{type:'linear', position:'left', ticks:{{color:'#aac5da'}}, grid:{{color:'rgba(42,92,126,.25)'}}, beginAtZero:true, grace:'22%'}}
   }};
-  if (y2) scales.y2 = {{type:'linear', position:'right', ticks:{{color:'#ffc26b'}}, grid:{{drawOnChartArea:false}}}};
-  return {{responsive:true, maintainAspectRatio:false, interaction:{{mode:'index', intersect:false}},
-    layout:{{padding:{{top:10,right:18,bottom:4,left:4}}}},
+  if (y2) scales.y2 = {{type:'linear', position:'right', ticks:{{color:'#ffc26b'}}, grid:{{drawOnChartArea:false}}, beginAtZero:true, grace:'22%'}};
+  return {{responsive:true, maintainAspectRatio:false, clip:false,
+    interaction:{{mode:'index', intersect:false}},
+    layout:{{padding:{{top:28,right:36,bottom:8,left:8}}}},
     plugins:{{
       legend:{{labels:{{color:'#eff8ff', padding:16}}}},
       tooltip:{{
-        enabled:true,
-        position:'keepIn',
-        xAlign:'left',
-        yAlign:'center',
-        padding:10,
-        caretPadding:8,
-        displayColors:true
+        enabled:false,
+        external:htmlTip
       }}
     }}, scales}};
 }}
-if (typeof Chart !== 'undefined' && Chart.Tooltip && !Chart.Tooltip.positioners.keepIn) {{
-  Chart.Tooltip.positioners.keepIn = function(items, eventPosition) {{
-    const nearest = Chart.Tooltip.positioners.nearest.call(this, items, eventPosition);
-    if (!nearest) return false;
-    const area = this.chart.chartArea;
-    let x = nearest.x, y = nearest.y;
-    const cut = area.left + (area.right - area.left) * 0.62;
-    if (x > cut) x = Math.max(area.left + 8, x - 120);
-    y = Math.min(Math.max(y, area.top + 8), area.bottom - 8);
-    return {{x, y}};
-  }};
-}}
 function line(id, labels, datasets, y2, extraOpt) {{
   const opt = Object.assign(base(y2), extraOpt || {{}});
+  if (extraOpt && extraOpt.plugins && extraOpt.plugins.tooltip) {{
+    opt.plugins = Object.assign({{}}, base(y2).plugins, extraOpt.plugins);
+    opt.plugins.tooltip = Object.assign({{enabled:false, external:htmlTip}}, extraOpt.plugins.tooltip, {{enabled:false, external:htmlTip}});
+  }}
+  opt.clip = false;
   new Chart(document.getElementById(id), {{type:'line', data:{{labels, datasets}}, options:opt}});
 }}
 function drawRateLabels(chart) {{
