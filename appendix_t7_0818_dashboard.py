@@ -562,7 +562,7 @@ def write_html(data):
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>T7 召回前端看板 · 2026-08-18</title>
+<title>T7 召回看板 · 2026-08-18</title>
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
 <style>
 :root{{--bg:#071b2f;--card:#0c2944;--line:#2a5c7e;--text:#eff8ff;--muted:#aac5da;--cy:#43c7e7;--gr:#64dcae;--am:#ffc26b;--pk:#f68ab0}}
@@ -597,7 +597,7 @@ details.code pre{{overflow:auto;max-height:520px;font-size:11px;line-height:1.45
 <main class="wrap">
 <div class="top">
   <div class="kicker">FRONTEND DASHBOARD · T7+ RECALL · 2026-08-18</div>
-  <h1>流失 7 天以上召回 · 前端看板</h1>
+  <h1>流失 7 天以上召回 · 看板</h1>
   <p class="meta">名单 {fmt(k['n_user'])} 人 · 统计至 {k['as_of']} · 本周 {k['week_start']} 起（周一）</p>
 </div>
 <section class="kpis">
