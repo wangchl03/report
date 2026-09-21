@@ -867,7 +867,7 @@ details.code pre{{overflow:auto;max-height:520px;font-size:11px;line-height:1.45
   <article class="card"><div class="label">获额通过人数</div><div class="num g">{fmt(k['n_pass'])}</div><div class="sub">is_pass1=1</div></article>
   <article class="card"><div class="label">获额通过率</div><div class="num a">{pct(k['pass_rate'])}</div><div class="sub">{fmt(k['n_pass'])} / {fmt(k['n_vir'])}</div></article>
   <article class="card"><div class="label">提单人数</div><div class="num g">{fmt(k['n_apply'])}</div><div class="sub">获额通过后提单去重用户</div></article>
-  <article class="card"><div class="label">提单率</div><div class="num a">{pct(k['apply_rate'])}</div><div class="sub">{fmt(k['n_apply'])} / {fmt(k['n_pass'])} · 分母=获额通过</div></article>
+  <article class="card"><div class="label">提单率</div><div class="num a">{pct(k['apply_rate'])}</div><div class="sub">{fmt(k['n_apply'])} / {fmt(k['n_pass'])} · 截至统计日累计提单 / 累计获额通过</div></article>
   <article class="card"><div class="label">提单订单量</div><div class="num">{fmt(k['n_apply_order'])}</div><div class="sub">获额通过后提单订单数</div></article>
   <article class="card"><div class="label">本周提单人数</div><div class="num">{fmt(k['n_apply_week'])}</div><div class="sub">通过后本周有过提单的去重用户</div></article>
   <article class="card"><div class="label">本周新增提单人数</div><div class="num p">{fmt(k['n_first_week'])}</div><div class="sub">通过后首次提单落在本周</div></article>
@@ -877,7 +877,7 @@ details.code pre{{overflow:auto;max-height:520px;font-size:11px;line-height:1.45
   <article class="card"><div class="label">订单逾期率</div><div class="num p">{pct(k['overdue_pct'])}</div><div class="sub">到期订单</div></article>
 </section>
 <div class="grid">
-  <div class="card chart"><h3>累计提单人数与提单率</h3><p>截至当日累计提单人数 / 截至当日累计获额通过人数</p><div class="box"><canvas id="c1"></canvas></div></div>
+  <div class="card chart"><h3>累计提单人数与提单率</h3><p>提单率 = 截至当日累计提单用户 / 截至当日累计获额通过人数（分母随日期滚动，不是统计截止日的全部通过人数）</p><div class="box"><canvas id="c1"></canvas></div></div>
   <div class="card chart"><h3>每日新增首次提单</h3><p>每人只记通过后第一笔提单所在日</p><div class="box"><canvas id="c2"></canvas></div></div>
 </div>
 <div class="grid" style="margin-top:14px">
@@ -904,7 +904,7 @@ Chart.defaults.color='#aac5da';
 function base(y2) {
   const scales = {
     x: {ticks:{color:'#aac5da', maxRotation:45, autoSkip:true, autoSkipPadding:6}, grid:{display:false}},
-    y: {type:'linear', position:'left', ticks:{color:'#aac5da'}, grid:{color:'rgba(42,92,126,.25)'}}
+    y: {type:'linear', position:'left', ticks:{color:'#aac5da'}, grid:{color:'rgba(42,92,126,.25)'}, beginAtZero:true, grace:'18%'}
   };
   if (y2) scales.y2 = {type:'linear', position:'right', ticks:{color:'#ffc26b'}, grid:{drawOnChartArea:false}};
   return {responsive:true, maintainAspectRatio:false, interaction:{mode:'index', intersect:false},
@@ -964,8 +964,8 @@ function drawRateLabels(chart) {
 }
 const fd = D.first_daily, ad = D.apply_daily, rd = D.remit_daily, dd = D.due_daily, k=D.kpi;
 line('c1', fd.map(x=>x.d.slice(5)), [
-  {label:'累计提单人数', data:fd.map(x=>x.cum), borderColor:col.cy, backgroundColor:'rgba(67,199,231,.12)', fill:true, tension:.25, yAxisID:'y', pointRadius:3, pointHitRadius:16},
-  {label:'提单率%', data:fd.map(x=>x.rate), borderColor:col.am, tension:.25, yAxisID:'y2', pointRadius:3, pointHitRadius:16}
+  {label:'累计提单人数', data:fd.map(x=>x.cum), borderColor:col.cy, backgroundColor:'rgba(67,199,231,.12)', fill:true, tension:.25, yAxisID:'y', pointRadius:3, pointHoverRadius:5, pointHitRadius:18, borderWidth:2, clip:false},
+  {label:'提单率%', data:fd.map(x=>x.rate), borderColor:col.am, tension:.25, yAxisID:'y2', pointRadius:3, pointHoverRadius:5, pointHitRadius:18, borderWidth:2, clip:false}
 ], true, {
   plugins: Object.assign({}, base(true).plugins, {
     tooltip: Object.assign({}, base(true).plugins.tooltip, {
@@ -974,10 +974,19 @@ line('c1', fd.map(x=>x.d.slice(5)), [
           const i = items[0].dataIndex;
           return (fd[i] && fd[i].d) ? fd[i].d : items[0].label;
         },
+        label(ctx) {
+          const r = fd[ctx.dataIndex];
+          if (!r) return ctx.formattedValue;
+          if (String(ctx.dataset.label).includes('提单率')) {
+            return '提单率 ' + Number(r.rate).toFixed(2) + '%  （' +
+              Number(r.cum).toLocaleString() + ' / ' + Number(r.cum_pass).toLocaleString() + '）';
+          }
+          return '累计提单人数 ' + Number(r.cum).toLocaleString();
+        },
         afterBody(items) {
           const r = fd[items[0].dataIndex];
           if (!r) return [];
-          return ['累计获额通过 ' + Number(r.cum_pass || 0).toLocaleString()];
+          return ['口径：截至当日累计提单用户 / 截至当日累计获额通过人数'];
         }
       }
     })
@@ -1109,7 +1118,7 @@ def panel_body(data, batch, pfx):
   <article class="card"><div class="label">获额通过人数</div><div class="num g">{_fmt(k['n_pass'])}</div><div class="sub">is_pass1=1</div></article>
   <article class="card"><div class="label">获额通过率</div><div class="num a">{_pct(k['pass_rate'])}</div><div class="sub">{_fmt(k['n_pass'])} / {_fmt(k['n_vir'])}</div></article>
   <article class="card"><div class="label">提单人数</div><div class="num g">{_fmt(k['n_apply'])}</div><div class="sub">获额通过后提单去重用户</div></article>
-  <article class="card"><div class="label">提单率</div><div class="num a">{_pct(k['apply_rate'])}</div><div class="sub">{_fmt(k['n_apply'])} / {_fmt(k['n_pass'])} · 分母=获额通过</div></article>
+  <article class="card"><div class="label">提单率</div><div class="num a">{_pct(k['apply_rate'])}</div><div class="sub">{_fmt(k['n_apply'])} / {_fmt(k['n_pass'])} · 截至统计日累计提单 / 累计获额通过</div></article>
   <article class="card"><div class="label">提单订单量</div><div class="num">{_fmt(k['n_apply_order'])}</div><div class="sub">获额通过后提单订单数</div></article>
   <article class="card"><div class="label">本周提单人数</div><div class="num">{_fmt(k['n_apply_week'])}</div><div class="sub">通过后本周有过提单的去重用户</div></article>
   <article class="card"><div class="label">本周新增提单人数</div><div class="num p">{_fmt(k['n_first_week'])}</div><div class="sub">通过后首次提单落在本周</div></article>
@@ -1119,7 +1128,7 @@ def panel_body(data, batch, pfx):
   <article class="card"><div class="label">订单逾期率</div><div class="num p">{_pct(k['overdue_pct'])}</div><div class="sub">到期订单</div></article>
 </section>
 <div class="grid">
-  <div class="card chart"><h3>累计提单人数与提单率</h3><p>截至当日累计提单人数 / 截至当日累计获额通过人数</p><div class="box"><canvas id="{pfx}c1"></canvas></div></div>
+  <div class="card chart"><h3>累计提单人数与提单率</h3><p>提单率 = 截至当日累计提单用户 / 截至当日累计获额通过人数（分母随日期滚动，不是统计截止日的全部通过人数）</p><div class="box"><canvas id="{pfx}c1"></canvas></div></div>
   <div class="card chart"><h3>每日新增首次提单</h3><p>每人只记通过后第一笔提单所在日</p><div class="box"><canvas id="{pfx}c2"></canvas></div></div>
 </div>
 <div class="grid" style="margin-top:14px">
@@ -1145,8 +1154,8 @@ def charts_js_for(pfx: str) -> str:
     js = r"""
 const fd = D.first_daily, ad = D.apply_daily, rd = D.remit_daily, dd = D.due_daily, k=D.kpi;
 line('__P__c1', fd.map(x=>x.d.slice(5)), [
-  {label:'累计提单人数', data:fd.map(x=>x.cum), borderColor:col.cy, backgroundColor:'rgba(67,199,231,.12)', fill:true, tension:.25, yAxisID:'y', pointRadius:3, pointHitRadius:16},
-  {label:'提单率%', data:fd.map(x=>x.rate), borderColor:col.am, tension:.25, yAxisID:'y2', pointRadius:3, pointHitRadius:16}
+  {label:'累计提单人数', data:fd.map(x=>x.cum), borderColor:col.cy, backgroundColor:'rgba(67,199,231,.12)', fill:true, tension:.25, yAxisID:'y', pointRadius:3, pointHoverRadius:5, pointHitRadius:18, borderWidth:2, clip:false},
+  {label:'提单率%', data:fd.map(x=>x.rate), borderColor:col.am, tension:.25, yAxisID:'y2', pointRadius:3, pointHoverRadius:5, pointHitRadius:18, borderWidth:2, clip:false}
 ], true, {
   plugins: Object.assign({}, base(true).plugins, {
     tooltip: Object.assign({}, base(true).plugins.tooltip, {
@@ -1155,10 +1164,19 @@ line('__P__c1', fd.map(x=>x.d.slice(5)), [
           const i = items[0].dataIndex;
           return (fd[i] && fd[i].d) ? fd[i].d : items[0].label;
         },
+        label(ctx) {
+          const r = fd[ctx.dataIndex];
+          if (!r) return ctx.formattedValue;
+          if (String(ctx.dataset.label).includes('提单率')) {
+            return '提单率 ' + Number(r.rate).toFixed(2) + '%  （' +
+              Number(r.cum).toLocaleString() + ' / ' + Number(r.cum_pass).toLocaleString() + '）';
+          }
+          return '累计提单人数 ' + Number(r.cum).toLocaleString();
+        },
         afterBody(items) {
           const r = fd[items[0].dataIndex];
           if (!r) return [];
-          return ['累计获额通过 ' + Number(r.cum_pass || 0).toLocaleString()];
+          return ['口径：截至当日累计提单用户 / 截至当日累计获额通过人数'];
         }
       }
     })
@@ -1296,7 +1314,7 @@ details.code pre{{overflow:auto;max-height:520px;font-size:11px;line-height:1.45
 <div class="page-top">
   <div class="kicker">T7+ RECALL · MULTI-BATCH · CREDIT PASS</div>
   <h1>流失 7 天以上召回 · 获额通过口径看板</h1>
-  <p class="meta">折线提单率 = 截至当日累计提单人数 / 截至当日累计获额通过人数 · 本机每天下午 17:30 自动刷新</p>
+  <p class="meta">折线提单率 = 截至当日累计提单用户 / 截至当日累计获额通过人数 · 本机每天下午 17:30 自动刷新</p>
   <div class="tabs">{"".join(btns)}</div>
 </div>
 {"".join(panels)}
@@ -1332,7 +1350,7 @@ Chart.register({{
 function base(y2) {{
   const scales = {{
     x: {{ticks:{{color:'#aac5da', maxRotation:45, autoSkip:true, autoSkipPadding:6}}, grid:{{display:false}}}},
-    y: {{type:'linear', position:'left', ticks:{{color:'#aac5da'}}, grid:{{color:'rgba(42,92,126,.25)'}}}}
+    y: {{type:'linear', position:'left', ticks:{{color:'#aac5da'}}, grid:{{color:'rgba(42,92,126,.25)'}}, beginAtZero:true, grace:'18%'}}
   }};
   if (y2) scales.y2 = {{type:'linear', position:'right', ticks:{{color:'#ffc26b'}}, grid:{{drawOnChartArea:false}}}};
   return {{responsive:true, maintainAspectRatio:false, interaction:{{mode:'index', intersect:false}},
