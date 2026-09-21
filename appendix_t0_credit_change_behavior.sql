@@ -1,29 +1,21 @@
 -- =============================================================================
--- T0 当天结清获额 × 结清后当天页内行为 × 额度相对最晚放款笔变化
--- 库：kaby_dw · 账号需 SELECT wangchuanliang.event_track_record
--- 区间：2026-01-01（含）～ 2026-09-01（不含）即 1–8 月
--- 本脚本一次跑完，6 个结果集对应报告全部数字（卡片 / 结论 / 图1–图8 / 三张表）
+-- T0 7–8 月：额度变化 → 进提单页 → 页内行为 → 当天提单 / 额度使用率
+-- 库：kaby_dw · 需 SELECT wangchuanliang.event_track_record
+-- 区间：2026-07-01（含）～ 2026-09-01（不含），按周（周一为周起点）汇总
 --
--- 结果集对照
---   R1 漏斗          → 顶部 4 张卡片、结论 1
---   R2 升额/不变/降额 → 图1–图4、主表、结论 2–4（含样本内占比 share_pct）
---   R3 幅度五档      → 图5、幅度表、结论 5
---   R4 月度          → 图6 人数、图7 当天提单率、结论 6
---   R5 行为组合 TOP20 → 图8、组合表（报告表取前 12 行）
---   R6 组合×额度组    → 备用交叉（报告未单独制表，数字可复现）
+-- 思路
+--   1) 升额 / 不变 / 降额：结清后当天进提单页占比，看额度变化会不会影响进页。
+--   2) 只在进页用户里看改金额/期次、看合同/计划、选原因，以及这些行为下的当天提单率。
+--   3) 额度使用率 = 当天提单订单 apply_amt / 本笔 max_credit_apply_amt，仅当天提过单的人。
 --
--- 口径
---   T0：is_pass1=1 AND loan_type_code=2 AND recycle_type=3；20 秒获额批次去重；
---       结清日=获额日；vir_time>=repaid_time；结清时 0 在贷；用户×日最早一轮获额。
---   页内行为：wangchuanliang.event_track_record。必须带 create_date 分区。
---            create_date = 获额日 = 结清日；
---            create_time >= 刚结清 repaid_time（结清之后，含结清到获额之间）；
---            create_time < 获额日+1（当天内）。
---            不含确认提单、不含仅进页（Loan_newpage）。
---   上一笔放款：vir_time 之前 is_remit=1 且 remit_amt>0，remit_time 最晚一笔
---              （不必是刚结清那笔）；额度 = max_credit_apply_amt。
---   当天提单：apply_time>=vir_time 且 apply_date=vir_date，不卡放款。
---   分析样本：T0 ∩ 能对上上一笔获额额度 ∩ 结清后当天至少一类页内行为。
+-- 结果集
+--   R1 漏斗合计
+--   R2 全体（有上一笔额度）：进页率、全体提单率、进页后提单率、使用率
+--   R3 进页用户：页内行为发生率、确认、提单、使用率
+--   R4 进页用户中「有/无某行为」的提单率（行为对提单的影响）
+--   R5 周 × 额度组：进页率、进页后提单率、使用率
+--   R6 进页用户行为组合 TOP20 + 提单率 / 使用率
+--   R7 进页用户：行为 × 额度组 的人数与提单率
 -- =============================================================================
 
 SET search_path TO wangchuanliang, public;
@@ -32,7 +24,7 @@ SET statement_timeout = 0;
 DROP TABLE IF EXISTS tmp_m_origin;
 CREATE TEMP TABLE tmp_m_origin AS
 WITH params AS (
-    SELECT DATE '2026-01-01' AS start_date, DATE '2026-09-01' AS end_date
+    SELECT DATE '2026-07-01' AS start_date, DATE '2026-09-01' AS end_date
 ), raw_offer AS (
     SELECT DISTINCT ON (v.user_id, v.serial_id)
         v.user_id, v.serial_id, v.vir_date::date AS vir_date,
@@ -153,7 +145,7 @@ SELECT
 FROM tmp_m_origin t
 INNER JOIN wangchuanliang.event_track_record e
   ON e.user_id = t.user_id
- AND e.create_date >= DATE '2026-01-01'
+ AND e.create_date >= DATE '2026-07-01'
  AND e.create_date <  DATE '2026-09-01'
  AND e.create_date = t.vir_date
  AND e.create_time >= t.repaid_time
@@ -173,7 +165,7 @@ SELECT t.user_id, t.vir_date, 1 AS f_confirm
 FROM tmp_m_origin t
 INNER JOIN wangchuanliang.event_track_record e
   ON e.user_id = t.user_id
- AND e.create_date >= DATE '2026-01-01'
+ AND e.create_date >= DATE '2026-07-01'
  AND e.create_date <  DATE '2026-09-01'
  AND e.create_date = t.vir_date
  AND e.create_time >= t.repaid_time
@@ -181,27 +173,38 @@ INNER JOIN wangchuanliang.event_track_record e
  AND e.props_id IN ('Loan_newconfirm','Loan_newconfirm_select')
 GROUP BY t.user_id, t.vir_date;
 
+DROP TABLE IF EXISTS tmp_enter;
+CREATE TEMP TABLE tmp_enter AS
+SELECT t.user_id, t.vir_date, 1 AS f_enter
+FROM tmp_m_origin t
+INNER JOIN wangchuanliang.event_track_record e
+  ON e.user_id = t.user_id
+ AND e.create_date >= DATE '2026-07-01'
+ AND e.create_date <  DATE '2026-09-01'
+ AND e.create_date = t.vir_date
+ AND e.create_time >= t.repaid_time
+ AND e.create_time < t.vir_date + 1
+ AND e.event_type = 'page_view_in'
+ AND e.props_id IN ('Loan_newpage','Loan_newpage_select')
+GROUP BY t.user_id, t.vir_date;
+
 DROP TABLE IF EXISTS tmp_apply;
 CREATE TEMP TABLE tmp_apply AS
-SELECT t.user_id, t.vir_date, 1 AS f_apply
-FROM tmp_m_origin t
-INNER JOIN (
-    SELECT z.user_id, z.vir_date
-    FROM (
-        SELECT t.user_id, t.vir_date,
-               ROW_NUMBER() OVER (PARTITION BY t.user_id, t.vir_date ORDER BY a.apply_time, a.serial_id) AS rn
-        FROM tmp_m_origin t
-        INNER JOIN wangchuanliang.order_loan_f_v2_copy a
-          ON a.user_id = t.user_id AND a.apply_time >= t.vir_time AND a.apply_date = t.vir_date
-    ) z WHERE rn = 1
-) s ON s.user_id = t.user_id AND s.vir_date = t.vir_date;
+SELECT z.user_id, z.vir_date, 1 AS f_apply, z.apply_amt
+FROM (
+    SELECT t.user_id, t.vir_date, a.apply_amt,
+           ROW_NUMBER() OVER (PARTITION BY t.user_id, t.vir_date ORDER BY a.apply_time, a.serial_id) AS rn
+    FROM tmp_m_origin t
+    INNER JOIN wangchuanliang.order_loan_f_v2_copy a
+      ON a.user_id = t.user_id AND a.apply_time >= t.vir_time AND a.apply_date = t.vir_date
+) z WHERE rn = 1;
 
 DROP TABLE IF EXISTS tmp_base;
 CREATE TEMP TABLE tmp_base AS
 SELECT
     t.user_id,
     t.vir_date,
-    TO_CHAR(DATE_TRUNC('month', t.vir_date), 'YYYY-MM') AS ym,
+    TO_CHAR(DATE_TRUNC('week', t.vir_date), 'YYYY-MM-DD') AS wk,
     t.this_amt,
     p.prev_amt,
     (t.this_amt - p.prev_amt) AS amt_diff,
@@ -213,14 +216,7 @@ SELECT
         WHEN t.this_amt < p.prev_amt THEN '降额'
         ELSE '不变'
     END AS chg_grp,
-    CASE
-        WHEN t.this_amt IS NULL OR p.prev_amt IS NULL OR p.prev_amt = 0 THEN '未知'
-        WHEN t.this_amt < p.prev_amt AND (p.prev_amt - t.this_amt) / p.prev_amt >= 0.20 THEN '降额≥20%'
-        WHEN t.this_amt < p.prev_amt THEN '降额<20%'
-        WHEN t.this_amt = p.prev_amt THEN '不变'
-        WHEN (t.this_amt - p.prev_amt) / p.prev_amt >= 0.20 THEN '升额≥20%'
-        ELSE '升额<20%'
-    END AS chg_bin,
+    COALESCE(en.f_enter, 0) AS f_enter,
     COALESCE(b.f_amt, 0) AS f_amt,
     COALESCE(b.f_term, 0) AS f_term,
     COALESCE(b.f_contract, 0) AS f_contract,
@@ -228,50 +224,62 @@ SELECT
     COALESCE(b.f_purpose, 0) AS f_purpose,
     COALESCE(b.n_amt, 0) AS n_amt,
     COALESCE(b.n_term, 0) AS n_term,
-    COALESCE(b.n_contract, 0) AS n_contract,
-    COALESCE(b.n_plan, 0) AS n_plan,
-    COALESCE(b.n_purpose, 0) AS n_purpose,
     COALESCE(c.f_confirm, 0) AS f_confirm,
-    COALESCE(a.f_apply, 0) AS f_apply
+    COALESCE(a.f_apply, 0) AS f_apply,
+    a.apply_amt,
+    CASE WHEN COALESCE(a.f_apply, 0) = 1 AND t.this_amt > 0
+         THEN a.apply_amt / t.this_amt END AS util
 FROM tmp_m_origin t
 LEFT JOIN tmp_prev_amt p ON p.user_id = t.user_id AND p.vir_date = t.vir_date
+LEFT JOIN tmp_enter en ON en.user_id = t.user_id AND en.vir_date = t.vir_date
 LEFT JOIN tmp_beh b ON b.user_id = t.user_id AND b.vir_date = t.vir_date
 LEFT JOIN tmp_confirm c ON c.user_id = t.user_id AND c.vir_date = t.vir_date
 LEFT JOIN tmp_apply a ON a.user_id = t.user_id AND a.vir_date = t.vir_date;
 
-DROP TABLE IF EXISTS tmp_sample;
-CREATE TEMP TABLE tmp_sample AS
-SELECT *
-FROM tmp_base
-WHERE this_amt IS NOT NULL AND prev_amt IS NOT NULL
-  AND (f_amt + f_term + f_contract + f_plan + f_purpose) >= 1;
+DROP TABLE IF EXISTS tmp_univ;
+CREATE TEMP TABLE tmp_univ AS
+SELECT * FROM tmp_base
+WHERE this_amt IS NOT NULL AND prev_amt IS NOT NULL AND chg_grp IN ('升额','不变','降额');
 
--- ---------------------------------------------------------------------------
--- R1 漏斗：顶部卡片 + 结论1
--- ---------------------------------------------------------------------------
+DROP TABLE IF EXISTS tmp_ent;
+CREATE TEMP TABLE tmp_ent AS
+SELECT * FROM tmp_univ WHERE f_enter = 1;
+
+-- R1 漏斗
 SELECT
-    t0.n_t0,
-    pv.n_with_prev,
-    bh.n_with_beh,
-    sm.n_sample,
-    ROUND(100.0 * sm.n_sample / NULLIF(t0.n_t0, 0), 2) AS sample_of_t0_pct,
-    ROUND(100.0 * bh.n_with_beh / NULLIF(t0.n_t0, 0), 2) AS beh_of_t0_pct
-FROM (SELECT COUNT(*) AS n_t0 FROM tmp_m_origin) t0
-CROSS JOIN (SELECT COUNT(*) AS n_with_prev FROM tmp_base WHERE prev_amt IS NOT NULL AND this_amt IS NOT NULL) pv
-CROSS JOIN (SELECT COUNT(*) AS n_with_beh FROM tmp_base WHERE (f_amt + f_term + f_contract + f_plan + f_purpose) >= 1) bh
-CROSS JOIN (SELECT COUNT(*) AS n_sample FROM tmp_sample) sm;
+    (SELECT COUNT(*) FROM tmp_m_origin) AS n_t0,
+    (SELECT COUNT(*) FROM tmp_univ) AS n_univ,
+    (SELECT COUNT(*) FROM tmp_ent) AS n_enter,
+    (SELECT COUNT(*) FROM tmp_univ WHERE f_apply = 1) AS n_apply,
+    (SELECT COUNT(*) FROM tmp_ent WHERE f_apply = 1) AS n_enter_apply,
+    ROUND(100.0 * (SELECT COUNT(*) FROM tmp_ent) / NULLIF((SELECT COUNT(*) FROM tmp_univ), 0), 2) AS pct_enter,
+    ROUND(100.0 * (SELECT COUNT(*) FROM tmp_univ WHERE f_apply = 1) / NULLIF((SELECT COUNT(*) FROM tmp_univ), 0), 2) AS pct_apply,
+    ROUND(100.0 * (SELECT COUNT(*) FROM tmp_ent WHERE f_apply = 1) / NULLIF((SELECT COUNT(*) FROM tmp_ent), 0), 2) AS pct_apply_enter,
+    ROUND(100.0 * (SELECT AVG(util) FROM tmp_univ WHERE f_apply = 1), 2) AS avg_util_pct;
 
--- ---------------------------------------------------------------------------
--- R2 图1–图4 + 主表 + 结论2–4（share_pct = 分析样本内人数占比）
--- ---------------------------------------------------------------------------
+-- R2 全体：额度变化 → 进页
 SELECT
     chg_grp,
     COUNT(*) AS n,
-    ROUND(100.0 * COUNT(*) / (SELECT COUNT(*) FROM tmp_sample), 2) AS share_pct,
+    ROUND(100.0 * COUNT(*) / (SELECT COUNT(*) FROM tmp_univ), 2) AS share_pct,
+    SUM(f_enter) AS n_enter,
+    ROUND(100.0 * AVG(f_enter), 2) AS pct_enter,
+    SUM(f_apply) AS n_apply,
+    ROUND(100.0 * AVG(f_apply), 2) AS pct_apply,
+    SUM(CASE WHEN f_enter = 1 THEN f_apply ELSE 0 END) AS n_enter_apply,
+    ROUND(100.0 * SUM(CASE WHEN f_enter = 1 THEN f_apply ELSE 0 END) / NULLIF(SUM(f_enter), 0), 2) AS pct_apply_enter,
     ROUND(AVG(this_amt), 0) AS avg_this,
     ROUND(AVG(prev_amt), 0) AS avg_prev,
-    ROUND(AVG(amt_diff), 0) AS avg_diff,
-    ROUND(AVG(amt_pct), 2) AS avg_pct,
+    ROUND(100.0 * AVG(util), 2) AS avg_util_pct
+FROM tmp_univ
+GROUP BY chg_grp
+ORDER BY CASE chg_grp WHEN '降额' THEN 1 WHEN '不变' THEN 2 WHEN '升额' THEN 3 END;
+
+-- R3 进页用户：页内行为 + 提单 + 使用率
+SELECT
+    chg_grp,
+    COUNT(*) AS n,
+    ROUND(100.0 * COUNT(*) / (SELECT COUNT(*) FROM tmp_ent), 2) AS share_pct,
     ROUND(100.0 * AVG(f_amt), 2) AS pct_amt,
     ROUND(100.0 * AVG(f_term), 2) AS pct_term,
     ROUND(100.0 * AVG(f_contract), 2) AS pct_contract,
@@ -279,54 +287,68 @@ SELECT
     ROUND(100.0 * AVG(f_purpose), 2) AS pct_purpose,
     ROUND(AVG(n_amt), 2) AS avg_n_amt,
     ROUND(AVG(n_term), 2) AS avg_n_term,
-    ROUND(AVG(n_contract), 2) AS avg_n_contract,
-    ROUND(AVG(n_plan), 2) AS avg_n_plan,
-    ROUND(AVG(n_purpose), 2) AS avg_n_purpose,
     ROUND(100.0 * AVG(f_confirm), 2) AS pct_confirm,
-    ROUND(100.0 * AVG(f_apply), 2) AS pct_apply
-FROM tmp_sample
+    ROUND(100.0 * AVG(f_apply), 2) AS pct_apply,
+    ROUND(100.0 * AVG(util), 2) AS avg_util_pct
+FROM tmp_ent
 GROUP BY chg_grp
-ORDER BY CASE chg_grp WHEN '降额' THEN 1 WHEN '不变' THEN 2 WHEN '升额' THEN 3 ELSE 4 END;
+ORDER BY CASE chg_grp WHEN '降额' THEN 1 WHEN '不变' THEN 2 WHEN '升额' THEN 3 END;
 
--- ---------------------------------------------------------------------------
--- R3 图5 + 幅度表 + 结论5
--- ---------------------------------------------------------------------------
-SELECT
-    chg_bin,
-    COUNT(*) AS n,
-    ROUND(100.0 * COUNT(*) / (SELECT COUNT(*) FROM tmp_sample), 2) AS share_pct,
-    ROUND(100.0 * AVG(f_amt), 2) AS pct_amt,
-    ROUND(100.0 * AVG(f_term), 2) AS pct_term,
-    ROUND(100.0 * AVG(f_contract), 2) AS pct_contract,
-    ROUND(100.0 * AVG(f_plan), 2) AS pct_plan,
-    ROUND(100.0 * AVG(f_purpose), 2) AS pct_purpose,
-    ROUND(100.0 * AVG(f_confirm), 2) AS pct_confirm,
-    ROUND(100.0 * AVG(f_apply), 2) AS pct_apply
-FROM tmp_sample
-GROUP BY chg_bin
-ORDER BY CASE chg_bin
-    WHEN '降额≥20%' THEN 1 WHEN '降额<20%' THEN 2 WHEN '不变' THEN 3
-    WHEN '升额<20%' THEN 4 WHEN '升额≥20%' THEN 5 ELSE 6 END;
+-- R4 进页用户：有/无某行为的当天提单率
+SELECT * FROM (
+    SELECT 1 AS ord, '改金额' AS beh,
+           SUM(f_amt) AS n_yes, ROUND(100.0 * AVG(f_amt), 2) AS pct_yes,
+           ROUND(100.0 * SUM(CASE WHEN f_amt = 1 THEN f_apply ELSE 0 END) / NULLIF(SUM(f_amt), 0), 2) AS pct_apply_yes,
+           ROUND(100.0 * SUM(CASE WHEN f_amt = 0 THEN f_apply ELSE 0 END) / NULLIF(SUM(1 - f_amt), 0), 2) AS pct_apply_no,
+           ROUND(100.0 * AVG(CASE WHEN f_amt = 1 AND f_apply = 1 THEN util END), 2) AS util_yes
+    FROM tmp_ent
+    UNION ALL
+    SELECT 2, '改期次', SUM(f_term), ROUND(100.0 * AVG(f_term), 2),
+           ROUND(100.0 * SUM(CASE WHEN f_term = 1 THEN f_apply ELSE 0 END) / NULLIF(SUM(f_term), 0), 2),
+           ROUND(100.0 * SUM(CASE WHEN f_term = 0 THEN f_apply ELSE 0 END) / NULLIF(SUM(1 - f_term), 0), 2),
+           ROUND(100.0 * AVG(CASE WHEN f_term = 1 AND f_apply = 1 THEN util END), 2)
+    FROM tmp_ent
+    UNION ALL
+    SELECT 3, '看合同', SUM(f_contract), ROUND(100.0 * AVG(f_contract), 2),
+           ROUND(100.0 * SUM(CASE WHEN f_contract = 1 THEN f_apply ELSE 0 END) / NULLIF(SUM(f_contract), 0), 2),
+           ROUND(100.0 * SUM(CASE WHEN f_contract = 0 THEN f_apply ELSE 0 END) / NULLIF(SUM(1 - f_contract), 0), 2),
+           ROUND(100.0 * AVG(CASE WHEN f_contract = 1 AND f_apply = 1 THEN util END), 2)
+    FROM tmp_ent
+    UNION ALL
+    SELECT 4, '看计划', SUM(f_plan), ROUND(100.0 * AVG(f_plan), 2),
+           ROUND(100.0 * SUM(CASE WHEN f_plan = 1 THEN f_apply ELSE 0 END) / NULLIF(SUM(f_plan), 0), 2),
+           ROUND(100.0 * SUM(CASE WHEN f_plan = 0 THEN f_apply ELSE 0 END) / NULLIF(SUM(1 - f_plan), 0), 2),
+           ROUND(100.0 * AVG(CASE WHEN f_plan = 1 AND f_apply = 1 THEN util END), 2)
+    FROM tmp_ent
+    UNION ALL
+    SELECT 5, '选原因', SUM(f_purpose), ROUND(100.0 * AVG(f_purpose), 2),
+           ROUND(100.0 * SUM(CASE WHEN f_purpose = 1 THEN f_apply ELSE 0 END) / NULLIF(SUM(f_purpose), 0), 2),
+           ROUND(100.0 * SUM(CASE WHEN f_purpose = 0 THEN f_apply ELSE 0 END) / NULLIF(SUM(1 - f_purpose), 0), 2),
+           ROUND(100.0 * AVG(CASE WHEN f_purpose = 1 AND f_apply = 1 THEN util END), 2)
+    FROM tmp_ent
+    UNION ALL
+    SELECT 6, '确认提单', SUM(f_confirm), ROUND(100.0 * AVG(f_confirm), 2),
+           ROUND(100.0 * SUM(CASE WHEN f_confirm = 1 THEN f_apply ELSE 0 END) / NULLIF(SUM(f_confirm), 0), 2),
+           ROUND(100.0 * SUM(CASE WHEN f_confirm = 0 THEN f_apply ELSE 0 END) / NULLIF(SUM(1 - f_confirm), 0), 2),
+           ROUND(100.0 * AVG(CASE WHEN f_confirm = 1 AND f_apply = 1 THEN util END), 2)
+    FROM tmp_ent
+) x ORDER BY ord;
 
--- ---------------------------------------------------------------------------
--- R4 图6 各月人数、图7 各月当天提单率 + 结论6
--- ---------------------------------------------------------------------------
+-- R5 周 × 额度组
 SELECT
-    ym,
+    wk,
     chg_grp,
     COUNT(*) AS n,
+    SUM(f_enter) AS n_enter,
+    ROUND(100.0 * AVG(f_enter), 2) AS pct_enter,
+    ROUND(100.0 * SUM(CASE WHEN f_enter = 1 THEN f_apply ELSE 0 END) / NULLIF(SUM(f_enter), 0), 2) AS pct_apply_enter,
     ROUND(100.0 * AVG(f_apply), 2) AS pct_apply,
-    ROUND(100.0 * AVG(f_confirm), 2) AS pct_confirm,
-    ROUND(100.0 * AVG(f_amt), 2) AS pct_amt,
-    ROUND(100.0 * AVG(f_term), 2) AS pct_term,
-    ROUND(100.0 * AVG(f_plan), 2) AS pct_plan
-FROM tmp_sample
-GROUP BY ym, chg_grp
-ORDER BY ym, CASE chg_grp WHEN '降额' THEN 1 WHEN '不变' THEN 2 WHEN '升额' THEN 3 ELSE 4 END;
+    ROUND(100.0 * AVG(util), 2) AS avg_util_pct
+FROM tmp_univ
+GROUP BY wk, chg_grp
+ORDER BY wk, CASE chg_grp WHEN '降额' THEN 1 WHEN '不变' THEN 2 WHEN '升额' THEN 3 END;
 
--- ---------------------------------------------------------------------------
--- R5 图8 + 组合表（combo_name 与报告表一致，取人数最多的 20 组）
--- ---------------------------------------------------------------------------
+-- R6 进页用户行为组合
 SELECT
     TRIM(BOTH '+' FROM
         (CASE WHEN f_amt = 1 THEN '金额+' ELSE '' END) ||
@@ -337,27 +359,32 @@ SELECT
     ) AS combo_name,
     f_amt, f_term, f_contract, f_plan, f_purpose,
     COUNT(*) AS n,
+    ROUND(100.0 * COUNT(*) / (SELECT COUNT(*) FROM tmp_ent), 2) AS share_pct,
     ROUND(100.0 * AVG(f_confirm), 2) AS pct_confirm,
-    ROUND(100.0 * AVG(f_apply), 2) AS pct_apply
-FROM tmp_sample
+    ROUND(100.0 * AVG(f_apply), 2) AS pct_apply,
+    ROUND(100.0 * AVG(util), 2) AS avg_util_pct
+FROM tmp_ent
 GROUP BY f_amt, f_term, f_contract, f_plan, f_purpose
 ORDER BY n DESC
 LIMIT 20;
 
--- ---------------------------------------------------------------------------
--- R6 组合 × 额度组（交叉人数，报告未单独制表）
--- ---------------------------------------------------------------------------
+-- R7 进页用户：行为 × 额度组
 SELECT
-    chg_grp,
-    TRIM(BOTH '+' FROM
-        (CASE WHEN f_amt = 1 THEN '金额+' ELSE '' END) ||
-        (CASE WHEN f_term = 1 THEN '期次+' ELSE '' END) ||
-        (CASE WHEN f_contract = 1 THEN '合同+' ELSE '' END) ||
-        (CASE WHEN f_plan = 1 THEN '计划+' ELSE '' END) ||
-        (CASE WHEN f_purpose = 1 THEN '原因+' ELSE '' END)
-    ) AS combo_name,
-    f_amt, f_term, f_contract, f_plan, f_purpose,
-    COUNT(*) AS n
-FROM tmp_sample
-GROUP BY chg_grp, f_amt, f_term, f_contract, f_plan, f_purpose
-ORDER BY chg_grp, n DESC;
+    chg_grp, beh, n_yes,
+    ROUND(100.0 * n_yes / NULLIF(n_grp, 0), 2) AS pct_yes,
+    ROUND(100.0 * n_apply_yes / NULLIF(n_yes, 0), 2) AS pct_apply_yes
+FROM (
+    SELECT chg_grp, COUNT(*) AS n_grp,
+           SUM(f_amt) AS n_yes, SUM(CASE WHEN f_amt = 1 THEN f_apply ELSE 0 END) AS n_apply_yes,
+           '改金额' AS beh FROM tmp_ent GROUP BY chg_grp
+    UNION ALL
+    SELECT chg_grp, COUNT(*), SUM(f_term), SUM(CASE WHEN f_term = 1 THEN f_apply ELSE 0 END), '改期次' FROM tmp_ent GROUP BY chg_grp
+    UNION ALL
+    SELECT chg_grp, COUNT(*), SUM(f_plan), SUM(CASE WHEN f_plan = 1 THEN f_apply ELSE 0 END), '看计划' FROM tmp_ent GROUP BY chg_grp
+    UNION ALL
+    SELECT chg_grp, COUNT(*), SUM(f_purpose), SUM(CASE WHEN f_purpose = 1 THEN f_apply ELSE 0 END), '选原因' FROM tmp_ent GROUP BY chg_grp
+    UNION ALL
+    SELECT chg_grp, COUNT(*), SUM(f_confirm), SUM(CASE WHEN f_confirm = 1 THEN f_apply ELSE 0 END), '确认提单' FROM tmp_ent GROUP BY chg_grp
+) z
+ORDER BY CASE chg_grp WHEN '降额' THEN 1 WHEN '不变' THEN 2 WHEN '升额' THEN 3 END,
+         CASE beh WHEN '改金额' THEN 1 WHEN '改期次' THEN 2 WHEN '看计划' THEN 3 WHEN '选原因' THEN 4 ELSE 5 END;
