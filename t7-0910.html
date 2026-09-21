@@ -23,6 +23,8 @@ h1{font-size:24px;margin:8px 0 6px}
 .chart h3{margin:0 0 4px;font-size:15px}
 .chart p{margin:0 0 10px;font-size:12px;color:var(--muted)}
 .box{height:300px;position:relative;overflow:visible}
+.chart-tip{position:absolute;z-index:20;pointer-events:none;opacity:0;background:#0c2944;border:1px solid #2a5c7e;color:#eff8ff;padding:8px 10px;border-radius:8px;font-size:12px;line-height:1.55;white-space:nowrap;box-shadow:0 8px 20px rgba(0,0,0,.35)}
+.chart-tip .t{color:var(--cy);font-weight:700;margin-bottom:2px}
 .foot{color:#7fa6c2;font-size:12px;margin-top:28px;border-top:1px solid var(--line);padding-top:14px;line-height:1.8}
 .appendix{margin-top:36px;border-top:1px solid var(--line);padding-top:8px}
 .appendix h2{font-size:18px;margin:22px 0 10px}
@@ -300,6 +302,7 @@ import html as html_lib
 import json
 import os
 import sys
+from datetime import date, timedelta
 from pathlib import Path
 
 HERE = Path(__file__).resolve().parent
@@ -351,6 +354,76 @@ WHERE churn_user_id IS NOT NULL{extra}
 def md_label(recall_date: str) -&gt; str:
     _y, m, d = recall_date.split(&quot;-&quot;)
     return f&quot;{int(m)}/{int(d)}&quot;
+
+
+def _iso(d) -&gt; str:
+    return d if isinstance(d, str) else str(d)
+
+
+def fill_daily_spine(rows, start, end, n_key=&quot;n&quot;):
+    &quot;&quot;&quot;补齐召回日至统计日的日历轴，零值日也有点，避免折线标记跳日缺失。&quot;&quot;&quot;
+    start_d = date.fromisoformat(_iso(start)[:10])
+    end_d = date.fromisoformat(_iso(end)[:10])
+    by = {_iso(r[&quot;d&quot;])[:10]: r for r in rows or []}
+    out = []
+    last = {}
+    cur = start_d
+    while cur &lt;= end_d:
+        key = cur.isoformat()
+        if key in by:
+            rec = dict(by[key])
+            rec[&quot;d&quot;] = key
+            last = rec
+            out.append(rec)
+        else:
+            rec = {&quot;d&quot;: key, n_key: 0}
+            if last:
+                if &quot;cum&quot; in last:
+                    rec[&quot;cum&quot;] = last[&quot;cum&quot;]
+                if &quot;rate&quot; in last:
+                    rec[&quot;rate&quot;] = last[&quot;rate&quot;]
+            out.append(rec)
+        cur += timedelta(days=1)
+    return out
+
+
+def complete_dashboard_series(data):
+    k = data.get(&quot;kpi&quot;) or {}
+    start = k.get(&quot;recall_date&quot;)
+    end = k.get(&quot;as_of&quot;)
+    n_user = int(k.get(&quot;n_user&quot;) or 0)
+    if not start or not end:
+        return
+    first = fill_daily_spine(data.get(&quot;first_daily&quot;) or [], start, end, &quot;n&quot;)
+    cum = 0
+    for r in first:
+        r[&quot;n&quot;] = int(r.get(&quot;n&quot;) or 0)
+        cum += r[&quot;n&quot;]
+        r[&quot;cum&quot;] = cum
+        r[&quot;rate&quot;] = round(100.0 * cum / n_user, 2) if n_user else 0
+    data[&quot;first_daily&quot;] = first
+    data[&quot;apply_daily&quot;] = fill_daily_spine(data.get(&quot;apply_daily&quot;) or [], start, end, &quot;n_user&quot;)
+    for r in data[&quot;apply_daily&quot;]:
+        r[&quot;n_user&quot;] = int(r.get(&quot;n_user&quot;) or 0)
+        r[&quot;n_order&quot;] = int(r.get(&quot;n_order&quot;) or 0)
+    remit = fill_daily_spine(data.get(&quot;remit_daily&quot;) or [], start, end, &quot;n&quot;)
+    rcum = 0
+    for r in remit:
+        r[&quot;n&quot;] = int(r.get(&quot;n&quot;) or 0)
+        rcum += r[&quot;n&quot;]
+        r[&quot;cum&quot;] = rcum
+    data[&quot;remit_daily&quot;] = remit
+    due = fill_daily_spine(data.get(&quot;due_daily&quot;) or [], start, end, &quot;n_due&quot;)
+    for r in due:
+        r[&quot;n_due&quot;] = int(r.get(&quot;n_due&quot;) or 0)
+        r[&quot;n_od&quot;] = int(r.get(&quot;n_od&quot;) or 0)
+        if not r.get(&quot;n_due&quot;):
+            r[&quot;profit_pct&quot;] = None
+            r[&quot;overdue_pct&quot;] = None
+            r[&quot;remit&quot;] = float(r.get(&quot;remit&quot;) or 0)
+            r[&quot;repaid&quot;] = float(r.get(&quot;repaid&quot;) or 0)
+    data[&quot;due_daily&quot;] = due
+    attach_due_cum(due)
 
 
 def attach_due_cum(due_daily):
@@ -889,7 +962,7 @@ GROUP BY 1;
 
 
 def write_html(data, batch):
-    attach_due_cum(data.get(&quot;due_daily&quot;) or [])
+    complete_dashboard_series(data)
     k = data[&quot;kpi&quot;]
     payload = json.dumps(data, ensure_ascii=False)
     LIST_TABLE = batch[&quot;table&quot;]
@@ -934,6 +1007,8 @@ h1{{font-size:24px;margin:8px 0 6px}}
 .chart h3{{margin:0 0 4px;font-size:15px}}
 .chart p{{margin:0 0 10px;font-size:12px;color:var(--muted)}}
 .box{{height:300px;position:relative;overflow:visible}}
+.chart-tip{{position:absolute;z-index:20;pointer-events:none;opacity:0;background:#0c2944;border:1px solid #2a5c7e;color:#eff8ff;padding:8px 10px;border-radius:8px;font-size:12px;line-height:1.55;white-space:nowrap;box-shadow:0 8px 20px rgba(0,0,0,.35)}}
+.chart-tip .t{{color:var(--cy);font-weight:700;margin-bottom:2px}}
 .foot{{color:#7fa6c2;font-size:12px;margin-top:28px;border-top:1px solid var(--line);padding-top:14px;line-height:1.8}}
 .appendix{{margin-top:36px;border-top:1px solid var(--line);padding-top:8px}}
 .appendix h2{{font-size:18px;margin:22px 0 10px}}
@@ -987,43 +1062,59 @@ details.code pre{{overflow:auto;max-height:520px;font-size:11px;line-height:1.45
 const col = {cy:&#x27;#43c7e7&#x27;, gr:&#x27;#64dcae&#x27;, am:&#x27;#ffc26b&#x27;, pk:&#x27;#f68ab0&#x27;};
 Chart.defaults.font.family=&#x27;-apple-system,BlinkMacSystemFont,&quot;PingFang SC&quot;,&quot;Microsoft YaHei&quot;,sans-serif&#x27;;
 Chart.defaults.color=&#x27;#aac5da&#x27;;
+function htmlTip(ctx) {
+  const {chart, tooltip} = ctx;
+  const wrap = chart.canvas.parentNode;
+  let el = wrap.querySelector(&#x27;.chart-tip&#x27;);
+  if (!el) {
+    el = document.createElement(&#x27;div&#x27;);
+    el.className = &#x27;chart-tip&#x27;;
+    wrap.appendChild(el);
+  }
+  if (!tooltip || tooltip.opacity === 0) {
+    el.style.opacity = &#x27;0&#x27;;
+    return;
+  }
+  const title = (tooltip.title || []).join(&#x27; &#x27;);
+  const lines = (tooltip.body || []).map(b =&gt; (b.lines || []).join(&#x27; &#x27;));
+  el.innerHTML = &#x27;&lt;div class=&quot;t&quot;&gt;&#x27; + title + &#x27;&lt;/div&gt;&#x27; + lines.map(l =&gt; &#x27;&lt;div&gt;&#x27; + l + &#x27;&lt;/div&gt;&#x27;).join(&#x27;&#x27;);
+  const w = el.offsetWidth || 180, h = el.offsetHeight || 70;
+  let left = tooltip.caretX + 14;
+  if (left + w &gt; wrap.clientWidth - 6) left = tooltip.caretX - w - 14;
+  if (left &lt; 6) left = 6;
+  let top = tooltip.caretY - h - 12;
+  if (top &lt; 6) top = tooltip.caretY + 16;
+  el.style.left = left + &#x27;px&#x27;;
+  el.style.top = top + &#x27;px&#x27;;
+  el.style.opacity = &#x27;1&#x27;;
+}
 function base(y2) {
   const scales = {
     x: {ticks:{color:&#x27;#aac5da&#x27;, maxRotation:45, autoSkip:true, autoSkipPadding:6}, grid:{display:false}},
-    y: {type:&#x27;linear&#x27;, position:&#x27;left&#x27;, ticks:{color:&#x27;#aac5da&#x27;}, grid:{color:&#x27;rgba(42,92,126,.25)&#x27;}, beginAtZero:true, grace:&#x27;18%&#x27;}
+    y: {type:&#x27;linear&#x27;, position:&#x27;left&#x27;, ticks:{color:&#x27;#aac5da&#x27;}, grid:{color:&#x27;rgba(42,92,126,.25)&#x27;}, beginAtZero:true, grace:&#x27;22%&#x27;}
   };
-  if (y2) scales.y2 = {type:&#x27;linear&#x27;, position:&#x27;right&#x27;, ticks:{color:&#x27;#ffc26b&#x27;}, grid:{drawOnChartArea:false}};
-  return {responsive:true, maintainAspectRatio:false, interaction:{mode:&#x27;index&#x27;, intersect:false},
-    layout:{padding:{top:10,right:18,bottom:4,left:4}},
+  if (y2) scales.y2 = {type:&#x27;linear&#x27;, position:&#x27;right&#x27;, ticks:{color:&#x27;#ffc26b&#x27;}, grid:{drawOnChartArea:false}, beginAtZero:true, grace:&#x27;22%&#x27;};
+  return {responsive:true, maintainAspectRatio:false, clip:false,
+    interaction:{mode:&#x27;index&#x27;, intersect:false},
+    layout:{padding:{top:28,right:48,bottom:8,left:12}},
+    elements:{point:{radius:3, hoverRadius:5, hitRadius:18, borderWidth:1.5, borderColor:&#x27;#0c2944&#x27;}},
     plugins:{
       legend:{labels:{color:&#x27;#eff8ff&#x27;, padding:16}},
-      tooltip:{
-        enabled:true,
-        position:&#x27;keepIn&#x27;,
-        xAlign:&#x27;left&#x27;,
-        yAlign:&#x27;center&#x27;,
-        padding:10,
-        caretPadding:8,
-        displayColors:true
-      }
+      tooltip:{enabled:false, external:htmlTip}
     },
     scales};
 }
-if (typeof Chart !== &#x27;undefined&#x27; &amp;&amp; Chart.Tooltip &amp;&amp; !Chart.Tooltip.positioners.keepIn) {
-  Chart.Tooltip.positioners.keepIn = function(items, eventPosition) {
-    const nearest = Chart.Tooltip.positioners.nearest.call(this, items, eventPosition);
-    if (!nearest) return false;
-    const area = this.chart.chartArea;
-    let x = nearest.x, y = nearest.y;
-    const cut = area.left + (area.right - area.left) * 0.62;
-    if (x &gt; cut) x = Math.max(area.left + 8, x - 120);
-    if (y &lt; area.top + 48) y = Math.min(area.bottom - 8, y + 56);
-    else y = Math.min(Math.max(y, area.top + 8), area.bottom - 8);
-    return {x, y};
-  };
-}
 function line(id, labels, datasets, y2, extraOpt) {
-  const opt = Object.assign(base(y2), extraOpt || {});
+  const baseOpt = base(y2);
+  const opt = Object.assign({}, baseOpt, extraOpt || {});
+  if (extraOpt &amp;&amp; extraOpt.plugins) {
+    opt.plugins = Object.assign({}, baseOpt.plugins, extraOpt.plugins);
+    opt.plugins.tooltip = Object.assign({enabled:false, external:htmlTip}, extraOpt.plugins.tooltip || {}, {enabled:false, external:htmlTip});
+  }
+  if (extraOpt &amp;&amp; extraOpt.scales) {
+    opt.scales = Object.assign({}, baseOpt.scales, extraOpt.scales);
+  }
+  opt.clip = false;
   new Chart(document.getElementById(id), {type:&#x27;line&#x27;, data:{labels, datasets}, options:opt});
 }
 function drawRateLabels(chart) {
@@ -1051,8 +1142,8 @@ function drawRateLabels(chart) {
 }
 const fd = D.first_daily, ad = D.apply_daily, rd = D.remit_daily, dd = D.due_daily, k=D.kpi;
 line(&#x27;c1&#x27;, fd.map(x=&gt;x.d.slice(5)), [
-  {label:&#x27;累计提单人数&#x27;, data:fd.map(x=&gt;x.cum), borderColor:col.cy, backgroundColor:&#x27;rgba(67,199,231,.12)&#x27;, fill:true, tension:.25, yAxisID:&#x27;y&#x27;, pointRadius:3, pointHoverRadius:5, pointHitRadius:18, borderWidth:2, clip:false},
-  {label:&#x27;提单率%&#x27;, data:fd.map(x=&gt;x.rate), borderColor:col.am, tension:.25, yAxisID:&#x27;y2&#x27;, pointRadius:3, pointHoverRadius:5, pointHitRadius:18, borderWidth:2, clip:false}
+  {label:&#x27;累计提单人数&#x27;, data:fd.map(x=&gt;x.cum), borderColor:col.cy, backgroundColor:&#x27;rgba(67,199,231,.12)&#x27;, fill:true, tension:.25, yAxisID:&#x27;y&#x27;, pointStyle:&#x27;circle&#x27;, pointRadius:3, pointHoverRadius:5, pointHitRadius:18, pointBackgroundColor:col.cy, pointBorderColor:col.cy, borderWidth:2, clip:false},
+  {label:&#x27;提单率%&#x27;, data:fd.map(x=&gt;x.rate), borderColor:col.am, backgroundColor:col.am, fill:false, tension:.25, yAxisID:&#x27;y2&#x27;, pointStyle:&#x27;circle&#x27;, pointRadius:3, pointHoverRadius:5, pointHitRadius:18, pointBackgroundColor:col.am, pointBorderColor:col.am, borderWidth:2, clip:false, showLine:true}
 ], true, {
   plugins: Object.assign({}, base(true).plugins, {
     tooltip: Object.assign({}, base(true).plugins.tooltip, {
@@ -1060,6 +1151,14 @@ line(&#x27;c1&#x27;, fd.map(x=&gt;x.d.slice(5)), [
         title(items) {
           const i = items[0].dataIndex;
           return (fd[i] &amp;&amp; fd[i].d) ? fd[i].d : items[0].label;
+        },
+        label(ctx) {
+          const r = fd[ctx.dataIndex];
+          if (!r) return ctx.formattedValue;
+          if (String(ctx.dataset.label).includes(&#x27;提单率&#x27;)) {
+            return &#x27;提单率 &#x27; + Number(r.rate).toFixed(2) + &#x27;%&#x27;;
+          }
+          return &#x27;累计提单人数 &#x27; + Number(r.cum).toLocaleString();
         }
       }
     })
@@ -1072,16 +1171,16 @@ new Chart(document.getElementById(&#x27;c3&#x27;), {type:&#x27;bar&#x27;, data:{
   {label:&#x27;当日提单用户&#x27;, data:ad.map(x=&gt;x.n_user), backgroundColor:&#x27;rgba(67,199,231,.7)&#x27;}
 ]}, options:base(false)});
 line(&#x27;c4&#x27;, rd.map(x=&gt;x.d.slice(5)), [
-  {label:&#x27;当日放款单&#x27;, data:rd.map(x=&gt;x.n), borderColor:col.gr, tension:.25, yAxisID:&#x27;y&#x27;, pointRadius:2},
-  {label:&#x27;累计放款单&#x27;, data:rd.map(x=&gt;x.cum), borderColor:col.am, tension:.25, yAxisID:&#x27;y2&#x27;, pointRadius:2}
+  {label:&#x27;当日放款单&#x27;, data:rd.map(x=&gt;x.n), borderColor:col.gr, backgroundColor:col.gr, fill:false, tension:.25, yAxisID:&#x27;y&#x27;, pointStyle:&#x27;circle&#x27;, pointRadius:3, pointHoverRadius:5, pointHitRadius:18, pointBackgroundColor:col.gr, pointBorderColor:col.gr, clip:false},
+  {label:&#x27;累计放款单&#x27;, data:rd.map(x=&gt;x.cum), borderColor:col.am, backgroundColor:col.am, fill:false, tension:.25, yAxisID:&#x27;y2&#x27;, pointStyle:&#x27;circle&#x27;, pointRadius:3, pointHoverRadius:5, pointHitRadius:18, pointBackgroundColor:col.am, pointBorderColor:col.am, clip:false}
 ], true);
 line(&#x27;c5&#x27;, dd.map(x=&gt;x.d.slice(5)), [
-  {label:&#x27;当天盈利率%&#x27;, data:dd.map(x=&gt;x.profit_pct), borderColor:col.gr, tension:.25, pointRadius:2, spanGaps:true},
-  {label:&#x27;累计盈利率%&#x27;, data:dd.map(x=&gt;x.cum_profit_pct), borderColor:col.am, tension:.25, pointRadius:2, spanGaps:true}
+  {label:&#x27;当天盈利率%&#x27;, data:dd.map(x=&gt;x.profit_pct), borderColor:col.gr, backgroundColor:col.gr, fill:false, tension:.25, pointStyle:&#x27;circle&#x27;, pointRadius:3, pointHoverRadius:5, pointHitRadius:18, pointBackgroundColor:col.gr, pointBorderColor:col.gr, spanGaps:true, clip:false},
+  {label:&#x27;累计盈利率%&#x27;, data:dd.map(x=&gt;x.cum_profit_pct), borderColor:col.am, backgroundColor:col.am, fill:false, tension:.25, pointStyle:&#x27;circle&#x27;, pointRadius:3, pointHoverRadius:5, pointHitRadius:18, pointBackgroundColor:col.am, pointBorderColor:col.am, spanGaps:true, clip:false}
 ], false);
 line(&#x27;c6&#x27;, dd.map(x=&gt;x.d.slice(5)), [
-  {label:&#x27;当天逾期率%&#x27;, data:dd.map(x=&gt;x.overdue_pct), borderColor:col.pk, tension:.25, pointRadius:2, spanGaps:true},
-  {label:&#x27;累计逾期率%&#x27;, data:dd.map(x=&gt;x.cum_overdue_pct), borderColor:col.cy, tension:.25, pointRadius:2, spanGaps:true}
+  {label:&#x27;当天逾期率%&#x27;, data:dd.map(x=&gt;x.overdue_pct), borderColor:col.pk, backgroundColor:col.pk, fill:false, tension:.25, pointStyle:&#x27;circle&#x27;, pointRadius:3, pointHoverRadius:5, pointHitRadius:18, pointBackgroundColor:col.pk, pointBorderColor:col.pk, spanGaps:true, clip:false},
+  {label:&#x27;累计逾期率%&#x27;, data:dd.map(x=&gt;x.cum_overdue_pct), borderColor:col.cy, backgroundColor:col.cy, fill:false, tension:.25, pointStyle:&#x27;circle&#x27;, pointRadius:3, pointHoverRadius:5, pointHitRadius:18, pointBackgroundColor:col.cy, pointBorderColor:col.cy, spanGaps:true, clip:false}
 ], false);
 new Chart(document.getElementById(&#x27;c7&#x27;), {type:&#x27;doughnut&#x27;, data:{labels:[&#x27;已提单&#x27;,&#x27;尚未提单&#x27;], datasets:[{data:[k.n_apply, k.n_user-k.n_apply], backgroundColor:[col.gr, &#x27;rgba(42,92,126,.55)&#x27;], borderWidth:0}]},
   options:{responsive:true, maintainAspectRatio:false, cutout:&#x27;55%&#x27;, layout:{padding:{top:4,bottom:8,left:4,right:8}}, plugins:{legend:{position:&#x27;right&#x27;, labels:{color:&#x27;#eff8ff&#x27;, padding:12, boxWidth:12}}}},
@@ -1108,12 +1207,12 @@ new Chart(document.getElementById(&#x27;c8&#x27;), {type:&#x27;bar&#x27;, data:{
   }}]});
 new Chart(document.getElementById(&#x27;c9&#x27;), {type:&#x27;bar&#x27;, data:{labels:D.strat.map(x=&gt;x.strat), datasets:[
   {label:&#x27;名单人数&#x27;, data:D.strat.map(x=&gt;x.n_user), backgroundColor:&#x27;rgba(67,199,231,.35)&#x27;, yAxisID:&#x27;y&#x27;},
-  {label:&#x27;提单率%&#x27;, data:D.strat.map(x=&gt;x.pct), type:&#x27;line&#x27;, borderColor:col.pk, yAxisID:&#x27;y2&#x27;, tension:.2, pointRadius:3}
+  {label:&#x27;提单率%&#x27;, data:D.strat.map(x=&gt;x.pct), type:&#x27;line&#x27;, borderColor:col.pk, yAxisID:&#x27;y2&#x27;, tension:.2, pointStyle:&#x27;circle&#x27;, pointRadius:3, pointHoverRadius:5, pointHitRadius:18, pointBackgroundColor:col.pk, pointBorderColor:col.pk, clip:false}
 ]}, options:Object.assign(base(true), {layout:{padding:{top:0,right:8}}}),
   plugins:[{id:&#x27;rateLabel9&#x27;, afterDatasetsDraw(chart){ drawRateLabels(chart); }}]});
 new Chart(document.getElementById(&#x27;c10&#x27;), {type:&#x27;bar&#x27;, data:{labels:D.churn.map(x=&gt;x.bin), datasets:[
   {label:&#x27;名单人数&#x27;, data:D.churn.map(x=&gt;x.n_user), backgroundColor:&#x27;rgba(67,199,231,.35)&#x27;, yAxisID:&#x27;y&#x27;},
-  {label:&#x27;提单率%&#x27;, data:D.churn.map(x=&gt;x.pct), type:&#x27;line&#x27;, borderColor:col.pk, yAxisID:&#x27;y2&#x27;, tension:.2, pointRadius:3}
+  {label:&#x27;提单率%&#x27;, data:D.churn.map(x=&gt;x.pct), type:&#x27;line&#x27;, borderColor:col.pk, yAxisID:&#x27;y2&#x27;, tension:.2, pointStyle:&#x27;circle&#x27;, pointRadius:3, pointHoverRadius:5, pointHitRadius:18, pointBackgroundColor:col.pk, pointBorderColor:col.pk, clip:false}
 ]}, options:Object.assign(base(true), {layout:{padding:{top:0,right:8}}}),
   plugins:[{id:&#x27;rateLabel10&#x27;, afterDatasetsDraw(chart){ drawRateLabels(chart); }}]});
 &lt;/script&gt;
@@ -1235,8 +1334,8 @@ def charts_js_for(pfx: str) -&gt; str:
     js = r&quot;&quot;&quot;
 const fd = D.first_daily, ad = D.apply_daily, rd = D.remit_daily, dd = D.due_daily, k=D.kpi;
 line(&#x27;__P__c1&#x27;, fd.map(x=&gt;x.d.slice(5)), [
-  {label:&#x27;累计提单人数&#x27;, data:fd.map(x=&gt;x.cum), borderColor:col.cy, backgroundColor:&#x27;rgba(67,199,231,.12)&#x27;, fill:true, tension:.25, yAxisID:&#x27;y&#x27;, pointRadius:3, pointHoverRadius:5, pointHitRadius:18, borderWidth:2, clip:false},
-  {label:&#x27;提单率%&#x27;, data:fd.map(x=&gt;x.rate), borderColor:col.am, tension:.25, yAxisID:&#x27;y2&#x27;, pointRadius:3, pointHoverRadius:5, pointHitRadius:18, borderWidth:2, clip:false}
+  {label:&#x27;累计提单人数&#x27;, data:fd.map(x=&gt;x.cum), borderColor:col.cy, backgroundColor:&#x27;rgba(67,199,231,.12)&#x27;, fill:true, tension:.25, yAxisID:&#x27;y&#x27;, pointStyle:&#x27;circle&#x27;, pointRadius:3, pointHoverRadius:5, pointHitRadius:18, pointBackgroundColor:col.cy, pointBorderColor:col.cy, borderWidth:2, clip:false},
+  {label:&#x27;提单率%&#x27;, data:fd.map(x=&gt;x.rate), borderColor:col.am, backgroundColor:col.am, fill:false, tension:.25, yAxisID:&#x27;y2&#x27;, pointStyle:&#x27;circle&#x27;, pointRadius:3, pointHoverRadius:5, pointHitRadius:18, pointBackgroundColor:col.am, pointBorderColor:col.am, borderWidth:2, clip:false, showLine:true}
 ], true, {
   plugins: Object.assign({}, base(true).plugins, {
     tooltip: Object.assign({}, base(true).plugins.tooltip, {
@@ -1244,6 +1343,14 @@ line(&#x27;__P__c1&#x27;, fd.map(x=&gt;x.d.slice(5)), [
         title(items) {
           const i = items[0].dataIndex;
           return (fd[i] &amp;&amp; fd[i].d) ? fd[i].d : items[0].label;
+        },
+        label(ctx) {
+          const r = fd[ctx.dataIndex];
+          if (!r) return ctx.formattedValue;
+          if (String(ctx.dataset.label).includes(&#x27;提单率&#x27;)) {
+            return &#x27;提单率 &#x27; + Number(r.rate).toFixed(2) + &#x27;%&#x27;;
+          }
+          return &#x27;累计提单人数 &#x27; + Number(r.cum).toLocaleString();
         }
       }
     })
@@ -1256,16 +1363,16 @@ new Chart(document.getElementById(&#x27;__P__c3&#x27;), {type:&#x27;bar&#x27;, d
   {label:&#x27;当日提单用户&#x27;, data:ad.map(x=&gt;x.n_user), backgroundColor:&#x27;rgba(67,199,231,.7)&#x27;}
 ]}, options:base(false)});
 line(&#x27;__P__c4&#x27;, rd.map(x=&gt;x.d.slice(5)), [
-  {label:&#x27;当日放款单&#x27;, data:rd.map(x=&gt;x.n), borderColor:col.gr, tension:.25, yAxisID:&#x27;y&#x27;, pointRadius:2},
-  {label:&#x27;累计放款单&#x27;, data:rd.map(x=&gt;x.cum), borderColor:col.am, tension:.25, yAxisID:&#x27;y2&#x27;, pointRadius:2}
+  {label:&#x27;当日放款单&#x27;, data:rd.map(x=&gt;x.n), borderColor:col.gr, backgroundColor:col.gr, fill:false, tension:.25, yAxisID:&#x27;y&#x27;, pointStyle:&#x27;circle&#x27;, pointRadius:3, pointHoverRadius:5, pointHitRadius:18, pointBackgroundColor:col.gr, pointBorderColor:col.gr, clip:false},
+  {label:&#x27;累计放款单&#x27;, data:rd.map(x=&gt;x.cum), borderColor:col.am, backgroundColor:col.am, fill:false, tension:.25, yAxisID:&#x27;y2&#x27;, pointStyle:&#x27;circle&#x27;, pointRadius:3, pointHoverRadius:5, pointHitRadius:18, pointBackgroundColor:col.am, pointBorderColor:col.am, clip:false}
 ], true);
 line(&#x27;__P__c5&#x27;, dd.map(x=&gt;x.d.slice(5)), [
-  {label:&#x27;当天盈利率%&#x27;, data:dd.map(x=&gt;x.profit_pct), borderColor:col.gr, tension:.25, pointRadius:2, spanGaps:true},
-  {label:&#x27;累计盈利率%&#x27;, data:dd.map(x=&gt;x.cum_profit_pct), borderColor:col.am, tension:.25, pointRadius:2, spanGaps:true}
+  {label:&#x27;当天盈利率%&#x27;, data:dd.map(x=&gt;x.profit_pct), borderColor:col.gr, backgroundColor:col.gr, fill:false, tension:.25, pointStyle:&#x27;circle&#x27;, pointRadius:3, pointHoverRadius:5, pointHitRadius:18, pointBackgroundColor:col.gr, pointBorderColor:col.gr, spanGaps:true, clip:false},
+  {label:&#x27;累计盈利率%&#x27;, data:dd.map(x=&gt;x.cum_profit_pct), borderColor:col.am, backgroundColor:col.am, fill:false, tension:.25, pointStyle:&#x27;circle&#x27;, pointRadius:3, pointHoverRadius:5, pointHitRadius:18, pointBackgroundColor:col.am, pointBorderColor:col.am, spanGaps:true, clip:false}
 ], false);
 line(&#x27;__P__c6&#x27;, dd.map(x=&gt;x.d.slice(5)), [
-  {label:&#x27;当天逾期率%&#x27;, data:dd.map(x=&gt;x.overdue_pct), borderColor:col.pk, tension:.25, pointRadius:2, spanGaps:true},
-  {label:&#x27;累计逾期率%&#x27;, data:dd.map(x=&gt;x.cum_overdue_pct), borderColor:col.cy, tension:.25, pointRadius:2, spanGaps:true}
+  {label:&#x27;当天逾期率%&#x27;, data:dd.map(x=&gt;x.overdue_pct), borderColor:col.pk, backgroundColor:col.pk, fill:false, tension:.25, pointStyle:&#x27;circle&#x27;, pointRadius:3, pointHoverRadius:5, pointHitRadius:18, pointBackgroundColor:col.pk, pointBorderColor:col.pk, spanGaps:true, clip:false},
+  {label:&#x27;累计逾期率%&#x27;, data:dd.map(x=&gt;x.cum_overdue_pct), borderColor:col.cy, backgroundColor:col.cy, fill:false, tension:.25, pointStyle:&#x27;circle&#x27;, pointRadius:3, pointHoverRadius:5, pointHitRadius:18, pointBackgroundColor:col.cy, pointBorderColor:col.cy, spanGaps:true, clip:false}
 ], false);
 new Chart(document.getElementById(&#x27;__P__c7&#x27;), {type:&#x27;doughnut&#x27;, data:{labels:[&#x27;已提单&#x27;,&#x27;尚未提单&#x27;], datasets:[{data:[k.n_apply, k.n_user-k.n_apply], backgroundColor:[col.gr, &#x27;rgba(42,92,126,.55)&#x27;], borderWidth:0}]},
   options:{responsive:true, maintainAspectRatio:false, cutout:&#x27;55%&#x27;, layout:{padding:{top:4,bottom:8,left:4,right:8}}, plugins:{legend:{position:&#x27;right&#x27;, labels:{color:&#x27;#eff8ff&#x27;, padding:12, boxWidth:12}}}},
@@ -1292,12 +1399,12 @@ new Chart(document.getElementById(&#x27;__P__c8&#x27;), {type:&#x27;bar&#x27;, d
   }}]});
 new Chart(document.getElementById(&#x27;__P__c9&#x27;), {type:&#x27;bar&#x27;, data:{labels:D.strat.map(x=&gt;x.strat), datasets:[
   {label:&#x27;名单人数&#x27;, data:D.strat.map(x=&gt;x.n_user), backgroundColor:&#x27;rgba(67,199,231,.35)&#x27;, yAxisID:&#x27;y&#x27;},
-  {label:&#x27;提单率%&#x27;, data:D.strat.map(x=&gt;x.pct), type:&#x27;line&#x27;, borderColor:col.pk, yAxisID:&#x27;y2&#x27;, tension:.2, pointRadius:3}
+  {label:&#x27;提单率%&#x27;, data:D.strat.map(x=&gt;x.pct), type:&#x27;line&#x27;, borderColor:col.pk, yAxisID:&#x27;y2&#x27;, tension:.2, pointStyle:&#x27;circle&#x27;, pointRadius:3, pointHoverRadius:5, pointHitRadius:18, pointBackgroundColor:col.pk, pointBorderColor:col.pk, clip:false}
 ]}, options:Object.assign(base(true), {layout:{padding:{top:0,right:8}}}),
   plugins:[{id:&#x27;rateLabel9&#x27;, afterDatasetsDraw(chart){ drawRateLabels(chart); }}]});
 new Chart(document.getElementById(&#x27;__P__c10&#x27;), {type:&#x27;bar&#x27;, data:{labels:D.churn.map(x=&gt;x.bin), datasets:[
   {label:&#x27;名单人数&#x27;, data:D.churn.map(x=&gt;x.n_user), backgroundColor:&#x27;rgba(67,199,231,.35)&#x27;, yAxisID:&#x27;y&#x27;},
-  {label:&#x27;提单率%&#x27;, data:D.churn.map(x=&gt;x.pct), type:&#x27;line&#x27;, borderColor:col.pk, yAxisID:&#x27;y2&#x27;, tension:.2, pointRadius:3}
+  {label:&#x27;提单率%&#x27;, data:D.churn.map(x=&gt;x.pct), type:&#x27;line&#x27;, borderColor:col.pk, yAxisID:&#x27;y2&#x27;, tension:.2, pointStyle:&#x27;circle&#x27;, pointRadius:3, pointHoverRadius:5, pointHitRadius:18, pointBackgroundColor:col.pk, pointBorderColor:col.pk, clip:false}
 ]}, options:Object.assign(base(true), {layout:{padding:{top:0,right:8}}}),
   plugins:[{id:&#x27;rateLabel10&#x27;, afterDatasetsDraw(chart){ drawRateLabels(chart); }}]});
 &quot;&quot;&quot;
@@ -1357,6 +1464,8 @@ h1{{font-size:24px;margin:8px 0 6px}}
 .chart h3{{margin:0 0 4px;font-size:15px}}
 .chart p{{margin:0 0 10px;font-size:12px;color:var(--muted)}}
 .box{{height:300px;position:relative;overflow:visible}}
+.chart-tip{{position:absolute;z-index:20;pointer-events:none;opacity:0;background:#0c2944;border:1px solid #2a5c7e;color:#eff8ff;padding:8px 10px;border-radius:8px;font-size:12px;line-height:1.55;white-space:nowrap;box-shadow:0 8px 20px rgba(0,0,0,.35)}}
+.chart-tip .t{{color:var(--cy);font-weight:700;margin-bottom:2px}}
 @media(max-width:900px){{.kpis,.grid{{grid-template-columns:1fr}}}}
 &lt;/style&gt;
 &lt;/head&gt;
@@ -1374,53 +1483,58 @@ const DATA = {json.dumps(payload, ensure_ascii=False)};
 const col = {{cy:&#x27;#43c7e7&#x27;, gr:&#x27;#64dcae&#x27;, am:&#x27;#ffc26b&#x27;, pk:&#x27;#f68ab0&#x27;}};
 Chart.defaults.font.family=&#x27;-apple-system,BlinkMacSystemFont,&quot;PingFang SC&quot;,&quot;Microsoft YaHei&quot;,sans-serif&#x27;;
 Chart.defaults.color=&#x27;#aac5da&#x27;;
-Chart.register({{
-  id: &#x27;legendPlotGap&#x27;,
-  afterLayout(chart) {{
-    const legend = chart.legend;
-    const area = chart.chartArea;
-    if (!legend || !legend.options.display || !area) return;
-    if (chart.config.type === &#x27;pie&#x27; || chart.config.type === &#x27;doughnut&#x27;) return;
-    const hasRateLbl = (chart.data.datasets || []).some(d =&gt; String(d.label || &#x27;&#x27;).includes(&#x27;提单率&#x27;));
-    area.top += hasRateLbl ? 34 : 8;
+function htmlTip(ctx) {{
+  const {{chart, tooltip}} = ctx;
+  const wrap = chart.canvas.parentNode;
+  let el = wrap.querySelector(&#x27;.chart-tip&#x27;);
+  if (!el) {{
+    el = document.createElement(&#x27;div&#x27;);
+    el.className = &#x27;chart-tip&#x27;;
+    wrap.appendChild(el);
   }}
-}});
+  if (!tooltip || tooltip.opacity === 0) {{
+    el.style.opacity = &#x27;0&#x27;;
+    return;
+  }}
+  const title = (tooltip.title || []).join(&#x27; &#x27;);
+  const lines = (tooltip.body || []).map(b =&gt; (b.lines || []).join(&#x27; &#x27;));
+  el.innerHTML = &#x27;&lt;div class=&quot;t&quot;&gt;&#x27; + title + &#x27;&lt;/div&gt;&#x27; + lines.map(l =&gt; &#x27;&lt;div&gt;&#x27; + l + &#x27;&lt;/div&gt;&#x27;).join(&#x27;&#x27;);
+  const w = el.offsetWidth || 180, h = el.offsetHeight || 70;
+  let left = tooltip.caretX + 14;
+  if (left + w &gt; wrap.clientWidth - 6) left = tooltip.caretX - w - 14;
+  if (left &lt; 6) left = 6;
+  let top = tooltip.caretY - h - 12;
+  if (top &lt; 6) top = tooltip.caretY + 16;
+  el.style.left = left + &#x27;px&#x27;;
+  el.style.top = top + &#x27;px&#x27;;
+  el.style.opacity = &#x27;1&#x27;;
+}}
 function base(y2) {{
   const scales = {{
     x: {{ticks:{{color:&#x27;#aac5da&#x27;, maxRotation:45, autoSkip:true, autoSkipPadding:6}}, grid:{{display:false}}}},
-    y: {{type:&#x27;linear&#x27;, position:&#x27;left&#x27;, ticks:{{color:&#x27;#aac5da&#x27;}}, grid:{{color:&#x27;rgba(42,92,126,.25)&#x27;}}, beginAtZero:true, grace:&#x27;18%&#x27;}}
+    y: {{type:&#x27;linear&#x27;, position:&#x27;left&#x27;, ticks:{{color:&#x27;#aac5da&#x27;}}, grid:{{color:&#x27;rgba(42,92,126,.25)&#x27;}}, beginAtZero:true, grace:&#x27;22%&#x27;}}
   }};
-  if (y2) scales.y2 = {{type:&#x27;linear&#x27;, position:&#x27;right&#x27;, ticks:{{color:&#x27;#ffc26b&#x27;}}, grid:{{drawOnChartArea:false}}}};
-  return {{responsive:true, maintainAspectRatio:false, interaction:{{mode:&#x27;index&#x27;, intersect:false}},
-    layout:{{padding:{{top:10,right:18,bottom:4,left:4}}}},
+  if (y2) scales.y2 = {{type:&#x27;linear&#x27;, position:&#x27;right&#x27;, ticks:{{color:&#x27;#ffc26b&#x27;}}, grid:{{drawOnChartArea:false}}, beginAtZero:true, grace:&#x27;22%&#x27;}};
+  return {{responsive:true, maintainAspectRatio:false, clip:false,
+    interaction:{{mode:&#x27;index&#x27;, intersect:false}},
+    layout:{{padding:{{top:28,right:48,bottom:8,left:12}}}},
+    elements:{{point:{{radius:3, hoverRadius:5, hitRadius:18, borderWidth:1.5, borderColor:&#x27;#0c2944&#x27;}}}},
     plugins:{{
       legend:{{labels:{{color:&#x27;#eff8ff&#x27;, padding:16}}}},
-      tooltip:{{
-        enabled:true,
-        position:&#x27;keepIn&#x27;,
-        xAlign:&#x27;left&#x27;,
-        yAlign:&#x27;center&#x27;,
-        padding:10,
-        caretPadding:8,
-        displayColors:true
-      }}
+      tooltip:{{enabled:false, external:htmlTip}}
     }}, scales}};
 }}
-if (typeof Chart !== &#x27;undefined&#x27; &amp;&amp; Chart.Tooltip &amp;&amp; !Chart.Tooltip.positioners.keepIn) {{
-  Chart.Tooltip.positioners.keepIn = function(items, eventPosition) {{
-    const nearest = Chart.Tooltip.positioners.nearest.call(this, items, eventPosition);
-    if (!nearest) return false;
-    const area = this.chart.chartArea;
-    let x = nearest.x, y = nearest.y;
-    const cut = area.left + (area.right - area.left) * 0.62;
-    if (x &gt; cut) x = Math.max(area.left + 8, x - 120);
-    if (y &lt; area.top + 48) y = Math.min(area.bottom - 8, y + 56);
-    else y = Math.min(Math.max(y, area.top + 8), area.bottom - 8);
-    return {{x, y}};
-  }};
-}}
 function line(id, labels, datasets, y2, extraOpt) {{
-  const opt = Object.assign(base(y2), extraOpt || {{}});
+  const baseOpt = base(y2);
+  const opt = Object.assign({{}}, baseOpt, extraOpt || {{}});
+  if (extraOpt &amp;&amp; extraOpt.plugins) {{
+    opt.plugins = Object.assign({{}}, baseOpt.plugins, extraOpt.plugins);
+    opt.plugins.tooltip = Object.assign({{enabled:false, external:htmlTip}}, extraOpt.plugins.tooltip || {{}}, {{enabled:false, external:htmlTip}});
+  }}
+  if (extraOpt &amp;&amp; extraOpt.scales) {{
+    opt.scales = Object.assign({{}}, baseOpt.scales, extraOpt.scales);
+  }}
+  opt.clip = false;
   new Chart(document.getElementById(id), {{type:&#x27;line&#x27;, data:{{labels, datasets}}, options:opt}});
 }}
 function drawRateLabels(chart) {{
@@ -1483,7 +1597,7 @@ def write_hub_from_disk():
             return
         items.append((batch, json.loads(p.read_text(encoding=&quot;utf-8&quot;))))
     for batch, data in items:
-        attach_due_cum(data.get(&quot;due_daily&quot;) or [])
+        complete_dashboard_series(data)
     write_hub(items)
 
 
@@ -1527,6 +1641,8 @@ h1{font-size:24px;margin:8px 0 6px}
 .chart h3{margin:0 0 4px;font-size:15px}
 .chart p{margin:0 0 10px;font-size:12px;color:var(--muted)}
 .box{height:300px;position:relative;overflow:visible}
+.chart-tip{position:absolute;z-index:20;pointer-events:none;opacity:0;background:#0c2944;border:1px solid #2a5c7e;color:#eff8ff;padding:8px 10px;border-radius:8px;font-size:12px;line-height:1.55;white-space:nowrap;box-shadow:0 8px 20px rgba(0,0,0,.35)}
+.chart-tip .t{color:var(--cy);font-weight:700;margin-bottom:2px}
 .foot{color:#7fa6c2;font-size:12px;margin-top:28px;border-top:1px solid var(--line);padding-top:14px;line-height:1.8}
 .appendix{margin-top:36px;border-top:1px solid var(--line);padding-top:8px}
 .appendix h2{font-size:18px;margin:22px 0 10px}
@@ -1584,43 +1700,59 @@ const D = /* 由后端写入，对象结构同 t7_0910_dashboard_data.json */;
 const col = {cy:&#x27;#43c7e7&#x27;, gr:&#x27;#64dcae&#x27;, am:&#x27;#ffc26b&#x27;, pk:&#x27;#f68ab0&#x27;};
 Chart.defaults.font.family=&#x27;-apple-system,BlinkMacSystemFont,&quot;PingFang SC&quot;,&quot;Microsoft YaHei&quot;,sans-serif&#x27;;
 Chart.defaults.color=&#x27;#aac5da&#x27;;
+function htmlTip(ctx) {
+  const {chart, tooltip} = ctx;
+  const wrap = chart.canvas.parentNode;
+  let el = wrap.querySelector(&#x27;.chart-tip&#x27;);
+  if (!el) {
+    el = document.createElement(&#x27;div&#x27;);
+    el.className = &#x27;chart-tip&#x27;;
+    wrap.appendChild(el);
+  }
+  if (!tooltip || tooltip.opacity === 0) {
+    el.style.opacity = &#x27;0&#x27;;
+    return;
+  }
+  const title = (tooltip.title || []).join(&#x27; &#x27;);
+  const lines = (tooltip.body || []).map(b =&gt; (b.lines || []).join(&#x27; &#x27;));
+  el.innerHTML = &#x27;&lt;div class=&quot;t&quot;&gt;&#x27; + title + &#x27;&lt;/div&gt;&#x27; + lines.map(l =&gt; &#x27;&lt;div&gt;&#x27; + l + &#x27;&lt;/div&gt;&#x27;).join(&#x27;&#x27;);
+  const w = el.offsetWidth || 180, h = el.offsetHeight || 70;
+  let left = tooltip.caretX + 14;
+  if (left + w &gt; wrap.clientWidth - 6) left = tooltip.caretX - w - 14;
+  if (left &lt; 6) left = 6;
+  let top = tooltip.caretY - h - 12;
+  if (top &lt; 6) top = tooltip.caretY + 16;
+  el.style.left = left + &#x27;px&#x27;;
+  el.style.top = top + &#x27;px&#x27;;
+  el.style.opacity = &#x27;1&#x27;;
+}
 function base(y2) {
   const scales = {
     x: {ticks:{color:&#x27;#aac5da&#x27;, maxRotation:45, autoSkip:true, autoSkipPadding:6}, grid:{display:false}},
-    y: {type:&#x27;linear&#x27;, position:&#x27;left&#x27;, ticks:{color:&#x27;#aac5da&#x27;}, grid:{color:&#x27;rgba(42,92,126,.25)&#x27;}, beginAtZero:true, grace:&#x27;18%&#x27;}
+    y: {type:&#x27;linear&#x27;, position:&#x27;left&#x27;, ticks:{color:&#x27;#aac5da&#x27;}, grid:{color:&#x27;rgba(42,92,126,.25)&#x27;}, beginAtZero:true, grace:&#x27;22%&#x27;}
   };
-  if (y2) scales.y2 = {type:&#x27;linear&#x27;, position:&#x27;right&#x27;, ticks:{color:&#x27;#ffc26b&#x27;}, grid:{drawOnChartArea:false}};
-  return {responsive:true, maintainAspectRatio:false, interaction:{mode:&#x27;index&#x27;, intersect:false},
-    layout:{padding:{top:10,right:18,bottom:4,left:4}},
+  if (y2) scales.y2 = {type:&#x27;linear&#x27;, position:&#x27;right&#x27;, ticks:{color:&#x27;#ffc26b&#x27;}, grid:{drawOnChartArea:false}, beginAtZero:true, grace:&#x27;22%&#x27;};
+  return {responsive:true, maintainAspectRatio:false, clip:false,
+    interaction:{mode:&#x27;index&#x27;, intersect:false},
+    layout:{padding:{top:28,right:48,bottom:8,left:12}},
+    elements:{point:{radius:3, hoverRadius:5, hitRadius:18, borderWidth:1.5, borderColor:&#x27;#0c2944&#x27;}},
     plugins:{
       legend:{labels:{color:&#x27;#eff8ff&#x27;, padding:16}},
-      tooltip:{
-        enabled:true,
-        position:&#x27;keepIn&#x27;,
-        xAlign:&#x27;left&#x27;,
-        yAlign:&#x27;center&#x27;,
-        padding:10,
-        caretPadding:8,
-        displayColors:true
-      }
+      tooltip:{enabled:false, external:htmlTip}
     },
     scales};
 }
-if (typeof Chart !== &#x27;undefined&#x27; &amp;&amp; Chart.Tooltip &amp;&amp; !Chart.Tooltip.positioners.keepIn) {
-  Chart.Tooltip.positioners.keepIn = function(items, eventPosition) {
-    const nearest = Chart.Tooltip.positioners.nearest.call(this, items, eventPosition);
-    if (!nearest) return false;
-    const area = this.chart.chartArea;
-    let x = nearest.x, y = nearest.y;
-    const cut = area.left + (area.right - area.left) * 0.62;
-    if (x &gt; cut) x = Math.max(area.left + 8, x - 120);
-    if (y &lt; area.top + 48) y = Math.min(area.bottom - 8, y + 56);
-    else y = Math.min(Math.max(y, area.top + 8), area.bottom - 8);
-    return {x, y};
-  };
-}
 function line(id, labels, datasets, y2, extraOpt) {
-  const opt = Object.assign(base(y2), extraOpt || {});
+  const baseOpt = base(y2);
+  const opt = Object.assign({}, baseOpt, extraOpt || {});
+  if (extraOpt &amp;&amp; extraOpt.plugins) {
+    opt.plugins = Object.assign({}, baseOpt.plugins, extraOpt.plugins);
+    opt.plugins.tooltip = Object.assign({enabled:false, external:htmlTip}, extraOpt.plugins.tooltip || {}, {enabled:false, external:htmlTip});
+  }
+  if (extraOpt &amp;&amp; extraOpt.scales) {
+    opt.scales = Object.assign({}, baseOpt.scales, extraOpt.scales);
+  }
+  opt.clip = false;
   new Chart(document.getElementById(id), {type:&#x27;line&#x27;, data:{labels, datasets}, options:opt});
 }
 function drawRateLabels(chart) {
@@ -1648,8 +1780,8 @@ function drawRateLabels(chart) {
 }
 const fd = D.first_daily, ad = D.apply_daily, rd = D.remit_daily, dd = D.due_daily, k=D.kpi;
 line(&#x27;c1&#x27;, fd.map(x=&gt;x.d.slice(5)), [
-  {label:&#x27;累计提单人数&#x27;, data:fd.map(x=&gt;x.cum), borderColor:col.cy, backgroundColor:&#x27;rgba(67,199,231,.12)&#x27;, fill:true, tension:.25, yAxisID:&#x27;y&#x27;, pointRadius:3, pointHoverRadius:5, pointHitRadius:18, borderWidth:2, clip:false},
-  {label:&#x27;提单率%&#x27;, data:fd.map(x=&gt;x.rate), borderColor:col.am, tension:.25, yAxisID:&#x27;y2&#x27;, pointRadius:3, pointHoverRadius:5, pointHitRadius:18, borderWidth:2, clip:false}
+  {label:&#x27;累计提单人数&#x27;, data:fd.map(x=&gt;x.cum), borderColor:col.cy, backgroundColor:&#x27;rgba(67,199,231,.12)&#x27;, fill:true, tension:.25, yAxisID:&#x27;y&#x27;, pointStyle:&#x27;circle&#x27;, pointRadius:3, pointHoverRadius:5, pointHitRadius:18, pointBackgroundColor:col.cy, pointBorderColor:col.cy, borderWidth:2, clip:false},
+  {label:&#x27;提单率%&#x27;, data:fd.map(x=&gt;x.rate), borderColor:col.am, backgroundColor:col.am, fill:false, tension:.25, yAxisID:&#x27;y2&#x27;, pointStyle:&#x27;circle&#x27;, pointRadius:3, pointHoverRadius:5, pointHitRadius:18, pointBackgroundColor:col.am, pointBorderColor:col.am, borderWidth:2, clip:false, showLine:true}
 ], true, {
   plugins: Object.assign({}, base(true).plugins, {
     tooltip: Object.assign({}, base(true).plugins.tooltip, {
@@ -1657,6 +1789,14 @@ line(&#x27;c1&#x27;, fd.map(x=&gt;x.d.slice(5)), [
         title(items) {
           const i = items[0].dataIndex;
           return (fd[i] &amp;&amp; fd[i].d) ? fd[i].d : items[0].label;
+        },
+        label(ctx) {
+          const r = fd[ctx.dataIndex];
+          if (!r) return ctx.formattedValue;
+          if (String(ctx.dataset.label).includes(&#x27;提单率&#x27;)) {
+            return &#x27;提单率 &#x27; + Number(r.rate).toFixed(2) + &#x27;%&#x27;;
+          }
+          return &#x27;累计提单人数 &#x27; + Number(r.cum).toLocaleString();
         }
       }
     })
@@ -1669,16 +1809,16 @@ new Chart(document.getElementById(&#x27;c3&#x27;), {type:&#x27;bar&#x27;, data:{
   {label:&#x27;当日提单用户&#x27;, data:ad.map(x=&gt;x.n_user), backgroundColor:&#x27;rgba(67,199,231,.7)&#x27;}
 ]}, options:base(false)});
 line(&#x27;c4&#x27;, rd.map(x=&gt;x.d.slice(5)), [
-  {label:&#x27;当日放款单&#x27;, data:rd.map(x=&gt;x.n), borderColor:col.gr, tension:.25, yAxisID:&#x27;y&#x27;, pointRadius:2},
-  {label:&#x27;累计放款单&#x27;, data:rd.map(x=&gt;x.cum), borderColor:col.am, tension:.25, yAxisID:&#x27;y2&#x27;, pointRadius:2}
+  {label:&#x27;当日放款单&#x27;, data:rd.map(x=&gt;x.n), borderColor:col.gr, backgroundColor:col.gr, fill:false, tension:.25, yAxisID:&#x27;y&#x27;, pointStyle:&#x27;circle&#x27;, pointRadius:3, pointHoverRadius:5, pointHitRadius:18, pointBackgroundColor:col.gr, pointBorderColor:col.gr, clip:false},
+  {label:&#x27;累计放款单&#x27;, data:rd.map(x=&gt;x.cum), borderColor:col.am, backgroundColor:col.am, fill:false, tension:.25, yAxisID:&#x27;y2&#x27;, pointStyle:&#x27;circle&#x27;, pointRadius:3, pointHoverRadius:5, pointHitRadius:18, pointBackgroundColor:col.am, pointBorderColor:col.am, clip:false}
 ], true);
 line(&#x27;c5&#x27;, dd.map(x=&gt;x.d.slice(5)), [
-  {label:&#x27;当天盈利率%&#x27;, data:dd.map(x=&gt;x.profit_pct), borderColor:col.gr, tension:.25, pointRadius:2, spanGaps:true},
-  {label:&#x27;累计盈利率%&#x27;, data:dd.map(x=&gt;x.cum_profit_pct), borderColor:col.am, tension:.25, pointRadius:2, spanGaps:true}
+  {label:&#x27;当天盈利率%&#x27;, data:dd.map(x=&gt;x.profit_pct), borderColor:col.gr, backgroundColor:col.gr, fill:false, tension:.25, pointStyle:&#x27;circle&#x27;, pointRadius:3, pointHoverRadius:5, pointHitRadius:18, pointBackgroundColor:col.gr, pointBorderColor:col.gr, spanGaps:true, clip:false},
+  {label:&#x27;累计盈利率%&#x27;, data:dd.map(x=&gt;x.cum_profit_pct), borderColor:col.am, backgroundColor:col.am, fill:false, tension:.25, pointStyle:&#x27;circle&#x27;, pointRadius:3, pointHoverRadius:5, pointHitRadius:18, pointBackgroundColor:col.am, pointBorderColor:col.am, spanGaps:true, clip:false}
 ], false);
 line(&#x27;c6&#x27;, dd.map(x=&gt;x.d.slice(5)), [
-  {label:&#x27;当天逾期率%&#x27;, data:dd.map(x=&gt;x.overdue_pct), borderColor:col.pk, tension:.25, pointRadius:2, spanGaps:true},
-  {label:&#x27;累计逾期率%&#x27;, data:dd.map(x=&gt;x.cum_overdue_pct), borderColor:col.cy, tension:.25, pointRadius:2, spanGaps:true}
+  {label:&#x27;当天逾期率%&#x27;, data:dd.map(x=&gt;x.overdue_pct), borderColor:col.pk, backgroundColor:col.pk, fill:false, tension:.25, pointStyle:&#x27;circle&#x27;, pointRadius:3, pointHoverRadius:5, pointHitRadius:18, pointBackgroundColor:col.pk, pointBorderColor:col.pk, spanGaps:true, clip:false},
+  {label:&#x27;累计逾期率%&#x27;, data:dd.map(x=&gt;x.cum_overdue_pct), borderColor:col.cy, backgroundColor:col.cy, fill:false, tension:.25, pointStyle:&#x27;circle&#x27;, pointRadius:3, pointHoverRadius:5, pointHitRadius:18, pointBackgroundColor:col.cy, pointBorderColor:col.cy, spanGaps:true, clip:false}
 ], false);
 new Chart(document.getElementById(&#x27;c7&#x27;), {type:&#x27;doughnut&#x27;, data:{labels:[&#x27;已提单&#x27;,&#x27;尚未提单&#x27;], datasets:[{data:[k.n_apply, k.n_user-k.n_apply], backgroundColor:[col.gr, &#x27;rgba(42,92,126,.55)&#x27;], borderWidth:0}]},
   options:{responsive:true, maintainAspectRatio:false, cutout:&#x27;55%&#x27;, layout:{padding:{top:4,bottom:8,left:4,right:8}}, plugins:{legend:{position:&#x27;right&#x27;, labels:{color:&#x27;#eff8ff&#x27;, padding:12, boxWidth:12}}}},
@@ -1705,12 +1845,12 @@ new Chart(document.getElementById(&#x27;c8&#x27;), {type:&#x27;bar&#x27;, data:{
   }}]});
 new Chart(document.getElementById(&#x27;c9&#x27;), {type:&#x27;bar&#x27;, data:{labels:D.strat.map(x=&gt;x.strat), datasets:[
   {label:&#x27;名单人数&#x27;, data:D.strat.map(x=&gt;x.n_user), backgroundColor:&#x27;rgba(67,199,231,.35)&#x27;, yAxisID:&#x27;y&#x27;},
-  {label:&#x27;提单率%&#x27;, data:D.strat.map(x=&gt;x.pct), type:&#x27;line&#x27;, borderColor:col.pk, yAxisID:&#x27;y2&#x27;, tension:.2, pointRadius:3}
+  {label:&#x27;提单率%&#x27;, data:D.strat.map(x=&gt;x.pct), type:&#x27;line&#x27;, borderColor:col.pk, yAxisID:&#x27;y2&#x27;, tension:.2, pointStyle:&#x27;circle&#x27;, pointRadius:3, pointHoverRadius:5, pointHitRadius:18, pointBackgroundColor:col.pk, pointBorderColor:col.pk, clip:false}
 ]}, options:Object.assign(base(true), {layout:{padding:{top:0,right:8}}}),
   plugins:[{id:&#x27;rateLabel9&#x27;, afterDatasetsDraw(chart){ drawRateLabels(chart); }}]});
 new Chart(document.getElementById(&#x27;c10&#x27;), {type:&#x27;bar&#x27;, data:{labels:D.churn.map(x=&gt;x.bin), datasets:[
   {label:&#x27;名单人数&#x27;, data:D.churn.map(x=&gt;x.n_user), backgroundColor:&#x27;rgba(67,199,231,.35)&#x27;, yAxisID:&#x27;y&#x27;},
-  {label:&#x27;提单率%&#x27;, data:D.churn.map(x=&gt;x.pct), type:&#x27;line&#x27;, borderColor:col.pk, yAxisID:&#x27;y2&#x27;, tension:.2, pointRadius:3}
+  {label:&#x27;提单率%&#x27;, data:D.churn.map(x=&gt;x.pct), type:&#x27;line&#x27;, borderColor:col.pk, yAxisID:&#x27;y2&#x27;, tension:.2, pointStyle:&#x27;circle&#x27;, pointRadius:3, pointHoverRadius:5, pointHitRadius:18, pointBackgroundColor:col.pk, pointBorderColor:col.pk, clip:false}
 ]}, options:Object.assign(base(true), {layout:{padding:{top:0,right:8}}}),
   plugins:[{id:&#x27;rateLabel10&#x27;, afterDatasetsDraw(chart){ drawRateLabels(chart); }}]});
 &lt;/script&gt;
@@ -1720,48 +1860,64 @@ new Chart(document.getElementById(&#x27;c10&#x27;), {type:&#x27;bar&#x27;, data:
 <p class="foot">数据：kaby_dw · wangchuanliang.t7recalllist_0910 · recall_date=2026-09-10 · 库内 CURRENT_DATE=2026-09-21</p>
 </main>
 <script>
-const D = {"kpi": {"n_user": 2050, "n_apply": 504, "apply_rate": 24.59, "n_apply_week": 1, "n_first_week": 1, "n_remit": 504, "n_remit_week": 1, "n_due": 31, "n_due_od": 11, "profit_pct": -3.64, "overdue_pct": 35.48, "week_start": "2026-09-21", "as_of": "2026-09-21", "recall_date": "2026-09-10", "remit_day": "o.remit_date::date"}, "first_daily": [{"d": "2026-09-10", "n": 82, "cum": 82, "rate": 4.0}, {"d": "2026-09-11", "n": 79, "cum": 161, "rate": 7.85}, {"d": "2026-09-12", "n": 50, "cum": 211, "rate": 10.29}, {"d": "2026-09-13", "n": 49, "cum": 260, "rate": 12.68}, {"d": "2026-09-14", "n": 58, "cum": 318, "rate": 15.51}, {"d": "2026-09-15", "n": 37, "cum": 355, "rate": 17.32}, {"d": "2026-09-16", "n": 34, "cum": 389, "rate": 18.98}, {"d": "2026-09-17", "n": 30, "cum": 419, "rate": 20.44}, {"d": "2026-09-18", "n": 27, "cum": 446, "rate": 21.76}, {"d": "2026-09-19", "n": 28, "cum": 474, "rate": 23.12}, {"d": "2026-09-20", "n": 29, "cum": 503, "rate": 24.54}, {"d": "2026-09-21", "n": 1, "cum": 504, "rate": 24.59}], "apply_daily": [{"d": "2026-09-10", "n_order": 82, "n_user": 82}, {"d": "2026-09-11", "n_order": 80, "n_user": 79}, {"d": "2026-09-12", "n_order": 50, "n_user": 50}, {"d": "2026-09-13", "n_order": 51, "n_user": 50}, {"d": "2026-09-14", "n_order": 63, "n_user": 63}, {"d": "2026-09-15", "n_order": 42, "n_user": 42}, {"d": "2026-09-16", "n_order": 38, "n_user": 38}, {"d": "2026-09-17", "n_order": 40, "n_user": 39}, {"d": "2026-09-18", "n_order": 30, "n_user": 30}, {"d": "2026-09-19", "n_order": 40, "n_user": 40}, {"d": "2026-09-20", "n_order": 44, "n_user": 44}, {"d": "2026-09-21", "n_order": 1, "n_user": 1}], "remit_daily": [{"d": "2026-09-10", "n": 80, "cum": 80}, {"d": "2026-09-11", "n": 71, "cum": 151}, {"d": "2026-09-12", "n": 46, "cum": 197}, {"d": "2026-09-13", "n": 41, "cum": 238}, {"d": "2026-09-14", "n": 54, "cum": 292}, {"d": "2026-09-15", "n": 42, "cum": 334}, {"d": "2026-09-16", "n": 32, "cum": 366}, {"d": "2026-09-17", "n": 38, "cum": 404}, {"d": "2026-09-18", "n": 26, "cum": 430}, {"d": "2026-09-19", "n": 34, "cum": 464}, {"d": "2026-09-20", "n": 39, "cum": 503}, {"d": "2026-09-21", "n": 1, "cum": 504}], "due_daily": [{"d": "2026-09-16", "n_due": 6, "n_od": 0, "repaid": 3116.0, "remit": 1935.0, "profit_pct": 61.03, "overdue_pct": 0.0, "cum_profit_pct": 61.03, "cum_overdue_pct": 0.0}, {"d": "2026-09-17", "n_due": 8, "n_od": 4, "repaid": 3024.0, "remit": 3008.0, "profit_pct": 0.53, "overdue_pct": 50.0, "cum_profit_pct": 24.22, "cum_overdue_pct": 28.57}, {"d": "2026-09-18", "n_due": 4, "n_od": 3, "repaid": 335.0, "remit": 1286.0, "profit_pct": -73.95, "overdue_pct": 75.0, "cum_profit_pct": 3.95, "cum_overdue_pct": 38.89}, {"d": "2026-09-19", "n_due": 2, "n_od": 1, "repaid": 1700.0, "remit": 1200.0, "profit_pct": 41.67, "overdue_pct": 50.0, "cum_profit_pct": 10.04, "cum_overdue_pct": 40.0}, {"d": "2026-09-20", "n_due": 7, "n_od": 3, "repaid": 5523.0, "remit": 5548.0, "profit_pct": -0.45, "overdue_pct": 42.86, "cum_profit_pct": 5.56, "cum_overdue_pct": 40.74}, {"d": "2026-09-21", "n_due": 4, "n_od": 0, "repaid": 0.0, "remit": 1238.0, "profit_pct": -100.0, "overdue_pct": 0.0, "cum_profit_pct": -3.64, "cum_overdue_pct": 35.48}], "strat": [{"strat": "10d+10r", "n_user": 841, "n_apply": 188, "pct": 22.35}, {"strat": "20d+10r", "n_user": 538, "n_apply": 145, "pct": 26.95}, {"strat": "20d", "n_user": 536, "n_apply": 134, "pct": 25.0}, {"strat": "10d", "n_user": 132, "n_apply": 36, "pct": 27.27}, {"strat": "30d+10r", "n_user": 2, "n_apply": 1, "pct": 50.0}, {"strat": "30d", "n_user": 1, "n_apply": 0, "pct": 0.0}], "churn": [{"bin": "7-15d", "n_user": 2034, "n_apply": 498, "pct": 24.48}, {"bin": "16-30d", "n_user": 16, "n_apply": 6, "pct": 37.5}]};
+const D = {"kpi": {"n_user": 2050, "n_apply": 504, "apply_rate": 24.59, "n_apply_week": 1, "n_first_week": 1, "n_remit": 504, "n_remit_week": 1, "n_due": 31, "n_due_od": 11, "profit_pct": -3.64, "overdue_pct": 35.48, "week_start": "2026-09-21", "as_of": "2026-09-21", "recall_date": "2026-09-10", "remit_day": "o.remit_date::date"}, "first_daily": [{"d": "2026-09-10", "n": 82, "cum": 82, "rate": 4.0}, {"d": "2026-09-11", "n": 79, "cum": 161, "rate": 7.85}, {"d": "2026-09-12", "n": 50, "cum": 211, "rate": 10.29}, {"d": "2026-09-13", "n": 49, "cum": 260, "rate": 12.68}, {"d": "2026-09-14", "n": 58, "cum": 318, "rate": 15.51}, {"d": "2026-09-15", "n": 37, "cum": 355, "rate": 17.32}, {"d": "2026-09-16", "n": 34, "cum": 389, "rate": 18.98}, {"d": "2026-09-17", "n": 30, "cum": 419, "rate": 20.44}, {"d": "2026-09-18", "n": 27, "cum": 446, "rate": 21.76}, {"d": "2026-09-19", "n": 28, "cum": 474, "rate": 23.12}, {"d": "2026-09-20", "n": 29, "cum": 503, "rate": 24.54}, {"d": "2026-09-21", "n": 1, "cum": 504, "rate": 24.59}], "apply_daily": [{"d": "2026-09-10", "n_order": 82, "n_user": 82}, {"d": "2026-09-11", "n_order": 80, "n_user": 79}, {"d": "2026-09-12", "n_order": 50, "n_user": 50}, {"d": "2026-09-13", "n_order": 51, "n_user": 50}, {"d": "2026-09-14", "n_order": 63, "n_user": 63}, {"d": "2026-09-15", "n_order": 42, "n_user": 42}, {"d": "2026-09-16", "n_order": 38, "n_user": 38}, {"d": "2026-09-17", "n_order": 40, "n_user": 39}, {"d": "2026-09-18", "n_order": 30, "n_user": 30}, {"d": "2026-09-19", "n_order": 40, "n_user": 40}, {"d": "2026-09-20", "n_order": 44, "n_user": 44}, {"d": "2026-09-21", "n_order": 1, "n_user": 1}], "remit_daily": [{"d": "2026-09-10", "n": 80, "cum": 80}, {"d": "2026-09-11", "n": 71, "cum": 151}, {"d": "2026-09-12", "n": 46, "cum": 197}, {"d": "2026-09-13", "n": 41, "cum": 238}, {"d": "2026-09-14", "n": 54, "cum": 292}, {"d": "2026-09-15", "n": 42, "cum": 334}, {"d": "2026-09-16", "n": 32, "cum": 366}, {"d": "2026-09-17", "n": 38, "cum": 404}, {"d": "2026-09-18", "n": 26, "cum": 430}, {"d": "2026-09-19", "n": 34, "cum": 464}, {"d": "2026-09-20", "n": 39, "cum": 503}, {"d": "2026-09-21", "n": 1, "cum": 504}], "due_daily": [{"d": "2026-09-10", "n_due": 0, "n_od": 0, "profit_pct": null, "overdue_pct": null, "remit": 0.0, "repaid": 0.0, "cum_profit_pct": null, "cum_overdue_pct": null}, {"d": "2026-09-11", "n_due": 0, "n_od": 0, "profit_pct": null, "overdue_pct": null, "remit": 0.0, "repaid": 0.0, "cum_profit_pct": null, "cum_overdue_pct": null}, {"d": "2026-09-12", "n_due": 0, "n_od": 0, "profit_pct": null, "overdue_pct": null, "remit": 0.0, "repaid": 0.0, "cum_profit_pct": null, "cum_overdue_pct": null}, {"d": "2026-09-13", "n_due": 0, "n_od": 0, "profit_pct": null, "overdue_pct": null, "remit": 0.0, "repaid": 0.0, "cum_profit_pct": null, "cum_overdue_pct": null}, {"d": "2026-09-14", "n_due": 0, "n_od": 0, "profit_pct": null, "overdue_pct": null, "remit": 0.0, "repaid": 0.0, "cum_profit_pct": null, "cum_overdue_pct": null}, {"d": "2026-09-15", "n_due": 0, "n_od": 0, "profit_pct": null, "overdue_pct": null, "remit": 0.0, "repaid": 0.0, "cum_profit_pct": null, "cum_overdue_pct": null}, {"d": "2026-09-16", "n_due": 6, "n_od": 0, "repaid": 3116.0, "remit": 1935.0, "profit_pct": 61.03, "overdue_pct": 0.0, "cum_profit_pct": 61.03, "cum_overdue_pct": 0.0}, {"d": "2026-09-17", "n_due": 8, "n_od": 4, "repaid": 3024.0, "remit": 3008.0, "profit_pct": 0.53, "overdue_pct": 50.0, "cum_profit_pct": 24.22, "cum_overdue_pct": 28.57}, {"d": "2026-09-18", "n_due": 4, "n_od": 3, "repaid": 335.0, "remit": 1286.0, "profit_pct": -73.95, "overdue_pct": 75.0, "cum_profit_pct": 3.95, "cum_overdue_pct": 38.89}, {"d": "2026-09-19", "n_due": 2, "n_od": 1, "repaid": 1700.0, "remit": 1200.0, "profit_pct": 41.67, "overdue_pct": 50.0, "cum_profit_pct": 10.04, "cum_overdue_pct": 40.0}, {"d": "2026-09-20", "n_due": 7, "n_od": 3, "repaid": 5523.0, "remit": 5548.0, "profit_pct": -0.45, "overdue_pct": 42.86, "cum_profit_pct": 5.56, "cum_overdue_pct": 40.74}, {"d": "2026-09-21", "n_due": 4, "n_od": 0, "repaid": 0.0, "remit": 1238.0, "profit_pct": -100.0, "overdue_pct": 0.0, "cum_profit_pct": -3.64, "cum_overdue_pct": 35.48}], "strat": [{"strat": "10d+10r", "n_user": 841, "n_apply": 188, "pct": 22.35}, {"strat": "20d+10r", "n_user": 538, "n_apply": 145, "pct": 26.95}, {"strat": "20d", "n_user": 536, "n_apply": 134, "pct": 25.0}, {"strat": "10d", "n_user": 132, "n_apply": 36, "pct": 27.27}, {"strat": "30d+10r", "n_user": 2, "n_apply": 1, "pct": 50.0}, {"strat": "30d", "n_user": 1, "n_apply": 0, "pct": 0.0}], "churn": [{"bin": "7-15d", "n_user": 2034, "n_apply": 498, "pct": 24.48}, {"bin": "16-30d", "n_user": 16, "n_apply": 6, "pct": 37.5}]};
 
 const col = {cy:'#43c7e7', gr:'#64dcae', am:'#ffc26b', pk:'#f68ab0'};
 Chart.defaults.font.family='-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei",sans-serif';
 Chart.defaults.color='#aac5da';
+function htmlTip(ctx) {
+  const {chart, tooltip} = ctx;
+  const wrap = chart.canvas.parentNode;
+  let el = wrap.querySelector('.chart-tip');
+  if (!el) {
+    el = document.createElement('div');
+    el.className = 'chart-tip';
+    wrap.appendChild(el);
+  }
+  if (!tooltip || tooltip.opacity === 0) {
+    el.style.opacity = '0';
+    return;
+  }
+  const title = (tooltip.title || []).join(' ');
+  const lines = (tooltip.body || []).map(b => (b.lines || []).join(' '));
+  el.innerHTML = '<div class="t">' + title + '</div>' + lines.map(l => '<div>' + l + '</div>').join('');
+  const w = el.offsetWidth || 180, h = el.offsetHeight || 70;
+  let left = tooltip.caretX + 14;
+  if (left + w > wrap.clientWidth - 6) left = tooltip.caretX - w - 14;
+  if (left < 6) left = 6;
+  let top = tooltip.caretY - h - 12;
+  if (top < 6) top = tooltip.caretY + 16;
+  el.style.left = left + 'px';
+  el.style.top = top + 'px';
+  el.style.opacity = '1';
+}
 function base(y2) {
   const scales = {
     x: {ticks:{color:'#aac5da', maxRotation:45, autoSkip:true, autoSkipPadding:6}, grid:{display:false}},
-    y: {type:'linear', position:'left', ticks:{color:'#aac5da'}, grid:{color:'rgba(42,92,126,.25)'}, beginAtZero:true, grace:'18%'}
+    y: {type:'linear', position:'left', ticks:{color:'#aac5da'}, grid:{color:'rgba(42,92,126,.25)'}, beginAtZero:true, grace:'22%'}
   };
-  if (y2) scales.y2 = {type:'linear', position:'right', ticks:{color:'#ffc26b'}, grid:{drawOnChartArea:false}};
-  return {responsive:true, maintainAspectRatio:false, interaction:{mode:'index', intersect:false},
-    layout:{padding:{top:10,right:18,bottom:4,left:4}},
+  if (y2) scales.y2 = {type:'linear', position:'right', ticks:{color:'#ffc26b'}, grid:{drawOnChartArea:false}, beginAtZero:true, grace:'22%'};
+  return {responsive:true, maintainAspectRatio:false, clip:false,
+    interaction:{mode:'index', intersect:false},
+    layout:{padding:{top:28,right:48,bottom:8,left:12}},
+    elements:{point:{radius:3, hoverRadius:5, hitRadius:18, borderWidth:1.5, borderColor:'#0c2944'}},
     plugins:{
       legend:{labels:{color:'#eff8ff', padding:16}},
-      tooltip:{
-        enabled:true,
-        position:'keepIn',
-        xAlign:'left',
-        yAlign:'center',
-        padding:10,
-        caretPadding:8,
-        displayColors:true
-      }
+      tooltip:{enabled:false, external:htmlTip}
     },
     scales};
 }
-if (typeof Chart !== 'undefined' && Chart.Tooltip && !Chart.Tooltip.positioners.keepIn) {
-  Chart.Tooltip.positioners.keepIn = function(items, eventPosition) {
-    const nearest = Chart.Tooltip.positioners.nearest.call(this, items, eventPosition);
-    if (!nearest) return false;
-    const area = this.chart.chartArea;
-    let x = nearest.x, y = nearest.y;
-    const cut = area.left + (area.right - area.left) * 0.62;
-    if (x > cut) x = Math.max(area.left + 8, x - 120);
-    if (y < area.top + 48) y = Math.min(area.bottom - 8, y + 56);
-    else y = Math.min(Math.max(y, area.top + 8), area.bottom - 8);
-    return {x, y};
-  };
-}
 function line(id, labels, datasets, y2, extraOpt) {
-  const opt = Object.assign(base(y2), extraOpt || {});
+  const baseOpt = base(y2);
+  const opt = Object.assign({}, baseOpt, extraOpt || {});
+  if (extraOpt && extraOpt.plugins) {
+    opt.plugins = Object.assign({}, baseOpt.plugins, extraOpt.plugins);
+    opt.plugins.tooltip = Object.assign({enabled:false, external:htmlTip}, extraOpt.plugins.tooltip || {}, {enabled:false, external:htmlTip});
+  }
+  if (extraOpt && extraOpt.scales) {
+    opt.scales = Object.assign({}, baseOpt.scales, extraOpt.scales);
+  }
+  opt.clip = false;
   new Chart(document.getElementById(id), {type:'line', data:{labels, datasets}, options:opt});
 }
 function drawRateLabels(chart) {
@@ -1789,8 +1945,8 @@ function drawRateLabels(chart) {
 }
 const fd = D.first_daily, ad = D.apply_daily, rd = D.remit_daily, dd = D.due_daily, k=D.kpi;
 line('c1', fd.map(x=>x.d.slice(5)), [
-  {label:'累计提单人数', data:fd.map(x=>x.cum), borderColor:col.cy, backgroundColor:'rgba(67,199,231,.12)', fill:true, tension:.25, yAxisID:'y', pointRadius:3, pointHoverRadius:5, pointHitRadius:18, borderWidth:2, clip:false},
-  {label:'提单率%', data:fd.map(x=>x.rate), borderColor:col.am, tension:.25, yAxisID:'y2', pointRadius:3, pointHoverRadius:5, pointHitRadius:18, borderWidth:2, clip:false}
+  {label:'累计提单人数', data:fd.map(x=>x.cum), borderColor:col.cy, backgroundColor:'rgba(67,199,231,.12)', fill:true, tension:.25, yAxisID:'y', pointStyle:'circle', pointRadius:3, pointHoverRadius:5, pointHitRadius:18, pointBackgroundColor:col.cy, pointBorderColor:col.cy, borderWidth:2, clip:false},
+  {label:'提单率%', data:fd.map(x=>x.rate), borderColor:col.am, backgroundColor:col.am, fill:false, tension:.25, yAxisID:'y2', pointStyle:'circle', pointRadius:3, pointHoverRadius:5, pointHitRadius:18, pointBackgroundColor:col.am, pointBorderColor:col.am, borderWidth:2, clip:false, showLine:true}
 ], true, {
   plugins: Object.assign({}, base(true).plugins, {
     tooltip: Object.assign({}, base(true).plugins.tooltip, {
@@ -1798,6 +1954,14 @@ line('c1', fd.map(x=>x.d.slice(5)), [
         title(items) {
           const i = items[0].dataIndex;
           return (fd[i] && fd[i].d) ? fd[i].d : items[0].label;
+        },
+        label(ctx) {
+          const r = fd[ctx.dataIndex];
+          if (!r) return ctx.formattedValue;
+          if (String(ctx.dataset.label).includes('提单率')) {
+            return '提单率 ' + Number(r.rate).toFixed(2) + '%';
+          }
+          return '累计提单人数 ' + Number(r.cum).toLocaleString();
         }
       }
     })
@@ -1810,16 +1974,16 @@ new Chart(document.getElementById('c3'), {type:'bar', data:{labels:ad.map(x=>x.d
   {label:'当日提单用户', data:ad.map(x=>x.n_user), backgroundColor:'rgba(67,199,231,.7)'}
 ]}, options:base(false)});
 line('c4', rd.map(x=>x.d.slice(5)), [
-  {label:'当日放款单', data:rd.map(x=>x.n), borderColor:col.gr, tension:.25, yAxisID:'y', pointRadius:2},
-  {label:'累计放款单', data:rd.map(x=>x.cum), borderColor:col.am, tension:.25, yAxisID:'y2', pointRadius:2}
+  {label:'当日放款单', data:rd.map(x=>x.n), borderColor:col.gr, backgroundColor:col.gr, fill:false, tension:.25, yAxisID:'y', pointStyle:'circle', pointRadius:3, pointHoverRadius:5, pointHitRadius:18, pointBackgroundColor:col.gr, pointBorderColor:col.gr, clip:false},
+  {label:'累计放款单', data:rd.map(x=>x.cum), borderColor:col.am, backgroundColor:col.am, fill:false, tension:.25, yAxisID:'y2', pointStyle:'circle', pointRadius:3, pointHoverRadius:5, pointHitRadius:18, pointBackgroundColor:col.am, pointBorderColor:col.am, clip:false}
 ], true);
 line('c5', dd.map(x=>x.d.slice(5)), [
-  {label:'当天盈利率%', data:dd.map(x=>x.profit_pct), borderColor:col.gr, tension:.25, pointRadius:2, spanGaps:true},
-  {label:'累计盈利率%', data:dd.map(x=>x.cum_profit_pct), borderColor:col.am, tension:.25, pointRadius:2, spanGaps:true}
+  {label:'当天盈利率%', data:dd.map(x=>x.profit_pct), borderColor:col.gr, backgroundColor:col.gr, fill:false, tension:.25, pointStyle:'circle', pointRadius:3, pointHoverRadius:5, pointHitRadius:18, pointBackgroundColor:col.gr, pointBorderColor:col.gr, spanGaps:true, clip:false},
+  {label:'累计盈利率%', data:dd.map(x=>x.cum_profit_pct), borderColor:col.am, backgroundColor:col.am, fill:false, tension:.25, pointStyle:'circle', pointRadius:3, pointHoverRadius:5, pointHitRadius:18, pointBackgroundColor:col.am, pointBorderColor:col.am, spanGaps:true, clip:false}
 ], false);
 line('c6', dd.map(x=>x.d.slice(5)), [
-  {label:'当天逾期率%', data:dd.map(x=>x.overdue_pct), borderColor:col.pk, tension:.25, pointRadius:2, spanGaps:true},
-  {label:'累计逾期率%', data:dd.map(x=>x.cum_overdue_pct), borderColor:col.cy, tension:.25, pointRadius:2, spanGaps:true}
+  {label:'当天逾期率%', data:dd.map(x=>x.overdue_pct), borderColor:col.pk, backgroundColor:col.pk, fill:false, tension:.25, pointStyle:'circle', pointRadius:3, pointHoverRadius:5, pointHitRadius:18, pointBackgroundColor:col.pk, pointBorderColor:col.pk, spanGaps:true, clip:false},
+  {label:'累计逾期率%', data:dd.map(x=>x.cum_overdue_pct), borderColor:col.cy, backgroundColor:col.cy, fill:false, tension:.25, pointStyle:'circle', pointRadius:3, pointHoverRadius:5, pointHitRadius:18, pointBackgroundColor:col.cy, pointBorderColor:col.cy, spanGaps:true, clip:false}
 ], false);
 new Chart(document.getElementById('c7'), {type:'doughnut', data:{labels:['已提单','尚未提单'], datasets:[{data:[k.n_apply, k.n_user-k.n_apply], backgroundColor:[col.gr, 'rgba(42,92,126,.55)'], borderWidth:0}]},
   options:{responsive:true, maintainAspectRatio:false, cutout:'55%', layout:{padding:{top:4,bottom:8,left:4,right:8}}, plugins:{legend:{position:'right', labels:{color:'#eff8ff', padding:12, boxWidth:12}}}},
@@ -1846,12 +2010,12 @@ new Chart(document.getElementById('c8'), {type:'bar', data:{labels:['本周新�
   }}]});
 new Chart(document.getElementById('c9'), {type:'bar', data:{labels:D.strat.map(x=>x.strat), datasets:[
   {label:'名单人数', data:D.strat.map(x=>x.n_user), backgroundColor:'rgba(67,199,231,.35)', yAxisID:'y'},
-  {label:'提单率%', data:D.strat.map(x=>x.pct), type:'line', borderColor:col.pk, yAxisID:'y2', tension:.2, pointRadius:3}
+  {label:'提单率%', data:D.strat.map(x=>x.pct), type:'line', borderColor:col.pk, yAxisID:'y2', tension:.2, pointStyle:'circle', pointRadius:3, pointHoverRadius:5, pointHitRadius:18, pointBackgroundColor:col.pk, pointBorderColor:col.pk, clip:false}
 ]}, options:Object.assign(base(true), {layout:{padding:{top:0,right:8}}}),
   plugins:[{id:'rateLabel9', afterDatasetsDraw(chart){ drawRateLabels(chart); }}]});
 new Chart(document.getElementById('c10'), {type:'bar', data:{labels:D.churn.map(x=>x.bin), datasets:[
   {label:'名单人数', data:D.churn.map(x=>x.n_user), backgroundColor:'rgba(67,199,231,.35)', yAxisID:'y'},
-  {label:'提单率%', data:D.churn.map(x=>x.pct), type:'line', borderColor:col.pk, yAxisID:'y2', tension:.2, pointRadius:3}
+  {label:'提单率%', data:D.churn.map(x=>x.pct), type:'line', borderColor:col.pk, yAxisID:'y2', tension:.2, pointStyle:'circle', pointRadius:3, pointHoverRadius:5, pointHitRadius:18, pointBackgroundColor:col.pk, pointBorderColor:col.pk, clip:false}
 ]}, options:Object.assign(base(true), {layout:{padding:{top:0,right:8}}}),
   plugins:[{id:'rateLabel10', afterDatasetsDraw(chart){ drawRateLabels(chart); }}]});
 </script>
