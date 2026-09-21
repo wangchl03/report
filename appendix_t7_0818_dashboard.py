@@ -10,6 +10,7 @@ T7+ 召回前端看板 · 后端
 """
 from __future__ import annotations
 
+import html as html_lib
 import json
 import os
 from pathlib import Path
@@ -339,6 +340,213 @@ def fetch():
     }
 
 
+def build_sql(remit_day: str) -> str:
+    return f"""-- T7 召回前端看板 · 可复现 PGSQL
+-- 库：kaby_dw · schema：wangchuanliang
+-- 名单：{LIST_TABLE}
+-- 触达日：{RECALL_DATE}
+-- 放款日：优先 o.remit_date::date（无该列时用 o.apply_date::date）
+-- 本文件当前放款日表达式：{remit_day}
+-- 本周：DATE_TRUNC('week', CURRENT_DATE)::date（周一）
+-- 执行前：SET search_path TO wangchuanliang, public;
+
+SET search_path TO wangchuanliang, public;
+
+-- ---------------------------------------------------------------------------
+-- 0) 放款日字段是否存在（结果有行则用 remit_date，否则用 apply_date）
+-- ---------------------------------------------------------------------------
+SELECT 1 AS has_remit_date
+FROM information_schema.columns
+WHERE table_schema = 'wangchuanliang'
+  AND table_name = 'order_loan_f_v2_copy'
+  AND column_name = 'remit_date';
+
+-- ---------------------------------------------------------------------------
+-- 1) 召回名单（去重用户）
+-- ---------------------------------------------------------------------------
+DROP TABLE IF EXISTS tmp_t7_u;
+CREATE TEMP TABLE tmp_t7_u AS
+SELECT DISTINCT churn_user_id::bigint AS user_id,
+       COALESCE(strat, 'NA') AS strat,
+       churn_days
+FROM {LIST_TABLE}
+WHERE churn_user_id IS NOT NULL
+  AND recall_date = DATE '{RECALL_DATE}';
+
+-- ---------------------------------------------------------------------------
+-- 2) KPI（提单率、本周提单/新增提单、放款、到期盈利与逾期）
+-- ---------------------------------------------------------------------------
+WITH params AS (
+    SELECT DATE '{RECALL_DATE}' AS recall_dt,
+           DATE_TRUNC('week', CURRENT_DATE)::date AS week_start,
+           CURRENT_DATE AS as_of
+),
+apply_u AS (
+    SELECT DISTINCT o.user_id
+    FROM tmp_t7_u u
+    INNER JOIN order_loan_f_v2_copy o ON o.user_id = u.user_id
+    CROSS JOIN params p
+    WHERE o.apply_date >= p.recall_dt
+),
+first_apply AS (
+    SELECT o.user_id, MIN(o.apply_date) AS first_dt
+    FROM tmp_t7_u u
+    INNER JOIN order_loan_f_v2_copy o ON o.user_id = u.user_id
+    CROSS JOIN params p
+    WHERE o.apply_date >= p.recall_dt
+    GROUP BY 1
+)
+SELECT
+    (SELECT COUNT(*) FROM tmp_t7_u) AS n_user,
+    (SELECT COUNT(*) FROM apply_u) AS n_apply,
+    ROUND(100.0 * (SELECT COUNT(*) FROM apply_u)
+        / NULLIF((SELECT COUNT(*) FROM tmp_t7_u), 0), 2) AS apply_rate,
+    (SELECT COUNT(DISTINCT o.user_id)
+     FROM tmp_t7_u u
+     INNER JOIN order_loan_f_v2_copy o ON o.user_id = u.user_id
+     CROSS JOIN params p
+     WHERE o.apply_date >= p.week_start AND o.apply_date <= p.as_of) AS n_apply_week,
+    (SELECT COUNT(*) FROM first_apply f CROSS JOIN params p
+     WHERE f.first_dt >= p.week_start AND f.first_dt <= p.as_of) AS n_first_week,
+    (SELECT COUNT(*)
+     FROM tmp_t7_u u
+     INNER JOIN order_loan_f_v2_copy o ON o.user_id = u.user_id
+     CROSS JOIN params p
+     WHERE o.apply_date >= p.recall_dt AND o.is_remit = 1
+       AND COALESCE(o.remit_amt, 0) > 0) AS n_remit,
+    (SELECT COUNT(*)
+     FROM tmp_t7_u u
+     INNER JOIN order_loan_f_v2_copy o ON o.user_id = u.user_id
+     CROSS JOIN params p
+     WHERE o.apply_date >= p.recall_dt AND o.is_remit = 1
+       AND COALESCE(o.remit_amt, 0) > 0
+       AND {remit_day} >= p.week_start AND {remit_day} <= p.as_of) AS n_remit_week,
+    (SELECT COUNT(*)
+     FROM tmp_t7_u u
+     INNER JOIN order_loan_f_v2_copy o ON o.user_id = u.user_id
+     CROSS JOIN params p
+     WHERE o.apply_date >= p.recall_dt AND o.is_due = 1 AND o.is_remit = 1
+       AND COALESCE(o.remit_amt, 0) > 0) AS n_due,
+    (SELECT COUNT(*)
+     FROM tmp_t7_u u
+     INNER JOIN order_loan_f_v2_copy o ON o.user_id = u.user_id
+     CROSS JOIN params p
+     WHERE o.apply_date >= p.recall_dt AND o.is_due = 1 AND o.is_remit = 1
+       AND COALESCE(o.remit_amt, 0) > 0 AND o.loan_status_code = 8) AS n_due_od,
+    (SELECT SUM(COALESCE(o.repaid_amt, 0))
+     FROM tmp_t7_u u
+     INNER JOIN order_loan_f_v2_copy o ON o.user_id = u.user_id
+     CROSS JOIN params p
+     WHERE o.apply_date >= p.recall_dt AND o.is_due = 1 AND o.is_remit = 1
+       AND COALESCE(o.remit_amt, 0) > 0) AS due_repaid,
+    (SELECT SUM(o.remit_amt)
+     FROM tmp_t7_u u
+     INNER JOIN order_loan_f_v2_copy o ON o.user_id = u.user_id
+     CROSS JOIN params p
+     WHERE o.apply_date >= p.recall_dt AND o.is_due = 1 AND o.is_remit = 1
+       AND COALESCE(o.remit_amt, 0) > 0) AS due_remit,
+    (SELECT week_start FROM params) AS week_start,
+    (SELECT as_of FROM params) AS as_of;
+
+-- 盈利率 = (due_repaid - due_remit) / due_remit
+-- 逾期率 = n_due_od / n_due
+
+-- ---------------------------------------------------------------------------
+-- 3) 召回后首次提单日分布（累计人数、累计提单率）
+-- ---------------------------------------------------------------------------
+WITH fa AS (
+  SELECT o.user_id, MIN(o.apply_date) AS first_apply
+  FROM tmp_t7_u u
+  INNER JOIN order_loan_f_v2_copy o
+    ON o.user_id = u.user_id AND o.apply_date >= DATE '{RECALL_DATE}'
+  GROUP BY 1
+)
+SELECT first_apply::text AS d, COUNT(*) AS n
+FROM fa
+GROUP BY 1
+ORDER BY 1;
+
+-- ---------------------------------------------------------------------------
+-- 4) 每日提单用户（当日有过提单的去重用户）与当日提单订单数
+-- ---------------------------------------------------------------------------
+SELECT o.apply_date::text AS d,
+       COUNT(*) AS n_order,
+       COUNT(DISTINCT o.user_id) AS n_user
+FROM tmp_t7_u u
+INNER JOIN order_loan_f_v2_copy o
+  ON o.user_id = u.user_id AND o.apply_date >= DATE '{RECALL_DATE}'
+GROUP BY 1
+ORDER BY 1;
+
+-- ---------------------------------------------------------------------------
+-- 5) 每日放款单量
+-- ---------------------------------------------------------------------------
+SELECT {remit_day}::text AS d, COUNT(*) AS n
+FROM tmp_t7_u u
+INNER JOIN order_loan_f_v2_copy o ON o.user_id = u.user_id
+WHERE o.apply_date >= DATE '{RECALL_DATE}'
+  AND o.is_remit = 1 AND COALESCE(o.remit_amt, 0) > 0
+  AND {remit_day} IS NOT NULL
+GROUP BY 1
+ORDER BY 1;
+
+-- ---------------------------------------------------------------------------
+-- 6) 按到期日的盈利率、逾期率
+-- ---------------------------------------------------------------------------
+SELECT o.due_date::text AS d,
+       COUNT(*) AS n_due,
+       SUM(CASE WHEN o.loan_status_code = 8 THEN 1 ELSE 0 END) AS n_od,
+       SUM(COALESCE(o.repaid_amt, 0)) AS repaid,
+       SUM(o.remit_amt) AS remit
+FROM tmp_t7_u u
+INNER JOIN order_loan_f_v2_copy o ON o.user_id = u.user_id
+WHERE o.apply_date >= DATE '{RECALL_DATE}'
+  AND o.is_due = 1 AND o.is_remit = 1 AND COALESCE(o.remit_amt, 0) > 0
+  AND o.due_date IS NOT NULL
+GROUP BY 1
+ORDER BY 1;
+
+-- ---------------------------------------------------------------------------
+-- 7) 分层 strat 名单人数与提单率
+-- ---------------------------------------------------------------------------
+SELECT u.strat,
+       COUNT(*) AS n_user,
+       COUNT(a.user_id) AS n_apply
+FROM tmp_t7_u u
+LEFT JOIN (
+  SELECT DISTINCT o.user_id
+  FROM tmp_t7_u u
+  INNER JOIN order_loan_f_v2_copy o
+    ON o.user_id = u.user_id AND o.apply_date >= DATE '{RECALL_DATE}'
+) a ON a.user_id = u.user_id
+GROUP BY 1
+ORDER BY n_user DESC;
+
+-- ---------------------------------------------------------------------------
+-- 8) 流失天数分箱名单人数与提单率
+-- ---------------------------------------------------------------------------
+SELECT
+  CASE
+    WHEN churn_days <= 15 THEN '7-15d'
+    WHEN churn_days <= 30 THEN '16-30d'
+    WHEN churn_days <= 60 THEN '31-60d'
+    WHEN churn_days <= 90 THEN '61-90d'
+    WHEN churn_days <= 180 THEN '91-180d'
+    ELSE '180d+'
+  END AS bin,
+  COUNT(*) AS n_user,
+  COUNT(a.user_id) AS n_apply
+FROM tmp_t7_u u
+LEFT JOIN (
+  SELECT DISTINCT o.user_id
+  FROM tmp_t7_u u
+  INNER JOIN order_loan_f_v2_copy o
+    ON o.user_id = u.user_id AND o.apply_date >= DATE '{RECALL_DATE}'
+) a ON a.user_id = u.user_id
+GROUP BY 1;
+"""
+
+
 def write_html(data):
     k = data["kpi"]
     payload = json.dumps(data, ensure_ascii=False)
@@ -375,6 +583,13 @@ h1{{font-size:24px;margin:8px 0 6px}}
 .chart p{{margin:0 0 10px;font-size:12px;color:var(--muted)}}
 .box{{height:300px;position:relative}}
 .foot{{color:#7fa6c2;font-size:12px;margin-top:28px;border-top:1px solid var(--line);padding-top:14px;line-height:1.8}}
+.appendix{{margin-top:36px;border-top:1px solid var(--line);padding-top:8px}}
+.appendix h2{{font-size:18px;margin:22px 0 10px}}
+.appendix p,.appendix li{{color:var(--muted);font-size:13px;line-height:1.8}}
+.appendix ul{{padding-left:1.2em}}
+details.code{{margin:10px 0;background:rgba(10,41,68,.95);border:1px solid var(--line);border-radius:12px;padding:10px 14px}}
+details.code summary{{cursor:pointer;color:var(--cy);font-weight:700;font-size:13px}}
+details.code pre{{overflow:auto;max-height:520px;font-size:11px;line-height:1.45;color:#d7ecf8;white-space:pre-wrap;word-break:break-word}}
 @media(max-width:900px){{.kpis,.grid{{grid-template-columns:1fr}}}}
 </style>
 </head>
@@ -383,9 +598,7 @@ h1{{font-size:24px;margin:8px 0 6px}}
 <div class="top">
   <div class="kicker">FRONTEND DASHBOARD · T7+ RECALL · 2026-08-18</div>
   <h1>流失 7 天以上召回 · 前端看板</h1>
-  <p class="meta">名单 {fmt(k['n_user'])} 人 · 统计至 {k['as_of']} · 本周 {k['week_start']} 起（周一）<br>
-  提单：apply_date≥8/18，用户去重。本周提单=本周任意提单用户；本周新增提单=召回后首次提单落在本周。<br>
-  放款：is_remit=1 且 remit_amt&gt;0。到期盈利/逾期：is_due=1 且已放款；逾期=loan_status_code=8。</p>
+  <p class="meta">名单 {fmt(k['n_user'])} 人 · 统计至 {k['as_of']} · 本周 {k['week_start']} 起（周一）</p>
 </div>
 <section class="kpis">
   <article class="card"><div class="label">提单率</div><div class="num a">{pct(k['apply_rate'])}</div><div class="sub">{fmt(k['n_apply'])} / {fmt(k['n_user'])} · 8/18至今去重用户</div></article>
@@ -417,10 +630,6 @@ h1{{font-size:24px;margin:8px 0 6px}}
   <div class="card chart"><h3>分层 strat 提单率</h3><p>人数柱 + 提单率折线</p><div class="box"><canvas id="c9"></canvas></div></div>
   <div class="card chart"><h3>流失天数提单率</h3><p>7–15 / 16–30 / 31–60 / 61–90 / 91–180 / 180d+</p><div class="box"><canvas id="c10"></canvas></div></div>
 </div>
-<p class="foot">数据：kaby_dw · {LIST_TABLE} · recall_date={RECALL_DATE} · 库内 CURRENT_DATE={k['as_of']}</p>
-</main>
-<script>
-const D = __DATA__;
 """
     html_js = r"""
 const col = {cy:'#43c7e7', gr:'#64dcae', am:'#ffc26b', pk:'#f68ab0'};
@@ -519,7 +728,50 @@ new Chart(document.getElementById('c10'), {type:'bar', data:{labels:D.churn.map(
 </script>
 </body></html>
 """
-    HTML_PATH.write_text(html_head.replace("__DATA__", payload) + html_js, encoding="utf-8")
+    sql_txt = build_sql(k["remit_day"])
+    py_txt = Path(__file__).read_text(encoding="utf-8")
+    front_src = (
+        html_head
+        + "\n<!-- 口径与附录见页面底部 -->\n</main>\n"
+        + "<script>\nconst D = /* 由后端写入，对象结构同 t7_0818_dashboard_data.json */;\n"
+        + html_js
+    )
+    appendix = (
+        '<section class="appendix" id="method">\n'
+        "<h2>口径说明</h2>\n"
+        "<ul>\n"
+        f"<li>名单：<code>{LIST_TABLE}</code>，<code>recall_date = {RECALL_DATE}</code>，按 <code>churn_user_id</code> 去重。</li>\n"
+        "<li>提单：<code>apply_date ≥ 2026-08-18</code>。总提单人数=召回后任意提单用户去重；本周提单=本周任意提单用户去重；本周新增提单=召回后首次提单日期落在本周（周一 <code>DATE_TRUNC('week', CURRENT_DATE)</code> 至库内 <code>CURRENT_DATE</code>）。</li>\n"
+        "<li>放款：<code>is_remit = 1</code> 且 <code>remit_amt &gt; 0</code>；本周新增放款按放款日（本页为 <code>"
+        + html_lib.escape(str(k["remit_day"]))
+        + "</code>）落在本周的订单数。</li>\n"
+        "<li>到期盈利 / 逾期：召回后提单且 <code>is_due = 1</code>、<code>is_remit = 1</code>、<code>remit_amt &gt; 0</code>。盈利率 = <code>(repaid_amt − remit_amt) / remit_amt</code>；逾期率 = <code>loan_status_code = 8</code> 占到期放款单。</li>\n"
+        "<li>转化结构：已提单 vs 名单中尚未提单。分层 / 流失天数：名单人数与对应提单率。</li>\n"
+        "</ul>\n"
+        "<h2>附录：可复现本看板的全部代码</h2>\n"
+        "<p>库 <code>kaby_dw</code>，账号只读。设置 <code>PGPASSWORD</code> 后执行 "
+        "<code>python3 appendix_t7_0818_dashboard.py</code> 会重写 <code>t7-0818.html</code> 与 "
+        "<code>t7_0818_dashboard_data.json</code>。密码不写入附录。Chart.js 使用 CDN "
+        "<code>https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js</code>。</p>\n"
+        '<details class="code" open><summary>1. PGSQL（名单 + KPI + 全部图数据）</summary><pre>'
+        + html_lib.escape(sql_txt)
+        + "</pre></details>\n"
+        '<details class="code"><summary>2. 后端 Python（查库、汇总、写出 HTML）</summary><pre>'
+        + html_lib.escape(py_txt)
+        + "</pre></details>\n"
+        '<details class="code"><summary>3. 前端 HTML / CSS / Chart.js（数据对象 D 由后端注入）</summary><pre>'
+        + html_lib.escape(front_src)
+        + "</pre></details>\n"
+        "</section>\n"
+        f'<p class="foot">数据：kaby_dw · {LIST_TABLE} · recall_date={RECALL_DATE} · 库内 CURRENT_DATE={k["as_of"]}</p>\n'
+        "</main>\n"
+        "<script>\nconst D = "
+        + payload
+        + ";\n"
+    )
+    HTML_PATH.write_text(html_head + appendix + html_js, encoding="utf-8")
+    SQL_PATH = HERE / "appendix_t7_0818_dashboard.sql"
+    SQL_PATH.write_text(sql_txt, encoding="utf-8")
 
 
 if __name__ == "__main__":

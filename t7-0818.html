@@ -24,6 +24,13 @@ h1{font-size:24px;margin:8px 0 6px}
 .chart p{margin:0 0 10px;font-size:12px;color:var(--muted)}
 .box{height:300px;position:relative}
 .foot{color:#7fa6c2;font-size:12px;margin-top:28px;border-top:1px solid var(--line);padding-top:14px;line-height:1.8}
+.appendix{margin-top:36px;border-top:1px solid var(--line);padding-top:8px}
+.appendix h2{font-size:18px;margin:22px 0 10px}
+.appendix p,.appendix li{color:var(--muted);font-size:13px;line-height:1.8}
+.appendix ul{padding-left:1.2em}
+details.code{margin:10px 0;background:rgba(10,41,68,.95);border:1px solid var(--line);border-radius:12px;padding:10px 14px}
+details.code summary{cursor:pointer;color:var(--cy);font-weight:700;font-size:13px}
+details.code pre{overflow:auto;max-height:520px;font-size:11px;line-height:1.45;color:#d7ecf8;white-space:pre-wrap;word-break:break-word}
 @media(max-width:900px){.kpis,.grid{grid-template-columns:1fr}}
 </style>
 </head>
@@ -32,9 +39,7 @@ h1{font-size:24px;margin:8px 0 6px}
 <div class="top">
   <div class="kicker">FRONTEND DASHBOARD · T7+ RECALL · 2026-08-18</div>
   <h1>流失 7 天以上召回 · 前端看板</h1>
-  <p class="meta">名单 11,585 人 · 统计至 2026-09-20 · 本周 2026-09-14 起（周一）<br>
-  提单：apply_date≥8/18，用户去重。本周提单=本周任意提单用户；本周新增提单=召回后首次提单落在本周。<br>
-  放款：is_remit=1 且 remit_amt&gt;0。到期盈利/逾期：is_due=1 且已放款；逾期=loan_status_code=8。</p>
+  <p class="meta">名单 11,585 人 · 统计至 2026-09-20 · 本周 2026-09-14 起（周一）</p>
 </div>
 <section class="kpis">
   <article class="card"><div class="label">提单率</div><div class="num a">21.24%</div><div class="sub">2,461 / 11,585 · 8/18至今去重用户</div></article>
@@ -66,6 +71,1180 @@ h1{font-size:24px;margin:8px 0 6px}
   <div class="card chart"><h3>分层 strat 提单率</h3><p>人数柱 + 提单率折线</p><div class="box"><canvas id="c9"></canvas></div></div>
   <div class="card chart"><h3>流失天数提单率</h3><p>7–15 / 16–30 / 31–60 / 61–90 / 91–180 / 180d+</p><div class="box"><canvas id="c10"></canvas></div></div>
 </div>
+<section class="appendix" id="method">
+<h2>口径说明</h2>
+<ul>
+<li>名单：<code>wangchuanliang.t7recalllist_0818_0819</code>，<code>recall_date = 2026-08-18</code>，按 <code>churn_user_id</code> 去重。</li>
+<li>提单：<code>apply_date ≥ 2026-08-18</code>。总提单人数=召回后任意提单用户去重；本周提单=本周任意提单用户去重；本周新增提单=召回后首次提单日期落在本周（周一 <code>DATE_TRUNC('week', CURRENT_DATE)</code> 至库内 <code>CURRENT_DATE</code>）。</li>
+<li>放款：<code>is_remit = 1</code> 且 <code>remit_amt &gt; 0</code>；本周新增放款按放款日（本页为 <code>o.remit_date::date</code>）落在本周的订单数。</li>
+<li>到期盈利 / 逾期：召回后提单且 <code>is_due = 1</code>、<code>is_remit = 1</code>、<code>remit_amt &gt; 0</code>。盈利率 = <code>(repaid_amt − remit_amt) / remit_amt</code>；逾期率 = <code>loan_status_code = 8</code> 占到期放款单。</li>
+<li>转化结构：已提单 vs 名单中尚未提单。分层 / 流失天数：名单人数与对应提单率。</li>
+</ul>
+<h2>附录：可复现本看板的全部代码</h2>
+<p>库 <code>kaby_dw</code>，账号只读。设置 <code>PGPASSWORD</code> 后执行 <code>python3 appendix_t7_0818_dashboard.py</code> 会重写 <code>t7-0818.html</code> 与 <code>t7_0818_dashboard_data.json</code>。密码不写入附录。Chart.js 使用 CDN <code>https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js</code>。</p>
+<details class="code" open><summary>1. PGSQL（名单 + KPI + 全部图数据）</summary><pre>-- T7 召回前端看板 · 可复现 PGSQL
+-- 库：kaby_dw · schema：wangchuanliang
+-- 名单：wangchuanliang.t7recalllist_0818_0819
+-- 触达日：2026-08-18
+-- 放款日：优先 o.remit_date::date（无该列时用 o.apply_date::date）
+-- 本文件当前放款日表达式：o.remit_date::date
+-- 本周：DATE_TRUNC(&#x27;week&#x27;, CURRENT_DATE)::date（周一）
+-- 执行前：SET search_path TO wangchuanliang, public;
+
+SET search_path TO wangchuanliang, public;
+
+-- ---------------------------------------------------------------------------
+-- 0) 放款日字段是否存在（结果有行则用 remit_date，否则用 apply_date）
+-- ---------------------------------------------------------------------------
+SELECT 1 AS has_remit_date
+FROM information_schema.columns
+WHERE table_schema = &#x27;wangchuanliang&#x27;
+  AND table_name = &#x27;order_loan_f_v2_copy&#x27;
+  AND column_name = &#x27;remit_date&#x27;;
+
+-- ---------------------------------------------------------------------------
+-- 1) 召回名单（去重用户）
+-- ---------------------------------------------------------------------------
+DROP TABLE IF EXISTS tmp_t7_u;
+CREATE TEMP TABLE tmp_t7_u AS
+SELECT DISTINCT churn_user_id::bigint AS user_id,
+       COALESCE(strat, &#x27;NA&#x27;) AS strat,
+       churn_days
+FROM wangchuanliang.t7recalllist_0818_0819
+WHERE churn_user_id IS NOT NULL
+  AND recall_date = DATE &#x27;2026-08-18&#x27;;
+
+-- ---------------------------------------------------------------------------
+-- 2) KPI（提单率、本周提单/新增提单、放款、到期盈利与逾期）
+-- ---------------------------------------------------------------------------
+WITH params AS (
+    SELECT DATE &#x27;2026-08-18&#x27; AS recall_dt,
+           DATE_TRUNC(&#x27;week&#x27;, CURRENT_DATE)::date AS week_start,
+           CURRENT_DATE AS as_of
+),
+apply_u AS (
+    SELECT DISTINCT o.user_id
+    FROM tmp_t7_u u
+    INNER JOIN order_loan_f_v2_copy o ON o.user_id = u.user_id
+    CROSS JOIN params p
+    WHERE o.apply_date &gt;= p.recall_dt
+),
+first_apply AS (
+    SELECT o.user_id, MIN(o.apply_date) AS first_dt
+    FROM tmp_t7_u u
+    INNER JOIN order_loan_f_v2_copy o ON o.user_id = u.user_id
+    CROSS JOIN params p
+    WHERE o.apply_date &gt;= p.recall_dt
+    GROUP BY 1
+)
+SELECT
+    (SELECT COUNT(*) FROM tmp_t7_u) AS n_user,
+    (SELECT COUNT(*) FROM apply_u) AS n_apply,
+    ROUND(100.0 * (SELECT COUNT(*) FROM apply_u)
+        / NULLIF((SELECT COUNT(*) FROM tmp_t7_u), 0), 2) AS apply_rate,
+    (SELECT COUNT(DISTINCT o.user_id)
+     FROM tmp_t7_u u
+     INNER JOIN order_loan_f_v2_copy o ON o.user_id = u.user_id
+     CROSS JOIN params p
+     WHERE o.apply_date &gt;= p.week_start AND o.apply_date &lt;= p.as_of) AS n_apply_week,
+    (SELECT COUNT(*) FROM first_apply f CROSS JOIN params p
+     WHERE f.first_dt &gt;= p.week_start AND f.first_dt &lt;= p.as_of) AS n_first_week,
+    (SELECT COUNT(*)
+     FROM tmp_t7_u u
+     INNER JOIN order_loan_f_v2_copy o ON o.user_id = u.user_id
+     CROSS JOIN params p
+     WHERE o.apply_date &gt;= p.recall_dt AND o.is_remit = 1
+       AND COALESCE(o.remit_amt, 0) &gt; 0) AS n_remit,
+    (SELECT COUNT(*)
+     FROM tmp_t7_u u
+     INNER JOIN order_loan_f_v2_copy o ON o.user_id = u.user_id
+     CROSS JOIN params p
+     WHERE o.apply_date &gt;= p.recall_dt AND o.is_remit = 1
+       AND COALESCE(o.remit_amt, 0) &gt; 0
+       AND o.remit_date::date &gt;= p.week_start AND o.remit_date::date &lt;= p.as_of) AS n_remit_week,
+    (SELECT COUNT(*)
+     FROM tmp_t7_u u
+     INNER JOIN order_loan_f_v2_copy o ON o.user_id = u.user_id
+     CROSS JOIN params p
+     WHERE o.apply_date &gt;= p.recall_dt AND o.is_due = 1 AND o.is_remit = 1
+       AND COALESCE(o.remit_amt, 0) &gt; 0) AS n_due,
+    (SELECT COUNT(*)
+     FROM tmp_t7_u u
+     INNER JOIN order_loan_f_v2_copy o ON o.user_id = u.user_id
+     CROSS JOIN params p
+     WHERE o.apply_date &gt;= p.recall_dt AND o.is_due = 1 AND o.is_remit = 1
+       AND COALESCE(o.remit_amt, 0) &gt; 0 AND o.loan_status_code = 8) AS n_due_od,
+    (SELECT SUM(COALESCE(o.repaid_amt, 0))
+     FROM tmp_t7_u u
+     INNER JOIN order_loan_f_v2_copy o ON o.user_id = u.user_id
+     CROSS JOIN params p
+     WHERE o.apply_date &gt;= p.recall_dt AND o.is_due = 1 AND o.is_remit = 1
+       AND COALESCE(o.remit_amt, 0) &gt; 0) AS due_repaid,
+    (SELECT SUM(o.remit_amt)
+     FROM tmp_t7_u u
+     INNER JOIN order_loan_f_v2_copy o ON o.user_id = u.user_id
+     CROSS JOIN params p
+     WHERE o.apply_date &gt;= p.recall_dt AND o.is_due = 1 AND o.is_remit = 1
+       AND COALESCE(o.remit_amt, 0) &gt; 0) AS due_remit,
+    (SELECT week_start FROM params) AS week_start,
+    (SELECT as_of FROM params) AS as_of;
+
+-- 盈利率 = (due_repaid - due_remit) / due_remit
+-- 逾期率 = n_due_od / n_due
+
+-- ---------------------------------------------------------------------------
+-- 3) 召回后首次提单日分布（累计人数、累计提单率）
+-- ---------------------------------------------------------------------------
+WITH fa AS (
+  SELECT o.user_id, MIN(o.apply_date) AS first_apply
+  FROM tmp_t7_u u
+  INNER JOIN order_loan_f_v2_copy o
+    ON o.user_id = u.user_id AND o.apply_date &gt;= DATE &#x27;2026-08-18&#x27;
+  GROUP BY 1
+)
+SELECT first_apply::text AS d, COUNT(*) AS n
+FROM fa
+GROUP BY 1
+ORDER BY 1;
+
+-- ---------------------------------------------------------------------------
+-- 4) 每日提单用户（当日有过提单的去重用户）与当日提单订单数
+-- ---------------------------------------------------------------------------
+SELECT o.apply_date::text AS d,
+       COUNT(*) AS n_order,
+       COUNT(DISTINCT o.user_id) AS n_user
+FROM tmp_t7_u u
+INNER JOIN order_loan_f_v2_copy o
+  ON o.user_id = u.user_id AND o.apply_date &gt;= DATE &#x27;2026-08-18&#x27;
+GROUP BY 1
+ORDER BY 1;
+
+-- ---------------------------------------------------------------------------
+-- 5) 每日放款单量
+-- ---------------------------------------------------------------------------
+SELECT o.remit_date::date::text AS d, COUNT(*) AS n
+FROM tmp_t7_u u
+INNER JOIN order_loan_f_v2_copy o ON o.user_id = u.user_id
+WHERE o.apply_date &gt;= DATE &#x27;2026-08-18&#x27;
+  AND o.is_remit = 1 AND COALESCE(o.remit_amt, 0) &gt; 0
+  AND o.remit_date::date IS NOT NULL
+GROUP BY 1
+ORDER BY 1;
+
+-- ---------------------------------------------------------------------------
+-- 6) 按到期日的盈利率、逾期率
+-- ---------------------------------------------------------------------------
+SELECT o.due_date::text AS d,
+       COUNT(*) AS n_due,
+       SUM(CASE WHEN o.loan_status_code = 8 THEN 1 ELSE 0 END) AS n_od,
+       SUM(COALESCE(o.repaid_amt, 0)) AS repaid,
+       SUM(o.remit_amt) AS remit
+FROM tmp_t7_u u
+INNER JOIN order_loan_f_v2_copy o ON o.user_id = u.user_id
+WHERE o.apply_date &gt;= DATE &#x27;2026-08-18&#x27;
+  AND o.is_due = 1 AND o.is_remit = 1 AND COALESCE(o.remit_amt, 0) &gt; 0
+  AND o.due_date IS NOT NULL
+GROUP BY 1
+ORDER BY 1;
+
+-- ---------------------------------------------------------------------------
+-- 7) 分层 strat 名单人数与提单率
+-- ---------------------------------------------------------------------------
+SELECT u.strat,
+       COUNT(*) AS n_user,
+       COUNT(a.user_id) AS n_apply
+FROM tmp_t7_u u
+LEFT JOIN (
+  SELECT DISTINCT o.user_id
+  FROM tmp_t7_u u
+  INNER JOIN order_loan_f_v2_copy o
+    ON o.user_id = u.user_id AND o.apply_date &gt;= DATE &#x27;2026-08-18&#x27;
+) a ON a.user_id = u.user_id
+GROUP BY 1
+ORDER BY n_user DESC;
+
+-- ---------------------------------------------------------------------------
+-- 8) 流失天数分箱名单人数与提单率
+-- ---------------------------------------------------------------------------
+SELECT
+  CASE
+    WHEN churn_days &lt;= 15 THEN &#x27;7-15d&#x27;
+    WHEN churn_days &lt;= 30 THEN &#x27;16-30d&#x27;
+    WHEN churn_days &lt;= 60 THEN &#x27;31-60d&#x27;
+    WHEN churn_days &lt;= 90 THEN &#x27;61-90d&#x27;
+    WHEN churn_days &lt;= 180 THEN &#x27;91-180d&#x27;
+    ELSE &#x27;180d+&#x27;
+  END AS bin,
+  COUNT(*) AS n_user,
+  COUNT(a.user_id) AS n_apply
+FROM tmp_t7_u u
+LEFT JOIN (
+  SELECT DISTINCT o.user_id
+  FROM tmp_t7_u u
+  INNER JOIN order_loan_f_v2_copy o
+    ON o.user_id = u.user_id AND o.apply_date &gt;= DATE &#x27;2026-08-18&#x27;
+) a ON a.user_id = u.user_id
+GROUP BY 1;
+</pre></details>
+<details class="code"><summary>2. 后端 Python（查库、汇总、写出 HTML）</summary><pre>#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+&quot;&quot;&quot;
+T7+ 召回前端看板 · 后端
+名单：wangchuanliang.t7recalllist_0818_0819
+触达日：recall_date = 2026-08-18
+
+  export PGPASSWORD=&#x27;...&#x27;
+  python3 appendix_t7_0818_dashboard.py
+&quot;&quot;&quot;
+from __future__ import annotations
+
+import html as html_lib
+import json
+import os
+from pathlib import Path
+
+HERE = Path(__file__).resolve().parent
+HTML_PATH = HERE / &quot;t7-0818.html&quot;
+JSON_PATH = HERE / &quot;t7_0818_dashboard_data.json&quot;
+RECALL_DATE = &quot;2026-08-18&quot;
+LIST_TABLE = &quot;wangchuanliang.t7recalllist_0818_0819&quot;
+
+U = f&quot;&quot;&quot;
+SELECT DISTINCT churn_user_id::bigint AS user_id,
+       COALESCE(strat, &#x27;NA&#x27;) AS strat,
+       churn_days
+FROM {LIST_TABLE}
+WHERE churn_user_id IS NOT NULL
+  AND recall_date = DATE &#x27;{RECALL_DATE}&#x27;
+&quot;&quot;&quot;
+
+
+def connect():
+    pwd = os.environ.get(&quot;PGPASSWORD&quot;)
+    if not pwd:
+        raise SystemExit(&quot;请先设置环境变量 PGPASSWORD&quot;)
+    import psycopg2
+
+    conn = psycopg2.connect(
+        host=os.environ.get(&quot;PGHOST&quot;, &quot;47.89.225.85&quot;),
+        port=int(os.environ.get(&quot;PGPORT&quot;, &quot;8000&quot;)),
+        dbname=os.environ.get(&quot;PGDATABASE&quot;, &quot;kaby_dw&quot;),
+        user=os.environ.get(&quot;PGUSER&quot;, &quot;wangchuanliang_readonly&quot;),
+        password=pwd,
+        connect_timeout=30,
+        options=&quot;-c statement_timeout=0&quot;,
+    )
+    conn.autocommit = True
+    return conn
+
+
+def rows(cur, sql):
+    cur.execute(sql)
+    cols = [d[0] for d in cur.description]
+    out = []
+    for r in cur.fetchall():
+        item = {}
+        for c, v in zip(cols, r):
+            if hasattr(v, &quot;as_tuple&quot;):
+                v = float(v)
+            elif hasattr(v, &quot;isoformat&quot;):
+                v = str(v)
+            item[c] = v
+        out.append(item)
+    return out
+
+
+def one(cur, sql):
+    return rows(cur, sql)[0]
+
+
+def fetch():
+    conn = connect()
+    cur = conn.cursor()
+    cur.execute(&quot;SET search_path TO wangchuanliang, public&quot;)
+    cur.execute(
+        &quot;&quot;&quot;
+        SELECT 1 FROM information_schema.columns
+        WHERE table_schema = &#x27;wangchuanliang&#x27; AND table_name = &#x27;order_loan_f_v2_copy&#x27;
+          AND column_name = &#x27;remit_date&#x27;
+        &quot;&quot;&quot;
+    )
+    remit_day = &quot;o.remit_date::date&quot; if cur.fetchone() else &quot;o.apply_date::date&quot;
+    print(&quot;remit day expr&quot;, remit_day, flush=True)
+
+    kpi = one(
+        cur,
+        f&quot;&quot;&quot;
+        WITH u AS ({U}),
+        params AS (
+            SELECT DATE &#x27;{RECALL_DATE}&#x27; AS recall_dt,
+                   DATE_TRUNC(&#x27;week&#x27;, CURRENT_DATE)::date AS week_start,
+                   CURRENT_DATE AS as_of
+        ),
+        apply_u AS (
+            SELECT DISTINCT o.user_id
+            FROM u
+            INNER JOIN order_loan_f_v2_copy o ON o.user_id = u.user_id
+            CROSS JOIN params p
+            WHERE o.apply_date &gt;= p.recall_dt
+        ),
+        first_apply AS (
+            SELECT o.user_id, MIN(o.apply_date) AS first_dt
+            FROM u
+            INNER JOIN order_loan_f_v2_copy o ON o.user_id = u.user_id
+            CROSS JOIN params p
+            WHERE o.apply_date &gt;= p.recall_dt
+            GROUP BY 1
+        )
+        SELECT
+            (SELECT COUNT(*) FROM u) AS n_user,
+            (SELECT COUNT(*) FROM apply_u) AS n_apply,
+            (SELECT COUNT(DISTINCT o.user_id)
+             FROM u
+             INNER JOIN order_loan_f_v2_copy o ON o.user_id = u.user_id
+             CROSS JOIN params p
+             WHERE o.apply_date &gt;= p.week_start AND o.apply_date &lt;= p.as_of) AS n_apply_week,
+            (SELECT COUNT(*) FROM first_apply f CROSS JOIN params p
+             WHERE f.first_dt &gt;= p.week_start AND f.first_dt &lt;= p.as_of) AS n_first_week,
+            (SELECT COUNT(*)
+             FROM u
+             INNER JOIN order_loan_f_v2_copy o ON o.user_id = u.user_id
+             CROSS JOIN params p
+             WHERE o.apply_date &gt;= p.recall_dt AND o.is_remit = 1
+               AND COALESCE(o.remit_amt, 0) &gt; 0) AS n_remit,
+            (SELECT COUNT(*)
+             FROM u
+             INNER JOIN order_loan_f_v2_copy o ON o.user_id = u.user_id
+             CROSS JOIN params p
+             WHERE o.apply_date &gt;= p.recall_dt AND o.is_remit = 1
+               AND COALESCE(o.remit_amt, 0) &gt; 0
+               AND {remit_day} &gt;= p.week_start AND {remit_day} &lt;= p.as_of) AS n_remit_week,
+            (SELECT COUNT(*)
+             FROM u
+             INNER JOIN order_loan_f_v2_copy o ON o.user_id = u.user_id
+             CROSS JOIN params p
+             WHERE o.apply_date &gt;= p.recall_dt AND o.is_due = 1 AND o.is_remit = 1
+               AND COALESCE(o.remit_amt, 0) &gt; 0) AS n_due,
+            (SELECT COUNT(*)
+             FROM u
+             INNER JOIN order_loan_f_v2_copy o ON o.user_id = u.user_id
+             CROSS JOIN params p
+             WHERE o.apply_date &gt;= p.recall_dt AND o.is_due = 1 AND o.is_remit = 1
+               AND COALESCE(o.remit_amt, 0) &gt; 0 AND o.loan_status_code = 8) AS n_due_od,
+            (SELECT SUM(COALESCE(o.repaid_amt, 0))
+             FROM u
+             INNER JOIN order_loan_f_v2_copy o ON o.user_id = u.user_id
+             CROSS JOIN params p
+             WHERE o.apply_date &gt;= p.recall_dt AND o.is_due = 1 AND o.is_remit = 1
+               AND COALESCE(o.remit_amt, 0) &gt; 0) AS due_repaid,
+            (SELECT SUM(o.remit_amt)
+             FROM u
+             INNER JOIN order_loan_f_v2_copy o ON o.user_id = u.user_id
+             CROSS JOIN params p
+             WHERE o.apply_date &gt;= p.recall_dt AND o.is_due = 1 AND o.is_remit = 1
+               AND COALESCE(o.remit_amt, 0) &gt; 0) AS due_remit,
+            (SELECT week_start FROM params) AS week_start,
+            (SELECT as_of FROM params) AS as_of
+        &quot;&quot;&quot;,
+    )
+
+    n_user = int(kpi[&quot;n_user&quot;] or 0)
+    n_apply = int(kpi[&quot;n_apply&quot;] or 0)
+    n_due = int(kpi[&quot;n_due&quot;] or 0)
+    n_due_od = int(kpi[&quot;n_due_od&quot;] or 0)
+    due_repaid = float(kpi[&quot;due_repaid&quot;] or 0)
+    due_remit = float(kpi[&quot;due_remit&quot;] or 0)
+    profit = (due_repaid - due_remit) / due_remit if due_remit else None
+    overdue = n_due_od / n_due if n_due else None
+
+    kpi_out = {
+        &quot;n_user&quot;: n_user,
+        &quot;n_apply&quot;: n_apply,
+        &quot;apply_rate&quot;: round(100.0 * n_apply / n_user, 2) if n_user else 0,
+        &quot;n_apply_week&quot;: int(kpi[&quot;n_apply_week&quot;] or 0),
+        &quot;n_first_week&quot;: int(kpi[&quot;n_first_week&quot;] or 0),
+        &quot;n_remit&quot;: int(kpi[&quot;n_remit&quot;] or 0),
+        &quot;n_remit_week&quot;: int(kpi[&quot;n_remit_week&quot;] or 0),
+        &quot;n_due&quot;: n_due,
+        &quot;n_due_od&quot;: n_due_od,
+        &quot;profit_pct&quot;: None if profit is None else round(100.0 * profit, 2),
+        &quot;overdue_pct&quot;: None if overdue is None else round(100.0 * overdue, 2),
+        &quot;week_start&quot;: str(kpi[&quot;week_start&quot;]),
+        &quot;as_of&quot;: str(kpi[&quot;as_of&quot;]),
+        &quot;recall_date&quot;: RECALL_DATE,
+        &quot;remit_day&quot;: remit_day,
+    }
+
+    print(&quot;daily series&quot;, flush=True)
+    first_daily = rows(
+        cur,
+        f&quot;&quot;&quot;
+        WITH u AS ({U}),
+        fa AS (
+          SELECT o.user_id, MIN(o.apply_date) AS first_apply
+          FROM u
+          INNER JOIN order_loan_f_v2_copy o
+            ON o.user_id = u.user_id AND o.apply_date &gt;= DATE &#x27;{RECALL_DATE}&#x27;
+          GROUP BY 1
+        )
+        SELECT first_apply::text AS d, COUNT(*) AS n
+        FROM fa GROUP BY 1 ORDER BY 1
+        &quot;&quot;&quot;,
+    )
+    cum = 0
+    for r in first_daily:
+        r[&quot;n&quot;] = int(r[&quot;n&quot;])
+        cum += r[&quot;n&quot;]
+        r[&quot;cum&quot;] = cum
+        r[&quot;rate&quot;] = round(100.0 * cum / n_user, 2) if n_user else 0
+
+    apply_daily = rows(
+        cur,
+        f&quot;&quot;&quot;
+        WITH u AS ({U})
+        SELECT o.apply_date::text AS d,
+               COUNT(*) AS n_order,
+               COUNT(DISTINCT o.user_id) AS n_user
+        FROM u
+        INNER JOIN order_loan_f_v2_copy o
+          ON o.user_id = u.user_id AND o.apply_date &gt;= DATE &#x27;{RECALL_DATE}&#x27;
+        GROUP BY 1 ORDER BY 1
+        &quot;&quot;&quot;,
+    )
+    for r in apply_daily:
+        r[&quot;n_order&quot;] = int(r[&quot;n_order&quot;])
+        r[&quot;n_user&quot;] = int(r[&quot;n_user&quot;])
+
+    remit_daily = rows(
+        cur,
+        f&quot;&quot;&quot;
+        WITH u AS ({U})
+        SELECT {remit_day}::text AS d, COUNT(*) AS n
+        FROM u
+        INNER JOIN order_loan_f_v2_copy o ON o.user_id = u.user_id
+        WHERE o.apply_date &gt;= DATE &#x27;{RECALL_DATE}&#x27;
+          AND o.is_remit = 1 AND COALESCE(o.remit_amt, 0) &gt; 0
+          AND {remit_day} IS NOT NULL
+        GROUP BY 1 ORDER BY 1
+        &quot;&quot;&quot;,
+    )
+    rcum = 0
+    for r in remit_daily:
+        r[&quot;n&quot;] = int(r[&quot;n&quot;])
+        rcum += r[&quot;n&quot;]
+        r[&quot;cum&quot;] = rcum
+
+    due_daily = rows(
+        cur,
+        f&quot;&quot;&quot;
+        WITH u AS ({U})
+        SELECT o.due_date::text AS d,
+               COUNT(*) AS n_due,
+               SUM(CASE WHEN o.loan_status_code = 8 THEN 1 ELSE 0 END) AS n_od,
+               SUM(COALESCE(o.repaid_amt, 0)) AS repaid,
+               SUM(o.remit_amt) AS remit
+        FROM u
+        INNER JOIN order_loan_f_v2_copy o ON o.user_id = u.user_id
+        WHERE o.apply_date &gt;= DATE &#x27;{RECALL_DATE}&#x27;
+          AND o.is_due = 1 AND o.is_remit = 1 AND COALESCE(o.remit_amt, 0) &gt; 0
+          AND o.due_date IS NOT NULL
+        GROUP BY 1 ORDER BY 1
+        &quot;&quot;&quot;,
+    )
+    for r in due_daily:
+        r[&quot;n_due&quot;] = int(r[&quot;n_due&quot;])
+        r[&quot;n_od&quot;] = int(r[&quot;n_od&quot;])
+        remit = float(r[&quot;remit&quot;] or 0)
+        repaid = float(r[&quot;repaid&quot;] or 0)
+        r[&quot;profit_pct&quot;] = round(100.0 * (repaid - remit) / remit, 2) if remit else None
+        r[&quot;overdue_pct&quot;] = round(100.0 * r[&quot;n_od&quot;] / r[&quot;n_due&quot;], 2) if r[&quot;n_due&quot;] else None
+
+    strat = rows(
+        cur,
+        f&quot;&quot;&quot;
+        WITH u AS ({U})
+        SELECT u.strat, COUNT(*) AS n_user, COUNT(a.user_id) AS n_apply
+        FROM u
+        LEFT JOIN (
+          SELECT DISTINCT o.user_id
+          FROM u
+          INNER JOIN order_loan_f_v2_copy o
+            ON o.user_id = u.user_id AND o.apply_date &gt;= DATE &#x27;{RECALL_DATE}&#x27;
+        ) a ON a.user_id = u.user_id
+        GROUP BY 1 ORDER BY n_user DESC
+        &quot;&quot;&quot;,
+    )
+    for r in strat:
+        r[&quot;n_user&quot;] = int(r[&quot;n_user&quot;])
+        r[&quot;n_apply&quot;] = int(r[&quot;n_apply&quot;])
+        r[&quot;pct&quot;] = round(100.0 * r[&quot;n_apply&quot;] / r[&quot;n_user&quot;], 2) if r[&quot;n_user&quot;] else 0
+
+    churn_raw = rows(
+        cur,
+        f&quot;&quot;&quot;
+        WITH u AS ({U})
+        SELECT
+          CASE
+            WHEN churn_days &lt;= 15 THEN &#x27;7-15d&#x27;
+            WHEN churn_days &lt;= 30 THEN &#x27;16-30d&#x27;
+            WHEN churn_days &lt;= 60 THEN &#x27;31-60d&#x27;
+            WHEN churn_days &lt;= 90 THEN &#x27;61-90d&#x27;
+            WHEN churn_days &lt;= 180 THEN &#x27;91-180d&#x27;
+            ELSE &#x27;180d+&#x27;
+          END AS bin,
+          COUNT(*) AS n_user,
+          COUNT(a.user_id) AS n_apply
+        FROM u
+        LEFT JOIN (
+          SELECT DISTINCT o.user_id
+          FROM u
+          INNER JOIN order_loan_f_v2_copy o
+            ON o.user_id = u.user_id AND o.apply_date &gt;= DATE &#x27;{RECALL_DATE}&#x27;
+        ) a ON a.user_id = u.user_id
+        GROUP BY 1
+        &quot;&quot;&quot;,
+    )
+    order = [&quot;7-15d&quot;, &quot;16-30d&quot;, &quot;31-60d&quot;, &quot;61-90d&quot;, &quot;91-180d&quot;, &quot;180d+&quot;]
+    by = {r[&quot;bin&quot;]: r for r in churn_raw}
+    churn = []
+    for k in order:
+        if k not in by:
+            continue
+        r = by[k]
+        r[&quot;n_user&quot;] = int(r[&quot;n_user&quot;])
+        r[&quot;n_apply&quot;] = int(r[&quot;n_apply&quot;])
+        r[&quot;pct&quot;] = round(100.0 * r[&quot;n_apply&quot;] / r[&quot;n_user&quot;], 2) if r[&quot;n_user&quot;] else 0
+        churn.append(r)
+
+    conn.close()
+    return {
+        &quot;kpi&quot;: kpi_out,
+        &quot;first_daily&quot;: first_daily,
+        &quot;apply_daily&quot;: apply_daily,
+        &quot;remit_daily&quot;: remit_daily,
+        &quot;due_daily&quot;: due_daily,
+        &quot;strat&quot;: strat,
+        &quot;churn&quot;: churn,
+    }
+
+
+def build_sql(remit_day: str) -&gt; str:
+    return f&quot;&quot;&quot;-- T7 召回前端看板 · 可复现 PGSQL
+-- 库：kaby_dw · schema：wangchuanliang
+-- 名单：{LIST_TABLE}
+-- 触达日：{RECALL_DATE}
+-- 放款日：优先 o.remit_date::date（无该列时用 o.apply_date::date）
+-- 本文件当前放款日表达式：{remit_day}
+-- 本周：DATE_TRUNC(&#x27;week&#x27;, CURRENT_DATE)::date（周一）
+-- 执行前：SET search_path TO wangchuanliang, public;
+
+SET search_path TO wangchuanliang, public;
+
+-- ---------------------------------------------------------------------------
+-- 0) 放款日字段是否存在（结果有行则用 remit_date，否则用 apply_date）
+-- ---------------------------------------------------------------------------
+SELECT 1 AS has_remit_date
+FROM information_schema.columns
+WHERE table_schema = &#x27;wangchuanliang&#x27;
+  AND table_name = &#x27;order_loan_f_v2_copy&#x27;
+  AND column_name = &#x27;remit_date&#x27;;
+
+-- ---------------------------------------------------------------------------
+-- 1) 召回名单（去重用户）
+-- ---------------------------------------------------------------------------
+DROP TABLE IF EXISTS tmp_t7_u;
+CREATE TEMP TABLE tmp_t7_u AS
+SELECT DISTINCT churn_user_id::bigint AS user_id,
+       COALESCE(strat, &#x27;NA&#x27;) AS strat,
+       churn_days
+FROM {LIST_TABLE}
+WHERE churn_user_id IS NOT NULL
+  AND recall_date = DATE &#x27;{RECALL_DATE}&#x27;;
+
+-- ---------------------------------------------------------------------------
+-- 2) KPI（提单率、本周提单/新增提单、放款、到期盈利与逾期）
+-- ---------------------------------------------------------------------------
+WITH params AS (
+    SELECT DATE &#x27;{RECALL_DATE}&#x27; AS recall_dt,
+           DATE_TRUNC(&#x27;week&#x27;, CURRENT_DATE)::date AS week_start,
+           CURRENT_DATE AS as_of
+),
+apply_u AS (
+    SELECT DISTINCT o.user_id
+    FROM tmp_t7_u u
+    INNER JOIN order_loan_f_v2_copy o ON o.user_id = u.user_id
+    CROSS JOIN params p
+    WHERE o.apply_date &gt;= p.recall_dt
+),
+first_apply AS (
+    SELECT o.user_id, MIN(o.apply_date) AS first_dt
+    FROM tmp_t7_u u
+    INNER JOIN order_loan_f_v2_copy o ON o.user_id = u.user_id
+    CROSS JOIN params p
+    WHERE o.apply_date &gt;= p.recall_dt
+    GROUP BY 1
+)
+SELECT
+    (SELECT COUNT(*) FROM tmp_t7_u) AS n_user,
+    (SELECT COUNT(*) FROM apply_u) AS n_apply,
+    ROUND(100.0 * (SELECT COUNT(*) FROM apply_u)
+        / NULLIF((SELECT COUNT(*) FROM tmp_t7_u), 0), 2) AS apply_rate,
+    (SELECT COUNT(DISTINCT o.user_id)
+     FROM tmp_t7_u u
+     INNER JOIN order_loan_f_v2_copy o ON o.user_id = u.user_id
+     CROSS JOIN params p
+     WHERE o.apply_date &gt;= p.week_start AND o.apply_date &lt;= p.as_of) AS n_apply_week,
+    (SELECT COUNT(*) FROM first_apply f CROSS JOIN params p
+     WHERE f.first_dt &gt;= p.week_start AND f.first_dt &lt;= p.as_of) AS n_first_week,
+    (SELECT COUNT(*)
+     FROM tmp_t7_u u
+     INNER JOIN order_loan_f_v2_copy o ON o.user_id = u.user_id
+     CROSS JOIN params p
+     WHERE o.apply_date &gt;= p.recall_dt AND o.is_remit = 1
+       AND COALESCE(o.remit_amt, 0) &gt; 0) AS n_remit,
+    (SELECT COUNT(*)
+     FROM tmp_t7_u u
+     INNER JOIN order_loan_f_v2_copy o ON o.user_id = u.user_id
+     CROSS JOIN params p
+     WHERE o.apply_date &gt;= p.recall_dt AND o.is_remit = 1
+       AND COALESCE(o.remit_amt, 0) &gt; 0
+       AND {remit_day} &gt;= p.week_start AND {remit_day} &lt;= p.as_of) AS n_remit_week,
+    (SELECT COUNT(*)
+     FROM tmp_t7_u u
+     INNER JOIN order_loan_f_v2_copy o ON o.user_id = u.user_id
+     CROSS JOIN params p
+     WHERE o.apply_date &gt;= p.recall_dt AND o.is_due = 1 AND o.is_remit = 1
+       AND COALESCE(o.remit_amt, 0) &gt; 0) AS n_due,
+    (SELECT COUNT(*)
+     FROM tmp_t7_u u
+     INNER JOIN order_loan_f_v2_copy o ON o.user_id = u.user_id
+     CROSS JOIN params p
+     WHERE o.apply_date &gt;= p.recall_dt AND o.is_due = 1 AND o.is_remit = 1
+       AND COALESCE(o.remit_amt, 0) &gt; 0 AND o.loan_status_code = 8) AS n_due_od,
+    (SELECT SUM(COALESCE(o.repaid_amt, 0))
+     FROM tmp_t7_u u
+     INNER JOIN order_loan_f_v2_copy o ON o.user_id = u.user_id
+     CROSS JOIN params p
+     WHERE o.apply_date &gt;= p.recall_dt AND o.is_due = 1 AND o.is_remit = 1
+       AND COALESCE(o.remit_amt, 0) &gt; 0) AS due_repaid,
+    (SELECT SUM(o.remit_amt)
+     FROM tmp_t7_u u
+     INNER JOIN order_loan_f_v2_copy o ON o.user_id = u.user_id
+     CROSS JOIN params p
+     WHERE o.apply_date &gt;= p.recall_dt AND o.is_due = 1 AND o.is_remit = 1
+       AND COALESCE(o.remit_amt, 0) &gt; 0) AS due_remit,
+    (SELECT week_start FROM params) AS week_start,
+    (SELECT as_of FROM params) AS as_of;
+
+-- 盈利率 = (due_repaid - due_remit) / due_remit
+-- 逾期率 = n_due_od / n_due
+
+-- ---------------------------------------------------------------------------
+-- 3) 召回后首次提单日分布（累计人数、累计提单率）
+-- ---------------------------------------------------------------------------
+WITH fa AS (
+  SELECT o.user_id, MIN(o.apply_date) AS first_apply
+  FROM tmp_t7_u u
+  INNER JOIN order_loan_f_v2_copy o
+    ON o.user_id = u.user_id AND o.apply_date &gt;= DATE &#x27;{RECALL_DATE}&#x27;
+  GROUP BY 1
+)
+SELECT first_apply::text AS d, COUNT(*) AS n
+FROM fa
+GROUP BY 1
+ORDER BY 1;
+
+-- ---------------------------------------------------------------------------
+-- 4) 每日提单用户（当日有过提单的去重用户）与当日提单订单数
+-- ---------------------------------------------------------------------------
+SELECT o.apply_date::text AS d,
+       COUNT(*) AS n_order,
+       COUNT(DISTINCT o.user_id) AS n_user
+FROM tmp_t7_u u
+INNER JOIN order_loan_f_v2_copy o
+  ON o.user_id = u.user_id AND o.apply_date &gt;= DATE &#x27;{RECALL_DATE}&#x27;
+GROUP BY 1
+ORDER BY 1;
+
+-- ---------------------------------------------------------------------------
+-- 5) 每日放款单量
+-- ---------------------------------------------------------------------------
+SELECT {remit_day}::text AS d, COUNT(*) AS n
+FROM tmp_t7_u u
+INNER JOIN order_loan_f_v2_copy o ON o.user_id = u.user_id
+WHERE o.apply_date &gt;= DATE &#x27;{RECALL_DATE}&#x27;
+  AND o.is_remit = 1 AND COALESCE(o.remit_amt, 0) &gt; 0
+  AND {remit_day} IS NOT NULL
+GROUP BY 1
+ORDER BY 1;
+
+-- ---------------------------------------------------------------------------
+-- 6) 按到期日的盈利率、逾期率
+-- ---------------------------------------------------------------------------
+SELECT o.due_date::text AS d,
+       COUNT(*) AS n_due,
+       SUM(CASE WHEN o.loan_status_code = 8 THEN 1 ELSE 0 END) AS n_od,
+       SUM(COALESCE(o.repaid_amt, 0)) AS repaid,
+       SUM(o.remit_amt) AS remit
+FROM tmp_t7_u u
+INNER JOIN order_loan_f_v2_copy o ON o.user_id = u.user_id
+WHERE o.apply_date &gt;= DATE &#x27;{RECALL_DATE}&#x27;
+  AND o.is_due = 1 AND o.is_remit = 1 AND COALESCE(o.remit_amt, 0) &gt; 0
+  AND o.due_date IS NOT NULL
+GROUP BY 1
+ORDER BY 1;
+
+-- ---------------------------------------------------------------------------
+-- 7) 分层 strat 名单人数与提单率
+-- ---------------------------------------------------------------------------
+SELECT u.strat,
+       COUNT(*) AS n_user,
+       COUNT(a.user_id) AS n_apply
+FROM tmp_t7_u u
+LEFT JOIN (
+  SELECT DISTINCT o.user_id
+  FROM tmp_t7_u u
+  INNER JOIN order_loan_f_v2_copy o
+    ON o.user_id = u.user_id AND o.apply_date &gt;= DATE &#x27;{RECALL_DATE}&#x27;
+) a ON a.user_id = u.user_id
+GROUP BY 1
+ORDER BY n_user DESC;
+
+-- ---------------------------------------------------------------------------
+-- 8) 流失天数分箱名单人数与提单率
+-- ---------------------------------------------------------------------------
+SELECT
+  CASE
+    WHEN churn_days &lt;= 15 THEN &#x27;7-15d&#x27;
+    WHEN churn_days &lt;= 30 THEN &#x27;16-30d&#x27;
+    WHEN churn_days &lt;= 60 THEN &#x27;31-60d&#x27;
+    WHEN churn_days &lt;= 90 THEN &#x27;61-90d&#x27;
+    WHEN churn_days &lt;= 180 THEN &#x27;91-180d&#x27;
+    ELSE &#x27;180d+&#x27;
+  END AS bin,
+  COUNT(*) AS n_user,
+  COUNT(a.user_id) AS n_apply
+FROM tmp_t7_u u
+LEFT JOIN (
+  SELECT DISTINCT o.user_id
+  FROM tmp_t7_u u
+  INNER JOIN order_loan_f_v2_copy o
+    ON o.user_id = u.user_id AND o.apply_date &gt;= DATE &#x27;{RECALL_DATE}&#x27;
+) a ON a.user_id = u.user_id
+GROUP BY 1;
+&quot;&quot;&quot;
+
+
+def write_html(data):
+    k = data[&quot;kpi&quot;]
+    payload = json.dumps(data, ensure_ascii=False)
+
+    def fmt(n):
+        return f&quot;{int(n):,}&quot;
+
+    def pct(v):
+        return &quot;—&quot; if v is None else f&quot;{v:.2f}%&quot;
+
+    html_head = f&quot;&quot;&quot;&lt;!doctype html&gt;
+&lt;html lang=&quot;zh-CN&quot;&gt;
+&lt;head&gt;
+&lt;meta charset=&quot;utf-8&quot;&gt;
+&lt;meta name=&quot;viewport&quot; content=&quot;width=device-width,initial-scale=1&quot;&gt;
+&lt;title&gt;T7 召回前端看板 · 2026-08-18&lt;/title&gt;
+&lt;script src=&quot;https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js&quot;&gt;&lt;/script&gt;
+&lt;style&gt;
+:root{{--bg:#071b2f;--card:#0c2944;--line:#2a5c7e;--text:#eff8ff;--muted:#aac5da;--cy:#43c7e7;--gr:#64dcae;--am:#ffc26b;--pk:#f68ab0}}
+*{{box-sizing:border-box}}body{{margin:0;background:#06192b;color:var(--text);font-family:-apple-system,BlinkMacSystemFont,&quot;PingFang SC&quot;,&quot;Microsoft YaHei&quot;,sans-serif}}
+.wrap{{max-width:1480px;margin:auto;padding:24px 28px 64px}}
+.top{{text-align:center;border-bottom:1px solid var(--line);padding-bottom:16px}}
+.kicker{{color:var(--cy);font-size:12px;letter-spacing:2px;font-weight:700}}
+h1{{font-size:24px;margin:8px 0 6px}}
+.meta{{color:var(--muted);font-size:13px;line-height:1.7}}
+.kpis{{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin:18px 0}}
+.card{{background:rgba(10,41,68,.95);border:1px solid var(--line);border-radius:14px;padding:16px}}
+.label{{color:var(--muted);font-size:12px}}
+.num{{font-size:26px;font-weight:800;margin:6px 0 2px;color:var(--cy);line-height:1.15}}
+.num.g{{color:var(--gr)}}.num.a{{color:var(--am)}}.num.p{{color:var(--pk)}}
+.sub{{color:var(--muted);font-size:12px}}
+.grid{{display:grid;grid-template-columns:1fr 1fr;gap:14px}}
+.chart h3{{margin:0 0 4px;font-size:15px}}
+.chart p{{margin:0 0 10px;font-size:12px;color:var(--muted)}}
+.box{{height:300px;position:relative}}
+.foot{{color:#7fa6c2;font-size:12px;margin-top:28px;border-top:1px solid var(--line);padding-top:14px;line-height:1.8}}
+.appendix{{margin-top:36px;border-top:1px solid var(--line);padding-top:8px}}
+.appendix h2{{font-size:18px;margin:22px 0 10px}}
+.appendix p,.appendix li{{color:var(--muted);font-size:13px;line-height:1.8}}
+.appendix ul{{padding-left:1.2em}}
+details.code{{margin:10px 0;background:rgba(10,41,68,.95);border:1px solid var(--line);border-radius:12px;padding:10px 14px}}
+details.code summary{{cursor:pointer;color:var(--cy);font-weight:700;font-size:13px}}
+details.code pre{{overflow:auto;max-height:520px;font-size:11px;line-height:1.45;color:#d7ecf8;white-space:pre-wrap;word-break:break-word}}
+@media(max-width:900px){{.kpis,.grid{{grid-template-columns:1fr}}}}
+&lt;/style&gt;
+&lt;/head&gt;
+&lt;body&gt;
+&lt;main class=&quot;wrap&quot;&gt;
+&lt;div class=&quot;top&quot;&gt;
+  &lt;div class=&quot;kicker&quot;&gt;FRONTEND DASHBOARD · T7+ RECALL · 2026-08-18&lt;/div&gt;
+  &lt;h1&gt;流失 7 天以上召回 · 前端看板&lt;/h1&gt;
+  &lt;p class=&quot;meta&quot;&gt;名单 {fmt(k[&#x27;n_user&#x27;])} 人 · 统计至 {k[&#x27;as_of&#x27;]} · 本周 {k[&#x27;week_start&#x27;]} 起（周一）&lt;/p&gt;
+&lt;/div&gt;
+&lt;section class=&quot;kpis&quot;&gt;
+  &lt;article class=&quot;card&quot;&gt;&lt;div class=&quot;label&quot;&gt;提单率&lt;/div&gt;&lt;div class=&quot;num a&quot;&gt;{pct(k[&#x27;apply_rate&#x27;])}&lt;/div&gt;&lt;div class=&quot;sub&quot;&gt;{fmt(k[&#x27;n_apply&#x27;])} / {fmt(k[&#x27;n_user&#x27;])} · 8/18至今去重用户&lt;/div&gt;&lt;/article&gt;
+  &lt;article class=&quot;card&quot;&gt;&lt;div class=&quot;label&quot;&gt;总提单人数&lt;/div&gt;&lt;div class=&quot;num g&quot;&gt;{fmt(k[&#x27;n_apply&#x27;])}&lt;/div&gt;&lt;div class=&quot;sub&quot;&gt;8/18至今任意提单用户&lt;/div&gt;&lt;/article&gt;
+  &lt;article class=&quot;card&quot;&gt;&lt;div class=&quot;label&quot;&gt;本周提单人数&lt;/div&gt;&lt;div class=&quot;num&quot;&gt;{fmt(k[&#x27;n_apply_week&#x27;])}&lt;/div&gt;&lt;div class=&quot;sub&quot;&gt;本周有过提单的去重用户&lt;/div&gt;&lt;/article&gt;
+  &lt;article class=&quot;card&quot;&gt;&lt;div class=&quot;label&quot;&gt;本周新增提单人数&lt;/div&gt;&lt;div class=&quot;num p&quot;&gt;{fmt(k[&#x27;n_first_week&#x27;])}&lt;/div&gt;&lt;div class=&quot;sub&quot;&gt;召回后首次提单落在本周&lt;/div&gt;&lt;/article&gt;
+  &lt;article class=&quot;card&quot;&gt;&lt;div class=&quot;label&quot;&gt;放款单量&lt;/div&gt;&lt;div class=&quot;num g&quot;&gt;{fmt(k[&#x27;n_remit&#x27;])}&lt;/div&gt;&lt;div class=&quot;sub&quot;&gt;8/18至今已放款订单数&lt;/div&gt;&lt;/article&gt;
+  &lt;article class=&quot;card&quot;&gt;&lt;div class=&quot;label&quot;&gt;本周新增放款单量&lt;/div&gt;&lt;div class=&quot;num&quot;&gt;{fmt(k[&#x27;n_remit_week&#x27;])}&lt;/div&gt;&lt;div class=&quot;sub&quot;&gt;本周新放款订单数&lt;/div&gt;&lt;/article&gt;
+  &lt;article class=&quot;card&quot;&gt;&lt;div class=&quot;label&quot;&gt;订单盈利率&lt;/div&gt;&lt;div class=&quot;num a&quot;&gt;{pct(k[&#x27;profit_pct&#x27;])}&lt;/div&gt;&lt;div class=&quot;sub&quot;&gt;到期订单&lt;/div&gt;&lt;/article&gt;
+  &lt;article class=&quot;card&quot;&gt;&lt;div class=&quot;label&quot;&gt;订单逾期率&lt;/div&gt;&lt;div class=&quot;num p&quot;&gt;{pct(k[&#x27;overdue_pct&#x27;])}&lt;/div&gt;&lt;div class=&quot;sub&quot;&gt;到期订单&lt;/div&gt;&lt;/article&gt;
+&lt;/section&gt;
+&lt;div class=&quot;grid&quot;&gt;
+  &lt;div class=&quot;card chart&quot;&gt;&lt;h3&gt;累计提单人数与提单率&lt;/h3&gt;&lt;p&gt;按召回后首次提单日累计，分母={fmt(k[&#x27;n_user&#x27;])}&lt;/p&gt;&lt;div class=&quot;box&quot;&gt;&lt;canvas id=&quot;c1&quot;&gt;&lt;/canvas&gt;&lt;/div&gt;&lt;/div&gt;
+  &lt;div class=&quot;card chart&quot;&gt;&lt;h3&gt;每日新增首次提单&lt;/h3&gt;&lt;p&gt;每人只记召回后第一笔提单所在日&lt;/p&gt;&lt;div class=&quot;box&quot;&gt;&lt;canvas id=&quot;c2&quot;&gt;&lt;/canvas&gt;&lt;/div&gt;&lt;/div&gt;
+&lt;/div&gt;
+&lt;div class=&quot;grid&quot; style=&quot;margin-top:14px&quot;&gt;
+  &lt;div class=&quot;card chart&quot;&gt;&lt;h3&gt;每日提单用户&lt;/h3&gt;&lt;p&gt;当日有过提单的去重用户&lt;/p&gt;&lt;div class=&quot;box&quot;&gt;&lt;canvas id=&quot;c3&quot;&gt;&lt;/canvas&gt;&lt;/div&gt;&lt;/div&gt;
+  &lt;div class=&quot;card chart&quot;&gt;&lt;h3&gt;每日放款单量与累计&lt;/h3&gt;&lt;p&gt;已放款订单；本周新增见 KPI&lt;/p&gt;&lt;div class=&quot;box&quot;&gt;&lt;canvas id=&quot;c4&quot;&gt;&lt;/canvas&gt;&lt;/div&gt;&lt;/div&gt;
+&lt;/div&gt;
+&lt;div class=&quot;grid&quot; style=&quot;margin-top:14px&quot;&gt;
+  &lt;div class=&quot;card chart&quot;&gt;&lt;h3&gt;按到期日的盈利率&lt;/h3&gt;&lt;p&gt;当日到期放款单 (repaid−remit)/remit&lt;/p&gt;&lt;div class=&quot;box&quot;&gt;&lt;canvas id=&quot;c5&quot;&gt;&lt;/canvas&gt;&lt;/div&gt;&lt;/div&gt;
+  &lt;div class=&quot;card chart&quot;&gt;&lt;h3&gt;按到期日的逾期率&lt;/h3&gt;&lt;p&gt;当日到期单中 loan_status_code=8 占比&lt;/p&gt;&lt;div class=&quot;box&quot;&gt;&lt;canvas id=&quot;c6&quot;&gt;&lt;/canvas&gt;&lt;/div&gt;&lt;/div&gt;
+&lt;/div&gt;
+&lt;div class=&quot;grid&quot; style=&quot;margin-top:14px&quot;&gt;
+  &lt;div class=&quot;card chart&quot;&gt;&lt;h3&gt;转化结构&lt;/h3&gt;&lt;p&gt;已提单 vs 尚未提单&lt;/p&gt;&lt;div class=&quot;box&quot;&gt;&lt;canvas id=&quot;c7&quot;&gt;&lt;/canvas&gt;&lt;/div&gt;&lt;/div&gt;
+  &lt;div class=&quot;card chart&quot;&gt;&lt;h3&gt;本周 vs 累计&lt;/h3&gt;&lt;p&gt;本周新增提单用户 / 本周提单用户 / 本周放款单量&lt;/p&gt;&lt;div class=&quot;box&quot;&gt;&lt;canvas id=&quot;c8&quot;&gt;&lt;/canvas&gt;&lt;/div&gt;&lt;/div&gt;
+&lt;/div&gt;
+&lt;div class=&quot;grid&quot; style=&quot;margin-top:14px&quot;&gt;
+  &lt;div class=&quot;card chart&quot;&gt;&lt;h3&gt;分层 strat 提单率&lt;/h3&gt;&lt;p&gt;人数柱 + 提单率折线&lt;/p&gt;&lt;div class=&quot;box&quot;&gt;&lt;canvas id=&quot;c9&quot;&gt;&lt;/canvas&gt;&lt;/div&gt;&lt;/div&gt;
+  &lt;div class=&quot;card chart&quot;&gt;&lt;h3&gt;流失天数提单率&lt;/h3&gt;&lt;p&gt;7–15 / 16–30 / 31–60 / 61–90 / 91–180 / 180d+&lt;/p&gt;&lt;div class=&quot;box&quot;&gt;&lt;canvas id=&quot;c10&quot;&gt;&lt;/canvas&gt;&lt;/div&gt;&lt;/div&gt;
+&lt;/div&gt;
+&quot;&quot;&quot;
+    html_js = r&quot;&quot;&quot;
+const col = {cy:&#x27;#43c7e7&#x27;, gr:&#x27;#64dcae&#x27;, am:&#x27;#ffc26b&#x27;, pk:&#x27;#f68ab0&#x27;};
+Chart.defaults.font.family=&#x27;-apple-system,BlinkMacSystemFont,&quot;PingFang SC&quot;,&quot;Microsoft YaHei&quot;,sans-serif&#x27;;
+Chart.defaults.color=&#x27;#aac5da&#x27;;
+function base(y2) {
+  const scales = {
+    x: {ticks:{color:&#x27;#aac5da&#x27;, maxRotation:45}, grid:{display:false}},
+    y: {type:&#x27;linear&#x27;, position:&#x27;left&#x27;, ticks:{color:&#x27;#aac5da&#x27;}, grid:{color:&#x27;rgba(42,92,126,.25)&#x27;}}
+  };
+  if (y2) scales.y2 = {type:&#x27;linear&#x27;, position:&#x27;right&#x27;, ticks:{color:&#x27;#ffc26b&#x27;}, grid:{drawOnChartArea:false}};
+  return {responsive:true, maintainAspectRatio:false, interaction:{mode:&#x27;index&#x27;, intersect:false},
+    plugins:{legend:{labels:{color:&#x27;#eff8ff&#x27;}}}, scales};
+}
+function line(id, labels, datasets, y2) {
+  new Chart(document.getElementById(id), {type:&#x27;line&#x27;, data:{labels, datasets}, options:base(y2)});
+}
+function drawRateLabels(chart) {
+  const {ctx} = chart;
+  chart.data.datasets.forEach((ds,i)=&gt;{
+    if(!String(ds.label).includes(&#x27;提单率&#x27;)) return;
+    const pts = chart.getDatasetMeta(i).data;
+    ctx.save();
+    ctx.font=&#x27;11px sans-serif&#x27;;
+    ctx.fillStyle=&#x27;#f68ab0&#x27;;
+    ctx.textBaseline=&#x27;bottom&#x27;;
+    pts.forEach((pt,j)=&gt;{
+      const v=ds.data[j];
+      if(v==null) return;
+      let dx=0, dy=-16, align=&#x27;center&#x27;;
+      if(j===0){ align=&#x27;left&#x27;; dx=10; }
+      else if(j===pts.length-1){ align=&#x27;right&#x27;; dx=-10; }
+      const prev=pts[j-1], next=pts[j+1];
+      if(prev &amp;&amp; next &amp;&amp; pt.y&gt;=prev.y &amp;&amp; pt.y&gt;=next.y) dy=-20;
+      ctx.textAlign=align;
+      ctx.fillText(Number(v).toFixed(2)+&#x27;%&#x27;, pt.x+dx, pt.y+dy);
+    });
+    ctx.restore();
+  });
+}
+const fd = D.first_daily, ad = D.apply_daily, rd = D.remit_daily, dd = D.due_daily, k=D.kpi;
+line(&#x27;c1&#x27;, fd.map(x=&gt;x.d.slice(5)), [
+  {label:&#x27;累计提单人数&#x27;, data:fd.map(x=&gt;x.cum), borderColor:col.cy, backgroundColor:&#x27;rgba(67,199,231,.12)&#x27;, fill:true, tension:.25, yAxisID:&#x27;y&#x27;, pointRadius:2},
+  {label:&#x27;提单率%&#x27;, data:fd.map(x=&gt;x.rate), borderColor:col.am, tension:.25, yAxisID:&#x27;y2&#x27;, pointRadius:2}
+], true);
+new Chart(document.getElementById(&#x27;c2&#x27;), {type:&#x27;bar&#x27;, data:{labels:fd.map(x=&gt;x.d.slice(5)), datasets:[
+  {label:&#x27;当日首次提单&#x27;, data:fd.map(x=&gt;x.n), backgroundColor:col.gr}
+]}, options:base(false)});
+new Chart(document.getElementById(&#x27;c3&#x27;), {type:&#x27;bar&#x27;, data:{labels:ad.map(x=&gt;x.d.slice(5)), datasets:[
+  {label:&#x27;当日提单用户&#x27;, data:ad.map(x=&gt;x.n_user), backgroundColor:&#x27;rgba(67,199,231,.7)&#x27;}
+]}, options:base(false)});
+line(&#x27;c4&#x27;, rd.map(x=&gt;x.d.slice(5)), [
+  {label:&#x27;当日放款单&#x27;, data:rd.map(x=&gt;x.n), borderColor:col.gr, tension:.25, yAxisID:&#x27;y&#x27;, pointRadius:2},
+  {label:&#x27;累计放款单&#x27;, data:rd.map(x=&gt;x.cum), borderColor:col.am, tension:.25, yAxisID:&#x27;y2&#x27;, pointRadius:2}
+], true);
+line(&#x27;c5&#x27;, dd.map(x=&gt;x.d.slice(5)), [
+  {label:&#x27;到期盈利率%&#x27;, data:dd.map(x=&gt;x.profit_pct), borderColor:col.gr, tension:.25, pointRadius:2, spanGaps:true}
+], false);
+line(&#x27;c6&#x27;, dd.map(x=&gt;x.d.slice(5)), [
+  {label:&#x27;到期逾期率%&#x27;, data:dd.map(x=&gt;x.overdue_pct), borderColor:col.pk, tension:.25, pointRadius:2, spanGaps:true},
+  {label:&#x27;到期单量&#x27;, data:dd.map(x=&gt;x.n_due), borderColor:col.cy, tension:.25, yAxisID:&#x27;y2&#x27;, pointRadius:2}
+], true);
+new Chart(document.getElementById(&#x27;c7&#x27;), {type:&#x27;doughnut&#x27;, data:{labels:[&#x27;已提单&#x27;,&#x27;尚未提单&#x27;], datasets:[{data:[k.n_apply, k.n_user-k.n_apply], backgroundColor:[col.gr, &#x27;rgba(42,92,126,.55)&#x27;], borderWidth:0}]},
+  options:{responsive:true, maintainAspectRatio:false, plugins:{legend:{labels:{color:&#x27;#eff8ff&#x27;}}}},
+  plugins:[{id:&#x27;pieLabel&#x27;, afterDatasetsDraw(chart){
+    const {ctx} = chart; const ds = chart.data.datasets[0];
+    const total = ds.data.reduce((a,b)=&gt;a+b,0);
+    const meta = chart.getDatasetMeta(0);
+    meta.data.forEach((arc,i)=&gt;{
+      const v = ds.data[i]; const pos = arc.tooltipPosition();
+      ctx.save(); ctx.fillStyle=&#x27;#eff8ff&#x27;; ctx.textAlign=&#x27;center&#x27;; ctx.textBaseline=&#x27;middle&#x27;;
+      ctx.font=&#x27;13px sans-serif&#x27;; ctx.fillText((100*v/total).toFixed(2)+&#x27;%&#x27;, pos.x, pos.y);
+      ctx.restore();
+    });
+  }}]});
+new Chart(document.getElementById(&#x27;c8&#x27;), {type:&#x27;bar&#x27;, data:{labels:[&#x27;本周新增提单用户&#x27;,&#x27;本周提单用户&#x27;,&#x27;本周放款单量&#x27;,&#x27;累计提单人数&#x27;,&#x27;累计放款单量&#x27;],
+  datasets:[{label:&#x27;人数/单量&#x27;, data:[k.n_first_week, k.n_apply_week, k.n_remit_week, k.n_apply, k.n_remit],
+    backgroundColor:[col.pk, col.cy, col.am, col.gr, &#x27;rgba(67,199,231,.45)&#x27;]}]},
+  options:Object.assign(base(false), {layout:{padding:{top:22}}}),
+  plugins:[{id:&#x27;barLabel&#x27;, afterDatasetsDraw(chart){
+    const {ctx}=chart; const meta=chart.getDatasetMeta(0);
+    ctx.save(); ctx.fillStyle=&#x27;#eff8ff&#x27;; ctx.font=&#x27;11px sans-serif&#x27;; ctx.textAlign=&#x27;center&#x27;; ctx.textBaseline=&#x27;bottom&#x27;;
+    meta.data.forEach((pt,j)=&gt;{ const v=chart.data.datasets[0].data[j]; if(v==null) return; ctx.fillText(Number(v).toLocaleString(), pt.x, pt.y-4); });
+    ctx.restore();
+  }}]});
+new Chart(document.getElementById(&#x27;c9&#x27;), {type:&#x27;bar&#x27;, data:{labels:D.strat.map(x=&gt;x.strat), datasets:[
+  {label:&#x27;名单人数&#x27;, data:D.strat.map(x=&gt;x.n_user), backgroundColor:&#x27;rgba(67,199,231,.35)&#x27;, yAxisID:&#x27;y&#x27;},
+  {label:&#x27;提单率%&#x27;, data:D.strat.map(x=&gt;x.pct), type:&#x27;line&#x27;, borderColor:col.pk, yAxisID:&#x27;y2&#x27;, tension:.2, pointRadius:3}
+]}, options:Object.assign(base(true), {layout:{padding:{top:28,right:8}}}),
+  plugins:[{id:&#x27;rateLabel9&#x27;, afterDatasetsDraw(chart){ drawRateLabels(chart); }}]});
+new Chart(document.getElementById(&#x27;c10&#x27;), {type:&#x27;bar&#x27;, data:{labels:D.churn.map(x=&gt;x.bin), datasets:[
+  {label:&#x27;名单人数&#x27;, data:D.churn.map(x=&gt;x.n_user), backgroundColor:&#x27;rgba(67,199,231,.35)&#x27;, yAxisID:&#x27;y&#x27;},
+  {label:&#x27;提单率%&#x27;, data:D.churn.map(x=&gt;x.pct), type:&#x27;line&#x27;, borderColor:col.pk, yAxisID:&#x27;y2&#x27;, tension:.2, pointRadius:3}
+]}, options:Object.assign(base(true), {layout:{padding:{top:28,right:8}}}),
+  plugins:[{id:&#x27;rateLabel10&#x27;, afterDatasetsDraw(chart){ drawRateLabels(chart); }}]});
+&lt;/script&gt;
+&lt;/body&gt;&lt;/html&gt;
+&quot;&quot;&quot;
+    sql_txt = build_sql(k[&quot;remit_day&quot;])
+    py_txt = Path(__file__).read_text(encoding=&quot;utf-8&quot;)
+    front_src = (
+        html_head
+        + &quot;\n&lt;!-- 口径与附录见页面底部 --&gt;\n&lt;/main&gt;\n&quot;
+        + &quot;&lt;script&gt;\nconst D = /* 由后端写入，对象结构同 t7_0818_dashboard_data.json */;\n&quot;
+        + html_js
+    )
+    appendix = (
+        &#x27;&lt;section class=&quot;appendix&quot; id=&quot;method&quot;&gt;\n&#x27;
+        &quot;&lt;h2&gt;口径说明&lt;/h2&gt;\n&quot;
+        &quot;&lt;ul&gt;\n&quot;
+        f&quot;&lt;li&gt;名单：&lt;code&gt;{LIST_TABLE}&lt;/code&gt;，&lt;code&gt;recall_date = {RECALL_DATE}&lt;/code&gt;，按 &lt;code&gt;churn_user_id&lt;/code&gt; 去重。&lt;/li&gt;\n&quot;
+        &quot;&lt;li&gt;提单：&lt;code&gt;apply_date ≥ 2026-08-18&lt;/code&gt;。总提单人数=召回后任意提单用户去重；本周提单=本周任意提单用户去重；本周新增提单=召回后首次提单日期落在本周（周一 &lt;code&gt;DATE_TRUNC(&#x27;week&#x27;, CURRENT_DATE)&lt;/code&gt; 至库内 &lt;code&gt;CURRENT_DATE&lt;/code&gt;）。&lt;/li&gt;\n&quot;
+        &quot;&lt;li&gt;放款：&lt;code&gt;is_remit = 1&lt;/code&gt; 且 &lt;code&gt;remit_amt &amp;gt; 0&lt;/code&gt;；本周新增放款按放款日（本页为 &lt;code&gt;&quot;
+        + html_lib.escape(str(k[&quot;remit_day&quot;]))
+        + &quot;&lt;/code&gt;）落在本周的订单数。&lt;/li&gt;\n&quot;
+        &quot;&lt;li&gt;到期盈利 / 逾期：召回后提单且 &lt;code&gt;is_due = 1&lt;/code&gt;、&lt;code&gt;is_remit = 1&lt;/code&gt;、&lt;code&gt;remit_amt &amp;gt; 0&lt;/code&gt;。盈利率 = &lt;code&gt;(repaid_amt − remit_amt) / remit_amt&lt;/code&gt;；逾期率 = &lt;code&gt;loan_status_code = 8&lt;/code&gt; 占到期放款单。&lt;/li&gt;\n&quot;
+        &quot;&lt;li&gt;转化结构：已提单 vs 名单中尚未提单。分层 / 流失天数：名单人数与对应提单率。&lt;/li&gt;\n&quot;
+        &quot;&lt;/ul&gt;\n&quot;
+        &quot;&lt;h2&gt;附录：可复现本看板的全部代码&lt;/h2&gt;\n&quot;
+        &quot;&lt;p&gt;库 &lt;code&gt;kaby_dw&lt;/code&gt;，账号只读。设置 &lt;code&gt;PGPASSWORD&lt;/code&gt; 后执行 &quot;
+        &quot;&lt;code&gt;python3 appendix_t7_0818_dashboard.py&lt;/code&gt; 会重写 &lt;code&gt;t7-0818.html&lt;/code&gt; 与 &quot;
+        &quot;&lt;code&gt;t7_0818_dashboard_data.json&lt;/code&gt;。密码不写入附录。Chart.js 使用 CDN &quot;
+        &quot;&lt;code&gt;https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js&lt;/code&gt;。&lt;/p&gt;\n&quot;
+        &#x27;&lt;details class=&quot;code&quot; open&gt;&lt;summary&gt;1. PGSQL（名单 + KPI + 全部图数据）&lt;/summary&gt;&lt;pre&gt;&#x27;
+        + html_lib.escape(sql_txt)
+        + &quot;&lt;/pre&gt;&lt;/details&gt;\n&quot;
+        &#x27;&lt;details class=&quot;code&quot;&gt;&lt;summary&gt;2. 后端 Python（查库、汇总、写出 HTML）&lt;/summary&gt;&lt;pre&gt;&#x27;
+        + html_lib.escape(py_txt)
+        + &quot;&lt;/pre&gt;&lt;/details&gt;\n&quot;
+        &#x27;&lt;details class=&quot;code&quot;&gt;&lt;summary&gt;3. 前端 HTML / CSS / Chart.js（数据对象 D 由后端注入）&lt;/summary&gt;&lt;pre&gt;&#x27;
+        + html_lib.escape(front_src)
+        + &quot;&lt;/pre&gt;&lt;/details&gt;\n&quot;
+        &quot;&lt;/section&gt;\n&quot;
+        f&#x27;&lt;p class=&quot;foot&quot;&gt;数据：kaby_dw · {LIST_TABLE} · recall_date={RECALL_DATE} · 库内 CURRENT_DATE={k[&quot;as_of&quot;]}&lt;/p&gt;\n&#x27;
+        &quot;&lt;/main&gt;\n&quot;
+        &quot;&lt;script&gt;\nconst D = &quot;
+        + payload
+        + &quot;;\n&quot;
+    )
+    HTML_PATH.write_text(html_head + appendix + html_js, encoding=&quot;utf-8&quot;)
+    SQL_PATH = HERE / &quot;appendix_t7_0818_dashboard.sql&quot;
+    SQL_PATH.write_text(sql_txt, encoding=&quot;utf-8&quot;)
+
+
+if __name__ == &quot;__main__&quot;:
+    data = fetch()
+    JSON_PATH.write_text(json.dumps(data, ensure_ascii=False, indent=2), encoding=&quot;utf-8&quot;)
+    write_html(data)
+    print(&quot;kpi&quot;, data[&quot;kpi&quot;])
+    print(&quot;HTML&quot;, HTML_PATH)
+</pre></details>
+<details class="code"><summary>3. 前端 HTML / CSS / Chart.js（数据对象 D 由后端注入）</summary><pre>&lt;!doctype html&gt;
+&lt;html lang=&quot;zh-CN&quot;&gt;
+&lt;head&gt;
+&lt;meta charset=&quot;utf-8&quot;&gt;
+&lt;meta name=&quot;viewport&quot; content=&quot;width=device-width,initial-scale=1&quot;&gt;
+&lt;title&gt;T7 召回前端看板 · 2026-08-18&lt;/title&gt;
+&lt;script src=&quot;https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js&quot;&gt;&lt;/script&gt;
+&lt;style&gt;
+:root{--bg:#071b2f;--card:#0c2944;--line:#2a5c7e;--text:#eff8ff;--muted:#aac5da;--cy:#43c7e7;--gr:#64dcae;--am:#ffc26b;--pk:#f68ab0}
+*{box-sizing:border-box}body{margin:0;background:#06192b;color:var(--text);font-family:-apple-system,BlinkMacSystemFont,&quot;PingFang SC&quot;,&quot;Microsoft YaHei&quot;,sans-serif}
+.wrap{max-width:1480px;margin:auto;padding:24px 28px 64px}
+.top{text-align:center;border-bottom:1px solid var(--line);padding-bottom:16px}
+.kicker{color:var(--cy);font-size:12px;letter-spacing:2px;font-weight:700}
+h1{font-size:24px;margin:8px 0 6px}
+.meta{color:var(--muted);font-size:13px;line-height:1.7}
+.kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin:18px 0}
+.card{background:rgba(10,41,68,.95);border:1px solid var(--line);border-radius:14px;padding:16px}
+.label{color:var(--muted);font-size:12px}
+.num{font-size:26px;font-weight:800;margin:6px 0 2px;color:var(--cy);line-height:1.15}
+.num.g{color:var(--gr)}.num.a{color:var(--am)}.num.p{color:var(--pk)}
+.sub{color:var(--muted);font-size:12px}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.chart h3{margin:0 0 4px;font-size:15px}
+.chart p{margin:0 0 10px;font-size:12px;color:var(--muted)}
+.box{height:300px;position:relative}
+.foot{color:#7fa6c2;font-size:12px;margin-top:28px;border-top:1px solid var(--line);padding-top:14px;line-height:1.8}
+.appendix{margin-top:36px;border-top:1px solid var(--line);padding-top:8px}
+.appendix h2{font-size:18px;margin:22px 0 10px}
+.appendix p,.appendix li{color:var(--muted);font-size:13px;line-height:1.8}
+.appendix ul{padding-left:1.2em}
+details.code{margin:10px 0;background:rgba(10,41,68,.95);border:1px solid var(--line);border-radius:12px;padding:10px 14px}
+details.code summary{cursor:pointer;color:var(--cy);font-weight:700;font-size:13px}
+details.code pre{overflow:auto;max-height:520px;font-size:11px;line-height:1.45;color:#d7ecf8;white-space:pre-wrap;word-break:break-word}
+@media(max-width:900px){.kpis,.grid{grid-template-columns:1fr}}
+&lt;/style&gt;
+&lt;/head&gt;
+&lt;body&gt;
+&lt;main class=&quot;wrap&quot;&gt;
+&lt;div class=&quot;top&quot;&gt;
+  &lt;div class=&quot;kicker&quot;&gt;FRONTEND DASHBOARD · T7+ RECALL · 2026-08-18&lt;/div&gt;
+  &lt;h1&gt;流失 7 天以上召回 · 前端看板&lt;/h1&gt;
+  &lt;p class=&quot;meta&quot;&gt;名单 11,585 人 · 统计至 2026-09-20 · 本周 2026-09-14 起（周一）&lt;/p&gt;
+&lt;/div&gt;
+&lt;section class=&quot;kpis&quot;&gt;
+  &lt;article class=&quot;card&quot;&gt;&lt;div class=&quot;label&quot;&gt;提单率&lt;/div&gt;&lt;div class=&quot;num a&quot;&gt;21.24%&lt;/div&gt;&lt;div class=&quot;sub&quot;&gt;2,461 / 11,585 · 8/18至今去重用户&lt;/div&gt;&lt;/article&gt;
+  &lt;article class=&quot;card&quot;&gt;&lt;div class=&quot;label&quot;&gt;总提单人数&lt;/div&gt;&lt;div class=&quot;num g&quot;&gt;2,461&lt;/div&gt;&lt;div class=&quot;sub&quot;&gt;8/18至今任意提单用户&lt;/div&gt;&lt;/article&gt;
+  &lt;article class=&quot;card&quot;&gt;&lt;div class=&quot;label&quot;&gt;本周提单人数&lt;/div&gt;&lt;div class=&quot;num&quot;&gt;644&lt;/div&gt;&lt;div class=&quot;sub&quot;&gt;本周有过提单的去重用户&lt;/div&gt;&lt;/article&gt;
+  &lt;article class=&quot;card&quot;&gt;&lt;div class=&quot;label&quot;&gt;本周新增提单人数&lt;/div&gt;&lt;div class=&quot;num p&quot;&gt;262&lt;/div&gt;&lt;div class=&quot;sub&quot;&gt;召回后首次提单落在本周&lt;/div&gt;&lt;/article&gt;
+  &lt;article class=&quot;card&quot;&gt;&lt;div class=&quot;label&quot;&gt;放款单量&lt;/div&gt;&lt;div class=&quot;num g&quot;&gt;3,644&lt;/div&gt;&lt;div class=&quot;sub&quot;&gt;8/18至今已放款订单数&lt;/div&gt;&lt;/article&gt;
+  &lt;article class=&quot;card&quot;&gt;&lt;div class=&quot;label&quot;&gt;本周新增放款单量&lt;/div&gt;&lt;div class=&quot;num&quot;&gt;634&lt;/div&gt;&lt;div class=&quot;sub&quot;&gt;本周新放款订单数&lt;/div&gt;&lt;/article&gt;
+  &lt;article class=&quot;card&quot;&gt;&lt;div class=&quot;label&quot;&gt;订单盈利率&lt;/div&gt;&lt;div class=&quot;num a&quot;&gt;7.71%&lt;/div&gt;&lt;div class=&quot;sub&quot;&gt;到期订单&lt;/div&gt;&lt;/article&gt;
+  &lt;article class=&quot;card&quot;&gt;&lt;div class=&quot;label&quot;&gt;订单逾期率&lt;/div&gt;&lt;div class=&quot;num p&quot;&gt;33.76%&lt;/div&gt;&lt;div class=&quot;sub&quot;&gt;到期订单&lt;/div&gt;&lt;/article&gt;
+&lt;/section&gt;
+&lt;div class=&quot;grid&quot;&gt;
+  &lt;div class=&quot;card chart&quot;&gt;&lt;h3&gt;累计提单人数与提单率&lt;/h3&gt;&lt;p&gt;按召回后首次提单日累计，分母=11,585&lt;/p&gt;&lt;div class=&quot;box&quot;&gt;&lt;canvas id=&quot;c1&quot;&gt;&lt;/canvas&gt;&lt;/div&gt;&lt;/div&gt;
+  &lt;div class=&quot;card chart&quot;&gt;&lt;h3&gt;每日新增首次提单&lt;/h3&gt;&lt;p&gt;每人只记召回后第一笔提单所在日&lt;/p&gt;&lt;div class=&quot;box&quot;&gt;&lt;canvas id=&quot;c2&quot;&gt;&lt;/canvas&gt;&lt;/div&gt;&lt;/div&gt;
+&lt;/div&gt;
+&lt;div class=&quot;grid&quot; style=&quot;margin-top:14px&quot;&gt;
+  &lt;div class=&quot;card chart&quot;&gt;&lt;h3&gt;每日提单用户&lt;/h3&gt;&lt;p&gt;当日有过提单的去重用户&lt;/p&gt;&lt;div class=&quot;box&quot;&gt;&lt;canvas id=&quot;c3&quot;&gt;&lt;/canvas&gt;&lt;/div&gt;&lt;/div&gt;
+  &lt;div class=&quot;card chart&quot;&gt;&lt;h3&gt;每日放款单量与累计&lt;/h3&gt;&lt;p&gt;已放款订单；本周新增见 KPI&lt;/p&gt;&lt;div class=&quot;box&quot;&gt;&lt;canvas id=&quot;c4&quot;&gt;&lt;/canvas&gt;&lt;/div&gt;&lt;/div&gt;
+&lt;/div&gt;
+&lt;div class=&quot;grid&quot; style=&quot;margin-top:14px&quot;&gt;
+  &lt;div class=&quot;card chart&quot;&gt;&lt;h3&gt;按到期日的盈利率&lt;/h3&gt;&lt;p&gt;当日到期放款单 (repaid−remit)/remit&lt;/p&gt;&lt;div class=&quot;box&quot;&gt;&lt;canvas id=&quot;c5&quot;&gt;&lt;/canvas&gt;&lt;/div&gt;&lt;/div&gt;
+  &lt;div class=&quot;card chart&quot;&gt;&lt;h3&gt;按到期日的逾期率&lt;/h3&gt;&lt;p&gt;当日到期单中 loan_status_code=8 占比&lt;/p&gt;&lt;div class=&quot;box&quot;&gt;&lt;canvas id=&quot;c6&quot;&gt;&lt;/canvas&gt;&lt;/div&gt;&lt;/div&gt;
+&lt;/div&gt;
+&lt;div class=&quot;grid&quot; style=&quot;margin-top:14px&quot;&gt;
+  &lt;div class=&quot;card chart&quot;&gt;&lt;h3&gt;转化结构&lt;/h3&gt;&lt;p&gt;已提单 vs 尚未提单&lt;/p&gt;&lt;div class=&quot;box&quot;&gt;&lt;canvas id=&quot;c7&quot;&gt;&lt;/canvas&gt;&lt;/div&gt;&lt;/div&gt;
+  &lt;div class=&quot;card chart&quot;&gt;&lt;h3&gt;本周 vs 累计&lt;/h3&gt;&lt;p&gt;本周新增提单用户 / 本周提单用户 / 本周放款单量&lt;/p&gt;&lt;div class=&quot;box&quot;&gt;&lt;canvas id=&quot;c8&quot;&gt;&lt;/canvas&gt;&lt;/div&gt;&lt;/div&gt;
+&lt;/div&gt;
+&lt;div class=&quot;grid&quot; style=&quot;margin-top:14px&quot;&gt;
+  &lt;div class=&quot;card chart&quot;&gt;&lt;h3&gt;分层 strat 提单率&lt;/h3&gt;&lt;p&gt;人数柱 + 提单率折线&lt;/p&gt;&lt;div class=&quot;box&quot;&gt;&lt;canvas id=&quot;c9&quot;&gt;&lt;/canvas&gt;&lt;/div&gt;&lt;/div&gt;
+  &lt;div class=&quot;card chart&quot;&gt;&lt;h3&gt;流失天数提单率&lt;/h3&gt;&lt;p&gt;7–15 / 16–30 / 31–60 / 61–90 / 91–180 / 180d+&lt;/p&gt;&lt;div class=&quot;box&quot;&gt;&lt;canvas id=&quot;c10&quot;&gt;&lt;/canvas&gt;&lt;/div&gt;&lt;/div&gt;
+&lt;/div&gt;
+
+&lt;!-- 口径与附录见页面底部 --&gt;
+&lt;/main&gt;
+&lt;script&gt;
+const D = /* 由后端写入，对象结构同 t7_0818_dashboard_data.json */;
+
+const col = {cy:&#x27;#43c7e7&#x27;, gr:&#x27;#64dcae&#x27;, am:&#x27;#ffc26b&#x27;, pk:&#x27;#f68ab0&#x27;};
+Chart.defaults.font.family=&#x27;-apple-system,BlinkMacSystemFont,&quot;PingFang SC&quot;,&quot;Microsoft YaHei&quot;,sans-serif&#x27;;
+Chart.defaults.color=&#x27;#aac5da&#x27;;
+function base(y2) {
+  const scales = {
+    x: {ticks:{color:&#x27;#aac5da&#x27;, maxRotation:45}, grid:{display:false}},
+    y: {type:&#x27;linear&#x27;, position:&#x27;left&#x27;, ticks:{color:&#x27;#aac5da&#x27;}, grid:{color:&#x27;rgba(42,92,126,.25)&#x27;}}
+  };
+  if (y2) scales.y2 = {type:&#x27;linear&#x27;, position:&#x27;right&#x27;, ticks:{color:&#x27;#ffc26b&#x27;}, grid:{drawOnChartArea:false}};
+  return {responsive:true, maintainAspectRatio:false, interaction:{mode:&#x27;index&#x27;, intersect:false},
+    plugins:{legend:{labels:{color:&#x27;#eff8ff&#x27;}}}, scales};
+}
+function line(id, labels, datasets, y2) {
+  new Chart(document.getElementById(id), {type:&#x27;line&#x27;, data:{labels, datasets}, options:base(y2)});
+}
+function drawRateLabels(chart) {
+  const {ctx} = chart;
+  chart.data.datasets.forEach((ds,i)=&gt;{
+    if(!String(ds.label).includes(&#x27;提单率&#x27;)) return;
+    const pts = chart.getDatasetMeta(i).data;
+    ctx.save();
+    ctx.font=&#x27;11px sans-serif&#x27;;
+    ctx.fillStyle=&#x27;#f68ab0&#x27;;
+    ctx.textBaseline=&#x27;bottom&#x27;;
+    pts.forEach((pt,j)=&gt;{
+      const v=ds.data[j];
+      if(v==null) return;
+      let dx=0, dy=-16, align=&#x27;center&#x27;;
+      if(j===0){ align=&#x27;left&#x27;; dx=10; }
+      else if(j===pts.length-1){ align=&#x27;right&#x27;; dx=-10; }
+      const prev=pts[j-1], next=pts[j+1];
+      if(prev &amp;&amp; next &amp;&amp; pt.y&gt;=prev.y &amp;&amp; pt.y&gt;=next.y) dy=-20;
+      ctx.textAlign=align;
+      ctx.fillText(Number(v).toFixed(2)+&#x27;%&#x27;, pt.x+dx, pt.y+dy);
+    });
+    ctx.restore();
+  });
+}
+const fd = D.first_daily, ad = D.apply_daily, rd = D.remit_daily, dd = D.due_daily, k=D.kpi;
+line(&#x27;c1&#x27;, fd.map(x=&gt;x.d.slice(5)), [
+  {label:&#x27;累计提单人数&#x27;, data:fd.map(x=&gt;x.cum), borderColor:col.cy, backgroundColor:&#x27;rgba(67,199,231,.12)&#x27;, fill:true, tension:.25, yAxisID:&#x27;y&#x27;, pointRadius:2},
+  {label:&#x27;提单率%&#x27;, data:fd.map(x=&gt;x.rate), borderColor:col.am, tension:.25, yAxisID:&#x27;y2&#x27;, pointRadius:2}
+], true);
+new Chart(document.getElementById(&#x27;c2&#x27;), {type:&#x27;bar&#x27;, data:{labels:fd.map(x=&gt;x.d.slice(5)), datasets:[
+  {label:&#x27;当日首次提单&#x27;, data:fd.map(x=&gt;x.n), backgroundColor:col.gr}
+]}, options:base(false)});
+new Chart(document.getElementById(&#x27;c3&#x27;), {type:&#x27;bar&#x27;, data:{labels:ad.map(x=&gt;x.d.slice(5)), datasets:[
+  {label:&#x27;当日提单用户&#x27;, data:ad.map(x=&gt;x.n_user), backgroundColor:&#x27;rgba(67,199,231,.7)&#x27;}
+]}, options:base(false)});
+line(&#x27;c4&#x27;, rd.map(x=&gt;x.d.slice(5)), [
+  {label:&#x27;当日放款单&#x27;, data:rd.map(x=&gt;x.n), borderColor:col.gr, tension:.25, yAxisID:&#x27;y&#x27;, pointRadius:2},
+  {label:&#x27;累计放款单&#x27;, data:rd.map(x=&gt;x.cum), borderColor:col.am, tension:.25, yAxisID:&#x27;y2&#x27;, pointRadius:2}
+], true);
+line(&#x27;c5&#x27;, dd.map(x=&gt;x.d.slice(5)), [
+  {label:&#x27;到期盈利率%&#x27;, data:dd.map(x=&gt;x.profit_pct), borderColor:col.gr, tension:.25, pointRadius:2, spanGaps:true}
+], false);
+line(&#x27;c6&#x27;, dd.map(x=&gt;x.d.slice(5)), [
+  {label:&#x27;到期逾期率%&#x27;, data:dd.map(x=&gt;x.overdue_pct), borderColor:col.pk, tension:.25, pointRadius:2, spanGaps:true},
+  {label:&#x27;到期单量&#x27;, data:dd.map(x=&gt;x.n_due), borderColor:col.cy, tension:.25, yAxisID:&#x27;y2&#x27;, pointRadius:2}
+], true);
+new Chart(document.getElementById(&#x27;c7&#x27;), {type:&#x27;doughnut&#x27;, data:{labels:[&#x27;已提单&#x27;,&#x27;尚未提单&#x27;], datasets:[{data:[k.n_apply, k.n_user-k.n_apply], backgroundColor:[col.gr, &#x27;rgba(42,92,126,.55)&#x27;], borderWidth:0}]},
+  options:{responsive:true, maintainAspectRatio:false, plugins:{legend:{labels:{color:&#x27;#eff8ff&#x27;}}}},
+  plugins:[{id:&#x27;pieLabel&#x27;, afterDatasetsDraw(chart){
+    const {ctx} = chart; const ds = chart.data.datasets[0];
+    const total = ds.data.reduce((a,b)=&gt;a+b,0);
+    const meta = chart.getDatasetMeta(0);
+    meta.data.forEach((arc,i)=&gt;{
+      const v = ds.data[i]; const pos = arc.tooltipPosition();
+      ctx.save(); ctx.fillStyle=&#x27;#eff8ff&#x27;; ctx.textAlign=&#x27;center&#x27;; ctx.textBaseline=&#x27;middle&#x27;;
+      ctx.font=&#x27;13px sans-serif&#x27;; ctx.fillText((100*v/total).toFixed(2)+&#x27;%&#x27;, pos.x, pos.y);
+      ctx.restore();
+    });
+  }}]});
+new Chart(document.getElementById(&#x27;c8&#x27;), {type:&#x27;bar&#x27;, data:{labels:[&#x27;本周新增提单用户&#x27;,&#x27;本周提单用户&#x27;,&#x27;本周放款单量&#x27;,&#x27;累计提单人数&#x27;,&#x27;累计放款单量&#x27;],
+  datasets:[{label:&#x27;人数/单量&#x27;, data:[k.n_first_week, k.n_apply_week, k.n_remit_week, k.n_apply, k.n_remit],
+    backgroundColor:[col.pk, col.cy, col.am, col.gr, &#x27;rgba(67,199,231,.45)&#x27;]}]},
+  options:Object.assign(base(false), {layout:{padding:{top:22}}}),
+  plugins:[{id:&#x27;barLabel&#x27;, afterDatasetsDraw(chart){
+    const {ctx}=chart; const meta=chart.getDatasetMeta(0);
+    ctx.save(); ctx.fillStyle=&#x27;#eff8ff&#x27;; ctx.font=&#x27;11px sans-serif&#x27;; ctx.textAlign=&#x27;center&#x27;; ctx.textBaseline=&#x27;bottom&#x27;;
+    meta.data.forEach((pt,j)=&gt;{ const v=chart.data.datasets[0].data[j]; if(v==null) return; ctx.fillText(Number(v).toLocaleString(), pt.x, pt.y-4); });
+    ctx.restore();
+  }}]});
+new Chart(document.getElementById(&#x27;c9&#x27;), {type:&#x27;bar&#x27;, data:{labels:D.strat.map(x=&gt;x.strat), datasets:[
+  {label:&#x27;名单人数&#x27;, data:D.strat.map(x=&gt;x.n_user), backgroundColor:&#x27;rgba(67,199,231,.35)&#x27;, yAxisID:&#x27;y&#x27;},
+  {label:&#x27;提单率%&#x27;, data:D.strat.map(x=&gt;x.pct), type:&#x27;line&#x27;, borderColor:col.pk, yAxisID:&#x27;y2&#x27;, tension:.2, pointRadius:3}
+]}, options:Object.assign(base(true), {layout:{padding:{top:28,right:8}}}),
+  plugins:[{id:&#x27;rateLabel9&#x27;, afterDatasetsDraw(chart){ drawRateLabels(chart); }}]});
+new Chart(document.getElementById(&#x27;c10&#x27;), {type:&#x27;bar&#x27;, data:{labels:D.churn.map(x=&gt;x.bin), datasets:[
+  {label:&#x27;名单人数&#x27;, data:D.churn.map(x=&gt;x.n_user), backgroundColor:&#x27;rgba(67,199,231,.35)&#x27;, yAxisID:&#x27;y&#x27;},
+  {label:&#x27;提单率%&#x27;, data:D.churn.map(x=&gt;x.pct), type:&#x27;line&#x27;, borderColor:col.pk, yAxisID:&#x27;y2&#x27;, tension:.2, pointRadius:3}
+]}, options:Object.assign(base(true), {layout:{padding:{top:28,right:8}}}),
+  plugins:[{id:&#x27;rateLabel10&#x27;, afterDatasetsDraw(chart){ drawRateLabels(chart); }}]});
+&lt;/script&gt;
+&lt;/body&gt;&lt;/html&gt;
+</pre></details>
+</section>
 <p class="foot">数据：kaby_dw · wangchuanliang.t7recalllist_0818_0819 · recall_date=2026-08-18 · 库内 CURRENT_DATE=2026-09-20</p>
 </main>
 <script>

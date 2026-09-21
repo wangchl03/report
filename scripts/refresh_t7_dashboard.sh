@@ -1,5 +1,5 @@
 #!/bin/zsh
-# 本机每天 18:00 刷新 T7 看板，只推送到 wangchl03/report（GitHub Pages）。
+# 本机每天下午 17:30 刷新 T7 看板，只推送到 wangchl03/report（GitHub Pages）。
 # 密码只从 ~/.t7_dashboard.env 读取，不要写进仓库。
 set -euo pipefail
 PAGES_REPO="${PAGES_REPO:-$HOME/Documents/trae_projects/github_pages_repo}"
@@ -16,7 +16,7 @@ if [[ -z "${PGPASSWORD:-}" ]]; then
   exit 1
 fi
 python3 appendix_t7_0818_dashboard.py
-git add t7-0818.html t7_0818_dashboard_data.json
+git add t7-0818.html t7_0818_dashboard_data.json appendix_t7_0818_dashboard.sql
 if git diff --cached --quiet; then
   echo "no changes in wangchl03/report"
   exit 0
