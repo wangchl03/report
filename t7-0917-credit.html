@@ -39,19 +39,19 @@ details.code pre{overflow:auto;max-height:520px;font-size:11px;line-height:1.45;
 <div class="top">
   <div class="kicker">DASHBOARD · T7+ RECALL · CREDIT PASS · 2026-09-17</div>
   <h1>流失 7 天以上召回 · 获额通过口径看板</h1>
-  <p class="meta">名单 1,493 人 · 获额通过 150 人 · 统计至 2026-09-21 · 本周 2026-09-21 起（周一）</p>
+  <p class="meta">名单 1,493 人 · 获额通过 149 人 · 统计至 2026-09-20 · 本周 2026-09-14 起（周一）</p>
 </div>
 <section class="kpis">
-  <article class="card"><div class="label">获额人数</div><div class="num">154</div><div class="sub">9/17至今发起获额</div></article>
-  <article class="card"><div class="label">获额通过人数</div><div class="num g">150</div><div class="sub">is_pass1=1</div></article>
-  <article class="card"><div class="label">获额通过率</div><div class="num a">97.40%</div><div class="sub">150 / 154</div></article>
+  <article class="card"><div class="label">获额人数</div><div class="num">153</div><div class="sub">9/17至今发起获额</div></article>
+  <article class="card"><div class="label">获额通过人数</div><div class="num g">149</div><div class="sub">is_pass1=1</div></article>
+  <article class="card"><div class="label">获额通过率</div><div class="num a">97.39%</div><div class="sub">149 / 153</div></article>
   <article class="card"><div class="label">提单人数</div><div class="num g">70</div><div class="sub">获额通过后提单去重用户</div></article>
-  <article class="card"><div class="label">提单率</div><div class="num a">46.67%</div><div class="sub">70 / 150 · 截至统计日累计提单 / 累计获额通过</div></article>
+  <article class="card"><div class="label">提单率</div><div class="num a">46.98%</div><div class="sub">70 / 149 · 截至统计日累计提单 / 累计获额通过</div></article>
   <article class="card"><div class="label">提单订单量</div><div class="num">70</div><div class="sub">获额通过后提单订单数</div></article>
-  <article class="card"><div class="label">本周提单人数</div><div class="num">0</div><div class="sub">通过后本周有过提单的去重用户</div></article>
-  <article class="card"><div class="label">本周新增提单人数</div><div class="num p">0</div><div class="sub">通过后首次提单落在本周</div></article>
-  <article class="card"><div class="label">放款单量</div><div class="num g">173</div><div class="sub">9/17至今已放款订单数</div></article>
-  <article class="card"><div class="label">本周新增放款单量</div><div class="num">1</div><div class="sub">本周新放款订单数</div></article>
+  <article class="card"><div class="label">本周提单人数</div><div class="num">70</div><div class="sub">通过后本周有过提单的去重用户</div></article>
+  <article class="card"><div class="label">本周新增提单人数</div><div class="num p">70</div><div class="sub">通过后首次提单落在本周</div></article>
+  <article class="card"><div class="label">放款单量</div><div class="num g">172</div><div class="sub">9/17至今已放款订单数</div></article>
+  <article class="card"><div class="label">本周新增放款单量</div><div class="num">172</div><div class="sub">本周新放款订单数</div></article>
   <article class="card"><div class="label">订单盈利率</div><div class="num a">—</div><div class="sub">到期订单</div></article>
   <article class="card"><div class="label">订单逾期率</div><div class="num p">—</div><div class="sub">到期订单</div></article>
 </section>
@@ -79,10 +79,10 @@ details.code pre{overflow:auto;max-height:520px;font-size:11px;line-height:1.45;
 <h2>口径说明</h2>
 <ul>
 <li>名单：<code>wangchuanliang.t7recalllist_0917</code>，批次日 <code>2026-09-17</code>，按 <code>churn_user_id</code> 去重。该表无可用召回日日期字段，以整表为该批次名单。</li>
-<li>获额：名单用户在 <code>order_vir_f_copy</code> 上 <code>vir_date ≥ 2026-09-17</code> 去重为获额人数；<code>is_pass1 = 1</code> 去重为获额通过人数。获额通过率 = 获额通过人数 / 获额人数。</li>
-<li>提单：获额通过后 <code>apply_time ≥ 首次通过时间</code> 且 <code>apply_date ≥ 2026-09-17</code>。提单人数=通过后任意提单用户去重；KPI 提单率 = 截至统计日累计提单人数 / 累计获额通过人数。折线图按日滚动同一口径。提单订单量=通过后提单订单数。</li>
-<li>放款：<code>is_remit = 1</code> 且 <code>remit_amt &gt; 0</code>，召回日后提单订单（与原看板一致）；本周新增放款按放款日（本页为 <code>o.remit_date::date</code>）落在本周的订单数。</li>
-<li>到期盈利 / 逾期：召回后提单且 <code>is_due = 1</code>、<code>is_remit = 1</code>、<code>remit_amt &gt; 0</code>。盈利率 = <code>(repaid_amt − remit_amt) / remit_amt</code>；逾期率 = <code>loan_status_code = 8</code> 占到期放款单。</li>
+<li>获额：名单用户在 <code>order_vir_f_copy</code> 上 <code>vir_date ≥ 2026-09-17</code> 且 <code>vir_date ≤ CURRENT_DATE-1</code> 去重为获额人数；<code>is_pass1 = 1</code> 去重为获额通过人数。获额通过率 = 获额通过人数 / 获额人数。</li>
+<li>提单：获额通过后 <code>apply_time ≥ 首次通过时间</code> 且 <code>apply_date</code> 在 <code>2026-09-17</code> 至 <code>CURRENT_DATE-1</code>。提单人数=通过后任意提单用户去重；KPI 提单率 = 截至统计日累计提单人数 / 累计获额通过人数。折线图按日滚动同一口径。提单订单量=通过后提单订单数。</li>
+<li>放款：<code>is_remit = 1</code> 且 <code>remit_amt &gt; 0</code>，召回日后提单订单（与原看板一致）；放款日不超过 <code>CURRENT_DATE-1</code>。本周新增放款按放款日（本页为 <code>o.remit_date::date</code>）落在本周的订单数。</li>
+<li>到期盈利 / 逾期：召回后提单且 <code>is_due = 1</code>、<code>is_remit = 1</code>、<code>remit_amt &gt; 0</code>，且 <code>due_date &lt; CURRENT_DATE</code>。盈利率 = <code>(repaid_amt − remit_amt) / remit_amt</code>；逾期率 = <code>loan_status_code = 8</code> 占到期放款单。</li>
 <li>转化结构：获额通过后已提单 vs 尚未提单。分层 / 流失天数：该档获额通过人数与对应提单率。</li>
 </ul>
 <h2>附录：完整 PGSQL</h2>
@@ -90,14 +90,15 @@ details.code pre{overflow:auto;max-height:520px;font-size:11px;line-height:1.45;
 -- 库：kaby_dw · schema：wangchuanliang
 -- 名单：wangchuanliang.t7recalllist_0917
 -- 触达日：2026-09-17
--- 获额：order_vir_f_copy.vir_date &gt;= 召回日
+-- 获额：order_vir_f_copy.vir_date &gt;= 召回日 且 &lt;= CURRENT_DATE-1
 -- 获额通过：is_pass1 = 1；首次通过时间 = MIN(COALESCE(TO_TIMESTAMP(vir_unix), vir_date::timestamp))
--- 提单：获额通过后 apply_time &gt;= pass_time 且 apply_date &gt;= 召回日
+-- 提单：获额通过后 apply_time &gt;= pass_time 且 apply_date 在召回日至 CURRENT_DATE-1
 -- 提单率分母：获额通过人数
 -- 放款/到期：仍为召回日后提单订单（与原看板一致）
+-- 到期：due_date &lt; CURRENT_DATE
 -- 放款日：优先 o.remit_date::date（无该列时用 o.apply_date::date）
 -- 本文件当前放款日表达式：o.remit_date::date
--- 本周：DATE_TRUNC(&#x27;week&#x27;, CURRENT_DATE)::date（周一）
+-- 统计截止：CURRENT_DATE - 1；本周：DATE_TRUNC(&#x27;week&#x27;, CURRENT_DATE - 1)::date（周一）
 -- 执行前：SET search_path TO wangchuanliang, public;
 
 SET search_path TO wangchuanliang, public;
@@ -127,15 +128,15 @@ WHERE churn_user_id IS NOT NULL;
 -- ---------------------------------------------------------------------------
 WITH params AS (
     SELECT DATE &#x27;2026-09-17&#x27; AS recall_dt,
-           DATE_TRUNC(&#x27;week&#x27;, CURRENT_DATE)::date AS week_start,
-           CURRENT_DATE AS as_of
+           DATE_TRUNC(&#x27;week&#x27;, CURRENT_DATE - 1)::date AS week_start,
+           (CURRENT_DATE - 1) AS as_of
 ),
 vir_u AS (
     SELECT DISTINCT v.user_id
     FROM tmp_t7_u u
     INNER JOIN wangchuanliang.order_vir_f_copy v ON v.user_id = u.user_id
     CROSS JOIN params p
-    WHERE v.vir_date &gt;= p.recall_dt
+    WHERE v.vir_date &gt;= p.recall_dt AND v.vir_date &lt;= p.as_of
 ),
 pass_u AS (
     SELECT v.user_id,
@@ -143,7 +144,7 @@ pass_u AS (
     FROM tmp_t7_u u
     INNER JOIN wangchuanliang.order_vir_f_copy v ON v.user_id = u.user_id
     CROSS JOIN params p
-    WHERE v.vir_date &gt;= p.recall_dt AND v.is_pass1 = 1
+    WHERE v.vir_date &gt;= p.recall_dt AND v.vir_date &lt;= p.as_of AND v.is_pass1 = 1
     GROUP BY v.user_id
 ),
 apply_after AS (
@@ -152,6 +153,7 @@ apply_after AS (
     INNER JOIN order_loan_f_v2_copy o ON o.user_id = pu.user_id
     CROSS JOIN params p
     WHERE o.apply_date &gt;= p.recall_dt
+      AND o.apply_date &lt;= p.as_of
       AND o.apply_time &gt;= pu.pass_time
 ),
 apply_u AS (
@@ -183,7 +185,8 @@ SELECT
      INNER JOIN order_loan_f_v2_copy o ON o.user_id = u.user_id
      CROSS JOIN params p
      WHERE o.apply_date &gt;= p.recall_dt AND o.is_remit = 1
-       AND COALESCE(o.remit_amt, 0) &gt; 0) AS n_remit,
+       AND COALESCE(o.remit_amt, 0) &gt; 0
+       AND o.remit_date::date &lt;= p.as_of) AS n_remit,
     (SELECT COUNT(*)
      FROM tmp_t7_u u
      INNER JOIN order_loan_f_v2_copy o ON o.user_id = u.user_id
@@ -196,25 +199,29 @@ SELECT
      INNER JOIN order_loan_f_v2_copy o ON o.user_id = u.user_id
      CROSS JOIN params p
      WHERE o.apply_date &gt;= p.recall_dt AND o.is_due = 1 AND o.is_remit = 1
-       AND COALESCE(o.remit_amt, 0) &gt; 0) AS n_due,
+       AND COALESCE(o.remit_amt, 0) &gt; 0
+       AND o.due_date &lt; CURRENT_DATE) AS n_due,
     (SELECT COUNT(*)
      FROM tmp_t7_u u
      INNER JOIN order_loan_f_v2_copy o ON o.user_id = u.user_id
      CROSS JOIN params p
      WHERE o.apply_date &gt;= p.recall_dt AND o.is_due = 1 AND o.is_remit = 1
-       AND COALESCE(o.remit_amt, 0) &gt; 0 AND o.loan_status_code = 8) AS n_due_od,
+       AND COALESCE(o.remit_amt, 0) &gt; 0 AND o.loan_status_code = 8
+       AND o.due_date &lt; CURRENT_DATE) AS n_due_od,
     (SELECT SUM(COALESCE(o.repaid_amt, 0))
      FROM tmp_t7_u u
      INNER JOIN order_loan_f_v2_copy o ON o.user_id = u.user_id
      CROSS JOIN params p
      WHERE o.apply_date &gt;= p.recall_dt AND o.is_due = 1 AND o.is_remit = 1
-       AND COALESCE(o.remit_amt, 0) &gt; 0) AS due_repaid,
+       AND COALESCE(o.remit_amt, 0) &gt; 0
+       AND o.due_date &lt; CURRENT_DATE) AS due_repaid,
     (SELECT SUM(o.remit_amt)
      FROM tmp_t7_u u
      INNER JOIN order_loan_f_v2_copy o ON o.user_id = u.user_id
      CROSS JOIN params p
      WHERE o.apply_date &gt;= p.recall_dt AND o.is_due = 1 AND o.is_remit = 1
-       AND COALESCE(o.remit_amt, 0) &gt; 0) AS due_remit,
+       AND COALESCE(o.remit_amt, 0) &gt; 0
+       AND o.due_date &lt; CURRENT_DATE) AS due_remit,
     (SELECT week_start FROM params) AS week_start,
     (SELECT as_of FROM params) AS as_of;
 
@@ -232,7 +239,7 @@ WITH pass_u AS (
          MIN(COALESCE(TO_TIMESTAMP(v.vir_unix), v.vir_date::timestamp)) AS pass_time
   FROM tmp_t7_u u
   INNER JOIN wangchuanliang.order_vir_f_copy v ON v.user_id = u.user_id
-  WHERE v.vir_date &gt;= DATE &#x27;2026-09-17&#x27; AND v.is_pass1 = 1
+  WHERE v.vir_date &gt;= DATE &#x27;2026-09-17&#x27; AND v.vir_date &lt;= (CURRENT_DATE - 1) AND v.is_pass1 = 1
   GROUP BY v.user_id
 ),
 fa AS (
@@ -241,6 +248,7 @@ fa AS (
   INNER JOIN order_loan_f_v2_copy o
     ON o.user_id = pu.user_id
    AND o.apply_date &gt;= DATE &#x27;2026-09-17&#x27;
+   AND o.apply_date &lt;= (CURRENT_DATE - 1)
    AND o.apply_time &gt;= pu.pass_time
   GROUP BY o.user_id
 )
@@ -260,7 +268,7 @@ WITH pass_u AS (
          MIN(COALESCE(TO_TIMESTAMP(v.vir_unix), v.vir_date::timestamp)) AS pass_time
   FROM tmp_t7_u u
   INNER JOIN wangchuanliang.order_vir_f_copy v ON v.user_id = u.user_id
-  WHERE v.vir_date &gt;= DATE &#x27;2026-09-17&#x27; AND v.is_pass1 = 1
+  WHERE v.vir_date &gt;= DATE &#x27;2026-09-17&#x27; AND v.vir_date &lt;= (CURRENT_DATE - 1) AND v.is_pass1 = 1
   GROUP BY v.user_id
 )
 SELECT o.apply_date::text AS d,
@@ -270,6 +278,7 @@ FROM pass_u pu
 INNER JOIN order_loan_f_v2_copy o
   ON o.user_id = pu.user_id
  AND o.apply_date &gt;= DATE &#x27;2026-09-17&#x27;
+ AND o.apply_date &lt;= (CURRENT_DATE - 1)
  AND o.apply_time &gt;= pu.pass_time
 GROUP BY o.apply_date
 ORDER BY o.apply_date;
@@ -283,6 +292,7 @@ INNER JOIN order_loan_f_v2_copy o ON o.user_id = u.user_id
 WHERE o.apply_date &gt;= DATE &#x27;2026-09-17&#x27;
   AND o.is_remit = 1 AND COALESCE(o.remit_amt, 0) &gt; 0
   AND o.remit_date::date IS NOT NULL
+  AND o.remit_date::date &lt;= (CURRENT_DATE - 1)
 GROUP BY 1
 ORDER BY 1;
 
@@ -299,6 +309,7 @@ INNER JOIN order_loan_f_v2_copy o ON o.user_id = u.user_id
 WHERE o.apply_date &gt;= DATE &#x27;2026-09-17&#x27;
   AND o.is_due = 1 AND o.is_remit = 1 AND COALESCE(o.remit_amt, 0) &gt; 0
   AND o.due_date IS NOT NULL
+  AND o.due_date &lt; CURRENT_DATE
 GROUP BY 1
 ORDER BY 1;
 
@@ -310,7 +321,7 @@ WITH pass_u AS (
          MIN(COALESCE(TO_TIMESTAMP(v.vir_unix), v.vir_date::timestamp)) AS pass_time
   FROM tmp_t7_u u
   INNER JOIN wangchuanliang.order_vir_f_copy v ON v.user_id = u.user_id
-  WHERE v.vir_date &gt;= DATE &#x27;2026-09-17&#x27; AND v.is_pass1 = 1
+  WHERE v.vir_date &gt;= DATE &#x27;2026-09-17&#x27; AND v.vir_date &lt;= (CURRENT_DATE - 1) AND v.is_pass1 = 1
   GROUP BY v.user_id
 ),
 apply_u AS (
@@ -319,6 +330,7 @@ apply_u AS (
   INNER JOIN order_loan_f_v2_copy o
     ON o.user_id = pu.user_id
    AND o.apply_date &gt;= DATE &#x27;2026-09-17&#x27;
+   AND o.apply_date &lt;= (CURRENT_DATE - 1)
    AND o.apply_time &gt;= pu.pass_time
 )
 SELECT u.strat,
@@ -338,7 +350,7 @@ WITH pass_u AS (
          MIN(COALESCE(TO_TIMESTAMP(v.vir_unix), v.vir_date::timestamp)) AS pass_time
   FROM tmp_t7_u u
   INNER JOIN wangchuanliang.order_vir_f_copy v ON v.user_id = u.user_id
-  WHERE v.vir_date &gt;= DATE &#x27;2026-09-17&#x27; AND v.is_pass1 = 1
+  WHERE v.vir_date &gt;= DATE &#x27;2026-09-17&#x27; AND v.vir_date &lt;= (CURRENT_DATE - 1) AND v.is_pass1 = 1
   GROUP BY v.user_id
 ),
 apply_u AS (
@@ -347,6 +359,7 @@ apply_u AS (
   INNER JOIN order_loan_f_v2_copy o
     ON o.user_id = pu.user_id
    AND o.apply_date &gt;= DATE &#x27;2026-09-17&#x27;
+   AND o.apply_date &lt;= (CURRENT_DATE - 1)
    AND o.apply_time &gt;= pu.pass_time
 )
 SELECT
@@ -374,10 +387,10 @@ GROUP BY
   END;
 </pre></details>
 </section>
-<p class="foot">数据：kaby_dw · wangchuanliang.t7recalllist_0917 · recall_date=2026-09-17 · 获额通过口径 · 库内 CURRENT_DATE=2026-09-21</p>
+<p class="foot">数据：kaby_dw · wangchuanliang.t7recalllist_0917 · recall_date=2026-09-17 · 获额通过口径 · 统计至 CURRENT_DATE-1=2026-09-20 · 到期 due_date &lt; CURRENT_DATE</p>
 </main>
 <script>
-const D = {"kpi": {"n_user": 1493, "n_vir": 154, "n_pass": 150, "n_apply": 70, "n_apply_order": 70, "pass_rate": 97.4, "apply_rate": 46.67, "n_apply_week": 0, "n_first_week": 0, "n_remit": 173, "n_remit_week": 1, "n_due": 0, "n_due_od": 0, "profit_pct": null, "overdue_pct": null, "week_start": "2026-09-21", "as_of": "2026-09-21", "recall_date": "2026-09-17", "remit_day": "o.remit_date::date"}, "first_daily": [{"d": "2026-09-17", "n": 11, "n_pass": 31, "cum": 11, "cum_pass": 31, "rate": 35.48}, {"d": "2026-09-18", "n": 16, "n_pass": 29, "cum": 27, "cum_pass": 60, "rate": 45.0}, {"d": "2026-09-19", "n": 26, "n_pass": 47, "cum": 53, "cum_pass": 107, "rate": 49.53}, {"d": "2026-09-20", "n": 17, "n_pass": 42, "cum": 70, "cum_pass": 149, "rate": 46.98}, {"d": "2026-09-21", "n": 0, "n_pass": 1, "cum": 70, "cum_pass": 150, "rate": 46.67}], "apply_daily": [{"d": "2026-09-17", "n_order": 11, "n_user": 11}, {"d": "2026-09-18", "n_order": 16, "n_user": 16}, {"d": "2026-09-19", "n_order": 26, "n_user": 26}, {"d": "2026-09-20", "n_order": 17, "n_user": 17}], "remit_daily": [{"d": "2026-09-17", "n": 53, "cum": 53}, {"d": "2026-09-18", "n": 44, "cum": 97}, {"d": "2026-09-19", "n": 45, "cum": 142}, {"d": "2026-09-20", "n": 30, "cum": 172}, {"d": "2026-09-21", "n": 1, "cum": 173}], "due_daily": [], "strat": [{"strat": "20d+10r", "n_user": 37, "n_apply": 22, "pct": 59.46}, {"strat": "20d", "n_user": 28, "n_apply": 11, "pct": 39.29}, {"strat": "30d", "n_user": 28, "n_apply": 10, "pct": 35.71}, {"strat": "30d+10r", "n_user": 24, "n_apply": 6, "pct": 25.0}, {"strat": "10d", "n_user": 18, "n_apply": 9, "pct": 50.0}, {"strat": "10d+10r", "n_user": 15, "n_apply": 12, "pct": 80.0}], "churn": [{"bin": "7-15d", "n_user": 150, "n_apply": 70, "pct": 46.67}]};
+const D = {"kpi": {"n_user": 1493, "n_vir": 153, "n_pass": 149, "n_apply": 70, "n_apply_order": 70, "pass_rate": 97.39, "apply_rate": 46.98, "n_apply_week": 70, "n_first_week": 70, "n_remit": 172, "n_remit_week": 172, "n_due": 0, "n_due_od": 0, "profit_pct": null, "overdue_pct": null, "week_start": "2026-09-14", "as_of": "2026-09-20", "recall_date": "2026-09-17", "remit_day": "o.remit_date::date"}, "first_daily": [{"d": "2026-09-17", "n": 11, "n_pass": 31, "cum": 11, "cum_pass": 31, "rate": 35.48}, {"d": "2026-09-18", "n": 16, "n_pass": 29, "cum": 27, "cum_pass": 60, "rate": 45.0}, {"d": "2026-09-19", "n": 26, "n_pass": 47, "cum": 53, "cum_pass": 107, "rate": 49.53}, {"d": "2026-09-20", "n": 17, "n_pass": 42, "cum": 70, "cum_pass": 149, "rate": 46.98}], "apply_daily": [{"d": "2026-09-17", "n_order": 11, "n_user": 11}, {"d": "2026-09-18", "n_order": 16, "n_user": 16}, {"d": "2026-09-19", "n_order": 26, "n_user": 26}, {"d": "2026-09-20", "n_order": 17, "n_user": 17}], "remit_daily": [{"d": "2026-09-17", "n": 53, "cum": 53}, {"d": "2026-09-18", "n": 44, "cum": 97}, {"d": "2026-09-19", "n": 45, "cum": 142}, {"d": "2026-09-20", "n": 30, "cum": 172}], "due_daily": [], "strat": [{"strat": "20d+10r", "n_user": 37, "n_apply": 22, "pct": 59.46}, {"strat": "20d", "n_user": 28, "n_apply": 11, "pct": 39.29}, {"strat": "30d", "n_user": 28, "n_apply": 10, "pct": 35.71}, {"strat": "30d+10r", "n_user": 24, "n_apply": 6, "pct": 25.0}, {"strat": "10d", "n_user": 17, "n_apply": 9, "pct": 52.94}, {"strat": "10d+10r", "n_user": 15, "n_apply": 12, "pct": 80.0}], "churn": [{"bin": "7-15d", "n_user": 149, "n_apply": 70, "pct": 46.98}]};
 
 const col = {cy:'#43c7e7', gr:'#64dcae', am:'#ffc26b', pk:'#f68ab0'};
 Chart.defaults.font.family='-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei",sans-serif';

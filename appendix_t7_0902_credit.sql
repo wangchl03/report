@@ -2,14 +2,15 @@
 -- 库：kaby_dw · schema：wangchuanliang
 -- 名单：wangchuanliang.t7recalllist_0902
 -- 触达日：2026-09-02
--- 获额：order_vir_f_copy.vir_date >= 召回日
+-- 获额：order_vir_f_copy.vir_date >= 召回日 且 <= CURRENT_DATE-1
 -- 获额通过：is_pass1 = 1；首次通过时间 = MIN(COALESCE(TO_TIMESTAMP(vir_unix), vir_date::timestamp))
--- 提单：获额通过后 apply_time >= pass_time 且 apply_date >= 召回日
+-- 提单：获额通过后 apply_time >= pass_time 且 apply_date 在召回日至 CURRENT_DATE-1
 -- 提单率分母：获额通过人数
 -- 放款/到期：仍为召回日后提单订单（与原看板一致）
+-- 到期：due_date < CURRENT_DATE
 -- 放款日：优先 o.remit_date::date（无该列时用 o.apply_date::date）
 -- 本文件当前放款日表达式：o.remit_date::date
--- 本周：DATE_TRUNC('week', CURRENT_DATE)::date（周一）
+-- 统计截止：CURRENT_DATE - 1；本周：DATE_TRUNC('week', CURRENT_DATE - 1)::date（周一）
 -- 执行前：SET search_path TO wangchuanliang, public;
 
 SET search_path TO wangchuanliang, public;
@@ -39,15 +40,15 @@ WHERE churn_user_id IS NOT NULL;
 -- ---------------------------------------------------------------------------
 WITH params AS (
     SELECT DATE '2026-09-02' AS recall_dt,
-           DATE_TRUNC('week', CURRENT_DATE)::date AS week_start,
-           CURRENT_DATE AS as_of
+           DATE_TRUNC('week', CURRENT_DATE - 1)::date AS week_start,
+           (CURRENT_DATE - 1) AS as_of
 ),
 vir_u AS (
     SELECT DISTINCT v.user_id
     FROM tmp_t7_u u
     INNER JOIN wangchuanliang.order_vir_f_copy v ON v.user_id = u.user_id
     CROSS JOIN params p
-    WHERE v.vir_date >= p.recall_dt
+    WHERE v.vir_date >= p.recall_dt AND v.vir_date <= p.as_of
 ),
 pass_u AS (
     SELECT v.user_id,
@@ -55,7 +56,7 @@ pass_u AS (
     FROM tmp_t7_u u
     INNER JOIN wangchuanliang.order_vir_f_copy v ON v.user_id = u.user_id
     CROSS JOIN params p
-    WHERE v.vir_date >= p.recall_dt AND v.is_pass1 = 1
+    WHERE v.vir_date >= p.recall_dt AND v.vir_date <= p.as_of AND v.is_pass1 = 1
     GROUP BY v.user_id
 ),
 apply_after AS (
@@ -64,6 +65,7 @@ apply_after AS (
     INNER JOIN order_loan_f_v2_copy o ON o.user_id = pu.user_id
     CROSS JOIN params p
     WHERE o.apply_date >= p.recall_dt
+      AND o.apply_date <= p.as_of
       AND o.apply_time >= pu.pass_time
 ),
 apply_u AS (
@@ -95,7 +97,8 @@ SELECT
      INNER JOIN order_loan_f_v2_copy o ON o.user_id = u.user_id
      CROSS JOIN params p
      WHERE o.apply_date >= p.recall_dt AND o.is_remit = 1
-       AND COALESCE(o.remit_amt, 0) > 0) AS n_remit,
+       AND COALESCE(o.remit_amt, 0) > 0
+       AND o.remit_date::date <= p.as_of) AS n_remit,
     (SELECT COUNT(*)
      FROM tmp_t7_u u
      INNER JOIN order_loan_f_v2_copy o ON o.user_id = u.user_id
@@ -108,25 +111,29 @@ SELECT
      INNER JOIN order_loan_f_v2_copy o ON o.user_id = u.user_id
      CROSS JOIN params p
      WHERE o.apply_date >= p.recall_dt AND o.is_due = 1 AND o.is_remit = 1
-       AND COALESCE(o.remit_amt, 0) > 0) AS n_due,
+       AND COALESCE(o.remit_amt, 0) > 0
+       AND o.due_date < CURRENT_DATE) AS n_due,
     (SELECT COUNT(*)
      FROM tmp_t7_u u
      INNER JOIN order_loan_f_v2_copy o ON o.user_id = u.user_id
      CROSS JOIN params p
      WHERE o.apply_date >= p.recall_dt AND o.is_due = 1 AND o.is_remit = 1
-       AND COALESCE(o.remit_amt, 0) > 0 AND o.loan_status_code = 8) AS n_due_od,
+       AND COALESCE(o.remit_amt, 0) > 0 AND o.loan_status_code = 8
+       AND o.due_date < CURRENT_DATE) AS n_due_od,
     (SELECT SUM(COALESCE(o.repaid_amt, 0))
      FROM tmp_t7_u u
      INNER JOIN order_loan_f_v2_copy o ON o.user_id = u.user_id
      CROSS JOIN params p
      WHERE o.apply_date >= p.recall_dt AND o.is_due = 1 AND o.is_remit = 1
-       AND COALESCE(o.remit_amt, 0) > 0) AS due_repaid,
+       AND COALESCE(o.remit_amt, 0) > 0
+       AND o.due_date < CURRENT_DATE) AS due_repaid,
     (SELECT SUM(o.remit_amt)
      FROM tmp_t7_u u
      INNER JOIN order_loan_f_v2_copy o ON o.user_id = u.user_id
      CROSS JOIN params p
      WHERE o.apply_date >= p.recall_dt AND o.is_due = 1 AND o.is_remit = 1
-       AND COALESCE(o.remit_amt, 0) > 0) AS due_remit,
+       AND COALESCE(o.remit_amt, 0) > 0
+       AND o.due_date < CURRENT_DATE) AS due_remit,
     (SELECT week_start FROM params) AS week_start,
     (SELECT as_of FROM params) AS as_of;
 
@@ -144,7 +151,7 @@ WITH pass_u AS (
          MIN(COALESCE(TO_TIMESTAMP(v.vir_unix), v.vir_date::timestamp)) AS pass_time
   FROM tmp_t7_u u
   INNER JOIN wangchuanliang.order_vir_f_copy v ON v.user_id = u.user_id
-  WHERE v.vir_date >= DATE '2026-09-02' AND v.is_pass1 = 1
+  WHERE v.vir_date >= DATE '2026-09-02' AND v.vir_date <= (CURRENT_DATE - 1) AND v.is_pass1 = 1
   GROUP BY v.user_id
 ),
 fa AS (
@@ -153,6 +160,7 @@ fa AS (
   INNER JOIN order_loan_f_v2_copy o
     ON o.user_id = pu.user_id
    AND o.apply_date >= DATE '2026-09-02'
+   AND o.apply_date <= (CURRENT_DATE - 1)
    AND o.apply_time >= pu.pass_time
   GROUP BY o.user_id
 )
@@ -172,7 +180,7 @@ WITH pass_u AS (
          MIN(COALESCE(TO_TIMESTAMP(v.vir_unix), v.vir_date::timestamp)) AS pass_time
   FROM tmp_t7_u u
   INNER JOIN wangchuanliang.order_vir_f_copy v ON v.user_id = u.user_id
-  WHERE v.vir_date >= DATE '2026-09-02' AND v.is_pass1 = 1
+  WHERE v.vir_date >= DATE '2026-09-02' AND v.vir_date <= (CURRENT_DATE - 1) AND v.is_pass1 = 1
   GROUP BY v.user_id
 )
 SELECT o.apply_date::text AS d,
@@ -182,6 +190,7 @@ FROM pass_u pu
 INNER JOIN order_loan_f_v2_copy o
   ON o.user_id = pu.user_id
  AND o.apply_date >= DATE '2026-09-02'
+ AND o.apply_date <= (CURRENT_DATE - 1)
  AND o.apply_time >= pu.pass_time
 GROUP BY o.apply_date
 ORDER BY o.apply_date;
@@ -195,6 +204,7 @@ INNER JOIN order_loan_f_v2_copy o ON o.user_id = u.user_id
 WHERE o.apply_date >= DATE '2026-09-02'
   AND o.is_remit = 1 AND COALESCE(o.remit_amt, 0) > 0
   AND o.remit_date::date IS NOT NULL
+  AND o.remit_date::date <= (CURRENT_DATE - 1)
 GROUP BY 1
 ORDER BY 1;
 
@@ -211,6 +221,7 @@ INNER JOIN order_loan_f_v2_copy o ON o.user_id = u.user_id
 WHERE o.apply_date >= DATE '2026-09-02'
   AND o.is_due = 1 AND o.is_remit = 1 AND COALESCE(o.remit_amt, 0) > 0
   AND o.due_date IS NOT NULL
+  AND o.due_date < CURRENT_DATE
 GROUP BY 1
 ORDER BY 1;
 
@@ -222,7 +233,7 @@ WITH pass_u AS (
          MIN(COALESCE(TO_TIMESTAMP(v.vir_unix), v.vir_date::timestamp)) AS pass_time
   FROM tmp_t7_u u
   INNER JOIN wangchuanliang.order_vir_f_copy v ON v.user_id = u.user_id
-  WHERE v.vir_date >= DATE '2026-09-02' AND v.is_pass1 = 1
+  WHERE v.vir_date >= DATE '2026-09-02' AND v.vir_date <= (CURRENT_DATE - 1) AND v.is_pass1 = 1
   GROUP BY v.user_id
 ),
 apply_u AS (
@@ -231,6 +242,7 @@ apply_u AS (
   INNER JOIN order_loan_f_v2_copy o
     ON o.user_id = pu.user_id
    AND o.apply_date >= DATE '2026-09-02'
+   AND o.apply_date <= (CURRENT_DATE - 1)
    AND o.apply_time >= pu.pass_time
 )
 SELECT u.strat,
@@ -250,7 +262,7 @@ WITH pass_u AS (
          MIN(COALESCE(TO_TIMESTAMP(v.vir_unix), v.vir_date::timestamp)) AS pass_time
   FROM tmp_t7_u u
   INNER JOIN wangchuanliang.order_vir_f_copy v ON v.user_id = u.user_id
-  WHERE v.vir_date >= DATE '2026-09-02' AND v.is_pass1 = 1
+  WHERE v.vir_date >= DATE '2026-09-02' AND v.vir_date <= (CURRENT_DATE - 1) AND v.is_pass1 = 1
   GROUP BY v.user_id
 ),
 apply_u AS (
@@ -259,6 +271,7 @@ apply_u AS (
   INNER JOIN order_loan_f_v2_copy o
     ON o.user_id = pu.user_id
    AND o.apply_date >= DATE '2026-09-02'
+   AND o.apply_date <= (CURRENT_DATE - 1)
    AND o.apply_time >= pu.pass_time
 )
 SELECT
