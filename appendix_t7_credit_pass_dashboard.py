@@ -843,7 +843,7 @@ h1{{font-size:24px;margin:8px 0 6px}}
 .grid{{display:grid;grid-template-columns:1fr 1fr;gap:14px}}
 .chart h3{{margin:0 0 4px;font-size:15px}}
 .chart p{{margin:0 0 10px;font-size:12px;color:var(--muted)}}
-.box{{height:300px;position:relative;overflow:hidden}}
+.box{{height:300px;position:relative;overflow:visible}}
 .foot{{color:#7fa6c2;font-size:12px;margin-top:28px;border-top:1px solid var(--line);padding-top:14px;line-height:1.8}}
 .appendix{{margin-top:36px;border-top:1px solid var(--line);padding-top:8px}}
 .appendix h2{{font-size:18px;margin:22px 0 10px}}
@@ -903,15 +903,41 @@ Chart.defaults.font.family='-apple-system,BlinkMacSystemFont,"PingFang SC","Micr
 Chart.defaults.color='#aac5da';
 function base(y2) {
   const scales = {
-    x: {ticks:{color:'#aac5da', maxRotation:45}, grid:{display:false}},
+    x: {ticks:{color:'#aac5da', maxRotation:45, autoSkip:true, autoSkipPadding:6}, grid:{display:false}},
     y: {type:'linear', position:'left', ticks:{color:'#aac5da'}, grid:{color:'rgba(42,92,126,.25)'}}
   };
   if (y2) scales.y2 = {type:'linear', position:'right', ticks:{color:'#ffc26b'}, grid:{drawOnChartArea:false}};
   return {responsive:true, maintainAspectRatio:false, interaction:{mode:'index', intersect:false},
-    plugins:{legend:{labels:{color:'#eff8ff', padding:16}}}, scales};
+    layout:{padding:{top:10,right:18,bottom:4,left:4}},
+    plugins:{
+      legend:{labels:{color:'#eff8ff', padding:16}},
+      tooltip:{
+        enabled:true,
+        position:'keepIn',
+        xAlign:'left',
+        yAlign:'center',
+        padding:10,
+        caretPadding:8,
+        displayColors:true
+      }
+    },
+    scales};
 }
-function line(id, labels, datasets, y2) {
-  new Chart(document.getElementById(id), {type:'line', data:{labels, datasets}, options:base(y2)});
+if (typeof Chart !== 'undefined' && Chart.Tooltip && !Chart.Tooltip.positioners.keepIn) {
+  Chart.Tooltip.positioners.keepIn = function(items, eventPosition) {
+    const nearest = Chart.Tooltip.positioners.nearest.call(this, items, eventPosition);
+    if (!nearest) return false;
+    const area = this.chart.chartArea;
+    let x = nearest.x, y = nearest.y;
+    const cut = area.left + (area.right - area.left) * 0.62;
+    if (x > cut) x = Math.max(area.left + 8, x - 120);
+    y = Math.min(Math.max(y, area.top + 8), area.bottom - 8);
+    return {x, y};
+  };
+}
+function line(id, labels, datasets, y2, extraOpt) {
+  const opt = Object.assign(base(y2), extraOpt || {});
+  new Chart(document.getElementById(id), {type:'line', data:{labels, datasets}, options:opt});
 }
 function drawRateLabels(chart) {
   const {ctx} = chart;
@@ -938,9 +964,25 @@ function drawRateLabels(chart) {
 }
 const fd = D.first_daily, ad = D.apply_daily, rd = D.remit_daily, dd = D.due_daily, k=D.kpi;
 line('c1', fd.map(x=>x.d.slice(5)), [
-  {label:'累计提单人数', data:fd.map(x=>x.cum), borderColor:col.cy, backgroundColor:'rgba(67,199,231,.12)', fill:true, tension:.25, yAxisID:'y', pointRadius:2},
-  {label:'提单率%', data:fd.map(x=>x.rate), borderColor:col.am, tension:.25, yAxisID:'y2', pointRadius:2}
-], true);
+  {label:'累计提单人数', data:fd.map(x=>x.cum), borderColor:col.cy, backgroundColor:'rgba(67,199,231,.12)', fill:true, tension:.25, yAxisID:'y', pointRadius:3, pointHitRadius:16},
+  {label:'提单率%', data:fd.map(x=>x.rate), borderColor:col.am, tension:.25, yAxisID:'y2', pointRadius:3, pointHitRadius:16}
+], true, {
+  plugins: Object.assign({}, base(true).plugins, {
+    tooltip: Object.assign({}, base(true).plugins.tooltip, {
+      callbacks: {
+        title(items) {
+          const i = items[0].dataIndex;
+          return (fd[i] && fd[i].d) ? fd[i].d : items[0].label;
+        },
+        afterBody(items) {
+          const r = fd[items[0].dataIndex];
+          if (!r) return [];
+          return ['累计获额通过 ' + Number(r.cum_pass || 0).toLocaleString()];
+        }
+      }
+    })
+  })
+});
 new Chart(document.getElementById('c2'), {type:'bar', data:{labels:fd.map(x=>x.d.slice(5)), datasets:[
   {label:'当日首次提单', data:fd.map(x=>x.n), backgroundColor:col.gr}
 ]}, options:base(false)});
@@ -1103,9 +1145,25 @@ def charts_js_for(pfx: str) -> str:
     js = r"""
 const fd = D.first_daily, ad = D.apply_daily, rd = D.remit_daily, dd = D.due_daily, k=D.kpi;
 line('__P__c1', fd.map(x=>x.d.slice(5)), [
-  {label:'累计提单人数', data:fd.map(x=>x.cum), borderColor:col.cy, backgroundColor:'rgba(67,199,231,.12)', fill:true, tension:.25, yAxisID:'y', pointRadius:2},
-  {label:'提单率%', data:fd.map(x=>x.rate), borderColor:col.am, tension:.25, yAxisID:'y2', pointRadius:2}
-], true);
+  {label:'累计提单人数', data:fd.map(x=>x.cum), borderColor:col.cy, backgroundColor:'rgba(67,199,231,.12)', fill:true, tension:.25, yAxisID:'y', pointRadius:3, pointHitRadius:16},
+  {label:'提单率%', data:fd.map(x=>x.rate), borderColor:col.am, tension:.25, yAxisID:'y2', pointRadius:3, pointHitRadius:16}
+], true, {
+  plugins: Object.assign({}, base(true).plugins, {
+    tooltip: Object.assign({}, base(true).plugins.tooltip, {
+      callbacks: {
+        title(items) {
+          const i = items[0].dataIndex;
+          return (fd[i] && fd[i].d) ? fd[i].d : items[0].label;
+        },
+        afterBody(items) {
+          const r = fd[items[0].dataIndex];
+          if (!r) return [];
+          return ['累计获额通过 ' + Number(r.cum_pass || 0).toLocaleString()];
+        }
+      }
+    })
+  })
+});
 new Chart(document.getElementById('__P__c2'), {type:'bar', data:{labels:fd.map(x=>x.d.slice(5)), datasets:[
   {label:'当日首次提单', data:fd.map(x=>x.n), backgroundColor:col.gr}
 ]}, options:base(false)});
@@ -1220,7 +1278,7 @@ h1{{font-size:24px;margin:8px 0 6px}}
 .grid{{display:grid;grid-template-columns:1fr 1fr;gap:14px}}
 .chart h3{{margin:0 0 4px;font-size:15px}}
 .chart p{{margin:0 0 10px;font-size:12px;color:var(--muted)}}
-.box{{height:300px;position:relative;overflow:hidden}}
+.box{{height:300px;position:relative;overflow:visible}}
 .box.pie{{height:280px}}
 .foot{{color:#7fa6c2;font-size:12px;margin-top:28px;border-top:1px solid var(--line);padding-top:14px;line-height:1.8}}
 .appendix{{margin-top:36px;border-top:1px solid var(--line);padding-top:8px;text-align:left}}
@@ -1273,15 +1331,40 @@ Chart.register({{
 }});
 function base(y2) {{
   const scales = {{
-    x: {{ticks:{{color:'#aac5da', maxRotation:45}}, grid:{{display:false}}}},
+    x: {{ticks:{{color:'#aac5da', maxRotation:45, autoSkip:true, autoSkipPadding:6}}, grid:{{display:false}}}},
     y: {{type:'linear', position:'left', ticks:{{color:'#aac5da'}}, grid:{{color:'rgba(42,92,126,.25)'}}}}
   }};
   if (y2) scales.y2 = {{type:'linear', position:'right', ticks:{{color:'#ffc26b'}}, grid:{{drawOnChartArea:false}}}};
   return {{responsive:true, maintainAspectRatio:false, interaction:{{mode:'index', intersect:false}},
-    plugins:{{legend:{{labels:{{color:'#eff8ff', padding:16}}}}}}, scales}};
+    layout:{{padding:{{top:10,right:18,bottom:4,left:4}}}},
+    plugins:{{
+      legend:{{labels:{{color:'#eff8ff', padding:16}}}},
+      tooltip:{{
+        enabled:true,
+        position:'keepIn',
+        xAlign:'left',
+        yAlign:'center',
+        padding:10,
+        caretPadding:8,
+        displayColors:true
+      }}
+    }}, scales}};
 }}
-function line(id, labels, datasets, y2) {{
-  new Chart(document.getElementById(id), {{type:'line', data:{{labels, datasets}}, options:base(y2)}});
+if (typeof Chart !== 'undefined' && Chart.Tooltip && !Chart.Tooltip.positioners.keepIn) {{
+  Chart.Tooltip.positioners.keepIn = function(items, eventPosition) {{
+    const nearest = Chart.Tooltip.positioners.nearest.call(this, items, eventPosition);
+    if (!nearest) return false;
+    const area = this.chart.chartArea;
+    let x = nearest.x, y = nearest.y;
+    const cut = area.left + (area.right - area.left) * 0.62;
+    if (x > cut) x = Math.max(area.left + 8, x - 120);
+    y = Math.min(Math.max(y, area.top + 8), area.bottom - 8);
+    return {{x, y}};
+  }};
+}}
+function line(id, labels, datasets, y2, extraOpt) {{
+  const opt = Object.assign(base(y2), extraOpt || {{}});
+  new Chart(document.getElementById(id), {{type:'line', data:{{labels, datasets}}, options:opt}});
 }}
 function drawRateLabels(chart) {{
   const {{ctx}} = chart;

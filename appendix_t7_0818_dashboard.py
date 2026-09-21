@@ -647,7 +647,7 @@ h1{{font-size:24px;margin:8px 0 6px}}
 .grid{{display:grid;grid-template-columns:1fr 1fr;gap:14px}}
 .chart h3{{margin:0 0 4px;font-size:15px}}
 .chart p{{margin:0 0 10px;font-size:12px;color:var(--muted)}}
-.box{{height:300px;position:relative;overflow:hidden}}
+.box{{height:300px;position:relative;overflow:visible}}
 .foot{{color:#7fa6c2;font-size:12px;margin-top:28px;border-top:1px solid var(--line);padding-top:14px;line-height:1.8}}
 .appendix{{margin-top:36px;border-top:1px solid var(--line);padding-top:8px}}
 .appendix h2{{font-size:18px;margin:22px 0 10px}}
@@ -703,15 +703,41 @@ Chart.defaults.font.family='-apple-system,BlinkMacSystemFont,"PingFang SC","Micr
 Chart.defaults.color='#aac5da';
 function base(y2) {
   const scales = {
-    x: {ticks:{color:'#aac5da', maxRotation:45}, grid:{display:false}},
+    x: {ticks:{color:'#aac5da', maxRotation:45, autoSkip:true, autoSkipPadding:6}, grid:{display:false}},
     y: {type:'linear', position:'left', ticks:{color:'#aac5da'}, grid:{color:'rgba(42,92,126,.25)'}}
   };
   if (y2) scales.y2 = {type:'linear', position:'right', ticks:{color:'#ffc26b'}, grid:{drawOnChartArea:false}};
   return {responsive:true, maintainAspectRatio:false, interaction:{mode:'index', intersect:false},
-    plugins:{legend:{labels:{color:'#eff8ff', padding:16}}}, scales};
+    layout:{padding:{top:10,right:18,bottom:4,left:4}},
+    plugins:{
+      legend:{labels:{color:'#eff8ff', padding:16}},
+      tooltip:{
+        enabled:true,
+        position:'keepIn',
+        xAlign:'left',
+        yAlign:'center',
+        padding:10,
+        caretPadding:8,
+        displayColors:true
+      }
+    },
+    scales};
 }
-function line(id, labels, datasets, y2) {
-  new Chart(document.getElementById(id), {type:'line', data:{labels, datasets}, options:base(y2)});
+if (typeof Chart !== 'undefined' && Chart.Tooltip && !Chart.Tooltip.positioners.keepIn) {
+  Chart.Tooltip.positioners.keepIn = function(items, eventPosition) {
+    const nearest = Chart.Tooltip.positioners.nearest.call(this, items, eventPosition);
+    if (!nearest) return false;
+    const area = this.chart.chartArea;
+    let x = nearest.x, y = nearest.y;
+    const cut = area.left + (area.right - area.left) * 0.62;
+    if (x > cut) x = Math.max(area.left + 8, x - 120);
+    y = Math.min(Math.max(y, area.top + 8), area.bottom - 8);
+    return {x, y};
+  };
+}
+function line(id, labels, datasets, y2, extraOpt) {
+  const opt = Object.assign(base(y2), extraOpt || {});
+  new Chart(document.getElementById(id), {type:'line', data:{labels, datasets}, options:opt});
 }
 function drawRateLabels(chart) {
   const {ctx} = chart;
@@ -1021,7 +1047,7 @@ h1{{font-size:24px;margin:8px 0 6px}}
 .grid{{display:grid;grid-template-columns:1fr 1fr;gap:14px}}
 .chart h3{{margin:0 0 4px;font-size:15px}}
 .chart p{{margin:0 0 10px;font-size:12px;color:var(--muted)}}
-.box{{height:300px;position:relative;overflow:hidden}}
+.box{{height:300px;position:relative;overflow:visible}}
 @media(max-width:900px){{.kpis,.grid{{grid-template-columns:1fr}}}}
 </style>
 </head>
@@ -1052,15 +1078,40 @@ Chart.register({{
 }});
 function base(y2) {{
   const scales = {{
-    x: {{ticks:{{color:'#aac5da', maxRotation:45}}, grid:{{display:false}}}},
+    x: {{ticks:{{color:'#aac5da', maxRotation:45, autoSkip:true, autoSkipPadding:6}}, grid:{{display:false}}}},
     y: {{type:'linear', position:'left', ticks:{{color:'#aac5da'}}, grid:{{color:'rgba(42,92,126,.25)'}}}}
   }};
   if (y2) scales.y2 = {{type:'linear', position:'right', ticks:{{color:'#ffc26b'}}, grid:{{drawOnChartArea:false}}}};
   return {{responsive:true, maintainAspectRatio:false, interaction:{{mode:'index', intersect:false}},
-    plugins:{{legend:{{labels:{{color:'#eff8ff', padding:16}}}}}}, scales}};
+    layout:{{padding:{{top:10,right:18,bottom:4,left:4}}}},
+    plugins:{{
+      legend:{{labels:{{color:'#eff8ff', padding:16}}}},
+      tooltip:{{
+        enabled:true,
+        position:'keepIn',
+        xAlign:'left',
+        yAlign:'center',
+        padding:10,
+        caretPadding:8,
+        displayColors:true
+      }}
+    }}, scales}};
 }}
-function line(id, labels, datasets, y2) {{
-  new Chart(document.getElementById(id), {{type:'line', data:{{labels, datasets}}, options:base(y2)}});
+if (typeof Chart !== 'undefined' && Chart.Tooltip && !Chart.Tooltip.positioners.keepIn) {{
+  Chart.Tooltip.positioners.keepIn = function(items, eventPosition) {{
+    const nearest = Chart.Tooltip.positioners.nearest.call(this, items, eventPosition);
+    if (!nearest) return false;
+    const area = this.chart.chartArea;
+    let x = nearest.x, y = nearest.y;
+    const cut = area.left + (area.right - area.left) * 0.62;
+    if (x > cut) x = Math.max(area.left + 8, x - 120);
+    y = Math.min(Math.max(y, area.top + 8), area.bottom - 8);
+    return {{x, y}};
+  }};
+}}
+function line(id, labels, datasets, y2, extraOpt) {{
+  const opt = Object.assign(base(y2), extraOpt || {{}});
+  new Chart(document.getElementById(id), {{type:'line', data:{{labels, datasets}}, options:opt}});
 }}
 function drawRateLabels(chart) {{
   const {{ctx}} = chart;
