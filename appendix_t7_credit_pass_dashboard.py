@@ -964,8 +964,8 @@ function drawRateLabels(chart) {
 }
 const fd = D.first_daily, ad = D.apply_daily, rd = D.remit_daily, dd = D.due_daily, k=D.kpi;
 line('c1', fd.map(x=>x.d.slice(5)), [
-  {label:'累计提单人数', data:fd.map(x=>x.cum), borderColor:col.cy, backgroundColor:'rgba(67,199,231,.12)', fill:true, tension:.25, yAxisID:'y', pointRadius:4, pointHoverRadius:6, pointHitRadius:20, borderWidth:2, clip:false},
-  {label:'提单率%', data:fd.map(x=>x.rate), borderColor:col.am, tension:.25, yAxisID:'y2', pointRadius:4, pointHoverRadius:6, pointHitRadius:20, borderWidth:2, clip:false}
+  {label:'累计提单人数', data:fd.map(x=>x.cum), borderColor:col.cy, backgroundColor:'rgba(67,199,231,.12)', fill:true, tension:.25, yAxisID:'y', pointStyle:'circle', pointRadius:4, pointHoverRadius:6, pointHitRadius:20, pointBackgroundColor:col.cy, pointBorderColor:col.cy, borderWidth:2, clip:false},
+  {label:'提单率%', data:fd.map(x=>x.rate), borderColor:col.am, backgroundColor:col.am, fill:false, tension:.25, yAxisID:'y2', pointStyle:'circle', pointRadius:4, pointHoverRadius:6, pointHitRadius:20, pointBackgroundColor:col.am, pointBorderColor:col.am, borderWidth:2, clip:false, showLine:true}
 ], true, {
   plugins: Object.assign({}, base(true).plugins, {
     tooltip: Object.assign({}, base(true).plugins.tooltip, {
@@ -982,11 +982,6 @@ line('c1', fd.map(x=>x.d.slice(5)), [
               Number(r.cum).toLocaleString() + ' / ' + Number(r.cum_pass).toLocaleString() + '）';
           }
           return '累计提单人数 ' + Number(r.cum).toLocaleString();
-        },
-        afterBody(items) {
-          const r = fd[items[0].dataIndex];
-          if (!r) return [];
-          return ['口径：截至当日累计提单用户 / 截至当日累计获额通过人数'];
         }
       }
     })
@@ -1154,9 +1149,12 @@ def charts_js_for(pfx: str) -> str:
     js = r"""
 const fd = D.first_daily, ad = D.apply_daily, rd = D.remit_daily, dd = D.due_daily, k=D.kpi;
 line('__P__c1', fd.map(x=>x.d.slice(5)), [
-  {label:'累计提单人数', data:fd.map(x=>x.cum), borderColor:col.cy, backgroundColor:'rgba(67,199,231,.12)', fill:true, tension:.25, yAxisID:'y', pointRadius:4, pointHoverRadius:6, pointHitRadius:20, borderWidth:2, clip:false},
-  {label:'提单率%', data:fd.map(x=>x.rate), borderColor:col.am, tension:.25, yAxisID:'y2', pointRadius:4, pointHoverRadius:6, pointHitRadius:20, borderWidth:2, clip:false}
+  {label:'累计提单人数', data:fd.map(x=>x.cum), borderColor:col.cy, backgroundColor:'rgba(67,199,231,.12)', fill:true, tension:.25, yAxisID:'y', pointStyle:'circle', pointRadius:4, pointHoverRadius:6, pointHitRadius:20, pointBackgroundColor:col.cy, pointBorderColor:col.cy, borderWidth:2, clip:false},
+  {label:'提单率%', data:fd.map(x=>x.rate), borderColor:col.am, backgroundColor:col.am, fill:false, tension:.25, yAxisID:'y2', pointStyle:'circle', pointRadius:4, pointHoverRadius:6, pointHitRadius:20, pointBackgroundColor:col.am, pointBorderColor:col.am, borderWidth:2, clip:false, showLine:true}
 ], true, {
+  scales: {
+    y2: {type:'linear', position:'right', ticks:{color:'#ffc26b'}, grid:{drawOnChartArea:false}, min:0, max:100}
+  },
   plugins: Object.assign({}, base(true).plugins, {
     tooltip: Object.assign({}, base(true).plugins.tooltip, {
       callbacks: {
@@ -1172,11 +1170,6 @@ line('__P__c1', fd.map(x=>x.d.slice(5)), [
               Number(r.cum).toLocaleString() + ' / ' + Number(r.cum_pass).toLocaleString() + '）';
           }
           return '累计提单人数 ' + Number(r.cum).toLocaleString();
-        },
-        afterBody(items) {
-          const r = fd[items[0].dataIndex];
-          if (!r) return [];
-          return ['口径：截至当日累计提单用户 / 截至当日累计获额通过人数'];
         }
       }
     })
@@ -1290,8 +1283,8 @@ h1{{font-size:24px;margin:8px 0 6px}}
 .chart h3{{margin:0 0 4px;font-size:15px}}
 .chart p{{margin:0 0 10px;font-size:12px;color:var(--muted)}}
 .box{{height:300px;position:relative;overflow:visible}}
-.chart-tip{{position:absolute;z-index:20;pointer-events:none;opacity:0;background:#0c2944;border:1px solid #2a5c7e;color:#eff8ff;padding:8px 10px;border-radius:8px;font-size:12px;line-height:1.55;white-space:nowrap;box-shadow:0 8px 20px rgba(0,0,0,.35)}}
-.chart-tip .t{{color:var(--cy);font-weight:700;margin-bottom:4px}}
+.chart-tip{{position:absolute;z-index:20;pointer-events:none;opacity:0;background:transparent;border:none;box-shadow:none;color:#eff8ff;padding:0;font-size:12px;line-height:1.55;white-space:nowrap;font-weight:600}}
+.chart-tip .t{{color:var(--cy);font-weight:700;margin-bottom:2px}}
 .foot{{color:#7fa6c2;font-size:12px;margin-top:28px;border-top:1px solid var(--line);padding-top:14px;line-height:1.8}}
 @media(max-width:900px){{.kpis,.grid{{grid-template-columns:1fr}}}}
 </style>
@@ -1327,9 +1320,7 @@ function htmlTip(ctx) {{
   }}
   const title = (tooltip.title || []).join(' ');
   const lines = (tooltip.body || []).map(b => (b.lines || []).join(' '));
-  const foot = (tooltip.afterBody || []).join('<br>');
-  el.innerHTML = '<div class="t">' + title + '</div>' + lines.map(l => '<div>' + l + '</div>').join('') +
-    (foot ? '<div>' + foot + '</div>' : '');
+  el.innerHTML = '<div class="t">' + title + '</div>' + lines.map(l => '<div>' + l + '</div>').join('');
   const w = el.offsetWidth || 180, h = el.offsetHeight || 70;
   let left = tooltip.caretX + 14;
   if (left + w > wrap.clientWidth - 6) left = tooltip.caretX - w - 14;
@@ -1358,10 +1349,14 @@ function base(y2) {{
     }}, scales}};
 }}
 function line(id, labels, datasets, y2, extraOpt) {{
-  const opt = Object.assign(base(y2), extraOpt || {{}});
-  if (extraOpt && extraOpt.plugins && extraOpt.plugins.tooltip) {{
-    opt.plugins = Object.assign({{}}, base(y2).plugins, extraOpt.plugins);
-    opt.plugins.tooltip = Object.assign({{enabled:false, external:htmlTip}}, extraOpt.plugins.tooltip, {{enabled:false, external:htmlTip}});
+  const baseOpt = base(y2);
+  const opt = Object.assign({{}}, baseOpt, extraOpt || {{}});
+  if (extraOpt && extraOpt.plugins) {{
+    opt.plugins = Object.assign({{}}, baseOpt.plugins, extraOpt.plugins);
+    opt.plugins.tooltip = Object.assign({{enabled:false, external:htmlTip}}, extraOpt.plugins.tooltip || {{}}, {{enabled:false, external:htmlTip}});
+  }}
+  if (extraOpt && extraOpt.scales) {{
+    opt.scales = Object.assign({{}}, baseOpt.scales, extraOpt.scales);
   }}
   opt.clip = false;
   new Chart(document.getElementById(id), {{type:'line', data:{{labels, datasets}}, options:opt}});
