@@ -1,0 +1,472 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>T7 召回看板 · 获额通过口径 · 2026-09-17</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+<style>
+:root{--bg:#071b2f;--card:#0c2944;--line:#2a5c7e;--text:#eff8ff;--muted:#aac5da;--cy:#43c7e7;--gr:#64dcae;--am:#ffc26b;--pk:#f68ab0}
+*{box-sizing:border-box}body{margin:0;background:#06192b;color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei",sans-serif}
+.wrap{max-width:1480px;margin:auto;padding:24px 28px 64px}
+.top{text-align:center;border-bottom:1px solid var(--line);padding-bottom:16px}
+.kicker{color:var(--cy);font-size:12px;letter-spacing:2px;font-weight:700}
+h1{font-size:24px;margin:8px 0 6px}
+.meta{color:var(--muted);font-size:13px;line-height:1.7}
+.kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin:18px 0}
+.card{background:rgba(10,41,68,.95);border:1px solid var(--line);border-radius:14px;padding:16px}
+.label{color:var(--muted);font-size:12px}
+.num{font-size:26px;font-weight:800;margin:6px 0 2px;color:var(--cy);line-height:1.15}
+.num.g{color:var(--gr)}.num.a{color:var(--am)}.num.p{color:var(--pk)}
+.sub{color:var(--muted);font-size:12px}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.chart h3{margin:0 0 4px;font-size:15px}
+.chart p{margin:0 0 10px;font-size:12px;color:var(--muted)}
+.box{height:300px;position:relative;overflow:hidden}
+.foot{color:#7fa6c2;font-size:12px;margin-top:28px;border-top:1px solid var(--line);padding-top:14px;line-height:1.8}
+.appendix{margin-top:36px;border-top:1px solid var(--line);padding-top:8px}
+.appendix h2{font-size:18px;margin:22px 0 10px}
+.appendix p,.appendix li{color:var(--muted);font-size:13px;line-height:1.8}
+.appendix ul{padding-left:1.2em}
+details.code{margin:10px 0;background:rgba(10,41,68,.95);border:1px solid var(--line);border-radius:12px;padding:10px 14px}
+details.code summary{cursor:pointer;color:var(--cy);font-weight:700;font-size:13px}
+details.code pre{overflow:auto;max-height:520px;font-size:11px;line-height:1.45;color:#d7ecf8;white-space:pre-wrap;word-break:break-word}
+@media(max-width:900px){.kpis,.grid{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<main class="wrap">
+<div class="top">
+  <div class="kicker">DASHBOARD · T7+ RECALL · CREDIT PASS · 2026-09-17</div>
+  <h1>流失 7 天以上召回 · 获额通过口径看板</h1>
+  <p class="meta">名单 1,493 人 · 获额通过 150 人 · 统计至 2026-09-21 · 本周 2026-09-21 起（周一）</p>
+</div>
+<section class="kpis">
+  <article class="card"><div class="label">获额人数</div><div class="num">154</div><div class="sub">9/17至今发起获额</div></article>
+  <article class="card"><div class="label">获额通过人数</div><div class="num g">150</div><div class="sub">is_pass1=1</div></article>
+  <article class="card"><div class="label">获额通过率</div><div class="num a">97.40%</div><div class="sub">150 / 154</div></article>
+  <article class="card"><div class="label">提单人数</div><div class="num g">70</div><div class="sub">获额通过后提单去重用户</div></article>
+  <article class="card"><div class="label">提单率</div><div class="num a">46.67%</div><div class="sub">70 / 150 · 分母=获额通过</div></article>
+  <article class="card"><div class="label">提单订单量</div><div class="num">70</div><div class="sub">获额通过后提单订单数</div></article>
+  <article class="card"><div class="label">本周提单人数</div><div class="num">0</div><div class="sub">通过后本周有过提单的去重用户</div></article>
+  <article class="card"><div class="label">本周新增提单人数</div><div class="num p">0</div><div class="sub">通过后首次提单落在本周</div></article>
+  <article class="card"><div class="label">放款单量</div><div class="num g">173</div><div class="sub">9/17至今已放款订单数</div></article>
+  <article class="card"><div class="label">本周新增放款单量</div><div class="num">1</div><div class="sub">本周新放款订单数</div></article>
+  <article class="card"><div class="label">订单盈利率</div><div class="num a">—</div><div class="sub">到期订单</div></article>
+  <article class="card"><div class="label">订单逾期率</div><div class="num p">—</div><div class="sub">到期订单</div></article>
+</section>
+<div class="grid">
+  <div class="card chart"><h3>累计提单人数与提单率</h3><p>按获额通过后首次提单日累计，分母=获额通过 150</p><div class="box"><canvas id="c1"></canvas></div></div>
+  <div class="card chart"><h3>每日新增首次提单</h3><p>每人只记通过后第一笔提单所在日</p><div class="box"><canvas id="c2"></canvas></div></div>
+</div>
+<div class="grid" style="margin-top:14px">
+  <div class="card chart"><h3>每日提单用户</h3><p>获额通过后当日有过提单的去重用户</p><div class="box"><canvas id="c3"></canvas></div></div>
+  <div class="card chart"><h3>每日放款单量与累计</h3><p>已放款订单；本周新增见 KPI</p><div class="box"><canvas id="c4"></canvas></div></div>
+</div>
+<div class="grid" style="margin-top:14px">
+  <div class="card chart"><h3>按到期日的盈利率</h3><p>当日到期放款单 (repaid−remit)/remit</p><div class="box"><canvas id="c5"></canvas></div></div>
+  <div class="card chart"><h3>按到期日的逾期率</h3><p>当日到期单中 loan_status_code=8 占比</p><div class="box"><canvas id="c6"></canvas></div></div>
+</div>
+<div class="grid" style="margin-top:14px">
+  <div class="card chart"><h3>转化结构</h3><p>获额通过后已提单 vs 尚未提单</p><div class="box pie"><canvas id="c7"></canvas></div></div>
+  <div class="card chart"><h3>本周 vs 累计</h3><p>本周新增提单用户 / 本周提单用户 / 本周放款单量</p><div class="box"><canvas id="c8"></canvas></div></div>
+</div>
+<div class="grid" style="margin-top:14px">
+  <div class="card chart"><h3>分层 strat 提单率</h3><p>获额通过人数柱 + 通过后提单率折线</p><div class="box"><canvas id="c9"></canvas></div></div>
+  <div class="card chart"><h3>流失天数提单率</h3><p>分母为该档获额通过人数</p><div class="box"><canvas id="c10"></canvas></div></div>
+</div>
+<section class="appendix" id="method">
+<h2>口径说明</h2>
+<ul>
+<li>名单：<code>wangchuanliang.t7recalllist_0917</code>，批次日 <code>2026-09-17</code>，按 <code>churn_user_id</code> 去重。该表无可用召回日日期字段，以整表为该批次名单。</li>
+<li>获额：名单用户在 <code>order_vir_f_copy</code> 上 <code>vir_date ≥ 2026-09-17</code> 去重为获额人数；<code>is_pass1 = 1</code> 去重为获额通过人数。获额通过率 = 获额通过人数 / 获额人数。</li>
+<li>提单：获额通过后 <code>apply_time ≥ 首次通过时间</code> 且 <code>apply_date ≥ 2026-09-17</code>。提单人数=通过后任意提单用户去重；提单率 = 提单人数 / 获额通过人数；提单订单量=通过后提单订单数。本周提单 / 本周新增提单均在通过后口径下统计。</li>
+<li>放款：<code>is_remit = 1</code> 且 <code>remit_amt &gt; 0</code>，召回日后提单订单（与原看板一致）；本周新增放款按放款日（本页为 <code>o.remit_date::date</code>）落在本周的订单数。</li>
+<li>到期盈利 / 逾期：召回后提单且 <code>is_due = 1</code>、<code>is_remit = 1</code>、<code>remit_amt &gt; 0</code>。盈利率 = <code>(repaid_amt − remit_amt) / remit_amt</code>；逾期率 = <code>loan_status_code = 8</code> 占到期放款单。</li>
+<li>转化结构：获额通过后已提单 vs 尚未提单。分层 / 流失天数：该档获额通过人数与对应提单率。</li>
+</ul>
+<h2>附录：完整 PGSQL</h2>
+<details class="code"><summary>完整 PGSQL（点击展开）</summary><pre>-- T7 召回看板 · 获额通过口径 · 可复现 PGSQL
+-- 库：kaby_dw · schema：wangchuanliang
+-- 名单：wangchuanliang.t7recalllist_0917
+-- 触达日：2026-09-17
+-- 获额：order_vir_f_copy.vir_date &gt;= 召回日
+-- 获额通过：is_pass1 = 1；首次通过时间 = MIN(COALESCE(TO_TIMESTAMP(vir_unix), vir_date::timestamp))
+-- 提单：获额通过后 apply_time &gt;= pass_time 且 apply_date &gt;= 召回日
+-- 提单率分母：获额通过人数
+-- 放款/到期：仍为召回日后提单订单（与原看板一致）
+-- 放款日：优先 o.remit_date::date（无该列时用 o.apply_date::date）
+-- 本文件当前放款日表达式：o.remit_date::date
+-- 本周：DATE_TRUNC(&#x27;week&#x27;, CURRENT_DATE)::date（周一）
+-- 执行前：SET search_path TO wangchuanliang, public;
+
+SET search_path TO wangchuanliang, public;
+
+-- ---------------------------------------------------------------------------
+-- 0) 放款日字段是否存在（结果有行则用 remit_date，否则用 apply_date）
+-- ---------------------------------------------------------------------------
+SELECT 1 AS has_remit_date
+FROM information_schema.columns
+WHERE table_schema = &#x27;wangchuanliang&#x27;
+  AND table_name = &#x27;order_loan_f_v2_copy&#x27;
+  AND column_name = &#x27;remit_date&#x27;;
+
+-- ---------------------------------------------------------------------------
+-- 1) 召回名单（去重用户）
+-- ---------------------------------------------------------------------------
+DROP TABLE IF EXISTS tmp_t7_u;
+CREATE TEMP TABLE tmp_t7_u AS
+SELECT DISTINCT churn_user_id::bigint AS user_id,
+       COALESCE(strat, &#x27;NA&#x27;) AS strat,
+       churn_days
+FROM wangchuanliang.t7recalllist_0917
+WHERE churn_user_id IS NOT NULL;
+
+-- ---------------------------------------------------------------------------
+-- 2) KPI（获额、获额通过、通过后提单、放款、到期盈利与逾期）
+-- ---------------------------------------------------------------------------
+WITH params AS (
+    SELECT DATE &#x27;2026-09-17&#x27; AS recall_dt,
+           DATE_TRUNC(&#x27;week&#x27;, CURRENT_DATE)::date AS week_start,
+           CURRENT_DATE AS as_of
+),
+vir_u AS (
+    SELECT DISTINCT v.user_id
+    FROM tmp_t7_u u
+    INNER JOIN wangchuanliang.order_vir_f_copy v ON v.user_id = u.user_id
+    CROSS JOIN params p
+    WHERE v.vir_date &gt;= p.recall_dt
+),
+pass_u AS (
+    SELECT v.user_id,
+           MIN(COALESCE(TO_TIMESTAMP(v.vir_unix), v.vir_date::timestamp)) AS pass_time
+    FROM tmp_t7_u u
+    INNER JOIN wangchuanliang.order_vir_f_copy v ON v.user_id = u.user_id
+    CROSS JOIN params p
+    WHERE v.vir_date &gt;= p.recall_dt AND v.is_pass1 = 1
+    GROUP BY v.user_id
+),
+apply_after AS (
+    SELECT o.user_id, o.apply_date
+    FROM pass_u pu
+    INNER JOIN order_loan_f_v2_copy o ON o.user_id = pu.user_id
+    CROSS JOIN params p
+    WHERE o.apply_date &gt;= p.recall_dt
+      AND o.apply_time &gt;= pu.pass_time
+),
+apply_u AS (
+    SELECT DISTINCT user_id FROM apply_after
+),
+first_apply AS (
+    SELECT user_id, MIN(apply_date) AS first_dt
+    FROM apply_after
+    GROUP BY user_id
+)
+SELECT
+    (SELECT COUNT(*) FROM tmp_t7_u) AS n_user,
+    (SELECT COUNT(*) FROM vir_u) AS n_vir,
+    (SELECT COUNT(*) FROM pass_u) AS n_pass,
+    ROUND(100.0 * (SELECT COUNT(*) FROM pass_u)
+        / NULLIF((SELECT COUNT(*) FROM vir_u), 0), 2) AS pass_rate,
+    (SELECT COUNT(*) FROM apply_u) AS n_apply,
+    ROUND(100.0 * (SELECT COUNT(*) FROM apply_u)
+        / NULLIF((SELECT COUNT(*) FROM pass_u), 0), 2) AS apply_rate,
+    (SELECT COUNT(*) FROM apply_after) AS n_apply_order,
+    (SELECT COUNT(DISTINCT aa.user_id)
+     FROM apply_after aa
+     CROSS JOIN params p
+     WHERE aa.apply_date &gt;= p.week_start AND aa.apply_date &lt;= p.as_of) AS n_apply_week,
+    (SELECT COUNT(*) FROM first_apply f CROSS JOIN params p
+     WHERE f.first_dt &gt;= p.week_start AND f.first_dt &lt;= p.as_of) AS n_first_week,
+    (SELECT COUNT(*)
+     FROM tmp_t7_u u
+     INNER JOIN order_loan_f_v2_copy o ON o.user_id = u.user_id
+     CROSS JOIN params p
+     WHERE o.apply_date &gt;= p.recall_dt AND o.is_remit = 1
+       AND COALESCE(o.remit_amt, 0) &gt; 0) AS n_remit,
+    (SELECT COUNT(*)
+     FROM tmp_t7_u u
+     INNER JOIN order_loan_f_v2_copy o ON o.user_id = u.user_id
+     CROSS JOIN params p
+     WHERE o.apply_date &gt;= p.recall_dt AND o.is_remit = 1
+       AND COALESCE(o.remit_amt, 0) &gt; 0
+       AND o.remit_date::date &gt;= p.week_start AND o.remit_date::date &lt;= p.as_of) AS n_remit_week,
+    (SELECT COUNT(*)
+     FROM tmp_t7_u u
+     INNER JOIN order_loan_f_v2_copy o ON o.user_id = u.user_id
+     CROSS JOIN params p
+     WHERE o.apply_date &gt;= p.recall_dt AND o.is_due = 1 AND o.is_remit = 1
+       AND COALESCE(o.remit_amt, 0) &gt; 0) AS n_due,
+    (SELECT COUNT(*)
+     FROM tmp_t7_u u
+     INNER JOIN order_loan_f_v2_copy o ON o.user_id = u.user_id
+     CROSS JOIN params p
+     WHERE o.apply_date &gt;= p.recall_dt AND o.is_due = 1 AND o.is_remit = 1
+       AND COALESCE(o.remit_amt, 0) &gt; 0 AND o.loan_status_code = 8) AS n_due_od,
+    (SELECT SUM(COALESCE(o.repaid_amt, 0))
+     FROM tmp_t7_u u
+     INNER JOIN order_loan_f_v2_copy o ON o.user_id = u.user_id
+     CROSS JOIN params p
+     WHERE o.apply_date &gt;= p.recall_dt AND o.is_due = 1 AND o.is_remit = 1
+       AND COALESCE(o.remit_amt, 0) &gt; 0) AS due_repaid,
+    (SELECT SUM(o.remit_amt)
+     FROM tmp_t7_u u
+     INNER JOIN order_loan_f_v2_copy o ON o.user_id = u.user_id
+     CROSS JOIN params p
+     WHERE o.apply_date &gt;= p.recall_dt AND o.is_due = 1 AND o.is_remit = 1
+       AND COALESCE(o.remit_amt, 0) &gt; 0) AS due_remit,
+    (SELECT week_start FROM params) AS week_start,
+    (SELECT as_of FROM params) AS as_of;
+
+-- 获额通过率 = n_pass / n_vir
+-- 提单率 = n_apply / n_pass
+-- 盈利率 = (due_repaid - due_remit) / due_remit
+-- 逾期率 = n_due_od / n_due
+
+-- ---------------------------------------------------------------------------
+-- 3) 获额通过后首次提单日分布（累计人数、累计提单率；分母=获额通过人数）
+-- ---------------------------------------------------------------------------
+WITH pass_u AS (
+  SELECT v.user_id,
+         MIN(COALESCE(TO_TIMESTAMP(v.vir_unix), v.vir_date::timestamp)) AS pass_time
+  FROM tmp_t7_u u
+  INNER JOIN wangchuanliang.order_vir_f_copy v ON v.user_id = u.user_id
+  WHERE v.vir_date &gt;= DATE &#x27;2026-09-17&#x27; AND v.is_pass1 = 1
+  GROUP BY v.user_id
+),
+fa AS (
+  SELECT o.user_id, MIN(o.apply_date) AS first_apply
+  FROM pass_u pu
+  INNER JOIN order_loan_f_v2_copy o
+    ON o.user_id = pu.user_id
+   AND o.apply_date &gt;= DATE &#x27;2026-09-17&#x27;
+   AND o.apply_time &gt;= pu.pass_time
+  GROUP BY o.user_id
+)
+SELECT first_apply::text AS d, COUNT(*) AS n
+FROM fa
+GROUP BY first_apply
+ORDER BY first_apply;
+
+-- ---------------------------------------------------------------------------
+-- 4) 每日提单用户（获额通过后当日有过提单的去重用户）与当日提单订单数
+-- ---------------------------------------------------------------------------
+WITH pass_u AS (
+  SELECT v.user_id,
+         MIN(COALESCE(TO_TIMESTAMP(v.vir_unix), v.vir_date::timestamp)) AS pass_time
+  FROM tmp_t7_u u
+  INNER JOIN wangchuanliang.order_vir_f_copy v ON v.user_id = u.user_id
+  WHERE v.vir_date &gt;= DATE &#x27;2026-09-17&#x27; AND v.is_pass1 = 1
+  GROUP BY v.user_id
+)
+SELECT o.apply_date::text AS d,
+       COUNT(*) AS n_order,
+       COUNT(DISTINCT o.user_id) AS n_user
+FROM pass_u pu
+INNER JOIN order_loan_f_v2_copy o
+  ON o.user_id = pu.user_id
+ AND o.apply_date &gt;= DATE &#x27;2026-09-17&#x27;
+ AND o.apply_time &gt;= pu.pass_time
+GROUP BY o.apply_date
+ORDER BY o.apply_date;
+
+-- ---------------------------------------------------------------------------
+-- 5) 每日放款单量
+-- ---------------------------------------------------------------------------
+SELECT o.remit_date::date::text AS d, COUNT(*) AS n
+FROM tmp_t7_u u
+INNER JOIN order_loan_f_v2_copy o ON o.user_id = u.user_id
+WHERE o.apply_date &gt;= DATE &#x27;2026-09-17&#x27;
+  AND o.is_remit = 1 AND COALESCE(o.remit_amt, 0) &gt; 0
+  AND o.remit_date::date IS NOT NULL
+GROUP BY 1
+ORDER BY 1;
+
+-- ---------------------------------------------------------------------------
+-- 6) 按到期日的盈利率、逾期率
+-- ---------------------------------------------------------------------------
+SELECT o.due_date::text AS d,
+       COUNT(*) AS n_due,
+       SUM(CASE WHEN o.loan_status_code = 8 THEN 1 ELSE 0 END) AS n_od,
+       SUM(COALESCE(o.repaid_amt, 0)) AS repaid,
+       SUM(o.remit_amt) AS remit
+FROM tmp_t7_u u
+INNER JOIN order_loan_f_v2_copy o ON o.user_id = u.user_id
+WHERE o.apply_date &gt;= DATE &#x27;2026-09-17&#x27;
+  AND o.is_due = 1 AND o.is_remit = 1 AND COALESCE(o.remit_amt, 0) &gt; 0
+  AND o.due_date IS NOT NULL
+GROUP BY 1
+ORDER BY 1;
+
+-- ---------------------------------------------------------------------------
+-- 7) 分层 strat：获额通过人数与通过后提单率
+-- ---------------------------------------------------------------------------
+WITH pass_u AS (
+  SELECT v.user_id,
+         MIN(COALESCE(TO_TIMESTAMP(v.vir_unix), v.vir_date::timestamp)) AS pass_time
+  FROM tmp_t7_u u
+  INNER JOIN wangchuanliang.order_vir_f_copy v ON v.user_id = u.user_id
+  WHERE v.vir_date &gt;= DATE &#x27;2026-09-17&#x27; AND v.is_pass1 = 1
+  GROUP BY v.user_id
+),
+apply_u AS (
+  SELECT DISTINCT o.user_id
+  FROM pass_u pu
+  INNER JOIN order_loan_f_v2_copy o
+    ON o.user_id = pu.user_id
+   AND o.apply_date &gt;= DATE &#x27;2026-09-17&#x27;
+   AND o.apply_time &gt;= pu.pass_time
+)
+SELECT u.strat,
+       COUNT(*) AS n_pass,
+       COUNT(a.user_id) AS n_apply
+FROM tmp_t7_u u
+INNER JOIN pass_u p ON p.user_id = u.user_id
+LEFT JOIN apply_u a ON a.user_id = u.user_id
+GROUP BY u.strat
+ORDER BY n_pass DESC;
+
+-- ---------------------------------------------------------------------------
+-- 8) 流失天数分箱：获额通过人数与通过后提单率
+-- ---------------------------------------------------------------------------
+WITH pass_u AS (
+  SELECT v.user_id,
+         MIN(COALESCE(TO_TIMESTAMP(v.vir_unix), v.vir_date::timestamp)) AS pass_time
+  FROM tmp_t7_u u
+  INNER JOIN wangchuanliang.order_vir_f_copy v ON v.user_id = u.user_id
+  WHERE v.vir_date &gt;= DATE &#x27;2026-09-17&#x27; AND v.is_pass1 = 1
+  GROUP BY v.user_id
+),
+apply_u AS (
+  SELECT DISTINCT o.user_id
+  FROM pass_u pu
+  INNER JOIN order_loan_f_v2_copy o
+    ON o.user_id = pu.user_id
+   AND o.apply_date &gt;= DATE &#x27;2026-09-17&#x27;
+   AND o.apply_time &gt;= pu.pass_time
+)
+SELECT
+  CASE
+    WHEN u.churn_days &lt;= 15 THEN &#x27;7-15d&#x27;
+    WHEN u.churn_days &lt;= 30 THEN &#x27;16-30d&#x27;
+    WHEN u.churn_days &lt;= 60 THEN &#x27;31-60d&#x27;
+    WHEN u.churn_days &lt;= 90 THEN &#x27;61-90d&#x27;
+    WHEN u.churn_days &lt;= 180 THEN &#x27;91-180d&#x27;
+    ELSE &#x27;180d+&#x27;
+  END AS bin,
+  COUNT(*) AS n_pass,
+  COUNT(a.user_id) AS n_apply
+FROM tmp_t7_u u
+INNER JOIN pass_u p ON p.user_id = u.user_id
+LEFT JOIN apply_u a ON a.user_id = u.user_id
+GROUP BY
+  CASE
+    WHEN u.churn_days &lt;= 15 THEN &#x27;7-15d&#x27;
+    WHEN u.churn_days &lt;= 30 THEN &#x27;16-30d&#x27;
+    WHEN u.churn_days &lt;= 60 THEN &#x27;31-60d&#x27;
+    WHEN u.churn_days &lt;= 90 THEN &#x27;61-90d&#x27;
+    WHEN u.churn_days &lt;= 180 THEN &#x27;91-180d&#x27;
+    ELSE &#x27;180d+&#x27;
+  END;
+</pre></details>
+</section>
+<p class="foot">数据：kaby_dw · wangchuanliang.t7recalllist_0917 · recall_date=2026-09-17 · 获额通过口径 · 库内 CURRENT_DATE=2026-09-21</p>
+</main>
+<script>
+const D = {"kpi": {"n_user": 1493, "n_vir": 154, "n_pass": 150, "n_apply": 70, "n_apply_order": 70, "pass_rate": 97.4, "apply_rate": 46.67, "n_apply_week": 0, "n_first_week": 0, "n_remit": 173, "n_remit_week": 1, "n_due": 0, "n_due_od": 0, "profit_pct": null, "overdue_pct": null, "week_start": "2026-09-21", "as_of": "2026-09-21", "recall_date": "2026-09-17", "remit_day": "o.remit_date::date"}, "first_daily": [{"d": "2026-09-17", "n": 11, "cum": 11, "rate": 7.33}, {"d": "2026-09-18", "n": 16, "cum": 27, "rate": 18.0}, {"d": "2026-09-19", "n": 26, "cum": 53, "rate": 35.33}, {"d": "2026-09-20", "n": 17, "cum": 70, "rate": 46.67}], "apply_daily": [{"d": "2026-09-17", "n_order": 11, "n_user": 11}, {"d": "2026-09-18", "n_order": 16, "n_user": 16}, {"d": "2026-09-19", "n_order": 26, "n_user": 26}, {"d": "2026-09-20", "n_order": 17, "n_user": 17}], "remit_daily": [{"d": "2026-09-17", "n": 53, "cum": 53}, {"d": "2026-09-18", "n": 44, "cum": 97}, {"d": "2026-09-19", "n": 45, "cum": 142}, {"d": "2026-09-20", "n": 30, "cum": 172}, {"d": "2026-09-21", "n": 1, "cum": 173}], "due_daily": [], "strat": [{"strat": "20d+10r", "n_user": 37, "n_apply": 22, "pct": 59.46}, {"strat": "20d", "n_user": 28, "n_apply": 11, "pct": 39.29}, {"strat": "30d", "n_user": 28, "n_apply": 10, "pct": 35.71}, {"strat": "30d+10r", "n_user": 24, "n_apply": 6, "pct": 25.0}, {"strat": "10d", "n_user": 18, "n_apply": 9, "pct": 50.0}, {"strat": "10d+10r", "n_user": 15, "n_apply": 12, "pct": 80.0}], "churn": [{"bin": "7-15d", "n_user": 150, "n_apply": 70, "pct": 46.67}]};
+
+const col = {cy:'#43c7e7', gr:'#64dcae', am:'#ffc26b', pk:'#f68ab0'};
+Chart.defaults.font.family='-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei",sans-serif';
+Chart.defaults.color='#aac5da';
+function base(y2) {
+  const scales = {
+    x: {ticks:{color:'#aac5da', maxRotation:45}, grid:{display:false}},
+    y: {type:'linear', position:'left', ticks:{color:'#aac5da'}, grid:{color:'rgba(42,92,126,.25)'}}
+  };
+  if (y2) scales.y2 = {type:'linear', position:'right', ticks:{color:'#ffc26b'}, grid:{drawOnChartArea:false}};
+  return {responsive:true, maintainAspectRatio:false, interaction:{mode:'index', intersect:false},
+    plugins:{legend:{labels:{color:'#eff8ff', padding:16}}}, scales};
+}
+function line(id, labels, datasets, y2) {
+  new Chart(document.getElementById(id), {type:'line', data:{labels, datasets}, options:base(y2)});
+}
+function drawRateLabels(chart) {
+  const {ctx} = chart;
+  chart.data.datasets.forEach((ds,i)=>{
+    if(!String(ds.label).includes('提单率')) return;
+    const pts = chart.getDatasetMeta(i).data;
+    ctx.save();
+    ctx.font='11px sans-serif';
+    ctx.fillStyle='#f68ab0';
+    ctx.textBaseline='bottom';
+    pts.forEach((pt,j)=>{
+      const v=ds.data[j];
+      if(v==null) return;
+      let dx=0, dy=-16, align='center';
+      if(j===0){ align='left'; dx=10; }
+      else if(j===pts.length-1){ align='right'; dx=-10; }
+      const prev=pts[j-1], next=pts[j+1];
+      if(prev && next && pt.y>=prev.y && pt.y>=next.y) dy=-20;
+      ctx.textAlign=align;
+      ctx.fillText(Number(v).toFixed(2)+'%', pt.x+dx, pt.y+dy);
+    });
+    ctx.restore();
+  });
+}
+const fd = D.first_daily, ad = D.apply_daily, rd = D.remit_daily, dd = D.due_daily, k=D.kpi;
+line('c1', fd.map(x=>x.d.slice(5)), [
+  {label:'累计提单人数', data:fd.map(x=>x.cum), borderColor:col.cy, backgroundColor:'rgba(67,199,231,.12)', fill:true, tension:.25, yAxisID:'y', pointRadius:2},
+  {label:'提单率%', data:fd.map(x=>x.rate), borderColor:col.am, tension:.25, yAxisID:'y2', pointRadius:2}
+], true);
+new Chart(document.getElementById('c2'), {type:'bar', data:{labels:fd.map(x=>x.d.slice(5)), datasets:[
+  {label:'当日首次提单', data:fd.map(x=>x.n), backgroundColor:col.gr}
+]}, options:base(false)});
+new Chart(document.getElementById('c3'), {type:'bar', data:{labels:ad.map(x=>x.d.slice(5)), datasets:[
+  {label:'当日提单用户', data:ad.map(x=>x.n_user), backgroundColor:'rgba(67,199,231,.7)'}
+]}, options:base(false)});
+line('c4', rd.map(x=>x.d.slice(5)), [
+  {label:'当日放款单', data:rd.map(x=>x.n), borderColor:col.gr, tension:.25, yAxisID:'y', pointRadius:2},
+  {label:'累计放款单', data:rd.map(x=>x.cum), borderColor:col.am, tension:.25, yAxisID:'y2', pointRadius:2}
+], true);
+line('c5', dd.map(x=>x.d.slice(5)), [
+  {label:'到期盈利率%', data:dd.map(x=>x.profit_pct), borderColor:col.gr, tension:.25, pointRadius:2, spanGaps:true}
+], false);
+line('c6', dd.map(x=>x.d.slice(5)), [
+  {label:'到期逾期率%', data:dd.map(x=>x.overdue_pct), borderColor:col.pk, tension:.25, pointRadius:2, spanGaps:true},
+  {label:'到期单量', data:dd.map(x=>x.n_due), borderColor:col.cy, tension:.25, yAxisID:'y2', pointRadius:2}
+], true);
+new Chart(document.getElementById('c7'), {type:'doughnut', data:{labels:['已提单','获额通过尚未提单'], datasets:[{data:[k.n_apply, Math.max(0, k.n_pass-k.n_apply)], backgroundColor:[col.gr, 'rgba(42,92,126,.55)'], borderWidth:0}]},
+  options:{responsive:true, maintainAspectRatio:false, cutout:'55%', layout:{padding:{top:4,bottom:8,left:4,right:8}}, plugins:{legend:{position:'right', labels:{color:'#eff8ff', padding:12, boxWidth:12}}}},
+  plugins:[{id:'pieLabel', afterDatasetsDraw(chart){
+    const {ctx} = chart; const ds = chart.data.datasets[0];
+    const total = ds.data.reduce((a,b)=>a+b,0);
+    const meta = chart.getDatasetMeta(0);
+    meta.data.forEach((arc,i)=>{
+      const v = ds.data[i]; const pos = arc.tooltipPosition();
+      ctx.save(); ctx.fillStyle='#eff8ff'; ctx.textAlign='center'; ctx.textBaseline='middle';
+      ctx.font='13px sans-serif'; ctx.fillText((100*v/total).toFixed(2)+'%', pos.x, pos.y);
+      ctx.restore();
+    });
+  }}]});
+new Chart(document.getElementById('c8'), {type:'bar', data:{labels:['本周新增提单用户','本周提单用户','本周放款单量','累计提单人数','累计放款单量'],
+  datasets:[{label:'人数/单量', data:[k.n_first_week, k.n_apply_week, k.n_remit_week, k.n_apply, k.n_remit],
+    backgroundColor:[col.pk, col.cy, col.am, col.gr, 'rgba(67,199,231,.45)']}]},
+  options:Object.assign(base(false), {layout:{padding:{top:22}}}),
+  plugins:[{id:'barLabel', afterDatasetsDraw(chart){
+    const {ctx}=chart; const meta=chart.getDatasetMeta(0);
+    ctx.save(); ctx.fillStyle='#eff8ff'; ctx.font='11px sans-serif'; ctx.textAlign='center'; ctx.textBaseline='bottom';
+    meta.data.forEach((pt,j)=>{ const v=chart.data.datasets[0].data[j]; if(v==null) return; ctx.fillText(Number(v).toLocaleString(), pt.x, pt.y-4); });
+    ctx.restore();
+  }}]});
+new Chart(document.getElementById('c9'), {type:'bar', data:{labels:D.strat.map(x=>x.strat), datasets:[
+  {label:'获额通过人数', data:D.strat.map(x=>x.n_user), backgroundColor:'rgba(67,199,231,.35)', yAxisID:'y'},
+  {label:'提单率%', data:D.strat.map(x=>x.pct), type:'line', borderColor:col.pk, yAxisID:'y2', tension:.2, pointRadius:3}
+]}, options:Object.assign(base(true), {layout:{padding:{top:0,right:8}}}),
+  plugins:[{id:'rateLabel9', afterDatasetsDraw(chart){ drawRateLabels(chart); }}]});
+new Chart(document.getElementById('c10'), {type:'bar', data:{labels:D.churn.map(x=>x.bin), datasets:[
+  {label:'获额通过人数', data:D.churn.map(x=>x.n_user), backgroundColor:'rgba(67,199,231,.35)', yAxisID:'y'},
+  {label:'提单率%', data:D.churn.map(x=>x.pct), type:'line', borderColor:col.pk, yAxisID:'y2', tension:.2, pointRadius:3}
+]}, options:Object.assign(base(true), {layout:{padding:{top:0,right:8}}}),
+  plugins:[{id:'rateLabel10', afterDatasetsDraw(chart){ drawRateLabels(chart); }}]});
+</script>
+</body></html>
