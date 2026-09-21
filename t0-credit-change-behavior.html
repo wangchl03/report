@@ -28,7 +28,7 @@ th,td{padding:8px 10px;border-bottom:1px solid rgba(42,92,126,.45);text-align:ri
 th{color:var(--muted);background:rgba(12,48,78,.65)}th:first-child,td:first-child{text-align:left}
 details.code{margin:10px 0;background:rgba(10,41,68,.95);border:1px solid var(--line);border-radius:12px;padding:10px 14px}
 details.code summary{cursor:pointer;color:var(--cy);font-weight:700}
-pre.sql{overflow:auto;max-height:640px;font-size:11.5px;line-height:1.5;color:#d7ecf8;white-space:pre}
+pre.sql{overflow:auto;max-height:900px;font-size:11.5px;line-height:1.5;color:#d7ecf8;white-space:pre}
 .foot{color:#7fa6c2;font-size:12.5px;margin-top:40px;border-top:1px solid var(--line);padding-top:16px;line-height:1.9}
 @media(max-width:900px){.g2,.g4{grid-template-columns:1fr}}
 </style>
@@ -110,23 +110,35 @@ T0：<code>order_vir_f_copy</code> is_pass1=1、loan_type_code=2、<code>side_re
 当天提单：apply_time≥vir_time 且 apply_date=vir_date，不卡放款。
 </div>
 
-<h2>附录：</h2>
-<details class="code"><summary>完整 PGSQL（点击展开）</summary>
+<h2>附录：完整 PGSQL（可复现报告全部指标）</h2>
+<p class="desc">一次执行。6 个结果集：R1 漏斗/顶部卡片；R2 升额·不变·降额（图1–4、主表、结论2–4）；R3 幅度五档（图5、结论5）；R4 月度（图6–7、结论6）；R5 行为组合 TOP20（图8、组合表取前12行）；R6 组合×额度组。所有业务表已写 <code>wangchuanliang.</code>。必须能 SELECT <code>event_track_record</code>，JOIN 必须带 <code>create_date</code> 分区。</p>
+<details class="code" open><summary>完整 PGSQL（点击收起）</summary>
 <pre class="sql">-- =============================================================================
 -- T0 当天结清获额 × 结清后当天页内行为 × 额度相对最晚放款笔变化
--- 库：kaby_dw · schema：wangchuanliang · 2026-01-01～2026-08-31
+-- 库：kaby_dw · 账号需 SELECT wangchuanliang.event_track_record
+-- 区间：2026-01-01（含）～ 2026-09-01（不含）即 1–8 月
+-- 本脚本一次跑完，6 个结果集对应报告全部数字（卡片 / 结论 / 图1–图8 / 三张表）
+--
+-- 结果集对照
+--   R1 漏斗          → 顶部 4 张卡片、结论 1
+--   R2 升额/不变/降额 → 图1–图4、主表、结论 2–4（含样本内占比 share_pct）
+--   R3 幅度五档      → 图5、幅度表、结论 5
+--   R4 月度          → 图6 人数、图7 当天提单率、结论 6
+--   R5 行为组合 TOP20 → 图8、组合表（报告表取前 12 行）
+--   R6 组合×额度组    → 备用交叉（报告未单独制表，数字可复现）
 --
 -- 口径
 --   T0：is_pass1=1 AND loan_type_code=2 AND recycle_type=3；20 秒获额批次去重；
 --       结清日=获额日；vir_time&gt;=repaid_time；结清时 0 在贷；用户×日最早一轮获额。
---   页内行为：wangchuanliang.event_track_record 明细。必须带 create_date 分区。
+--   页内行为：wangchuanliang.event_track_record。必须带 create_date 分区。
 --            create_date = 获额日 = 结清日；
---            create_time &gt;= 该用户日刚结清 repaid_time（结清之后，含结清到获额之间）；
+--            create_time &gt;= 刚结清 repaid_time（结清之后，含结清到获额之间）；
 --            create_time &lt; 获额日+1（当天内）。
 --            不含确认提单、不含仅进页（Loan_newpage）。
---   上一笔放款：vir_time 之前 is_remit=1 且 remit_amt&gt;0，remit_time 最晚的一笔
---              （不必是刚结清那笔）；额度取获额表 max_credit_apply_amt。
---   分析样本：T0 ∩ 能取到上一笔获额额度 ∩ 结清后当天有至少一类页内行为。
+--   上一笔放款：vir_time 之前 is_remit=1 且 remit_amt&gt;0，remit_time 最晚一笔
+--              （不必是刚结清那笔）；额度 = max_credit_apply_amt。
+--   当天提单：apply_time&gt;=vir_time 且 apply_date=vir_date，不卡放款。
+--   分析样本：T0 ∩ 能对上上一笔获额额度 ∩ 结清后当天至少一类页内行为。
 -- =============================================================================
 
 SET search_path TO wangchuanliang, public;
@@ -140,8 +152,8 @@ WITH params AS (
     SELECT DISTINCT ON (v.user_id, v.serial_id)
         v.user_id, v.serial_id, v.vir_date::date AS vir_date,
         TO_TIMESTAMP(v.vir_unix) AS vir_time, v.max_credit_apply_amt
-    FROM order_vir_f_copy v
-    INNER JOIN side_recycle_type_copy r ON r.serial_id = v.serial_id
+    FROM wangchuanliang.order_vir_f_copy v
+    INNER JOIN wangchuanliang.side_recycle_type_copy r ON r.serial_id = v.serial_id
     CROSS JOIN params p
     WHERE v.is_pass1 = 1 AND v.loan_type_code = 2 AND r.recycle_type = 3
       AND v.vir_date &gt;= p.start_date - 1 AND v.vir_date &lt; p.end_date
@@ -165,7 +177,7 @@ WITH params AS (
 all_orders AS (
     SELECT o.user_id, o.serial_id, o.apply_time, o.repaid_time, o.repaid_date::date AS repaid_date,
            o.loan_status_code, o.is_remit, o.is_repaid
-    FROM order_loan_f_v2_copy o
+    FROM wangchuanliang.order_loan_f_v2_copy o
     INNER JOIN candidate_users u ON u.user_id = o.user_id
 ), clean_settlement AS (
     SELECT o.user_id, o.serial_id, o.repaid_time, o.repaid_date
@@ -202,7 +214,7 @@ FROM (
     SELECT t.user_id, t.vir_date, o.serial_id AS prev_serial, o.remit_time AS prev_remit_time,
            ROW_NUMBER() OVER (PARTITION BY t.user_id, t.vir_date ORDER BY o.remit_time DESC, o.serial_id DESC) AS rn
     FROM tmp_m_origin t
-    INNER JOIN order_loan_f_v2_copy o
+    INNER JOIN wangchuanliang.order_loan_f_v2_copy o
       ON o.user_id = t.user_id
      AND o.is_remit = 1 AND COALESCE(o.remit_amt, 0) &gt; 0
      AND o.remit_time IS NOT NULL
@@ -215,7 +227,7 @@ SELECT p.user_id, p.vir_date, p.prev_serial, p.prev_remit_time, v.max_credit_app
 FROM tmp_prev p
 LEFT JOIN (
     SELECT DISTINCT ON (serial_id) serial_id, max_credit_apply_amt
-    FROM order_vir_f_copy
+    FROM wangchuanliang.order_vir_f_copy
     ORDER BY serial_id, vir_unix DESC
 ) v ON v.serial_id = p.prev_serial;
 
@@ -294,7 +306,7 @@ INNER JOIN (
         SELECT t.user_id, t.vir_date,
                ROW_NUMBER() OVER (PARTITION BY t.user_id, t.vir_date ORDER BY a.apply_time, a.serial_id) AS rn
         FROM tmp_m_origin t
-        INNER JOIN order_loan_f_v2_copy a
+        INNER JOIN wangchuanliang.order_loan_f_v2_copy a
           ON a.user_id = t.user_id AND a.apply_time &gt;= t.vir_time AND a.apply_date = t.vir_date
     ) z WHERE rn = 1
 ) s ON s.user_id = t.user_id AND s.vir_date = t.vir_date;
@@ -349,17 +361,28 @@ FROM tmp_base
 WHERE this_amt IS NOT NULL AND prev_amt IS NOT NULL
   AND (f_amt + f_term + f_contract + f_plan + f_purpose) &gt;= 1;
 
--- 漏斗
+-- ---------------------------------------------------------------------------
+-- R1 漏斗：顶部卡片 + 结论1
+-- ---------------------------------------------------------------------------
 SELECT
-    (SELECT COUNT(*) FROM tmp_m_origin) AS n_t0,
-    (SELECT COUNT(*) FROM tmp_base WHERE prev_amt IS NOT NULL AND this_amt IS NOT NULL) AS n_with_prev,
-    (SELECT COUNT(*) FROM tmp_base WHERE (f_amt+f_term+f_contract+f_plan+f_purpose) &gt;= 1) AS n_with_beh,
-    (SELECT COUNT(*) FROM tmp_sample) AS n_sample;
+    t0.n_t0,
+    pv.n_with_prev,
+    bh.n_with_beh,
+    sm.n_sample,
+    ROUND(100.0 * sm.n_sample / NULLIF(t0.n_t0, 0), 2) AS sample_of_t0_pct,
+    ROUND(100.0 * bh.n_with_beh / NULLIF(t0.n_t0, 0), 2) AS beh_of_t0_pct
+FROM (SELECT COUNT(*) AS n_t0 FROM tmp_m_origin) t0
+CROSS JOIN (SELECT COUNT(*) AS n_with_prev FROM tmp_base WHERE prev_amt IS NOT NULL AND this_amt IS NOT NULL) pv
+CROSS JOIN (SELECT COUNT(*) AS n_with_beh FROM tmp_base WHERE (f_amt + f_term + f_contract + f_plan + f_purpose) &gt;= 1) bh
+CROSS JOIN (SELECT COUNT(*) AS n_sample FROM tmp_sample) sm;
 
--- 三组主表
+-- ---------------------------------------------------------------------------
+-- R2 图1–图4 + 主表 + 结论2–4（share_pct = 分析样本内人数占比）
+-- ---------------------------------------------------------------------------
 SELECT
     chg_grp,
     COUNT(*) AS n,
+    ROUND(100.0 * COUNT(*) / (SELECT COUNT(*) FROM tmp_sample), 2) AS share_pct,
     ROUND(AVG(this_amt), 0) AS avg_this,
     ROUND(AVG(prev_amt), 0) AS avg_prev,
     ROUND(AVG(amt_diff), 0) AS avg_diff,
@@ -377,12 +400,16 @@ SELECT
     ROUND(100.0 * AVG(f_confirm), 2) AS pct_confirm,
     ROUND(100.0 * AVG(f_apply), 2) AS pct_apply
 FROM tmp_sample
-GROUP BY chg_grp;
+GROUP BY chg_grp
+ORDER BY CASE chg_grp WHEN &#x27;降额&#x27; THEN 1 WHEN &#x27;不变&#x27; THEN 2 WHEN &#x27;升额&#x27; THEN 3 ELSE 4 END;
 
--- 幅度分档
+-- ---------------------------------------------------------------------------
+-- R3 图5 + 幅度表 + 结论5
+-- ---------------------------------------------------------------------------
 SELECT
     chg_bin,
     COUNT(*) AS n,
+    ROUND(100.0 * COUNT(*) / (SELECT COUNT(*) FROM tmp_sample), 2) AS share_pct,
     ROUND(100.0 * AVG(f_amt), 2) AS pct_amt,
     ROUND(100.0 * AVG(f_term), 2) AS pct_term,
     ROUND(100.0 * AVG(f_contract), 2) AS pct_contract,
@@ -391,19 +418,38 @@ SELECT
     ROUND(100.0 * AVG(f_confirm), 2) AS pct_confirm,
     ROUND(100.0 * AVG(f_apply), 2) AS pct_apply
 FROM tmp_sample
-GROUP BY chg_bin;
+GROUP BY chg_bin
+ORDER BY CASE chg_bin
+    WHEN &#x27;降额≥20%&#x27; THEN 1 WHEN &#x27;降额&lt;20%&#x27; THEN 2 WHEN &#x27;不变&#x27; THEN 3
+    WHEN &#x27;升额&lt;20%&#x27; THEN 4 WHEN &#x27;升额≥20%&#x27; THEN 5 ELSE 6 END;
 
--- 月度结构
-SELECT ym, chg_grp, COUNT(*) AS n,
-       ROUND(100.0 * AVG(f_apply), 2) AS pct_apply,
-       ROUND(100.0 * AVG(f_amt), 2) AS pct_amt,
-       ROUND(100.0 * AVG(f_term), 2) AS pct_term
+-- ---------------------------------------------------------------------------
+-- R4 图6 各月人数、图7 各月当天提单率 + 结论6
+-- ---------------------------------------------------------------------------
+SELECT
+    ym,
+    chg_grp,
+    COUNT(*) AS n,
+    ROUND(100.0 * AVG(f_apply), 2) AS pct_apply,
+    ROUND(100.0 * AVG(f_confirm), 2) AS pct_confirm,
+    ROUND(100.0 * AVG(f_amt), 2) AS pct_amt,
+    ROUND(100.0 * AVG(f_term), 2) AS pct_term,
+    ROUND(100.0 * AVG(f_plan), 2) AS pct_plan
 FROM tmp_sample
 GROUP BY ym, chg_grp
-ORDER BY 1, 2;
+ORDER BY ym, CASE chg_grp WHEN &#x27;降额&#x27; THEN 1 WHEN &#x27;不变&#x27; THEN 2 WHEN &#x27;升额&#x27; THEN 3 ELSE 4 END;
 
--- 行为组合（前 20）
+-- ---------------------------------------------------------------------------
+-- R5 图8 + 组合表（combo_name 与报告表一致，取人数最多的 20 组）
+-- ---------------------------------------------------------------------------
 SELECT
+    TRIM(BOTH &#x27;+&#x27; FROM
+        (CASE WHEN f_amt = 1 THEN &#x27;金额+&#x27; ELSE &#x27;&#x27; END) ||
+        (CASE WHEN f_term = 1 THEN &#x27;期次+&#x27; ELSE &#x27;&#x27; END) ||
+        (CASE WHEN f_contract = 1 THEN &#x27;合同+&#x27; ELSE &#x27;&#x27; END) ||
+        (CASE WHEN f_plan = 1 THEN &#x27;计划+&#x27; ELSE &#x27;&#x27; END) ||
+        (CASE WHEN f_purpose = 1 THEN &#x27;原因+&#x27; ELSE &#x27;&#x27; END)
+    ) AS combo_name,
     f_amt, f_term, f_contract, f_plan, f_purpose,
     COUNT(*) AS n,
     ROUND(100.0 * AVG(f_confirm), 2) AS pct_confirm,
@@ -413,13 +459,23 @@ GROUP BY f_amt, f_term, f_contract, f_plan, f_purpose
 ORDER BY n DESC
 LIMIT 20;
 
--- 组合 × 额度组
+-- ---------------------------------------------------------------------------
+-- R6 组合 × 额度组（交叉人数，报告未单独制表）
+-- ---------------------------------------------------------------------------
 SELECT
     chg_grp,
+    TRIM(BOTH &#x27;+&#x27; FROM
+        (CASE WHEN f_amt = 1 THEN &#x27;金额+&#x27; ELSE &#x27;&#x27; END) ||
+        (CASE WHEN f_term = 1 THEN &#x27;期次+&#x27; ELSE &#x27;&#x27; END) ||
+        (CASE WHEN f_contract = 1 THEN &#x27;合同+&#x27; ELSE &#x27;&#x27; END) ||
+        (CASE WHEN f_plan = 1 THEN &#x27;计划+&#x27; ELSE &#x27;&#x27; END) ||
+        (CASE WHEN f_purpose = 1 THEN &#x27;原因+&#x27; ELSE &#x27;&#x27; END)
+    ) AS combo_name,
     f_amt, f_term, f_contract, f_plan, f_purpose,
     COUNT(*) AS n
 FROM tmp_sample
-GROUP BY chg_grp, f_amt, f_term, f_contract, f_plan, f_purpose;
+GROUP BY chg_grp, f_amt, f_term, f_contract, f_plan, f_purpose
+ORDER BY chg_grp, n DESC;
 </pre>
 </details>
 <p class="foot">kaby_dw · wangchuanliang · 2026-01-01～2026-08-31 · 密码不入库。</p>
