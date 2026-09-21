@@ -1,0 +1,482 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>T0 获额额度变化与当天页内行为</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+<style>
+:root{--bg:#071b2f;--line:#2a5c7e;--text:#eff8ff;--muted:#aac5da;--cy:#43c7e7;--gr:#64dcae;--am:#ffc26b;--pk:#f68ab0}
+*{box-sizing:border-box}body{margin:0;background:#06192b;color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei",sans-serif}
+.wrap{max-width:1480px;margin:auto;padding:32px 36px 80px}
+.hero{text-align:center;padding:28px 12px 22px;border-bottom:1px solid var(--line)}
+.kicker{color:var(--cy);font-size:13px;letter-spacing:2px;font-weight:700}
+.hero h1{font-size:26px;line-height:1.35;margin:10px 0}
+.hero-meta{display:inline-block;text-align:left;margin-top:12px;line-height:1.75;color:var(--muted);font-size:14px}
+h2{font-size:22px;margin:40px 0 10px}
+.desc{color:var(--muted);margin:0 0 12px;line-height:1.75;font-size:14px}
+.grid{display:grid;gap:14px}.g2{grid-template-columns:repeat(2,minmax(0,1fr))}.g4{grid-template-columns:repeat(4,minmax(0,1fr))}
+.card,.chart{background:rgba(10,41,68,.95);border:1px solid var(--line);border-radius:14px;padding:16px}
+.label{color:var(--muted);font-size:12px}.num{font-size:22px;font-weight:800;margin:4px 0 2px;color:var(--cy)}
+.sub{color:var(--muted);font-size:12px}
+.box{height:300px;position:relative}.chart h3{margin:0 0 4px;font-size:15px}.chart p{font-size:12px;color:var(--muted);margin:0 0 10px}
+.callout{background:#0a2a45;border:1px solid #2a5c7e;border-left:4px solid #43c7e7;border-radius:10px;padding:14px 18px;margin:14px 0;line-height:1.75;font-size:14px}
+.callout.gold{border-left-color:#ffc26b}.callout.red{border-left-color:#f68ab0}.callout.green{border-left-color:#64dcae}
+.callout .ch{font-weight:800;margin-bottom:8px}
+.table{overflow-x:auto;margin:12px 0}table{width:100%;border-collapse:collapse;font-size:13px}
+th,td{padding:8px 10px;border-bottom:1px solid rgba(42,92,126,.45);text-align:right;white-space:nowrap}
+th{color:var(--muted);background:rgba(12,48,78,.65)}th:first-child,td:first-child{text-align:left}
+details.code{margin:10px 0;background:rgba(10,41,68,.95);border:1px solid var(--line);border-radius:12px;padding:10px 14px}
+details.code summary{cursor:pointer;color:var(--cy);font-weight:700}
+pre.sql{overflow:auto;max-height:640px;font-size:11.5px;line-height:1.5;color:#d7ecf8;white-space:pre}
+.foot{color:#7fa6c2;font-size:12.5px;margin-top:40px;border-top:1px solid var(--line);padding-top:16px;line-height:1.9}
+@media(max-width:900px){.g2,.g4{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<main class="wrap">
+<header class="hero">
+<div class="kicker">T0 · 2026-01-01～08-31 · 额度变化 × 获额后当天页内行为</div>
+<h1>获额额度相对最晚放款笔变化，会不会带来不同的提单页操作</h1>
+<div class="hero-meta">
+样本：当天结清且获额通过的 T0；获额当天在提单页发生过切换金额/期次、看合同/计划、选原因中至少一类（日表 event_track；确认提单不入样）。<br>
+确认提单不作为入样条件。额度 = 获额表 <code>max_credit_apply_amt</code>。上一笔放款 = 获额通过前 <code>remit_time</code> 最晚的已放款单（不必是刚结清那笔）。<br>
+明细埋点表当前无权限，行为按日汇总字段，不能在库内卡到「获额通过时刻之后」的秒级。
+</div>
+</header>
+
+<section class="grid g4" style="margin-top:18px">
+<article class="card"><div class="label">T0 用户日</div><div class="num">177,133</div><div class="sub">2026-01～08 结清0在贷获额</div></article>
+<article class="card"><div class="label">分析样本</div><div class="num">99,131</div><div class="sub">有上一笔额度且当天有页内行为</div></article>
+<article class="card"><div class="label">升额 / 不变 / 降额</div><div class="num">58.2% / 10.2% / 31.6%</div><div class="sub">57,688 / 10,071 / 31,372</div></article>
+<article class="card"><div class="label">漏斗</div><div class="num">177,133</div><div class="sub">T0 中能对上上一笔获额额度</div></article>
+</section>
+
+<h2>结论</h2>
+<div class="callout"><div class="ch">1. 样本不是全部 T0，只覆盖「当天动过提单页」的人</div>
+T0 177,133 人日中，能对上上一笔获额额度 177,133，获额后当天有页内行为 99,131，两者交集（本报告样本）99,131。结论不能外推到当天完全不进页、不操作的人。</div>
+<div class="callout gold"><div class="ch">2. 额度变化方向</div>
+分析样本里升额 58.19%、不变 10.16%、降额 31.65%。升额组上一笔均额 2,680、本笔 4,579；降额组上一笔 2,884、本笔 1,988。</div>
+<div class="callout green"><div class="ch">3. 会不会当天提单</div>
+降额组当天提单率 65.52%，高于升额组 56.25%（差 9.27pp）。额度相对上一笔放款下降的人，当天更常把单交出去；升额组浏览更多、交单更少。 三组里最高的是额度不变：当天提单 71.24%、确认提单 73.99%。 确认提单埋点：升额 57.87%，不变 73.99%，降额 67.81%。</div>
+<div class="callout red"><div class="ch">4. 页内会不会改金额 / 改期次</div>
+升额组更常切换金额（61.01% vs 降额 50.23%，+10.78pp），人均改金额次数 2.44 vs 降额 1.51。 看还款计划：升额 71.80%、降额 60.30%、不变 46.69%。 选借款原因则相反：不变 36.24%、降额 33.78%、升额 25.92%。 切换期次三组接近：升额 33.51%、不变 35.38%、降额 33.94%。看合同都在 5% 上下，额度变化几乎不改变合同浏览。</div>
+<div class="callout gold"><div class="ch">5. 变化幅度</div>
+升额≥20% 当天提单 55.68%、改金额 61.44%（50,531 人）；降额≥20% 当天提单 66.13%、改金额 48.77%（24,748 人）。幅度越大，升额侧交单越弱、改金额越强，不是「有没有变化」四个字能概括的。</div>
+<div class="callout"><div class="ch">6. 月度是否稳定</div>
+1～8 月每月都是降额组当天提单率高于升额组，结论不是被某一个月带偏。</div>
+<div class="callout"><div class="ch">经营含义</div>
+升额用户当天更爱改金额、更爱看还款计划，但当天提单更低：提额后默认可借额和默认期次要对齐新额度，减少「逛一圈不交单」。降额与额度不变的人当天交单更高，降额页要把可借额和试算摆在第一屏，少让用户猜还能借多少。确认提单埋点与当天订单提单方向一致，可互相印证，但确认率略高于订单提单率，不能只信埋点。</div>
+
+<h2>一、额度三组与五类行为</h2>
+<p class="desc">发生率 = 该组中当天发生过该类埋点的人数占比。次数 = 该组人均事件条数。</p>
+<div class="grid g2">
+  <div class="chart"><h3>图1 分析样本的额度变化结构</h3><p>升额 / 不变 / 降额人数</p><div class="box"><canvas id="c1"></canvas></div></div>
+  <div class="chart"><h3>图2 五类页内行为发生率</h3><p>按额度变化组</p><div class="box"><canvas id="c2"></canvas></div></div>
+</div>
+<div class="grid g2" style="margin-top:14px">
+  <div class="chart"><h3>图3 当天确认提单 vs 当天提单</h3><p>确认=埋点；提单=获额后当天 apply</p><div class="box"><canvas id="c3"></canvas></div></div>
+  <div class="chart"><h3>图4 人均切换次数</h3><p>金额 / 期次事件条数</p><div class="box"><canvas id="c4"></canvas></div></div>
+</div>
+<div class="table"><table>
+<thead><tr><th>组</th><th>人数</th><th>占比</th><th>上一笔额度</th><th>本笔额度</th><th>差额</th><th>变化%</th><th>改金额</th><th>改期次</th><th>看合同</th><th>看计划</th><th>选原因</th><th>确认提单</th><th>当天提单</th></tr></thead>
+<tbody><tr><td>降额</td><td>31,372</td><td>31.65%</td><td>2,884</td><td>1,988</td><td>-896</td><td>-34.77%</td><td>50.23%</td><td>33.94%</td><td>4.77%</td><td>60.30%</td><td>33.78%</td><td>67.81%</td><td>65.52%</td></tr><tr><td>不变</td><td>10,071</td><td>10.16%</td><td>935</td><td>935</td><td>0</td><td>0.00%</td><td>49.89%</td><td>35.38%</td><td>5.27%</td><td>46.69%</td><td>36.24%</td><td>73.99%</td><td>71.24%</td></tr><tr><td>升额</td><td>57,688</td><td>58.19%</td><td>2,680</td><td>4,579</td><td>1,899</td><td>131.95%</td><td>61.01%</td><td>33.51%</td><td>3.54%</td><td>71.80%</td><td>25.92%</td><td>57.87%</td><td>56.25%</td></tr></tbody>
+</table></div>
+
+<h2>二、按变化幅度</h2>
+<p class="desc">相对上一笔获额额度：降≥20% / 降&lt;20% / 不变 / 升&lt;20% / 升≥20%。</p>
+<div class="chart"><h3>图5 幅度分档的改金额、改期次、当天提单</h3><p>看是「有没有变化」还是「变化够大」在起作用</p><div class="box" style="height:340px"><canvas id="c5"></canvas></div></div>
+<div class="table"><table>
+<thead><tr><th>分档</th><th>人数</th><th>改金额</th><th>改期次</th><th>看合同</th><th>看计划</th><th>选原因</th><th>确认提单</th><th>当天提单</th></tr></thead>
+<tbody><tr><td>降额≥20%</td><td>24,748</td><td>48.77%</td><td>34.60%</td><td>4.77%</td><td>58.56%</td><td>35.23%</td><td>68.54%</td><td>66.13%</td></tr><tr><td>降额<20%</td><td>6,624</td><td>55.69%</td><td>31.49%</td><td>4.77%</td><td>66.79%</td><td>28.38%</td><td>65.05%</td><td>63.24%</td></tr><tr><td>不变</td><td>10,071</td><td>49.89%</td><td>35.38%</td><td>5.27%</td><td>46.69%</td><td>36.24%</td><td>73.99%</td><td>71.24%</td></tr><tr><td>升额<20%</td><td>7,157</td><td>57.96%</td><td>32.12%</td><td>3.62%</td><td>69.88%</td><td>25.32%</td><td>61.66%</td><td>60.22%</td></tr><tr><td>升额≥20%</td><td>50,531</td><td>61.44%</td><td>33.70%</td><td>3.53%</td><td>72.07%</td><td>26.00%</td><td>57.34%</td><td>55.68%</td></tr></tbody>
+</table></div>
+
+<h2>三、月度与行为组合</h2>
+<div class="grid g2">
+  <div class="chart"><h3>图6 各月升额 / 不变 / 降额人数</h3><p>分析样本内部结构</p><div class="box"><canvas id="c6"></canvas></div></div>
+  <div class="chart"><h3>图7 各月升额组 vs 降额组当天提单率</h3><p>检查结论是否只被某几个月拉动</p><div class="box"><canvas id="c7"></canvas></div></div>
+</div>
+<div class="chart" style="margin-top:14px"><h3>图8 最常见页内行为组合</h3><p>分析样本人数</p><div class="box" style="height:340px"><canvas id="c8"></canvas></div></div>
+<p class="desc" style="margin-top:18px">最常见的页内行为组合（样本合计）。</p>
+<div class="table"><table>
+<thead><tr><th>组合</th><th>人数</th><th>确认提单</th><th>当天提单</th></tr></thead>
+<tbody><tr><td>计划</td><td>16,858</td><td>52.60%</td><td>51.35%</td></tr><tr><td>金额+计划</td><td>15,671</td><td>51.48%</td><td>50.08%</td></tr><tr><td>金额</td><td>12,520</td><td>55.70%</td><td>54.29%</td></tr><tr><td>金额+期次+计划</td><td>7,874</td><td>56.77%</td><td>54.90%</td></tr><tr><td>期次</td><td>5,945</td><td>75.61%</td><td>74.48%</td></tr><tr><td>金额+计划+原因</td><td>5,714</td><td>65.42%</td><td>62.55%</td></tr><tr><td>期次+计划</td><td>5,688</td><td>67.37%</td><td>65.66%</td></tr><tr><td>原因</td><td>5,197</td><td>74.20%</td><td>72.14%</td></tr><tr><td>金额+期次+计划+原因</td><td>4,739</td><td>67.71%</td><td>63.22%</td></tr><tr><td>计划+原因</td><td>4,013</td><td>71.52%</td><td>69.32%</td></tr><tr><td>金额+原因</td><td>3,011</td><td>75.72%</td><td>72.90%</td></tr><tr><td>金额+期次</td><td>2,946</td><td>64.70%</td><td>63.14%</td></tr></tbody>
+</table></div>
+
+<h2>口径</h2>
+<div class="callout">
+T0：<code>order_vir_f_copy</code> is_pass1=1、loan_type_code=2、<code>side_recycle_type_copy.recycle_type=3</code>；20 秒批次去重；结清日=获额日且 vir_time≥repaid_time；结清时无其他在途/在贷；用户×日最早一轮获额。<br>
+页内行为：获额当日 <code>event_track</code> 日汇总（只读账号无 <code>event_track_record</code> 明细，无法卡到秒级「获额通过之后」）。映射：金额→amount_selection，期次→term_selection，合同→contract_newdetails，计划→plan_newdetails，原因→purpose_newdetails；确认→newconfirm。入样不含确认、不含仅进页。T0 获额在结清之后，页内操作多数仍在获额后，但同日获额前点击无法剔除。<br>
+上一笔放款：is_remit=1 且 remit_amt&gt;0 且 remit_time&lt;vir_time，取 remit_time 最晚；额度用该 serial 在获额表的 max_credit_apply_amt。<br>
+当天提单：apply_time≥vir_time 且 apply_date=vir_date，不卡放款。
+</div>
+
+<h2>附录：</h2>
+<details class="code"><summary>完整 PGSQL（点击展开）</summary>
+<pre class="sql">-- =============================================================================
+-- T0 当天结清获额 × 获额后当天页内行为 × 额度相对最晚放款笔变化
+-- 库：kaby_dw · schema：wangchuanliang · 2026-01-01～2026-08-31
+--
+-- 口径
+--   T0：is_pass1=1 AND loan_type_code=2 AND recycle_type=3；20 秒获额批次去重；
+--       结清日=获额日；vir_time&gt;=repaid_time；结清时 0 在贷；用户×日最早一轮获额。
+--   页内行为：获额当日 event_track 日表；只读账号无 event_track_record 明细权限，
+--            无法在 SQL 中卡 create_time&gt;=vir_time。字段映射见文末。
+--            不含确认提单、不含仅进页（newpage）。
+--   上一笔放款：vir_time 之前 is_remit=1 且 remit_amt&gt;0，remit_time 最晚的一笔
+--              （不必是刚结清那笔）；额度取获额表 max_credit_apply_amt。
+--   分析样本：T0 ∩ 能取到上一笔获额额度 ∩ 当天有至少一类页内行为。
+-- =============================================================================
+
+SET search_path TO wangchuanliang, public;
+SET statement_timeout = 0;
+
+DROP TABLE IF EXISTS tmp_m_origin;
+CREATE TEMP TABLE tmp_m_origin AS
+WITH params AS (
+    SELECT DATE &#x27;2026-01-01&#x27; AS start_date, DATE &#x27;2026-09-01&#x27; AS end_date
+), raw_offer AS (
+    SELECT DISTINCT ON (v.user_id, v.serial_id)
+        v.user_id, v.serial_id, v.vir_date::date AS vir_date,
+        TO_TIMESTAMP(v.vir_unix) AS vir_time, v.max_credit_apply_amt
+    FROM order_vir_f_copy v
+    INNER JOIN side_recycle_type_copy r ON r.serial_id = v.serial_id
+    CROSS JOIN params p
+    WHERE v.is_pass1 = 1 AND v.loan_type_code = 2 AND r.recycle_type = 3
+      AND v.vir_date &gt;= p.start_date - 1 AND v.vir_date &lt; p.end_date
+    ORDER BY v.user_id, v.serial_id, v.vir_unix DESC
+), lagged AS (
+    SELECT r.*, LAG(r.vir_time) OVER (PARTITION BY r.user_id ORDER BY r.vir_time, r.serial_id) AS prev_vir_time
+    FROM raw_offer r
+), batched AS (
+    SELECT l.*, SUM(CASE WHEN l.prev_vir_time IS NULL OR l.vir_time - l.prev_vir_time &gt; INTERVAL &#x27;20 seconds&#x27; THEN 1 ELSE 0 END)
+      OVER (PARTITION BY l.user_id ORDER BY l.vir_time, l.serial_id ROWS UNBOUNDED PRECEDING) AS batch_id
+    FROM lagged l
+), dedup_offer AS (
+    SELECT user_id, serial_id, vir_date, vir_time, max_credit_apply_amt
+    FROM (
+        SELECT b.*, ROW_NUMBER() OVER (PARTITION BY b.user_id, b.batch_id ORDER BY b.vir_time DESC, b.serial_id DESC) AS batch_rn
+        FROM batched b
+    ) x
+    CROSS JOIN params p
+    WHERE batch_rn = 1 AND vir_date &gt;= p.start_date AND vir_date &lt; p.end_date
+), candidate_users AS (SELECT DISTINCT user_id FROM dedup_offer),
+all_orders AS (
+    SELECT o.user_id, o.serial_id, o.apply_time, o.repaid_time, o.repaid_date::date AS repaid_date,
+           o.loan_status_code, o.is_remit, o.is_repaid
+    FROM order_loan_f_v2_copy o
+    INNER JOIN candidate_users u ON u.user_id = o.user_id
+), clean_settlement AS (
+    SELECT o.user_id, o.serial_id, o.repaid_time, o.repaid_date
+    FROM all_orders o
+    WHERE o.is_remit = 1 AND (o.is_repaid = 1 OR o.loan_status_code = 7)
+      AND o.repaid_time &gt; TIMESTAMP &#x27;2000-01-01 00:00:00&#x27;
+      AND NOT EXISTS (
+          SELECT 1 FROM all_orders x
+          WHERE x.user_id = o.user_id AND x.serial_id &lt;&gt; o.serial_id AND x.apply_time &lt; o.repaid_time
+            AND (x.loan_status_code IN (5, 8) OR (x.loan_status_code = 7 AND x.repaid_time &gt; o.repaid_time))
+      )
+), paired AS (
+    SELECT e.user_id, e.serial_id AS credit_serial_id, e.vir_date, e.vir_time, e.max_credit_apply_amt,
+           ROW_NUMBER() OVER (PARTITION BY e.user_id, e.vir_date ORDER BY e.vir_time ASC, e.serial_id DESC) AS day_rn
+    FROM dedup_offer e
+    INNER JOIN clean_settlement s
+        ON s.user_id = e.user_id AND s.repaid_date = e.vir_date AND e.vir_time &gt;= s.repaid_time
+)
+SELECT user_id, credit_serial_id, vir_date, vir_time, max_credit_apply_amt AS this_amt
+FROM paired WHERE day_rn = 1;
+
+DROP TABLE IF EXISTS tmp_prev;
+CREATE TEMP TABLE tmp_prev AS
+SELECT user_id, vir_date, prev_serial, prev_remit_time
+FROM (
+    SELECT t.user_id, t.vir_date, o.serial_id AS prev_serial, o.remit_time AS prev_remit_time,
+           ROW_NUMBER() OVER (PARTITION BY t.user_id, t.vir_date ORDER BY o.remit_time DESC, o.serial_id DESC) AS rn
+    FROM tmp_m_origin t
+    INNER JOIN order_loan_f_v2_copy o
+      ON o.user_id = t.user_id
+     AND o.is_remit = 1 AND COALESCE(o.remit_amt, 0) &gt; 0
+     AND o.remit_time IS NOT NULL
+     AND o.remit_time &lt; t.vir_time
+) z WHERE rn = 1;
+
+DROP TABLE IF EXISTS tmp_prev_amt;
+CREATE TEMP TABLE tmp_prev_amt AS
+SELECT p.user_id, p.vir_date, p.prev_serial, p.prev_remit_time, v.max_credit_apply_amt AS prev_amt
+FROM tmp_prev p
+LEFT JOIN (
+    SELECT DISTINCT ON (serial_id) serial_id, max_credit_apply_amt
+    FROM order_vir_f_copy
+    ORDER BY serial_id, vir_unix DESC
+) v ON v.serial_id = p.prev_serial;
+
+DROP TABLE IF EXISTS tmp_beh;
+CREATE TEMP TABLE tmp_beh AS
+SELECT
+    t.user_id, t.vir_date,
+    MAX(CASE WHEN COALESCE(e.amount_selection, 0) &gt; 0 THEN 1 ELSE 0 END) AS f_amt,
+    MAX(CASE WHEN COALESCE(e.term_selection, 0) &gt; 0 THEN 1 ELSE 0 END) AS f_term,
+    MAX(CASE WHEN COALESCE(e.contract_newdetails, 0) &gt; 0 THEN 1 ELSE 0 END) AS f_contract,
+    MAX(CASE WHEN COALESCE(e.plan_newdetails, 0) &gt; 0 THEN 1 ELSE 0 END) AS f_plan,
+    MAX(CASE WHEN COALESCE(e.purpose_newdetails, 0) &gt; 0 THEN 1 ELSE 0 END) AS f_purpose,
+    SUM(COALESCE(e.amount_selection, 0)) AS n_amt,
+    SUM(COALESCE(e.term_selection, 0)) AS n_term,
+    SUM(COALESCE(e.contract_newdetails, 0)) AS n_contract,
+    SUM(COALESCE(e.plan_newdetails, 0)) AS n_plan,
+    SUM(COALESCE(e.purpose_newdetails, 0)) AS n_purpose
+FROM tmp_m_origin t
+INNER JOIN event_track e
+  ON e.user_id = t.user_id AND e.active_date = t.vir_date
+GROUP BY t.user_id, t.vir_date
+HAVING SUM(COALESCE(e.amount_selection, 0) + COALESCE(e.term_selection, 0)
+         + COALESCE(e.contract_newdetails, 0) + COALESCE(e.plan_newdetails, 0)
+         + COALESCE(e.purpose_newdetails, 0)) &gt; 0;
+
+DROP TABLE IF EXISTS tmp_confirm;
+CREATE TEMP TABLE tmp_confirm AS
+SELECT t.user_id, t.vir_date, 1 AS f_confirm
+FROM tmp_m_origin t
+INNER JOIN event_track e
+  ON e.user_id = t.user_id AND e.active_date = t.vir_date
+GROUP BY t.user_id, t.vir_date
+HAVING SUM(COALESCE(e.newconfirm, 0)) &gt; 0;
+
+DROP TABLE IF EXISTS tmp_apply;
+CREATE TEMP TABLE tmp_apply AS
+SELECT t.user_id, t.vir_date, 1 AS f_apply
+FROM tmp_m_origin t
+INNER JOIN (
+    SELECT z.user_id, z.vir_date
+    FROM (
+        SELECT t.user_id, t.vir_date,
+               ROW_NUMBER() OVER (PARTITION BY t.user_id, t.vir_date ORDER BY a.apply_time, a.serial_id) AS rn
+        FROM tmp_m_origin t
+        INNER JOIN order_loan_f_v2_copy a
+          ON a.user_id = t.user_id AND a.apply_time &gt;= t.vir_time AND a.apply_date = t.vir_date
+    ) z WHERE rn = 1
+) s ON s.user_id = t.user_id AND s.vir_date = t.vir_date;
+
+DROP TABLE IF EXISTS tmp_base;
+CREATE TEMP TABLE tmp_base AS
+SELECT
+    t.user_id,
+    t.vir_date,
+    TO_CHAR(DATE_TRUNC(&#x27;month&#x27;, t.vir_date), &#x27;YYYY-MM&#x27;) AS ym,
+    t.this_amt,
+    p.prev_amt,
+    (t.this_amt - p.prev_amt) AS amt_diff,
+    CASE WHEN p.prev_amt IS NULL OR p.prev_amt = 0 THEN NULL
+         ELSE ROUND(100.0 * (t.this_amt - p.prev_amt) / p.prev_amt, 2) END AS amt_pct,
+    CASE
+        WHEN t.this_amt IS NULL OR p.prev_amt IS NULL THEN &#x27;未知&#x27;
+        WHEN t.this_amt &gt; p.prev_amt THEN &#x27;升额&#x27;
+        WHEN t.this_amt &lt; p.prev_amt THEN &#x27;降额&#x27;
+        ELSE &#x27;不变&#x27;
+    END AS chg_grp,
+    CASE
+        WHEN t.this_amt IS NULL OR p.prev_amt IS NULL OR p.prev_amt = 0 THEN &#x27;未知&#x27;
+        WHEN t.this_amt &lt; p.prev_amt AND (p.prev_amt - t.this_amt) / p.prev_amt &gt;= 0.20 THEN &#x27;降额≥20%&#x27;
+        WHEN t.this_amt &lt; p.prev_amt THEN &#x27;降额&lt;20%&#x27;
+        WHEN t.this_amt = p.prev_amt THEN &#x27;不变&#x27;
+        WHEN (t.this_amt - p.prev_amt) / p.prev_amt &gt;= 0.20 THEN &#x27;升额≥20%&#x27;
+        ELSE &#x27;升额&lt;20%&#x27;
+    END AS chg_bin,
+    COALESCE(b.f_amt, 0) AS f_amt,
+    COALESCE(b.f_term, 0) AS f_term,
+    COALESCE(b.f_contract, 0) AS f_contract,
+    COALESCE(b.f_plan, 0) AS f_plan,
+    COALESCE(b.f_purpose, 0) AS f_purpose,
+    COALESCE(b.n_amt, 0) AS n_amt,
+    COALESCE(b.n_term, 0) AS n_term,
+    COALESCE(b.n_contract, 0) AS n_contract,
+    COALESCE(b.n_plan, 0) AS n_plan,
+    COALESCE(b.n_purpose, 0) AS n_purpose,
+    COALESCE(c.f_confirm, 0) AS f_confirm,
+    COALESCE(a.f_apply, 0) AS f_apply
+FROM tmp_m_origin t
+LEFT JOIN tmp_prev_amt p ON p.user_id = t.user_id AND p.vir_date = t.vir_date
+LEFT JOIN tmp_beh b ON b.user_id = t.user_id AND b.vir_date = t.vir_date
+LEFT JOIN tmp_confirm c ON c.user_id = t.user_id AND c.vir_date = t.vir_date
+LEFT JOIN tmp_apply a ON a.user_id = t.user_id AND a.vir_date = t.vir_date;
+
+DROP TABLE IF EXISTS tmp_sample;
+CREATE TEMP TABLE tmp_sample AS
+SELECT *
+FROM tmp_base
+WHERE this_amt IS NOT NULL AND prev_amt IS NOT NULL
+  AND (f_amt + f_term + f_contract + f_plan + f_purpose) &gt;= 1;
+
+-- 漏斗
+SELECT
+    (SELECT COUNT(*) FROM tmp_m_origin) AS n_t0,
+    (SELECT COUNT(*) FROM tmp_base WHERE prev_amt IS NOT NULL AND this_amt IS NOT NULL) AS n_with_prev,
+    (SELECT COUNT(*) FROM tmp_base WHERE (f_amt+f_term+f_contract+f_plan+f_purpose) &gt;= 1) AS n_with_beh,
+    (SELECT COUNT(*) FROM tmp_sample) AS n_sample;
+
+-- 三组主表
+SELECT
+    chg_grp,
+    COUNT(*) AS n,
+    ROUND(AVG(this_amt), 0) AS avg_this,
+    ROUND(AVG(prev_amt), 0) AS avg_prev,
+    ROUND(AVG(amt_diff), 0) AS avg_diff,
+    ROUND(AVG(amt_pct), 2) AS avg_pct,
+    ROUND(100.0 * AVG(f_amt), 2) AS pct_amt,
+    ROUND(100.0 * AVG(f_term), 2) AS pct_term,
+    ROUND(100.0 * AVG(f_contract), 2) AS pct_contract,
+    ROUND(100.0 * AVG(f_plan), 2) AS pct_plan,
+    ROUND(100.0 * AVG(f_purpose), 2) AS pct_purpose,
+    ROUND(AVG(n_amt), 2) AS avg_n_amt,
+    ROUND(AVG(n_term), 2) AS avg_n_term,
+    ROUND(AVG(n_contract), 2) AS avg_n_contract,
+    ROUND(AVG(n_plan), 2) AS avg_n_plan,
+    ROUND(AVG(n_purpose), 2) AS avg_n_purpose,
+    ROUND(100.0 * AVG(f_confirm), 2) AS pct_confirm,
+    ROUND(100.0 * AVG(f_apply), 2) AS pct_apply
+FROM tmp_sample
+GROUP BY chg_grp;
+
+-- 幅度分档
+SELECT
+    chg_bin,
+    COUNT(*) AS n,
+    ROUND(100.0 * AVG(f_amt), 2) AS pct_amt,
+    ROUND(100.0 * AVG(f_term), 2) AS pct_term,
+    ROUND(100.0 * AVG(f_contract), 2) AS pct_contract,
+    ROUND(100.0 * AVG(f_plan), 2) AS pct_plan,
+    ROUND(100.0 * AVG(f_purpose), 2) AS pct_purpose,
+    ROUND(100.0 * AVG(f_confirm), 2) AS pct_confirm,
+    ROUND(100.0 * AVG(f_apply), 2) AS pct_apply
+FROM tmp_sample
+GROUP BY chg_bin;
+
+-- 月度结构
+SELECT ym, chg_grp, COUNT(*) AS n,
+       ROUND(100.0 * AVG(f_apply), 2) AS pct_apply,
+       ROUND(100.0 * AVG(f_amt), 2) AS pct_amt,
+       ROUND(100.0 * AVG(f_term), 2) AS pct_term
+FROM tmp_sample
+GROUP BY ym, chg_grp
+ORDER BY 1, 2;
+
+-- 行为组合（前 20）
+SELECT
+    f_amt, f_term, f_contract, f_plan, f_purpose,
+    COUNT(*) AS n,
+    ROUND(100.0 * AVG(f_confirm), 2) AS pct_confirm,
+    ROUND(100.0 * AVG(f_apply), 2) AS pct_apply
+FROM tmp_sample
+GROUP BY f_amt, f_term, f_contract, f_plan, f_purpose
+ORDER BY n DESC
+LIMIT 20;
+
+-- 组合 × 额度组
+SELECT
+    chg_grp,
+    f_amt, f_term, f_contract, f_plan, f_purpose,
+    COUNT(*) AS n
+FROM tmp_sample
+GROUP BY chg_grp, f_amt, f_term, f_contract, f_plan, f_purpose;
+</pre>
+</details>
+<p class="foot">kaby_dw · wangchuanliang · 2026-01-01～2026-08-31 · 密码不入库。</p>
+</main>
+<script>
+const D = {"funnel": {"n_t0": 177133, "n_with_prev": 177133, "n_with_beh": 99131, "n_sample": 99131}, "grp": [{"chg_grp": "不变", "n": 10071, "avg_this": 935.0, "avg_prev": 935.0, "avg_diff": 0.0, "avg_pct": 0.0, "pct_amt": 49.89, "pct_term": 35.38, "pct_contract": 5.27, "pct_plan": 46.69, "pct_purpose": 36.24, "avg_n_amt": 1.27, "avg_n_term": 0.89, "avg_n_contract": 0.06, "avg_n_plan": 0.74, "avg_n_purpose": 0.46, "pct_confirm": 73.99, "pct_apply": 71.24}, {"chg_grp": "降额", "n": 31372, "avg_this": 1988.0, "avg_prev": 2884.0, "avg_diff": -896.0, "avg_pct": -34.77, "pct_amt": 50.23, "pct_term": 33.94, "pct_contract": 4.77, "pct_plan": 60.3, "pct_purpose": 33.78, "avg_n_amt": 1.51, "avg_n_term": 0.91, "avg_n_contract": 0.06, "avg_n_plan": 1.05, "avg_n_purpose": 0.44, "pct_confirm": 67.81, "pct_apply": 65.52}, {"chg_grp": "升额", "n": 57688, "avg_this": 4579.0, "avg_prev": 2680.0, "avg_diff": 1899.0, "avg_pct": 131.95, "pct_amt": 61.01, "pct_term": 33.51, "pct_contract": 3.54, "pct_plan": 71.8, "pct_purpose": 25.92, "avg_n_amt": 2.44, "avg_n_term": 1.04, "avg_n_contract": 0.04, "avg_n_plan": 1.47, "avg_n_purpose": 0.33, "pct_confirm": 57.87, "pct_apply": 56.25}], "bins": [{"chg_bin": "不变", "n": 10071, "pct_amt": 49.89, "pct_term": 35.38, "pct_contract": 5.27, "pct_plan": 46.69, "pct_purpose": 36.24, "pct_confirm": 73.99, "pct_apply": 71.24}, {"chg_bin": "降额<20%", "n": 6624, "pct_amt": 55.69, "pct_term": 31.49, "pct_contract": 4.77, "pct_plan": 66.79, "pct_purpose": 28.38, "pct_confirm": 65.05, "pct_apply": 63.24}, {"chg_bin": "升额<20%", "n": 7157, "pct_amt": 57.96, "pct_term": 32.12, "pct_contract": 3.62, "pct_plan": 69.88, "pct_purpose": 25.32, "pct_confirm": 61.66, "pct_apply": 60.22}, {"chg_bin": "升额≥20%", "n": 50531, "pct_amt": 61.44, "pct_term": 33.7, "pct_contract": 3.53, "pct_plan": 72.07, "pct_purpose": 26.0, "pct_confirm": 57.34, "pct_apply": 55.68}, {"chg_bin": "降额≥20%", "n": 24748, "pct_amt": 48.77, "pct_term": 34.6, "pct_contract": 4.77, "pct_plan": 58.56, "pct_purpose": 35.23, "pct_confirm": 68.54, "pct_apply": 66.13}], "ym": [{"ym": "2026-01", "chg_grp": "不变", "n": 862, "pct_apply": 79.7, "pct_amt": 34.69, "pct_term": 61.37}, {"ym": "2026-01", "chg_grp": "升额", "n": 7136, "pct_apply": 67.46, "pct_amt": 58.14, "pct_term": 47.93}, {"ym": "2026-01", "chg_grp": "降额", "n": 3291, "pct_apply": 74.69, "pct_amt": 42.54, "pct_term": 53.54}, {"ym": "2026-02", "chg_grp": "不变", "n": 1071, "pct_apply": 79.93, "pct_amt": 38.84, "pct_term": 57.7}, {"ym": "2026-02", "chg_grp": "升额", "n": 7553, "pct_apply": 65.99, "pct_amt": 58.31, "pct_term": 47.62}, {"ym": "2026-02", "chg_grp": "降额", "n": 4349, "pct_apply": 73.9, "pct_amt": 43.3, "pct_term": 50.15}, {"ym": "2026-03", "chg_grp": "不变", "n": 1619, "pct_apply": 74.8, "pct_amt": 43.24, "pct_term": 44.84}, {"ym": "2026-03", "chg_grp": "升额", "n": 5897, "pct_apply": 63.1, "pct_amt": 57.01, "pct_term": 39.8}, {"ym": "2026-03", "chg_grp": "降额", "n": 4025, "pct_apply": 69.69, "pct_amt": 43.65, "pct_term": 42.01}, {"ym": "2026-04", "chg_grp": "不变", "n": 1476, "pct_apply": 74.46, "pct_amt": 44.11, "pct_term": 36.99}, {"ym": "2026-04", "chg_grp": "升额", "n": 6302, "pct_apply": 59.55, "pct_amt": 58.95, "pct_term": 37.02}, {"ym": "2026-04", "chg_grp": "降额", "n": 3371, "pct_apply": 66.66, "pct_amt": 45.03, "pct_term": 36.61}, {"ym": "2026-05", "chg_grp": "不变", "n": 1420, "pct_apply": 68.45, "pct_amt": 57.46, "pct_term": 24.23}, {"ym": "2026-05", "chg_grp": "升额", "n": 7827, "pct_apply": 53.85, "pct_amt": 61.9, "pct_term": 26.66}, {"ym": "2026-05", "chg_grp": "降额", "n": 4250, "pct_apply": 61.2, "pct_amt": 52.54, "pct_term": 24.71}, {"ym": "2026-06", "chg_grp": "不变", "n": 1586, "pct_apply": 65.7, "pct_amt": 60.66, "pct_term": 18.85}, {"ym": "2026-06", "chg_grp": "升额", "n": 7198, "pct_apply": 49.57, "pct_amt": 64.2, "pct_term": 21.19}, {"ym": "2026-06", "chg_grp": "降额", "n": 4043, "pct_apply": 61.04, "pct_amt": 58.25, "pct_term": 19.76}, {"ym": "2026-07", "chg_grp": "不变", "n": 1097, "pct_apply": 63.99, "pct_amt": 59.16, "pct_term": 20.78}, {"ym": "2026-07", "chg_grp": "升额", "n": 8133, "pct_apply": 47.36, "pct_amt": 65.13, "pct_term": 23.3}, {"ym": "2026-07", "chg_grp": "降额", "n": 3985, "pct_apply": 60.63, "pct_amt": 58.95, "pct_term": 21.76}, {"ym": "2026-08", "chg_grp": "不变", "n": 940, "pct_apply": 64.47, "pct_amt": 56.49, "pct_term": 29.04}, {"ym": "2026-08", "chg_grp": "升额", "n": 7642, "pct_apply": 46.34, "pct_amt": 62.84, "pct_term": 27.81}, {"ym": "2026-08", "chg_grp": "降额", "n": 4058, "pct_apply": 57.84, "pct_amt": 55.77, "pct_term": 26.22}], "combo": [{"f_amt": 0, "f_term": 0, "f_contract": 0, "f_plan": 1, "f_purpose": 0, "n": 16858, "pct_confirm": 52.6, "pct_apply": 51.35}, {"f_amt": 1, "f_term": 0, "f_contract": 0, "f_plan": 1, "f_purpose": 0, "n": 15671, "pct_confirm": 51.48, "pct_apply": 50.08}, {"f_amt": 1, "f_term": 0, "f_contract": 0, "f_plan": 0, "f_purpose": 0, "n": 12520, "pct_confirm": 55.7, "pct_apply": 54.29}, {"f_amt": 1, "f_term": 1, "f_contract": 0, "f_plan": 1, "f_purpose": 0, "n": 7874, "pct_confirm": 56.77, "pct_apply": 54.9}, {"f_amt": 0, "f_term": 1, "f_contract": 0, "f_plan": 0, "f_purpose": 0, "n": 5945, "pct_confirm": 75.61, "pct_apply": 74.48}, {"f_amt": 1, "f_term": 0, "f_contract": 0, "f_plan": 1, "f_purpose": 1, "n": 5714, "pct_confirm": 65.42, "pct_apply": 62.55}, {"f_amt": 0, "f_term": 1, "f_contract": 0, "f_plan": 1, "f_purpose": 0, "n": 5688, "pct_confirm": 67.37, "pct_apply": 65.66}, {"f_amt": 0, "f_term": 0, "f_contract": 0, "f_plan": 0, "f_purpose": 1, "n": 5197, "pct_confirm": 74.2, "pct_apply": 72.14}, {"f_amt": 1, "f_term": 1, "f_contract": 0, "f_plan": 1, "f_purpose": 1, "n": 4739, "pct_confirm": 67.71, "pct_apply": 63.22}, {"f_amt": 0, "f_term": 0, "f_contract": 0, "f_plan": 1, "f_purpose": 1, "n": 4013, "pct_confirm": 71.52, "pct_apply": 69.32}, {"f_amt": 1, "f_term": 0, "f_contract": 0, "f_plan": 0, "f_purpose": 1, "n": 3011, "pct_confirm": 75.72, "pct_apply": 72.9}, {"f_amt": 1, "f_term": 1, "f_contract": 0, "f_plan": 0, "f_purpose": 0, "n": 2946, "pct_confirm": 64.7, "pct_apply": 63.14}, {"f_amt": 0, "f_term": 1, "f_contract": 0, "f_plan": 1, "f_purpose": 1, "n": 2037, "pct_confirm": 77.37, "pct_apply": 74.08}, {"f_amt": 0, "f_term": 1, "f_contract": 0, "f_plan": 0, "f_purpose": 1, "n": 1428, "pct_confirm": 83.61, "pct_apply": 81.44}, {"f_amt": 1, "f_term": 1, "f_contract": 0, "f_plan": 0, "f_purpose": 1, "n": 1419, "pct_confirm": 78.22, "pct_apply": 74.7}, {"f_amt": 0, "f_term": 0, "f_contract": 1, "f_plan": 0, "f_purpose": 0, "n": 629, "pct_confirm": 90.94, "pct_apply": 87.12}, {"f_amt": 1, "f_term": 0, "f_contract": 1, "f_plan": 1, "f_purpose": 0, "n": 457, "pct_confirm": 87.96, "pct_apply": 85.12}, {"f_amt": 1, "f_term": 1, "f_contract": 1, "f_plan": 1, "f_purpose": 1, "n": 412, "pct_confirm": 82.28, "pct_apply": 76.21}, {"f_amt": 1, "f_term": 0, "f_contract": 1, "f_plan": 1, "f_purpose": 1, "n": 375, "pct_confirm": 88.0, "pct_apply": 80.27}, {"f_amt": 0, "f_term": 0, "f_contract": 1, "f_plan": 1, "f_purpose": 0, "n": 371, "pct_confirm": 91.37, "pct_apply": 88.14}], "combo_x": [{"chg_grp": "降额", "f_amt": 1, "f_term": 0, "f_contract": 1, "f_plan": 0, "f_purpose": 0, "n": 75}, {"chg_grp": "不变", "f_amt": 1, "f_term": 1, "f_contract": 0, "f_plan": 0, "f_purpose": 1, "n": 248}, {"chg_grp": "降额", "f_amt": 0, "f_term": 0, "f_contract": 1, "f_plan": 0, "f_purpose": 1, "n": 89}, {"chg_grp": "降额", "f_amt": 1, "f_term": 1, "f_contract": 1, "f_plan": 0, "f_purpose": 1, "n": 42}, {"chg_grp": "不变", "f_amt": 1, "f_term": 1, "f_contract": 1, "f_plan": 0, "f_purpose": 0, "n": 13}, {"chg_grp": "降额", "f_amt": 0, "f_term": 1, "f_contract": 0, "f_plan": 1, "f_purpose": 0, "n": 1894}, {"chg_grp": "不变", "f_amt": 1, "f_term": 0, "f_contract": 1, "f_plan": 1, "f_purpose": 0, "n": 30}, {"chg_grp": "不变", "f_amt": 1, "f_term": 0, "f_contract": 0, "f_plan": 0, "f_purpose": 1, "n": 546}, {"chg_grp": "不变", "f_amt": 0, "f_term": 0, "f_contract": 1, "f_plan": 1, "f_purpose": 1, "n": 26}, {"chg_grp": "降额", "f_amt": 0, "f_term": 1, "f_contract": 0, "f_plan": 1, "f_purpose": 1, "n": 774}, {"chg_grp": "不变", "f_amt": 1, "f_term": 0, "f_contract": 0, "f_plan": 0, "f_purpose": 0, "n": 1725}, {"chg_grp": "升额", "f_amt": 1, "f_term": 0, "f_contract": 0, "f_plan": 1, "f_purpose": 1, "n": 3644}, {"chg_grp": "降额", "f_amt": 1, "f_term": 1, "f_contract": 0, "f_plan": 1, "f_purpose": 1, "n": 1333}, {"chg_grp": "降额", "f_amt": 1, "f_term": 1, "f_contract": 0, "f_plan": 0, "f_purpose": 0, "n": 952}, {"chg_grp": "升额", "f_amt": 0, "f_term": 0, "f_contract": 1, "f_plan": 0, "f_purpose": 0, "n": 271}, {"chg_grp": "降额", "f_amt": 1, "f_term": 0, "f_contract": 0, "f_plan": 1, "f_purpose": 0, "n": 3569}, {"chg_grp": "降额", "f_amt": 1, "f_term": 0, "f_contract": 0, "f_plan": 0, "f_purpose": 1, "n": 1250}, {"chg_grp": "升额", "f_amt": 1, "f_term": 1, "f_contract": 0, "f_plan": 1, "f_purpose": 1, "n": 3028}, {"chg_grp": "升额", "f_amt": 1, "f_term": 1, "f_contract": 1, "f_plan": 1, "f_purpose": 1, "n": 233}, {"chg_grp": "不变", "f_amt": 1, "f_term": 1, "f_contract": 0, "f_plan": 0, "f_purpose": 0, "n": 333}, {"chg_grp": "不变", "f_amt": 0, "f_term": 0, "f_contract": 1, "f_plan": 1, "f_purpose": 0, "n": 53}, {"chg_grp": "降额", "f_amt": 0, "f_term": 1, "f_contract": 0, "f_plan": 0, "f_purpose": 1, "n": 629}, {"chg_grp": "不变", "f_amt": 0, "f_term": 1, "f_contract": 0, "f_plan": 0, "f_purpose": 0, "n": 996}, {"chg_grp": "升额", "f_amt": 0, "f_term": 0, "f_contract": 1, "f_plan": 1, "f_purpose": 0, "n": 186}, {"chg_grp": "降额", "f_amt": 0, "f_term": 1, "f_contract": 0, "f_plan": 0, "f_purpose": 0, "n": 2201}, {"chg_grp": "不变", "f_amt": 1, "f_term": 1, "f_contract": 1, "f_plan": 1, "f_purpose": 1, "n": 40}, {"chg_grp": "不变", "f_amt": 0, "f_term": 0, "f_contract": 1, "f_plan": 0, "f_purpose": 1, "n": 38}, {"chg_grp": "升额", "f_amt": 0, "f_term": 1, "f_contract": 0, "f_plan": 0, "f_purpose": 0, "n": 2748}, {"chg_grp": "不变", "f_amt": 0, "f_term": 1, "f_contract": 0, "f_plan": 1, "f_purpose": 0, "n": 573}, {"chg_grp": "升额", "f_amt": 1, "f_term": 1, "f_contract": 1, "f_plan": 1, "f_purpose": 0, "n": 194}, {"chg_grp": "升额", "f_amt": 0, "f_term": 1, "f_contract": 1, "f_plan": 0, "f_purpose": 1, "n": 22}, {"chg_grp": "升额", "f_amt": 0, "f_term": 1, "f_contract": 1, "f_plan": 1, "f_purpose": 0, "n": 108}, {"chg_grp": "不变", "f_amt": 1, "f_term": 0, "f_contract": 0, "f_plan": 1, "f_purpose": 0, "n": 768}, {"chg_grp": "降额", "f_amt": 1, "f_term": 0, "f_contract": 1, "f_plan": 1, "f_purpose": 1, "n": 135}, {"chg_grp": "升额", "f_amt": 1, "f_term": 0, "f_contract": 1, "f_plan": 0, "f_purpose": 0, "n": 113}, {"chg_grp": "降额", "f_amt": 0, "f_term": 1, "f_contract": 1, "f_plan": 0, "f_purpose": 0, "n": 72}, {"chg_grp": "升额", "f_amt": 1, "f_term": 1, "f_contract": 1, "f_plan": 0, "f_purpose": 1, "n": 33}, {"chg_grp": "降额", "f_amt": 0, "f_term": 0, "f_contract": 0, "f_plan": 1, "f_purpose": 0, "n": 5597}, {"chg_grp": "不变", "f_amt": 1, "f_term": 0, "f_contract": 0, "f_plan": 1, "f_purpose": 1, "n": 426}, {"chg_grp": "降额", "f_amt": 0, "f_term": 0, "f_contract": 1, "f_plan": 0, "f_purpose": 0, "n": 238}, {"chg_grp": "降额", "f_amt": 0, "f_term": 0, "f_contract": 0, "f_plan": 0, "f_purpose": 1, "n": 2235}, {"chg_grp": "升额", "f_amt": 0, "f_term": 0, "f_contract": 1, "f_plan": 1, "f_purpose": 1, "n": 96}, {"chg_grp": "升额", "f_amt": 1, "f_term": 0, "f_contract": 0, "f_plan": 1, "f_purpose": 0, "n": 11334}, {"chg_grp": "升额", "f_amt": 0, "f_term": 0, "f_contract": 0, "f_plan": 1, "f_purpose": 0, "n": 9961}, {"chg_grp": "不变", "f_amt": 0, "f_term": 0, "f_contract": 0, "f_plan": 1, "f_purpose": 0, "n": 1300}, {"chg_grp": "降额", "f_amt": 1, "f_term": 0, "f_contract": 1, "f_plan": 0, "f_purpose": 1, "n": 74}, {"chg_grp": "升额", "f_amt": 1, "f_term": 0, "f_contract": 1, "f_plan": 1, "f_purpose": 1, "n": 210}, {"chg_grp": "降额", "f_amt": 0, "f_term": 1, "f_contract": 1, "f_plan": 0, "f_purpose": 1, "n": 39}, {"chg_grp": "升额", "f_amt": 1, "f_term": 1, "f_contract": 0, "f_plan": 1, "f_purpose": 0, "n": 5706}, {"chg_grp": "不变", "f_amt": 1, "f_term": 1, "f_contract": 1, "f_plan": 1, "f_purpose": 0, "n": 16}, {"chg_grp": "升额", "f_amt": 0, "f_term": 0, "f_contract": 0, "f_plan": 1, "f_purpose": 1, "n": 2101}, {"chg_grp": "降额", "f_amt": 1, "f_term": 1, "f_contract": 0, "f_plan": 1, "f_purpose": 0, "n": 1769}, {"chg_grp": "不变", "f_amt": 0, "f_term": 1, "f_contract": 1, "f_plan": 0, "f_purpose": 1, "n": 15}, {"chg_grp": "降额", "f_amt": 1, "f_term": 1, "f_contract": 1, "f_plan": 1, "f_purpose": 1, "n": 139}, {"chg_grp": "不变", "f_amt": 0, "f_term": 0, "f_contract": 0, "f_plan": 1, "f_purpose": 1, "n": 408}, {"chg_grp": "降额", "f_amt": 0, "f_term": 0, "f_contract": 0, "f_plan": 1, "f_purpose": 1, "n": 1504}, {"chg_grp": "降额", "f_amt": 0, "f_term": 1, "f_contract": 1, "f_plan": 1, "f_purpose": 0, "n": 66}, {"chg_grp": "降额", "f_amt": 1, "f_term": 1, "f_contract": 0, "f_plan": 0, "f_purpose": 1, "n": 568}, {"chg_grp": "不变", "f_amt": 1, "f_term": 0, "f_contract": 1, "f_plan": 0, "f_purpose": 0, "n": 32}, {"chg_grp": "升额", "f_amt": 1, "f_term": 1, "f_contract": 1, "f_plan": 0, "f_purpose": 0, "n": 45}, {"chg_grp": "降额", "f_amt": 0, "f_term": 0, "f_contract": 1, "f_plan": 1, "f_purpose": 1, "n": 85}, {"chg_grp": "升额", "f_amt": 0, "f_term": 0, "f_contract": 1, "f_plan": 0, "f_purpose": 1, "n": 72}, {"chg_grp": "升额", "f_amt": 1, "f_term": 0, "f_contract": 0, "f_plan": 0, "f_purpose": 0, "n": 6839}, {"chg_grp": "不变", "f_amt": 0, "f_term": 1, "f_contract": 0, "f_plan": 1, "f_purpose": 1, "n": 209}, {"chg_grp": "升额", "f_amt": 0, "f_term": 0, "f_contract": 0, "f_plan": 0, "f_purpose": 1, "n": 1980}, {"chg_grp": "降额", "f_amt": 0, "f_term": 1, "f_contract": 1, "f_plan": 1, "f_purpose": 1, "n": 59}, {"chg_grp": "不变", "f_amt": 1, "f_term": 1, "f_contract": 1, "f_plan": 0, "f_purpose": 1, "n": 16}, {"chg_grp": "升额", "f_amt": 1, "f_term": 0, "f_contract": 1, "f_plan": 0, "f_purpose": 1, "n": 51}, {"chg_grp": "降额", "f_amt": 0, "f_term": 0, "f_contract": 1, "f_plan": 1, "f_purpose": 0, "n": 132}, {"chg_grp": "不变", "f_amt": 0, "f_term": 1, "f_contract": 0, "f_plan": 0, "f_purpose": 1, "n": 249}, {"chg_grp": "升额", "f_amt": 0, "f_term": 1, "f_contract": 0, "f_plan": 1, "f_purpose": 0, "n": 3221}, {"chg_grp": "不变", "f_amt": 1, "f_term": 0, "f_contract": 1, "f_plan": 1, "f_purpose": 1, "n": 30}, {"chg_grp": "升额", "f_amt": 0, "f_term": 1, "f_contract": 1, "f_plan": 0, "f_purpose": 0, "n": 64}, {"chg_grp": "升额", "f_amt": 0, "f_term": 1, "f_contract": 0, "f_plan": 1, "f_purpose": 1, "n": 1054}, {"chg_grp": "升额", "f_amt": 1, "f_term": 0, "f_contract": 1, "f_plan": 1, "f_purpose": 0, "n": 286}, {"chg_grp": "不变", "f_amt": 0, "f_term": 1, "f_contract": 1, "f_plan": 1, "f_purpose": 1, "n": 15}, {"chg_grp": "降额", "f_amt": 1, "f_term": 1, "f_contract": 1, "f_plan": 0, "f_purpose": 0, "n": 36}, {"chg_grp": "不变", "f_amt": 1, "f_term": 1, "f_contract": 0, "f_plan": 1, "f_purpose": 0, "n": 399}, {"chg_grp": "不变", "f_amt": 0, "f_term": 0, "f_contract": 1, "f_plan": 0, "f_purpose": 0, "n": 120}, {"chg_grp": "升额", "f_amt": 0, "f_term": 1, "f_contract": 0, "f_plan": 0, "f_purpose": 1, "n": 550}, {"chg_grp": "不变", "f_amt": 0, "f_term": 1, "f_contract": 1, "f_plan": 0, "f_purpose": 0, "n": 32}, {"chg_grp": "升额", "f_amt": 1, "f_term": 1, "f_contract": 0, "f_plan": 0, "f_purpose": 0, "n": 1661}, {"chg_grp": "升额", "f_amt": 0, "f_term": 1, "f_contract": 1, "f_plan": 1, "f_purpose": 1, "n": 59}, {"chg_grp": "降额", "f_amt": 1, "f_term": 1, "f_contract": 1, "f_plan": 1, "f_purpose": 0, "n": 75}, {"chg_grp": "降额", "f_amt": 1, "f_term": 0, "f_contract": 0, "f_plan": 1, "f_purpose": 1, "n": 1644}, {"chg_grp": "不变", "f_amt": 0, "f_term": 1, "f_contract": 1, "f_plan": 1, "f_purpose": 0, "n": 31}, {"chg_grp": "不变", "f_amt": 0, "f_term": 0, "f_contract": 0, "f_plan": 0, "f_purpose": 1, "n": 982}, {"chg_grp": "不变", "f_amt": 1, "f_term": 1, "f_contract": 0, "f_plan": 1, "f_purpose": 1, "n": 378}, {"chg_grp": "降额", "f_amt": 1, "f_term": 0, "f_contract": 1, "f_plan": 1, "f_purpose": 0, "n": 141}, {"chg_grp": "升额", "f_amt": 1, "f_term": 1, "f_contract": 0, "f_plan": 0, "f_purpose": 1, "n": 603}, {"chg_grp": "降额", "f_amt": 1, "f_term": 0, "f_contract": 0, "f_plan": 0, "f_purpose": 0, "n": 3956}, {"chg_grp": "升额", "f_amt": 1, "f_term": 0, "f_contract": 0, "f_plan": 0, "f_purpose": 1, "n": 1215}, {"chg_grp": "不变", "f_amt": 1, "f_term": 0, "f_contract": 1, "f_plan": 0, "f_purpose": 1, "n": 24}]};
+const col = {up:'#64dcae', same:'#ffc26b', down:'#f68ab0', cy:'#43c7e7'};
+const order = ['降额','不变','升额'];
+const grp = Object.fromEntries((D.grp||[]).map(r => [r.chg_grp, r]));
+const colors = {'降额':col.down,'不变':col.same,'升额':col.up};
+function base() {
+  return {
+    responsive:true, maintainAspectRatio:false, interaction:{mode:'index', intersect:false},
+    plugins:{legend:{labels:{color:'#eff8ff'}}},
+    scales:{
+      x:{ticks:{color:'#aac5da'}, grid:{display:false}},
+      y:{ticks:{color:'#aac5da'}, grid:{color:'rgba(42,92,126,.25)'}}
+    }
+  };
+}
+new Chart(document.getElementById('c1'), {
+  type:'doughnut',
+  data:{labels:order.filter(k=>grp[k]), datasets:[{data:order.filter(k=>grp[k]).map(k=>grp[k].n), backgroundColor:order.filter(k=>grp[k]).map(k=>colors[k]), borderWidth:0}]},
+  options:{responsive:true, maintainAspectRatio:false, plugins:{legend:{position:'right', labels:{color:'#eff8ff'}}}},
+  plugins:[{id:'piePct', afterDatasetsDraw(chart){
+    const {ctx}=chart, ds=chart.data.datasets[0], tot=ds.data.reduce((a,b)=>a+b,0), meta=chart.getDatasetMeta(0);
+    meta.data.forEach((arc,i)=>{
+      const pos=arc.tooltipPosition(); ctx.save(); ctx.fillStyle='#eff8ff'; ctx.textAlign='center'; ctx.font='12px sans-serif';
+      ctx.fillText((100*ds.data[i]/tot).toFixed(1)+'%', pos.x, pos.y); ctx.restore();
+    });
+  }}]
+});
+const behs = [['pct_amt','改金额'],['pct_term','改期次'],['pct_contract','看合同'],['pct_plan','看计划'],['pct_purpose','选原因']];
+new Chart(document.getElementById('c2'), {
+  type:'bar',
+  data:{labels:behs.map(x=>x[1]), datasets:order.filter(k=>grp[k]).map(k=>({
+    label:k, data:behs.map(x=>grp[k][x[0]]), backgroundColor:colors[k]
+  }))},
+  options:base()
+});
+new Chart(document.getElementById('c3'), {
+  type:'bar',
+  data:{labels:order.filter(k=>grp[k]), datasets:[
+    {label:'确认提单%', data:order.filter(k=>grp[k]).map(k=>grp[k].pct_confirm), backgroundColor:col.am},
+    {label:'当天提单%', data:order.filter(k=>grp[k]).map(k=>grp[k].pct_apply), backgroundColor:col.cy}
+  ]},
+  options:base()
+});
+new Chart(document.getElementById('c4'), {
+  type:'bar',
+  data:{labels:order.filter(k=>grp[k]), datasets:[
+    {label:'人均改金额次数', data:order.filter(k=>grp[k]).map(k=>grp[k].avg_n_amt), backgroundColor:col.up},
+    {label:'人均改期次次数', data:order.filter(k=>grp[k]).map(k=>grp[k].avg_n_term), backgroundColor:col.cy}
+  ]},
+  options:base()
+});
+const binOrder = ['降额≥20%','降额<20%','不变','升额<20%','升额≥20%'];
+const bmap = Object.fromEntries((D.bins||[]).map(r=>[r.chg_bin,r]));
+const bins = binOrder.filter(k=>bmap[k]);
+new Chart(document.getElementById('c5'), {
+  type:'bar',
+  data:{labels:bins, datasets:[
+    {label:'改金额%', data:bins.map(k=>bmap[k].pct_amt), backgroundColor:col.up},
+    {label:'改期次%', data:bins.map(k=>bmap[k].pct_term), backgroundColor:col.am},
+    {label:'当天提单%', data:bins.map(k=>bmap[k].pct_apply), backgroundColor:col.cy}
+  ]},
+  options:base()
+});
+const months = [...new Set((D.ym||[]).map(r=>r.ym))].sort();
+new Chart(document.getElementById('c6'), {
+  type:'bar',
+  data:{labels:months, datasets:order.map(k=>({
+    label:k, data:months.map(m=>((D.ym||[]).find(r=>r.ym===m && r.chg_grp===k)||{}).n || 0),
+    backgroundColor:colors[k], stack:'a'
+  }))},
+  options:Object.assign(base(), {scales:{x:{stacked:true, ticks:{color:'#aac5da'}, grid:{display:false}}, y:{stacked:true, ticks:{color:'#aac5da'}, grid:{color:'rgba(42,92,126,.25)'}}}})
+});
+new Chart(document.getElementById('c7'), {
+  type:'line',
+  data:{labels:months, datasets:[
+    {label:'升额当天提单%', data:months.map(m=>((D.ym||[]).find(r=>r.ym===m && r.chg_grp==='升额')||{}).pct_apply ?? null), borderColor:col.up, tension:.25, spanGaps:true},
+    {label:'降额当天提单%', data:months.map(m=>((D.ym||[]).find(r=>r.ym===m && r.chg_grp==='降额')||{}).pct_apply ?? null), borderColor:col.down, tension:.25, spanGaps:true},
+    {label:'不变当天提单%', data:months.map(m=>((D.ym||[]).find(r=>r.ym===m && r.chg_grp==='不变')||{}).pct_apply ?? null), borderColor:col.same, tension:.25, spanGaps:true}
+  ]},
+  options:base()
+});
+function comboLabel(r) {
+  const names = [];
+  if (r.f_amt) names.push('金额');
+  if (r.f_term) names.push('期次');
+  if (r.f_contract) names.push('合同');
+  if (r.f_plan) names.push('计划');
+  if (r.f_purpose) names.push('原因');
+  return names.join('+') || '无';
+}
+const combos = (D.combo||[]).slice(0,10);
+new Chart(document.getElementById('c8'), {
+  type:'bar',
+  data:{labels:combos.map(comboLabel), datasets:[{label:'人数', data:combos.map(r=>r.n), backgroundColor:col.cy}]},
+  options:base()
+});
+</script>
+</body></html>
