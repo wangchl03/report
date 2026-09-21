@@ -619,7 +619,8 @@ h1{{font-size:24px;margin:8px 0 6px}}
 .grid{{display:grid;grid-template-columns:1fr 1fr;gap:14px}}
 .chart h3{{margin:0 0 4px;font-size:15px}}
 .chart p{{margin:0 0 10px;font-size:12px;color:var(--muted)}}
-.box{{height:300px;position:relative}}
+.box{{height:300px;position:relative;overflow:hidden}}
+.box.pie{{height:230px}}
 .foot{{color:#7fa6c2;font-size:12px;margin-top:28px;border-top:1px solid var(--line);padding-top:14px;line-height:1.8}}
 .appendix{{margin-top:36px;border-top:1px solid var(--line);padding-top:8px}}
 .appendix h2{{font-size:18px;margin:22px 0 10px}}
@@ -661,7 +662,7 @@ details.code pre{{overflow:auto;max-height:520px;font-size:11px;line-height:1.45
   <div class="card chart"><h3>按到期日的逾期率</h3><p>当日到期单中 loan_status_code=8 占比</p><div class="box"><canvas id="c6"></canvas></div></div>
 </div>
 <div class="grid" style="margin-top:14px">
-  <div class="card chart"><h3>转化结构</h3><p>已提单 vs 尚未提单</p><div class="box"><canvas id="c7"></canvas></div></div>
+  <div class="card chart"><h3>转化结构</h3><p>已提单 vs 尚未提单</p><div class="box pie"><canvas id="c7"></canvas></div></div>
   <div class="card chart"><h3>本周 vs 累计</h3><p>本周新增提单用户 / 本周提单用户 / 本周放款单量</p><div class="box"><canvas id="c8"></canvas></div></div>
 </div>
 <div class="grid" style="margin-top:14px">
@@ -731,7 +732,7 @@ line('c6', dd.map(x=>x.d.slice(5)), [
   {label:'到期单量', data:dd.map(x=>x.n_due), borderColor:col.cy, tension:.25, yAxisID:'y2', pointRadius:2}
 ], true);
 new Chart(document.getElementById('c7'), {type:'doughnut', data:{labels:['已提单','尚未提单'], datasets:[{data:[k.n_apply, k.n_user-k.n_apply], backgroundColor:[col.gr, 'rgba(42,92,126,.55)'], borderWidth:0}]},
-  options:{responsive:true, maintainAspectRatio:false, plugins:{legend:{labels:{color:'#eff8ff', padding:16}}}},
+  options:{responsive:true, maintainAspectRatio:false, cutout:'58%', layout:{padding:{top:6,bottom:18,left:28,right:28}}, plugins:{legend:{labels:{color:'#eff8ff', padding:16}}}},
   plugins:[{id:'pieLabel', afterDatasetsDraw(chart){
     const {ctx} = chart; const ds = chart.data.datasets[0];
     const total = ds.data.reduce((a,b)=>a+b,0);
@@ -863,7 +864,7 @@ def panel_body(data, batch, pfx):
   <div class="card chart"><h3>按到期日的逾期率</h3><p>当日到期单中 loan_status_code=8 占比</p><div class="box"><canvas id="{pfx}c6"></canvas></div></div>
 </div>
 <div class="grid" style="margin-top:14px">
-  <div class="card chart"><h3>转化结构</h3><p>已提单 vs 尚未提单</p><div class="box"><canvas id="{pfx}c7"></canvas></div></div>
+  <div class="card chart"><h3>转化结构</h3><p>已提单 vs 尚未提单</p><div class="box pie"><canvas id="{pfx}c7"></canvas></div></div>
   <div class="card chart"><h3>本周 vs 累计</h3><p>本周新增提单用户 / 本周提单用户 / 本周放款单量</p><div class="box"><canvas id="{pfx}c8"></canvas></div></div>
 </div>
 <div class="grid" style="margin-top:14px">
@@ -898,7 +899,7 @@ line('__P__c6', dd.map(x=>x.d.slice(5)), [
   {label:'到期单量', data:dd.map(x=>x.n_due), borderColor:col.cy, tension:.25, yAxisID:'y2', pointRadius:2}
 ], true);
 new Chart(document.getElementById('__P__c7'), {type:'doughnut', data:{labels:['已提单','尚未提单'], datasets:[{data:[k.n_apply, k.n_user-k.n_apply], backgroundColor:[col.gr, 'rgba(42,92,126,.55)'], borderWidth:0}]},
-  options:{responsive:true, maintainAspectRatio:false, plugins:{legend:{labels:{color:'#eff8ff', padding:16}}}},
+  options:{responsive:true, maintainAspectRatio:false, cutout:'58%', layout:{padding:{top:6,bottom:18,left:28,right:28}}, plugins:{legend:{labels:{color:'#eff8ff', padding:16}}}},
   plugins:[{id:'pieLabel', afterDatasetsDraw(chart){
     const {ctx} = chart; const ds = chart.data.datasets[0];
     const total = ds.data.reduce((a,b)=>a+b,0);
@@ -986,7 +987,8 @@ h1{{font-size:24px;margin:8px 0 6px}}
 .grid{{display:grid;grid-template-columns:1fr 1fr;gap:14px}}
 .chart h3{{margin:0 0 4px;font-size:15px}}
 .chart p{{margin:0 0 10px;font-size:12px;color:var(--muted)}}
-.box{{height:300px;position:relative}}
+.box{{height:300px;position:relative;overflow:hidden}}
+.box.pie{{height:230px}}
 @media(max-width:900px){{.kpis,.grid{{grid-template-columns:1fr}}}}
 </style>
 </head>
