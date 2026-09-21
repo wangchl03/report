@@ -15,8 +15,7 @@ import os
 from pathlib import Path
 
 HERE = Path(__file__).resolve().parent
-HTML_PATH = HERE / "T7召回0818前端看板.html"
-HTML_ALIAS = HERE / "t7-0818.html"
+HTML_PATH = HERE / "t7-0818.html"
 JSON_PATH = HERE / "t7_0818_dashboard_data.json"
 RECALL_DATE = "2026-08-18"
 LIST_TABLE = "wangchuanliang.t7recalllist_0818_0819"
@@ -520,9 +519,7 @@ new Chart(document.getElementById('c10'), {type:'bar', data:{labels:D.churn.map(
 </script>
 </body></html>
 """
-    html = html_head.replace("__DATA__", payload) + html_js
-    HTML_PATH.write_text(html, encoding="utf-8")
-    HTML_ALIAS.write_text(html, encoding="utf-8")
+    HTML_PATH.write_text(html_head.replace("__DATA__", payload) + html_js, encoding="utf-8")
 
 
 if __name__ == "__main__":
@@ -531,4 +528,3 @@ if __name__ == "__main__":
     write_html(data)
     print("kpi", data["kpi"])
     print("HTML", HTML_PATH)
-    print("HTML_ALIAS", HTML_ALIAS)

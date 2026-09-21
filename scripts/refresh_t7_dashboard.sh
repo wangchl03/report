@@ -16,7 +16,7 @@ if [[ -z "${PGPASSWORD:-}" ]]; then
   exit 1
 fi
 python3 appendix_t7_0818_dashboard.py
-git add "T7召回0818前端看板.html" t7-0818.html t7_0818_dashboard_data.json
+git add t7-0818.html t7_0818_dashboard_data.json
 if git diff --cached --quiet; then
   echo "no changes in wangchl03/report"
   exit 0
