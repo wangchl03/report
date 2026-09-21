@@ -748,12 +748,8 @@ new Chart(document.getElementById('c10'), {type:'bar', data:{labels:D.churn.map(
         "<li>到期盈利 / 逾期：召回后提单且 <code>is_due = 1</code>、<code>is_remit = 1</code>、<code>remit_amt &gt; 0</code>。盈利率 = <code>(repaid_amt − remit_amt) / remit_amt</code>；逾期率 = <code>loan_status_code = 8</code> 占到期放款单。</li>\n"
         "<li>转化结构：已提单 vs 名单中尚未提单。分层 / 流失天数：名单人数与对应提单率。</li>\n"
         "</ul>\n"
-        "<h2>附录：可复现本看板的全部代码</h2>\n"
-        "<p>库 <code>kaby_dw</code>，账号只读。设置 <code>PGPASSWORD</code> 后执行 "
-        "<code>python3 appendix_t7_0818_dashboard.py</code> 会重写 <code>t7-0818.html</code> 与 "
-        "<code>t7_0818_dashboard_data.json</code>。密码不写入附录。Chart.js 使用 CDN "
-        "<code>https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js</code>。</p>\n"
-        '<details class="code" open><summary>1. PGSQL（名单 + KPI + 全部图数据）</summary><pre>'
+        "<h2>附录：</h2>\n"
+        '<details class="code"><summary>1. PGSQL（名单 + KPI + 全部图数据）</summary><pre>'
         + html_lib.escape(sql_txt)
         + "</pre></details>\n"
         '<details class="code"><summary>2. 后端 Python（查库、汇总、写出 HTML）</summary><pre>'

@@ -80,9 +80,8 @@ details.code pre{overflow:auto;max-height:520px;font-size:11px;line-height:1.45;
 <li>到期盈利 / 逾期：召回后提单且 <code>is_due = 1</code>、<code>is_remit = 1</code>、<code>remit_amt &gt; 0</code>。盈利率 = <code>(repaid_amt − remit_amt) / remit_amt</code>；逾期率 = <code>loan_status_code = 8</code> 占到期放款单。</li>
 <li>转化结构：已提单 vs 名单中尚未提单。分层 / 流失天数：名单人数与对应提单率。</li>
 </ul>
-<h2>附录：可复现本看板的全部代码</h2>
-<p>库 <code>kaby_dw</code>，账号只读。设置 <code>PGPASSWORD</code> 后执行 <code>python3 appendix_t7_0818_dashboard.py</code> 会重写 <code>t7-0818.html</code> 与 <code>t7_0818_dashboard_data.json</code>。密码不写入附录。Chart.js 使用 CDN <code>https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js</code>。</p>
-<details class="code" open><summary>1. PGSQL（名单 + KPI + 全部图数据）</summary><pre>-- T7 召回前端看板 · 可复现 PGSQL
+<h2>附录：</h2>
+<details class="code"><summary>1. PGSQL（名单 + KPI + 全部图数据）</summary><pre>-- T7 召回前端看板 · 可复现 PGSQL
 -- 库：kaby_dw · schema：wangchuanliang
 -- 名单：wangchuanliang.t7recalllist_0818_0819
 -- 触达日：2026-08-18
@@ -1036,12 +1035,8 @@ new Chart(document.getElementById(&#x27;c10&#x27;), {type:&#x27;bar&#x27;, data:
         &quot;&lt;li&gt;到期盈利 / 逾期：召回后提单且 &lt;code&gt;is_due = 1&lt;/code&gt;、&lt;code&gt;is_remit = 1&lt;/code&gt;、&lt;code&gt;remit_amt &amp;gt; 0&lt;/code&gt;。盈利率 = &lt;code&gt;(repaid_amt − remit_amt) / remit_amt&lt;/code&gt;；逾期率 = &lt;code&gt;loan_status_code = 8&lt;/code&gt; 占到期放款单。&lt;/li&gt;\n&quot;
         &quot;&lt;li&gt;转化结构：已提单 vs 名单中尚未提单。分层 / 流失天数：名单人数与对应提单率。&lt;/li&gt;\n&quot;
         &quot;&lt;/ul&gt;\n&quot;
-        &quot;&lt;h2&gt;附录：可复现本看板的全部代码&lt;/h2&gt;\n&quot;
-        &quot;&lt;p&gt;库 &lt;code&gt;kaby_dw&lt;/code&gt;，账号只读。设置 &lt;code&gt;PGPASSWORD&lt;/code&gt; 后执行 &quot;
-        &quot;&lt;code&gt;python3 appendix_t7_0818_dashboard.py&lt;/code&gt; 会重写 &lt;code&gt;t7-0818.html&lt;/code&gt; 与 &quot;
-        &quot;&lt;code&gt;t7_0818_dashboard_data.json&lt;/code&gt;。密码不写入附录。Chart.js 使用 CDN &quot;
-        &quot;&lt;code&gt;https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js&lt;/code&gt;。&lt;/p&gt;\n&quot;
-        &#x27;&lt;details class=&quot;code&quot; open&gt;&lt;summary&gt;1. PGSQL（名单 + KPI + 全部图数据）&lt;/summary&gt;&lt;pre&gt;&#x27;
+        &quot;&lt;h2&gt;附录：&lt;/h2&gt;\n&quot;
+        &#x27;&lt;details class=&quot;code&quot;&gt;&lt;summary&gt;1. PGSQL（名单 + KPI + 全部图数据）&lt;/summary&gt;&lt;pre&gt;&#x27;
         + html_lib.escape(sql_txt)
         + &quot;&lt;/pre&gt;&lt;/details&gt;\n&quot;
         &#x27;&lt;details class=&quot;code&quot;&gt;&lt;summary&gt;2. 后端 Python（查库、汇总、写出 HTML）&lt;/summary&gt;&lt;pre&gt;&#x27;
