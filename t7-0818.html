@@ -1043,12 +1043,12 @@ new Chart(document.getElementById(&#x27;c8&#x27;), {type:&#x27;bar&#x27;, data:{
 new Chart(document.getElementById(&#x27;c9&#x27;), {type:&#x27;bar&#x27;, data:{labels:D.strat.map(x=&gt;x.strat), datasets:[
   {label:&#x27;名单人数&#x27;, data:D.strat.map(x=&gt;x.n_user), backgroundColor:&#x27;rgba(67,199,231,.35)&#x27;, yAxisID:&#x27;y&#x27;},
   {label:&#x27;提单率%&#x27;, data:D.strat.map(x=&gt;x.pct), type:&#x27;line&#x27;, borderColor:col.pk, yAxisID:&#x27;y2&#x27;, tension:.2, pointRadius:3}
-]}, options:Object.assign(base(true), {layout:{padding:{top:28,right:8}}}),
+]}, options:Object.assign(base(true), {layout:{padding:{top:0,right:8}}}),
   plugins:[{id:&#x27;rateLabel9&#x27;, afterDatasetsDraw(chart){ drawRateLabels(chart); }}]});
 new Chart(document.getElementById(&#x27;c10&#x27;), {type:&#x27;bar&#x27;, data:{labels:D.churn.map(x=&gt;x.bin), datasets:[
   {label:&#x27;名单人数&#x27;, data:D.churn.map(x=&gt;x.n_user), backgroundColor:&#x27;rgba(67,199,231,.35)&#x27;, yAxisID:&#x27;y&#x27;},
   {label:&#x27;提单率%&#x27;, data:D.churn.map(x=&gt;x.pct), type:&#x27;line&#x27;, borderColor:col.pk, yAxisID:&#x27;y2&#x27;, tension:.2, pointRadius:3}
-]}, options:Object.assign(base(true), {layout:{padding:{top:28,right:8}}}),
+]}, options:Object.assign(base(true), {layout:{padding:{top:0,right:8}}}),
   plugins:[{id:&#x27;rateLabel10&#x27;, afterDatasetsDraw(chart){ drawRateLabels(chart); }}]});
 &lt;/script&gt;
 &lt;/body&gt;&lt;/html&gt;
@@ -1210,12 +1210,12 @@ new Chart(document.getElementById(&#x27;__P__c8&#x27;), {type:&#x27;bar&#x27;, d
 new Chart(document.getElementById(&#x27;__P__c9&#x27;), {type:&#x27;bar&#x27;, data:{labels:D.strat.map(x=&gt;x.strat), datasets:[
   {label:&#x27;名单人数&#x27;, data:D.strat.map(x=&gt;x.n_user), backgroundColor:&#x27;rgba(67,199,231,.35)&#x27;, yAxisID:&#x27;y&#x27;},
   {label:&#x27;提单率%&#x27;, data:D.strat.map(x=&gt;x.pct), type:&#x27;line&#x27;, borderColor:col.pk, yAxisID:&#x27;y2&#x27;, tension:.2, pointRadius:3}
-]}, options:Object.assign(base(true), {layout:{padding:{top:28,right:8}}}),
+]}, options:Object.assign(base(true), {layout:{padding:{top:0,right:8}}}),
   plugins:[{id:&#x27;rateLabel9&#x27;, afterDatasetsDraw(chart){ drawRateLabels(chart); }}]});
 new Chart(document.getElementById(&#x27;__P__c10&#x27;), {type:&#x27;bar&#x27;, data:{labels:D.churn.map(x=&gt;x.bin), datasets:[
   {label:&#x27;名单人数&#x27;, data:D.churn.map(x=&gt;x.n_user), backgroundColor:&#x27;rgba(67,199,231,.35)&#x27;, yAxisID:&#x27;y&#x27;},
   {label:&#x27;提单率%&#x27;, data:D.churn.map(x=&gt;x.pct), type:&#x27;line&#x27;, borderColor:col.pk, yAxisID:&#x27;y2&#x27;, tension:.2, pointRadius:3}
-]}, options:Object.assign(base(true), {layout:{padding:{top:28,right:8}}}),
+]}, options:Object.assign(base(true), {layout:{padding:{top:0,right:8}}}),
   plugins:[{id:&#x27;rateLabel10&#x27;, afterDatasetsDraw(chart){ drawRateLabels(chart); }}]});
 &quot;&quot;&quot;
     return js.replace(&quot;__P__&quot;, pfx)
@@ -1299,7 +1299,7 @@ Chart.register({{
     if (!legend || !legend.options.display || !area) return;
     if (chart.config.type === &#x27;pie&#x27; || chart.config.type === &#x27;doughnut&#x27;) return;
     const hasRateLbl = (chart.data.datasets || []).some(d =&gt; String(d.label || &#x27;&#x27;).includes(&#x27;提单率&#x27;));
-    area.top += hasRateLbl ? 26 : 12;
+    area.top += hasRateLbl ? 34 : 8;
   }}
 }});
 function base(y2) {{
@@ -1556,12 +1556,12 @@ new Chart(document.getElementById(&#x27;c8&#x27;), {type:&#x27;bar&#x27;, data:{
 new Chart(document.getElementById(&#x27;c9&#x27;), {type:&#x27;bar&#x27;, data:{labels:D.strat.map(x=&gt;x.strat), datasets:[
   {label:&#x27;名单人数&#x27;, data:D.strat.map(x=&gt;x.n_user), backgroundColor:&#x27;rgba(67,199,231,.35)&#x27;, yAxisID:&#x27;y&#x27;},
   {label:&#x27;提单率%&#x27;, data:D.strat.map(x=&gt;x.pct), type:&#x27;line&#x27;, borderColor:col.pk, yAxisID:&#x27;y2&#x27;, tension:.2, pointRadius:3}
-]}, options:Object.assign(base(true), {layout:{padding:{top:28,right:8}}}),
+]}, options:Object.assign(base(true), {layout:{padding:{top:0,right:8}}}),
   plugins:[{id:&#x27;rateLabel9&#x27;, afterDatasetsDraw(chart){ drawRateLabels(chart); }}]});
 new Chart(document.getElementById(&#x27;c10&#x27;), {type:&#x27;bar&#x27;, data:{labels:D.churn.map(x=&gt;x.bin), datasets:[
   {label:&#x27;名单人数&#x27;, data:D.churn.map(x=&gt;x.n_user), backgroundColor:&#x27;rgba(67,199,231,.35)&#x27;, yAxisID:&#x27;y&#x27;},
   {label:&#x27;提单率%&#x27;, data:D.churn.map(x=&gt;x.pct), type:&#x27;line&#x27;, borderColor:col.pk, yAxisID:&#x27;y2&#x27;, tension:.2, pointRadius:3}
-]}, options:Object.assign(base(true), {layout:{padding:{top:28,right:8}}}),
+]}, options:Object.assign(base(true), {layout:{padding:{top:0,right:8}}}),
   plugins:[{id:&#x27;rateLabel10&#x27;, afterDatasetsDraw(chart){ drawRateLabels(chart); }}]});
 &lt;/script&gt;
 &lt;/body&gt;&lt;/html&gt;
@@ -1658,12 +1658,12 @@ new Chart(document.getElementById('c8'), {type:'bar', data:{labels:['本周新�
 new Chart(document.getElementById('c9'), {type:'bar', data:{labels:D.strat.map(x=>x.strat), datasets:[
   {label:'名单人数', data:D.strat.map(x=>x.n_user), backgroundColor:'rgba(67,199,231,.35)', yAxisID:'y'},
   {label:'提单率%', data:D.strat.map(x=>x.pct), type:'line', borderColor:col.pk, yAxisID:'y2', tension:.2, pointRadius:3}
-]}, options:Object.assign(base(true), {layout:{padding:{top:28,right:8}}}),
+]}, options:Object.assign(base(true), {layout:{padding:{top:0,right:8}}}),
   plugins:[{id:'rateLabel9', afterDatasetsDraw(chart){ drawRateLabels(chart); }}]});
 new Chart(document.getElementById('c10'), {type:'bar', data:{labels:D.churn.map(x=>x.bin), datasets:[
   {label:'名单人数', data:D.churn.map(x=>x.n_user), backgroundColor:'rgba(67,199,231,.35)', yAxisID:'y'},
   {label:'提单率%', data:D.churn.map(x=>x.pct), type:'line', borderColor:col.pk, yAxisID:'y2', tension:.2, pointRadius:3}
-]}, options:Object.assign(base(true), {layout:{padding:{top:28,right:8}}}),
+]}, options:Object.assign(base(true), {layout:{padding:{top:0,right:8}}}),
   plugins:[{id:'rateLabel10', afterDatasetsDraw(chart){ drawRateLabels(chart); }}]});
 </script>
 </body></html>

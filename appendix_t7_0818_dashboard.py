@@ -756,12 +756,12 @@ new Chart(document.getElementById('c8'), {type:'bar', data:{labels:['本周新�
 new Chart(document.getElementById('c9'), {type:'bar', data:{labels:D.strat.map(x=>x.strat), datasets:[
   {label:'名单人数', data:D.strat.map(x=>x.n_user), backgroundColor:'rgba(67,199,231,.35)', yAxisID:'y'},
   {label:'提单率%', data:D.strat.map(x=>x.pct), type:'line', borderColor:col.pk, yAxisID:'y2', tension:.2, pointRadius:3}
-]}, options:Object.assign(base(true), {layout:{padding:{top:28,right:8}}}),
+]}, options:Object.assign(base(true), {layout:{padding:{top:0,right:8}}}),
   plugins:[{id:'rateLabel9', afterDatasetsDraw(chart){ drawRateLabels(chart); }}]});
 new Chart(document.getElementById('c10'), {type:'bar', data:{labels:D.churn.map(x=>x.bin), datasets:[
   {label:'名单人数', data:D.churn.map(x=>x.n_user), backgroundColor:'rgba(67,199,231,.35)', yAxisID:'y'},
   {label:'提单率%', data:D.churn.map(x=>x.pct), type:'line', borderColor:col.pk, yAxisID:'y2', tension:.2, pointRadius:3}
-]}, options:Object.assign(base(true), {layout:{padding:{top:28,right:8}}}),
+]}, options:Object.assign(base(true), {layout:{padding:{top:0,right:8}}}),
   plugins:[{id:'rateLabel10', afterDatasetsDraw(chart){ drawRateLabels(chart); }}]});
 </script>
 </body></html>
@@ -923,12 +923,12 @@ new Chart(document.getElementById('__P__c8'), {type:'bar', data:{labels:['本周
 new Chart(document.getElementById('__P__c9'), {type:'bar', data:{labels:D.strat.map(x=>x.strat), datasets:[
   {label:'名单人数', data:D.strat.map(x=>x.n_user), backgroundColor:'rgba(67,199,231,.35)', yAxisID:'y'},
   {label:'提单率%', data:D.strat.map(x=>x.pct), type:'line', borderColor:col.pk, yAxisID:'y2', tension:.2, pointRadius:3}
-]}, options:Object.assign(base(true), {layout:{padding:{top:28,right:8}}}),
+]}, options:Object.assign(base(true), {layout:{padding:{top:0,right:8}}}),
   plugins:[{id:'rateLabel9', afterDatasetsDraw(chart){ drawRateLabels(chart); }}]});
 new Chart(document.getElementById('__P__c10'), {type:'bar', data:{labels:D.churn.map(x=>x.bin), datasets:[
   {label:'名单人数', data:D.churn.map(x=>x.n_user), backgroundColor:'rgba(67,199,231,.35)', yAxisID:'y'},
   {label:'提单率%', data:D.churn.map(x=>x.pct), type:'line', borderColor:col.pk, yAxisID:'y2', tension:.2, pointRadius:3}
-]}, options:Object.assign(base(true), {layout:{padding:{top:28,right:8}}}),
+]}, options:Object.assign(base(true), {layout:{padding:{top:0,right:8}}}),
   plugins:[{id:'rateLabel10', afterDatasetsDraw(chart){ drawRateLabels(chart); }}]});
 """
     return js.replace("__P__", pfx)
@@ -1012,7 +1012,7 @@ Chart.register({{
     if (!legend || !legend.options.display || !area) return;
     if (chart.config.type === 'pie' || chart.config.type === 'doughnut') return;
     const hasRateLbl = (chart.data.datasets || []).some(d => String(d.label || '').includes('提单率'));
-    area.top += hasRateLbl ? 26 : 12;
+    area.top += hasRateLbl ? 34 : 8;
   }}
 }});
 function base(y2) {{
