@@ -680,8 +680,7 @@ function base(y2) {
   };
   if (y2) scales.y2 = {type:'linear', position:'right', ticks:{color:'#ffc26b'}, grid:{drawOnChartArea:false}};
   return {responsive:true, maintainAspectRatio:false, interaction:{mode:'index', intersect:false},
-    layout:{padding:{top:16, bottom:8}},
-    plugins:{legend:{labels:{color:'#eff8ff', padding:28, boxPadding:8}}}, scales};
+    plugins:{legend:{labels:{color:'#eff8ff', padding:16}}}, scales};
 }
 function line(id, labels, datasets, y2) {
   new Chart(document.getElementById(id), {type:'line', data:{labels, datasets}, options:base(y2)});
@@ -732,7 +731,7 @@ line('c6', dd.map(x=>x.d.slice(5)), [
   {label:'到期单量', data:dd.map(x=>x.n_due), borderColor:col.cy, tension:.25, yAxisID:'y2', pointRadius:2}
 ], true);
 new Chart(document.getElementById('c7'), {type:'doughnut', data:{labels:['已提单','尚未提单'], datasets:[{data:[k.n_apply, k.n_user-k.n_apply], backgroundColor:[col.gr, 'rgba(42,92,126,.55)'], borderWidth:0}]},
-  options:{responsive:true, maintainAspectRatio:false, layout:{padding:{top:16, bottom:8}}, plugins:{legend:{labels:{color:'#eff8ff', padding:28, boxPadding:8}}}},
+  options:{responsive:true, maintainAspectRatio:false, plugins:{legend:{labels:{color:'#eff8ff', padding:16}}}},
   plugins:[{id:'pieLabel', afterDatasetsDraw(chart){
     const {ctx} = chart; const ds = chart.data.datasets[0];
     const total = ds.data.reduce((a,b)=>a+b,0);
@@ -747,7 +746,7 @@ new Chart(document.getElementById('c7'), {type:'doughnut', data:{labels:['已提
 new Chart(document.getElementById('c8'), {type:'bar', data:{labels:['本周新增提单用户','本周提单用户','本周放款单量','累计提单人数','累计放款单量'],
   datasets:[{label:'人数/单量', data:[k.n_first_week, k.n_apply_week, k.n_remit_week, k.n_apply, k.n_remit],
     backgroundColor:[col.pk, col.cy, col.am, col.gr, 'rgba(67,199,231,.45)']}]},
-  options:Object.assign(base(false), {layout:{padding:{top:36}}}),
+  options:Object.assign(base(false), {layout:{padding:{top:22}}}),
   plugins:[{id:'barLabel', afterDatasetsDraw(chart){
     const {ctx}=chart; const meta=chart.getDatasetMeta(0);
     ctx.save(); ctx.fillStyle='#eff8ff'; ctx.font='11px sans-serif'; ctx.textAlign='center'; ctx.textBaseline='bottom';
@@ -757,12 +756,12 @@ new Chart(document.getElementById('c8'), {type:'bar', data:{labels:['本周新�
 new Chart(document.getElementById('c9'), {type:'bar', data:{labels:D.strat.map(x=>x.strat), datasets:[
   {label:'名单人数', data:D.strat.map(x=>x.n_user), backgroundColor:'rgba(67,199,231,.35)', yAxisID:'y'},
   {label:'提单率%', data:D.strat.map(x=>x.pct), type:'line', borderColor:col.pk, yAxisID:'y2', tension:.2, pointRadius:3}
-]}, options:Object.assign(base(true), {layout:{padding:{top:40,right:8}}}),
+]}, options:Object.assign(base(true), {layout:{padding:{top:28,right:8}}}),
   plugins:[{id:'rateLabel9', afterDatasetsDraw(chart){ drawRateLabels(chart); }}]});
 new Chart(document.getElementById('c10'), {type:'bar', data:{labels:D.churn.map(x=>x.bin), datasets:[
   {label:'名单人数', data:D.churn.map(x=>x.n_user), backgroundColor:'rgba(67,199,231,.35)', yAxisID:'y'},
   {label:'提单率%', data:D.churn.map(x=>x.pct), type:'line', borderColor:col.pk, yAxisID:'y2', tension:.2, pointRadius:3}
-]}, options:Object.assign(base(true), {layout:{padding:{top:40,right:8}}}),
+]}, options:Object.assign(base(true), {layout:{padding:{top:28,right:8}}}),
   plugins:[{id:'rateLabel10', afterDatasetsDraw(chart){ drawRateLabels(chart); }}]});
 </script>
 </body></html>
@@ -899,7 +898,7 @@ line('__P__c6', dd.map(x=>x.d.slice(5)), [
   {label:'到期单量', data:dd.map(x=>x.n_due), borderColor:col.cy, tension:.25, yAxisID:'y2', pointRadius:2}
 ], true);
 new Chart(document.getElementById('__P__c7'), {type:'doughnut', data:{labels:['已提单','尚未提单'], datasets:[{data:[k.n_apply, k.n_user-k.n_apply], backgroundColor:[col.gr, 'rgba(42,92,126,.55)'], borderWidth:0}]},
-  options:{responsive:true, maintainAspectRatio:false, layout:{padding:{top:16, bottom:8}}, plugins:{legend:{labels:{color:'#eff8ff', padding:28, boxPadding:8}}}},
+  options:{responsive:true, maintainAspectRatio:false, plugins:{legend:{labels:{color:'#eff8ff', padding:16}}}},
   plugins:[{id:'pieLabel', afterDatasetsDraw(chart){
     const {ctx} = chart; const ds = chart.data.datasets[0];
     const total = ds.data.reduce((a,b)=>a+b,0);
@@ -914,7 +913,7 @@ new Chart(document.getElementById('__P__c7'), {type:'doughnut', data:{labels:['�
 new Chart(document.getElementById('__P__c8'), {type:'bar', data:{labels:['本周新增提单用户','本周提单用户','本周放款单量','累计提单人数','累计放款单量'],
   datasets:[{label:'人数/单量', data:[k.n_first_week, k.n_apply_week, k.n_remit_week, k.n_apply, k.n_remit],
     backgroundColor:[col.pk, col.cy, col.am, col.gr, 'rgba(67,199,231,.45)']}]},
-  options:Object.assign(base(false), {layout:{padding:{top:36}}}),
+  options:Object.assign(base(false), {layout:{padding:{top:22}}}),
   plugins:[{id:'barLabel', afterDatasetsDraw(chart){
     const {ctx}=chart; const meta=chart.getDatasetMeta(0);
     ctx.save(); ctx.fillStyle='#eff8ff'; ctx.font='11px sans-serif'; ctx.textAlign='center'; ctx.textBaseline='bottom';
@@ -924,12 +923,12 @@ new Chart(document.getElementById('__P__c8'), {type:'bar', data:{labels:['本周
 new Chart(document.getElementById('__P__c9'), {type:'bar', data:{labels:D.strat.map(x=>x.strat), datasets:[
   {label:'名单人数', data:D.strat.map(x=>x.n_user), backgroundColor:'rgba(67,199,231,.35)', yAxisID:'y'},
   {label:'提单率%', data:D.strat.map(x=>x.pct), type:'line', borderColor:col.pk, yAxisID:'y2', tension:.2, pointRadius:3}
-]}, options:Object.assign(base(true), {layout:{padding:{top:40,right:8}}}),
+]}, options:Object.assign(base(true), {layout:{padding:{top:28,right:8}}}),
   plugins:[{id:'rateLabel9', afterDatasetsDraw(chart){ drawRateLabels(chart); }}]});
 new Chart(document.getElementById('__P__c10'), {type:'bar', data:{labels:D.churn.map(x=>x.bin), datasets:[
   {label:'名单人数', data:D.churn.map(x=>x.n_user), backgroundColor:'rgba(67,199,231,.35)', yAxisID:'y'},
   {label:'提单率%', data:D.churn.map(x=>x.pct), type:'line', borderColor:col.pk, yAxisID:'y2', tension:.2, pointRadius:3}
-]}, options:Object.assign(base(true), {layout:{padding:{top:40,right:8}}}),
+]}, options:Object.assign(base(true), {layout:{padding:{top:28,right:8}}}),
   plugins:[{id:'rateLabel10', afterDatasetsDraw(chart){ drawRateLabels(chart); }}]});
 """
     return js.replace("__P__", pfx)
@@ -1005,6 +1004,15 @@ const DATA = {json.dumps(payload, ensure_ascii=False)};
 const col = {{cy:'#43c7e7', gr:'#64dcae', am:'#ffc26b', pk:'#f68ab0'}};
 Chart.defaults.font.family='-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei",sans-serif';
 Chart.defaults.color='#aac5da';
+Chart.register({{
+  id: 'legendPlotGap',
+  afterLayout(chart) {{
+    const legend = chart.legend;
+    const area = chart.chartArea;
+    if (!legend || !legend.options.display || !area) return;
+    area.top += 8;
+  }}
+}});
 function base(y2) {{
   const scales = {{
     x: {{ticks:{{color:'#aac5da', maxRotation:45}}, grid:{{display:false}}}},
@@ -1012,8 +1020,7 @@ function base(y2) {{
   }};
   if (y2) scales.y2 = {{type:'linear', position:'right', ticks:{{color:'#ffc26b'}}, grid:{{drawOnChartArea:false}}}};
   return {{responsive:true, maintainAspectRatio:false, interaction:{{mode:'index', intersect:false}},
-    layout:{{padding:{{top:16, bottom:8}}}},
-    plugins:{{legend:{{labels:{{color:'#eff8ff', padding:28, boxPadding:8}}}}}}, scales}};
+    plugins:{{legend:{{labels:{{color:'#eff8ff', padding:16}}}}}}, scales}};
 }}
 function line(id, labels, datasets, y2) {{
   new Chart(document.getElementById(id), {{type:'line', data:{{labels, datasets}}, options:base(y2)}});
