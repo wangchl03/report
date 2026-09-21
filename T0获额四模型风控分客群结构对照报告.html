@@ -33,7 +33,7 @@ th{color:var(--muted);background:rgba(12,48,78,.65);font-weight:600}th:first-chi
 <body>
 <main class="wrap">
 <header class="hero">
-<div class="kicker">T0 · 结清0在贷 · 363 / 100 / 407 / 405 · 客群结构对照</div>
+<div class="kicker">T0 · 结清0在贷 · 363 / 405 / 100 / 407 · 客群结构对照</div>
 <h1>四个风控分模型：T0 获额结构 vs 当天提单结构</h1>
 <div class="hero-meta">
 只对照各报告的图3（T0 获额客群）和图4（当天提单客群）。三档均为该模型全量有分样本的 P30 / P60（较差 ≤P30，一般 P30–P60，最好 &gt;P60），分越高越好。<br>
@@ -59,7 +59,7 @@ th{color:var(--muted);background:rgba(12,48,78,.65);font-weight:600}th:first-chi
 <table>
 <thead><tr><th>模型</th><th>对比</th><th>T0 最好%</th><th>T0 较差%</th><th>获额</th><th>提单最好%</th><th>提单较差%</th><th>当天提单</th></tr></thead>
 <tbody>
-<tr><td>363</td><td>1月→8月</td><td>40.94%→35.10%<br><span class='delta'>-5.84pp</span></td><td>28.92%→34.01%<br><span class='delta'>+5.09pp</span></td><td>变差</td><td>39.36%→32.72%<br><span class='delta'>-6.64pp</span></td><td>30.47%→36.09%<br><span class='delta'>+5.62pp</span></td><td>变差</td></tr><tr><td>100</td><td>1月→6月</td><td>37.06%→40.24%<br><span class='delta'>+3.18pp</span></td><td>33.88%→33.01%<br><span class='delta'>-0.87pp</span></td><td>未变差</td><td>20.58%→16.00%<br><span class='delta'>-4.58pp</span></td><td>44.55%→48.73%<br><span class='delta'>+4.18pp</span></td><td>变差</td></tr><tr><td>407</td><td>5月→8月</td><td>47.19%→31.31%<br><span class='delta'>-15.88pp</span></td><td>23.50%→36.48%<br><span class='delta'>+12.98pp</span></td><td>变差</td><td>41.35%→28.03%<br><span class='delta'>-13.32pp</span></td><td>27.55%→40.10%<br><span class='delta'>+12.55pp</span></td><td>变差</td></tr><tr><td>405</td><td>1月→8月</td><td>40.70%→32.29%<br><span class='delta'>-8.41pp</span></td><td>30.75%→37.90%<br><span class='delta'>+7.15pp</span></td><td>变差</td><td>35.56%→25.58%<br><span class='delta'>-9.98pp</span></td><td>35.16%→44.16%<br><span class='delta'>+9.00pp</span></td><td>变差</td></tr>
+<tr><td>363</td><td>1月→8月</td><td>40.94%→35.10%<br><span class='delta'>-5.84pp</span></td><td>28.92%→34.01%<br><span class='delta'>+5.09pp</span></td><td>变差</td><td>39.36%→32.72%<br><span class='delta'>-6.64pp</span></td><td>30.47%→36.09%<br><span class='delta'>+5.62pp</span></td><td>变差</td></tr><tr><td>405</td><td>1月→8月</td><td>40.70%→32.29%<br><span class='delta'>-8.41pp</span></td><td>30.75%→37.90%<br><span class='delta'>+7.15pp</span></td><td>变差</td><td>35.56%→25.58%<br><span class='delta'>-9.98pp</span></td><td>35.16%→44.16%<br><span class='delta'>+9.00pp</span></td><td>变差</td></tr><tr><td>100</td><td>1月→6月</td><td>37.06%→40.24%<br><span class='delta'>+3.18pp</span></td><td>33.88%→33.01%<br><span class='delta'>-0.87pp</span></td><td>未变差</td><td>20.58%→16.00%<br><span class='delta'>-4.58pp</span></td><td>44.55%→48.73%<br><span class='delta'>+4.18pp</span></td><td>变差</td></tr><tr><td>407</td><td>5月→8月</td><td>47.19%→31.31%<br><span class='delta'>-15.88pp</span></td><td>23.50%→36.48%<br><span class='delta'>+12.98pp</span></td><td>变差</td><td>41.35%→28.03%<br><span class='delta'>-13.32pp</span></td><td>27.55%→40.10%<br><span class='delta'>+12.55pp</span></td><td>变差</td></tr>
 </tbody>
 </table>
 </div>
@@ -72,34 +72,34 @@ th{color:var(--muted);background:rgba(12,48,78,.65);font-weight:600}th:first-chi
   <div class="chart"><h3>图1.2 当天提单客群结构</h3><p>折线；纵轴不从 0 起。分母=当月当天提单</p><div class="box"><canvas id="ap_363"></canvas></div></div>
 </div>
 
-<h2>2. 100 分 · KabyBXgboost100 · 2026-01～06</h2>
-<p class="desc">字段 <code>kabybxgboost100</code> · P30=451 / P60=487 · 1–6 月（2 月无分 1 单已剔除）<br>
-获额没有变差（最好档略升）；当天提单明显变差。问题在转化端。 原报告：<a href="T0获额风控分100三档当日提单息费逾期盈利报告.html">T0获额风控分100三档当日提单息费逾期盈利报告.html</a></p>
-<div class="grid g2">
-  <div class="chart"><h3>图2.1 T0 获额客群结构</h3><p>折线；纵轴不从 0 起。分母=当月全部有分 T0</p><div class="box"><canvas id="t0_100"></canvas></div></div>
-  <div class="chart"><h3>图2.2 当天提单客群结构</h3><p>折线；纵轴不从 0 起。分母=当月当天提单</p><div class="box"><canvas id="ap_100"></canvas></div></div>
-</div>
-
-<h2>3. 407 分 · KabyBXgboost407 · 2026-05～08</h2>
-<p class="desc">字段 <code>kabybxgboost407apd7reprime</code> · P30=448 / P60=465 · 5–8 月有分样本；6 月标 *（剔除无分 5,549）<br>
-获额、当天提单都变差，且幅度在四个模型里最大。 原报告：<a href="T0获额风控分407三档当日提单息费逾期盈利报告.html">T0获额风控分407三档当日提单息费逾期盈利报告.html</a></p>
-<div class="grid g2">
-  <div class="chart"><h3>图3.1 T0 获额客群结构</h3><p>折线；纵轴不从 0 起。分母=当月全部有分 T0</p><div class="box"><canvas id="t0_407"></canvas></div></div>
-  <div class="chart"><h3>图3.2 当天提单客群结构</h3><p>折线；纵轴不从 0 起。分母=当月当天提单</p><div class="box"><canvas id="ap_407"></canvas></div></div>
-</div>
-
-<h2>4. 405 分 · KabyBXgboost405 · 2026-01～08</h2>
+<h2>2. 405 分 · KabyBXgboost405 · 2026-01～08</h2>
 <p class="desc">字段 <code>kabybxgboost405apd7crecyc</code> · P30=447 / P60=465 · 1–8 月有分样本；5 月标 *（剔除 765）<br>
 获额、当天提单都变差；形态接近 363，5 月以后更明显。 原报告：<a href="T0获额风控分405三档当日提单息费逾期盈利报告.html">T0获额风控分405三档当日提单息费逾期盈利报告.html</a></p>
 <div class="grid g2">
-  <div class="chart"><h3>图4.1 T0 获额客群结构</h3><p>折线；纵轴不从 0 起。分母=当月全部有分 T0</p><div class="box"><canvas id="t0_405"></canvas></div></div>
-  <div class="chart"><h3>图4.2 当天提单客群结构</h3><p>折线；纵轴不从 0 起。分母=当月当天提单</p><div class="box"><canvas id="ap_405"></canvas></div></div>
+  <div class="chart"><h3>图2.1 T0 获额客群结构</h3><p>折线；纵轴不从 0 起。分母=当月全部有分 T0</p><div class="box"><canvas id="t0_405"></canvas></div></div>
+  <div class="chart"><h3>图2.2 当天提单客群结构</h3><p>折线；纵轴不从 0 起。分母=当月当天提单</p><div class="box"><canvas id="ap_405"></canvas></div></div>
 </div>
 
-<p class="foot">数据来源：sunyingylyd/report 已发布的 363 / 100 / 407 / 405 四份 T0 三档报告。本页不重查库，只对照图3、图4。</p>
+<h2>3. 100 分 · KabyBXgboost100 · 2026-01～06</h2>
+<p class="desc">字段 <code>kabybxgboost100</code> · P30=451 / P60=487 · 1–6 月（2 月无分 1 单已剔除）<br>
+获额没有变差（最好档略升）；当天提单明显变差。问题在转化端。 原报告：<a href="T0获额风控分100三档当日提单息费逾期盈利报告.html">T0获额风控分100三档当日提单息费逾期盈利报告.html</a></p>
+<div class="grid g2">
+  <div class="chart"><h3>图3.1 T0 获额客群结构</h3><p>折线；纵轴不从 0 起。分母=当月全部有分 T0</p><div class="box"><canvas id="t0_100"></canvas></div></div>
+  <div class="chart"><h3>图3.2 当天提单客群结构</h3><p>折线；纵轴不从 0 起。分母=当月当天提单</p><div class="box"><canvas id="ap_100"></canvas></div></div>
+</div>
+
+<h2>4. 407 分 · KabyBXgboost407 · 2026-05～08</h2>
+<p class="desc">字段 <code>kabybxgboost407apd7reprime</code> · P30=448 / P60=465 · 5–8 月有分样本；6 月标 *（剔除无分 5,549）<br>
+获额、当天提单都变差，且幅度在四个模型里最大。 原报告：<a href="T0获额风控分407三档当日提单息费逾期盈利报告.html">T0获额风控分407三档当日提单息费逾期盈利报告.html</a></p>
+<div class="grid g2">
+  <div class="chart"><h3>图4.1 T0 获额客群结构</h3><p>折线；纵轴不从 0 起。分母=当月全部有分 T0</p><div class="box"><canvas id="t0_407"></canvas></div></div>
+  <div class="chart"><h3>图4.2 当天提单客群结构</h3><p>折线；纵轴不从 0 起。分母=当月当天提单</p><div class="box"><canvas id="ap_407"></canvas></div></div>
+</div>
+
+<p class="foot">数据来源：已发布的 363 / 405 / 100 / 407 四份 T0 三档报告。本页不重查库，只对照图3、图4。</p>
 </main>
 <script>
-const ALL = {"363": {"ym": ["2026-01", "2026-02", "2026-03", "2026-04", "2026-05", "2026-06", "2026-07", "2026-08"], "t0_good": [40.94, 39.96, 40.32, 41.22, 39.3, 37.28, 36.13, 35.1], "t0_mid": [30.14, 31.27, 29.68, 29.27, 29.98, 29.62, 29.81, 30.89], "t0_poor": [28.92, 28.77, 30.0, 29.51, 30.72, 33.1, 34.06, 34.01], "ap_good": [39.36, 38.63, 38.35, 39.68, 37.08, 34.71, 32.95, 32.72], "ap_mid": [30.17, 31.27, 30.12, 29.54, 29.55, 28.71, 29.53, 31.2], "ap_poor": [30.47, 30.09, 31.54, 30.78, 33.38, 36.58, 37.51, 36.09]}, "100": {"ym": ["2026-01", "2026-02", "2026-03", "2026-04", "2026-05", "2026-06"], "t0_good": [37.06, 37.64, 42.94, 39.97, 40.31, 40.24], "t0_mid": [29.06, 30.88, 31.54, 32.22, 28.51, 26.75], "t0_poor": [33.88, 31.48, 25.52, 27.81, 31.18, 33.01], "ap_good": [20.58, 21.2, 24.78, 21.67, 17.55, 16.0], "ap_mid": [34.87, 37.49, 39.64, 40.33, 36.82, 35.27], "ap_poor": [44.55, 41.31, 35.58, 37.99, 45.64, 48.73]}, "407": {"ym": ["2026-05", "2026-06*", "2026-07", "2026-08"], "t0_good": [47.19, 42.05, 33.31, 31.31], "t0_mid": [29.31, 30.24, 32.71, 32.21], "t0_poor": [23.5, 27.71, 33.98, 36.48], "ap_good": [41.35, 36.12, 28.4, 28.03], "ap_mid": [31.1, 31.7, 33.05, 31.86], "ap_poor": [27.55, 32.18, 38.55, 40.1]}, "405": {"ym": ["2026-01", "2026-02", "2026-03", "2026-04", "2026-05*", "2026-06", "2026-07", "2026-08"], "t0_good": [40.7, 40.14, 42.6, 44.38, 43.75, 41.51, 34.84, 32.29], "t0_mid": [28.55, 30.57, 29.25, 29.0, 29.24, 28.89, 30.16, 29.81], "t0_poor": [30.75, 29.29, 28.15, 26.62, 27.01, 29.6, 35.0, 37.9], "ap_good": [35.56, 35.37, 37.08, 39.44, 36.91, 34.11, 27.0, 25.58], "ap_mid": [29.28, 31.03, 29.57, 29.96, 30.3, 30.19, 30.93, 30.26], "ap_poor": [35.16, 33.6, 33.34, 30.6, 32.79, 35.7, 42.07, 44.16]}};
+const ALL = {"363": {"ym": ["2026-01", "2026-02", "2026-03", "2026-04", "2026-05", "2026-06", "2026-07", "2026-08"], "t0_good": [40.94, 39.96, 40.32, 41.22, 39.3, 37.28, 36.13, 35.1], "t0_mid": [30.14, 31.27, 29.68, 29.27, 29.98, 29.62, 29.81, 30.89], "t0_poor": [28.92, 28.77, 30.0, 29.51, 30.72, 33.1, 34.06, 34.01], "ap_good": [39.36, 38.63, 38.35, 39.68, 37.08, 34.71, 32.95, 32.72], "ap_mid": [30.17, 31.27, 30.12, 29.54, 29.55, 28.71, 29.53, 31.2], "ap_poor": [30.47, 30.09, 31.54, 30.78, 33.38, 36.58, 37.51, 36.09]}, "405": {"ym": ["2026-01", "2026-02", "2026-03", "2026-04", "2026-05*", "2026-06", "2026-07", "2026-08"], "t0_good": [40.7, 40.14, 42.6, 44.38, 43.75, 41.51, 34.84, 32.29], "t0_mid": [28.55, 30.57, 29.25, 29.0, 29.24, 28.89, 30.16, 29.81], "t0_poor": [30.75, 29.29, 28.15, 26.62, 27.01, 29.6, 35.0, 37.9], "ap_good": [35.56, 35.37, 37.08, 39.44, 36.91, 34.11, 27.0, 25.58], "ap_mid": [29.28, 31.03, 29.57, 29.96, 30.3, 30.19, 30.93, 30.26], "ap_poor": [35.16, 33.6, 33.34, 30.6, 32.79, 35.7, 42.07, 44.16]}, "100": {"ym": ["2026-01", "2026-02", "2026-03", "2026-04", "2026-05", "2026-06"], "t0_good": [37.06, 37.64, 42.94, 39.97, 40.31, 40.24], "t0_mid": [29.06, 30.88, 31.54, 32.22, 28.51, 26.75], "t0_poor": [33.88, 31.48, 25.52, 27.81, 31.18, 33.01], "ap_good": [20.58, 21.2, 24.78, 21.67, 17.55, 16.0], "ap_mid": [34.87, 37.49, 39.64, 40.33, 36.82, 35.27], "ap_poor": [44.55, 41.31, 35.58, 37.99, 45.64, 48.73]}, "407": {"ym": ["2026-05", "2026-06*", "2026-07", "2026-08"], "t0_good": [47.19, 42.05, 33.31, 31.31], "t0_mid": [29.31, 30.24, 32.71, 32.21], "t0_poor": [23.5, 27.71, 33.98, 36.48], "ap_good": [41.35, 36.12, 28.4, 28.03], "ap_mid": [31.1, 31.7, 33.05, 31.86], "ap_poor": [27.55, 32.18, 38.55, 40.1]}};
 const col = {good:'#64dcae', mid:'#ffc26b', poor:'#f68ab0'};
 const labelGood = {
   id: 'labelGood',
@@ -152,6 +152,6 @@ function mix(key) {
   lineZoom('t0_'+key, D.ym, ds(D.t0_good, D.t0_mid, D.t0_poor));
   lineZoom('ap_'+key, D.ym, ds(D.ap_good, D.ap_mid, D.ap_poor));
 }
-['363','100','407','405'].forEach(mix);
+['363','405','100','407'].forEach(mix);
 </script>
 </body></html>
