@@ -815,6 +815,269 @@ new Chart(document.getElementById('c10'), {type:'bar', data:{labels:D.churn.map(
     print("HTML", HTML_PATH)
 
 
+TAB_LABEL = {
+    "0818": "8月18日批次",
+    "0902": "9月2日批次",
+    "0910": "9月10日批次",
+    "0917": "9月17日批次",
+}
+
+
+def _fmt(n):
+    return f"{int(n):,}"
+
+
+def _pct(v):
+    return "—" if v is None else f"{v:.2f}%"
+
+
+def panel_body(data, batch, pfx):
+    k = data["kpi"]
+    md = md_label(batch["recall_date"])
+    rd = batch["recall_date"]
+    return f"""
+<div class="top">
+  <div class="kicker">DASHBOARD · T7+ RECALL · {rd}</div>
+  <p class="meta">名单 {_fmt(k['n_user'])} 人 · 统计至 {k['as_of']} · 本周 {k['week_start']} 起（周一）</p>
+</div>
+<section class="kpis">
+  <article class="card"><div class="label">提单率</div><div class="num a">{_pct(k['apply_rate'])}</div><div class="sub">{_fmt(k['n_apply'])} / {_fmt(k['n_user'])} · {md}至今去重用户</div></article>
+  <article class="card"><div class="label">总提单人数</div><div class="num g">{_fmt(k['n_apply'])}</div><div class="sub">{md}至今任意提单用户</div></article>
+  <article class="card"><div class="label">本周提单人数</div><div class="num">{_fmt(k['n_apply_week'])}</div><div class="sub">本周有过提单的去重用户</div></article>
+  <article class="card"><div class="label">本周新增提单人数</div><div class="num p">{_fmt(k['n_first_week'])}</div><div class="sub">召回后首次提单落在本周</div></article>
+  <article class="card"><div class="label">放款单量</div><div class="num g">{_fmt(k['n_remit'])}</div><div class="sub">{md}至今已放款订单数</div></article>
+  <article class="card"><div class="label">本周新增放款单量</div><div class="num">{_fmt(k['n_remit_week'])}</div><div class="sub">本周新放款订单数</div></article>
+  <article class="card"><div class="label">订单盈利率</div><div class="num a">{_pct(k['profit_pct'])}</div><div class="sub">到期订单</div></article>
+  <article class="card"><div class="label">订单逾期率</div><div class="num p">{_pct(k['overdue_pct'])}</div><div class="sub">到期订单</div></article>
+</section>
+<div class="grid">
+  <div class="card chart"><h3>累计提单人数与提单率</h3><p>按召回后首次提单日累计，分母={_fmt(k['n_user'])}</p><div class="box"><canvas id="{pfx}c1"></canvas></div></div>
+  <div class="card chart"><h3>每日新增首次提单</h3><p>每人只记召回后第一笔提单所在日</p><div class="box"><canvas id="{pfx}c2"></canvas></div></div>
+</div>
+<div class="grid" style="margin-top:14px">
+  <div class="card chart"><h3>每日提单用户</h3><p>当日有过提单的去重用户</p><div class="box"><canvas id="{pfx}c3"></canvas></div></div>
+  <div class="card chart"><h3>每日放款单量与累计</h3><p>已放款订单；本周新增见 KPI</p><div class="box"><canvas id="{pfx}c4"></canvas></div></div>
+</div>
+<div class="grid" style="margin-top:14px">
+  <div class="card chart"><h3>按到期日的盈利率</h3><p>当日到期放款单 (repaid−remit)/remit</p><div class="box"><canvas id="{pfx}c5"></canvas></div></div>
+  <div class="card chart"><h3>按到期日的逾期率</h3><p>当日到期单中 loan_status_code=8 占比</p><div class="box"><canvas id="{pfx}c6"></canvas></div></div>
+</div>
+<div class="grid" style="margin-top:14px">
+  <div class="card chart"><h3>转化结构</h3><p>已提单 vs 尚未提单</p><div class="box"><canvas id="{pfx}c7"></canvas></div></div>
+  <div class="card chart"><h3>本周 vs 累计</h3><p>本周新增提单用户 / 本周提单用户 / 本周放款单量</p><div class="box"><canvas id="{pfx}c8"></canvas></div></div>
+</div>
+<div class="grid" style="margin-top:14px">
+  <div class="card chart"><h3>分层 strat 提单率</h3><p>人数柱 + 提单率折线</p><div class="box"><canvas id="{pfx}c9"></canvas></div></div>
+  <div class="card chart"><h3>流失天数提单率</h3><p>7–15 / 16–30 / 31–60 / 61–90 / 91–180 / 180d+</p><div class="box"><canvas id="{pfx}c10"></canvas></div></div>
+</div>
+"""
+
+
+def charts_js_for(pfx: str) -> str:
+    js = r"""
+const fd = D.first_daily, ad = D.apply_daily, rd = D.remit_daily, dd = D.due_daily, k=D.kpi;
+line('__P__c1', fd.map(x=>x.d.slice(5)), [
+  {label:'累计提单人数', data:fd.map(x=>x.cum), borderColor:col.cy, backgroundColor:'rgba(67,199,231,.12)', fill:true, tension:.25, yAxisID:'y', pointRadius:2},
+  {label:'提单率%', data:fd.map(x=>x.rate), borderColor:col.am, tension:.25, yAxisID:'y2', pointRadius:2}
+], true);
+new Chart(document.getElementById('__P__c2'), {type:'bar', data:{labels:fd.map(x=>x.d.slice(5)), datasets:[
+  {label:'当日首次提单', data:fd.map(x=>x.n), backgroundColor:col.gr}
+]}, options:base(false)});
+new Chart(document.getElementById('__P__c3'), {type:'bar', data:{labels:ad.map(x=>x.d.slice(5)), datasets:[
+  {label:'当日提单用户', data:ad.map(x=>x.n_user), backgroundColor:'rgba(67,199,231,.7)'}
+]}, options:base(false)});
+line('__P__c4', rd.map(x=>x.d.slice(5)), [
+  {label:'当日放款单', data:rd.map(x=>x.n), borderColor:col.gr, tension:.25, yAxisID:'y', pointRadius:2},
+  {label:'累计放款单', data:rd.map(x=>x.cum), borderColor:col.am, tension:.25, yAxisID:'y2', pointRadius:2}
+], true);
+line('__P__c5', dd.map(x=>x.d.slice(5)), [
+  {label:'到期盈利率%', data:dd.map(x=>x.profit_pct), borderColor:col.gr, tension:.25, pointRadius:2, spanGaps:true}
+], false);
+line('__P__c6', dd.map(x=>x.d.slice(5)), [
+  {label:'到期逾期率%', data:dd.map(x=>x.overdue_pct), borderColor:col.pk, tension:.25, pointRadius:2, spanGaps:true},
+  {label:'到期单量', data:dd.map(x=>x.n_due), borderColor:col.cy, tension:.25, yAxisID:'y2', pointRadius:2}
+], true);
+new Chart(document.getElementById('__P__c7'), {type:'doughnut', data:{labels:['已提单','尚未提单'], datasets:[{data:[k.n_apply, k.n_user-k.n_apply], backgroundColor:[col.gr, 'rgba(42,92,126,.55)'], borderWidth:0}]},
+  options:{responsive:true, maintainAspectRatio:false, plugins:{legend:{labels:{color:'#eff8ff'}}}},
+  plugins:[{id:'pieLabel', afterDatasetsDraw(chart){
+    const {ctx} = chart; const ds = chart.data.datasets[0];
+    const total = ds.data.reduce((a,b)=>a+b,0);
+    const meta = chart.getDatasetMeta(0);
+    meta.data.forEach((arc,i)=>{
+      const v = ds.data[i]; const pos = arc.tooltipPosition();
+      ctx.save(); ctx.fillStyle='#eff8ff'; ctx.textAlign='center'; ctx.textBaseline='middle';
+      ctx.font='13px sans-serif'; ctx.fillText((100*v/total).toFixed(2)+'%', pos.x, pos.y);
+      ctx.restore();
+    });
+  }}]});
+new Chart(document.getElementById('__P__c8'), {type:'bar', data:{labels:['本周新增提单用户','本周提单用户','本周放款单量','累计提单人数','累计放款单量'],
+  datasets:[{label:'人数/单量', data:[k.n_first_week, k.n_apply_week, k.n_remit_week, k.n_apply, k.n_remit],
+    backgroundColor:[col.pk, col.cy, col.am, col.gr, 'rgba(67,199,231,.45)']}]},
+  options:Object.assign(base(false), {layout:{padding:{top:22}}}),
+  plugins:[{id:'barLabel', afterDatasetsDraw(chart){
+    const {ctx}=chart; const meta=chart.getDatasetMeta(0);
+    ctx.save(); ctx.fillStyle='#eff8ff'; ctx.font='11px sans-serif'; ctx.textAlign='center'; ctx.textBaseline='bottom';
+    meta.data.forEach((pt,j)=>{ const v=chart.data.datasets[0].data[j]; if(v==null) return; ctx.fillText(Number(v).toLocaleString(), pt.x, pt.y-4); });
+    ctx.restore();
+  }}]});
+new Chart(document.getElementById('__P__c9'), {type:'bar', data:{labels:D.strat.map(x=>x.strat), datasets:[
+  {label:'名单人数', data:D.strat.map(x=>x.n_user), backgroundColor:'rgba(67,199,231,.35)', yAxisID:'y'},
+  {label:'提单率%', data:D.strat.map(x=>x.pct), type:'line', borderColor:col.pk, yAxisID:'y2', tension:.2, pointRadius:3}
+]}, options:Object.assign(base(true), {layout:{padding:{top:28,right:8}}}),
+  plugins:[{id:'rateLabel9', afterDatasetsDraw(chart){ drawRateLabels(chart); }}]});
+new Chart(document.getElementById('__P__c10'), {type:'bar', data:{labels:D.churn.map(x=>x.bin), datasets:[
+  {label:'名单人数', data:D.churn.map(x=>x.n_user), backgroundColor:'rgba(67,199,231,.35)', yAxisID:'y'},
+  {label:'提单率%', data:D.churn.map(x=>x.pct), type:'line', borderColor:col.pk, yAxisID:'y2', tension:.2, pointRadius:3}
+]}, options:Object.assign(base(true), {layout:{padding:{top:28,right:8}}}),
+  plugins:[{id:'rateLabel10', afterDatasetsDraw(chart){ drawRateLabels(chart); }}]});
+"""
+    return js.replace("__P__", pfx)
+
+
+def write_hub(items):
+    payload = {batch["slug"]: data for batch, data in items}
+    btns = []
+    panels = []
+    draws = []
+    for i, (batch, data) in enumerate(items):
+        slug = batch["slug"]
+        on = " on" if i == 0 else ""
+        cls = "on" if i == 0 else ""
+        btns.append(
+            f'<button type="button" data-tab="{slug}" class="{cls}">{TAB_LABEL[slug]}</button>'
+        )
+        pfx = f"b{slug}_"
+        panels.append(
+            f'<section class="panel{on}" id="p-{slug}">{panel_body(data, batch, pfx)}</section>'
+        )
+        draws.append(
+            f"if(slug==={json.dumps(slug)}){{\nconst D = DATA[{json.dumps(slug)}];\n"
+            + charts_js_for(pfx)
+            + "\n}"
+        )
+    html = f"""<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>流失 7 天以上召回 · 看板</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+<style>
+:root{{--bg:#071b2f;--card:#0c2944;--line:#2a5c7e;--text:#eff8ff;--muted:#aac5da;--cy:#43c7e7;--gr:#64dcae;--am:#ffc26b;--pk:#f68ab0}}
+*{{box-sizing:border-box}}body{{margin:0;background:#06192b;color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei",sans-serif}}
+.wrap{{max-width:1480px;margin:auto;padding:24px 28px 64px}}
+.page-top{{text-align:center}}
+.kicker{{color:var(--cy);font-size:12px;letter-spacing:2px;font-weight:700}}
+h1{{font-size:24px;margin:8px 0 6px}}
+.tabs{{display:flex;flex-wrap:wrap;gap:10px;justify-content:center;margin:18px 0 8px}}
+.tabs button{{appearance:none;border:1px solid var(--line);background:#0c2944;color:var(--text);border-radius:999px;padding:10px 18px;font-size:14px;font-weight:700;cursor:pointer}}
+.tabs button:hover{{border-color:var(--cy)}}
+.tabs button.on{{background:var(--cy);color:#062033;border-color:var(--cy)}}
+.panel{{display:none}}
+.panel.on{{display:block}}
+.top{{text-align:center;border-bottom:1px solid var(--line);padding:8px 0 16px}}
+.meta{{color:var(--muted);font-size:13px;line-height:1.7}}
+.kpis{{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin:18px 0}}
+.card{{background:rgba(10,41,68,.95);border:1px solid var(--line);border-radius:14px;padding:16px}}
+.label{{color:var(--muted);font-size:12px}}
+.num{{font-size:26px;font-weight:800;margin:6px 0 2px;color:var(--cy);line-height:1.15}}
+.num.g{{color:var(--gr)}}.num.a{{color:var(--am)}}.num.p{{color:var(--pk)}}
+.sub{{color:var(--muted);font-size:12px}}
+.grid{{display:grid;grid-template-columns:1fr 1fr;gap:14px}}
+.chart h3{{margin:0 0 4px;font-size:15px}}
+.chart p{{margin:0 0 10px;font-size:12px;color:var(--muted)}}
+.box{{height:300px;position:relative}}
+@media(max-width:900px){{.kpis,.grid{{grid-template-columns:1fr}}}}
+</style>
+</head>
+<body>
+<main class="wrap">
+<div class="page-top">
+  <div class="kicker">T7+ RECALL · MULTI-BATCH</div>
+  <h1>流失 7 天以上召回 · 看板</h1>
+  <div class="tabs">{"".join(btns)}</div>
+</div>
+{"".join(panels)}
+</main>
+<script>
+const DATA = {json.dumps(payload, ensure_ascii=False)};
+const col = {{cy:'#43c7e7', gr:'#64dcae', am:'#ffc26b', pk:'#f68ab0'}};
+Chart.defaults.font.family='-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei",sans-serif';
+Chart.defaults.color='#aac5da';
+function base(y2) {{
+  const scales = {{
+    x: {{ticks:{{color:'#aac5da', maxRotation:45}}, grid:{{display:false}}}},
+    y: {{type:'linear', position:'left', ticks:{{color:'#aac5da'}}, grid:{{color:'rgba(42,92,126,.25)'}}}}
+  }};
+  if (y2) scales.y2 = {{type:'linear', position:'right', ticks:{{color:'#ffc26b'}}, grid:{{drawOnChartArea:false}}}};
+  return {{responsive:true, maintainAspectRatio:false, interaction:{{mode:'index', intersect:false}},
+    plugins:{{legend:{{labels:{{color:'#eff8ff'}}}}}}, scales}};
+}}
+function line(id, labels, datasets, y2) {{
+  new Chart(document.getElementById(id), {{type:'line', data:{{labels, datasets}}, options:base(y2)}});
+}}
+function drawRateLabels(chart) {{
+  const {{ctx}} = chart;
+  chart.data.datasets.forEach((ds,i)=>{{
+    if(!String(ds.label).includes('提单率')) return;
+    const pts = chart.getDatasetMeta(i).data;
+    ctx.save();
+    ctx.font='11px sans-serif';
+    ctx.fillStyle='#f68ab0';
+    ctx.textBaseline='bottom';
+    pts.forEach((pt,j)=>{{
+      const v=ds.data[j];
+      if(v==null) return;
+      let dx=0, dy=-16, align='center';
+      if(j===0){{ align='left'; dx=10; }}
+      else if(j===pts.length-1){{ align='right'; dx=-10; }}
+      const prev=pts[j-1], next=pts[j+1];
+      if(prev && next && pt.y>=prev.y && pt.y>=next.y) dy=-20;
+      ctx.textAlign=align;
+      ctx.fillText(Number(v).toFixed(2)+'%', pt.x+dx, pt.y+dy);
+    }});
+    ctx.restore();
+  }});
+}}
+const drawn = {{}};
+function draw(slug) {{
+{chr(10).join(draws)}
+}}
+function show(slug) {{
+  document.querySelectorAll('.tabs button').forEach(b=>b.classList.toggle('on', b.dataset.tab===slug));
+  document.querySelectorAll('.panel').forEach(p=>p.classList.toggle('on', p.id==='p-'+slug));
+  const run = () => {{
+    if (!drawn[slug]) {{ draw(slug); drawn[slug]=true; }}
+    document.querySelectorAll('#p-'+slug+' canvas').forEach(cv => {{
+      const ch = Chart.getChart(cv);
+      if (ch) ch.resize();
+    }});
+  }};
+  requestAnimationFrame(() => requestAnimationFrame(run));
+}}
+document.querySelectorAll('.tabs button').forEach(btn => {{
+  btn.addEventListener('click', () => show(btn.dataset.tab));
+}});
+show({json.dumps(items[0][0]["slug"])});
+</script>
+</body></html>
+"""
+    path = HERE / "t7.html"
+    path.write_text(html, encoding="utf-8")
+    print("HTML", path)
+
+
+def write_hub_from_disk():
+    items = []
+    for batch in BATCHES:
+        p = HERE / f"t7_{batch['slug']}_dashboard_data.json"
+        if not p.exists():
+            print("skip hub, missing", p.name, flush=True)
+            return
+        items.append((batch, json.loads(p.read_text(encoding="utf-8"))))
+    write_hub(items)
+
+
 if __name__ == "__main__":
     by = {b["slug"]: b for b in BATCHES}
     slugs = sys.argv[1:] or [b["slug"] for b in BATCHES]
@@ -828,3 +1091,4 @@ if __name__ == "__main__":
         json_path.write_text(json.dumps(data, ensure_ascii=False, indent=2), encoding="utf-8")
         write_html(data, batch)
         print("kpi", data["kpi"], flush=True)
+    write_hub_from_disk()
