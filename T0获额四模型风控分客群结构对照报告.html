@@ -1,0 +1,157 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>T0 获额四模型风控分 · 客群结构对照</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+<style>
+:root{--bg:#071b2f;--p:#0c2944;--line:#2a5c7e;--text:#eff8ff;--muted:#aac5da;--cy:#43c7e7;--gr:#64dcae;--am:#ffc26b;--pk:#f68ab0}
+*{box-sizing:border-box}body{margin:0;background:#06192b;color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei",sans-serif}
+.wrap{max-width:1480px;margin:auto;padding:32px 36px 80px}
+.hero{text-align:center;padding:28px 12px 22px;border-bottom:1px solid var(--line)}
+.kicker{color:var(--cy);font-size:13px;letter-spacing:2px;font-weight:700}
+.hero h1{font-size:28px;line-height:1.3;margin:10px 0}
+.hero-meta{display:inline-block;text-align:left;margin-top:12px;line-height:1.75;color:var(--muted);font-size:14px}
+h2{font-size:22px;margin:44px 0 10px}
+.desc{color:var(--muted);margin:0 0 12px;line-height:1.75;font-size:14px}
+.desc a{color:#43c7e7}
+.grid{display:grid;gap:14px}.g2{grid-template-columns:repeat(2,minmax(0,1fr))}
+.chart{background:rgba(10,41,68,.95);border:1px solid var(--line);border-radius:14px;padding:16px}
+.box{height:300px;position:relative}.chart h3{margin:0 0 4px;font-size:15px}.chart p{font-size:12px;color:var(--muted);margin:0 0 10px}
+.callout{background:#0a2a45;border:1px solid #2a5c7e;border-left:4px solid #43c7e7;border-radius:10px;padding:14px 18px;margin:14px 0;line-height:1.75;font-size:14px}
+.callout.gold{border-left-color:#ffc26b}.callout.red{border-left-color:#f68ab0}.callout.green{border-left-color:#64dcae}
+.callout .ch{font-weight:800;margin-bottom:8px}
+.table{overflow-x:auto;margin:12px 0}table{width:100%;border-collapse:collapse;font-size:13px}
+th,td{padding:8px 10px;border-bottom:1px solid rgba(42,92,126,.45);text-align:right;white-space:nowrap;vertical-align:top}
+th{color:var(--muted);background:rgba(12,48,78,.65);font-weight:600}th:first-child,td:first-child,th:nth-child(2),td:nth-child(2){text-align:left}
+.delta{color:#aac5da;font-size:12px}
+.foot{color:#7fa6c2;font-size:12.5px;margin-top:50px;border-top:1px solid var(--line);padding-top:16px;line-height:1.9}
+@media(max-width:900px){.g2{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<main class="wrap">
+<header class="hero">
+<div class="kicker">T0 · 结清0在贷 · 363 / 100 / 407 / 405 · 客群结构对照</div>
+<h1>四个风控分模型：T0 获额结构 vs 当天提单结构</h1>
+<div class="hero-meta">
+只对照各报告的图3（T0 获额客群）和图4（当天提单客群）。三档均为该模型全量有分样本的 P30 / P60（较差 ≤P30，一般 P30–P60，最好 &gt;P60），分越高越好。<br>
+观察窗口不同：363 / 405 为 1–8 月，100 为 1–6 月，407 为 5–8 月。标 * 月份为剔除无分后的参考月，不作拐点。<br>
+数字直接取自已发布的四份报告，口径与原报告一致。
+</div>
+</header>
+
+<h2>对照结论</h2>
+<div class="callout green"><div class="ch">共同趋势：当天提单客群四个模型都在变差</div>
+363、100、407、405 的当天提单结构都是最好档下降、较差档上升。好资质更少出现在当天单里，差资质占比抬升——这条在四个分上方向一致。</div>
+<div class="callout gold"><div class="ch">分歧：获额客群是不是也变差，四个分结论并不完全一样</div>
+363 / 407 / 405：T0 获额最好档下降、较差档上升，获额端也在变差（407 因窗口从 5 月最好档接近一半起算，幅度看起来最大）。<br>
+100：T0 获额最好档 37.06%→40.24%，较差档 33.88%→33.01%，获额没有变差。100 分上「结构变差」只发生在当天提单，不发生在获额。</div>
+<div class="callout red"><div class="ch">因此：四份报告不能收成同一句「客群全面变差」</div>
+能收成同一句的是：<b>当天提单结构变差</b>（四个模型同向）。<br>
+不能收成同一句的是：<b>获额结构变差</b>——363 / 407 / 405 支持，100 不支持。100 更指向「获额还行、好客不提」；其余三个更指向「获额已经变差，当天单再叠加一层」。
+</div>
+<div class="callout"><div class="ch">读图时注意窗口</div>
+不要把 407 的 5→8 月斜率和 363/405 的 1→8 月斜率直接比大小。100 停在 6 月，看不到 7–8 月。对照看的是方向是否相同，不是幅度是否一样。</div>
+
+<div class="table">
+<table>
+<thead><tr><th>模型</th><th>对比</th><th>T0 最好%</th><th>T0 较差%</th><th>获额</th><th>提单最好%</th><th>提单较差%</th><th>当天提单</th></tr></thead>
+<tbody>
+<tr><td>363</td><td>1月→8月</td><td>40.94%→35.10%<br><span class='delta'>-5.84pp</span></td><td>28.92%→34.01%<br><span class='delta'>+5.09pp</span></td><td>变差</td><td>39.36%→32.72%<br><span class='delta'>-6.64pp</span></td><td>30.47%→36.09%<br><span class='delta'>+5.62pp</span></td><td>变差</td></tr><tr><td>100</td><td>1月→6月</td><td>37.06%→40.24%<br><span class='delta'>+3.18pp</span></td><td>33.88%→33.01%<br><span class='delta'>-0.87pp</span></td><td>未变差</td><td>20.58%→16.00%<br><span class='delta'>-4.58pp</span></td><td>44.55%→48.73%<br><span class='delta'>+4.18pp</span></td><td>变差</td></tr><tr><td>407</td><td>5月→8月</td><td>47.19%→31.31%<br><span class='delta'>-15.88pp</span></td><td>23.50%→36.48%<br><span class='delta'>+12.98pp</span></td><td>变差</td><td>41.35%→28.03%<br><span class='delta'>-13.32pp</span></td><td>27.55%→40.10%<br><span class='delta'>+12.55pp</span></td><td>变差</td></tr><tr><td>405</td><td>1月→8月</td><td>40.70%→32.29%<br><span class='delta'>-8.41pp</span></td><td>30.75%→37.90%<br><span class='delta'>+7.15pp</span></td><td>变差</td><td>35.56%→25.58%<br><span class='delta'>-9.98pp</span></td><td>35.16%→44.16%<br><span class='delta'>+9.00pp</span></td><td>变差</td></tr>
+</tbody>
+</table>
+</div>
+
+<h2>1. 363 分 · KabyBXgboost363 · 2026-01～08</h2>
+<p class="desc">字段 <code>kabybxgboost363dpd7cre</code> · P30=452 / P60=473 · 1–8 月，覆盖率 100%<br>
+获额、当天提单都变差；1–4 月稳，变差主要在 5 月以后。 原报告：<a href="T0获额风控分363三档当日提单息费逾期盈利报告.html">T0获额风控分363三档当日提单息费逾期盈利报告.html</a></p>
+<div class="grid g2">
+  <div class="chart"><h3>图1.1 T0 获额客群结构</h3><p>折线；纵轴不从 0 起。分母=当月全部有分 T0</p><div class="box"><canvas id="t0_363"></canvas></div></div>
+  <div class="chart"><h3>图1.2 当天提单客群结构</h3><p>折线；纵轴不从 0 起。分母=当月当天提单</p><div class="box"><canvas id="ap_363"></canvas></div></div>
+</div>
+
+<h2>2. 100 分 · KabyBXgboost100 · 2026-01～06</h2>
+<p class="desc">字段 <code>kabybxgboost100</code> · P30=451 / P60=487 · 1–6 月（2 月无分 1 单已剔除）<br>
+获额没有变差（最好档略升）；当天提单明显变差。问题在转化端。 原报告：<a href="T0获额风控分100三档当日提单息费逾期盈利报告.html">T0获额风控分100三档当日提单息费逾期盈利报告.html</a></p>
+<div class="grid g2">
+  <div class="chart"><h3>图2.1 T0 获额客群结构</h3><p>折线；纵轴不从 0 起。分母=当月全部有分 T0</p><div class="box"><canvas id="t0_100"></canvas></div></div>
+  <div class="chart"><h3>图2.2 当天提单客群结构</h3><p>折线；纵轴不从 0 起。分母=当月当天提单</p><div class="box"><canvas id="ap_100"></canvas></div></div>
+</div>
+
+<h2>3. 407 分 · KabyBXgboost407 · 2026-05～08</h2>
+<p class="desc">字段 <code>kabybxgboost407apd7reprime</code> · P30=448 / P60=465 · 5–8 月有分样本；6 月标 *（剔除无分 5,549）<br>
+获额、当天提单都变差，且幅度在四个模型里最大。 原报告：<a href="T0获额风控分407三档当日提单息费逾期盈利报告.html">T0获额风控分407三档当日提单息费逾期盈利报告.html</a></p>
+<div class="grid g2">
+  <div class="chart"><h3>图3.1 T0 获额客群结构</h3><p>折线；纵轴不从 0 起。分母=当月全部有分 T0</p><div class="box"><canvas id="t0_407"></canvas></div></div>
+  <div class="chart"><h3>图3.2 当天提单客群结构</h3><p>折线；纵轴不从 0 起。分母=当月当天提单</p><div class="box"><canvas id="ap_407"></canvas></div></div>
+</div>
+
+<h2>4. 405 分 · KabyBXgboost405 · 2026-01～08</h2>
+<p class="desc">字段 <code>kabybxgboost405apd7crecyc</code> · P30=447 / P60=465 · 1–8 月有分样本；5 月标 *（剔除 765）<br>
+获额、当天提单都变差；形态接近 363，5 月以后更明显。 原报告：<a href="T0获额风控分405三档当日提单息费逾期盈利报告.html">T0获额风控分405三档当日提单息费逾期盈利报告.html</a></p>
+<div class="grid g2">
+  <div class="chart"><h3>图4.1 T0 获额客群结构</h3><p>折线；纵轴不从 0 起。分母=当月全部有分 T0</p><div class="box"><canvas id="t0_405"></canvas></div></div>
+  <div class="chart"><h3>图4.2 当天提单客群结构</h3><p>折线；纵轴不从 0 起。分母=当月当天提单</p><div class="box"><canvas id="ap_405"></canvas></div></div>
+</div>
+
+<p class="foot">数据来源：sunyingylyd/report 已发布的 363 / 100 / 407 / 405 四份 T0 三档报告。本页不重查库，只对照图3、图4。</p>
+</main>
+<script>
+const ALL = {"363": {"ym": ["2026-01", "2026-02", "2026-03", "2026-04", "2026-05", "2026-06", "2026-07", "2026-08"], "t0_good": [40.94, 39.96, 40.32, 41.22, 39.3, 37.28, 36.13, 35.1], "t0_mid": [30.14, 31.27, 29.68, 29.27, 29.98, 29.62, 29.81, 30.89], "t0_poor": [28.92, 28.77, 30.0, 29.51, 30.72, 33.1, 34.06, 34.01], "ap_good": [39.36, 38.63, 38.35, 39.68, 37.08, 34.71, 32.95, 32.72], "ap_mid": [30.17, 31.27, 30.12, 29.54, 29.55, 28.71, 29.53, 31.2], "ap_poor": [30.47, 30.09, 31.54, 30.78, 33.38, 36.58, 37.51, 36.09]}, "100": {"ym": ["2026-01", "2026-02", "2026-03", "2026-04", "2026-05", "2026-06"], "t0_good": [37.06, 37.64, 42.94, 39.97, 40.31, 40.24], "t0_mid": [29.06, 30.88, 31.54, 32.22, 28.51, 26.75], "t0_poor": [33.88, 31.48, 25.52, 27.81, 31.18, 33.01], "ap_good": [20.58, 21.2, 24.78, 21.67, 17.55, 16.0], "ap_mid": [34.87, 37.49, 39.64, 40.33, 36.82, 35.27], "ap_poor": [44.55, 41.31, 35.58, 37.99, 45.64, 48.73]}, "407": {"ym": ["2026-05", "2026-06*", "2026-07", "2026-08"], "t0_good": [47.19, 42.05, 33.31, 31.31], "t0_mid": [29.31, 30.24, 32.71, 32.21], "t0_poor": [23.5, 27.71, 33.98, 36.48], "ap_good": [41.35, 36.12, 28.4, 28.03], "ap_mid": [31.1, 31.7, 33.05, 31.86], "ap_poor": [27.55, 32.18, 38.55, 40.1]}, "405": {"ym": ["2026-01", "2026-02", "2026-03", "2026-04", "2026-05*", "2026-06", "2026-07", "2026-08"], "t0_good": [40.7, 40.14, 42.6, 44.38, 43.75, 41.51, 34.84, 32.29], "t0_mid": [28.55, 30.57, 29.25, 29.0, 29.24, 28.89, 30.16, 29.81], "t0_poor": [30.75, 29.29, 28.15, 26.62, 27.01, 29.6, 35.0, 37.9], "ap_good": [35.56, 35.37, 37.08, 39.44, 36.91, 34.11, 27.0, 25.58], "ap_mid": [29.28, 31.03, 29.57, 29.96, 30.3, 30.19, 30.93, 30.26], "ap_poor": [35.16, 33.6, 33.34, 30.6, 32.79, 35.7, 42.07, 44.16]}};
+const col = {good:'#64dcae', mid:'#ffc26b', poor:'#f68ab0'};
+const labelGood = {
+  id: 'labelGood',
+  afterDatasetsDraw(chart) {
+    const {ctx} = chart;
+    chart.data.datasets.forEach((ds, i) => {
+      if (!String(ds.label).startsWith('最好')) return;
+      const meta = chart.getDatasetMeta(i);
+      ctx.save();
+      ctx.font = '12px sans-serif';
+      ctx.fillStyle = '#64dcae';
+      ctx.textBaseline = 'bottom';
+      meta.data.forEach((pt, j) => {
+        const v = ds.data[j];
+        if (v == null) return;
+        ctx.textAlign = j === 0 ? 'left' : 'center';
+        ctx.fillText(Number(v).toFixed(2) + '%', pt.x + (j === 0 ? 8 : 0), pt.y - 7);
+      });
+      ctx.restore();
+    });
+  }
+};
+function lineZoom(id, labels, datasets) {
+  const vals = datasets.flatMap(d => d.data).filter(x => x != null);
+  const mn = Math.min(...vals), mx = Math.max(...vals);
+  const padLo = Math.max(1.2, (mx - mn) * 0.22);
+  const padHi = Math.max(2.4, (mx - mn) * 0.38);
+  new Chart(document.getElementById(id), {
+    type:'line',
+    data:{labels, datasets},
+    options:{responsive:true, maintainAspectRatio:false, interaction:{mode:'index', intersect:false},
+      plugins:{legend:{labels:{color:'#eff8ff'}}},
+      scales:{
+        x:{ticks:{color:'#aac5da'}, grid:{display:false}},
+        y:{type:'linear', min: +(mn - padLo).toFixed(1), max: +(mx + padHi).toFixed(1), beginAtZero:false,
+          ticks:{color:'#aac5da'}, grid:{color:'rgba(42,92,126,.25)'}}
+      }
+    },
+    plugins:[labelGood]
+  });
+}
+const lw = 2.4;
+function mix(key) {
+  const D = ALL[key];
+  const ds = (g,m,p) => ([
+    {label:'最好%', data:g, borderColor:col.good, backgroundColor:'transparent', tension:.25, borderWidth:lw, pointRadius:3},
+    {label:'一般%', data:m, borderColor:col.mid, backgroundColor:'transparent', tension:.25, borderWidth:lw, pointRadius:3},
+    {label:'较差%', data:p, borderColor:col.poor, backgroundColor:'transparent', tension:.25, borderWidth:lw, pointRadius:3}
+  ]);
+  lineZoom('t0_'+key, D.ym, ds(D.t0_good, D.t0_mid, D.t0_poor));
+  lineZoom('ap_'+key, D.ym, ds(D.ap_good, D.ap_mid, D.ap_poor));
+}
+['363','100','407','405'].forEach(mix);
+</script>
+</body></html>
