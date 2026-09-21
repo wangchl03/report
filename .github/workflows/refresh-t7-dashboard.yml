@@ -1,9 +1,7 @@
 name: Refresh T7 dashboard
 
 on:
-  schedule:
-    # 北京时间每天 18:00 = UTC 10:00
-    - cron: "0 10 * * *"
+  # GitHub 托管机访问不了数仓（47.89.225.85:8000 超时），18:00 改由本机 launchd 刷新。
   workflow_dispatch:
 
 permissions:
