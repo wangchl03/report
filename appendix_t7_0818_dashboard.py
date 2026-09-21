@@ -731,7 +731,7 @@ line('c6', dd.map(x=>x.d.slice(5)), [
   {label:'到期单量', data:dd.map(x=>x.n_due), borderColor:col.cy, tension:.25, yAxisID:'y2', pointRadius:2}
 ], true);
 new Chart(document.getElementById('c7'), {type:'doughnut', data:{labels:['已提单','尚未提单'], datasets:[{data:[k.n_apply, k.n_user-k.n_apply], backgroundColor:[col.gr, 'rgba(42,92,126,.55)'], borderWidth:0}]},
-  options:{responsive:true, maintainAspectRatio:false, cutout:'0%', layout:{padding:{top:4,bottom:8,left:4,right:8}}, plugins:{legend:{position:'right', labels:{color:'#eff8ff', padding:12, boxWidth:12}}}},
+  options:{responsive:true, maintainAspectRatio:false, cutout:'55%', layout:{padding:{top:4,bottom:8,left:4,right:8}}, plugins:{legend:{position:'right', labels:{color:'#eff8ff', padding:12, boxWidth:12}}}},
   plugins:[{id:'pieLabel', afterDatasetsDraw(chart){
     const {ctx} = chart; const ds = chart.data.datasets[0];
     const total = ds.data.reduce((a,b)=>a+b,0);
@@ -898,7 +898,7 @@ line('__P__c6', dd.map(x=>x.d.slice(5)), [
   {label:'到期单量', data:dd.map(x=>x.n_due), borderColor:col.cy, tension:.25, yAxisID:'y2', pointRadius:2}
 ], true);
 new Chart(document.getElementById('__P__c7'), {type:'doughnut', data:{labels:['已提单','尚未提单'], datasets:[{data:[k.n_apply, k.n_user-k.n_apply], backgroundColor:[col.gr, 'rgba(42,92,126,.55)'], borderWidth:0}]},
-  options:{responsive:true, maintainAspectRatio:false, cutout:'0%', layout:{padding:{top:4,bottom:8,left:4,right:8}}, plugins:{legend:{position:'right', labels:{color:'#eff8ff', padding:12, boxWidth:12}}}},
+  options:{responsive:true, maintainAspectRatio:false, cutout:'55%', layout:{padding:{top:4,bottom:8,left:4,right:8}}, plugins:{legend:{position:'right', labels:{color:'#eff8ff', padding:12, boxWidth:12}}}},
   plugins:[{id:'pieLabel', afterDatasetsDraw(chart){
     const {ctx} = chart; const ds = chart.data.datasets[0];
     const total = ds.data.reduce((a,b)=>a+b,0);
