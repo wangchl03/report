@@ -620,7 +620,6 @@ h1{{font-size:24px;margin:8px 0 6px}}
 .chart h3{{margin:0 0 4px;font-size:15px}}
 .chart p{{margin:0 0 10px;font-size:12px;color:var(--muted)}}
 .box{{height:300px;position:relative;overflow:hidden}}
-.box.pie{{height:230px}}
 .foot{{color:#7fa6c2;font-size:12px;margin-top:28px;border-top:1px solid var(--line);padding-top:14px;line-height:1.8}}
 .appendix{{margin-top:36px;border-top:1px solid var(--line);padding-top:8px}}
 .appendix h2{{font-size:18px;margin:22px 0 10px}}
@@ -732,7 +731,7 @@ line('c6', dd.map(x=>x.d.slice(5)), [
   {label:'到期单量', data:dd.map(x=>x.n_due), borderColor:col.cy, tension:.25, yAxisID:'y2', pointRadius:2}
 ], true);
 new Chart(document.getElementById('c7'), {type:'doughnut', data:{labels:['已提单','尚未提单'], datasets:[{data:[k.n_apply, k.n_user-k.n_apply], backgroundColor:[col.gr, 'rgba(42,92,126,.55)'], borderWidth:0}]},
-  options:{responsive:true, maintainAspectRatio:false, cutout:'58%', layout:{padding:{top:6,bottom:18,left:28,right:28}}, plugins:{legend:{labels:{color:'#eff8ff', padding:16}}}},
+  options:{responsive:true, maintainAspectRatio:false, cutout:'0%', layout:{padding:{top:4,bottom:8,left:4,right:8}}, plugins:{legend:{position:'right', labels:{color:'#eff8ff', padding:12, boxWidth:12}}}},
   plugins:[{id:'pieLabel', afterDatasetsDraw(chart){
     const {ctx} = chart; const ds = chart.data.datasets[0];
     const total = ds.data.reduce((a,b)=>a+b,0);
@@ -899,7 +898,7 @@ line('__P__c6', dd.map(x=>x.d.slice(5)), [
   {label:'到期单量', data:dd.map(x=>x.n_due), borderColor:col.cy, tension:.25, yAxisID:'y2', pointRadius:2}
 ], true);
 new Chart(document.getElementById('__P__c7'), {type:'doughnut', data:{labels:['已提单','尚未提单'], datasets:[{data:[k.n_apply, k.n_user-k.n_apply], backgroundColor:[col.gr, 'rgba(42,92,126,.55)'], borderWidth:0}]},
-  options:{responsive:true, maintainAspectRatio:false, cutout:'58%', layout:{padding:{top:6,bottom:18,left:28,right:28}}, plugins:{legend:{labels:{color:'#eff8ff', padding:16}}}},
+  options:{responsive:true, maintainAspectRatio:false, cutout:'0%', layout:{padding:{top:4,bottom:8,left:4,right:8}}, plugins:{legend:{position:'right', labels:{color:'#eff8ff', padding:12, boxWidth:12}}}},
   plugins:[{id:'pieLabel', afterDatasetsDraw(chart){
     const {ctx} = chart; const ds = chart.data.datasets[0];
     const total = ds.data.reduce((a,b)=>a+b,0);
@@ -988,7 +987,6 @@ h1{{font-size:24px;margin:8px 0 6px}}
 .chart h3{{margin:0 0 4px;font-size:15px}}
 .chart p{{margin:0 0 10px;font-size:12px;color:var(--muted)}}
 .box{{height:300px;position:relative;overflow:hidden}}
-.box.pie{{height:230px}}
 @media(max-width:900px){{.kpis,.grid{{grid-template-columns:1fr}}}}
 </style>
 </head>
@@ -1012,6 +1010,7 @@ Chart.register({{
     const legend = chart.legend;
     const area = chart.chartArea;
     if (!legend || !legend.options.display || !area) return;
+    if (chart.config.type === 'pie' || chart.config.type === 'doughnut') return;
     const hasRateLbl = (chart.data.datasets || []).some(d => String(d.label || '').includes('提单率'));
     area.top += hasRateLbl ? 26 : 12;
   }}
