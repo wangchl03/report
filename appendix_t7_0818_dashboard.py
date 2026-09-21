@@ -1012,7 +1012,8 @@ Chart.register({{
     const legend = chart.legend;
     const area = chart.chartArea;
     if (!legend || !legend.options.display || !area) return;
-    area.top += 8;
+    const hasRateLbl = (chart.data.datasets || []).some(d => String(d.label || '').includes('提单率'));
+    area.top += hasRateLbl ? 26 : 12;
   }}
 }});
 function base(y2) {{
