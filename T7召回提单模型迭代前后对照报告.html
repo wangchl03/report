@@ -25,6 +25,8 @@ h2{font-size:22px;margin:40px 0 10px}
 .table{overflow-x:auto;margin:12px 0}table{width:100%;border-collapse:collapse;font-size:13px}
 th,td{padding:8px 10px;border-bottom:1px solid rgba(42,92,126,.45);text-align:right;white-space:nowrap}
 th{color:var(--muted);background:rgba(12,48,78,.65)}th:first-child,td:first-child{text-align:left}
+details.fold{margin:28px 0 10px;background:rgba(10,41,68,.95);border:1px solid var(--line);border-radius:12px;padding:12px 16px}
+details.fold>summary{cursor:pointer;color:var(--cy);font-weight:700;font-size:20px;line-height:1.4}
 details.code{margin:10px 0;background:rgba(10,41,68,.95);border:1px solid var(--line);border-radius:12px;padding:10px 14px}
 details.code summary{cursor:pointer;color:var(--cy);font-weight:700}
 pre.sql{overflow:auto;max-height:900px;font-size:11.5px;line-height:1.5;color:#d7ecf8;white-space:pre}
@@ -58,8 +60,9 @@ core 前 1/3 = 该批流失用户按 <code>score</code> 从高到低 <code>NTILE
 <div class="callout"><div class="ch">3. 经营含义</div>
 升级后的分更适合做触达排序和额度/券倾斜：同样覆盖前三分之一流失用户，能打到更大比例的实际提单人。</div>
 
-<h2>按首次提单日</h2>
-<p class="desc">累计占比用首次提单去重，跨日多次提单的人只进第一次。</p>
+<details class="fold">
+<summary>按首次提单日</summary>
+<p class="desc">累计占比用首次提单去重，跨日多次提单的人只进第一次。点击标题展开明细。</p>
 <h3 style="font-size:16px;margin:18px 0 8px">迭代前 0910</h3>
 <div class="table"><table>
 <thead><tr><th>日期</th><th>触达后</th><th>当日新增提单</th><th>其中前 1/3</th><th>当日占比</th><th>累计提单</th><th>累计前 1/3</th><th>累计占比</th></tr></thead>
@@ -70,10 +73,11 @@ core 前 1/3 = 该批流失用户按 <code>score</code> 从高到低 <code>NTILE
 <thead><tr><th>日期</th><th>触达后</th><th>当日新增提单</th><th>其中前 1/3</th><th>当日占比</th><th>累计提单</th><th>累计前 1/3</th><th>累计占比</th></tr></thead>
 <tbody><tr><td>2026-09-18</td><td>D0</td><td>56</td><td>41</td><td>73.21%</td><td>56</td><td>41</td><td>73.21%</td></tr><tr><td>2026-09-19</td><td>D1</td><td>73</td><td>54</td><td>73.97%</td><td>129</td><td>95</td><td>73.64%</td></tr><tr><td>2026-09-20</td><td>D2</td><td>85</td><td>63</td><td>74.12%</td><td>214</td><td>158</td><td>73.83%</td></tr><tr><td>2026-09-21</td><td>D3</td><td>69</td><td>51</td><td>73.91%</td><td>283</td><td>209</td><td>73.85%</td></tr><tr><td>2026-09-22</td><td>D4</td><td>1</td><td>0</td><td>0.00%</td><td>284</td><td>209</td><td>73.59%</td></tr></tbody>
 </table></div>
+</details>
 
-<h2>附录：完整 PGSQL（可复现全部指标）</h2>
+<details class="fold">
+<summary>附录：完整 PGSQL（可复现全部指标）</summary>
 <p class="desc">R1/R4 总览（含 D0～D4）；R2/R5 三分位人数；R3/R6 按首次提单日。占比用对应列相除。统计日随 <code>CURRENT_DATE</code> 滚动。</p>
-<details class="code" open><summary>完整 PGSQL（点击收起）</summary>
 <pre class="sql">-- =============================================================================
 -- T7 召回提单模型：迭代前 t7recall_active0910 vs 迭代后 t7recalllist_active0918
 -- 库：kaby_dw · schema wangchuanliang
