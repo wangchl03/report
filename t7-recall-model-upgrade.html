@@ -1,0 +1,282 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>T7 召回提单模型迭代前后对照</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+<style>
+:root{--line:#2a5c7e;--text:#eff8ff;--muted:#aac5da;--cy:#43c7e7}
+*{box-sizing:border-box}body{margin:0;background:#06192b;color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei",sans-serif}
+.wrap{max-width:1480px;margin:auto;padding:32px 36px 80px}
+.hero{text-align:center;padding:28px 12px 22px;border-bottom:1px solid var(--line)}
+.kicker{color:var(--cy);font-size:13px;letter-spacing:2px;font-weight:700}
+.hero h1{font-size:26px;line-height:1.35;margin:10px 0}
+.hero-meta{display:inline-block;text-align:left;margin-top:12px;line-height:1.75;color:var(--muted);font-size:14px}
+h2{font-size:22px;margin:40px 0 10px}
+.desc{color:var(--muted);margin:0 0 12px;line-height:1.75;font-size:14px}
+.grid{display:grid;gap:14px}.g2{grid-template-columns:repeat(2,minmax(0,1fr))}.g4{grid-template-columns:repeat(4,minmax(0,1fr))}
+.card,.chart{background:rgba(10,41,68,.95);border:1px solid var(--line);border-radius:14px;padding:16px}
+.label{color:var(--muted);font-size:12px}.num{font-size:22px;font-weight:800;margin:4px 0 2px;color:var(--cy)}
+.sub{color:var(--muted);font-size:12px}
+.box{height:300px;position:relative}.chart h3{margin:0 0 4px;font-size:15px}.chart p{font-size:12px;color:var(--muted);margin:0 0 10px}
+.callout{background:#0a2a45;border:1px solid #2a5c7e;border-left:4px solid #43c7e7;border-radius:10px;padding:14px 18px;margin:14px 0;line-height:1.75;font-size:14px}
+.callout.gold{border-left-color:#ffc26b}.callout.green{border-left-color:#64dcae}
+.callout .ch{font-weight:800;margin-bottom:8px}
+.table{overflow-x:auto;margin:12px 0}table{width:100%;border-collapse:collapse;font-size:13px}
+th,td{padding:8px 10px;border-bottom:1px solid rgba(42,92,126,.45);text-align:right;white-space:nowrap}
+th{color:var(--muted);background:rgba(12,48,78,.65)}th:first-child,td:first-child{text-align:left}
+details.code{margin:10px 0;background:rgba(10,41,68,.95);border:1px solid var(--line);border-radius:12px;padding:10px 14px}
+details.code summary{cursor:pointer;color:var(--cy);font-weight:700}
+pre.sql{overflow:auto;max-height:900px;font-size:11.5px;line-height:1.5;color:#d7ecf8;white-space:pre}
+.foot{color:#7fa6c2;font-size:12.5px;margin-top:40px;border-top:1px solid var(--line);padding-top:16px;line-height:1.9}
+@media(max-width:900px){.g2,.g4{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<main class="wrap">
+<header class="hero">
+<div class="kicker">T7 召回 · 提单预测模型 · 统计至 2026-09-22</div>
+<h1>模型迭代后，core 前三分之一流失用户贡献了更大份额的提单</h1>
+<div class="hero-meta">
+迭代前名单 <code>t7recall_active0910</code>（触达 9/10），迭代后 <code>t7recalllist_active0918</code>（触达 9/18）。<br>
+core 前 1/3 = 该批流失用户按 <code>score</code> 从高到低 <code>NTILE(3)</code> 最高档。主指标 = 前 1/3 里提单人数 / 该批全部提单人数。提单从触达日算到 2026-09-22。
+</div>
+</header>
+
+<section class="grid g4" style="margin-top:18px">
+<article class="card"><div class="label">迭代前 · 前1/3占全部提单</div><div class="num">65.43%</div><div class="sub">564 / 862 · 观察到今天</div></article>
+<article class="card"><div class="label">迭代后 · 前1/3占全部提单</div><div class="num">73.59%</div><div class="sub">209 / 284 · 观察到今天</div></article>
+<article class="card"><div class="label">对齐 5 日 · 迭代前</div><div class="num">71.01%</div><div class="sub">289 / 407 · D0～D4</div></article>
+<article class="card"><div class="label">对齐 5 日 · 迭代后</div><div class="num">73.59%</div><div class="sub">209 / 284 · D0～D4</div></article>
+</section>
+
+<h2>结论</h2>
+<div class="callout green"><div class="ch">1. 排序更准：高分用户贡献了更多提单</div>
+同样在流失用户里取 score 最高三分之一，这些人占全部提单的比例，迭代前 <b>65.43%</b>（564/862），迭代后 <b>73.59%</b>（209/284），提高 <b>8.16pp</b>。高分档大约只占名单 33%，迭代后贡献了约四分之三的提单。</div>
+<div class="callout gold"><div class="ch">2. 对齐触达后同样 5 天，提升还在</div>
+迭代前观察到 13 天、迭代后只有 5 天。后面几天会进来更多中低分提单，把前 1/3 占比拉低。两批都只看到 D0～D4：迭代前 <b>71.01%</b>，迭代后 <b>73.59%</b>，仍高 <b>2.58pp</b>。按触达后天数看累计占比，迭代后曲线更高、更稳。</div>
+<div class="callout"><div class="ch">3. 证明的是排序质量，不是名单整体提单率变高</div>
+对齐 5 日，名单整体提单率迭代前 5.22%、迭代后 3.28%，两批名单大小和运营条件不同，不能用来证伪或证实“提单变多”。前 1/3 档内提单率相对整批的倍数：迭代前 2.13 倍，迭代后 2.20 倍。两版 score 量纲不同（0910 约 5～115，0918 约 20～100），只比三分位排序，不比绝对分。</div>
+<div class="callout"><div class="ch">4. 经营含义</div>
+升级后的分更适合做触达排序和额度/券倾斜：同样覆盖前三分之一流失用户，能打到更大比例的实际提单人。今天（2026-09-22）库内提单尚未跑完，占比与截止昨天几乎相同。</div>
+
+<h2>一、主指标对照</h2>
+<p class="desc">分母 = 该批触达日至 2026-09-22 的去重提单用户。分子 = 其中 score 最高三分之一。</p>
+<div class="grid g2">
+  <div class="chart"><h3>图1 前 1/3 占全部提单</h3><p>观察到今天 vs 对齐 D0～D4</p><div class="box"><canvas id="c1"></canvas></div></div>
+  <div class="chart"><h3>图2 对齐 5 日：三分位对提单的贡献</h3><p>堆叠 = 100%</p><div class="box"><canvas id="c2"></canvas></div></div>
+</div>
+<div class="table"><table>
+<thead><tr><th>批次</th><th>触达日</th><th>流失人数</th><th>core 前 1/3</th><th>score 区间</th><th>全部提单</th><th>前 1/3 里提单</th><th>占全部提单</th></tr></thead>
+<tbody>
+<tr><td>迭代前 t7recall_active0910</td><td>2026-09-10</td><td>7,792</td><td>2,598</td><td>15.00～115.00</td><td>862</td><td>564</td><td><b>65.43%</b></td></tr>
+<tr><td>迭代后 t7recalllist_active0918</td><td>2026-09-18</td><td>8,669</td><td>2,890</td><td>83.15～100.00</td><td>284</td><td>209</td><td><b>73.59%</b></td></tr>
+</tbody></table></div>
+
+<h2>二、对齐触达后 5 天</h2>
+<p class="desc">D0＝触达日。0910 看 9/10～9/14，0918 看 9/18～9/22。每人只按首次提单日计入。</p>
+<div class="grid g2">
+  <div class="chart"><h3>图3 累计前 1/3 占全部提单</h3><p>按触达后天数 D0～D4</p><div class="box"><canvas id="c3"></canvas></div></div>
+  <div class="chart"><h3>图4 对齐 5 日各档提单率</h3><p>该档流失用户中的提单占比</p><div class="box"><canvas id="c4"></canvas></div></div>
+</div>
+<div class="table"><table>
+<thead><tr><th>批次</th><th>D0～D4 全部提单</th><th>前 1/3 里提单</th><th>占全部提单</th><th>名单提单率</th><th>前 1/3 档内提单率</th><th>中档</th><th>低档</th></tr></thead>
+<tbody>
+<tr><td>迭代前</td><td>407</td><td>289</td><td><b>71.01%</b></td><td>5.22%</td><td>11.12%</td><td>3.08%</td><td>1.46%</td></tr>
+<tr><td>迭代后</td><td>284</td><td>209</td><td><b>73.59%</b></td><td>3.28%</td><td>7.23%</td><td>1.63%</td><td>0.97%</td></tr>
+</tbody></table></div>
+
+<h2>三、按首次提单日</h2>
+<p class="desc">累计占比用首次提单去重，跨日多次提单的人只进第一次。</p>
+<h3 style="font-size:16px;margin:18px 0 8px">迭代前 0910</h3>
+<div class="table"><table>
+<thead><tr><th>日期</th><th>触达后</th><th>当日新增提单</th><th>其中前 1/3</th><th>当日占比</th><th>累计提单</th><th>累计前 1/3</th><th>累计占比</th></tr></thead>
+<tbody><tr><td>2026-09-10</td><td>D0</td><td>77</td><td>56</td><td>72.73%</td><td>77</td><td>56</td><td>72.73%</td></tr><tr><td>2026-09-11</td><td>D1</td><td>106</td><td>86</td><td>81.13%</td><td>183</td><td>142</td><td>77.60%</td></tr><tr><td>2026-09-12</td><td>D2</td><td>98</td><td>62</td><td>63.27%</td><td>281</td><td>204</td><td>72.60%</td></tr><tr><td>2026-09-13</td><td>D3</td><td>61</td><td>42</td><td>68.85%</td><td>342</td><td>246</td><td>71.93%</td></tr><tr><td>2026-09-14</td><td>D4</td><td>65</td><td>43</td><td>66.15%</td><td>407</td><td>289</td><td>71.01%</td></tr><tr><td>2026-09-15</td><td>D5</td><td>72</td><td>46</td><td>63.89%</td><td>479</td><td>335</td><td>69.94%</td></tr><tr><td>2026-09-16</td><td>D6</td><td>58</td><td>31</td><td>53.45%</td><td>537</td><td>366</td><td>68.16%</td></tr><tr><td>2026-09-17</td><td>D7</td><td>62</td><td>43</td><td>69.35%</td><td>599</td><td>409</td><td>68.28%</td></tr><tr><td>2026-09-18</td><td>D8</td><td>51</td><td>33</td><td>64.71%</td><td>650</td><td>442</td><td>68.00%</td></tr><tr><td>2026-09-19</td><td>D9</td><td>64</td><td>38</td><td>59.38%</td><td>714</td><td>480</td><td>67.23%</td></tr><tr><td>2026-09-20</td><td>D10</td><td>78</td><td>40</td><td>51.28%</td><td>792</td><td>520</td><td>65.66%</td></tr><tr><td>2026-09-21</td><td>D11</td><td>69</td><td>44</td><td>63.77%</td><td>861</td><td>564</td><td>65.51%</td></tr><tr><td>2026-09-22</td><td>D12</td><td>1</td><td>0</td><td>0.00%</td><td>862</td><td>564</td><td>65.43%</td></tr></tbody>
+</table></div>
+<h3 style="font-size:16px;margin:18px 0 8px">迭代后 0918</h3>
+<div class="table"><table>
+<thead><tr><th>日期</th><th>触达后</th><th>当日新增提单</th><th>其中前 1/3</th><th>当日占比</th><th>累计提单</th><th>累计前 1/3</th><th>累计占比</th></tr></thead>
+<tbody><tr><td>2026-09-18</td><td>D0</td><td>56</td><td>41</td><td>73.21%</td><td>56</td><td>41</td><td>73.21%</td></tr><tr><td>2026-09-19</td><td>D1</td><td>73</td><td>54</td><td>73.97%</td><td>129</td><td>95</td><td>73.64%</td></tr><tr><td>2026-09-20</td><td>D2</td><td>85</td><td>63</td><td>74.12%</td><td>214</td><td>158</td><td>73.83%</td></tr><tr><td>2026-09-21</td><td>D3</td><td>69</td><td>51</td><td>73.91%</td><td>283</td><td>209</td><td>73.85%</td></tr><tr><td>2026-09-22</td><td>D4</td><td>1</td><td>0</td><td>0.00%</td><td>284</td><td>209</td><td>73.59%</td></tr></tbody>
+</table></div>
+
+<h2>口径</h2>
+<div class="callout">
+流失用户：名单 <code>churn_user_id</code> 去重。core 分 = <code>score</code>，越高越好；<code>NTILE(3) ORDER BY score DESC, user_id</code>，tertile=1 为前 1/3。<br>
+提单：<code>order_loan_f_v2_copy.apply_date</code> 在触达日～2026-09-22（含）。每人取首次提单日。<br>
+主指标：前 1/3 里提单人数 / 该批全部提单人数。<br>
+对齐 5 日：首次提单日落在触达日 + 0～4 天。0910 与 0918 的 score 量纲不同，不做绝对分对比。
+</div>
+
+<h2>附录：完整 PGSQL（可复现全部指标）</h2>
+<p class="desc">R1/R4 总览（含 D0～D4）；R2/R5 三分位人数；R3/R6 按首次提单日。占比用对应列相除。统计日随 <code>CURRENT_DATE</code> 滚动。</p>
+<details class="code" open><summary>完整 PGSQL（点击收起）</summary>
+<pre class="sql">-- =============================================================================
+-- T7 召回提单模型：迭代前 t7recall_active0910 vs 迭代后 t7recalllist_active0918
+-- 库：kaby_dw · schema wangchuanliang
+-- 主指标：core 前 1/3 流失用户中的提单人数 / 该批全部提单人数
+-- 提单窗口：各批触达日（9/10、9/18）起至 CURRENT_DATE（含）
+-- 对齐窗口：触达日起连续 5 个日历日（D0～D4，0910 为 9/10～9/14，0918 为 9/18～9/22）
+-- =============================================================================
+
+-- ---------- 迭代前：t7recall_active0910，触达 2026-09-10 ----------
+DROP TABLE IF EXISTS tmp_u_v1;
+CREATE TEMP TABLE tmp_u_v1 AS
+SELECT DISTINCT ON (churn_user_id)
+    churn_user_id::bigint AS user_id,
+    score::numeric AS score
+FROM wangchuanliang.t7recall_active0910
+WHERE churn_user_id IS NOT NULL
+ORDER BY churn_user_id, score DESC NULLS LAST;
+
+DROP TABLE IF EXISTS tmp_r_v1;
+CREATE TEMP TABLE tmp_r_v1 AS
+SELECT u.*, NTILE(3) OVER (ORDER BY score DESC NULLS LAST, user_id) AS tertile
+FROM tmp_u_v1 u;
+
+DROP TABLE IF EXISTS tmp_a_v1;
+CREATE TEMP TABLE tmp_a_v1 AS
+SELECT o.user_id, MIN(o.apply_date) AS first_apply
+FROM tmp_u_v1 u
+INNER JOIN wangchuanliang.order_loan_f_v2_copy o ON o.user_id = u.user_id
+WHERE o.apply_date &gt;= DATE &#x27;2026-09-10&#x27; AND o.apply_date &lt;= CURRENT_DATE
+GROUP BY o.user_id;
+
+-- R1 迭代前总览（观察到今天 + D0～D4）
+SELECT
+    &#x27;v1_0910&#x27; AS batch,
+    (SELECT COUNT(*) FROM tmp_r_v1) AS n_churn,
+    (SELECT COUNT(*) FROM tmp_r_v1 WHERE tertile = 1) AS n_top,
+    (SELECT MIN(score) FROM tmp_r_v1 WHERE tertile = 1) AS top_score_min,
+    (SELECT MAX(score) FROM tmp_r_v1 WHERE tertile = 1) AS top_score_max,
+    (SELECT COUNT(*) FROM tmp_a_v1) AS n_apply,
+    (SELECT COUNT(*) FROM tmp_a_v1 a INNER JOIN tmp_r_v1 r ON r.user_id = a.user_id AND r.tertile = 1) AS n_apply_top,
+    (SELECT COUNT(*) FROM tmp_a_v1 WHERE first_apply &lt;= DATE &#x27;2026-09-10&#x27; + 4) AS n_apply_d4,
+    (SELECT COUNT(*) FROM tmp_a_v1 a INNER JOIN tmp_r_v1 r ON r.user_id = a.user_id AND r.tertile = 1
+      WHERE a.first_apply &lt;= DATE &#x27;2026-09-10&#x27; + 4) AS n_apply_top_d4;
+
+-- R2 迭代前三分位（观察到今天）
+SELECT r.tertile,
+       COUNT(*) AS n_churn,
+       COUNT(a.user_id) AS n_apply
+FROM tmp_r_v1 r
+LEFT JOIN tmp_a_v1 a ON a.user_id = r.user_id
+GROUP BY r.tertile
+ORDER BY r.tertile;
+
+-- R3 迭代前按首次提单日
+SELECT a.first_apply::text AS d,
+       COUNT(*) AS n_apply,
+       SUM(CASE WHEN r.tertile = 1 THEN 1 ELSE 0 END) AS n_apply_top
+FROM tmp_a_v1 a
+INNER JOIN tmp_r_v1 r ON r.user_id = a.user_id
+GROUP BY 1
+ORDER BY 1;
+
+-- ---------- 迭代后：t7recalllist_active0918，触达 2026-09-18 ----------
+DROP TABLE IF EXISTS tmp_u_v2;
+CREATE TEMP TABLE tmp_u_v2 AS
+SELECT DISTINCT ON (churn_user_id)
+    churn_user_id::bigint AS user_id,
+    score::numeric AS score
+FROM wangchuanliang.t7recalllist_active0918
+WHERE churn_user_id IS NOT NULL
+ORDER BY churn_user_id, score DESC NULLS LAST;
+
+DROP TABLE IF EXISTS tmp_r_v2;
+CREATE TEMP TABLE tmp_r_v2 AS
+SELECT u.*, NTILE(3) OVER (ORDER BY score DESC NULLS LAST, user_id) AS tertile
+FROM tmp_u_v2 u;
+
+DROP TABLE IF EXISTS tmp_a_v2;
+CREATE TEMP TABLE tmp_a_v2 AS
+SELECT o.user_id, MIN(o.apply_date) AS first_apply
+FROM tmp_u_v2 u
+INNER JOIN wangchuanliang.order_loan_f_v2_copy o ON o.user_id = u.user_id
+WHERE o.apply_date &gt;= DATE &#x27;2026-09-18&#x27; AND o.apply_date &lt;= CURRENT_DATE
+GROUP BY o.user_id;
+
+-- R4 迭代后总览
+SELECT
+    &#x27;v2_0918&#x27; AS batch,
+    (SELECT COUNT(*) FROM tmp_r_v2) AS n_churn,
+    (SELECT COUNT(*) FROM tmp_r_v2 WHERE tertile = 1) AS n_top,
+    (SELECT MIN(score) FROM tmp_r_v2 WHERE tertile = 1) AS top_score_min,
+    (SELECT MAX(score) FROM tmp_r_v2 WHERE tertile = 1) AS top_score_max,
+    (SELECT COUNT(*) FROM tmp_a_v2) AS n_apply,
+    (SELECT COUNT(*) FROM tmp_a_v2 a INNER JOIN tmp_r_v2 r ON r.user_id = a.user_id AND r.tertile = 1) AS n_apply_top,
+    (SELECT COUNT(*) FROM tmp_a_v2 WHERE first_apply &lt;= DATE &#x27;2026-09-18&#x27; + 4) AS n_apply_d4,
+    (SELECT COUNT(*) FROM tmp_a_v2 a INNER JOIN tmp_r_v2 r ON r.user_id = a.user_id AND r.tertile = 1
+      WHERE a.first_apply &lt;= DATE &#x27;2026-09-18&#x27; + 4) AS n_apply_top_d4;
+
+-- R5 迭代后三分位（观察到今天）
+SELECT r.tertile,
+       COUNT(*) AS n_churn,
+       COUNT(a.user_id) AS n_apply
+FROM tmp_r_v2 r
+LEFT JOIN tmp_a_v2 a ON a.user_id = r.user_id
+GROUP BY r.tertile
+ORDER BY r.tertile;
+
+-- R6 迭代后按首次提单日
+SELECT a.first_apply::text AS d,
+       COUNT(*) AS n_apply,
+       SUM(CASE WHEN r.tertile = 1 THEN 1 ELSE 0 END) AS n_apply_top
+FROM tmp_a_v2 a
+INNER JOIN tmp_r_v2 r ON r.user_id = a.user_id
+GROUP BY 1
+ORDER BY 1;
+
+-- 占比：n_apply_top / n_apply ；对齐 5 日：n_apply_top_d4 / n_apply_d4
+-- 两版 score 量纲不同，不要直接比绝对分，只比三分位排序后的提单贡献。
+</pre>
+</details>
+<p class="foot">数据截至库内 2026-09-22。2026-09-22 当日提单尚未跑完。源表：t7recall_active0910、t7recalllist_active0918、order_loan_f_v2_copy。</p>
+</main>
+<script>
+const D = {"labels": ["迭代前 0910", "迭代后 0918"], "share_today": [65.43, 73.59], "share_d4": [71.01, 73.59], "day": [0, 1, 2, 3, 4], "cum_v1": [72.73, 77.6, 72.6, 71.93, 71.01], "cum_v2": [73.21, 73.64, 73.83, 73.85, 73.59], "stack_t1": [71.01, 73.59], "stack_t2": [19.66, 16.55], "stack_t3": [9.34, 9.86], "rate_t1": [11.12, 7.23], "rate_t2": [3.08, 1.63], "rate_t3": [1.46, 0.97]};
+const common = {
+  responsive:true, maintainAspectRatio:false,
+  plugins:{legend:{labels:{color:'#d7ecf8'}}},
+  scales:{
+    x:{ticks:{color:'#aac5da'},grid:{color:'rgba(42,92,126,.25)'}},
+    y:{ticks:{color:'#aac5da'},grid:{color:'rgba(42,92,126,.25)'}}
+  }
+};
+new Chart(document.getElementById('c1'), {
+  type:'bar',
+  data:{labels:D.labels, datasets:[
+    {label:'观察到今天 %', data:D.share_today, backgroundColor:'rgba(67,199,231,.45)'},
+    {label:'对齐 D0～D4 %', data:D.share_d4, backgroundColor:'#43c7e7'}
+  ]},
+  options:{...common, scales:{...common.scales, y:{...common.scales.y, min:50, max:85}}}
+});
+new Chart(document.getElementById('c2'), {
+  type:'bar',
+  data:{labels:D.labels, datasets:[
+    {label:'前1/3', data:D.stack_t1, backgroundColor:'#43c7e7'},
+    {label:'中1/3', data:D.stack_t2, backgroundColor:'#ffc26b'},
+    {label:'低1/3', data:D.stack_t3, backgroundColor:'#f68ab0'}
+  ]},
+  options:{...common, plugins:{...common.plugins, legend:{labels:{color:'#d7ecf8'}}}, scales:{...common.scales, x:{...common.scales.x, stacked:true}, y:{...common.scales.y, stacked:true, max:100}}}
+});
+new Chart(document.getElementById('c3'), {
+  type:'line',
+  data:{labels:D.day.map(i=>'D'+i), datasets:[
+    {label:'迭代前', data:D.cum_v1, borderColor:'#aac5da', tension:.2, pointRadius:4},
+    {label:'迭代后', data:D.cum_v2, borderColor:'#43c7e7', tension:.2, pointRadius:4}
+  ]},
+  options:{...common, scales:{...common.scales, y:{...common.scales.y, min:60, max:85}}}
+});
+new Chart(document.getElementById('c4'), {
+  type:'bar',
+  data:{labels:D.labels, datasets:[
+    {label:'前1/3 档内提单率', data:D.rate_t1, backgroundColor:'#43c7e7'},
+    {label:'中档', data:D.rate_t2, backgroundColor:'#ffc26b'},
+    {label:'低档', data:D.rate_t3, backgroundColor:'#f68ab0'}
+  ]},
+  options:common
+});
+</script>
+</body>
+</html>
