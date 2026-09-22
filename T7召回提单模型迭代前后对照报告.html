@@ -272,6 +272,23 @@ ORDER BY CASE g.grp WHEN &#x27;S&#x27; THEN 1 WHEN &#x27;A&#x27; THEN 2 WHEN &#x
 <script>
 new Chart(document.getElementById('score_bar'), {
   type: 'bar',
+  plugins: [{
+    id: 'barLabels',
+    afterDatasetsDraw(chart) {
+      const {ctx} = chart;
+      const meta = chart.getDatasetMeta(0);
+      ctx.save();
+      ctx.fillStyle = '#eff8ff';
+      ctx.font = '600 13px -apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei",sans-serif';
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'bottom';
+      meta.data.forEach((bar, i) => {
+        const v = chart.data.datasets[0].data[i];
+        ctx.fillText(Number(v).toFixed(2) + '%', bar.x, bar.y - 6);
+      });
+      ctx.restore();
+    }
+  }],
   data: {
     labels: ['S(前10%)', 'A(10–20%)', 'B(20–40%)', 'C(40–70%)', 'D(70–100%)'],
     datasets: [{
@@ -285,6 +302,7 @@ new Chart(document.getElementById('score_bar'), {
   options: {
     responsive: true,
     maintainAspectRatio: false,
+    layout: { padding: { top: 18 } },
     plugins: {
       legend: {
         position: 'top',
@@ -302,7 +320,7 @@ new Chart(document.getElementById('score_bar'), {
       },
       y: {
         min: 0,
-        max: 14,
+        max: 16,
         ticks: {
           color: '#9bb8cc',
           stepSize: 2,
