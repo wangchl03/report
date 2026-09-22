@@ -1,0 +1,475 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>T0获额风控分363三档：当日提单息费逾期盈利</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+<style>
+:root{--bg:#071b2f;--p:#0c2944;--line:#2a5c7e;--text:#eff8ff;--muted:#aac5da;--cy:#43c7e7;--gr:#64dcae;--am:#ffc26b;--pk:#f68ab0}
+*{box-sizing:border-box}body{margin:0;background:#06192b;color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei",sans-serif}
+.wrap{max-width:1480px;margin:auto;padding:32px 36px 80px}
+.hero{text-align:center;padding:28px 12px 22px;border-bottom:1px solid var(--line)}
+.kicker{color:var(--cy);font-size:13px;letter-spacing:2px;font-weight:700}
+.hero h1{font-size:28px;line-height:1.3;margin:10px 0}
+.hero-meta{display:inline-block;text-align:left;margin-top:12px;line-height:1.75;color:var(--muted);font-size:14px}
+h2{font-size:24px;margin:44px 0 10px}h3{font-size:17px;margin:22px 0 8px}
+.desc,.sub{color:var(--muted);margin:0 0 12px;line-height:1.75;font-size:14px}
+.grid{display:grid;gap:14px}.g2{grid-template-columns:repeat(2,minmax(0,1fr))}.g4{grid-template-columns:repeat(4,minmax(0,1fr))}
+.card,.chart{background:rgba(10,41,68,.95);border:1px solid var(--line);border-radius:14px;padding:16px}
+.label{color:var(--muted);font-size:12px}.num{font-size:20px;font-weight:800;margin:4px 0 2px;line-height:1.2;color:var(--cy)}
+.box{height:300px;position:relative}.chart h3{margin:0 0 4px;font-size:15px}.chart p{font-size:12px;color:var(--muted);margin:0 0 10px}
+.callout{background:#0a2a45;border:1px solid #2a5c7e;border-left:4px solid #43c7e7;border-radius:10px;padding:14px 18px;margin:14px 0;line-height:1.75;font-size:14px}
+.callout.gold{border-left-color:#ffc26b}.callout.red{border-left-color:#f68ab0}.callout.green{border-left-color:#64dcae}
+.callout .ch{font-weight:800;margin-bottom:8px}
+.table{overflow-x:auto;margin:12px 0}table{width:100%;border-collapse:collapse;font-size:13px}
+th,td{padding:8px 10px;border-bottom:1px solid rgba(42,92,126,.45);text-align:right;white-space:nowrap}
+th{color:var(--muted);background:rgba(12,48,78,.65);font-weight:600}th:first-child,td:first-child{text-align:left}
+details{background:#082238;border:1px solid var(--line);border-radius:10px;margin:12px 0}
+summary{cursor:pointer;padding:14px 16px;font-weight:700;color:#d9edf8}
+details[open] summary{border-bottom:1px solid var(--line)}
+details pre.sql{margin:0;border:0;border-radius:0 0 10px 10px}
+pre.sql{background:#081726;border:1px solid var(--line);border-radius:14px;padding:18px;overflow:auto;max-height:820px;font-size:12px;line-height:1.6;color:#bfe0f2;font-family:"SF Mono",ui-monospace,Menlo,Consolas,monospace;white-space:pre;tab-size:2}
+.foot{color:#7fa6c2;font-size:12.5px;margin-top:50px;border-top:1px solid var(--line);padding-top:16px;line-height:1.9}
+@media(max-width:900px){.g2,.g4{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<main class="wrap">
+<header class="hero">
+<div class="kicker">T0 · 结清0在贷 · 获额时点 KabyBXGBoost363Dpd7Cre · 2026-01～08</div>
+<h1>风控分三档：当天提单率、客群结构、息费、到期逾期与盈利</h1>
+<div class="hero-meta">
+分：<code>model_result_copy.serial_id</code> = 获额订单号，字段 kabybxgboost363dpd7cre；分越高资质越好（已用到期 APD7 校验）<br>
+分层：全量 T0 有分样本 P30=452.0 / P60=473.0（较差 ≤P30，一般 P30–P60，最好 &gt;P60）<br>
+息费统计当天提单订单（不卡放款）；盈利与逾期统计当天提单且已放款、已到期订单<br>
+T0 用户日 177,133；获额单 363 分覆盖率 100%。8 月到期未成熟，逾期/盈利仅供方向。
+</div>
+</header>
+
+<h2>结论</h2>
+<div class="callout"><div class="ch">1. 当天提单率下降，和息费抬升同时发生</div>
+总体当天提单率 52.89% → 39.20%（-13.69pp）。当天提单订单加权息费 49.60% → 60.23%（+10.63pp）。价格上去、当天转化下来。</div>
+<div class="callout red"><div class="ch">2. 获额客群和当天提单客群都在变差</div>
+T0 获额结构：最好档 40.94% → 35.10%（-5.84pp），较差档 28.92% → 34.01%（+5.09pp）。<br>
+当天提单结构：最好档 39.36% → 32.72%（-6.64pp），较差档 30.47% → 36.09%（+5.62pp）。<br>
+1–4 月结构相对稳，变差主要在 5 月以后。这与「息费升 → 好资质少提、差资质占比升」同向，但不能单独当成因果鉴定。</div>
+<div class="callout gold"><div class="ch">3. 三档当天提单率都在掉，不是只有好客不提</div>
+最好档 50.86% → 36.55%；一般档 52.95% → 39.58%；较差档 55.72% → 41.60%。总提单率下降是各档转化都弱，叠加获额结构变差。</div>
+<div class="callout green"><div class="ch">4. 最好档加价后仍更能覆盖风险；较差档息费最高、逾期最高、盈利最薄</div>
+最好档息费 49.54% → 59.34%，到期盈利率 7.91% → 12.42%，逾期 33.27% → 39.14%。<br>
+较差档息费 49.81% → 61.38%，到期盈利率 -3.39% → 2.74%，逾期 41.10% → 46.47%。<br>
+总体到期盈利率 3.44% → 7.36%（+3.92pp），逾期 36.60% → 42.79%（+6.19pp）。息费升没有稳定翻译成更高到期盈利，结构变差会把加价吃掉。</div>
+<div class="callout"><div class="ch">经营含义</div>
+不宜再用降息/提额去抬 T0 当天提单率——当天单盈利薄，较差档占比还在升。更合理的是：保护最好档定价与转化；较差档控制让利；把经营重心放到结清当天之后仍未提单的时段。</div>
+
+<section class="grid g4" style="margin-top:18px">
+<article class="card"><div class="label">当天提单率 1月→8月</div><div class="num">52.89%→39.20%</div><div class="sub">-13.69pp</div></article>
+<article class="card"><div class="label">当天提单息费</div><div class="num">49.60%→60.23%</div><div class="sub">+10.63pp</div></article>
+<article class="card"><div class="label">T0 获额档占比</div><div class="num">28.92%→34.01%</div><div class="sub">+5.09pp</div></article>
+<article class="card"><div class="label">当天提单较差档占比</div><div class="num">30.47%→36.09%</div><div class="sub">+5.62pp</div></article>
+</section>
+
+<h2>一、月度总体</h2>
+<p class="desc">先看全部 T0，再看当天提单内部。提单率分母是当月全部获额用户日；息费是当天提单单（含未放款）；逾期与盈利是当天提单且已放款、已到期。</p>
+<div class="grid g2">
+<div class="chart"><h3>图1 当天提单率 vs 加权息费</h3><p>左轴提单率，右轴息费</p><div class="box"><canvas id="c1"></canvas></div></div>
+<div class="chart"><h3>图2 到期逾期率 vs 到期盈利率</h3><p>仅已放款且 due_date 已过；8月到期偏少</p><div class="box"><canvas id="c2"></canvas></div></div>
+</div>
+<div class="grid g2" style="margin-top:14px">
+<div class="chart"><h3>图3 T0 获额客群结构</h3><p>折线；纵轴不从 0 起，便于看结构变化。分母=当月全部 T0</p><div class="box"><canvas id="c3"></canvas></div></div>
+<div class="chart"><h3>图4 当天提单客群结构</h3><p>折线；纵轴不从 0 起。分母=当月当天提单</p><div class="box"><canvas id="c4"></canvas></div></div>
+</div>
+<div class="table"><table><thead><tr><th>月</th><th>T0</th><th>当天提单</th><th>当天提单率</th><th>获额均分</th><th>T0最好%</th><th>T0一般%</th><th>T0较差%</th><th>提单最好%</th><th>提单一般%</th><th>提单较差%</th><th>息费</th><th>到期单</th><th>逾期率</th><th>盈利率</th></tr></thead><tbody><tr><td>2026-01</td><td>19,520</td><td>10,325</td><td>52.89%</td><td>465.32</td><td>40.94%</td><td>30.14%</td><td>28.92%</td><td>39.36%</td><td>30.17%</td><td>30.47%</td><td>49.60%</td><td>10,197</td><td>36.60%</td><td>3.44%</td></tr><tr><td>2026-02</td><td>22,739</td><td>11,780</td><td>51.81%</td><td>465.16</td><td>39.96%</td><td>31.27%</td><td>28.77%</td><td>38.63%</td><td>31.27%</td><td>30.09%</td><td>48.92%</td><td>11,598</td><td>37.41%</td><td>1.20%</td></tr><tr><td>2026-03</td><td>22,198</td><td>10,293</td><td>46.37%</td><td>465.09</td><td>40.32%</td><td>29.68%</td><td>30.00%</td><td>38.35%</td><td>30.12%</td><td>31.54%</td><td>50.53%</td><td>10,160</td><td>36.40%</td><td>7.75%</td></tr><tr><td>2026-04</td><td>20,780</td><td>9,736</td><td>46.85%</td><td>465.64</td><td>41.22%</td><td>29.27%</td><td>29.51%</td><td>39.68%</td><td>29.54%</td><td>30.78%</td><td>51.47%</td><td>9,660</td><td>36.50%</td><td>8.49%</td></tr><tr><td>2026-05</td><td>23,875</td><td>10,783</td><td>45.16%</td><td>464.31</td><td>39.30%</td><td>29.98%</td><td>30.72%</td><td>37.08%</td><td>29.55%</td><td>33.38%</td><td>54.14%</td><td>10,569</td><td>37.81%</td><td>7.60%</td></tr><tr><td>2026-06</td><td>22,635</td><td>9,907</td><td>43.77%</td><td>462.53</td><td>37.28%</td><td>29.62%</td><td>33.10%</td><td>34.71%</td><td>28.71%</td><td>36.58%</td><td>58.37%</td><td>9,675</td><td>42.27%</td><td>4.37%</td></tr><tr><td>2026-07</td><td>23,275</td><td>9,626</td><td>41.36%</td><td>462.14</td><td>36.13%</td><td>29.81%</td><td>34.06%</td><td>32.95%</td><td>29.53%</td><td>37.51%</td><td>58.16%</td><td>9,468</td><td>42.54%</td><td>5.45%</td></tr><tr><td>2026-08</td><td>22,111</td><td>8,668</td><td>39.20%</td><td>461.75</td><td>35.10%</td><td>30.89%</td><td>34.01%</td><td>32.72%</td><td>31.20%</td><td>36.09%</td><td>60.23%</td><td>7,639</td><td>42.79%</td><td>7.36%</td></tr></tbody></table></div>
+
+<h2>二、三类用户月度</h2>
+<p class="desc">每档当天提单率 = 该档当天提单人数 / 该档 T0 获额人数。因此可以看到是「档内不愿提」还是「获额结构变了」。</p>
+<div class="grid g2">
+<div class="chart"><h3>图5 三档当天提单率</h3><p>各档分母为本档 T0</p><div class="box"><canvas id="c5"></canvas></div></div>
+<div class="chart"><h3>图6 三档当天提单息费</h3><p>不卡是否放款</p><div class="box"><canvas id="c6"></canvas></div></div>
+</div>
+<div class="grid g2" style="margin-top:14px">
+<div class="chart"><h3>图7 三档到期逾期率</h3><p>当天提单且已放款、已到期</p><div class="box"><canvas id="c7"></canvas></div></div>
+<div class="chart"><h3>图8 三档到期盈利率</h3><p>到期日及之前还款 / 放款 − 1</p><div class="box"><canvas id="c8"></canvas></div></div>
+</div>
+<h3>资质最好（&gt;473.0）</h3><div class="table"><table><thead><tr><th>月</th><th>T0</th><th>当天提单</th><th>当天提单率</th><th>均分</th><th>息费</th><th>到期单</th><th>逾期率</th><th>盈利率</th></tr></thead><tbody><tr><td>2026-01</td><td>7,991</td><td>4,064</td><td>50.86%</td><td>489.82</td><td>49.54%</td><td>4,031</td><td>33.27%</td><td>7.91%</td></tr><tr><td>2026-02</td><td>9,086</td><td>4,551</td><td>50.09%</td><td>489.47</td><td>48.94%</td><td>4,501</td><td>34.19%</td><td>7.22%</td></tr><tr><td>2026-03</td><td>8,950</td><td>3,947</td><td>44.10%</td><td>490.60</td><td>50.05%</td><td>3,916</td><td>31.95%</td><td>13.43%</td></tr><tr><td>2026-04</td><td>8,566</td><td>3,863</td><td>45.10%</td><td>491.19</td><td>50.69%</td><td>3,845</td><td>32.46%</td><td>12.79%</td></tr><tr><td>2026-05</td><td>9,382</td><td>3,998</td><td>42.61%</td><td>490.35</td><td>53.50%</td><td>3,958</td><td>33.55%</td><td>11.64%</td></tr><tr><td>2026-06</td><td>8,439</td><td>3,439</td><td>40.75%</td><td>490.45</td><td>57.48%</td><td>3,405</td><td>35.86%</td><td>12.73%</td></tr><tr><td>2026-07</td><td>8,409</td><td>3,172</td><td>37.72%</td><td>490.13</td><td>57.46%</td><td>3,135</td><td>39.23%</td><td>12.80%</td></tr><tr><td>2026-08</td><td>7,760</td><td>2,836</td><td>36.55%</td><td>489.75</td><td>59.34%</td><td>2,435</td><td>39.14%</td><td>12.42%</td></tr></tbody></table></div>
+<h3>资质一般（452.0–473.0）</h3><div class="table"><table><thead><tr><th>月</th><th>T0</th><th>当天提单</th><th>当天提单率</th><th>均分</th><th>息费</th><th>到期单</th><th>逾期率</th><th>盈利率</th></tr></thead><tbody><tr><td>2026-01</td><td>5,883</td><td>3,115</td><td>52.95%</td><td>463.67</td><td>49.50%</td><td>3,076</td><td>36.44%</td><td>1.47%</td></tr><tr><td>2026-02</td><td>7,110</td><td>3,684</td><td>51.81%</td><td>463.56</td><td>48.88%</td><td>3,640</td><td>36.92%</td><td>-0.09%</td></tr><tr><td>2026-03</td><td>6,588</td><td>3,100</td><td>47.06%</td><td>463.42</td><td>50.55%</td><td>3,064</td><td>35.18%</td><td>9.01%</td></tr><tr><td>2026-04</td><td>6,082</td><td>2,876</td><td>47.29%</td><td>463.42</td><td>51.69%</td><td>2,856</td><td>35.33%</td><td>8.15%</td></tr><tr><td>2026-05</td><td>7,158</td><td>3,186</td><td>44.51%</td><td>463.39</td><td>54.11%</td><td>3,139</td><td>38.01%</td><td>6.60%</td></tr><tr><td>2026-06</td><td>6,704</td><td>2,844</td><td>42.42%</td><td>463.31</td><td>58.59%</td><td>2,785</td><td>42.37%</td><td>5.37%</td></tr><tr><td>2026-07</td><td>6,939</td><td>2,843</td><td>40.97%</td><td>463.34</td><td>58.50%</td><td>2,798</td><td>40.14%</td><td>5.49%</td></tr><tr><td>2026-08</td><td>6,831</td><td>2,704</td><td>39.58%</td><td>463.28</td><td>60.26%</td><td>2,411</td><td>42.22%</td><td>5.60%</td></tr></tbody></table></div>
+<h3>资质较差（≤452.0）</h3><div class="table"><table><thead><tr><th>月</th><th>T0</th><th>当天提单</th><th>当天提单率</th><th>均分</th><th>息费</th><th>到期单</th><th>逾期率</th><th>盈利率</th></tr></thead><tbody><tr><td>2026-01</td><td>5,646</td><td>3,146</td><td>55.72%</td><td>432.39</td><td>49.81%</td><td>3,090</td><td>41.10%</td><td>-3.39%</td></tr><tr><td>2026-02</td><td>6,543</td><td>3,545</td><td>54.18%</td><td>433.13</td><td>48.94%</td><td>3,457</td><td>42.12%</td><td>-7.77%</td></tr><tr><td>2026-03</td><td>6,660</td><td>3,246</td><td>48.74%</td><td>432.46</td><td>51.33%</td><td>3,180</td><td>43.05%</td><td>-3.56%</td></tr><tr><td>2026-04</td><td>6,132</td><td>2,997</td><td>48.87%</td><td>432.15</td><td>52.75%</td><td>2,959</td><td>42.89%</td><td>0.48%</td></tr><tr><td>2026-05</td><td>7,335</td><td>3,599</td><td>49.07%</td><td>431.90</td><td>55.24%</td><td>3,472</td><td>42.48%</td><td>1.62%</td></tr><tr><td>2026-06</td><td>7,492</td><td>3,624</td><td>48.37%</td><td>430.37</td><td>59.27%</td><td>3,485</td><td>48.46%</td><td>-7.15%</td></tr><tr><td>2026-07</td><td>7,927</td><td>3,611</td><td>45.55%</td><td>431.41</td><td>58.70%</td><td>3,535</td><td>47.38%</td><td>-3.08%</td></tr><tr><td>2026-08</td><td>7,520</td><td>3,128</td><td>41.60%</td><td>431.46</td><td>61.38%</td><td>2,793</td><td>46.47%</td><td>2.74%</td></tr></tbody></table></div>
+
+<h2>口径</h2>
+<ul class="desc">
+<li>T0：is_pass1=1、loan_type_code=2、recycle_type=3；20 秒获额去重；结清日=获额日且获额时间≥结清时间；结清时 0 在贷；同日最早一轮获额。</li>
+<li>模型分：获额订单号关联 model_result_copy.kabybxgboost363dpd7cre；本窗口 177,133 笔全部有分。</li>
+<li>分越高逾期越低（到期 APD7：低分档 42.7%，高分档 25.1%）。</li>
+<li>当天提单不卡 is_due / is_remit。息费不卡放款。盈利、逾期要求 is_remit=1 且已到期。</li>
+</ul>
+
+<section id="sql">
+<h2>附录：完整 PGSQL</h2>
+<p class="desc">在 kaby_dw 执行；<code>SET search_path TO wangchuanliang, public;</code>。三个结果集依次为阈值、月度总体、月度×三档。同目录文件 <code>appendix_t0_risk363_full.sql</code>。</p>
+<details>
+<summary>完整 PGSQL（点击展开）</summary>
+<pre class="sql">-- =============================================================================
+-- T0 结清0在贷 × 获额时点 KabyBXGBoost363Dpd7Cre
+-- 月度总体 + 三档：当天提单率 / 提单结构 / 加权息费 / 到期盈利 / 整笔逾期
+-- 库：kaby_dw  GaussDB    SET search_path TO wangchuanliang, public;
+-- 窗口：vir_date 2026-01-01（含）～ 2026-09-01（不含）
+--
+-- 分：model_result_copy.serial_id = 获额订单号 credit_serial_id
+--     kabybxgboost363dpd7cre；-9999999 或空 = 无分
+--     分越高资质越好。三档阈值 = 全量 T0 有分样本 P30 / P60（脚本内计算）
+-- 当天提单：获额后第一笔 apply_time&gt;=vir_time 且 apply_date=vir_date（不卡放款）
+-- 息费：当天提单订单，不卡 is_remit；Σ(pre_amt+post_amt)/Σ(remit_amt)
+-- 盈利/逾期：当天提单且 is_remit=1 且 remit_amt&gt;0 且 due_date &lt; CURRENT_DATE
+-- 盈利：Σ(repayment_record_copy.amount, payin_date&lt;=due_date)/Σremit_amt - 1
+-- 非逾期：repaid_date &gt; 2000-01-01 AND repaid_date &lt;= due_date
+-- 逾期：其余到期放款单（含空值、1969-12-31、晚于到期日）
+-- =============================================================================
+
+-- [M0] 环境
+SET search_path TO wangchuanliang, public;
+SET statement_timeout = 0;
+
+-- [M1] T0 结清0在贷获额快照
+DROP TABLE IF EXISTS tmp_m_origin;
+CREATE TEMP TABLE tmp_m_origin AS
+WITH params AS (
+    SELECT DATE &#x27;2026-01-01&#x27; AS start_date, DATE &#x27;2026-09-01&#x27; AS end_date
+), raw_offer AS (
+    SELECT DISTINCT ON (v.user_id, v.serial_id)
+        v.user_id, v.serial_id, v.vir_date::date AS vir_date, TO_TIMESTAMP(v.vir_unix) AS vir_time
+    FROM order_vir_f_copy v
+    INNER JOIN side_recycle_type_copy r ON r.serial_id = v.serial_id
+    CROSS JOIN params p
+    WHERE v.is_pass1 = 1 AND v.loan_type_code = 2 AND r.recycle_type = 3
+      AND v.vir_date &gt;= p.start_date - 1 AND v.vir_date &lt; p.end_date
+    ORDER BY v.user_id, v.serial_id, v.vir_unix DESC
+), lagged AS (
+    SELECT r.*, LAG(r.vir_time) OVER (PARTITION BY r.user_id ORDER BY r.vir_time, r.serial_id) AS prev_vir_time
+    FROM raw_offer r
+), batched AS (
+    SELECT l.*, SUM(CASE WHEN l.prev_vir_time IS NULL OR l.vir_time - l.prev_vir_time &gt; INTERVAL &#x27;20 seconds&#x27; THEN 1 ELSE 0 END)
+      OVER (PARTITION BY l.user_id ORDER BY l.vir_time, l.serial_id ROWS UNBOUNDED PRECEDING) AS batch_id
+    FROM lagged l
+), dedup_offer AS (
+    SELECT user_id, serial_id, vir_date, vir_time
+    FROM (
+        SELECT b.*, ROW_NUMBER() OVER (PARTITION BY b.user_id, b.batch_id ORDER BY b.vir_time DESC, b.serial_id DESC) AS batch_rn
+        FROM batched b
+    ) x
+    CROSS JOIN params p
+    WHERE batch_rn = 1 AND vir_date &gt;= p.start_date AND vir_date &lt; p.end_date
+), candidate_users AS (SELECT DISTINCT user_id FROM dedup_offer),
+all_orders AS (
+    SELECT o.user_id, o.serial_id, o.apply_time, o.repaid_time, o.repaid_date::date AS repaid_date,
+           o.loan_status_code, o.is_remit, o.is_repaid
+    FROM order_loan_f_v2_copy o
+    INNER JOIN candidate_users u ON u.user_id = o.user_id
+), clean_settlement AS (
+    SELECT o.user_id, o.serial_id, o.repaid_time, o.repaid_date
+    FROM all_orders o
+    WHERE o.is_remit = 1 AND (o.is_repaid = 1 OR o.loan_status_code = 7)
+      AND o.repaid_time &gt; TIMESTAMP &#x27;2000-01-01 00:00:00&#x27;
+      AND NOT EXISTS (
+          SELECT 1 FROM all_orders x
+          WHERE x.user_id = o.user_id AND x.serial_id &lt;&gt; o.serial_id AND x.apply_time &lt; o.repaid_time
+            AND (x.loan_status_code IN (5, 8) OR (x.loan_status_code = 7 AND x.repaid_time &gt; o.repaid_time))
+      )
+), paired AS (
+    SELECT e.user_id, e.serial_id AS credit_serial_id, e.vir_date, e.vir_time,
+           ROW_NUMBER() OVER (PARTITION BY e.user_id, e.vir_date ORDER BY e.vir_time ASC, e.serial_id DESC) AS day_rn
+    FROM dedup_offer e
+    INNER JOIN clean_settlement s
+        ON s.user_id = e.user_id AND s.repaid_date = e.vir_date AND e.vir_time &gt;= s.repaid_time
+)
+SELECT user_id, credit_serial_id, vir_date, vir_time FROM paired WHERE day_rn = 1;
+
+-- [M2] 全量 T0 获额分 P30 / P60
+DROP TABLE IF EXISTS tmp_cuts;
+CREATE TEMP TABLE tmp_cuts AS
+SELECT
+    PERCENTILE_CONT(0.30) WITHIN GROUP (ORDER BY m.kabybxgboost363dpd7cre) AS p30,
+    PERCENTILE_CONT(0.60) WITHIN GROUP (ORDER BY m.kabybxgboost363dpd7cre) AS p60
+FROM tmp_m_origin t
+INNER JOIN model_result_copy m ON m.serial_id = t.credit_serial_id
+WHERE m.kabybxgboost363dpd7cre IS NOT NULL
+  AND m.kabybxgboost363dpd7cre &lt;&gt; -9999999;
+
+-- [M3] 获额后首次提单
+DROP TABLE IF EXISTS tmp_first_apply;
+CREATE TEMP TABLE tmp_first_apply AS
+SELECT user_id, vir_date, serial_id, apply_date, apply_time, due_date,
+       is_remit, remit_amt, pre_amt, post_amt, repaid_date
+FROM (
+    SELECT t.user_id, t.vir_date, a.serial_id, a.apply_date, a.apply_time, a.due_date,
+           a.is_remit, a.remit_amt, a.pre_amt, a.post_amt, a.repaid_date::date AS repaid_date,
+           ROW_NUMBER() OVER (PARTITION BY t.user_id, t.vir_date ORDER BY a.apply_time, a.serial_id) AS rn
+    FROM tmp_m_origin t
+    INNER JOIN order_loan_f_v2_copy a
+      ON a.user_id = t.user_id AND a.apply_time &gt;= t.vir_time
+) z WHERE rn = 1;
+
+-- [M4] 获额分、三档、当天提单标记
+DROP TABLE IF EXISTS tmp_base;
+CREATE TEMP TABLE tmp_base AS
+SELECT
+    t.user_id,
+    t.vir_date,
+    DATE_TRUNC(&#x27;month&#x27;, t.vir_date)::date AS ym,
+    t.credit_serial_id,
+    CASE
+      WHEN m.kabybxgboost363dpd7cre IS NULL THEN NULL
+      WHEN m.kabybxgboost363dpd7cre = -9999999 THEN NULL
+      ELSE m.kabybxgboost363dpd7cre
+    END AS score,
+    CASE
+      WHEN m.kabybxgboost363dpd7cre IS NULL OR m.kabybxgboost363dpd7cre = -9999999 THEN &#x27;无分&#x27;
+      WHEN m.kabybxgboost363dpd7cre &lt;= (SELECT p30 FROM tmp_cuts) THEN &#x27;较差&#x27;
+      WHEN m.kabybxgboost363dpd7cre &lt;= (SELECT p60 FROM tmp_cuts) THEN &#x27;一般&#x27;
+      ELSE &#x27;最好&#x27;
+    END AS tier,
+    CASE WHEN f.apply_date = t.vir_date THEN 1 ELSE 0 END AS is_same_day,
+    f.serial_id AS apply_serial_id,
+    f.is_remit,
+    f.remit_amt,
+    f.pre_amt,
+    f.post_amt,
+    f.due_date,
+    f.repaid_date
+FROM tmp_m_origin t
+LEFT JOIN model_result_copy m ON m.serial_id = t.credit_serial_id
+LEFT JOIN tmp_first_apply f ON f.user_id = t.user_id AND f.vir_date = t.vir_date;
+
+-- [M5] 到期日及之前还款
+DROP TABLE IF EXISTS tmp_repay;
+CREATE TEMP TABLE tmp_repay AS
+SELECT b.apply_serial_id, SUM(r.amount) AS repay_amt
+FROM tmp_base b
+INNER JOIN repayment_record_copy r ON r.serial_id = b.apply_serial_id
+WHERE b.is_same_day = 1
+  AND b.is_remit = 1
+  AND COALESCE(b.remit_amt, 0) &gt; 0
+  AND b.due_date &lt; CURRENT_DATE
+  AND r.payin_date &lt;= b.due_date
+GROUP BY b.apply_serial_id;
+
+-- [M6] 结果：阈值
+-- ---------------------------------------------------------------------------
+-- 结果1：阈值
+-- ---------------------------------------------------------------------------
+SELECT p30, p60 FROM tmp_cuts;
+
+-- [M7] 结果：月度总体
+-- ---------------------------------------------------------------------------
+-- 结果2：月度总体
+-- ---------------------------------------------------------------------------
+SELECT
+    TO_CHAR(ym, &#x27;YYYY-MM&#x27;) AS ym,
+    COUNT(*) AS n_t0,
+    SUM(is_same_day) AS n_same_day,
+    ROUND(100.0 * AVG(is_same_day::numeric), 2) AS apply_rate_pct,
+    ROUND(AVG(score)::numeric, 2) AS mean_score_t0,
+    ROUND(AVG(CASE WHEN is_same_day = 1 THEN score END)::numeric, 2) AS mean_score_apply,
+    SUM(CASE WHEN tier = &#x27;较差&#x27; THEN 1 ELSE 0 END) AS n_t0_poor,
+    SUM(CASE WHEN tier = &#x27;一般&#x27; THEN 1 ELSE 0 END) AS n_t0_mid,
+    SUM(CASE WHEN tier = &#x27;最好&#x27; THEN 1 ELSE 0 END) AS n_t0_good,
+    SUM(CASE WHEN tier = &#x27;无分&#x27; THEN 1 ELSE 0 END) AS n_t0_noscored,
+    ROUND(100.0 * SUM(CASE WHEN tier = &#x27;较差&#x27; THEN 1 ELSE 0 END) / COUNT(*), 2) AS pct_t0_poor,
+    ROUND(100.0 * SUM(CASE WHEN tier = &#x27;一般&#x27; THEN 1 ELSE 0 END) / COUNT(*), 2) AS pct_t0_mid,
+    ROUND(100.0 * SUM(CASE WHEN tier = &#x27;最好&#x27; THEN 1 ELSE 0 END) / COUNT(*), 2) AS pct_t0_good,
+    SUM(CASE WHEN is_same_day = 1 AND tier = &#x27;较差&#x27; THEN 1 ELSE 0 END) AS n_apply_poor,
+    SUM(CASE WHEN is_same_day = 1 AND tier = &#x27;一般&#x27; THEN 1 ELSE 0 END) AS n_apply_mid,
+    SUM(CASE WHEN is_same_day = 1 AND tier = &#x27;最好&#x27; THEN 1 ELSE 0 END) AS n_apply_good,
+    ROUND(100.0 * SUM(CASE WHEN is_same_day = 1 AND tier = &#x27;较差&#x27; THEN 1 ELSE 0 END)
+        / NULLIF(SUM(is_same_day), 0), 2) AS pct_apply_poor,
+    ROUND(100.0 * SUM(CASE WHEN is_same_day = 1 AND tier = &#x27;一般&#x27; THEN 1 ELSE 0 END)
+        / NULLIF(SUM(is_same_day), 0), 2) AS pct_apply_mid,
+    ROUND(100.0 * SUM(CASE WHEN is_same_day = 1 AND tier = &#x27;最好&#x27; THEN 1 ELSE 0 END)
+        / NULLIF(SUM(is_same_day), 0), 2) AS pct_apply_good,
+    ROUND((
+        SUM(CASE WHEN is_same_day = 1 THEN COALESCE(pre_amt, 0) + COALESCE(post_amt, 0) ELSE 0 END)
+        / NULLIF(SUM(CASE WHEN is_same_day = 1 THEN COALESCE(remit_amt, 0) ELSE 0 END), 0)
+    )::numeric, 4) AS fee_rate,
+    SUM(CASE WHEN is_same_day = 1 AND is_remit = 1 AND COALESCE(remit_amt, 0) &gt; 0
+              AND due_date &lt; CURRENT_DATE THEN 1 ELSE 0 END) AS n_due,
+    ROUND((
+        SUM(CASE WHEN is_same_day = 1 AND is_remit = 1 AND COALESCE(remit_amt, 0) &gt; 0
+                  AND due_date &lt; CURRENT_DATE THEN COALESCE(p.repay_amt, 0) ELSE 0 END)
+        / NULLIF(SUM(CASE WHEN is_same_day = 1 AND is_remit = 1 AND COALESCE(remit_amt, 0) &gt; 0
+                          AND due_date &lt; CURRENT_DATE THEN remit_amt ELSE 0 END), 0)
+        - 1
+    )::numeric, 4) AS profit_rate,
+    ROUND((
+        100.0 * SUM(CASE
+            WHEN is_same_day = 1 AND is_remit = 1 AND COALESCE(remit_amt, 0) &gt; 0
+             AND due_date &lt; CURRENT_DATE
+             AND NOT (repaid_date &gt; DATE &#x27;2000-01-01&#x27; AND repaid_date &lt;= due_date)
+            THEN 1 ELSE 0 END)
+        / NULLIF(SUM(CASE WHEN is_same_day = 1 AND is_remit = 1 AND COALESCE(remit_amt, 0) &gt; 0
+                          AND due_date &lt; CURRENT_DATE THEN 1 ELSE 0 END), 0)
+    )::numeric, 2) AS overdue_pct
+FROM tmp_base b
+LEFT JOIN tmp_repay p ON p.apply_serial_id = b.apply_serial_id
+GROUP BY ym
+ORDER BY ym;
+
+-- [M8] 结果：月度 × 三档
+-- ---------------------------------------------------------------------------
+-- 结果3：月度 × 三档
+-- ---------------------------------------------------------------------------
+SELECT
+    TO_CHAR(ym, &#x27;YYYY-MM&#x27;) AS ym,
+    tier,
+    COUNT(*) AS n_t0,
+    SUM(is_same_day) AS n_same_day,
+    ROUND(100.0 * AVG(is_same_day::numeric), 2) AS apply_rate_pct,
+    ROUND(AVG(score)::numeric, 2) AS mean_score,
+    ROUND((
+        SUM(CASE WHEN is_same_day = 1 THEN COALESCE(pre_amt, 0) + COALESCE(post_amt, 0) ELSE 0 END)
+        / NULLIF(SUM(CASE WHEN is_same_day = 1 THEN COALESCE(remit_amt, 0) ELSE 0 END), 0)
+    )::numeric, 4) AS fee_rate,
+    SUM(CASE WHEN is_same_day = 1 AND is_remit = 1 AND COALESCE(remit_amt, 0) &gt; 0
+              AND due_date &lt; CURRENT_DATE THEN 1 ELSE 0 END) AS n_due,
+    ROUND((
+        SUM(CASE WHEN is_same_day = 1 AND is_remit = 1 AND COALESCE(remit_amt, 0) &gt; 0
+                  AND due_date &lt; CURRENT_DATE THEN COALESCE(p.repay_amt, 0) ELSE 0 END)
+        / NULLIF(SUM(CASE WHEN is_same_day = 1 AND is_remit = 1 AND COALESCE(remit_amt, 0) &gt; 0
+                          AND due_date &lt; CURRENT_DATE THEN remit_amt ELSE 0 END), 0)
+        - 1
+    )::numeric, 4) AS profit_rate,
+    ROUND((
+        100.0 * SUM(CASE
+            WHEN is_same_day = 1 AND is_remit = 1 AND COALESCE(remit_amt, 0) &gt; 0
+             AND due_date &lt; CURRENT_DATE
+             AND NOT (repaid_date &gt; DATE &#x27;2000-01-01&#x27; AND repaid_date &lt;= due_date)
+            THEN 1 ELSE 0 END)
+        / NULLIF(SUM(CASE WHEN is_same_day = 1 AND is_remit = 1 AND COALESCE(remit_amt, 0) &gt; 0
+                          AND due_date &lt; CURRENT_DATE THEN 1 ELSE 0 END), 0)
+    )::numeric, 2) AS overdue_pct
+FROM tmp_base b
+LEFT JOIN tmp_repay p ON p.apply_serial_id = b.apply_serial_id
+GROUP BY ym, tier
+ORDER BY ym, CASE tier WHEN &#x27;最好&#x27; THEN 1 WHEN &#x27;一般&#x27; THEN 2 WHEN &#x27;较差&#x27; THEN 3 ELSE 4 END;
+</pre>
+</details>
+</section>
+<p class="foot">数据：kaby_dw · wangchuanliang · 2026-01-01～2026-08-31 · 报告生成于分析当日库内 CURRENT_DATE</p>
+</main>
+<script>
+const D = {"ym": ["2026-01", "2026-02", "2026-03", "2026-04", "2026-05", "2026-06", "2026-07", "2026-08"], "apply": [52.89, 51.81, 46.37, 46.85, 45.16, 43.77, 41.36, 39.2], "fee": [49.6, 48.92, 50.53, 51.47, 54.14, 58.37, 58.16, 60.23], "profit": [3.44, 1.2, 7.75, 8.49, 7.6, 4.37, 5.45, 7.36], "overdue": [36.6, 37.41, 36.4, 36.5, 37.81, 42.27, 42.54, 42.79], "t0_good": [40.94, 39.96, 40.32, 41.22, 39.3, 37.28, 36.13, 35.1], "t0_mid": [30.14, 31.27, 29.68, 29.27, 29.98, 29.62, 29.81, 30.89], "t0_poor": [28.92, 28.77, 30.0, 29.51, 30.72, 33.1, 34.06, 34.01], "ap_good": [39.36, 38.63, 38.35, 39.68, 37.08, 34.71, 32.95, 32.72], "ap_mid": [30.17, 31.27, 30.12, 29.54, 29.55, 28.71, 29.53, 31.2], "ap_poor": [30.47, 30.09, 31.54, 30.78, 33.38, 36.58, 37.51, 36.09], "r_good": [50.86, 50.09, 44.1, 45.1, 42.61, 40.75, 37.72, 36.55], "r_mid": [52.95, 51.81, 47.06, 47.29, 44.51, 42.42, 40.97, 39.58], "r_poor": [55.72, 54.18, 48.74, 48.87, 49.07, 48.37, 45.55, 41.6], "f_good": [49.54, 48.94, 50.05, 50.69, 53.5, 57.48, 57.46, 59.34], "f_mid": [49.5, 48.88, 50.55, 51.69, 54.11, 58.59, 58.5, 60.26], "f_poor": [49.81, 48.94, 51.33, 52.75, 55.24, 59.27, 58.7, 61.38], "o_good": [33.27, 34.19, 31.95, 32.46, 33.55, 35.86, 39.23, 39.14], "o_mid": [36.44, 36.92, 35.18, 35.33, 38.01, 42.37, 40.14, 42.22], "o_poor": [41.1, 42.12, 43.05, 42.89, 42.48, 48.46, 47.38, 46.47], "p_good": [7.91, 7.22, 13.43, 12.79, 11.64, 12.73, 12.8, 12.42], "p_mid": [1.47, -0.09, 9.01, 8.15, 6.6, 5.37, 5.49, 5.6], "p_poor": [-3.39, -7.77, -3.56, 0.48, 1.62, -7.15, -3.08, 2.74]};
+const col = {good:'#64dcae', mid:'#ffc26b', poor:'#f68ab0', cy:'#43c7e7', am:'#ffc26b'};
+function line(id, datasets, y2) {
+  const scales = {
+    y: {type:'linear', position:'left', ticks:{color:'#aac5da'}, grid:{color:'rgba(42,92,126,.25)'}},
+    x: {ticks:{color:'#aac5da'}, grid:{display:false}}
+  };
+  if (y2) scales.y2 = {type:'linear', position:'right', ticks:{color:'#ffc26b'}, grid:{drawOnChartArea:false}};
+  new Chart(document.getElementById(id), {
+    type:'line',
+    data:{labels:D.ym, datasets},
+    options:{responsive:true, maintainAspectRatio:false, interaction:{mode:'index', intersect:false},
+      plugins:{legend:{labels:{color:'#eff8ff'}}},
+      scales
+    }
+  });
+}
+function stack(id, ds) {
+  new Chart(document.getElementById(id), {
+    type:'bar',
+    data:{labels:D.ym, datasets: ds.map(x => ({...x, stack:'a'}))},
+    options:{responsive:true, maintainAspectRatio:false,
+      plugins:{legend:{labels:{color:'#eff8ff'}}},
+      scales:{
+        x:{stacked:true, ticks:{color:'#aac5da'}, grid:{display:false}},
+        y:{stacked:true, max:100, ticks:{color:'#aac5da'}, grid:{color:'rgba(42,92,126,.25)'}}
+      }
+    }
+  });
+}
+const labelGood = {
+  id: 'labelGood',
+  afterDatasetsDraw(chart) {
+    const {ctx} = chart;
+    chart.data.datasets.forEach((ds, i) => {
+      if (!String(ds.label).startsWith('最好')) return;
+      const meta = chart.getDatasetMeta(i);
+      ctx.save();
+      ctx.font = '12px sans-serif';
+      ctx.fillStyle = '#64dcae';
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'bottom';
+      meta.data.forEach((pt, j) => {
+        const v = ds.data[j];
+        if (v == null) return;
+        if (j === 0) {
+          ctx.textAlign = 'left';
+          ctx.fillText(Number(v).toFixed(2) + '%', pt.x + 8, pt.y - 7);
+        } else {
+          ctx.textAlign = 'center';
+          ctx.fillText(Number(v).toFixed(2) + '%', pt.x, pt.y - 7);
+        }
+      });
+      ctx.restore();
+    });
+  }
+};
+function lineZoom(id, datasets) {
+  const vals = datasets.flatMap(d => d.data).filter(x => x != null);
+  const mn = Math.min(...vals), mx = Math.max(...vals);
+  const padLo = Math.max(1.2, (mx - mn) * 0.22);
+  const padHi = Math.max(2.4, (mx - mn) * 0.38);
+  new Chart(document.getElementById(id), {
+    type:'line',
+    data:{labels:D.ym, datasets},
+    options:{responsive:true, maintainAspectRatio:false, interaction:{mode:'index', intersect:false},
+      plugins:{legend:{labels:{color:'#eff8ff'}}},
+      scales:{
+        x:{ticks:{color:'#aac5da'}, grid:{display:false}},
+        y:{type:'linear', min: +(mn - padLo).toFixed(1), max: +(mx + padHi).toFixed(1), beginAtZero:false,
+          ticks:{color:'#aac5da'}, grid:{color:'rgba(42,92,126,.25)'}}
+      }
+    },
+    plugins:[labelGood]
+  });
+}
+const lw = 2.4;
+line('c1', [
+  {label:'当天提单率%', data:D.apply, borderColor:col.cy, backgroundColor:'transparent', tension:.25, yAxisID:'y', borderWidth:lw, pointRadius:3},
+  {label:'加权息费%', data:D.fee, borderColor:col.am, backgroundColor:'transparent', tension:.25, yAxisID:'y2', borderWidth:lw, pointRadius:3}
+], true);
+line('c2', [
+  {label:'逾期率%', data:D.overdue, borderColor:col.poor, backgroundColor:'transparent', tension:.25, yAxisID:'y', borderWidth:lw},
+  {label:'盈利率%', data:D.profit, borderColor:col.good, backgroundColor:'transparent', tension:.25, yAxisID:'y2', borderWidth:lw}
+], true);
+lineZoom('c3', [
+  {label:'最好%', data:D.t0_good, borderColor:col.good, backgroundColor:'transparent', tension:.25, borderWidth:lw, pointRadius:3},
+  {label:'一般%', data:D.t0_mid, borderColor:col.mid, backgroundColor:'transparent', tension:.25, borderWidth:lw, pointRadius:3},
+  {label:'较差%', data:D.t0_poor, borderColor:col.poor, backgroundColor:'transparent', tension:.25, borderWidth:lw, pointRadius:3}
+]);
+lineZoom('c4', [
+  {label:'最好%', data:D.ap_good, borderColor:col.good, backgroundColor:'transparent', tension:.25, borderWidth:lw, pointRadius:3},
+  {label:'一般%', data:D.ap_mid, borderColor:col.mid, backgroundColor:'transparent', tension:.25, borderWidth:lw, pointRadius:3},
+  {label:'较差%', data:D.ap_poor, borderColor:col.poor, backgroundColor:'transparent', tension:.25, borderWidth:lw, pointRadius:3}
+]);
+line('c5', [
+  {label:'最好', data:D.r_good, borderColor:col.good, backgroundColor:'transparent', tension:.25, borderWidth:lw},
+  {label:'一般', data:D.r_mid, borderColor:col.mid, backgroundColor:'transparent', tension:.25, borderWidth:lw},
+  {label:'较差', data:D.r_poor, borderColor:col.poor, backgroundColor:'transparent', tension:.25, borderWidth:lw}
+]);
+line('c6', [
+  {label:'最好', data:D.f_good, borderColor:col.good, backgroundColor:'transparent', tension:.25, borderWidth:lw},
+  {label:'一般', data:D.f_mid, borderColor:col.mid, backgroundColor:'transparent', tension:.25, borderWidth:lw},
+  {label:'较差', data:D.f_poor, borderColor:col.poor, backgroundColor:'transparent', tension:.25, borderWidth:lw}
+]);
+line('c7', [
+  {label:'最好', data:D.o_good, borderColor:col.good, backgroundColor:'transparent', tension:.25, borderWidth:lw},
+  {label:'一般', data:D.o_mid, borderColor:col.mid, backgroundColor:'transparent', tension:.25, borderWidth:lw},
+  {label:'较差', data:D.o_poor, borderColor:col.poor, backgroundColor:'transparent', tension:.25, borderWidth:lw}
+]);
+line('c8', [
+  {label:'最好', data:D.p_good, borderColor:col.good, backgroundColor:'transparent', tension:.25, borderWidth:lw},
+  {label:'一般', data:D.p_mid, borderColor:col.mid, backgroundColor:'transparent', tension:.25, borderWidth:lw},
+  {label:'较差', data:D.p_poor, borderColor:col.poor, backgroundColor:'transparent', tension:.25, borderWidth:lw}
+]);
+</script>
+</body></html>
