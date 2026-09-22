@@ -1,0 +1,339 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>T0 点确认后窗口提单与活体</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+<style>
+:root{--line:#2a5c7e;--text:#eff8ff;--muted:#aac5da;--cy:#43c7e7}
+*{box-sizing:border-box}body{margin:0;background:#06192b;color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei",sans-serif}
+.wrap{max-width:1480px;margin:auto;padding:32px 36px 80px}
+.hero{text-align:center;padding:28px 12px 22px;border-bottom:1px solid var(--line)}
+.kicker{color:var(--cy);font-size:13px;letter-spacing:2px;font-weight:700}
+.hero h1{font-size:26px;line-height:1.35;margin:10px 0}
+.hero-meta{display:inline-block;text-align:left;margin-top:12px;line-height:1.75;color:var(--muted);font-size:14px}
+h2{font-size:22px;margin:40px 0 10px}
+.desc{color:var(--muted);margin:0 0 12px;line-height:1.75;font-size:14px}
+.grid{display:grid;gap:14px}.g2{grid-template-columns:repeat(2,minmax(0,1fr))}.g4{grid-template-columns:repeat(4,minmax(0,1fr))}.g5{grid-template-columns:repeat(5,minmax(0,1fr))}
+.card,.chart{background:rgba(10,41,68,.95);border:1px solid var(--line);border-radius:14px;padding:16px}
+.label{color:var(--muted);font-size:12px}.num{font-size:22px;font-weight:800;margin:4px 0 2px;color:var(--cy)}
+.sub{color:var(--muted);font-size:12px}
+.box{height:300px;position:relative}.chart h3{margin:0 0 4px;font-size:15px}.chart p{font-size:12px;color:var(--muted);margin:0 0 10px}
+.callout{background:#0a2a45;border:1px solid #2a5c7e;border-left:4px solid #43c7e7;border-radius:10px;padding:14px 18px;margin:14px 0;line-height:1.75;font-size:14px}
+.callout.gold{border-left-color:#ffc26b}.callout.red{border-left-color:#f68ab0}.callout.green{border-left-color:#64dcae}
+.callout .ch{font-weight:800;margin-bottom:8px}
+.table{overflow-x:auto;margin:12px 0}table{width:100%;border-collapse:collapse;font-size:13px}
+th,td{padding:8px 10px;border-bottom:1px solid rgba(42,92,126,.45);text-align:right;white-space:nowrap}
+th{color:var(--muted);background:rgba(12,48,78,.65)}th:first-child,td:first-child{text-align:left}
+details.code{margin:10px 0;background:rgba(10,41,68,.95);border:1px solid var(--line);border-radius:12px;padding:10px 14px}
+details.code summary{cursor:pointer;color:var(--cy);font-weight:700}
+pre.sql{overflow:auto;max-height:900px;font-size:11.5px;line-height:1.5;color:#d7ecf8;white-space:pre}
+.foot{color:#7fa6c2;font-size:12.5px;margin-top:40px;border-top:1px solid var(--line);padding-top:16px;line-height:1.9}
+@media(max-width:900px){.g2,.g4,.g5{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<main class="wrap">
+<header class="hero">
+<div class="kicker">T0 · 2026-01～08 · 确认后时钟</div>
+<h1>获额通过后点确认占比，以及确认后窗口提单、3分钟未提后续转化与活体</h1>
+<div class="hero-meta">
+分母先是 T0 获额通过人日。点确认 = 获额后 24 小时内 <code>Loan_newconfirm</code> / <code>Loan_newconfirm_select</code>。<br>
+提单、活体都从第一次点确认起算，窗口 3 分钟 / 30 分钟 / 1 小时 / 3 小时 / 24 小时。活体 = 确认后进入 <code>guide_live_ness_page_exposure</code>（page_view_in）。
+</div>
+</header>
+
+<section class="grid g5" style="margin-top:18px">
+<article class="card"><div class="label">T0 获额通过</div><div class="num">177,133</div><div class="sub">2026-01～08 人日</div></article>
+<article class="card"><div class="label">点确认 / 获额通过</div><div class="num">53.65%</div><div class="sub">95,023 人点确认</div></article>
+<article class="card"><div class="label">确认后 3 分钟提单率</div><div class="num">89.14%</div><div class="sub">84,708 / 95,023</div></article>
+<article class="card"><div class="label">确认后 24 小时提单率</div><div class="num">96.89%</div><div class="sub">92,065 人</div></article>
+<article class="card"><div class="label">确认后 3 分钟内进活体</div><div class="num">97.06%</div><div class="sub">92,227 人</div></article>
+</section>
+
+<h2>结论</h2>
+<div class="callout"><div class="ch">1. 获额通过后，点确认的人在下降</div>
+1–8 月合计点确认 95,023 / 177,133 = <b>53.65%</b>。1 月 60.46%，8 月 47.18%。后面窗口提单率只在点确认的人里算，不要拿 T0 全量当确认后转化分母。</div>
+<div class="callout gold"><div class="ch">2. 点确认后，绝大多数 3 分钟内就提单；再往后增量很小</div>
+确认后提单率：3 分钟 <b>89.14%</b>，30 分钟 93.36%，1 小时 94.22%，3 小时 95.25%，24 小时 <b>96.89%</b>。3 分钟到 24 小时只再抬 7.75pp。正式提单通过几乎都压在确认后极短窗口。</div>
+<div class="callout"><div class="ch">3. 3 分钟内未提单的人，后面还能补上一部分，但补不完</div>
+3 分钟未提单 10,315 人（占点确认 10.86%）。其中半小时内补上 4,010（38.88%），1 小时内 4,821（46.74%），3 小时内 5,804（56.27%），24 小时内 7,357（71.32%）。仍有 2,958 人 24 小时未提。</div>
+<div class="callout green"><div class="ch">4. 确认后 3 分钟内绝大多数已经进活体</div>
+点确认后 3 分钟内有活体进页 92,227 人，占点确认 <b>97.06%</b>；24 小时内进过活体 99.31%。确认之后下一步就是活体，和产品链路一致。</div>
+<div class="callout red"><div class="ch">5. 「点确认、没进活体、也没提单」存在，但不是主流</div>
+确认后 24 小时既未进活体、也未提单：600 人，占点确认 <b>0.63%</b>。进了活体仍 24 小时未提单 2,358 人；没进活体却提了单 53 人（埋点丢失或跳过活体页）。未提单主要仍是进了活体没走完，而不是确认后完全没进活体。</div>
+
+<h2>一、获额通过 → 点确认</h2>
+<p class="desc">指标：点确认人数 / T0 获额通过人数。后续窗口分母换成点确认。</p>
+<div class="grid g2">
+  <div class="chart"><h3>图1 点确认占获额通过</h3><p>按月</p><div class="box"><canvas id="c1"></canvas></div></div>
+  <div class="chart"><h3>图2 漏斗人数</h3><p>获额通过 → 点确认 → 3分钟进活体 → 3分钟提单 → 24小时提单</p><div class="box"><canvas id="c2"></canvas></div></div>
+</div>
+
+<h2>二、点确认后各窗口提单率</h2>
+<p class="desc">分母 = 点确认。提单 = 确认后 24 小时内最早 apply，落在对应窗口内。</p>
+<div class="chart"><h3>图3 确认后 3分钟 / 30分钟 / 1小时 / 3小时 / 24小时 提单率</h3><p>按月</p><div class="box" style="height:340px"><canvas id="c3"></canvas></div></div>
+<div class="table"><table>
+<thead><tr><th>月</th><th>T0获额通过</th><th>点确认</th><th>点确认占比</th><th>3分钟提单率</th><th>30分钟提单率</th><th>1小时提单率</th><th>3小时提单率</th><th>24小时提单率</th></tr></thead>
+<tbody><tr><td>2026-01</td><td>19,520</td><td>11,801</td><td>60.46%</td><td>91.30%</td><td>95.10%</td><td>95.86%</td><td>96.75%</td><td>97.86%</td></tr><tr><td>2026-02</td><td>22,739</td><td>13,535</td><td>59.52%</td><td>90.96%</td><td>94.68%</td><td>95.50%</td><td>96.43%</td><td>97.84%</td></tr><tr><td>2026-03</td><td>22,198</td><td>12,095</td><td>54.49%</td><td>91.02%</td><td>94.60%</td><td>95.23%</td><td>96.13%</td><td>97.54%</td></tr><tr><td>2026-04</td><td>20,780</td><td>11,343</td><td>54.59%</td><td>90.14%</td><td>94.17%</td><td>95.00%</td><td>95.90%</td><td>97.35%</td></tr><tr><td>2026-05</td><td>23,875</td><td>12,633</td><td>52.91%</td><td>89.23%</td><td>93.15%</td><td>94.01%</td><td>94.89%</td><td>96.64%</td></tr><tr><td>2026-06</td><td>22,635</td><td>11,746</td><td>51.89%</td><td>87.67%</td><td>92.14%</td><td>93.03%</td><td>94.15%</td><td>96.05%</td></tr><tr><td>2026-07</td><td>23,275</td><td>11,437</td><td>49.14%</td><td>86.19%</td><td>91.60%</td><td>92.58%</td><td>93.98%</td><td>95.87%</td></tr><tr><td>2026-08</td><td>22,111</td><td>10,433</td><td>47.18%</td><td>85.89%</td><td>90.95%</td><td>92.07%</td><td>93.38%</td><td>95.65%</td></tr><tr><td><b>合计</b></td><td>177,133</td><td>95,023</td><td>53.65%</td><td>89.14%</td><td>93.36%</td><td>94.22%</td><td>95.25%</td><td>96.89%</td></tr></tbody>
+</table></div>
+
+<h2>三、3 分钟内未提单：后面还能转化多少</h2>
+<p class="desc">分母 = 确认后 3 分钟仍未提单。分子 = 这些人里，在更长窗口内完成提单的人数。最后一列是 24 小时仍未提。</p>
+<div class="grid g2">
+  <div class="chart"><h3>图4 3分钟未提人群的后续提单率</h3><p>占 3 分钟未提人数</p><div class="box"><canvas id="c4"></canvas></div></div>
+  <div class="chart"><h3>图5 3分钟未提人数 vs 24小时仍未提</h3><p>按月人数</p><div class="box"><canvas id="c5"></canvas></div></div>
+</div>
+<div class="table"><table>
+<thead><tr><th>月</th><th>3分钟未提</th><th>半小时内提</th><th>占未提</th><th>1小时内提</th><th>占未提</th><th>3小时内提</th><th>占未提</th><th>24小时内提</th><th>占未提</th><th>24小时仍未提</th></tr></thead>
+<tbody><tr><td>2026-01</td><td>1,027</td><td>449</td><td>43.72%</td><td>538</td><td>52.39%</td><td>644</td><td>62.71%</td><td>775</td><td>75.46%</td><td>252</td></tr><tr><td>2026-02</td><td>1,224</td><td>504</td><td>41.18%</td><td>615</td><td>50.25%</td><td>741</td><td>60.54%</td><td>931</td><td>76.06%</td><td>293</td></tr><tr><td>2026-03</td><td>1,086</td><td>433</td><td>39.87%</td><td>509</td><td>46.87%</td><td>618</td><td>56.91%</td><td>789</td><td>72.65%</td><td>297</td></tr><tr><td>2026-04</td><td>1,118</td><td>457</td><td>40.88%</td><td>551</td><td>49.28%</td><td>653</td><td>58.41%</td><td>817</td><td>73.08%</td><td>301</td></tr><tr><td>2026-05</td><td>1,361</td><td>496</td><td>36.44%</td><td>604</td><td>44.38%</td><td>716</td><td>52.61%</td><td>936</td><td>68.77%</td><td>425</td></tr><tr><td>2026-06</td><td>1,448</td><td>525</td><td>36.26%</td><td>629</td><td>43.44%</td><td>761</td><td>52.56%</td><td>984</td><td>67.96%</td><td>464</td></tr><tr><td>2026-07</td><td>1,579</td><td>618</td><td>39.14%</td><td>730</td><td>46.23%</td><td>890</td><td>56.36%</td><td>1,107</td><td>70.11%</td><td>472</td></tr><tr><td>2026-08</td><td>1,472</td><td>528</td><td>35.87%</td><td>645</td><td>43.82%</td><td>781</td><td>53.06%</td><td>1,018</td><td>69.16%</td><td>454</td></tr><tr><td><b>合计</b></td><td>10,315</td><td>4,010</td><td>38.88%</td><td>4,821</td><td>46.74%</td><td>5,804</td><td>56.27%</td><td>7,357</td><td>71.32%</td><td>2,958</td></tr></tbody>
+</table></div>
+
+<h2>四、确认后活体</h2>
+<p class="desc">活体进页：确认后 24 小时内 <code>page_view_in</code> + <code>guide_live_ness_page_exposure</code>。埋点没有活体通过/失败，只能看到有没有进页。</p>
+<div class="grid g2">
+  <div class="chart"><h3>图6 确认后 3 分钟 / 24 小时进活体占比</h3><p>占点确认</p><div class="box"><canvas id="c6"></canvas></div></div>
+  <div class="chart"><h3>图7 点确认后未进活体且未提单</h3><p>占点确认</p><div class="box"><canvas id="c7"></canvas></div></div>
+</div>
+<div class="table"><table>
+<thead><tr><th>月</th><th>点确认</th><th>3分钟内进活体</th><th>占比</th><th>24小时内进活体</th><th>占比</th><th>未进活体且未提单</th><th>占点确认</th><th>进活体仍未提单</th><th>未进活体但提单</th></tr></thead>
+<tbody><tr><td>2026-01</td><td>11,801</td><td>11,574</td><td>98.08%</td><td>11,760</td><td>99.65%</td><td>37</td><td>0.31%</td><td>215</td><td>4</td></tr><tr><td>2026-02</td><td>13,535</td><td>13,253</td><td>97.92%</td><td>13,479</td><td>99.59%</td><td>48</td><td>0.35%</td><td>245</td><td>8</td></tr><tr><td>2026-03</td><td>12,095</td><td>11,807</td><td>97.62%</td><td>12,032</td><td>99.48%</td><td>61</td><td>0.50%</td><td>236</td><td>2</td></tr><tr><td>2026-04</td><td>11,343</td><td>11,041</td><td>97.34%</td><td>11,276</td><td>99.41%</td><td>57</td><td>0.50%</td><td>244</td><td>10</td></tr><tr><td>2026-05</td><td>12,633</td><td>12,198</td><td>96.56%</td><td>12,531</td><td>99.19%</td><td>96</td><td>0.76%</td><td>329</td><td>6</td></tr><tr><td>2026-06</td><td>11,746</td><td>11,304</td><td>96.24%</td><td>11,640</td><td>99.10%</td><td>98</td><td>0.83%</td><td>366</td><td>8</td></tr><tr><td>2026-07</td><td>11,437</td><td>10,994</td><td>96.13%</td><td>11,315</td><td>98.93%</td><td>113</td><td>0.99%</td><td>359</td><td>9</td></tr><tr><td>2026-08</td><td>10,433</td><td>10,056</td><td>96.39%</td><td>10,337</td><td>99.08%</td><td>90</td><td>0.86%</td><td>364</td><td>6</td></tr><tr><td><b>合计</b></td><td>95,023</td><td>92,227</td><td>97.06%</td><td>94,370</td><td>99.31%</td><td>600</td><td>0.63%</td><td>2,358</td><td>53</td></tr></tbody>
+</table></div>
+
+<h2>口径</h2>
+<div class="callout">
+T0 获额通过：2026-01-01～08-31；is_pass1=1、loan_type_code=2、recycle_type=3；20 秒批次去重；获额当天干净结清且 vir_time≥repaid_time；同一用户日 day_rn=1。<br>
+点确认：获额后 24 小时内第一次 Loan_newconfirm / Loan_newconfirm_select。<br>
+提单：确认后 24 小时内最早 apply_time；窗口含 3 分钟、30 分钟、1 小时、3 小时、24 小时（落在窗口内即算该窗口提单）。<br>
+3 分钟未提：apply 为空或 ≥ 确认+3分钟。后续转化仍要求提单落在确认后 24 小时内。<br>
+活体：确认后 24 小时内第一次 guide_live_ness_page_exposure 且 event_type=page_view_in。未进活体且未提单 = 24 小时内无活体进页且无提单。
+</div>
+
+<h2>附录：完整 PGSQL（可复现全部指标）</h2>
+<p class="desc">把 <code>__START_DATE__</code> / <code>__END_DATE__</code> 换成：01月 2026-01-01～2026-02-01，02月 2026-02-01～2026-03-01，…，08月 2026-08-01～2026-09-01（含起不含止）。各月人数相加即合计，比率用合计人数重算。报告全部卡片、分月表、图都来自该查询。</p>
+<details class="code" open><summary>完整 PGSQL（点击收起）</summary>
+<pre class="sql">-- =============================================================================
+-- T0 获额通过 → 点确认 → 确认后窗口提单 / 3分钟未提后续转化 / 活体
+-- 库：kaby_dw
+-- 区间：把 __START_DATE__ / __END_DATE__ 换成各月起止（例 2026-01-01 / 2026-02-01），月人数相加得合计
+-- 口径与既有 T0 origin + first_confirm 一致；提单时钟从 first_confirm 起算 24 小时
+-- =============================================================================
+
+-- 1) T0 origin（人日）
+DROP TABLE IF EXISTS tmp_m_origin;
+CREATE TEMP TABLE tmp_m_origin AS
+WITH params AS (
+    SELECT DATE &#x27;__START_DATE__&#x27; AS start_date, DATE &#x27;__END_DATE__&#x27; AS end_date
+), raw_offer AS (
+    SELECT DISTINCT ON (v.user_id, v.serial_id)
+        v.user_id, v.serial_id, v.vir_date::date AS vir_date, TO_TIMESTAMP(v.vir_unix) AS vir_time
+    FROM wangchuanliang.order_vir_f_copy v
+    INNER JOIN wangchuanliang.side_recycle_type_copy r ON r.serial_id = v.serial_id
+    CROSS JOIN params p
+    WHERE v.is_pass1 = 1 AND v.loan_type_code = 2 AND r.recycle_type = 3
+      AND v.vir_date &gt;= p.start_date - 1 AND v.vir_date &lt; p.end_date
+    ORDER BY v.user_id, v.serial_id, v.vir_unix DESC
+), lagged AS (
+    SELECT r.*, LAG(r.vir_time) OVER (PARTITION BY r.user_id ORDER BY r.vir_time, r.serial_id) AS prev_vir_time
+    FROM raw_offer r
+), batched AS (
+    SELECT l.*, SUM(CASE WHEN l.prev_vir_time IS NULL OR l.vir_time - l.prev_vir_time &gt; INTERVAL &#x27;20 seconds&#x27; THEN 1 ELSE 0 END)
+      OVER (PARTITION BY l.user_id ORDER BY l.vir_time, l.serial_id ROWS UNBOUNDED PRECEDING) AS batch_id
+    FROM lagged l
+), dedup_offer AS (
+    SELECT user_id, serial_id, vir_date, vir_time
+    FROM (
+        SELECT b.*, ROW_NUMBER() OVER (PARTITION BY b.user_id, b.batch_id ORDER BY b.vir_time DESC, b.serial_id DESC) AS batch_rn
+        FROM batched b
+    ) x
+    CROSS JOIN params p
+    WHERE batch_rn = 1 AND vir_date &gt;= p.start_date AND vir_date &lt; p.end_date
+), candidate_users AS (SELECT DISTINCT user_id FROM dedup_offer),
+all_orders AS (
+    SELECT o.user_id, o.serial_id, o.apply_time, o.repaid_time, o.repaid_date::date AS repaid_date,
+           o.loan_status_code, o.is_remit, o.is_repaid
+    FROM wangchuanliang.order_loan_f_v2_copy o
+    INNER JOIN candidate_users u ON u.user_id = o.user_id
+), clean_settlement AS (
+    SELECT o.user_id, o.serial_id, o.repaid_time, o.repaid_date
+    FROM all_orders o
+    WHERE o.is_remit = 1 AND (o.is_repaid = 1 OR o.loan_status_code = 7)
+      AND o.repaid_time &gt; TIMESTAMP &#x27;2000-01-01 00:00:00&#x27;
+      AND NOT EXISTS (
+          SELECT 1 FROM all_orders x
+          WHERE x.user_id = o.user_id AND x.serial_id &lt;&gt; o.serial_id AND x.apply_time &lt; o.repaid_time
+            AND (x.loan_status_code IN (5, 8) OR (x.loan_status_code = 7 AND x.repaid_time &gt; o.repaid_time))
+      )
+), paired AS (
+    SELECT e.user_id, e.serial_id AS credit_serial_id, e.vir_date, e.vir_time,
+           ROW_NUMBER() OVER (PARTITION BY e.user_id, e.vir_date ORDER BY e.vir_time ASC, e.serial_id DESC) AS day_rn
+    FROM dedup_offer e
+    INNER JOIN clean_settlement s
+        ON s.user_id = e.user_id AND s.repaid_date = e.vir_date AND e.vir_time &gt;= s.repaid_time
+)
+SELECT user_id, credit_serial_id, vir_date, vir_time FROM paired WHERE day_rn = 1;
+
+-- 2) 获额后 24h 内第一次点确认
+DROP TABLE IF EXISTS tmp_confirm;
+CREATE TEMP TABLE tmp_confirm AS
+SELECT t.user_id, t.vir_date, t.vir_time, MIN(e.create_time) AS first_confirm
+FROM tmp_m_origin t
+INNER JOIN wangchuanliang.event_track_record e
+  ON e.user_id = t.user_id
+ AND e.create_date &gt;= (SELECT MIN(vir_date) FROM tmp_m_origin)
+ AND e.create_date &lt;= (SELECT MAX(vir_date) FROM tmp_m_origin) + 1
+ AND e.create_date &gt;= t.vir_date AND e.create_date &lt;= t.vir_date + 1
+ AND e.create_time &gt;= t.vir_time
+ AND e.create_time &lt; t.vir_time + INTERVAL &#x27;24 hours&#x27;
+ AND e.props_id IN (&#x27;Loan_newconfirm&#x27;, &#x27;Loan_newconfirm_select&#x27;)
+GROUP BY t.user_id, t.vir_date, t.vir_time;
+
+-- 3) 确认后 24h 内最早提单
+DROP TABLE IF EXISTS tmp_apply;
+CREATE TEMP TABLE tmp_apply AS
+SELECT c.user_id, c.vir_date, c.first_confirm, MIN(o.apply_time) AS apply_after
+FROM tmp_confirm c
+LEFT JOIN wangchuanliang.order_loan_f_v2_copy o
+  ON o.user_id = c.user_id
+ AND o.apply_time &gt;= c.first_confirm
+ AND o.apply_time &lt; c.first_confirm + INTERVAL &#x27;24 hours&#x27;
+GROUP BY c.user_id, c.vir_date, c.first_confirm;
+
+-- 4) 确认后 24h 内最早进活体页（page_view_in）
+DROP TABLE IF EXISTS tmp_live;
+CREATE TEMP TABLE tmp_live AS
+SELECT c.user_id, c.vir_date, MIN(e.create_time) AS first_live
+FROM tmp_confirm c
+INNER JOIN wangchuanliang.event_track_record e
+  ON e.user_id = c.user_id
+ AND e.create_date &gt;= (SELECT MIN(vir_date) FROM tmp_m_origin)
+ AND e.create_date &lt;= (SELECT MAX(vir_date) FROM tmp_m_origin) + 1
+ AND e.create_date &gt;= c.vir_date AND e.create_date &lt;= c.vir_date + 1
+ AND e.create_time &gt;= c.first_confirm
+ AND e.create_time &lt; c.first_confirm + INTERVAL &#x27;24 hours&#x27;
+ AND e.event_type = &#x27;page_view_in&#x27;
+ AND e.props_id = &#x27;guide_live_ness_page_exposure&#x27;
+GROUP BY c.user_id, c.vir_date;
+
+-- 5) 人日明细 + 月汇总（报告全部指标）
+DROP TABLE IF EXISTS tmp_grain;
+CREATE TEMP TABLE tmp_grain AS
+SELECT
+    a.user_id,
+    a.vir_date,
+    a.first_confirm,
+    a.apply_after,
+    l.first_live,
+    CASE WHEN a.apply_after IS NOT NULL AND a.apply_after &lt; a.first_confirm + INTERVAL &#x27;3 minutes&#x27; THEN 1 ELSE 0 END AS f_apply_3m,
+    CASE WHEN a.apply_after IS NOT NULL AND a.apply_after &lt; a.first_confirm + INTERVAL &#x27;30 minutes&#x27; THEN 1 ELSE 0 END AS f_apply_30m,
+    CASE WHEN a.apply_after IS NOT NULL AND a.apply_after &lt; a.first_confirm + INTERVAL &#x27;1 hour&#x27; THEN 1 ELSE 0 END AS f_apply_1h,
+    CASE WHEN a.apply_after IS NOT NULL AND a.apply_after &lt; a.first_confirm + INTERVAL &#x27;3 hours&#x27; THEN 1 ELSE 0 END AS f_apply_3h,
+    CASE WHEN a.apply_after IS NOT NULL THEN 1 ELSE 0 END AS f_apply_24h,
+    CASE WHEN a.apply_after IS NULL OR a.apply_after &gt;= a.first_confirm + INTERVAL &#x27;3 minutes&#x27; THEN 1 ELSE 0 END AS f_no3m,
+    CASE WHEN l.first_live IS NOT NULL AND l.first_live &lt; a.first_confirm + INTERVAL &#x27;3 minutes&#x27; THEN 1 ELSE 0 END AS f_live_3m,
+    CASE WHEN l.first_live IS NOT NULL THEN 1 ELSE 0 END AS f_live_24h
+FROM tmp_apply a
+LEFT JOIN tmp_live l ON l.user_id = a.user_id AND l.vir_date = a.vir_date;
+
+-- R1 当月漏斗
+SELECT
+    (SELECT COUNT(*) FROM tmp_m_origin) AS n_t0,
+    COUNT(*) AS n_confirm,
+    ROUND(100.0 * COUNT(*) / NULLIF((SELECT COUNT(*) FROM tmp_m_origin), 0), 2) AS pct_confirm,
+    SUM(f_apply_3m) AS n_apply_3m,
+    ROUND(100.0 * SUM(f_apply_3m) / COUNT(*), 2) AS pct_apply_3m,
+    SUM(f_apply_30m) AS n_apply_30m,
+    ROUND(100.0 * SUM(f_apply_30m) / COUNT(*), 2) AS pct_apply_30m,
+    SUM(f_apply_1h) AS n_apply_1h,
+    ROUND(100.0 * SUM(f_apply_1h) / COUNT(*), 2) AS pct_apply_1h,
+    SUM(f_apply_3h) AS n_apply_3h,
+    ROUND(100.0 * SUM(f_apply_3h) / COUNT(*), 2) AS pct_apply_3h,
+    SUM(f_apply_24h) AS n_apply_24h,
+    ROUND(100.0 * SUM(f_apply_24h) / COUNT(*), 2) AS pct_apply_24h,
+    SUM(f_no3m) AS n_no3m,
+    SUM(CASE WHEN f_no3m = 1 AND f_apply_30m = 1 THEN 1 ELSE 0 END) AS no3m_apply_30m,
+    SUM(CASE WHEN f_no3m = 1 AND f_apply_1h = 1 THEN 1 ELSE 0 END) AS no3m_apply_1h,
+    SUM(CASE WHEN f_no3m = 1 AND f_apply_3h = 1 THEN 1 ELSE 0 END) AS no3m_apply_3h,
+    SUM(CASE WHEN f_no3m = 1 AND f_apply_24h = 1 THEN 1 ELSE 0 END) AS no3m_apply_24h,
+    SUM(f_live_3m) AS n_live_3m,
+    ROUND(100.0 * SUM(f_live_3m) / COUNT(*), 2) AS pct_live_3m,
+    SUM(f_live_24h) AS n_live_24h,
+    ROUND(100.0 * SUM(f_live_24h) / COUNT(*), 2) AS pct_live_24h,
+    SUM(CASE WHEN f_live_24h = 0 AND f_apply_24h = 0 THEN 1 ELSE 0 END) AS n_no_live_no_apply,
+    ROUND(100.0 * SUM(CASE WHEN f_live_24h = 0 AND f_apply_24h = 0 THEN 1 ELSE 0 END) / COUNT(*), 2) AS pct_no_live_no_apply,
+    SUM(CASE WHEN f_live_24h = 1 AND f_apply_24h = 0 THEN 1 ELSE 0 END) AS n_live_no_apply,
+    SUM(CASE WHEN f_live_24h = 0 AND f_apply_24h = 1 THEN 1 ELSE 0 END) AS n_apply_no_live
+FROM tmp_grain;
+</pre>
+</details>
+
+<p class="foot">数据截至 2026-08。复现：kaby_dw，源表 order_vir_f_copy、side_recycle_type_copy、order_loan_f_v2_copy、event_track_record。</p>
+</main>
+<script>
+const D = {"labels": ["01月", "02月", "03月", "04月", "05月", "06月", "07月", "08月"], "confirm_pct": [60.46, 59.52, 54.49, 54.59, 52.91, 51.89, 49.14, 47.18], "apply3": [91.3, 90.96, 91.02, 90.14, 89.23, 87.67, 86.19, 85.89], "apply30": [95.1, 94.68, 94.6, 94.17, 93.15, 92.14, 91.6, 90.95], "apply1": [95.86, 95.5, 95.23, 95.0, 94.01, 93.03, 92.58, 92.07], "apply3h": [96.75, 96.43, 96.13, 95.9, 94.89, 94.15, 93.98, 93.38], "apply24": [97.86, 97.84, 97.54, 97.35, 96.64, 96.05, 95.87, 95.65], "no3_30": [43.72, 41.18, 39.87, 40.88, 36.44, 36.26, 39.14, 35.87], "no3_1": [52.39, 50.25, 46.87, 49.28, 44.38, 43.44, 46.23, 43.82], "no3_3": [62.71, 60.54, 56.91, 58.41, 52.61, 52.56, 56.36, 53.06], "no3_24": [75.46, 76.06, 72.65, 73.08, 68.77, 67.96, 70.11, 69.16], "live3": [98.08, 97.92, 97.62, 97.34, 96.56, 96.24, 96.13, 96.39], "live24": [99.65, 99.59, 99.48, 99.41, 99.19, 99.1, 98.93, 99.08], "nola": [0.31, 0.35, 0.5, 0.5, 0.76, 0.83, 0.99, 0.86], "funnel": [177133, 95023, 92227, 84708, 92065], "funnel_labels": ["T0获额通过", "点确认", "确认后3分钟内进活体", "确认后3分钟内提单", "确认后24小时内提单"]};
+const common = {
+  responsive:true, maintainAspectRatio:false,
+  plugins:{legend:{labels:{color:'#d7ecf8'}}},
+  scales:{
+    x:{ticks:{color:'#aac5da'},grid:{color:'rgba(42,92,126,.25)'}},
+    y:{ticks:{color:'#aac5da'},grid:{color:'rgba(42,92,126,.25)'}}
+  }
+};
+new Chart(document.getElementById('c1'), {
+  type:'line',
+  data:{labels:D.labels, datasets:[{label:'点确认/获额通过 %', data:D.confirm_pct, borderColor:'#43c7e7', backgroundColor:'rgba(67,199,231,.15)', tension:.25, fill:true, pointRadius:4}]},
+  options:{...common, scales:{...common.scales, y:{...common.scales.y, min:40, max:70}}}
+});
+new Chart(document.getElementById('c2'), {
+  type:'bar',
+  data:{labels:D.funnel_labels, datasets:[{label:'人数', data:D.funnel, backgroundColor:'#43c7e7'}]},
+  options:common
+});
+new Chart(document.getElementById('c3'), {
+  type:'line',
+  data:{labels:D.labels, datasets:[
+    {label:'3分钟', data:D.apply3, borderColor:'#43c7e7', tension:.2, pointRadius:3},
+    {label:'30分钟', data:D.apply30, borderColor:'#64dcae', tension:.2, pointRadius:3},
+    {label:'1小时', data:D.apply1, borderColor:'#ffc26b', tension:.2, pointRadius:3},
+    {label:'3小时', data:D.apply3h, borderColor:'#f68ab0', tension:.2, pointRadius:3},
+    {label:'24小时', data:D.apply24, borderColor:'#c9b6ff', tension:.2, pointRadius:3}
+  ]},
+  options:{...common, scales:{...common.scales, y:{...common.scales.y, min:80, max:100}}}
+});
+new Chart(document.getElementById('c4'), {
+  type:'line',
+  data:{labels:D.labels, datasets:[
+    {label:'半小时内提', data:D.no3_30, borderColor:'#64dcae', tension:.2, pointRadius:3},
+    {label:'1小时内提', data:D.no3_1, borderColor:'#ffc26b', tension:.2, pointRadius:3},
+    {label:'3小时内提', data:D.no3_3, borderColor:'#f68ab0', tension:.2, pointRadius:3},
+    {label:'24小时内提', data:D.no3_24, borderColor:'#c9b6ff', tension:.2, pointRadius:3}
+  ]},
+  options:common
+});
+new Chart(document.getElementById('c5'), {
+  type:'bar',
+  data:{labels:D.labels, datasets:[
+    {label:'3分钟未提', data:[1027, 1224, 1086, 1118, 1361, 1448, 1579, 1472], backgroundColor:'rgba(246,138,176,.55)'},
+    {label:'其中24小时仍未提', data:[252, 293, 297, 301, 425, 464, 472, 454], backgroundColor:'#f68ab0'}
+  ]},
+  options:common
+});
+new Chart(document.getElementById('c6'), {
+  type:'line',
+  data:{labels:D.labels, datasets:[
+    {label:'3分钟内进活体', data:D.live3, borderColor:'#43c7e7', tension:.2, pointRadius:3},
+    {label:'24小时内进活体', data:D.live24, borderColor:'#64dcae', tension:.2, pointRadius:3}
+  ]},
+  options:{...common, scales:{...common.scales, y:{...common.scales.y, min:85, max:100}}}
+});
+new Chart(document.getElementById('c7'), {
+  type:'line',
+  data:{labels:D.labels, datasets:[
+    {label:'未进活体且未提单 %', data:D.nola, borderColor:'#f68ab0', tension:.2, pointRadius:4, fill:true, backgroundColor:'rgba(246,138,176,.12)'}
+  ]},
+  options:common
+});
+</script>
+</body>
+</html>
