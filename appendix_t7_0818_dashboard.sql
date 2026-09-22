@@ -4,7 +4,8 @@
 -- 触达日：2026-08-18
 -- 放款日：优先 o.remit_date::date（无该列时用 o.apply_date::date）
 -- 本文件当前放款日表达式：o.remit_date::date
--- 本周：DATE_TRUNC('week', CURRENT_DATE)::date（周一）
+-- 本周：DATE_TRUNC('week', CURRENT_DATE - 1)::date（周一）
+-- 统计截止：CURRENT_DATE - 1；到期：due_date < CURRENT_DATE
 -- 执行前：SET search_path TO wangchuanliang, public;
 
 SET search_path TO wangchuanliang, public;
@@ -36,22 +37,22 @@ WHERE churn_user_id IS NOT NULL
 -- ---------------------------------------------------------------------------
 WITH params AS (
     SELECT DATE '2026-08-18' AS recall_dt,
-           DATE_TRUNC('week', CURRENT_DATE)::date AS week_start,
-           CURRENT_DATE AS as_of
+           DATE_TRUNC('week', CURRENT_DATE - 1)::date AS week_start,
+           (CURRENT_DATE - 1) AS as_of
 ),
 apply_u AS (
     SELECT DISTINCT o.user_id
     FROM tmp_t7_u u
     INNER JOIN order_loan_f_v2_copy o ON o.user_id = u.user_id
     CROSS JOIN params p
-    WHERE o.apply_date >= p.recall_dt
+    WHERE o.apply_date >= p.recall_dt AND o.apply_date <= p.as_of
 ),
 first_apply AS (
     SELECT o.user_id, MIN(o.apply_date) AS first_dt
     FROM tmp_t7_u u
     INNER JOIN order_loan_f_v2_copy o ON o.user_id = u.user_id
     CROSS JOIN params p
-    WHERE o.apply_date >= p.recall_dt
+    WHERE o.apply_date >= p.recall_dt AND o.apply_date <= p.as_of
     GROUP BY 1
 )
 SELECT
@@ -70,39 +71,44 @@ SELECT
      FROM tmp_t7_u u
      INNER JOIN order_loan_f_v2_copy o ON o.user_id = u.user_id
      CROSS JOIN params p
-     WHERE o.apply_date >= p.recall_dt AND o.is_remit = 1
-       AND COALESCE(o.remit_amt, 0) > 0) AS n_remit,
+             WHERE o.apply_date >= p.recall_dt AND o.apply_date <= p.as_of AND o.is_remit = 1
+               AND COALESCE(o.remit_amt, 0) > 0
+               AND o.remit_date::date <= p.as_of) AS n_remit,
     (SELECT COUNT(*)
      FROM tmp_t7_u u
      INNER JOIN order_loan_f_v2_copy o ON o.user_id = u.user_id
      CROSS JOIN params p
-     WHERE o.apply_date >= p.recall_dt AND o.is_remit = 1
+     WHERE o.apply_date >= p.recall_dt AND o.apply_date <= p.as_of AND o.is_remit = 1
        AND COALESCE(o.remit_amt, 0) > 0
        AND o.remit_date::date >= p.week_start AND o.remit_date::date <= p.as_of) AS n_remit_week,
     (SELECT COUNT(*)
      FROM tmp_t7_u u
      INNER JOIN order_loan_f_v2_copy o ON o.user_id = u.user_id
      CROSS JOIN params p
-     WHERE o.apply_date >= p.recall_dt AND o.is_due = 1 AND o.is_remit = 1
-       AND COALESCE(o.remit_amt, 0) > 0) AS n_due,
+             WHERE o.apply_date >= p.recall_dt AND o.apply_date <= p.as_of AND o.is_due = 1 AND o.is_remit = 1
+               AND COALESCE(o.remit_amt, 0) > 0
+               AND o.due_date < CURRENT_DATE) AS n_due,
     (SELECT COUNT(*)
      FROM tmp_t7_u u
      INNER JOIN order_loan_f_v2_copy o ON o.user_id = u.user_id
      CROSS JOIN params p
-     WHERE o.apply_date >= p.recall_dt AND o.is_due = 1 AND o.is_remit = 1
-       AND COALESCE(o.remit_amt, 0) > 0 AND o.loan_status_code = 8) AS n_due_od,
+             WHERE o.apply_date >= p.recall_dt AND o.apply_date <= p.as_of AND o.is_due = 1 AND o.is_remit = 1
+               AND COALESCE(o.remit_amt, 0) > 0 AND o.loan_status_code = 8
+               AND o.due_date < CURRENT_DATE) AS n_due_od,
     (SELECT SUM(COALESCE(o.repaid_amt, 0))
      FROM tmp_t7_u u
      INNER JOIN order_loan_f_v2_copy o ON o.user_id = u.user_id
      CROSS JOIN params p
-     WHERE o.apply_date >= p.recall_dt AND o.is_due = 1 AND o.is_remit = 1
-       AND COALESCE(o.remit_amt, 0) > 0) AS due_repaid,
+             WHERE o.apply_date >= p.recall_dt AND o.apply_date <= p.as_of AND o.is_due = 1 AND o.is_remit = 1
+               AND COALESCE(o.remit_amt, 0) > 0
+               AND o.due_date < CURRENT_DATE) AS due_repaid,
     (SELECT SUM(o.remit_amt)
      FROM tmp_t7_u u
      INNER JOIN order_loan_f_v2_copy o ON o.user_id = u.user_id
      CROSS JOIN params p
-     WHERE o.apply_date >= p.recall_dt AND o.is_due = 1 AND o.is_remit = 1
-       AND COALESCE(o.remit_amt, 0) > 0) AS due_remit,
+             WHERE o.apply_date >= p.recall_dt AND o.apply_date <= p.as_of AND o.is_due = 1 AND o.is_remit = 1
+               AND COALESCE(o.remit_amt, 0) > 0
+               AND o.due_date < CURRENT_DATE) AS due_remit,
     (SELECT week_start FROM params) AS week_start,
     (SELECT as_of FROM params) AS as_of;
 
@@ -116,7 +122,7 @@ WITH fa AS (
   SELECT o.user_id, MIN(o.apply_date) AS first_apply
   FROM tmp_t7_u u
   INNER JOIN order_loan_f_v2_copy o
-    ON o.user_id = u.user_id AND o.apply_date >= DATE '2026-08-18'
+    ON o.user_id = u.user_id AND o.apply_date >= DATE '2026-08-18' AND o.apply_date <= (CURRENT_DATE - 1)
   GROUP BY 1
 )
 SELECT first_apply::text AS d, COUNT(*) AS n
@@ -132,7 +138,7 @@ SELECT o.apply_date::text AS d,
        COUNT(DISTINCT o.user_id) AS n_user
 FROM tmp_t7_u u
 INNER JOIN order_loan_f_v2_copy o
-  ON o.user_id = u.user_id AND o.apply_date >= DATE '2026-08-18'
+  ON o.user_id = u.user_id AND o.apply_date >= DATE '2026-08-18' AND o.apply_date <= (CURRENT_DATE - 1)
 GROUP BY 1
 ORDER BY 1;
 
@@ -145,6 +151,7 @@ INNER JOIN order_loan_f_v2_copy o ON o.user_id = u.user_id
 WHERE o.apply_date >= DATE '2026-08-18'
   AND o.is_remit = 1 AND COALESCE(o.remit_amt, 0) > 0
   AND o.remit_date::date IS NOT NULL
+  AND o.remit_date::date <= (CURRENT_DATE - 1)
 GROUP BY 1
 ORDER BY 1;
 
@@ -161,6 +168,7 @@ INNER JOIN order_loan_f_v2_copy o ON o.user_id = u.user_id
 WHERE o.apply_date >= DATE '2026-08-18'
   AND o.is_due = 1 AND o.is_remit = 1 AND COALESCE(o.remit_amt, 0) > 0
   AND o.due_date IS NOT NULL
+  AND o.due_date < CURRENT_DATE
 GROUP BY 1
 ORDER BY 1;
 
@@ -175,7 +183,7 @@ LEFT JOIN (
   SELECT DISTINCT o.user_id
   FROM tmp_t7_u u
   INNER JOIN order_loan_f_v2_copy o
-    ON o.user_id = u.user_id AND o.apply_date >= DATE '2026-08-18'
+    ON o.user_id = u.user_id AND o.apply_date >= DATE '2026-08-18' AND o.apply_date <= (CURRENT_DATE - 1)
 ) a ON a.user_id = u.user_id
 GROUP BY 1
 ORDER BY n_user DESC;
@@ -199,6 +207,6 @@ LEFT JOIN (
   SELECT DISTINCT o.user_id
   FROM tmp_t7_u u
   INNER JOIN order_loan_f_v2_copy o
-    ON o.user_id = u.user_id AND o.apply_date >= DATE '2026-08-18'
+    ON o.user_id = u.user_id AND o.apply_date >= DATE '2026-08-18' AND o.apply_date <= (CURRENT_DATE - 1)
 ) a ON a.user_id = u.user_id
 GROUP BY 1;

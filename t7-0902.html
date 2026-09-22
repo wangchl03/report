@@ -41,17 +41,17 @@ details.code pre{overflow:auto;max-height:520px;font-size:11px;line-height:1.45;
 <div class="top">
   <div class="kicker">DASHBOARD · T7+ RECALL · 2026-09-02</div>
   <h1>流失 7 天以上召回 · 看板</h1>
-  <p class="meta">名单 2,939 人 · 统计至 2026-09-21 · 本周 2026-09-21 起（周一）</p>
+  <p class="meta">名单 2,939 人 · 统计至 2026-09-20 · 本周 2026-09-14 起（周一）</p>
 </div>
 <section class="kpis">
   <article class="card"><div class="label">提单率</div><div class="num a">28.68%</div><div class="sub">843 / 2,939 · 9/2至今去重用户</div></article>
   <article class="card"><div class="label">总提单人数</div><div class="num g">843</div><div class="sub">9/2至今任意提单用户</div></article>
-  <article class="card"><div class="label">本周提单人数</div><div class="num">1</div><div class="sub">本周有过提单的去重用户</div></article>
-  <article class="card"><div class="label">本周新增提单人数</div><div class="num p">0</div><div class="sub">召回后首次提单落在本周</div></article>
-  <article class="card"><div class="label">放款单量</div><div class="num g">1,068</div><div class="sub">9/2至今已放款订单数</div></article>
-  <article class="card"><div class="label">本周新增放款单量</div><div class="num">1</div><div class="sub">本周新放款订单数</div></article>
-  <article class="card"><div class="label">订单盈利率</div><div class="num a">14.98%</div><div class="sub">到期订单</div></article>
-  <article class="card"><div class="label">订单逾期率</div><div class="num p">34.44%</div><div class="sub">到期订单</div></article>
+  <article class="card"><div class="label">本周提单人数</div><div class="num">365</div><div class="sub">本周有过提单的去重用户</div></article>
+  <article class="card"><div class="label">本周新增提单人数</div><div class="num p">204</div><div class="sub">召回后首次提单落在本周</div></article>
+  <article class="card"><div class="label">放款单量</div><div class="num g">1,067</div><div class="sub">9/2至今已放款订单数</div></article>
+  <article class="card"><div class="label">本周新增放款单量</div><div class="num">367</div><div class="sub">本周新放款订单数</div></article>
+  <article class="card"><div class="label">订单盈利率</div><div class="num a">17.70%</div><div class="sub">到期订单</div></article>
+  <article class="card"><div class="label">订单逾期率</div><div class="num p">34.12%</div><div class="sub">到期订单</div></article>
 </section>
 <div class="grid">
   <div class="card chart"><h3>累计提单人数与提单率</h3><p>按召回后首次提单日累计，分母=2,939</p><div class="box"><canvas id="c1"></canvas></div></div>
@@ -77,9 +77,9 @@ details.code pre{overflow:auto;max-height:520px;font-size:11px;line-height:1.45;
 <h2>口径说明</h2>
 <ul>
 <li>名单：<code>wangchuanliang.t7recalllist_0902</code>，批次日 <code>2026-09-02</code>，按 <code>churn_user_id</code> 去重。该表无可用召回日日期字段，以整表为该批次名单。</li>
-<li>提单：<code>apply_date ≥ 2026-09-02</code>。总提单人数=召回后任意提单用户去重；本周提单=本周任意提单用户去重；本周新增提单=召回后首次提单日期落在本周（周一 <code>DATE_TRUNC('week', CURRENT_DATE)</code> 至库内 <code>CURRENT_DATE</code>）。</li>
-<li>放款：<code>is_remit = 1</code> 且 <code>remit_amt &gt; 0</code>；本周新增放款按放款日（本页为 <code>o.remit_date::date</code>）落在本周的订单数。</li>
-<li>到期盈利 / 逾期：召回后提单且 <code>is_due = 1</code>、<code>is_remit = 1</code>、<code>remit_amt &gt; 0</code>。盈利率 = <code>(repaid_amt − remit_amt) / remit_amt</code>；逾期率 = <code>loan_status_code = 8</code> 占到期放款单。</li>
+<li>提单：<code>apply_date</code> 在 <code>2026-09-02</code> 至 <code>CURRENT_DATE-1</code>。总提单人数=召回后任意提单用户去重；本周提单=本周任意提单用户去重；本周新增提单=召回后首次提单日期落在本周（周一 <code>DATE_TRUNC('week', CURRENT_DATE-1)</code> 至 <code>CURRENT_DATE-1</code>）。</li>
+<li>放款：<code>is_remit = 1</code> 且 <code>remit_amt &gt; 0</code>，放款日不超过 <code>CURRENT_DATE-1</code>；本周新增放款按放款日（本页为 <code>o.remit_date::date</code>）落在本周的订单数。</li>
+<li>到期盈利 / 逾期：召回后提单且 <code>is_due = 1</code>、<code>is_remit = 1</code>、<code>remit_amt &gt; 0</code>，且 <code>due_date &lt; CURRENT_DATE</code>。盈利率 = <code>(repaid_amt − remit_amt) / remit_amt</code>；逾期率 = <code>loan_status_code = 8</code> 占到期放款单。</li>
 <li>转化结构：已提单 vs 名单中尚未提单。分层 / 流失天数：名单人数与对应提单率。</li>
 </ul>
 <h2>附录：</h2>
@@ -89,7 +89,8 @@ details.code pre{overflow:auto;max-height:520px;font-size:11px;line-height:1.45;
 -- 触达日：2026-09-02
 -- 放款日：优先 o.remit_date::date（无该列时用 o.apply_date::date）
 -- 本文件当前放款日表达式：o.remit_date::date
--- 本周：DATE_TRUNC(&#x27;week&#x27;, CURRENT_DATE)::date（周一）
+-- 本周：DATE_TRUNC(&#x27;week&#x27;, CURRENT_DATE - 1)::date（周一）
+-- 统计截止：CURRENT_DATE - 1；到期：due_date &lt; CURRENT_DATE
 -- 执行前：SET search_path TO wangchuanliang, public;
 
 SET search_path TO wangchuanliang, public;
@@ -119,22 +120,22 @@ WHERE churn_user_id IS NOT NULL;
 -- ---------------------------------------------------------------------------
 WITH params AS (
     SELECT DATE &#x27;2026-09-02&#x27; AS recall_dt,
-           DATE_TRUNC(&#x27;week&#x27;, CURRENT_DATE)::date AS week_start,
-           CURRENT_DATE AS as_of
+           DATE_TRUNC(&#x27;week&#x27;, CURRENT_DATE - 1)::date AS week_start,
+           (CURRENT_DATE - 1) AS as_of
 ),
 apply_u AS (
     SELECT DISTINCT o.user_id
     FROM tmp_t7_u u
     INNER JOIN order_loan_f_v2_copy o ON o.user_id = u.user_id
     CROSS JOIN params p
-    WHERE o.apply_date &gt;= p.recall_dt
+    WHERE o.apply_date &gt;= p.recall_dt AND o.apply_date &lt;= p.as_of
 ),
 first_apply AS (
     SELECT o.user_id, MIN(o.apply_date) AS first_dt
     FROM tmp_t7_u u
     INNER JOIN order_loan_f_v2_copy o ON o.user_id = u.user_id
     CROSS JOIN params p
-    WHERE o.apply_date &gt;= p.recall_dt
+    WHERE o.apply_date &gt;= p.recall_dt AND o.apply_date &lt;= p.as_of
     GROUP BY 1
 )
 SELECT
@@ -153,39 +154,44 @@ SELECT
      FROM tmp_t7_u u
      INNER JOIN order_loan_f_v2_copy o ON o.user_id = u.user_id
      CROSS JOIN params p
-     WHERE o.apply_date &gt;= p.recall_dt AND o.is_remit = 1
-       AND COALESCE(o.remit_amt, 0) &gt; 0) AS n_remit,
+             WHERE o.apply_date &gt;= p.recall_dt AND o.apply_date &lt;= p.as_of AND o.is_remit = 1
+               AND COALESCE(o.remit_amt, 0) &gt; 0
+               AND o.remit_date::date &lt;= p.as_of) AS n_remit,
     (SELECT COUNT(*)
      FROM tmp_t7_u u
      INNER JOIN order_loan_f_v2_copy o ON o.user_id = u.user_id
      CROSS JOIN params p
-     WHERE o.apply_date &gt;= p.recall_dt AND o.is_remit = 1
+     WHERE o.apply_date &gt;= p.recall_dt AND o.apply_date &lt;= p.as_of AND o.is_remit = 1
        AND COALESCE(o.remit_amt, 0) &gt; 0
        AND o.remit_date::date &gt;= p.week_start AND o.remit_date::date &lt;= p.as_of) AS n_remit_week,
     (SELECT COUNT(*)
      FROM tmp_t7_u u
      INNER JOIN order_loan_f_v2_copy o ON o.user_id = u.user_id
      CROSS JOIN params p
-     WHERE o.apply_date &gt;= p.recall_dt AND o.is_due = 1 AND o.is_remit = 1
-       AND COALESCE(o.remit_amt, 0) &gt; 0) AS n_due,
+             WHERE o.apply_date &gt;= p.recall_dt AND o.apply_date &lt;= p.as_of AND o.is_due = 1 AND o.is_remit = 1
+               AND COALESCE(o.remit_amt, 0) &gt; 0
+               AND o.due_date &lt; CURRENT_DATE) AS n_due,
     (SELECT COUNT(*)
      FROM tmp_t7_u u
      INNER JOIN order_loan_f_v2_copy o ON o.user_id = u.user_id
      CROSS JOIN params p
-     WHERE o.apply_date &gt;= p.recall_dt AND o.is_due = 1 AND o.is_remit = 1
-       AND COALESCE(o.remit_amt, 0) &gt; 0 AND o.loan_status_code = 8) AS n_due_od,
+             WHERE o.apply_date &gt;= p.recall_dt AND o.apply_date &lt;= p.as_of AND o.is_due = 1 AND o.is_remit = 1
+               AND COALESCE(o.remit_amt, 0) &gt; 0 AND o.loan_status_code = 8
+               AND o.due_date &lt; CURRENT_DATE) AS n_due_od,
     (SELECT SUM(COALESCE(o.repaid_amt, 0))
      FROM tmp_t7_u u
      INNER JOIN order_loan_f_v2_copy o ON o.user_id = u.user_id
      CROSS JOIN params p
-     WHERE o.apply_date &gt;= p.recall_dt AND o.is_due = 1 AND o.is_remit = 1
-       AND COALESCE(o.remit_amt, 0) &gt; 0) AS due_repaid,
+             WHERE o.apply_date &gt;= p.recall_dt AND o.apply_date &lt;= p.as_of AND o.is_due = 1 AND o.is_remit = 1
+               AND COALESCE(o.remit_amt, 0) &gt; 0
+               AND o.due_date &lt; CURRENT_DATE) AS due_repaid,
     (SELECT SUM(o.remit_amt)
      FROM tmp_t7_u u
      INNER JOIN order_loan_f_v2_copy o ON o.user_id = u.user_id
      CROSS JOIN params p
-     WHERE o.apply_date &gt;= p.recall_dt AND o.is_due = 1 AND o.is_remit = 1
-       AND COALESCE(o.remit_amt, 0) &gt; 0) AS due_remit,
+             WHERE o.apply_date &gt;= p.recall_dt AND o.apply_date &lt;= p.as_of AND o.is_due = 1 AND o.is_remit = 1
+               AND COALESCE(o.remit_amt, 0) &gt; 0
+               AND o.due_date &lt; CURRENT_DATE) AS due_remit,
     (SELECT week_start FROM params) AS week_start,
     (SELECT as_of FROM params) AS as_of;
 
@@ -199,7 +205,7 @@ WITH fa AS (
   SELECT o.user_id, MIN(o.apply_date) AS first_apply
   FROM tmp_t7_u u
   INNER JOIN order_loan_f_v2_copy o
-    ON o.user_id = u.user_id AND o.apply_date &gt;= DATE &#x27;2026-09-02&#x27;
+    ON o.user_id = u.user_id AND o.apply_date &gt;= DATE &#x27;2026-09-02&#x27; AND o.apply_date &lt;= (CURRENT_DATE - 1)
   GROUP BY 1
 )
 SELECT first_apply::text AS d, COUNT(*) AS n
@@ -215,7 +221,7 @@ SELECT o.apply_date::text AS d,
        COUNT(DISTINCT o.user_id) AS n_user
 FROM tmp_t7_u u
 INNER JOIN order_loan_f_v2_copy o
-  ON o.user_id = u.user_id AND o.apply_date &gt;= DATE &#x27;2026-09-02&#x27;
+  ON o.user_id = u.user_id AND o.apply_date &gt;= DATE &#x27;2026-09-02&#x27; AND o.apply_date &lt;= (CURRENT_DATE - 1)
 GROUP BY 1
 ORDER BY 1;
 
@@ -228,6 +234,7 @@ INNER JOIN order_loan_f_v2_copy o ON o.user_id = u.user_id
 WHERE o.apply_date &gt;= DATE &#x27;2026-09-02&#x27;
   AND o.is_remit = 1 AND COALESCE(o.remit_amt, 0) &gt; 0
   AND o.remit_date::date IS NOT NULL
+  AND o.remit_date::date &lt;= (CURRENT_DATE - 1)
 GROUP BY 1
 ORDER BY 1;
 
@@ -244,6 +251,7 @@ INNER JOIN order_loan_f_v2_copy o ON o.user_id = u.user_id
 WHERE o.apply_date &gt;= DATE &#x27;2026-09-02&#x27;
   AND o.is_due = 1 AND o.is_remit = 1 AND COALESCE(o.remit_amt, 0) &gt; 0
   AND o.due_date IS NOT NULL
+  AND o.due_date &lt; CURRENT_DATE
 GROUP BY 1
 ORDER BY 1;
 
@@ -258,7 +266,7 @@ LEFT JOIN (
   SELECT DISTINCT o.user_id
   FROM tmp_t7_u u
   INNER JOIN order_loan_f_v2_copy o
-    ON o.user_id = u.user_id AND o.apply_date &gt;= DATE &#x27;2026-09-02&#x27;
+    ON o.user_id = u.user_id AND o.apply_date &gt;= DATE &#x27;2026-09-02&#x27; AND o.apply_date &lt;= (CURRENT_DATE - 1)
 ) a ON a.user_id = u.user_id
 GROUP BY 1
 ORDER BY n_user DESC;
@@ -282,7 +290,7 @@ LEFT JOIN (
   SELECT DISTINCT o.user_id
   FROM tmp_t7_u u
   INNER JOIN order_loan_f_v2_copy o
-    ON o.user_id = u.user_id AND o.apply_date &gt;= DATE &#x27;2026-09-02&#x27;
+    ON o.user_id = u.user_id AND o.apply_date &gt;= DATE &#x27;2026-09-02&#x27; AND o.apply_date &lt;= (CURRENT_DATE - 1)
 ) a ON a.user_id = u.user_id
 GROUP BY 1;
 </pre></details>
@@ -295,6 +303,8 @@ T7+ 召回看板 · 后端
   export PGPASSWORD=&#x27;...&#x27;
   python3 appendix_t7_0818_dashboard.py
   python3 appendix_t7_0818_dashboard.py 0902 0910 0917
+
+统计截止：CURRENT_DATE - 1；到期订单：due_date &lt; CURRENT_DATE。
 &quot;&quot;&quot;
 from __future__ import annotations
 
@@ -512,22 +522,22 @@ def fetch(batch):
         WITH u AS ({U}),
         params AS (
             SELECT DATE &#x27;{RECALL_DATE}&#x27; AS recall_dt,
-                   DATE_TRUNC(&#x27;week&#x27;, CURRENT_DATE)::date AS week_start,
-                   CURRENT_DATE AS as_of
+                   DATE_TRUNC(&#x27;week&#x27;, CURRENT_DATE - 1)::date AS week_start,
+                   (CURRENT_DATE - 1) AS as_of
         ),
         apply_u AS (
             SELECT DISTINCT o.user_id
             FROM u
             INNER JOIN order_loan_f_v2_copy o ON o.user_id = u.user_id
             CROSS JOIN params p
-            WHERE o.apply_date &gt;= p.recall_dt
+            WHERE o.apply_date &gt;= p.recall_dt AND o.apply_date &lt;= p.as_of
         ),
         first_apply AS (
             SELECT o.user_id, MIN(o.apply_date) AS first_dt
             FROM u
             INNER JOIN order_loan_f_v2_copy o ON o.user_id = u.user_id
             CROSS JOIN params p
-            WHERE o.apply_date &gt;= p.recall_dt
+            WHERE o.apply_date &gt;= p.recall_dt AND o.apply_date &lt;= p.as_of
             GROUP BY 1
         )
         SELECT
@@ -544,39 +554,44 @@ def fetch(batch):
              FROM u
              INNER JOIN order_loan_f_v2_copy o ON o.user_id = u.user_id
              CROSS JOIN params p
-             WHERE o.apply_date &gt;= p.recall_dt AND o.is_remit = 1
-               AND COALESCE(o.remit_amt, 0) &gt; 0) AS n_remit,
+             WHERE o.apply_date &gt;= p.recall_dt AND o.apply_date &lt;= p.as_of AND o.is_remit = 1
+               AND COALESCE(o.remit_amt, 0) &gt; 0
+               AND {remit_day} &lt;= p.as_of) AS n_remit,
             (SELECT COUNT(*)
              FROM u
              INNER JOIN order_loan_f_v2_copy o ON o.user_id = u.user_id
              CROSS JOIN params p
-             WHERE o.apply_date &gt;= p.recall_dt AND o.is_remit = 1
+             WHERE o.apply_date &gt;= p.recall_dt AND o.apply_date &lt;= p.as_of AND o.is_remit = 1
                AND COALESCE(o.remit_amt, 0) &gt; 0
                AND {remit_day} &gt;= p.week_start AND {remit_day} &lt;= p.as_of) AS n_remit_week,
             (SELECT COUNT(*)
              FROM u
              INNER JOIN order_loan_f_v2_copy o ON o.user_id = u.user_id
              CROSS JOIN params p
-             WHERE o.apply_date &gt;= p.recall_dt AND o.is_due = 1 AND o.is_remit = 1
-               AND COALESCE(o.remit_amt, 0) &gt; 0) AS n_due,
+             WHERE o.apply_date &gt;= p.recall_dt AND o.apply_date &lt;= p.as_of AND o.is_due = 1 AND o.is_remit = 1
+               AND COALESCE(o.remit_amt, 0) &gt; 0
+               AND o.due_date &lt; CURRENT_DATE) AS n_due,
             (SELECT COUNT(*)
              FROM u
              INNER JOIN order_loan_f_v2_copy o ON o.user_id = u.user_id
              CROSS JOIN params p
-             WHERE o.apply_date &gt;= p.recall_dt AND o.is_due = 1 AND o.is_remit = 1
-               AND COALESCE(o.remit_amt, 0) &gt; 0 AND o.loan_status_code = 8) AS n_due_od,
+             WHERE o.apply_date &gt;= p.recall_dt AND o.apply_date &lt;= p.as_of AND o.is_due = 1 AND o.is_remit = 1
+               AND COALESCE(o.remit_amt, 0) &gt; 0 AND o.loan_status_code = 8
+               AND o.due_date &lt; CURRENT_DATE) AS n_due_od,
             (SELECT SUM(COALESCE(o.repaid_amt, 0))
              FROM u
              INNER JOIN order_loan_f_v2_copy o ON o.user_id = u.user_id
              CROSS JOIN params p
-             WHERE o.apply_date &gt;= p.recall_dt AND o.is_due = 1 AND o.is_remit = 1
-               AND COALESCE(o.remit_amt, 0) &gt; 0) AS due_repaid,
+             WHERE o.apply_date &gt;= p.recall_dt AND o.apply_date &lt;= p.as_of AND o.is_due = 1 AND o.is_remit = 1
+               AND COALESCE(o.remit_amt, 0) &gt; 0
+               AND o.due_date &lt; CURRENT_DATE) AS due_repaid,
             (SELECT SUM(o.remit_amt)
              FROM u
              INNER JOIN order_loan_f_v2_copy o ON o.user_id = u.user_id
              CROSS JOIN params p
-             WHERE o.apply_date &gt;= p.recall_dt AND o.is_due = 1 AND o.is_remit = 1
-               AND COALESCE(o.remit_amt, 0) &gt; 0) AS due_remit,
+             WHERE o.apply_date &gt;= p.recall_dt AND o.apply_date &lt;= p.as_of AND o.is_due = 1 AND o.is_remit = 1
+               AND COALESCE(o.remit_amt, 0) &gt; 0
+               AND o.due_date &lt; CURRENT_DATE) AS due_remit,
             (SELECT week_start FROM params) AS week_start,
             (SELECT as_of FROM params) AS as_of
         &quot;&quot;&quot;,
@@ -618,7 +633,7 @@ def fetch(batch):
           SELECT o.user_id, MIN(o.apply_date) AS first_apply
           FROM u
           INNER JOIN order_loan_f_v2_copy o
-            ON o.user_id = u.user_id AND o.apply_date &gt;= DATE &#x27;{RECALL_DATE}&#x27;
+            ON o.user_id = u.user_id AND o.apply_date &gt;= DATE &#x27;{RECALL_DATE}&#x27; AND o.apply_date &lt;= (CURRENT_DATE - 1)
           GROUP BY 1
         )
         SELECT first_apply::text AS d, COUNT(*) AS n
@@ -641,7 +656,7 @@ def fetch(batch):
                COUNT(DISTINCT o.user_id) AS n_user
         FROM u
         INNER JOIN order_loan_f_v2_copy o
-          ON o.user_id = u.user_id AND o.apply_date &gt;= DATE &#x27;{RECALL_DATE}&#x27;
+          ON o.user_id = u.user_id AND o.apply_date &gt;= DATE &#x27;{RECALL_DATE}&#x27; AND o.apply_date &lt;= (CURRENT_DATE - 1)
         GROUP BY 1 ORDER BY 1
         &quot;&quot;&quot;,
     )
@@ -659,6 +674,7 @@ def fetch(batch):
         WHERE o.apply_date &gt;= DATE &#x27;{RECALL_DATE}&#x27;
           AND o.is_remit = 1 AND COALESCE(o.remit_amt, 0) &gt; 0
           AND {remit_day} IS NOT NULL
+          AND {remit_day} &lt;= (CURRENT_DATE - 1)
         GROUP BY 1 ORDER BY 1
         &quot;&quot;&quot;,
     )
@@ -682,6 +698,7 @@ def fetch(batch):
         WHERE o.apply_date &gt;= DATE &#x27;{RECALL_DATE}&#x27;
           AND o.is_due = 1 AND o.is_remit = 1 AND COALESCE(o.remit_amt, 0) &gt; 0
           AND o.due_date IS NOT NULL
+          AND o.due_date &lt; CURRENT_DATE
         GROUP BY 1 ORDER BY 1
         &quot;&quot;&quot;,
     )
@@ -697,7 +714,7 @@ def fetch(batch):
           SELECT DISTINCT o.user_id
           FROM u
           INNER JOIN order_loan_f_v2_copy o
-            ON o.user_id = u.user_id AND o.apply_date &gt;= DATE &#x27;{RECALL_DATE}&#x27;
+            ON o.user_id = u.user_id AND o.apply_date &gt;= DATE &#x27;{RECALL_DATE}&#x27; AND o.apply_date &lt;= (CURRENT_DATE - 1)
         ) a ON a.user_id = u.user_id
         GROUP BY 1 ORDER BY n_user DESC
         &quot;&quot;&quot;,
@@ -727,7 +744,7 @@ def fetch(batch):
           SELECT DISTINCT o.user_id
           FROM u
           INNER JOIN order_loan_f_v2_copy o
-            ON o.user_id = u.user_id AND o.apply_date &gt;= DATE &#x27;{RECALL_DATE}&#x27;
+            ON o.user_id = u.user_id AND o.apply_date &gt;= DATE &#x27;{RECALL_DATE}&#x27; AND o.apply_date &lt;= (CURRENT_DATE - 1)
         ) a ON a.user_id = u.user_id
         GROUP BY 1
         &quot;&quot;&quot;,
@@ -766,7 +783,8 @@ def build_sql(batch, remit_day: str) -&gt; str:
 -- 触达日：{RECALL_DATE}
 -- 放款日：优先 o.remit_date::date（无该列时用 o.apply_date::date）
 -- 本文件当前放款日表达式：{remit_day}
--- 本周：DATE_TRUNC(&#x27;week&#x27;, CURRENT_DATE)::date（周一）
+-- 本周：DATE_TRUNC(&#x27;week&#x27;, CURRENT_DATE - 1)::date（周一）
+-- 统计截止：CURRENT_DATE - 1；到期：due_date &lt; CURRENT_DATE
 -- 执行前：SET search_path TO wangchuanliang, public;
 
 SET search_path TO wangchuanliang, public;
@@ -792,22 +810,22 @@ CREATE TEMP TABLE tmp_t7_u AS
 -- ---------------------------------------------------------------------------
 WITH params AS (
     SELECT DATE &#x27;{RECALL_DATE}&#x27; AS recall_dt,
-           DATE_TRUNC(&#x27;week&#x27;, CURRENT_DATE)::date AS week_start,
-           CURRENT_DATE AS as_of
+           DATE_TRUNC(&#x27;week&#x27;, CURRENT_DATE - 1)::date AS week_start,
+           (CURRENT_DATE - 1) AS as_of
 ),
 apply_u AS (
     SELECT DISTINCT o.user_id
     FROM tmp_t7_u u
     INNER JOIN order_loan_f_v2_copy o ON o.user_id = u.user_id
     CROSS JOIN params p
-    WHERE o.apply_date &gt;= p.recall_dt
+    WHERE o.apply_date &gt;= p.recall_dt AND o.apply_date &lt;= p.as_of
 ),
 first_apply AS (
     SELECT o.user_id, MIN(o.apply_date) AS first_dt
     FROM tmp_t7_u u
     INNER JOIN order_loan_f_v2_copy o ON o.user_id = u.user_id
     CROSS JOIN params p
-    WHERE o.apply_date &gt;= p.recall_dt
+    WHERE o.apply_date &gt;= p.recall_dt AND o.apply_date &lt;= p.as_of
     GROUP BY 1
 )
 SELECT
@@ -826,39 +844,44 @@ SELECT
      FROM tmp_t7_u u
      INNER JOIN order_loan_f_v2_copy o ON o.user_id = u.user_id
      CROSS JOIN params p
-     WHERE o.apply_date &gt;= p.recall_dt AND o.is_remit = 1
-       AND COALESCE(o.remit_amt, 0) &gt; 0) AS n_remit,
+             WHERE o.apply_date &gt;= p.recall_dt AND o.apply_date &lt;= p.as_of AND o.is_remit = 1
+               AND COALESCE(o.remit_amt, 0) &gt; 0
+               AND {remit_day} &lt;= p.as_of) AS n_remit,
     (SELECT COUNT(*)
      FROM tmp_t7_u u
      INNER JOIN order_loan_f_v2_copy o ON o.user_id = u.user_id
      CROSS JOIN params p
-     WHERE o.apply_date &gt;= p.recall_dt AND o.is_remit = 1
+     WHERE o.apply_date &gt;= p.recall_dt AND o.apply_date &lt;= p.as_of AND o.is_remit = 1
        AND COALESCE(o.remit_amt, 0) &gt; 0
        AND {remit_day} &gt;= p.week_start AND {remit_day} &lt;= p.as_of) AS n_remit_week,
     (SELECT COUNT(*)
      FROM tmp_t7_u u
      INNER JOIN order_loan_f_v2_copy o ON o.user_id = u.user_id
      CROSS JOIN params p
-     WHERE o.apply_date &gt;= p.recall_dt AND o.is_due = 1 AND o.is_remit = 1
-       AND COALESCE(o.remit_amt, 0) &gt; 0) AS n_due,
+             WHERE o.apply_date &gt;= p.recall_dt AND o.apply_date &lt;= p.as_of AND o.is_due = 1 AND o.is_remit = 1
+               AND COALESCE(o.remit_amt, 0) &gt; 0
+               AND o.due_date &lt; CURRENT_DATE) AS n_due,
     (SELECT COUNT(*)
      FROM tmp_t7_u u
      INNER JOIN order_loan_f_v2_copy o ON o.user_id = u.user_id
      CROSS JOIN params p
-     WHERE o.apply_date &gt;= p.recall_dt AND o.is_due = 1 AND o.is_remit = 1
-       AND COALESCE(o.remit_amt, 0) &gt; 0 AND o.loan_status_code = 8) AS n_due_od,
+             WHERE o.apply_date &gt;= p.recall_dt AND o.apply_date &lt;= p.as_of AND o.is_due = 1 AND o.is_remit = 1
+               AND COALESCE(o.remit_amt, 0) &gt; 0 AND o.loan_status_code = 8
+               AND o.due_date &lt; CURRENT_DATE) AS n_due_od,
     (SELECT SUM(COALESCE(o.repaid_amt, 0))
      FROM tmp_t7_u u
      INNER JOIN order_loan_f_v2_copy o ON o.user_id = u.user_id
      CROSS JOIN params p
-     WHERE o.apply_date &gt;= p.recall_dt AND o.is_due = 1 AND o.is_remit = 1
-       AND COALESCE(o.remit_amt, 0) &gt; 0) AS due_repaid,
+             WHERE o.apply_date &gt;= p.recall_dt AND o.apply_date &lt;= p.as_of AND o.is_due = 1 AND o.is_remit = 1
+               AND COALESCE(o.remit_amt, 0) &gt; 0
+               AND o.due_date &lt; CURRENT_DATE) AS due_repaid,
     (SELECT SUM(o.remit_amt)
      FROM tmp_t7_u u
      INNER JOIN order_loan_f_v2_copy o ON o.user_id = u.user_id
      CROSS JOIN params p
-     WHERE o.apply_date &gt;= p.recall_dt AND o.is_due = 1 AND o.is_remit = 1
-       AND COALESCE(o.remit_amt, 0) &gt; 0) AS due_remit,
+             WHERE o.apply_date &gt;= p.recall_dt AND o.apply_date &lt;= p.as_of AND o.is_due = 1 AND o.is_remit = 1
+               AND COALESCE(o.remit_amt, 0) &gt; 0
+               AND o.due_date &lt; CURRENT_DATE) AS due_remit,
     (SELECT week_start FROM params) AS week_start,
     (SELECT as_of FROM params) AS as_of;
 
@@ -872,7 +895,7 @@ WITH fa AS (
   SELECT o.user_id, MIN(o.apply_date) AS first_apply
   FROM tmp_t7_u u
   INNER JOIN order_loan_f_v2_copy o
-    ON o.user_id = u.user_id AND o.apply_date &gt;= DATE &#x27;{RECALL_DATE}&#x27;
+    ON o.user_id = u.user_id AND o.apply_date &gt;= DATE &#x27;{RECALL_DATE}&#x27; AND o.apply_date &lt;= (CURRENT_DATE - 1)
   GROUP BY 1
 )
 SELECT first_apply::text AS d, COUNT(*) AS n
@@ -888,7 +911,7 @@ SELECT o.apply_date::text AS d,
        COUNT(DISTINCT o.user_id) AS n_user
 FROM tmp_t7_u u
 INNER JOIN order_loan_f_v2_copy o
-  ON o.user_id = u.user_id AND o.apply_date &gt;= DATE &#x27;{RECALL_DATE}&#x27;
+  ON o.user_id = u.user_id AND o.apply_date &gt;= DATE &#x27;{RECALL_DATE}&#x27; AND o.apply_date &lt;= (CURRENT_DATE - 1)
 GROUP BY 1
 ORDER BY 1;
 
@@ -901,6 +924,7 @@ INNER JOIN order_loan_f_v2_copy o ON o.user_id = u.user_id
 WHERE o.apply_date &gt;= DATE &#x27;{RECALL_DATE}&#x27;
   AND o.is_remit = 1 AND COALESCE(o.remit_amt, 0) &gt; 0
   AND {remit_day} IS NOT NULL
+  AND {remit_day} &lt;= (CURRENT_DATE - 1)
 GROUP BY 1
 ORDER BY 1;
 
@@ -917,6 +941,7 @@ INNER JOIN order_loan_f_v2_copy o ON o.user_id = u.user_id
 WHERE o.apply_date &gt;= DATE &#x27;{RECALL_DATE}&#x27;
   AND o.is_due = 1 AND o.is_remit = 1 AND COALESCE(o.remit_amt, 0) &gt; 0
   AND o.due_date IS NOT NULL
+  AND o.due_date &lt; CURRENT_DATE
 GROUP BY 1
 ORDER BY 1;
 
@@ -931,7 +956,7 @@ LEFT JOIN (
   SELECT DISTINCT o.user_id
   FROM tmp_t7_u u
   INNER JOIN order_loan_f_v2_copy o
-    ON o.user_id = u.user_id AND o.apply_date &gt;= DATE &#x27;{RECALL_DATE}&#x27;
+    ON o.user_id = u.user_id AND o.apply_date &gt;= DATE &#x27;{RECALL_DATE}&#x27; AND o.apply_date &lt;= (CURRENT_DATE - 1)
 ) a ON a.user_id = u.user_id
 GROUP BY 1
 ORDER BY n_user DESC;
@@ -955,7 +980,7 @@ LEFT JOIN (
   SELECT DISTINCT o.user_id
   FROM tmp_t7_u u
   INNER JOIN order_loan_f_v2_copy o
-    ON o.user_id = u.user_id AND o.apply_date &gt;= DATE &#x27;{RECALL_DATE}&#x27;
+    ON o.user_id = u.user_id AND o.apply_date &gt;= DATE &#x27;{RECALL_DATE}&#x27; AND o.apply_date &lt;= (CURRENT_DATE - 1)
 ) a ON a.user_id = u.user_id
 GROUP BY 1;
 &quot;&quot;&quot;
@@ -1237,11 +1262,11 @@ new Chart(document.getElementById(&#x27;c10&#x27;), {type:&#x27;bar&#x27;, data:
             else &quot;该表无可用召回日日期字段，以整表为该批次名单。&quot;
         )
         + &quot;&lt;/li&gt;\n&quot;
-        f&quot;&lt;li&gt;提单：&lt;code&gt;apply_date ≥ {RECALL_DATE}&lt;/code&gt;。总提单人数=召回后任意提单用户去重；本周提单=本周任意提单用户去重；本周新增提单=召回后首次提单日期落在本周（周一 &lt;code&gt;DATE_TRUNC(&#x27;week&#x27;, CURRENT_DATE)&lt;/code&gt; 至库内 &lt;code&gt;CURRENT_DATE&lt;/code&gt;）。&lt;/li&gt;\n&quot;
-        &quot;&lt;li&gt;放款：&lt;code&gt;is_remit = 1&lt;/code&gt; 且 &lt;code&gt;remit_amt &amp;gt; 0&lt;/code&gt;；本周新增放款按放款日（本页为 &lt;code&gt;&quot;
+        f&quot;&lt;li&gt;提单：&lt;code&gt;apply_date&lt;/code&gt; 在 &lt;code&gt;{RECALL_DATE}&lt;/code&gt; 至 &lt;code&gt;CURRENT_DATE-1&lt;/code&gt;。总提单人数=召回后任意提单用户去重；本周提单=本周任意提单用户去重；本周新增提单=召回后首次提单日期落在本周（周一 &lt;code&gt;DATE_TRUNC(&#x27;week&#x27;, CURRENT_DATE-1)&lt;/code&gt; 至 &lt;code&gt;CURRENT_DATE-1&lt;/code&gt;）。&lt;/li&gt;\n&quot;
+        &quot;&lt;li&gt;放款：&lt;code&gt;is_remit = 1&lt;/code&gt; 且 &lt;code&gt;remit_amt &amp;gt; 0&lt;/code&gt;，放款日不超过 &lt;code&gt;CURRENT_DATE-1&lt;/code&gt;；本周新增放款按放款日（本页为 &lt;code&gt;&quot;
         + html_lib.escape(str(k[&quot;remit_day&quot;]))
         + &quot;&lt;/code&gt;）落在本周的订单数。&lt;/li&gt;\n&quot;
-        &quot;&lt;li&gt;到期盈利 / 逾期：召回后提单且 &lt;code&gt;is_due = 1&lt;/code&gt;、&lt;code&gt;is_remit = 1&lt;/code&gt;、&lt;code&gt;remit_amt &amp;gt; 0&lt;/code&gt;。盈利率 = &lt;code&gt;(repaid_amt − remit_amt) / remit_amt&lt;/code&gt;；逾期率 = &lt;code&gt;loan_status_code = 8&lt;/code&gt; 占到期放款单。&lt;/li&gt;\n&quot;
+        &quot;&lt;li&gt;到期盈利 / 逾期：召回后提单且 &lt;code&gt;is_due = 1&lt;/code&gt;、&lt;code&gt;is_remit = 1&lt;/code&gt;、&lt;code&gt;remit_amt &amp;gt; 0&lt;/code&gt;，且 &lt;code&gt;due_date &amp;lt; CURRENT_DATE&lt;/code&gt;。盈利率 = &lt;code&gt;(repaid_amt − remit_amt) / remit_amt&lt;/code&gt;；逾期率 = &lt;code&gt;loan_status_code = 8&lt;/code&gt; 占到期放款单。&lt;/li&gt;\n&quot;
         &quot;&lt;li&gt;转化结构：已提单 vs 名单中尚未提单。分层 / 流失天数：名单人数与对应提单率。&lt;/li&gt;\n&quot;
         &quot;&lt;/ul&gt;\n&quot;
         &quot;&lt;h2&gt;附录：&lt;/h2&gt;\n&quot;
@@ -1255,7 +1280,7 @@ new Chart(document.getElementById(&#x27;c10&#x27;), {type:&#x27;bar&#x27;, data:
         + html_lib.escape(front_src)
         + &quot;&lt;/pre&gt;&lt;/details&gt;\n&quot;
         &quot;&lt;/section&gt;\n&quot;
-        f&#x27;&lt;p class=&quot;foot&quot;&gt;数据：kaby_dw · {LIST_TABLE} · recall_date={RECALL_DATE} · 库内 CURRENT_DATE={k[&quot;as_of&quot;]}&lt;/p&gt;\n&#x27;
+        f&#x27;&lt;p class=&quot;foot&quot;&gt;数据：kaby_dw · {LIST_TABLE} · recall_date={RECALL_DATE} · 统计至 CURRENT_DATE-1={k[&quot;as_of&quot;]} · 到期 due_date &amp;lt; CURRENT_DATE&lt;/p&gt;\n&#x27;
         &quot;&lt;/main&gt;\n&quot;
         &quot;&lt;script&gt;\nconst D = &quot;
         + payload
@@ -1474,6 +1499,7 @@ h1{{font-size:24px;margin:8px 0 6px}}
 &lt;div class=&quot;page-top&quot;&gt;
   &lt;div class=&quot;kicker&quot;&gt;T7+ RECALL · MULTI-BATCH&lt;/div&gt;
   &lt;h1&gt;流失 7 天以上召回 · 看板&lt;/h1&gt;
+  &lt;p class=&quot;meta&quot;&gt;统计至库内 CURRENT_DATE-1 · 到期 due_date &amp;lt; CURRENT_DATE · 本机每天下午 17:30 自动刷新&lt;/p&gt;
   &lt;div class=&quot;tabs&quot;&gt;{&quot;&quot;.join(btns)}&lt;/div&gt;
 &lt;/div&gt;
 {&quot;&quot;.join(panels)}
@@ -1659,17 +1685,17 @@ details.code pre{overflow:auto;max-height:520px;font-size:11px;line-height:1.45;
 &lt;div class=&quot;top&quot;&gt;
   &lt;div class=&quot;kicker&quot;&gt;DASHBOARD · T7+ RECALL · 2026-09-02&lt;/div&gt;
   &lt;h1&gt;流失 7 天以上召回 · 看板&lt;/h1&gt;
-  &lt;p class=&quot;meta&quot;&gt;名单 2,939 人 · 统计至 2026-09-21 · 本周 2026-09-21 起（周一）&lt;/p&gt;
+  &lt;p class=&quot;meta&quot;&gt;名单 2,939 人 · 统计至 2026-09-20 · 本周 2026-09-14 起（周一）&lt;/p&gt;
 &lt;/div&gt;
 &lt;section class=&quot;kpis&quot;&gt;
   &lt;article class=&quot;card&quot;&gt;&lt;div class=&quot;label&quot;&gt;提单率&lt;/div&gt;&lt;div class=&quot;num a&quot;&gt;28.68%&lt;/div&gt;&lt;div class=&quot;sub&quot;&gt;843 / 2,939 · 9/2至今去重用户&lt;/div&gt;&lt;/article&gt;
   &lt;article class=&quot;card&quot;&gt;&lt;div class=&quot;label&quot;&gt;总提单人数&lt;/div&gt;&lt;div class=&quot;num g&quot;&gt;843&lt;/div&gt;&lt;div class=&quot;sub&quot;&gt;9/2至今任意提单用户&lt;/div&gt;&lt;/article&gt;
-  &lt;article class=&quot;card&quot;&gt;&lt;div class=&quot;label&quot;&gt;本周提单人数&lt;/div&gt;&lt;div class=&quot;num&quot;&gt;1&lt;/div&gt;&lt;div class=&quot;sub&quot;&gt;本周有过提单的去重用户&lt;/div&gt;&lt;/article&gt;
-  &lt;article class=&quot;card&quot;&gt;&lt;div class=&quot;label&quot;&gt;本周新增提单人数&lt;/div&gt;&lt;div class=&quot;num p&quot;&gt;0&lt;/div&gt;&lt;div class=&quot;sub&quot;&gt;召回后首次提单落在本周&lt;/div&gt;&lt;/article&gt;
-  &lt;article class=&quot;card&quot;&gt;&lt;div class=&quot;label&quot;&gt;放款单量&lt;/div&gt;&lt;div class=&quot;num g&quot;&gt;1,068&lt;/div&gt;&lt;div class=&quot;sub&quot;&gt;9/2至今已放款订单数&lt;/div&gt;&lt;/article&gt;
-  &lt;article class=&quot;card&quot;&gt;&lt;div class=&quot;label&quot;&gt;本周新增放款单量&lt;/div&gt;&lt;div class=&quot;num&quot;&gt;1&lt;/div&gt;&lt;div class=&quot;sub&quot;&gt;本周新放款订单数&lt;/div&gt;&lt;/article&gt;
-  &lt;article class=&quot;card&quot;&gt;&lt;div class=&quot;label&quot;&gt;订单盈利率&lt;/div&gt;&lt;div class=&quot;num a&quot;&gt;14.98%&lt;/div&gt;&lt;div class=&quot;sub&quot;&gt;到期订单&lt;/div&gt;&lt;/article&gt;
-  &lt;article class=&quot;card&quot;&gt;&lt;div class=&quot;label&quot;&gt;订单逾期率&lt;/div&gt;&lt;div class=&quot;num p&quot;&gt;34.44%&lt;/div&gt;&lt;div class=&quot;sub&quot;&gt;到期订单&lt;/div&gt;&lt;/article&gt;
+  &lt;article class=&quot;card&quot;&gt;&lt;div class=&quot;label&quot;&gt;本周提单人数&lt;/div&gt;&lt;div class=&quot;num&quot;&gt;365&lt;/div&gt;&lt;div class=&quot;sub&quot;&gt;本周有过提单的去重用户&lt;/div&gt;&lt;/article&gt;
+  &lt;article class=&quot;card&quot;&gt;&lt;div class=&quot;label&quot;&gt;本周新增提单人数&lt;/div&gt;&lt;div class=&quot;num p&quot;&gt;204&lt;/div&gt;&lt;div class=&quot;sub&quot;&gt;召回后首次提单落在本周&lt;/div&gt;&lt;/article&gt;
+  &lt;article class=&quot;card&quot;&gt;&lt;div class=&quot;label&quot;&gt;放款单量&lt;/div&gt;&lt;div class=&quot;num g&quot;&gt;1,067&lt;/div&gt;&lt;div class=&quot;sub&quot;&gt;9/2至今已放款订单数&lt;/div&gt;&lt;/article&gt;
+  &lt;article class=&quot;card&quot;&gt;&lt;div class=&quot;label&quot;&gt;本周新增放款单量&lt;/div&gt;&lt;div class=&quot;num&quot;&gt;367&lt;/div&gt;&lt;div class=&quot;sub&quot;&gt;本周新放款订单数&lt;/div&gt;&lt;/article&gt;
+  &lt;article class=&quot;card&quot;&gt;&lt;div class=&quot;label&quot;&gt;订单盈利率&lt;/div&gt;&lt;div class=&quot;num a&quot;&gt;17.70%&lt;/div&gt;&lt;div class=&quot;sub&quot;&gt;到期订单&lt;/div&gt;&lt;/article&gt;
+  &lt;article class=&quot;card&quot;&gt;&lt;div class=&quot;label&quot;&gt;订单逾期率&lt;/div&gt;&lt;div class=&quot;num p&quot;&gt;34.12%&lt;/div&gt;&lt;div class=&quot;sub&quot;&gt;到期订单&lt;/div&gt;&lt;/article&gt;
 &lt;/section&gt;
 &lt;div class=&quot;grid&quot;&gt;
   &lt;div class=&quot;card chart&quot;&gt;&lt;h3&gt;累计提单人数与提单率&lt;/h3&gt;&lt;p&gt;按召回后首次提单日累计，分母=2,939&lt;/p&gt;&lt;div class=&quot;box&quot;&gt;&lt;canvas id=&quot;c1&quot;&gt;&lt;/canvas&gt;&lt;/div&gt;&lt;/div&gt;
@@ -1857,10 +1883,10 @@ new Chart(document.getElementById(&#x27;c10&#x27;), {type:&#x27;bar&#x27;, data:
 &lt;/body&gt;&lt;/html&gt;
 </pre></details>
 </section>
-<p class="foot">数据：kaby_dw · wangchuanliang.t7recalllist_0902 · recall_date=2026-09-02 · 库内 CURRENT_DATE=2026-09-21</p>
+<p class="foot">数据：kaby_dw · wangchuanliang.t7recalllist_0902 · recall_date=2026-09-02 · 统计至 CURRENT_DATE-1=2026-09-20 · 到期 due_date &lt; CURRENT_DATE</p>
 </main>
 <script>
-const D = {"kpi": {"n_user": 2939, "n_apply": 843, "apply_rate": 28.68, "n_apply_week": 1, "n_first_week": 0, "n_remit": 1068, "n_remit_week": 1, "n_due": 90, "n_due_od": 31, "profit_pct": 14.98, "overdue_pct": 34.44, "week_start": "2026-09-21", "as_of": "2026-09-21", "recall_date": "2026-09-02", "remit_day": "o.remit_date::date"}, "first_daily": [{"d": "2026-09-02", "n": 82, "cum": 82, "rate": 2.79}, {"d": "2026-09-03", "n": 68, "cum": 150, "rate": 5.1}, {"d": "2026-09-04", "n": 85, "cum": 235, "rate": 8.0}, {"d": "2026-09-05", "n": 48, "cum": 283, "rate": 9.63}, {"d": "2026-09-06", "n": 57, "cum": 340, "rate": 11.57}, {"d": "2026-09-07", "n": 48, "cum": 388, "rate": 13.2}, {"d": "2026-09-08", "n": 51, "cum": 439, "rate": 14.94}, {"d": "2026-09-09", "n": 42, "cum": 481, "rate": 16.37}, {"d": "2026-09-10", "n": 39, "cum": 520, "rate": 17.69}, {"d": "2026-09-11", "n": 49, "cum": 569, "rate": 19.36}, {"d": "2026-09-12", "n": 43, "cum": 612, "rate": 20.82}, {"d": "2026-09-13", "n": 27, "cum": 639, "rate": 21.74}, {"d": "2026-09-14", "n": 40, "cum": 679, "rate": 23.1}, {"d": "2026-09-15", "n": 39, "cum": 718, "rate": 24.43}, {"d": "2026-09-16", "n": 23, "cum": 741, "rate": 25.21}, {"d": "2026-09-17", "n": 24, "cum": 765, "rate": 26.03}, {"d": "2026-09-18", "n": 21, "cum": 786, "rate": 26.74}, {"d": "2026-09-19", "n": 27, "cum": 813, "rate": 27.66}, {"d": "2026-09-20", "n": 30, "cum": 843, "rate": 28.68}, {"d": "2026-09-21", "n": 0, "cum": 843, "rate": 28.68}], "apply_daily": [{"d": "2026-09-02", "n_order": 83, "n_user": 82}, {"d": "2026-09-03", "n_order": 68, "n_user": 68}, {"d": "2026-09-04", "n_order": 86, "n_user": 86}, {"d": "2026-09-05", "n_order": 51, "n_user": 51}, {"d": "2026-09-06", "n_order": 57, "n_user": 57}, {"d": "2026-09-07", "n_order": 51, "n_user": 51}, {"d": "2026-09-08", "n_order": 58, "n_user": 57}, {"d": "2026-09-09", "n_order": 54, "n_user": 54}, {"d": "2026-09-10", "n_order": 52, "n_user": 52}, {"d": "2026-09-11", "n_order": 67, "n_user": 67}, {"d": "2026-09-12", "n_order": 58, "n_user": 58}, {"d": "2026-09-13", "n_order": 42, "n_user": 41}, {"d": "2026-09-14", "n_order": 58, "n_user": 57}, {"d": "2026-09-15", "n_order": 67, "n_user": 67}, {"d": "2026-09-16", "n_order": 42, "n_user": 42}, {"d": "2026-09-17", "n_order": 54, "n_user": 52}, {"d": "2026-09-18", "n_order": 51, "n_user": 50}, {"d": "2026-09-19", "n_order": 52, "n_user": 51}, {"d": "2026-09-20", "n_order": 69, "n_user": 67}, {"d": "2026-09-21", "n_order": 1, "n_user": 1}], "remit_daily": [{"d": "2026-09-02", "n": 81, "cum": 81}, {"d": "2026-09-03", "n": 67, "cum": 148}, {"d": "2026-09-04", "n": 83, "cum": 231}, {"d": "2026-09-05", "n": 50, "cum": 281}, {"d": "2026-09-06", "n": 54, "cum": 335}, {"d": "2026-09-07", "n": 49, "cum": 384}, {"d": "2026-09-08", "n": 56, "cum": 440}, {"d": "2026-09-09", "n": 52, "cum": 492}, {"d": "2026-09-10", "n": 51, "cum": 543}, {"d": "2026-09-11", "n": 60, "cum": 603}, {"d": "2026-09-12", "n": 58, "cum": 661}, {"d": "2026-09-13", "n": 39, "cum": 700}, {"d": "2026-09-14", "n": 52, "cum": 752}, {"d": "2026-09-15", "n": 65, "cum": 817}, {"d": "2026-09-16", "n": 41, "cum": 858}, {"d": "2026-09-17", "n": 53, "cum": 911}, {"d": "2026-09-18", "n": 46, "cum": 957}, {"d": "2026-09-19", "n": 50, "cum": 1007}, {"d": "2026-09-20", "n": 60, "cum": 1067}, {"d": "2026-09-21", "n": 1, "cum": 1068}], "due_daily": [{"d": "2026-09-02", "n_due": 0, "n_od": 0, "profit_pct": null, "overdue_pct": null, "remit": 0.0, "repaid": 0.0, "cum_profit_pct": null, "cum_overdue_pct": null}, {"d": "2026-09-03", "n_due": 0, "n_od": 0, "profit_pct": null, "overdue_pct": null, "remit": 0.0, "repaid": 0.0, "cum_profit_pct": null, "cum_overdue_pct": null}, {"d": "2026-09-04", "n_due": 0, "n_od": 0, "profit_pct": null, "overdue_pct": null, "remit": 0.0, "repaid": 0.0, "cum_profit_pct": null, "cum_overdue_pct": null}, {"d": "2026-09-05", "n_due": 0, "n_od": 0, "profit_pct": null, "overdue_pct": null, "remit": 0.0, "repaid": 0.0, "cum_profit_pct": null, "cum_overdue_pct": null}, {"d": "2026-09-06", "n_due": 0, "n_od": 0, "profit_pct": null, "overdue_pct": null, "remit": 0.0, "repaid": 0.0, "cum_profit_pct": null, "cum_overdue_pct": null}, {"d": "2026-09-07", "n_due": 0, "n_od": 0, "profit_pct": null, "overdue_pct": null, "remit": 0.0, "repaid": 0.0, "cum_profit_pct": null, "cum_overdue_pct": null}, {"d": "2026-09-08", "n_due": 7, "n_od": 2, "repaid": 2446.0, "remit": 2373.0, "profit_pct": 3.08, "overdue_pct": 28.57, "cum_profit_pct": 3.08, "cum_overdue_pct": 28.57}, {"d": "2026-09-09", "n_due": 8, "n_od": 1, "repaid": 8137.33, "remit": 5576.0, "profit_pct": 45.93, "overdue_pct": 12.5, "cum_profit_pct": 33.14, "cum_overdue_pct": 20.0}, {"d": "2026-09-10", "n_due": 4, "n_od": 0, "repaid": 2535.0, "remit": 1550.0, "profit_pct": 63.55, "overdue_pct": 0.0, "cum_profit_pct": 38.1, "cum_overdue_pct": 15.79}, {"d": "2026-09-11", "n_due": 1, "n_od": 0, "repaid": 850.0, "remit": 480.0, "profit_pct": 77.08, "overdue_pct": 0.0, "cum_profit_pct": 39.98, "cum_overdue_pct": 15.0}, {"d": "2026-09-12", "n_due": 5, "n_od": 0, "repaid": 4259.0, "remit": 2450.0, "profit_pct": 73.84, "overdue_pct": 0.0, "cum_profit_pct": 46.65, "cum_overdue_pct": 12.0}, {"d": "2026-09-13", "n_due": 3, "n_od": 1, "repaid": 1687.0, "remit": 3548.0, "profit_pct": -52.45, "overdue_pct": 33.33, "cum_profit_pct": 24.64, "cum_overdue_pct": 14.29}, {"d": "2026-09-14", "n_due": 6, "n_od": 4, "repaid": 3155.0, "remit": 2850.0, "profit_pct": 10.7, "overdue_pct": 66.67, "cum_profit_pct": 22.53, "cum_overdue_pct": 23.53}, {"d": "2026-09-15", "n_due": 13, "n_od": 7, "repaid": 29510.0, "remit": 25333.0, "profit_pct": 16.49, "overdue_pct": 53.85, "cum_profit_pct": 19.07, "cum_overdue_pct": 31.91}, {"d": "2026-09-16", "n_due": 8, "n_od": 2, "repaid": 25476.0, "remit": 19806.0, "profit_pct": 28.63, "overdue_pct": 25.0, "cum_profit_pct": 22.03, "cum_overdue_pct": 30.91}, {"d": "2026-09-17", "n_due": 11, "n_od": 6, "repaid": 27062.0, "remit": 26542.0, "profit_pct": 1.96, "overdue_pct": 54.55, "cum_profit_pct": 16.14, "cum_overdue_pct": 34.85}, {"d": "2026-09-18", "n_due": 6, "n_od": 1, "repaid": 14698.0, "remit": 10014.0, "profit_pct": 46.77, "overdue_pct": 16.67, "cum_profit_pct": 19.19, "cum_overdue_pct": 33.33}, {"d": "2026-09-19", "n_due": 5, "n_od": 1, "repaid": 2737.0, "remit": 3700.0, "profit_pct": -26.03, "overdue_pct": 20.0, "cum_profit_pct": 17.59, "cum_overdue_pct": 32.47}, {"d": "2026-09-20", "n_due": 8, "n_od": 4, "repaid": 23098.0, "remit": 19525.0, "profit_pct": 18.3, "overdue_pct": 50.0, "cum_profit_pct": 17.7, "cum_overdue_pct": 34.12}, {"d": "2026-09-21", "n_due": 5, "n_od": 2, "repaid": 893.0, "remit": 3704.0, "profit_pct": -75.89, "overdue_pct": 40.0, "cum_profit_pct": 14.98, "cum_overdue_pct": 34.44}], "strat": [{"strat": "20d+10r", "n_user": 1597, "n_apply": 431, "pct": 26.99}, {"strat": "30d", "n_user": 495, "n_apply": 153, "pct": 30.91}, {"strat": "20d", "n_user": 472, "n_apply": 155, "pct": 32.84}, {"strat": "10d+10r", "n_user": 320, "n_apply": 86, "pct": 26.88}, {"strat": "10d", "n_user": 55, "n_apply": 18, "pct": 32.73}], "churn": [{"bin": "7-15d", "n_user": 1397, "n_apply": 467, "pct": 33.43}, {"bin": "16-30d", "n_user": 1542, "n_apply": 376, "pct": 24.38}]};
+const D = {"kpi": {"n_user": 2939, "n_apply": 843, "apply_rate": 28.68, "n_apply_week": 365, "n_first_week": 204, "n_remit": 1067, "n_remit_week": 367, "n_due": 85, "n_due_od": 29, "profit_pct": 17.7, "overdue_pct": 34.12, "week_start": "2026-09-14", "as_of": "2026-09-20", "recall_date": "2026-09-02", "remit_day": "o.remit_date::date"}, "first_daily": [{"d": "2026-09-02", "n": 82, "cum": 82, "rate": 2.79}, {"d": "2026-09-03", "n": 68, "cum": 150, "rate": 5.1}, {"d": "2026-09-04", "n": 85, "cum": 235, "rate": 8.0}, {"d": "2026-09-05", "n": 48, "cum": 283, "rate": 9.63}, {"d": "2026-09-06", "n": 57, "cum": 340, "rate": 11.57}, {"d": "2026-09-07", "n": 48, "cum": 388, "rate": 13.2}, {"d": "2026-09-08", "n": 51, "cum": 439, "rate": 14.94}, {"d": "2026-09-09", "n": 42, "cum": 481, "rate": 16.37}, {"d": "2026-09-10", "n": 39, "cum": 520, "rate": 17.69}, {"d": "2026-09-11", "n": 49, "cum": 569, "rate": 19.36}, {"d": "2026-09-12", "n": 43, "cum": 612, "rate": 20.82}, {"d": "2026-09-13", "n": 27, "cum": 639, "rate": 21.74}, {"d": "2026-09-14", "n": 40, "cum": 679, "rate": 23.1}, {"d": "2026-09-15", "n": 39, "cum": 718, "rate": 24.43}, {"d": "2026-09-16", "n": 23, "cum": 741, "rate": 25.21}, {"d": "2026-09-17", "n": 24, "cum": 765, "rate": 26.03}, {"d": "2026-09-18", "n": 21, "cum": 786, "rate": 26.74}, {"d": "2026-09-19", "n": 27, "cum": 813, "rate": 27.66}, {"d": "2026-09-20", "n": 30, "cum": 843, "rate": 28.68}], "apply_daily": [{"d": "2026-09-02", "n_order": 83, "n_user": 82}, {"d": "2026-09-03", "n_order": 68, "n_user": 68}, {"d": "2026-09-04", "n_order": 86, "n_user": 86}, {"d": "2026-09-05", "n_order": 51, "n_user": 51}, {"d": "2026-09-06", "n_order": 57, "n_user": 57}, {"d": "2026-09-07", "n_order": 51, "n_user": 51}, {"d": "2026-09-08", "n_order": 58, "n_user": 57}, {"d": "2026-09-09", "n_order": 54, "n_user": 54}, {"d": "2026-09-10", "n_order": 52, "n_user": 52}, {"d": "2026-09-11", "n_order": 67, "n_user": 67}, {"d": "2026-09-12", "n_order": 58, "n_user": 58}, {"d": "2026-09-13", "n_order": 42, "n_user": 41}, {"d": "2026-09-14", "n_order": 58, "n_user": 57}, {"d": "2026-09-15", "n_order": 67, "n_user": 67}, {"d": "2026-09-16", "n_order": 42, "n_user": 42}, {"d": "2026-09-17", "n_order": 54, "n_user": 52}, {"d": "2026-09-18", "n_order": 51, "n_user": 50}, {"d": "2026-09-19", "n_order": 52, "n_user": 51}, {"d": "2026-09-20", "n_order": 69, "n_user": 67}], "remit_daily": [{"d": "2026-09-02", "n": 81, "cum": 81}, {"d": "2026-09-03", "n": 67, "cum": 148}, {"d": "2026-09-04", "n": 83, "cum": 231}, {"d": "2026-09-05", "n": 50, "cum": 281}, {"d": "2026-09-06", "n": 54, "cum": 335}, {"d": "2026-09-07", "n": 49, "cum": 384}, {"d": "2026-09-08", "n": 56, "cum": 440}, {"d": "2026-09-09", "n": 52, "cum": 492}, {"d": "2026-09-10", "n": 51, "cum": 543}, {"d": "2026-09-11", "n": 60, "cum": 603}, {"d": "2026-09-12", "n": 58, "cum": 661}, {"d": "2026-09-13", "n": 39, "cum": 700}, {"d": "2026-09-14", "n": 52, "cum": 752}, {"d": "2026-09-15", "n": 65, "cum": 817}, {"d": "2026-09-16", "n": 41, "cum": 858}, {"d": "2026-09-17", "n": 53, "cum": 911}, {"d": "2026-09-18", "n": 46, "cum": 957}, {"d": "2026-09-19", "n": 50, "cum": 1007}, {"d": "2026-09-20", "n": 60, "cum": 1067}], "due_daily": [{"d": "2026-09-02", "n_due": 0, "n_od": 0, "profit_pct": null, "overdue_pct": null, "remit": 0.0, "repaid": 0.0, "cum_profit_pct": null, "cum_overdue_pct": null}, {"d": "2026-09-03", "n_due": 0, "n_od": 0, "profit_pct": null, "overdue_pct": null, "remit": 0.0, "repaid": 0.0, "cum_profit_pct": null, "cum_overdue_pct": null}, {"d": "2026-09-04", "n_due": 0, "n_od": 0, "profit_pct": null, "overdue_pct": null, "remit": 0.0, "repaid": 0.0, "cum_profit_pct": null, "cum_overdue_pct": null}, {"d": "2026-09-05", "n_due": 0, "n_od": 0, "profit_pct": null, "overdue_pct": null, "remit": 0.0, "repaid": 0.0, "cum_profit_pct": null, "cum_overdue_pct": null}, {"d": "2026-09-06", "n_due": 0, "n_od": 0, "profit_pct": null, "overdue_pct": null, "remit": 0.0, "repaid": 0.0, "cum_profit_pct": null, "cum_overdue_pct": null}, {"d": "2026-09-07", "n_due": 0, "n_od": 0, "profit_pct": null, "overdue_pct": null, "remit": 0.0, "repaid": 0.0, "cum_profit_pct": null, "cum_overdue_pct": null}, {"d": "2026-09-08", "n_due": 7, "n_od": 2, "repaid": 2446.0, "remit": 2373.0, "profit_pct": 3.08, "overdue_pct": 28.57, "cum_profit_pct": 3.08, "cum_overdue_pct": 28.57}, {"d": "2026-09-09", "n_due": 8, "n_od": 1, "repaid": 8137.33, "remit": 5576.0, "profit_pct": 45.93, "overdue_pct": 12.5, "cum_profit_pct": 33.14, "cum_overdue_pct": 20.0}, {"d": "2026-09-10", "n_due": 4, "n_od": 0, "repaid": 2535.0, "remit": 1550.0, "profit_pct": 63.55, "overdue_pct": 0.0, "cum_profit_pct": 38.1, "cum_overdue_pct": 15.79}, {"d": "2026-09-11", "n_due": 1, "n_od": 0, "repaid": 850.0, "remit": 480.0, "profit_pct": 77.08, "overdue_pct": 0.0, "cum_profit_pct": 39.98, "cum_overdue_pct": 15.0}, {"d": "2026-09-12", "n_due": 5, "n_od": 0, "repaid": 4259.0, "remit": 2450.0, "profit_pct": 73.84, "overdue_pct": 0.0, "cum_profit_pct": 46.65, "cum_overdue_pct": 12.0}, {"d": "2026-09-13", "n_due": 3, "n_od": 1, "repaid": 1687.0, "remit": 3548.0, "profit_pct": -52.45, "overdue_pct": 33.33, "cum_profit_pct": 24.64, "cum_overdue_pct": 14.29}, {"d": "2026-09-14", "n_due": 6, "n_od": 4, "repaid": 3155.0, "remit": 2850.0, "profit_pct": 10.7, "overdue_pct": 66.67, "cum_profit_pct": 22.53, "cum_overdue_pct": 23.53}, {"d": "2026-09-15", "n_due": 13, "n_od": 7, "repaid": 29510.0, "remit": 25333.0, "profit_pct": 16.49, "overdue_pct": 53.85, "cum_profit_pct": 19.07, "cum_overdue_pct": 31.91}, {"d": "2026-09-16", "n_due": 8, "n_od": 2, "repaid": 25476.0, "remit": 19806.0, "profit_pct": 28.63, "overdue_pct": 25.0, "cum_profit_pct": 22.03, "cum_overdue_pct": 30.91}, {"d": "2026-09-17", "n_due": 11, "n_od": 6, "repaid": 27062.0, "remit": 26542.0, "profit_pct": 1.96, "overdue_pct": 54.55, "cum_profit_pct": 16.14, "cum_overdue_pct": 34.85}, {"d": "2026-09-18", "n_due": 6, "n_od": 1, "repaid": 14698.0, "remit": 10014.0, "profit_pct": 46.77, "overdue_pct": 16.67, "cum_profit_pct": 19.19, "cum_overdue_pct": 33.33}, {"d": "2026-09-19", "n_due": 5, "n_od": 1, "repaid": 2737.0, "remit": 3700.0, "profit_pct": -26.03, "overdue_pct": 20.0, "cum_profit_pct": 17.59, "cum_overdue_pct": 32.47}, {"d": "2026-09-20", "n_due": 8, "n_od": 4, "repaid": 23098.0, "remit": 19525.0, "profit_pct": 18.3, "overdue_pct": 50.0, "cum_profit_pct": 17.7, "cum_overdue_pct": 34.12}], "strat": [{"strat": "20d+10r", "n_user": 1597, "n_apply": 431, "pct": 26.99}, {"strat": "30d", "n_user": 495, "n_apply": 153, "pct": 30.91}, {"strat": "20d", "n_user": 472, "n_apply": 155, "pct": 32.84}, {"strat": "10d+10r", "n_user": 320, "n_apply": 86, "pct": 26.88}, {"strat": "10d", "n_user": 55, "n_apply": 18, "pct": 32.73}], "churn": [{"bin": "7-15d", "n_user": 1397, "n_apply": 467, "pct": 33.43}, {"bin": "16-30d", "n_user": 1542, "n_apply": 376, "pct": 24.38}]};
 
 const col = {cy:'#43c7e7', gr:'#64dcae', am:'#ffc26b', pk:'#f68ab0'};
 Chart.defaults.font.family='-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei",sans-serif';
