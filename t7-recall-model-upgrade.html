@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>T7 召回提单模型迭代前后对照</title>
+<title>T7 召回 · 提单预测模型 · 统计至 2026-09-21</title>
 <style>
 :root{--line:#2a5c7e;--text:#eff8ff;--muted:#aac5da;--cy:#43c7e7}
 *{box-sizing:border-box}body{margin:0;background:#06192b;color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei",sans-serif}
@@ -37,53 +37,53 @@ pre.sql{overflow:auto;max-height:900px;font-size:11.5px;line-height:1.5;color:#d
 <body>
 <main class="wrap">
 <header class="hero">
-<div class="kicker">T7 召回 · 提单预测模型 · 统计至 2026-09-22</div>
-<h1>模型迭代后，core 前三分之一流失用户贡献了更大份额的提单</h1>
+<div class="kicker">T7 召回 · 提单预测模型 · 统计至 2026-09-21</div>
+<h1>模型迭代后，提单意愿分前三分之一流失用户贡献了更大份额的提单</h1>
 <div class="hero-meta">
-迭代前名单 <code>t7recall_active0910</code>（触达 9/10），迭代后 <code>t7recalllist_active0918</code>（触达 9/18）。<br>
-core 前 1/3 = 该批流失用户按 <code>score</code> 从高到低 <code>NTILE(3)</code> 最高档。主指标 = 前 1/3 里提单人数 / 该批全部提单人数。提单从触达日算到 2026-09-22。
+迭代前 提单意愿模型v1版，迭代后 提单意愿模型v2版（触达 9/18）。<br>
+core 前 1/3 = 该批流失用户按 score 从高到低取前 1/3用户。主指标 = 前 1/3 里提单人数 / 该批全部提单人数。提单从触达日算到 2026-09-21。
 </div>
 </header>
 
 <section class="grid g4" style="margin-top:18px">
-<article class="card"><div class="label">迭代前 · 前1/3占全部提单</div><div class="num">65.43%</div><div class="sub">564 / 862 · 观察到今天</div></article>
-<article class="card"><div class="label">迭代后 · 前1/3占全部提单</div><div class="num">73.59%</div><div class="sub">209 / 284 · 观察到今天</div></article>
-<article class="card"><div class="label">对齐 5 日 · 迭代前</div><div class="num">71.01%</div><div class="sub">289 / 407 · D0～D4</div></article>
-<article class="card"><div class="label">对齐 5 日 · 迭代后</div><div class="num">73.59%</div><div class="sub">209 / 284 · D0～D4</div></article>
+<article class="card"><div class="label">v1 · 前1/3占全部提单</div><div class="num">65.51%</div><div class="sub">564 / 861 · 截至 9/21</div></article>
+<article class="card"><div class="label">v2 · 前1/3占全部提单</div><div class="num">73.85%</div><div class="sub">209 / 283 · 截至 9/21</div></article>
+<article class="card"><div class="label">对齐 4 日 · v1</div><div class="num">71.93%</div><div class="sub">246 / 342 · D0～D3</div></article>
+<article class="card"><div class="label">对齐 4 日 · v2</div><div class="num">73.85%</div><div class="sub">209 / 283 · D0～D3</div></article>
 </section>
 
 <h2>结论</h2>
 <div class="callout green"><div class="ch">1. 排序更准：高分用户贡献了更多提单</div>
-同样在流失用户里取 score 最高三分之一，这些人占全部提单的比例，迭代前 <b>65.43%</b>（564/862），迭代后 <b>73.59%</b>（209/284），提高 <b>8.16pp</b>。高分档大约只占名单 33%，迭代后贡献了约四分之三的提单。</div>
-<div class="callout gold"><div class="ch">2. 对齐触达后同样 5 天，提升还在</div>
-迭代前观察到 13 天、迭代后只有 5 天。后面几天会进来更多中低分提单，把前 1/3 占比拉低。两批都只看到 D0～D4：迭代前 <b>71.01%</b>，迭代后 <b>73.59%</b>，仍高 <b>2.58pp</b>。按触达后天数看累计占比，迭代后曲线更高、更稳。</div>
+同样在流失用户里取 score 最高三分之一，这些人占全部提单的比例，v1 <b>65.51%</b>（564/861），v2 <b>73.85%</b>（209/283），提高 <b>8.34pp</b>。高分档大约只占名单 33%，v2 贡献了约四分之三的提单。</div>
+<div class="callout gold"><div class="ch">2. 对齐触达后同样 4 天，提升还在</div>
+v1 观察到 12 天、v2 只有 4 天。后面几天会进来更多中低分提单，把前 1/3 占比拉低。两批都只看到 D0～D3：v1 <b>71.93%</b>，v2 <b>73.85%</b>，仍高 <b>1.92pp</b>。按触达后天数看累计占比，v2 曲线更高、更稳。</div>
 <div class="callout"><div class="ch">3. 经营含义</div>
 升级后的分更适合做触达排序和额度/券倾斜：同样覆盖前三分之一流失用户，能打到更大比例的实际提单人。</div>
 
 <details class="fold">
 <summary>按首次提单日</summary>
 <p class="desc">累计占比用首次提单去重，跨日多次提单的人只进第一次。点击标题展开明细。</p>
-<h3 style="font-size:16px;margin:18px 0 8px">迭代前 0910</h3>
+<h3 style="font-size:16px;margin:18px 0 8px">提单意愿模型v1版</h3>
 <div class="table"><table>
 <thead><tr><th>日期</th><th>触达后</th><th>当日新增提单</th><th>其中前 1/3</th><th>当日占比</th><th>累计提单</th><th>累计前 1/3</th><th>累计占比</th></tr></thead>
-<tbody><tr><td>2026-09-10</td><td>D0</td><td>77</td><td>56</td><td>72.73%</td><td>77</td><td>56</td><td>72.73%</td></tr><tr><td>2026-09-11</td><td>D1</td><td>106</td><td>86</td><td>81.13%</td><td>183</td><td>142</td><td>77.60%</td></tr><tr><td>2026-09-12</td><td>D2</td><td>98</td><td>62</td><td>63.27%</td><td>281</td><td>204</td><td>72.60%</td></tr><tr><td>2026-09-13</td><td>D3</td><td>61</td><td>42</td><td>68.85%</td><td>342</td><td>246</td><td>71.93%</td></tr><tr><td>2026-09-14</td><td>D4</td><td>65</td><td>43</td><td>66.15%</td><td>407</td><td>289</td><td>71.01%</td></tr><tr><td>2026-09-15</td><td>D5</td><td>72</td><td>46</td><td>63.89%</td><td>479</td><td>335</td><td>69.94%</td></tr><tr><td>2026-09-16</td><td>D6</td><td>58</td><td>31</td><td>53.45%</td><td>537</td><td>366</td><td>68.16%</td></tr><tr><td>2026-09-17</td><td>D7</td><td>62</td><td>43</td><td>69.35%</td><td>599</td><td>409</td><td>68.28%</td></tr><tr><td>2026-09-18</td><td>D8</td><td>51</td><td>33</td><td>64.71%</td><td>650</td><td>442</td><td>68.00%</td></tr><tr><td>2026-09-19</td><td>D9</td><td>64</td><td>38</td><td>59.38%</td><td>714</td><td>480</td><td>67.23%</td></tr><tr><td>2026-09-20</td><td>D10</td><td>78</td><td>40</td><td>51.28%</td><td>792</td><td>520</td><td>65.66%</td></tr><tr><td>2026-09-21</td><td>D11</td><td>69</td><td>44</td><td>63.77%</td><td>861</td><td>564</td><td>65.51%</td></tr><tr><td>2026-09-22</td><td>D12</td><td>1</td><td>0</td><td>0.00%</td><td>862</td><td>564</td><td>65.43%</td></tr></tbody>
+<tbody><tr><td>2026-09-10</td><td>D0</td><td>77</td><td>56</td><td>72.73%</td><td>77</td><td>56</td><td>72.73%</td></tr><tr><td>2026-09-11</td><td>D1</td><td>106</td><td>86</td><td>81.13%</td><td>183</td><td>142</td><td>77.60%</td></tr><tr><td>2026-09-12</td><td>D2</td><td>98</td><td>62</td><td>63.27%</td><td>281</td><td>204</td><td>72.60%</td></tr><tr><td>2026-09-13</td><td>D3</td><td>61</td><td>42</td><td>68.85%</td><td>342</td><td>246</td><td>71.93%</td></tr><tr><td>2026-09-14</td><td>D4</td><td>65</td><td>43</td><td>66.15%</td><td>407</td><td>289</td><td>71.01%</td></tr><tr><td>2026-09-15</td><td>D5</td><td>72</td><td>46</td><td>63.89%</td><td>479</td><td>335</td><td>69.94%</td></tr><tr><td>2026-09-16</td><td>D6</td><td>58</td><td>31</td><td>53.45%</td><td>537</td><td>366</td><td>68.16%</td></tr><tr><td>2026-09-17</td><td>D7</td><td>62</td><td>43</td><td>69.35%</td><td>599</td><td>409</td><td>68.28%</td></tr><tr><td>2026-09-18</td><td>D8</td><td>51</td><td>33</td><td>64.71%</td><td>650</td><td>442</td><td>68.00%</td></tr><tr><td>2026-09-19</td><td>D9</td><td>64</td><td>38</td><td>59.38%</td><td>714</td><td>480</td><td>67.23%</td></tr><tr><td>2026-09-20</td><td>D10</td><td>78</td><td>40</td><td>51.28%</td><td>792</td><td>520</td><td>65.66%</td></tr><tr><td>2026-09-21</td><td>D11</td><td>69</td><td>44</td><td>63.77%</td><td>861</td><td>564</td><td>65.51%</td></tr></tbody>
 </table></div>
-<h3 style="font-size:16px;margin:18px 0 8px">迭代后 0918</h3>
+<h3 style="font-size:16px;margin:18px 0 8px">提单意愿模型v2版（触达 9/18）</h3>
 <div class="table"><table>
 <thead><tr><th>日期</th><th>触达后</th><th>当日新增提单</th><th>其中前 1/3</th><th>当日占比</th><th>累计提单</th><th>累计前 1/3</th><th>累计占比</th></tr></thead>
-<tbody><tr><td>2026-09-18</td><td>D0</td><td>56</td><td>41</td><td>73.21%</td><td>56</td><td>41</td><td>73.21%</td></tr><tr><td>2026-09-19</td><td>D1</td><td>73</td><td>54</td><td>73.97%</td><td>129</td><td>95</td><td>73.64%</td></tr><tr><td>2026-09-20</td><td>D2</td><td>85</td><td>63</td><td>74.12%</td><td>214</td><td>158</td><td>73.83%</td></tr><tr><td>2026-09-21</td><td>D3</td><td>69</td><td>51</td><td>73.91%</td><td>283</td><td>209</td><td>73.85%</td></tr><tr><td>2026-09-22</td><td>D4</td><td>1</td><td>0</td><td>0.00%</td><td>284</td><td>209</td><td>73.59%</td></tr></tbody>
+<tbody><tr><td>2026-09-18</td><td>D0</td><td>56</td><td>41</td><td>73.21%</td><td>56</td><td>41</td><td>73.21%</td></tr><tr><td>2026-09-19</td><td>D1</td><td>73</td><td>54</td><td>73.97%</td><td>129</td><td>95</td><td>73.64%</td></tr><tr><td>2026-09-20</td><td>D2</td><td>85</td><td>63</td><td>74.12%</td><td>214</td><td>158</td><td>73.83%</td></tr><tr><td>2026-09-21</td><td>D3</td><td>69</td><td>51</td><td>73.91%</td><td>283</td><td>209</td><td>73.85%</td></tr></tbody>
 </table></div>
 </details>
 
 <details class="fold">
 <summary>附录：完整 PGSQL（可复现全部指标）</summary>
-<p class="desc">R1/R4 总览（含 D0～D4）；R2/R5 三分位人数；R3/R6 按首次提单日。占比用对应列相除。统计日随 <code>CURRENT_DATE</code> 滚动。</p>
+<p class="desc">R1/R4 总览（含 D0～D3）；R2/R5 三分位人数；R3/R6 按首次提单日。占比用对应列相除。提单窗口截止 <code>2026-09-21</code>。</p>
 <pre class="sql">-- =============================================================================
--- T7 召回提单模型：迭代前 t7recall_active0910 vs 迭代后 t7recalllist_active0918
+-- T7 召回 · 提单意愿模型：v1 t7recall_active0910 vs v2 t7recalllist_active0918
 -- 库：kaby_dw · schema wangchuanliang
 -- 主指标：core 前 1/3 流失用户中的提单人数 / 该批全部提单人数
--- 提单窗口：各批触达日（9/10、9/18）起至 CURRENT_DATE（含）
--- 对齐窗口：触达日起连续 5 个日历日（D0～D4，0910 为 9/10～9/14，0918 为 9/18～9/22）
+-- 提单窗口：各批触达日（9/10、9/18）起至 2026-09-21（含）
+-- 对齐窗口：触达日起连续 4 个日历日（D0～D3，v1 为 9/10～9/13，v2 为 9/18～9/21）
 -- =============================================================================
 
 -- ---------- 迭代前：t7recall_active0910，触达 2026-09-10 ----------
@@ -106,10 +106,10 @@ CREATE TEMP TABLE tmp_a_v1 AS
 SELECT o.user_id, MIN(o.apply_date) AS first_apply
 FROM tmp_u_v1 u
 INNER JOIN wangchuanliang.order_loan_f_v2_copy o ON o.user_id = u.user_id
-WHERE o.apply_date &gt;= DATE &#x27;2026-09-10&#x27; AND o.apply_date &lt;= CURRENT_DATE
+WHERE o.apply_date &gt;= DATE &#x27;2026-09-10&#x27; AND o.apply_date &lt;= DATE &#x27;2026-09-21&#x27;
 GROUP BY o.user_id;
 
--- R1 迭代前总览（观察到今天 + D0～D4）
+-- R1 v1 总览（截至 9/21 + D0～D3）
 SELECT
     &#x27;v1_0910&#x27; AS batch,
     (SELECT COUNT(*) FROM tmp_r_v1) AS n_churn,
@@ -118,11 +118,11 @@ SELECT
     (SELECT MAX(score) FROM tmp_r_v1 WHERE tertile = 1) AS top_score_max,
     (SELECT COUNT(*) FROM tmp_a_v1) AS n_apply,
     (SELECT COUNT(*) FROM tmp_a_v1 a INNER JOIN tmp_r_v1 r ON r.user_id = a.user_id AND r.tertile = 1) AS n_apply_top,
-    (SELECT COUNT(*) FROM tmp_a_v1 WHERE first_apply &lt;= DATE &#x27;2026-09-10&#x27; + 4) AS n_apply_d4,
+    (SELECT COUNT(*) FROM tmp_a_v1 WHERE first_apply &lt;= DATE &#x27;2026-09-10&#x27; + 3) AS n_apply_d3,
     (SELECT COUNT(*) FROM tmp_a_v1 a INNER JOIN tmp_r_v1 r ON r.user_id = a.user_id AND r.tertile = 1
-      WHERE a.first_apply &lt;= DATE &#x27;2026-09-10&#x27; + 4) AS n_apply_top_d4;
+      WHERE a.first_apply &lt;= DATE &#x27;2026-09-10&#x27; + 3) AS n_apply_top_d3;
 
--- R2 迭代前三分位（观察到今天）
+-- R2 v1 三分位（截至 9/21）
 SELECT r.tertile,
        COUNT(*) AS n_churn,
        COUNT(a.user_id) AS n_apply
@@ -160,10 +160,10 @@ CREATE TEMP TABLE tmp_a_v2 AS
 SELECT o.user_id, MIN(o.apply_date) AS first_apply
 FROM tmp_u_v2 u
 INNER JOIN wangchuanliang.order_loan_f_v2_copy o ON o.user_id = u.user_id
-WHERE o.apply_date &gt;= DATE &#x27;2026-09-18&#x27; AND o.apply_date &lt;= CURRENT_DATE
+WHERE o.apply_date &gt;= DATE &#x27;2026-09-18&#x27; AND o.apply_date &lt;= DATE &#x27;2026-09-21&#x27;
 GROUP BY o.user_id;
 
--- R4 迭代后总览
+-- R4 v2 总览
 SELECT
     &#x27;v2_0918&#x27; AS batch,
     (SELECT COUNT(*) FROM tmp_r_v2) AS n_churn,
@@ -172,11 +172,11 @@ SELECT
     (SELECT MAX(score) FROM tmp_r_v2 WHERE tertile = 1) AS top_score_max,
     (SELECT COUNT(*) FROM tmp_a_v2) AS n_apply,
     (SELECT COUNT(*) FROM tmp_a_v2 a INNER JOIN tmp_r_v2 r ON r.user_id = a.user_id AND r.tertile = 1) AS n_apply_top,
-    (SELECT COUNT(*) FROM tmp_a_v2 WHERE first_apply &lt;= DATE &#x27;2026-09-18&#x27; + 4) AS n_apply_d4,
+    (SELECT COUNT(*) FROM tmp_a_v2 WHERE first_apply &lt;= DATE &#x27;2026-09-18&#x27; + 3) AS n_apply_d3,
     (SELECT COUNT(*) FROM tmp_a_v2 a INNER JOIN tmp_r_v2 r ON r.user_id = a.user_id AND r.tertile = 1
-      WHERE a.first_apply &lt;= DATE &#x27;2026-09-18&#x27; + 4) AS n_apply_top_d4;
+      WHERE a.first_apply &lt;= DATE &#x27;2026-09-18&#x27; + 3) AS n_apply_top_d3;
 
--- R5 迭代后三分位（观察到今天）
+-- R5 v2 三分位（截至 9/21）
 SELECT r.tertile,
        COUNT(*) AS n_churn,
        COUNT(a.user_id) AS n_apply
@@ -194,11 +194,11 @@ INNER JOIN tmp_r_v2 r ON r.user_id = a.user_id
 GROUP BY 1
 ORDER BY 1;
 
--- 占比：n_apply_top / n_apply ；对齐 5 日：n_apply_top_d4 / n_apply_d4
+-- 占比：n_apply_top / n_apply ；对齐 4 日：n_apply_top_d3 / n_apply_d3
 -- 两版 score 量纲不同，不要直接比绝对分，只比三分位排序后的提单贡献。
 </pre>
 </details>
-<p class="foot">数据截至库内 2026-09-22。源表：t7recall_active0910、t7recalllist_active0918、order_loan_f_v2_copy。</p>
+<p class="foot">数据截至 2026-09-21。源表：t7recall_active0910、t7recalllist_active0918、order_loan_f_v2_copy。</p>
 </main>
 </body>
 </html>
