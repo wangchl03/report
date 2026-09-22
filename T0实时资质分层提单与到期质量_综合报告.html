@@ -1,0 +1,72 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>T0 实时资质分层：提单与到期质量综合报告</title>
+  <style>
+    :root { color-scheme: dark; --bg:#071724; --panel:#0e2639; --line:#2d5a77; --text:#eaf6ff; --muted:#a8c3d6; --accent:#4bd4ea; --active:#63ddb1; }
+    * { box-sizing:border-box; }
+    body { margin:0; background:linear-gradient(135deg,#061521,#0b2940); color:var(--text); font:15px/1.6 -apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei",sans-serif; }
+    main { max-width:1440px; margin:auto; padding:28px 22px 34px; }
+    header { border:1px solid var(--line); border-radius:16px; padding:24px 26px; background:linear-gradient(120deg,#112f49,#123b4a); }
+    .eyebrow { color:var(--active); letter-spacing:1.8px; font-size:12px; font-weight:750; }
+    h1 { margin:7px 0 5px; font-size:29px; line-height:1.28; }
+    p { color:var(--muted); margin:4px 0 0; }
+    .tabs { display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:10px; margin:20px 0 14px; }
+    .tab { appearance:none; min-height:68px; padding:11px 13px; border:1px solid var(--line); border-radius:11px; background:var(--panel); color:var(--text); cursor:pointer; text-align:left; font:inherit; transition:.16s ease; }
+    .tab:hover { transform:translateY(-1px); border-color:#55a8c9; }
+    .tab[aria-selected="true"] { background:#164354; border-color:var(--active); box-shadow:0 0 0 1px rgba(99,221,177,.15) inset; }
+    .tab b { display:block; font-size:15px; }
+    .tab small { display:block; color:var(--muted); margin-top:2px; }
+    .toolbar { display:flex; justify-content:space-between; gap:12px; align-items:center; margin:0 0 10px; color:var(--muted); font-size:13px; }
+    .toolbar a { color:#86e7f5; }
+    iframe { display:block; width:100%; height:calc(100vh - 245px); min-height:700px; border:1px solid var(--line); border-radius:13px; background:#071b2f; }
+    @media (max-width:860px) { main { padding:16px 10px; } h1 { font-size:24px; } .tabs { grid-template-columns:repeat(2,minmax(0,1fr)); } iframe { height:75vh; min-height:620px; } }
+  </style>
+</head>
+<body>
+  <main>
+    <header>
+      <div class="eyebrow">T0 · REAL-TIME SCORE · INTEGRATED REPORT</div>
+      <h1>T0 获额后 24 小时提单与整笔订单到期质量<br>实时资质分层综合报告</h1>
+      <p>可在下方四个选项中切换 363 / 405 模型、外层三档 / 外层资质较好客群内部三档的完整报告。</p>
+    </header>
+
+    <nav class="tabs" aria-label="报告切换">
+      <button class="tab" type="button" aria-selected="true" data-src="T0获额后24小时首次提单时效_363实时资质分层分析报告.html" data-title="363｜全量三档实时资质分层">
+        <b>363｜全量三档</b><small>实时资质分层、提单时效与到期质量</small>
+      </button>
+      <button class="tab" type="button" aria-selected="false" data-src="T0资质较好客群内部三等分_363实时分层分析报告.html" data-title="363｜资质较好客群内部三档">
+        <b>363｜资质较好客群内部三档</b><small>高资质客群的内部结构与质量变化</small>
+      </button>
+      <button class="tab" type="button" aria-selected="false" data-src="T0获额后24小时首次提单时效_405实时资质分层分析报告.html" data-title="405｜全量三档实时资质分层">
+        <b>405｜全量三档</b><small>实时资质分层、提单时效与到期质量</small>
+      </button>
+      <button class="tab" type="button" aria-selected="false" data-src="T0资质较好客群内部三等分_405实时分层分析报告.html" data-title="405｜资质较好客群内部三档">
+        <b>405｜资质较好客群内部三档</b><small>高资质客群的内部结构与质量变化</small>
+      </button>
+    </nav>
+
+    <div class="toolbar">
+      <span id="current-title">当前：363｜全量三档实时资质分层</span>
+      <a id="open-report" href="T0获额后24小时首次提单时效_363实时资质分层分析报告.html" target="_blank" rel="noopener">在新标签打开当前报告</a>
+    </div>
+    <iframe id="report-frame" title="363｜全量三档实时资质分层" src="T0获额后24小时首次提单时效_363实时资质分层分析报告.html"></iframe>
+  </main>
+  <script>
+    const tabs = [...document.querySelectorAll('.tab')];
+    const frame = document.querySelector('#report-frame');
+    const currentTitle = document.querySelector('#current-title');
+    const openReport = document.querySelector('#open-report');
+    tabs.forEach(tab => tab.addEventListener('click', () => {
+      const { src, title } = tab.dataset;
+      tabs.forEach(item => item.setAttribute('aria-selected', String(item === tab)));
+      frame.src = src;
+      frame.title = title;
+      currentTitle.textContent = `当前：${title}`;
+      openReport.href = src;
+    }));
+  </script>
+</body>
+</html>

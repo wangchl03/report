@@ -1,0 +1,377 @@
+<!DOCTYPE html>
+<html lang="zh-CN"><head><meta charset="utf-8"/><meta content="width=device-width,initial-scale=1" name="viewport"/><title>T0获额后24小时首次提单时效：405实时资质分层分析</title><style>
+:root{--bg:#071b2f;--panel:#0c2944;--line:#2a5c7e;--text:#eff8ff;--muted:#aac5da;--cyan:#43c7e7;--good:#64dcae;--mid:#ffc26b;--bad:#f68ab0}*{box-sizing:border-box}body{margin:0;background:linear-gradient(135deg,#06192b,#0b2c47);color:var(--text);font:15px/1.7 -apple-system,BlinkMacSystemFont,'PingFang SC','Microsoft YaHei',sans-serif}main{max-width:1280px;margin:auto;padding:42px 28px 72px}header{text-align:center;border-bottom:1px solid var(--line);padding:24px 8px}h1{margin:6px 0;font-size:32px;line-height:1.3}h2{font-size:23px;margin:44px 0 12px;border-left:4px solid var(--cyan);padding-left:11px}h3{font-size:17px;margin:0 0 8px}p,.muted{color:var(--muted)}.tag{display:inline-block;border:1px solid #33779e;border-radius:18px;padding:4px 12px;color:#ccecff}.grid2{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}.grid4{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px}.card,.panel,.note{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:17px}.value{font-weight:800;font-size:25px;color:var(--cyan);margin:5px 0}.label{color:var(--muted);font-size:13px}.note{border-left:4px solid var(--mid);margin:14px 0;line-height:1.75}.panel svg{width:100%;height:auto}.grid line{stroke:#2a5c7e;opacity:.55}svg text{fill:#aac5da;font-size:12px}.legend{display:flex;gap:18px;flex-wrap:wrap;color:var(--muted);font-size:13px}.legend i{display:inline-block;width:10px;height:10px;border-radius:50%;margin-right:6px}table{width:100%;border-collapse:collapse;background:var(--panel);font-size:13px}th,td{padding:9px 10px;border-bottom:1px solid rgba(42,92,126,.55);text-align:right;white-space:nowrap}th{background:#103453;color:#dff5ff}th:first-child,td:first-child,td:nth-child(2){text-align:left}.table{overflow:auto;border:1px solid var(--line);border-radius:12px}details{background:#061526;border:1px solid #285575;border-radius:9px;margin:12px 0}summary{cursor:pointer;padding:13px 16px;font-weight:700}pre{margin:0;padding:16px;border-top:1px solid #285575;overflow:auto;white-space:pre;color:#d4eaf7;font:12px/1.55 ui-monospace,SFMono-Regular,Menlo,monospace}@media(max-width:800px){main{padding:28px 14px}.grid2,.grid4{grid-template-columns:1fr}h1{font-size:25px}}
+</style></head><body><main><header><div style="color:#43c7e7;font-weight:700;letter-spacing:2px">T0 · HOURLY CONVERSION · REAL-TIME RISK SCORE</div><h1>结清0在贷用户获额后24小时首次提单时效<br/>405实时资质分层分析</h1><p>统计期：2026-01-01 至 2026-08-31｜实时分层单位：用户 × 当次获额订单｜报告生成：2026-09-22</p><span class="tag">模型分关联当次获额订单ID，不按用户固定分层</span></header>
+<div class="note"><b>* 数据完整性提示：</b>2026年2月、2026年5月部分T0订单缺少模型分或模型分为-9999999，已按口径剔除；所有按模型分层、客群结构及其对应订单指标均以*标识。缺失量较大的月份具有较强参考意义但不宜作精确比较。</div><h2>一、口径与研究问题</h2><div class="note"><b>研究问题：</b>比较资质较好、一般、较差三类用户在获额后0—1、1—3、3—6、6—24小时内的首次提单率月度变化，判断优质客群的即时转化或24小时总转化是否下降得更明显。<br/><b>实时资质：</b>每一个T0获额事件以其 <code>credit_serial_id</code> 关联 <code>model_result_copy.serial_id</code>，读取 <code>kabybxgboost405apd7crecyc</code>；同一用户不同获额事件可进入不同层。<br/><b>固定阈值：</b>P30=447.0、P60=465.0；分数≤P30为资质较差，P30—P60为一般，&gt;P60为较好。</div>
+<div class="grid4"><div class="card"><div class="label">严格T0获额事件</div><div class="value">177,133</div><p>结清0在贷、获额通过</p></div><div class="card"><div class="label">405有效分覆盖</div><div class="value">99.57%</div><p>176,367 个事件有有效实时分</p></div><div class="card"><div class="label">整体24小时提单率</div><div class="value">59.94% → 46.07%</div><p>1月到8月</p></div><div class="card"><div class="label">24小时下降最明显层</div><div class="value">资质较好</div><p>-15.37 个百分点</p></div></div>
+<h2>二、核心结论</h2><div class="note"><b>24小时总转化：</b>三档客群均下降，按点估计下降最大的是<b>资质较好</b>（-15.37pp）；即时0—1小时下降最大亦为<b>资质一般</b>（-14.30pp）。但24小时层间最大降幅与最小降幅仅相差 0.77pp，即时层仅相差 0.45pp，<b>不足以说明优质客群的下降明显更大</b>。<br/><b>水平差异：</b>报告期内资质较差层的提单率始终高于资质较好层，说明405分层刻画的是风控/信用资质，不等同于借款意愿。<br/><b>解释边界：</b>这是描述性趋势；息费、额度、期限、渠道、准入和活动策略均可能共同影响提单，需在这些条件可比后再检验因果。</div>
+<div class="grid2"><article class="panel"><h3>三档获额后24小时总首次提单率</h3><div class="legend"><span><i style="background:#64dcae"></i>资质较好</span><span><i style="background:#ffc26b"></i>资质一般</span><span><i style="background:#f68ab0"></i>资质较差</span></div><svg viewbox="0 0 780 300"><g class="grid"><line x1="58" x2="760" y1="32.0" y2="32.0"></line><line x1="58" x2="760" y1="88.5" y2="88.5"></line><line x1="58" x2="760" y1="145.0" y2="145.0"></line><line x1="58" x2="760" y1="201.5" y2="201.5"></line><line x1="58" x2="760" y1="258.0" y2="258.0"></line></g><text text-anchor="end" x="50" y="36.0">70.0%</text><text text-anchor="end" x="50" y="92.5">61.2%</text><text text-anchor="end" x="50" y="149.0">52.5%</text><text text-anchor="end" x="50" y="205.5">43.8%</text><text text-anchor="end" x="50" y="262.0">35.0%</text><polyline fill="none" points="58.0,139.7 158.3,144.1 258.6,173.0 358.9,168.8 459.1,193.1 559.4,207.4 659.7,235.0 760.0,238.9" stroke="#64dcae" stroke-width="3"></polyline><polyline fill="none" points="58.0,89.7 158.3,97.8 258.6,135.4 358.9,126.6 459.1,138.5 559.4,144.8 659.7,166.3 760.0,187.2" stroke="#ffc26b" stroke-width="3"></polyline><polyline fill="none" points="58.0,47.2 158.3,51.8 258.6,81.8 358.9,88.6 459.1,84.5 559.4,93.2 659.7,117.8 760.0,141.4" stroke="#f68ab0" stroke-width="3"></polyline><circle cx="58.0" cy="139.7" fill="#64dcae" r="4"><title>资质较好 2026-01：53.32%</title></circle><circle cx="158.3" cy="144.1" fill="#64dcae" r="4"><title>资质较好 2026-02*：52.64%</title></circle><circle cx="258.6" cy="173.0" fill="#64dcae" r="4"><title>资质较好 2026-03：48.17%</title></circle><circle cx="358.9" cy="168.8" fill="#64dcae" r="4"><title>资质较好 2026-04：48.81%</title></circle><circle cx="459.1" cy="193.1" fill="#64dcae" r="4"><title>资质较好 2026-05*：45.04%</title></circle><circle cx="559.4" cy="207.4" fill="#64dcae" r="4"><title>资质较好 2026-06：42.83%</title></circle><circle cx="659.7" cy="235.0" fill="#64dcae" r="4"><title>资质较好 2026-07：38.57%</title></circle><circle cx="760.0" cy="238.9" fill="#64dcae" r="4"><title>资质较好 2026-08：37.96%</title></circle><circle cx="58.0" cy="89.7" fill="#ffc26b" r="4"><title>资质一般 2026-01：61.06%</title></circle><circle cx="158.3" cy="97.8" fill="#ffc26b" r="4"><title>资质一般 2026-02*：59.80%</title></circle><circle cx="258.6" cy="135.4" fill="#ffc26b" r="4"><title>资质一般 2026-03：53.99%</title></circle><circle cx="358.9" cy="126.6" fill="#ffc26b" r="4"><title>资质一般 2026-04：55.35%</title></circle><circle cx="459.1" cy="138.5" fill="#ffc26b" r="4"><title>资质一般 2026-05*：53.51%</title></circle><circle cx="559.4" cy="144.8" fill="#ffc26b" r="4"><title>资质一般 2026-06：52.54%</title></circle><circle cx="659.7" cy="166.3" fill="#ffc26b" r="4"><title>资质一般 2026-07：49.20%</title></circle><circle cx="760.0" cy="187.2" fill="#ffc26b" r="4"><title>资质一般 2026-08：45.97%</title></circle><circle cx="58.0" cy="47.2" fill="#f68ab0" r="4"><title>资质较差 2026-01：67.65%</title></circle><circle cx="158.3" cy="51.8" fill="#f68ab0" r="4"><title>资质较差 2026-02*：66.93%</title></circle><circle cx="258.6" cy="81.8" fill="#f68ab0" r="4"><title>资质较差 2026-03：62.28%</title></circle><circle cx="358.9" cy="88.6" fill="#f68ab0" r="4"><title>资质较差 2026-04：61.24%</title></circle><circle cx="459.1" cy="84.5" fill="#f68ab0" r="4"><title>资质较差 2026-05*：61.87%</title></circle><circle cx="559.4" cy="93.2" fill="#f68ab0" r="4"><title>资质较差 2026-06：60.52%</title></circle><circle cx="659.7" cy="117.8" fill="#f68ab0" r="4"><title>资质较差 2026-07：56.71%</title></circle><circle cx="760.0" cy="141.4" fill="#f68ab0" r="4"><title>资质较差 2026-08：53.05%</title></circle><text text-anchor="middle" x="58.0" y="287">01月</text><text text-anchor="middle" x="158.3" y="287">02月*</text><text text-anchor="middle" x="258.6" y="287">03月</text><text text-anchor="middle" x="358.9" y="287">04月</text><text text-anchor="middle" x="459.1" y="287">05月*</text><text text-anchor="middle" x="559.4" y="287">06月</text><text text-anchor="middle" x="659.7" y="287">07月</text><text text-anchor="middle" x="760.0" y="287">08月</text></svg></article><article class="panel"><h3>三档获额后0—1小时即时提单率</h3><div class="legend"><span><i style="background:#64dcae"></i>资质较好</span><span><i style="background:#ffc26b"></i>资质一般</span><span><i style="background:#f68ab0"></i>资质较差</span></div><svg viewbox="0 0 780 300"><g class="grid"><line x1="58" x2="760" y1="32.0" y2="32.0"></line><line x1="58" x2="760" y1="88.5" y2="88.5"></line><line x1="58" x2="760" y1="145.0" y2="145.0"></line><line x1="58" x2="760" y1="201.5" y2="201.5"></line><line x1="58" x2="760" y1="258.0" y2="258.0"></line></g><text text-anchor="end" x="50" y="36.0">55.0%</text><text text-anchor="end" x="50" y="92.5">46.2%</text><text text-anchor="end" x="50" y="149.0">37.5%</text><text text-anchor="end" x="50" y="205.5">28.8%</text><text text-anchor="end" x="50" y="262.0">20.0%</text><polyline fill="none" points="58.0,144.8 158.3,148.7 258.6,178.7 358.9,174.9 459.1,194.8 559.4,206.5 659.7,225.9 760.0,236.8" stroke="#64dcae" stroke-width="3"></polyline><polyline fill="none" points="58.0,90.6 158.3,106.0 258.6,137.9 358.9,134.1 459.1,140.6 559.4,146.1 659.7,168.3 760.0,183.0" stroke="#ffc26b" stroke-width="3"></polyline><polyline fill="none" points="58.0,57.6 158.3,67.4 258.6,95.9 358.9,98.2 459.1,90.4 559.4,106.2 659.7,124.3 760.0,147.0" stroke="#f68ab0" stroke-width="3"></polyline><circle cx="58.0" cy="144.8" fill="#64dcae" r="4"><title>资质较好 2026-01：37.54%</title></circle><circle cx="158.3" cy="148.7" fill="#64dcae" r="4"><title>资质较好 2026-02*：36.93%</title></circle><circle cx="258.6" cy="178.7" fill="#64dcae" r="4"><title>资质较好 2026-03：32.28%</title></circle><circle cx="358.9" cy="174.9" fill="#64dcae" r="4"><title>资质较好 2026-04：32.87%</title></circle><circle cx="459.1" cy="194.8" fill="#64dcae" r="4"><title>资质较好 2026-05*：29.78%</title></circle><circle cx="559.4" cy="206.5" fill="#64dcae" r="4"><title>资质较好 2026-06：27.97%</title></circle><circle cx="659.7" cy="225.9" fill="#64dcae" r="4"><title>资质较好 2026-07：24.98%</title></circle><circle cx="760.0" cy="236.8" fill="#64dcae" r="4"><title>资质较好 2026-08：23.28%</title></circle><circle cx="58.0" cy="90.6" fill="#ffc26b" r="4"><title>资质一般 2026-01：45.92%</title></circle><circle cx="158.3" cy="106.0" fill="#ffc26b" r="4"><title>资质一般 2026-02*：43.53%</title></circle><circle cx="258.6" cy="137.9" fill="#ffc26b" r="4"><title>资质一般 2026-03：38.60%</title></circle><circle cx="358.9" cy="134.1" fill="#ffc26b" r="4"><title>资质一般 2026-04：39.19%</title></circle><circle cx="459.1" cy="140.6" fill="#ffc26b" r="4"><title>资质一般 2026-05*：38.18%</title></circle><circle cx="559.4" cy="146.1" fill="#ffc26b" r="4"><title>资质一般 2026-06：37.32%</title></circle><circle cx="659.7" cy="168.3" fill="#ffc26b" r="4"><title>资质一般 2026-07：33.89%</title></circle><circle cx="760.0" cy="183.0" fill="#ffc26b" r="4"><title>资质一般 2026-08：31.62%</title></circle><circle cx="58.0" cy="57.6" fill="#f68ab0" r="4"><title>资质较差 2026-01：51.04%</title></circle><circle cx="158.3" cy="67.4" fill="#f68ab0" r="4"><title>资质较差 2026-02*：49.51%</title></circle><circle cx="258.6" cy="95.9" fill="#f68ab0" r="4"><title>资质较差 2026-03：45.11%</title></circle><circle cx="358.9" cy="98.2" fill="#f68ab0" r="4"><title>资质较差 2026-04：44.75%</title></circle><circle cx="459.1" cy="90.4" fill="#f68ab0" r="4"><title>资质较差 2026-05*：45.96%</title></circle><circle cx="559.4" cy="106.2" fill="#f68ab0" r="4"><title>资质较差 2026-06：43.51%</title></circle><circle cx="659.7" cy="124.3" fill="#f68ab0" r="4"><title>资质较差 2026-07：40.70%</title></circle><circle cx="760.0" cy="147.0" fill="#f68ab0" r="4"><title>资质较差 2026-08：37.20%</title></circle><text text-anchor="middle" x="58.0" y="287">01月</text><text text-anchor="middle" x="158.3" y="287">02月*</text><text text-anchor="middle" x="258.6" y="287">03月</text><text text-anchor="middle" x="358.9" y="287">04月</text><text text-anchor="middle" x="459.1" y="287">05月*</text><text text-anchor="middle" x="559.4" y="287">06月</text><text text-anchor="middle" x="659.7" y="287">07月</text><text text-anchor="middle" x="760.0" y="287">08月</text></svg></article></div><div class="grid2"><article class="panel"><h3>三档获额后6—24小时延迟提单率</h3><div class="legend"><span><i style="background:#64dcae"></i>资质较好</span><span><i style="background:#ffc26b"></i>资质一般</span><span><i style="background:#f68ab0"></i>资质较差</span></div><svg viewbox="0 0 780 300"><g class="grid"><line x1="58" x2="760" y1="32.0" y2="32.0"></line><line x1="58" x2="760" y1="88.5" y2="88.5"></line><line x1="58" x2="760" y1="145.0" y2="145.0"></line><line x1="58" x2="760" y1="201.5" y2="201.5"></line><line x1="58" x2="760" y1="258.0" y2="258.0"></line></g><text text-anchor="end" x="50" y="36.0">9.5%</text><text text-anchor="end" x="50" y="92.5">9.0%</text><text text-anchor="end" x="50" y="149.0">8.5%</text><text text-anchor="end" x="50" y="205.5">8.0%</text><text text-anchor="end" x="50" y="262.0">7.5%</text><polyline fill="none" points="58.0,131.1 158.3,110.2 258.6,57.6 358.9,115.4 459.1,90.6 559.4,156.5 659.7,205.2 760.0,73.6" stroke="#64dcae" stroke-width="3"></polyline><polyline fill="none" points="58.0,156.6 158.3,94.3 258.6,99.4 358.9,104.3 459.1,137.4 559.4,137.9 659.7,160.6 760.0,195.1" stroke="#ffc26b" stroke-width="3"></polyline><polyline fill="none" points="58.0,96.5 158.3,46.6 258.6,58.5 358.9,59.5 459.1,82.7 559.4,66.6 659.7,137.4 760.0,90.1" stroke="#f68ab0" stroke-width="3"></polyline><circle cx="58.0" cy="131.1" fill="#64dcae" r="4"><title>资质较好 2026-01：8.62%</title></circle><circle cx="158.3" cy="110.2" fill="#64dcae" r="4"><title>资质较好 2026-02*：8.81%</title></circle><circle cx="258.6" cy="57.6" fill="#64dcae" r="4"><title>资质较好 2026-03：9.27%</title></circle><circle cx="358.9" cy="115.4" fill="#64dcae" r="4"><title>资质较好 2026-04：8.76%</title></circle><circle cx="459.1" cy="90.6" fill="#64dcae" r="4"><title>资质较好 2026-05*：8.98%</title></circle><circle cx="559.4" cy="156.5" fill="#64dcae" r="4"><title>资质较好 2026-06：8.40%</title></circle><circle cx="659.7" cy="205.2" fill="#64dcae" r="4"><title>资质较好 2026-07：7.97%</title></circle><circle cx="760.0" cy="73.6" fill="#64dcae" r="4"><title>资质较好 2026-08：9.13%</title></circle><circle cx="58.0" cy="156.6" fill="#ffc26b" r="4"><title>资质一般 2026-01：8.40%</title></circle><circle cx="158.3" cy="94.3" fill="#ffc26b" r="4"><title>资质一般 2026-02*：8.95%</title></circle><circle cx="258.6" cy="99.4" fill="#ffc26b" r="4"><title>资质一般 2026-03：8.90%</title></circle><circle cx="358.9" cy="104.3" fill="#ffc26b" r="4"><title>资质一般 2026-04：8.86%</title></circle><circle cx="459.1" cy="137.4" fill="#ffc26b" r="4"><title>资质一般 2026-05*：8.57%</title></circle><circle cx="559.4" cy="137.9" fill="#ffc26b" r="4"><title>资质一般 2026-06：8.56%</title></circle><circle cx="659.7" cy="160.6" fill="#ffc26b" r="4"><title>资质一般 2026-07：8.36%</title></circle><circle cx="760.0" cy="195.1" fill="#ffc26b" r="4"><title>资质一般 2026-08：8.06%</title></circle><circle cx="58.0" cy="96.5" fill="#f68ab0" r="4"><title>资质较差 2026-01：8.93%</title></circle><circle cx="158.3" cy="46.6" fill="#f68ab0" r="4"><title>资质较差 2026-02*：9.37%</title></circle><circle cx="258.6" cy="58.5" fill="#f68ab0" r="4"><title>资质较差 2026-03：9.27%</title></circle><circle cx="358.9" cy="59.5" fill="#f68ab0" r="4"><title>资质较差 2026-04：9.26%</title></circle><circle cx="459.1" cy="82.7" fill="#f68ab0" r="4"><title>资质较差 2026-05*：9.05%</title></circle><circle cx="559.4" cy="66.6" fill="#f68ab0" r="4"><title>资质较差 2026-06：9.19%</title></circle><circle cx="659.7" cy="137.4" fill="#f68ab0" r="4"><title>资质较差 2026-07：8.57%</title></circle><circle cx="760.0" cy="90.1" fill="#f68ab0" r="4"><title>资质较差 2026-08：8.99%</title></circle><text text-anchor="middle" x="58.0" y="287">01月</text><text text-anchor="middle" x="158.3" y="287">02月*</text><text text-anchor="middle" x="258.6" y="287">03月</text><text text-anchor="middle" x="358.9" y="287">04月</text><text text-anchor="middle" x="459.1" y="287">05月*</text><text text-anchor="middle" x="559.4" y="287">06月</text><text text-anchor="middle" x="659.7" y="287">07月</text><text text-anchor="middle" x="760.0" y="287">08月</text></svg></article><article class="panel"><h3>1月 → 8月变化比较</h3><details class="table-details"><summary>展开数据明细：1月 → 8月变化比较</summary><div class="table"><table><thead><tr><th>实时资质层</th><th>1月24h</th><th>8月24h</th><th>变化</th><th>1月0–1h</th><th>8月0–1h</th><th>变化</th></tr></thead><tbody><tr><td>资质较好</td><td>53.32%</td><td>37.96%</td><td>-15.37pp</td><td>37.54%</td><td>23.28%</td><td>-14.26pp</td></tr><tr><td>资质一般</td><td>61.06%</td><td>45.97%</td><td>-15.09pp</td><td>45.92%</td><td>31.62%</td><td>-14.30pp</td></tr><tr><td>资质较差</td><td>67.65%</td><td>53.05%</td><td>-14.59pp</td><td>51.04%</td><td>37.20%</td><td>-13.85pp</td></tr></tbody></table></div></details><p>百分点变化使用各层自身T0获额事件作分母，避免客群规模变化掩盖档内提单行为变化。</p></article></div>
+<h2>三、实时资质客群的获额与首提结构变化</h2><div class="note"><b>获额通过占比：</b>某实时资质层当月严格T0获额事件数 ÷ 当月全部严格T0获额事件数。<br/><b>24小时首提占比：</b>该层当月获额后24小时首提事件数 ÷ 当月全部24小时首提事件数。两项均衡量当月客群构成，不是该层自身的提单率。</div><div class="grid2"><article class="panel"><h3>各实时资质层在当月获额通过样本中的占比</h3><div class="legend"><span><i style="background:#64dcae"></i>资质较好</span><span><i style="background:#ffc26b"></i>资质一般</span><span><i style="background:#f68ab0"></i>资质较差</span></div><svg viewbox="0 0 780 300"><g class="grid"><line x1="58" x2="760" y1="32.0" y2="32.0"></line><line x1="58" x2="760" y1="88.5" y2="88.5"></line><line x1="58" x2="760" y1="145.0" y2="145.0"></line><line x1="58" x2="760" y1="201.5" y2="201.5"></line><line x1="58" x2="760" y1="258.0" y2="258.0"></line></g><text text-anchor="end" x="50" y="36.0">45.0%</text><text text-anchor="end" x="50" y="92.5">40.0%</text><text text-anchor="end" x="50" y="149.0">35.0%</text><text text-anchor="end" x="50" y="205.5">30.0%</text><text text-anchor="end" x="50" y="262.0">25.0%</text><polyline fill="none" points="58.0,80.6 158.3,86.9 258.6,59.1 358.9,39.0 459.1,46.2 559.4,71.5 659.7,146.9 760.0,175.6" stroke="#64dcae" stroke-width="3"></polyline><polyline fill="none" points="58.0,217.9 158.3,195.1 258.6,210.0 358.9,212.8 459.1,210.1 559.4,214.0 659.7,199.7 760.0,203.7" stroke="#ffc26b" stroke-width="3"></polyline><polyline fill="none" points="58.0,193.0 158.3,209.6 258.6,222.4 358.9,239.7 459.1,235.3 559.4,206.0 659.7,145.0 760.0,112.2" stroke="#f68ab0" stroke-width="3"></polyline><circle cx="58.0" cy="80.6" fill="#64dcae" r="4"><title>资质较好 2026-01：40.70%</title></circle><circle cx="158.3" cy="86.9" fill="#64dcae" r="4"><title>资质较好 2026-02*：40.14%</title></circle><circle cx="258.6" cy="59.1" fill="#64dcae" r="4"><title>资质较好 2026-03：42.60%</title></circle><circle cx="358.9" cy="39.0" fill="#64dcae" r="4"><title>资质较好 2026-04：44.38%</title></circle><circle cx="459.1" cy="46.2" fill="#64dcae" r="4"><title>资质较好 2026-05*：43.75%</title></circle><circle cx="559.4" cy="71.5" fill="#64dcae" r="4"><title>资质较好 2026-06：41.51%</title></circle><circle cx="659.7" cy="146.9" fill="#64dcae" r="4"><title>资质较好 2026-07：34.84%</title></circle><circle cx="760.0" cy="175.6" fill="#64dcae" r="4"><title>资质较好 2026-08：32.29%</title></circle><circle cx="58.0" cy="217.9" fill="#ffc26b" r="4"><title>资质一般 2026-01：28.55%</title></circle><circle cx="158.3" cy="195.1" fill="#ffc26b" r="4"><title>资质一般 2026-02*：30.57%</title></circle><circle cx="258.6" cy="210.0" fill="#ffc26b" r="4"><title>资质一般 2026-03：29.25%</title></circle><circle cx="358.9" cy="212.8" fill="#ffc26b" r="4"><title>资质一般 2026-04：29.00%</title></circle><circle cx="459.1" cy="210.1" fill="#ffc26b" r="4"><title>资质一般 2026-05*：29.24%</title></circle><circle cx="559.4" cy="214.0" fill="#ffc26b" r="4"><title>资质一般 2026-06：28.89%</title></circle><circle cx="659.7" cy="199.7" fill="#ffc26b" r="4"><title>资质一般 2026-07：30.16%</title></circle><circle cx="760.0" cy="203.7" fill="#ffc26b" r="4"><title>资质一般 2026-08：29.81%</title></circle><circle cx="58.0" cy="193.0" fill="#f68ab0" r="4"><title>资质较差 2026-01：30.75%</title></circle><circle cx="158.3" cy="209.6" fill="#f68ab0" r="4"><title>资质较差 2026-02*：29.29%</title></circle><circle cx="258.6" cy="222.4" fill="#f68ab0" r="4"><title>资质较差 2026-03：28.15%</title></circle><circle cx="358.9" cy="239.7" fill="#f68ab0" r="4"><title>资质较差 2026-04：26.62%</title></circle><circle cx="459.1" cy="235.3" fill="#f68ab0" r="4"><title>资质较差 2026-05*：27.01%</title></circle><circle cx="559.4" cy="206.0" fill="#f68ab0" r="4"><title>资质较差 2026-06：29.60%</title></circle><circle cx="659.7" cy="145.0" fill="#f68ab0" r="4"><title>资质较差 2026-07：35.00%</title></circle><circle cx="760.0" cy="112.2" fill="#f68ab0" r="4"><title>资质较差 2026-08：37.90%</title></circle><text text-anchor="middle" x="58.0" y="287">01月</text><text text-anchor="middle" x="158.3" y="287">02月*</text><text text-anchor="middle" x="258.6" y="287">03月</text><text text-anchor="middle" x="358.9" y="287">04月</text><text text-anchor="middle" x="459.1" y="287">05月*</text><text text-anchor="middle" x="559.4" y="287">06月</text><text text-anchor="middle" x="659.7" y="287">07月</text><text text-anchor="middle" x="760.0" y="287">08月</text></svg></article><article class="panel"><h3>各实时资质层在当月24小时首提样本中的占比</h3><div class="legend"><span><i style="background:#64dcae"></i>资质较好</span><span><i style="background:#ffc26b"></i>资质一般</span><span><i style="background:#f68ab0"></i>资质较差</span></div><svg viewbox="0 0 780 300"><g class="grid"><line x1="58" x2="760" y1="32.0" y2="32.0"></line><line x1="58" x2="760" y1="88.5" y2="88.5"></line><line x1="58" x2="760" y1="145.0" y2="145.0"></line><line x1="58" x2="760" y1="201.5" y2="201.5"></line><line x1="58" x2="760" y1="258.0" y2="258.0"></line></g><text text-anchor="end" x="50" y="36.0">45.0%</text><text text-anchor="end" x="50" y="92.5">40.0%</text><text text-anchor="end" x="50" y="149.0">35.0%</text><text text-anchor="end" x="50" y="205.5">30.0%</text><text text-anchor="end" x="50" y="262.0">25.0%</text><polyline fill="none" points="58.0,131.4 158.3,135.9 258.6,109.8 358.9,87.4 459.1,112.8 559.4,145.6 659.7,225.0 760.0,239.9" stroke="#64dcae" stroke-width="3"></polyline><polyline fill="none" points="58.0,211.8 158.3,190.4 258.6,209.1 358.9,204.6 459.1,200.9 559.4,203.3 659.7,192.0 760.0,204.4" stroke="#ffc26b" stroke-width="3"></polyline><polyline fill="none" points="58.0,148.3 158.3,165.2 258.6,172.5 358.9,199.5 459.1,177.8 559.4,142.6 659.7,74.4 760.0,47.3" stroke="#f68ab0" stroke-width="3"></polyline><circle cx="58.0" cy="131.4" fill="#64dcae" r="4"><title>资质较好 2026-01：36.21%</title></circle><circle cx="158.3" cy="135.9" fill="#64dcae" r="4"><title>资质较好 2026-02*：35.81%</title></circle><circle cx="258.6" cy="109.8" fill="#64dcae" r="4"><title>资质较好 2026-03：38.11%</title></circle><circle cx="358.9" cy="87.4" fill="#64dcae" r="4"><title>资质较好 2026-04：40.10%</title></circle><circle cx="459.1" cy="112.8" fill="#64dcae" r="4"><title>资质较好 2026-05*：37.85%</title></circle><circle cx="559.4" cy="145.6" fill="#64dcae" r="4"><title>资质较好 2026-06：34.95%</title></circle><circle cx="659.7" cy="225.0" fill="#64dcae" r="4"><title>资质较好 2026-07：27.92%</title></circle><circle cx="760.0" cy="239.9" fill="#64dcae" r="4"><title>资质较好 2026-08：26.61%</title></circle><circle cx="58.0" cy="211.8" fill="#ffc26b" r="4"><title>资质一般 2026-01：29.09%</title></circle><circle cx="158.3" cy="190.4" fill="#ffc26b" r="4"><title>资质一般 2026-02*：30.98%</title></circle><circle cx="258.6" cy="209.1" fill="#ffc26b" r="4"><title>资质一般 2026-03：29.33%</title></circle><circle cx="358.9" cy="204.6" fill="#ffc26b" r="4"><title>资质一般 2026-04：29.72%</title></circle><circle cx="459.1" cy="200.9" fill="#ffc26b" r="4"><title>资质一般 2026-05*：30.05%</title></circle><circle cx="559.4" cy="203.3" fill="#ffc26b" r="4"><title>资质一般 2026-06：29.84%</title></circle><circle cx="659.7" cy="192.0" fill="#ffc26b" r="4"><title>资质一般 2026-07：30.84%</title></circle><circle cx="760.0" cy="204.4" fill="#ffc26b" r="4"><title>资质一般 2026-08：29.75%</title></circle><circle cx="58.0" cy="148.3" fill="#f68ab0" r="4"><title>资质较差 2026-01：34.71%</title></circle><circle cx="158.3" cy="165.2" fill="#f68ab0" r="4"><title>资质较差 2026-02*：33.21%</title></circle><circle cx="258.6" cy="172.5" fill="#f68ab0" r="4"><title>资质较差 2026-03：32.56%</title></circle><circle cx="358.9" cy="199.5" fill="#f68ab0" r="4"><title>资质较差 2026-04：30.18%</title></circle><circle cx="459.1" cy="177.8" fill="#f68ab0" r="4"><title>资质较差 2026-05*：32.10%</title></circle><circle cx="559.4" cy="142.6" fill="#f68ab0" r="4"><title>资质较差 2026-06：35.21%</title></circle><circle cx="659.7" cy="74.4" fill="#f68ab0" r="4"><title>资质较差 2026-07：41.25%</title></circle><circle cx="760.0" cy="47.3" fill="#f68ab0" r="4"><title>资质较差 2026-08：43.65%</title></circle><text text-anchor="middle" x="58.0" y="287">01月</text><text text-anchor="middle" x="158.3" y="287">02月*</text><text text-anchor="middle" x="258.6" y="287">03月</text><text text-anchor="middle" x="358.9" y="287">04月</text><text text-anchor="middle" x="459.1" y="287">05月*</text><text text-anchor="middle" x="559.4" y="287">06月</text><text text-anchor="middle" x="659.7" y="287">07月</text><text text-anchor="middle" x="760.0" y="287">08月</text></svg></article></div><details class="table-details"><summary>展开数据明细：各实时资质层在当月24小时首提样本中的占比</summary><div class="table"><table><thead><tr><th>获额月份</th><th>实时资质层</th><th>获额通过事件数</th><th>获额通过占比</th><th>24h首提事件数</th><th>24h首提占比</th></tr></thead><tbody><tr><td>2026-01</td><td>资质较好</td><td>7,944</td><td>40.70%</td><td>4,236</td><td>36.21%</td></tr><tr><td>2026-01</td><td>资质一般</td><td>5,573</td><td>28.55%</td><td>3,403</td><td>29.09%</td></tr><tr><td>2026-01</td><td>资质较差</td><td>6,003</td><td>30.75%</td><td>4,061</td><td>34.71%</td></tr><tr><td>2026-02*</td><td>资质较好</td><td>9,128</td><td>40.14%</td><td>4,805</td><td>35.81%</td></tr><tr><td>2026-02*</td><td>资质一般</td><td>6,951</td><td>30.57%</td><td>4,157</td><td>30.98%</td></tr><tr><td>2026-02*</td><td>资质较差</td><td>6,659</td><td>29.29%</td><td>4,457</td><td>33.21%</td></tr><tr><td>2026-03</td><td>资质较好</td><td>9,457</td><td>42.60%</td><td>4,555</td><td>38.11%</td></tr><tr><td>2026-03</td><td>资质一般</td><td>6,492</td><td>29.25%</td><td>3,505</td><td>29.33%</td></tr><tr><td>2026-03</td><td>资质较差</td><td>6,249</td><td>28.15%</td><td>3,892</td><td>32.56%</td></tr><tr><td>2026-04</td><td>资质较好</td><td>9,222</td><td>44.38%</td><td>4,501</td><td>40.10%</td></tr><tr><td>2026-04</td><td>资质一般</td><td>6,027</td><td>29.00%</td><td>3,336</td><td>29.72%</td></tr><tr><td>2026-04</td><td>资质较差</td><td>5,531</td><td>26.62%</td><td>3,387</td><td>30.18%</td></tr><tr><td>2026-05*</td><td>资质较好</td><td>10,110</td><td>43.75%</td><td>4,554</td><td>37.85%</td></tr><tr><td>2026-05*</td><td>资质一般</td><td>6,758</td><td>29.24%</td><td>3,616</td><td>30.05%</td></tr><tr><td>2026-05*</td><td>资质较差</td><td>6,242</td><td>27.01%</td><td>3,862</td><td>32.10%</td></tr><tr><td>2026-06</td><td>资质较好</td><td>9,395</td><td>41.51%</td><td>4,024</td><td>34.95%</td></tr><tr><td>2026-06</td><td>资质一般</td><td>6,540</td><td>28.89%</td><td>3,436</td><td>29.84%</td></tr><tr><td>2026-06</td><td>资质较差</td><td>6,700</td><td>29.60%</td><td>4,055</td><td>35.21%</td></tr><tr><td>2026-07</td><td>资质较好</td><td>8,108</td><td>34.84%</td><td>3,127</td><td>27.92%</td></tr><tr><td>2026-07</td><td>资质一般</td><td>7,020</td><td>30.16%</td><td>3,454</td><td>30.84%</td></tr><tr><td>2026-07</td><td>资质较差</td><td>8,147</td><td>35.00%</td><td>4,620</td><td>41.25%</td></tr><tr><td>2026-08</td><td>资质较好</td><td>7,140</td><td>32.29%</td><td>2,710</td><td>26.61%</td></tr><tr><td>2026-08</td><td>资质一般</td><td>6,591</td><td>29.81%</td><td>3,030</td><td>29.75%</td></tr><tr><td>2026-08</td><td>资质较差</td><td>8,380</td><td>37.90%</td><td>4,446</td><td>43.65%</td></tr></tbody></table></div></details>
+<h2>四、整笔订单到期逾期率与盈利率</h2><div class="note"><b>观察对象：</b>获额后24小时首笔提单对应的成功放款订单；同一订单只归因给最近一次此前获额。进质量样本须满足 <code>due_date &lt; CURRENT_DATE - 1</code>。<br/><b>逾期：</b><code>repaid_date &gt; 2000-01-01 且 repaid_date ≤ due_date</code> 为未逾期，其余（未结清或到期后结清）为逾期；不使用 <code>loan_status_code</code>。<br/><b>盈利：</b>仅累计 <code>repayment_record_copy.payin_date ≤ due_date</code> 的 <code>amount</code>；盈利率 = Σ到期前回款 ÷ Σ放款金额 − 1。当前统计日为2026-09-22，因此到期观察截止至2026-09-20。</div><div class="grid2"><article class="panel"><h3>各实时资质层：整笔订单逾期率（按获额月份）</h3><div class="legend"><span><i style="background:#64dcae"></i>资质较好</span><span><i style="background:#ffc26b"></i>资质一般</span><span><i style="background:#f68ab0"></i>资质较差</span></div><svg viewbox="0 0 780 300"><g class="grid"><line x1="58" x2="760" y1="32.0" y2="32.0"></line><line x1="58" x2="760" y1="88.5" y2="88.5"></line><line x1="58" x2="760" y1="145.0" y2="145.0"></line><line x1="58" x2="760" y1="201.5" y2="201.5"></line><line x1="58" x2="760" y1="258.0" y2="258.0"></line></g><text text-anchor="end" x="50" y="36.0">50.0%</text><text text-anchor="end" x="50" y="92.5">43.8%</text><text text-anchor="end" x="50" y="149.0">37.5%</text><text text-anchor="end" x="50" y="205.5">31.2%</text><text text-anchor="end" x="50" y="262.0">25.0%</text><polyline fill="none" points="58.0,216.9 158.3,219.6 258.6,219.6 358.9,216.8 459.1,201.0 559.4,153.8 659.7,155.0 760.0,156.7" stroke="#64dcae" stroke-width="3"></polyline><polyline fill="none" points="58.0,162.5 158.3,141.7 258.6,166.2 358.9,148.3 459.1,151.5 559.4,116.4 659.7,110.3 760.0,98.7" stroke="#ffc26b" stroke-width="3"></polyline><polyline fill="none" points="58.0,85.4 158.3,83.0 258.6,89.8 358.9,92.1 459.1,87.6 559.4,56.4 659.7,67.7 760.0,71.2" stroke="#f68ab0" stroke-width="3"></polyline><circle cx="58.0" cy="216.9" fill="#64dcae" r="4"><title>资质较好 2026-01：29.55%</title></circle><circle cx="158.3" cy="219.6" fill="#64dcae" r="4"><title>资质较好 2026-02*：29.25%</title></circle><circle cx="258.6" cy="219.6" fill="#64dcae" r="4"><title>资质较好 2026-03：29.25%</title></circle><circle cx="358.9" cy="216.8" fill="#64dcae" r="4"><title>资质较好 2026-04：29.56%</title></circle><circle cx="459.1" cy="201.0" fill="#64dcae" r="4"><title>资质较好 2026-05*：31.31%</title></circle><circle cx="559.4" cy="153.8" fill="#64dcae" r="4"><title>资质较好 2026-06：36.53%</title></circle><circle cx="659.7" cy="155.0" fill="#64dcae" r="4"><title>资质较好 2026-07：36.39%</title></circle><circle cx="760.0" cy="156.7" fill="#64dcae" r="4"><title>资质较好 2026-08：36.21%</title></circle><circle cx="58.0" cy="162.5" fill="#ffc26b" r="4"><title>资质一般 2026-01：35.56%</title></circle><circle cx="158.3" cy="141.7" fill="#ffc26b" r="4"><title>资质一般 2026-02*：37.87%</title></circle><circle cx="258.6" cy="166.2" fill="#ffc26b" r="4"><title>资质一般 2026-03：35.16%</title></circle><circle cx="358.9" cy="148.3" fill="#ffc26b" r="4"><title>资质一般 2026-04：37.14%</title></circle><circle cx="459.1" cy="151.5" fill="#ffc26b" r="4"><title>资质一般 2026-05*：36.78%</title></circle><circle cx="559.4" cy="116.4" fill="#ffc26b" r="4"><title>资质一般 2026-06：40.66%</title></circle><circle cx="659.7" cy="110.3" fill="#ffc26b" r="4"><title>资质一般 2026-07：41.34%</title></circle><circle cx="760.0" cy="98.7" fill="#ffc26b" r="4"><title>资质一般 2026-08：42.62%</title></circle><circle cx="58.0" cy="85.4" fill="#f68ab0" r="4"><title>资质较差 2026-01：44.09%</title></circle><circle cx="158.3" cy="83.0" fill="#f68ab0" r="4"><title>资质较差 2026-02*：44.36%</title></circle><circle cx="258.6" cy="89.8" fill="#f68ab0" r="4"><title>资质较差 2026-03：43.61%</title></circle><circle cx="358.9" cy="92.1" fill="#f68ab0" r="4"><title>资质较差 2026-04：43.35%</title></circle><circle cx="459.1" cy="87.6" fill="#f68ab0" r="4"><title>资质较差 2026-05*：43.85%</title></circle><circle cx="559.4" cy="56.4" fill="#f68ab0" r="4"><title>资质较差 2026-06：47.30%</title></circle><circle cx="659.7" cy="67.7" fill="#f68ab0" r="4"><title>资质较差 2026-07：46.05%</title></circle><circle cx="760.0" cy="71.2" fill="#f68ab0" r="4"><title>资质较差 2026-08：45.66%</title></circle><text text-anchor="middle" x="58.0" y="287">01月</text><text text-anchor="middle" x="158.3" y="287">02月*</text><text text-anchor="middle" x="258.6" y="287">03月</text><text text-anchor="middle" x="358.9" y="287">04月</text><text text-anchor="middle" x="459.1" y="287">05月*</text><text text-anchor="middle" x="559.4" y="287">06月</text><text text-anchor="middle" x="659.7" y="287">07月</text><text text-anchor="middle" x="760.0" y="287">08月</text></svg></article><article class="panel"><h3>各实时资质层：整笔订单到期盈利率（按获额月份）</h3><div class="legend"><span><i style="background:#64dcae"></i>资质较好</span><span><i style="background:#ffc26b"></i>资质一般</span><span><i style="background:#f68ab0"></i>资质较差</span></div><svg viewbox="0 0 780 300"><g class="grid"><line x1="58" x2="760" y1="32.0" y2="32.0"></line><line x1="58" x2="760" y1="88.5" y2="88.5"></line><line x1="58" x2="760" y1="145.0" y2="145.0"></line><line x1="58" x2="760" y1="201.5" y2="201.5"></line><line x1="58" x2="760" y1="258.0" y2="258.0"></line></g><text text-anchor="end" x="50" y="36.0">20.0%</text><text text-anchor="end" x="50" y="92.5">12.5%</text><text text-anchor="end" x="50" y="149.0">5.0%</text><text text-anchor="end" x="50" y="205.5">-2.5%</text><text text-anchor="end" x="50" y="262.0">-10.0%</text><polyline fill="none" points="58.0,77.1 158.3,74.0 258.6,43.1 358.9,49.3 459.1,64.7 559.4,91.2 659.7,84.9 760.0,61.9" stroke="#64dcae" stroke-width="3"></polyline><polyline fill="none" points="58.0,167.3 158.3,185.8 258.6,117.3 358.9,129.6 459.1,133.3 559.4,167.6 659.7,134.6 760.0,100.9" stroke="#ffc26b" stroke-width="3"></polyline><polyline fill="none" points="58.0,241.1 158.3,250.4 258.6,213.9 358.9,191.1 459.1,184.6 559.4,202.0 659.7,189.5 760.0,180.0" stroke="#f68ab0" stroke-width="3"></polyline><circle cx="58.0" cy="77.1" fill="#64dcae" r="4"><title>资质较好 2026-01：14.01%</title></circle><circle cx="158.3" cy="74.0" fill="#64dcae" r="4"><title>资质较好 2026-02*：14.43%</title></circle><circle cx="258.6" cy="43.1" fill="#64dcae" r="4"><title>资质较好 2026-03：18.53%</title></circle><circle cx="358.9" cy="49.3" fill="#64dcae" r="4"><title>资质较好 2026-04：17.70%</title></circle><circle cx="459.1" cy="64.7" fill="#64dcae" r="4"><title>资质较好 2026-05*：15.66%</title></circle><circle cx="559.4" cy="91.2" fill="#64dcae" r="4"><title>资质较好 2026-06：12.14%</title></circle><circle cx="659.7" cy="84.9" fill="#64dcae" r="4"><title>资质较好 2026-07：12.98%</title></circle><circle cx="760.0" cy="61.9" fill="#64dcae" r="4"><title>资质较好 2026-08：16.03%</title></circle><circle cx="58.0" cy="167.3" fill="#ffc26b" r="4"><title>资质一般 2026-01：2.04%</title></circle><circle cx="158.3" cy="185.8" fill="#ffc26b" r="4"><title>资质一般 2026-02*：-0.42%</title></circle><circle cx="258.6" cy="117.3" fill="#ffc26b" r="4"><title>资质一般 2026-03：8.68%</title></circle><circle cx="358.9" cy="129.6" fill="#ffc26b" r="4"><title>资质一般 2026-04：7.04%</title></circle><circle cx="459.1" cy="133.3" fill="#ffc26b" r="4"><title>资质一般 2026-05*：6.55%</title></circle><circle cx="559.4" cy="167.6" fill="#ffc26b" r="4"><title>资质一般 2026-06：2.00%</title></circle><circle cx="659.7" cy="134.6" fill="#ffc26b" r="4"><title>资质一般 2026-07：6.38%</title></circle><circle cx="760.0" cy="100.9" fill="#ffc26b" r="4"><title>资质一般 2026-08：10.86%</title></circle><circle cx="58.0" cy="241.1" fill="#f68ab0" r="4"><title>资质较差 2026-01：-7.75%</title></circle><circle cx="158.3" cy="250.4" fill="#f68ab0" r="4"><title>资质较差 2026-02*：-8.99%</title></circle><circle cx="258.6" cy="213.9" fill="#f68ab0" r="4"><title>资质较差 2026-03：-4.15%</title></circle><circle cx="358.9" cy="191.1" fill="#f68ab0" r="4"><title>资质较差 2026-04：-1.12%</title></circle><circle cx="459.1" cy="184.6" fill="#f68ab0" r="4"><title>资质较差 2026-05*：-0.25%</title></circle><circle cx="559.4" cy="202.0" fill="#f68ab0" r="4"><title>资质较差 2026-06：-2.56%</title></circle><circle cx="659.7" cy="189.5" fill="#f68ab0" r="4"><title>资质较差 2026-07：-0.91%</title></circle><circle cx="760.0" cy="180.0" fill="#f68ab0" r="4"><title>资质较差 2026-08：0.36%</title></circle><text text-anchor="middle" x="58.0" y="287">01月</text><text text-anchor="middle" x="158.3" y="287">02月*</text><text text-anchor="middle" x="258.6" y="287">03月</text><text text-anchor="middle" x="358.9" y="287">04月</text><text text-anchor="middle" x="459.1" y="287">05月*</text><text text-anchor="middle" x="559.4" y="287">06月</text><text text-anchor="middle" x="659.7" y="287">07月</text><text text-anchor="middle" x="760.0" y="287">08月</text></svg></article></div><h3 style="margin-top:22px">整体：各实时资质层对比</h3><details class="table-details"><summary>展开数据明细：整体：各实时资质层对比</summary><div class="table"><table><thead><tr><th>实时资质层</th><th>成功放款订单</th><th>整笔已到期订单</th><th>到期覆盖率</th><th>逾期订单</th><th>逾期率</th><th>放款金额</th><th>到期前回款</th><th>到期盈利额</th><th>到期盈利率</th></tr></thead><tbody><tr><td>资质较好</td><td>32,221</td><td>31,885</td><td>98.96%</td><td>10,120</td><td>31.74%</td><td>91,096,939.00</td><td>104,956,789.05</td><td>13,859,850.05</td><td>15.21%</td></tr><tr><td>资质一般</td><td>27,557</td><td>27,326</td><td>99.16%</td><td>10,457</td><td>38.27%</td><td>59,564,708.00</td><td>62,501,469.35</td><td>2,936,761.35</td><td>4.93%</td></tr><tr><td>资质较差</td><td>31,955</td><td>31,670</td><td>99.11%</td><td>14,200</td><td>44.84%</td><td>70,223,618.00</td><td>67,662,212.04</td><td>-2,561,405.96</td><td>-3.65%</td></tr></tbody></table></div></details><h3 style="margin-top:22px">月度明细：按获额月份归因</h3><details class="table-details"><summary>展开数据明细：月度明细：按获额月份归因</summary><div class="table"><table><thead><tr><th>获额月份</th><th>实时资质层</th><th>成功放款订单</th><th>整笔已到期订单</th><th>到期覆盖率</th><th>逾期率</th><th>到期盈利率</th></tr></thead><tbody><tr><td>2026-01</td><td>资质较好</td><td>4,199</td><td>4,199</td><td>100.00%</td><td>29.55%</td><td>14.01%</td></tr><tr><td>2026-01</td><td>资质一般</td><td>3,405</td><td>3,405</td><td>100.00%</td><td>35.56%</td><td>2.04%</td></tr><tr><td>2026-01</td><td>资质较差</td><td>3,987</td><td>3,987</td><td>100.00%</td><td>44.09%</td><td>-7.75%</td></tr><tr><td>2026-02*</td><td>资质较好</td><td>4,763</td><td>4,763</td><td>100.00%</td><td>29.25%</td><td>14.43%</td></tr><tr><td>2026-02*</td><td>资质一般</td><td>4,103</td><td>4,103</td><td>100.00%</td><td>37.87%</td><td>-0.42%</td></tr><tr><td>2026-02*</td><td>资质较差</td><td>4,337</td><td>4,337</td><td>100.00%</td><td>44.36%</td><td>-8.99%</td></tr><tr><td>2026-03</td><td>资质较好</td><td>4,513</td><td>4,513</td><td>100.00%</td><td>29.25%</td><td>18.53%</td></tr><tr><td>2026-03</td><td>资质一般</td><td>3,464</td><td>3,464</td><td>100.00%</td><td>35.16%</td><td>8.68%</td></tr><tr><td>2026-03</td><td>资质较差</td><td>3,818</td><td>3,818</td><td>100.00%</td><td>43.61%</td><td>-4.15%</td></tr><tr><td>2026-04</td><td>资质较好</td><td>4,473</td><td>4,473</td><td>100.00%</td><td>29.56%</td><td>17.70%</td></tr><tr><td>2026-04</td><td>资质一般</td><td>3,309</td><td>3,309</td><td>100.00%</td><td>37.14%</td><td>7.04%</td></tr><tr><td>2026-04</td><td>资质较差</td><td>3,352</td><td>3,352</td><td>100.00%</td><td>43.35%</td><td>-1.12%</td></tr><tr><td>2026-05*</td><td>资质较好</td><td>4,510</td><td>4,510</td><td>100.00%</td><td>31.31%</td><td>15.66%</td></tr><tr><td>2026-05*</td><td>资质一般</td><td>3,559</td><td>3,559</td><td>100.00%</td><td>36.78%</td><td>6.55%</td></tr><tr><td>2026-05*</td><td>资质较差</td><td>3,713</td><td>3,713</td><td>100.00%</td><td>43.85%</td><td>-0.25%</td></tr><tr><td>2026-06</td><td>资质较好</td><td>3,980</td><td>3,980</td><td>100.00%</td><td>36.53%</td><td>12.14%</td></tr><tr><td>2026-06</td><td>资质一般</td><td>3,372</td><td>3,372</td><td>100.00%</td><td>40.66%</td><td>2.00%</td></tr><tr><td>2026-06</td><td>资质较差</td><td>3,882</td><td>3,882</td><td>100.00%</td><td>47.30%</td><td>-2.56%</td></tr><tr><td>2026-07</td><td>资质较好</td><td>3,103</td><td>3,086</td><td>99.45%</td><td>36.39%</td><td>12.98%</td></tr><tr><td>2026-07</td><td>资质一般</td><td>3,400</td><td>3,399</td><td>99.97%</td><td>41.34%</td><td>6.38%</td></tr><tr><td>2026-07</td><td>资质较差</td><td>4,511</td><td>4,510</td><td>99.98%</td><td>46.05%</td><td>-0.91%</td></tr><tr><td>2026-08</td><td>资质较好</td><td>2,680</td><td>2,361</td><td>88.10%</td><td>36.21%</td><td>16.03%</td></tr><tr><td>2026-08</td><td>资质一般</td><td>2,987</td><td>2,757</td><td>92.30%</td><td>42.62%</td><td>10.86%</td></tr><tr><td>2026-08</td><td>资质较差</td><td>4,355</td><td>4,071</td><td>93.48%</td><td>45.66%</td><td>0.36%</td></tr></tbody></table></div></details>
+<h2>五、月度 × 实时资质层 × 小时段提单率</h2><p>所有比率分母均为“该月、该实时资质层的严格T0获额事件数”；每个事件在24小时内最多归入一个小时段。</p><details class="table-details"><summary>展开数据明细：五、月度 × 实时资质层 × 小时段提单率</summary><div class="table"><table><thead><tr><th>获额月份</th><th>实时资质层</th><th>T0事件数</th><th>该月T0结构占比</th><th>0–1小时</th><th>1–3小时</th><th>3–6小时</th><th>6–24小时</th><th>24小时总计</th></tr></thead><tbody><tr><td>2026-01</td><td>资质较好</td><td>7,944</td><td>40.70%</td><td>37.54%</td><td>4.25%</td><td>2.91%</td><td>8.62%</td><td>53.32%</td></tr><tr><td>2026-01</td><td>资质一般</td><td>5,573</td><td>28.55%</td><td>45.92%</td><td>4.25%</td><td>2.49%</td><td>8.40%</td><td>61.06%</td></tr><tr><td>2026-01</td><td>资质较差</td><td>6,003</td><td>30.75%</td><td>51.04%</td><td>5.03%</td><td>2.65%</td><td>8.93%</td><td>67.65%</td></tr><tr><td>2026-02*</td><td>资质较好</td><td>9,128</td><td>40.14%</td><td>36.93%</td><td>4.43%</td><td>2.48%</td><td>8.81%</td><td>52.64%</td></tr><tr><td>2026-02*</td><td>资质一般</td><td>6,951</td><td>30.57%</td><td>43.53%</td><td>4.65%</td><td>2.68%</td><td>8.95%</td><td>59.80%</td></tr><tr><td>2026-02*</td><td>资质较差</td><td>6,659</td><td>29.29%</td><td>49.51%</td><td>5.26%</td><td>2.79%</td><td>9.37%</td><td>66.93%</td></tr><tr><td>2026-03</td><td>资质较好</td><td>9,457</td><td>42.60%</td><td>32.28%</td><td>4.01%</td><td>2.60%</td><td>9.27%</td><td>48.17%</td></tr><tr><td>2026-03</td><td>资质一般</td><td>6,492</td><td>29.25%</td><td>38.60%</td><td>4.22%</td><td>2.26%</td><td>8.90%</td><td>53.99%</td></tr><tr><td>2026-03</td><td>资质较差</td><td>6,249</td><td>28.15%</td><td>45.11%</td><td>5.18%</td><td>2.72%</td><td>9.27%</td><td>62.28%</td></tr><tr><td>2026-04</td><td>资质较好</td><td>9,222</td><td>44.38%</td><td>32.87%</td><td>4.39%</td><td>2.79%</td><td>8.76%</td><td>48.81%</td></tr><tr><td>2026-04</td><td>资质一般</td><td>6,027</td><td>29.00%</td><td>39.19%</td><td>4.71%</td><td>2.59%</td><td>8.86%</td><td>55.35%</td></tr><tr><td>2026-04</td><td>资质较差</td><td>5,531</td><td>26.62%</td><td>44.75%</td><td>4.63%</td><td>2.60%</td><td>9.26%</td><td>61.24%</td></tr><tr><td>2026-05*</td><td>资质较好</td><td>10,110</td><td>43.75%</td><td>29.78%</td><td>3.78%</td><td>2.50%</td><td>8.98%</td><td>45.04%</td></tr><tr><td>2026-05*</td><td>资质一般</td><td>6,758</td><td>29.24%</td><td>38.18%</td><td>4.38%</td><td>2.38%</td><td>8.57%</td><td>53.51%</td></tr><tr><td>2026-05*</td><td>资质较差</td><td>6,242</td><td>27.01%</td><td>45.96%</td><td>4.36%</td><td>2.50%</td><td>9.05%</td><td>61.87%</td></tr><tr><td>2026-06</td><td>资质较好</td><td>9,395</td><td>41.51%</td><td>27.97%</td><td>3.86%</td><td>2.60%</td><td>8.40%</td><td>42.83%</td></tr><tr><td>2026-06</td><td>资质一般</td><td>6,540</td><td>28.89%</td><td>37.32%</td><td>4.08%</td><td>2.57%</td><td>8.56%</td><td>52.54%</td></tr><tr><td>2026-06</td><td>资质较差</td><td>6,700</td><td>29.60%</td><td>43.51%</td><td>4.94%</td><td>2.88%</td><td>9.19%</td><td>60.52%</td></tr><tr><td>2026-07</td><td>资质较好</td><td>8,108</td><td>34.84%</td><td>24.98%</td><td>3.59%</td><td>2.04%</td><td>7.97%</td><td>38.57%</td></tr><tr><td>2026-07</td><td>资质一般</td><td>7,020</td><td>30.16%</td><td>33.89%</td><td>4.52%</td><td>2.44%</td><td>8.36%</td><td>49.20%</td></tr><tr><td>2026-07</td><td>资质较差</td><td>8,147</td><td>35.00%</td><td>40.70%</td><td>4.84%</td><td>2.60%</td><td>8.57%</td><td>56.71%</td></tr><tr><td>2026-08</td><td>资质较好</td><td>7,140</td><td>32.29%</td><td>23.28%</td><td>3.53%</td><td>2.02%</td><td>9.13%</td><td>37.96%</td></tr><tr><td>2026-08</td><td>资质一般</td><td>6,591</td><td>29.81%</td><td>31.62%</td><td>3.99%</td><td>2.31%</td><td>8.06%</td><td>45.97%</td></tr><tr><td>2026-08</td><td>资质较差</td><td>8,380</td><td>37.90%</td><td>37.20%</td><td>4.50%</td><td>2.37%</td><td>8.99%</td><td>53.05%</td></tr></tbody></table></div></details>
+<h2>六、总计24个小时桶：三档客群对比</h2><p>该表用于定位三类客群的小时节奏。每格均为该实时资质层在对应小时桶的首次提单事件数 ÷ 该层全部T0事件数。</p><details class="table-details"><summary>展开数据明细：六、总计24个小时桶：三档客群对比</summary><div class="table"><table><thead><tr><th>获额后时段</th><th>资质较好</th><th>资质一般</th><th>资质较差</th></tr></thead><tbody><tr><td>0–1小时</td><td>30.87%</td><td>38.38%</td><td>44.28%</td></tr><tr><td>1–2小时</td><td>2.49%</td><td>2.73%</td><td>3.03%</td></tr><tr><td>2–3小时</td><td>1.50%</td><td>1.62%</td><td>1.80%</td></tr><tr><td>3–4小时</td><td>1.11%</td><td>1.07%</td><td>1.13%</td></tr><tr><td>4–5小时</td><td>0.76%</td><td>0.77%</td><td>0.83%</td></tr><tr><td>5–6小时</td><td>0.63%</td><td>0.63%</td><td>0.68%</td></tr><tr><td>6–7小时</td><td>0.54%</td><td>0.51%</td><td>0.51%</td></tr><tr><td>7–8小时</td><td>0.44%</td><td>0.43%</td><td>0.51%</td></tr><tr><td>8–9小时</td><td>0.40%</td><td>0.43%</td><td>0.44%</td></tr><tr><td>9–10小时</td><td>0.40%</td><td>0.45%</td><td>0.46%</td></tr><tr><td>10–11小时</td><td>0.44%</td><td>0.38%</td><td>0.41%</td></tr><tr><td>11–12小时</td><td>0.40%</td><td>0.43%</td><td>0.40%</td></tr><tr><td>12–13小时</td><td>0.40%</td><td>0.40%</td><td>0.47%</td></tr><tr><td>13–14小时</td><td>0.45%</td><td>0.41%</td><td>0.45%</td></tr><tr><td>14–15小时</td><td>0.52%</td><td>0.41%</td><td>0.50%</td></tr><tr><td>15–16小时</td><td>0.43%</td><td>0.49%</td><td>0.47%</td></tr><tr><td>16–17小时</td><td>0.45%</td><td>0.51%</td><td>0.52%</td></tr><tr><td>17–18小时</td><td>0.52%</td><td>0.54%</td><td>0.53%</td></tr><tr><td>18–19小时</td><td>0.48%</td><td>0.39%</td><td>0.54%</td></tr><tr><td>19–20小时</td><td>0.47%</td><td>0.49%</td><td>0.53%</td></tr><tr><td>20–21小时</td><td>0.57%</td><td>0.50%</td><td>0.58%</td></tr><tr><td>21–22小时</td><td>0.57%</td><td>0.53%</td><td>0.62%</td></tr><tr><td>22–23小时</td><td>0.64%</td><td>0.59%</td><td>0.58%</td></tr><tr><td>23–24小时</td><td>0.63%</td><td>0.67%</td><td>0.54%</td></tr></tbody></table></div></details>
+<h2>七、统计边界</h2><ul><li>本报告只衡量获额后24小时内的首次提单，24小时后的提单不计入分子。</li><li>模型分是当次获额订单的实时分，不以用户历史或当前其他订单的分数替代。</li><li>结构图的统计单位是获额事件及其对应的首提事件；同一用户若在不同日期再次获额，可因实时分变化进入不同层。</li><li>订单质量与盈利按整笔订单到期日观察。获额月份越新，到期覆盖率可能越低；比较月度风险和盈利时应同时参考覆盖率。</li><li>各档月度提单率可用于比较行为趋势；但息费、额度、期限、渠道、准入和活动策略变化均可能影响结果，不能据此直接认定价格的因果作用。</li></ul>
+<h2>附录：完整可复现 PGSQL</h2><p>以下SQL可在同一数据库会话中顺序执行，依次输出实时模型分覆盖与阈值、提单时段、客群结构、整笔订单到期逾期率及盈利率。</p><details><summary>展开完整 PGSQL</summary><pre>-- ============================================================================
+-- T0 获额后 24 小时首次提单时效 × KabyBXgboost405Apd7CreCyc 实时资质分层
+-- 统计期：2026-01-01（含）至 2026-09-01（不含），即覆盖至 2026-08-31。
+-- 模型分关联：model_result_copy.serial_id = 当次 T0 获额订单 credit_serial_id。
+-- 同一用户不同获额事件的模型分独立计算，禁止按 user_id 固定映射资质。
+-- 分数越高代表资质越好；阈值为本统计期全部有分 T0 事件的 P30 / P60，固定应用到各月。
+-- ============================================================================
+SET search_path TO wangchuanliang, public;
+SET statement_timeout = 900000;
+
+DROP TABLE IF EXISTS tmp_t0_hour_params;
+CREATE TEMP TABLE tmp_t0_hour_params AS
+SELECT DATE '2026-01-01' AS start_date,
+       DATE '2026-09-01' AS end_date;
+
+-- 1. 候选获额订单：先取订单内最新获额记录。
+DROP TABLE IF EXISTS tmp_t0_raw_offer;
+CREATE TEMP TABLE tmp_t0_raw_offer AS
+SELECT DISTINCT ON (v.user_id, v.serial_id)
+       v.user_id,
+       v.serial_id,
+       v.vir_date::date AS vir_date,
+       TO_TIMESTAMP(v.vir_unix) AS vir_time,
+       r.recycle_type
+FROM order_vir_f_copy AS v
+INNER JOIN side_recycle_type_copy AS r
+        ON r.serial_id = v.serial_id
+CROSS JOIN tmp_t0_hour_params AS p
+WHERE v.is_pass1 = 1
+  AND v.loan_type_code = 2
+  AND v.vir_date &gt;= p.start_date - 1
+  AND v.vir_date &lt; p.end_date
+ORDER BY v.user_id, v.serial_id, v.vir_unix DESC;
+
+-- 2. 相邻获额间隔不超过 20 秒的记录属于同一批；每批取订单号最大的记录。
+DROP TABLE IF EXISTS tmp_t0_dedup_offer;
+CREATE TEMP TABLE tmp_t0_dedup_offer AS
+WITH lagged AS (
+    SELECT r.*,
+           LAG(r.vir_time) OVER (
+               PARTITION BY r.user_id ORDER BY r.vir_time, r.serial_id
+           ) AS prev_vir_time
+    FROM tmp_t0_raw_offer AS r
+), batched AS (
+    SELECT l.*,
+           SUM(CASE WHEN l.prev_vir_time IS NULL
+                         OR l.vir_time - l.prev_vir_time &gt; INTERVAL '20 seconds'
+                    THEN 1 ELSE 0 END)
+           OVER (PARTITION BY l.user_id ORDER BY l.vir_time, l.serial_id
+                 ROWS UNBOUNDED PRECEDING) AS batch_id
+    FROM lagged AS l
+), ranked AS (
+    SELECT b.*,
+           ROW_NUMBER() OVER (
+               PARTITION BY b.user_id, b.batch_id
+               ORDER BY b.serial_id DESC
+           ) AS batch_rn
+    FROM batched AS b
+    CROSS JOIN tmp_t0_hour_params AS p
+    WHERE b.recycle_type = 3
+      AND b.vir_date &gt;= p.start_date
+      AND b.vir_date &lt; p.end_date
+)
+SELECT user_id, serial_id, vir_date, vir_time
+FROM ranked
+WHERE batch_rn = 1;
+
+-- 3. 候选用户的订单全集，供“结清时 0 在贷”判断及获额后首次提单查找使用。
+DROP TABLE IF EXISTS tmp_t0_all_orders;
+CREATE TEMP TABLE tmp_t0_all_orders AS
+SELECT o.user_id, o.serial_id, o.apply_time, o.apply_date,
+       o.repaid_time, o.repaid_date, o.is_remit, o.is_repaid,
+       o.loan_status_code
+FROM order_loan_f_v2_copy AS o
+INNER JOIN (SELECT DISTINCT user_id FROM tmp_t0_dedup_offer) AS u
+        ON u.user_id = o.user_id;
+
+-- 4. 干净结清：成功放款且已结清，结清时不存在其他在途/在贷订单。
+DROP TABLE IF EXISTS tmp_t0_clean_settlement;
+CREATE TEMP TABLE tmp_t0_clean_settlement AS
+SELECT o.user_id, o.serial_id, o.repaid_time, o.repaid_date::date AS repaid_date
+FROM tmp_t0_all_orders AS o
+WHERE o.is_remit = 1
+  AND (o.is_repaid = 1 OR o.loan_status_code = 7)
+  AND o.repaid_time &gt; TIMESTAMP '2000-01-01 00:00:00'
+  AND NOT EXISTS (
+      SELECT 1
+      FROM tmp_t0_all_orders AS x
+      WHERE x.user_id = o.user_id
+        AND x.serial_id &lt;&gt; o.serial_id
+        AND x.apply_time &lt; o.repaid_time
+        AND (
+             x.loan_status_code IN (5, 8)
+          OR (x.loan_status_code = 7 AND x.repaid_time &gt; o.repaid_time)
+        )
+  );
+
+-- 5. 一个用户、一个结清日仅保留最早有效获额事件，形成严格 T0 获额样本。
+DROP TABLE IF EXISTS tmp_t0_event;
+CREATE TEMP TABLE tmp_t0_event AS
+SELECT user_id, credit_serial_id, vir_date, vir_time, settlement_serial_id
+FROM (
+    SELECT e.user_id,
+           e.serial_id AS credit_serial_id,
+           e.vir_date,
+           e.vir_time,
+           s.serial_id AS settlement_serial_id,
+           ROW_NUMBER() OVER (
+               PARTITION BY e.user_id, e.vir_date
+               ORDER BY e.vir_time ASC, e.serial_id DESC
+           ) AS day_rn
+    FROM tmp_t0_dedup_offer AS e
+    INNER JOIN tmp_t0_clean_settlement AS s
+            ON s.user_id = e.user_id
+           AND s.repaid_date = e.vir_date
+           AND e.vir_time &gt;= s.repaid_time
+) AS x
+WHERE day_rn = 1;
+
+-- 6. 关联当次获额订单的实时 405 模型分；-9999999 和空值均视为无有效分。
+DROP TABLE IF EXISTS tmp_t0_scored;
+CREATE TEMP TABLE tmp_t0_scored AS
+SELECT e.*,
+       m.kabybxgboost405apd7crecyc AS score
+FROM tmp_t0_event AS e
+LEFT JOIN model_result_copy AS m
+       ON m.serial_id = e.credit_serial_id
+WHERE m.kabybxgboost405apd7crecyc IS NOT NULL
+  AND m.kabybxgboost405apd7crecyc &lt;&gt; -9999999;
+
+-- 7. 用全统计期 T0 实时分数确定固定 P30/P60 阈值。
+DROP TABLE IF EXISTS tmp_t0_score_cut;
+CREATE TEMP TABLE tmp_t0_score_cut AS
+SELECT PERCENTILE_CONT(0.30) WITHIN GROUP (ORDER BY score) AS p30,
+       PERCENTILE_CONT(0.60) WITHIN GROUP (ORDER BY score) AS p60
+FROM tmp_t0_scored;
+
+-- 8. 每个获额事件的实时资质分层。
+DROP TABLE IF EXISTS tmp_t0_tier;
+CREATE TEMP TABLE tmp_t0_tier AS
+SELECT s.*,
+       CASE WHEN s.score &lt;= c.p30 THEN '资质较差'
+            WHEN s.score &lt;= c.p60 THEN '资质一般'
+            ELSE '资质较好' END AS quality_tier
+FROM tmp_t0_scored AS s
+CROSS JOIN tmp_t0_score_cut AS c;
+
+-- 9. 仅取获额后 24 小时内最早一笔提单。每个 T0 事件最多出现一次。
+DROP TABLE IF EXISTS tmp_t0_first_apply_24h;
+CREATE TEMP TABLE tmp_t0_first_apply_24h AS
+SELECT user_id, credit_serial_id, vir_date, vir_time,
+       apply_serial_id, apply_time,
+       FLOOR(EXTRACT(EPOCH FROM (apply_time - vir_time)) / 3600)::int AS hour_bucket
+FROM (
+    SELECT t.user_id, t.credit_serial_id, t.vir_date, t.vir_time,
+           o.serial_id AS apply_serial_id, o.apply_time,
+           ROW_NUMBER() OVER (
+               PARTITION BY t.user_id, t.credit_serial_id, t.vir_time
+               ORDER BY o.apply_time, o.serial_id
+           ) AS apply_rn
+    FROM tmp_t0_tier AS t
+    INNER JOIN tmp_t0_all_orders AS o
+            ON o.user_id = t.user_id
+           AND o.apply_time &gt;= t.vir_time
+           AND o.apply_time &lt; t.vir_time + INTERVAL '24 hours'
+) AS x
+WHERE apply_rn = 1;
+
+-- 10. 完整事件底表：无24小时提单的 T0 事件仍保留，用于各层提单率分母。
+DROP TABLE IF EXISTS tmp_t0_hour_base;
+CREATE TEMP TABLE tmp_t0_hour_base AS
+SELECT t.user_id, t.credit_serial_id, t.vir_date, t.vir_time,
+       t.score, t.quality_tier,
+       f.apply_serial_id, f.apply_time, f.hour_bucket
+FROM tmp_t0_tier AS t
+LEFT JOIN tmp_t0_first_apply_24h AS f
+       ON f.user_id = t.user_id
+      AND f.credit_serial_id = t.credit_serial_id
+      AND f.vir_time = t.vir_time;
+
+-- 11. 将每笔获额后首提订单只归因给最近一次此前的 T0 获额事件，防止跨窗口重复计入。
+DROP TABLE IF EXISTS tmp_t0_apply_order_attributed;
+CREATE TEMP TABLE tmp_t0_apply_order_attributed AS
+SELECT user_id, credit_serial_id, vir_date, vir_time, quality_tier, apply_serial_id
+FROM (
+    SELECT b.user_id, b.credit_serial_id, b.vir_date, b.vir_time, b.quality_tier,
+           b.apply_serial_id,
+           ROW_NUMBER() OVER (
+               PARTITION BY b.apply_serial_id
+               ORDER BY b.vir_time DESC, b.credit_serial_id DESC
+           ) AS attribution_rn
+    FROM tmp_t0_hour_base AS b
+    WHERE b.apply_serial_id IS NOT NULL
+) AS x
+WHERE attribution_rn = 1;
+
+-- 12. 成功放款首提订单，以及已整笔到期的观察样本。
+DROP TABLE IF EXISTS tmp_t0_remitted_order;
+CREATE TEMP TABLE tmp_t0_remitted_order AS
+SELECT a.*, o.remit_amt, o.due_date::date AS due_date, o.repaid_date::date AS repaid_date
+FROM tmp_t0_apply_order_attributed AS a
+INNER JOIN order_loan_f_v2_copy AS o
+        ON o.serial_id = a.apply_serial_id
+WHERE o.is_remit = 1
+  AND o.remit_amt &gt; 0;
+
+DROP TABLE IF EXISTS tmp_t0_matured_order;
+CREATE TEMP TABLE tmp_t0_matured_order AS
+SELECT *
+FROM tmp_t0_remitted_order
+WHERE due_date &lt; CURRENT_DATE - 1;
+
+-- 13. 到期日前实际到账回款：只累计 payin_date &lt;= due_date 的还款流水。
+DROP TABLE IF EXISTS tmp_t0_due_repayment;
+CREATE TEMP TABLE tmp_t0_due_repayment AS
+SELECT m.apply_serial_id,
+       COALESCE(SUM(CASE WHEN r.payin_date &lt;= m.due_date THEN r.amount ELSE 0 END), 0) AS paid_by_due
+FROM tmp_t0_matured_order AS m
+LEFT JOIN repayment_record_copy AS r
+       ON r.serial_id = m.apply_serial_id
+GROUP BY m.apply_serial_id;
+
+-- 14. 整笔订单到期质量：仅比较结清日与到期日；不使用 loan_status_code。
+DROP TABLE IF EXISTS tmp_t0_due_order_detail;
+CREATE TEMP TABLE tmp_t0_due_order_detail AS
+SELECT m.*, p.paid_by_due,
+       CASE WHEN m.repaid_date &gt; DATE '2000-01-01'
+                  AND m.repaid_date &lt;= m.due_date
+            THEN 0 ELSE 1 END AS is_overdue
+FROM tmp_t0_matured_order AS m
+INNER JOIN tmp_t0_due_repayment AS p
+        ON p.apply_serial_id = m.apply_serial_id;
+
+
+-- 结果 1：实时模型分覆盖率与固定分层阈值
+
+SELECT (SELECT COUNT(*) FROM tmp_t0_event) AS all_t0_events,
+       (SELECT COUNT(*) FROM tmp_t0_scored) AS scored_t0_events,
+       (SELECT COUNT(*) FROM tmp_t0_tier) AS tiered_t0_events,
+       p30, p60
+FROM tmp_t0_score_cut;
+
+
+-- 结果 2：月度 × 实时资质层 × 提单时段
+
+SELECT TO_CHAR(vir_date, 'YYYY-MM') AS stat_month,
+       quality_tier,
+       COUNT(*) AS t0_events,
+       SUM(CASE WHEN hour_bucket = 0 THEN 1 ELSE 0 END) AS apply_0_1h,
+       SUM(CASE WHEN hour_bucket BETWEEN 1 AND 2 THEN 1 ELSE 0 END) AS apply_1_3h,
+       SUM(CASE WHEN hour_bucket BETWEEN 3 AND 5 THEN 1 ELSE 0 END) AS apply_3_6h,
+       SUM(CASE WHEN hour_bucket BETWEEN 6 AND 23 THEN 1 ELSE 0 END) AS apply_6_24h,
+       SUM(CASE WHEN hour_bucket BETWEEN 0 AND 23 THEN 1 ELSE 0 END) AS apply_24h,
+       AVG(score) AS avg_realtime_score
+FROM tmp_t0_hour_base
+GROUP BY TO_CHAR(vir_date, 'YYYY-MM'), quality_tier
+ORDER BY stat_month,
+         CASE quality_tier WHEN '资质较好' THEN 1 WHEN '资质一般' THEN 2 ELSE 3 END;
+
+
+-- 结果 3：总计 24 个小时桶 × 实时资质层
+
+SELECT quality_tier,
+       hour_bucket,
+       COUNT(*) AS first_apply_events
+FROM tmp_t0_hour_base
+WHERE hour_bucket BETWEEN 0 AND 23
+GROUP BY quality_tier, hour_bucket
+ORDER BY CASE quality_tier WHEN '资质较好' THEN 1 WHEN '资质一般' THEN 2 ELSE 3 END,
+         hour_bucket;
+
+
+-- 结果 4：月度实时资质结构（获额通过、24小时首提）
+
+-- 月度实时资质结构：获额通过事件占比、获额后24小时首次提单事件占比。
+WITH monthly_tier AS (
+    SELECT TO_CHAR(vir_date, 'YYYY-MM') AS stat_month,
+           quality_tier,
+           COUNT(*) AS t0_events,
+           SUM(CASE WHEN hour_bucket BETWEEN 0 AND 23 THEN 1 ELSE 0 END) AS apply_24h_events
+    FROM tmp_t0_hour_base
+    GROUP BY TO_CHAR(vir_date, 'YYYY-MM'), quality_tier
+)
+SELECT stat_month,
+       quality_tier,
+       t0_events,
+       apply_24h_events,
+       100.0 * t0_events / SUM(t0_events) OVER (PARTITION BY stat_month) AS t0_event_share,
+       100.0 * apply_24h_events
+             / NULLIF(SUM(apply_24h_events) OVER (PARTITION BY stat_month), 0) AS apply_24h_event_share
+FROM monthly_tier
+ORDER BY stat_month,
+         CASE quality_tier WHEN '资质较好' THEN 1 WHEN '资质一般' THEN 2 ELSE 3 END;
+
+
+-- 结果 5：月度整笔订单到期逾期率与盈利率
+
+-- 月度整笔订单到期表现。月份按获额通过日期归属；分母为当月已整笔到期的成功放款订单。
+WITH remitted AS (
+    SELECT TO_CHAR(vir_date, 'YYYY-MM') AS cohort_month,
+           quality_tier,
+           COUNT(*) AS remitted_orders
+    FROM tmp_t0_remitted_order
+    GROUP BY TO_CHAR(vir_date, 'YYYY-MM'), quality_tier
+), matured AS (
+    SELECT TO_CHAR(vir_date, 'YYYY-MM') AS cohort_month,
+           quality_tier,
+           COUNT(*) AS matured_orders,
+           SUM(is_overdue) AS overdue_orders,
+           SUM(remit_amt) AS remit_amt,
+           SUM(paid_by_due) AS paid_by_due
+    FROM tmp_t0_due_order_detail
+    GROUP BY TO_CHAR(vir_date, 'YYYY-MM'), quality_tier
+)
+SELECT r.cohort_month,
+       r.quality_tier,
+       r.remitted_orders,
+       COALESCE(m.matured_orders, 0) AS matured_orders,
+       ROUND(100.0 * COALESCE(m.matured_orders, 0) / NULLIF(r.remitted_orders, 0), 2) AS maturity_coverage_pct,
+       COALESCE(m.overdue_orders, 0) AS overdue_orders,
+       ROUND(100.0 * COALESCE(m.overdue_orders, 0) / NULLIF(m.matured_orders, 0), 2) AS overdue_rate_pct,
+       COALESCE(m.remit_amt, 0) AS remit_amt,
+       COALESCE(m.paid_by_due, 0) AS paid_by_due,
+       COALESCE(m.paid_by_due, 0) - COALESCE(m.remit_amt, 0) AS profit_amt_by_due,
+       ROUND(100.0 * (m.paid_by_due / NULLIF(m.remit_amt, 0) - 1), 2) AS profit_rate_pct
+FROM remitted AS r
+LEFT JOIN matured AS m
+       ON m.cohort_month = r.cohort_month
+      AND m.quality_tier = r.quality_tier
+ORDER BY r.cohort_month,
+         CASE r.quality_tier WHEN '资质较好' THEN 1 WHEN '资质一般' THEN 2 ELSE 3 END;
+
+
+-- 结果 6：各实时资质层整体整笔订单到期逾期率与盈利率
+
+-- 各实时资质层的整体整笔订单到期表现。
+WITH remitted AS (
+    SELECT quality_tier, COUNT(*) AS remitted_orders
+    FROM tmp_t0_remitted_order
+    GROUP BY quality_tier
+), matured AS (
+    SELECT quality_tier,
+           COUNT(*) AS matured_orders,
+           SUM(is_overdue) AS overdue_orders,
+           SUM(remit_amt) AS remit_amt,
+           SUM(paid_by_due) AS paid_by_due
+    FROM tmp_t0_due_order_detail
+    GROUP BY quality_tier
+)
+SELECT r.quality_tier,
+       r.remitted_orders,
+       COALESCE(m.matured_orders, 0) AS matured_orders,
+       ROUND(100.0 * COALESCE(m.matured_orders, 0) / NULLIF(r.remitted_orders, 0), 2) AS maturity_coverage_pct,
+       COALESCE(m.overdue_orders, 0) AS overdue_orders,
+       ROUND(100.0 * COALESCE(m.overdue_orders, 0) / NULLIF(m.matured_orders, 0), 2) AS overdue_rate_pct,
+       COALESCE(m.remit_amt, 0) AS remit_amt,
+       COALESCE(m.paid_by_due, 0) AS paid_by_due,
+       COALESCE(m.paid_by_due, 0) - COALESCE(m.remit_amt, 0) AS profit_amt_by_due,
+       ROUND(100.0 * (m.paid_by_due / NULLIF(m.remit_amt, 0) - 1), 2) AS profit_rate_pct
+FROM remitted AS r
+LEFT JOIN matured AS m ON m.quality_tier = r.quality_tier
+ORDER BY CASE r.quality_tier WHEN '资质较好' THEN 1 WHEN '资质一般' THEN 2 ELSE 3 END;
+</pre></details>
+</main></body></html>
