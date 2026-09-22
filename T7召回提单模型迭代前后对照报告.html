@@ -10,10 +10,9 @@
 .wrap{max-width:1480px;margin:auto;padding:32px 36px 80px}
 .hero{text-align:center;padding:28px 12px 22px;border-bottom:1px solid var(--line)}
 .hero h1{font-size:28px;line-height:1.35;margin:0 0 14px}
-.hero-points{list-style:none;counter-reset:pt;margin:0 auto;padding:0;color:var(--muted);font-size:13px;line-height:2;text-align:center}
-.hero-points li{counter-increment:pt}
-.hero-points li::before{content:counter(pt);display:inline-flex;align-items:center;justify-content:center;width:16px;height:16px;margin-right:8px;border-radius:50%;background:var(--cy);color:#06192b;font-size:11px;font-weight:800;vertical-align:-1px}
-.hero-metric{margin:10px 0 0;color:var(--muted);font-size:13px;line-height:1.75;text-align:center}
+.hero-points{list-style:none;margin:0 auto;padding:0;color:var(--muted);font-size:13px;line-height:1.9;display:inline-block;text-align:left}
+.hero-points li{position:relative;padding-left:14px}
+.hero-points li::before{content:'';position:absolute;left:0;top:.72em;width:5px;height:5px;border-radius:50%;background:var(--cy)}
 h2{font-size:22px;margin:40px 0 10px}
 .desc{color:var(--muted);margin:0 0 12px;line-height:1.75;font-size:14px}
 .grid{display:grid;gap:14px}.g2{grid-template-columns:repeat(2,minmax(0,1fr))}.g4{grid-template-columns:repeat(4,minmax(0,1fr))}
@@ -40,11 +39,11 @@ pre.sql{overflow:auto;max-height:900px;font-size:11.5px;line-height:1.5;color:#d
 <main class="wrap">
 <header class="hero">
 <h1>提单意愿模型v2 提单效果评估</h1>
-<ol class="hero-points">
+<ul class="hero-points">
 <li>迭代前 提单意愿模型v1版，迭代后 提单意愿模型v2版</li>
 <li>core 前 1/3 = 该批流失用户按 score 从高到低取前 1/3用户</li>
-</ol>
-<p class="hero-metric">主指标 = 前 1/3 里提单人数 / 该批全部提单人数。提单从触达日算到 2026-09-21。</p>
+<li>主指标 = 前 1/3 里提单人数 / 该批全部提单人数。提单从触达日算到 2026-09-21。</li>
+</ul>
 </header>
 
 <section class="grid g4" style="margin-top:18px">
