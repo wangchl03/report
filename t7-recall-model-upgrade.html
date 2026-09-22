@@ -4,6 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>提单意愿模型v2 提单效果评估</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
 <style>
 :root{--line:#2a5c7e;--text:#eff8ff;--muted:#aac5da;--cy:#43c7e7}
 *{box-sizing:border-box}body{margin:0;background:#06192b;color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei",sans-serif}
@@ -19,7 +20,8 @@ h2{font-size:22px;margin:40px 0 10px}
 .card,.chart{background:rgba(10,41,68,.95);border:1px solid var(--line);border-radius:14px;padding:16px}
 .label{color:var(--muted);font-size:12px}.num{font-size:22px;font-weight:800;margin:4px 0 2px;color:var(--cy)}
 .sub{color:var(--muted);font-size:12px}
-.box{height:300px;position:relative}.chart h3{margin:0 0 4px;font-size:15px}.chart p{font-size:12px;color:var(--muted);margin:0 0 10px}
+.box{height:300px;position:relative}.chart h3{margin:0 0 4px;font-size:18px;font-weight:700}.chart p{font-size:13px;color:var(--muted);margin:0 0 10px}
+.chart.score-bar{padding:22px 22px 12px}.chart.score-bar .box{height:380px}
 .callout{background:#0a2a45;border:1px solid #2a5c7e;border-left:4px solid #43c7e7;border-radius:10px;padding:14px 18px;margin:14px 0;line-height:1.75;font-size:14px}
 .callout.gold{border-left-color:#ffc26b}.callout.green{border-left-color:#64dcae}
 .callout .ch{font-weight:800;margin-bottom:8px}
@@ -61,6 +63,29 @@ v1 观察到 12 天、v2 只有 4 天。后面几天会进来更多中低分提�
 <div class="callout"><div class="ch">3. 经营含义</div>
 升级后的分更适合做触达排序和额度/券倾斜：同样覆盖前三分之一流失用户，能打到更大比例的实际提单人。</div>
 
+<h2>v2 · score 分段提单率</h2>
+<p class="desc">名单 <code>t7recalllist_active0918</code>，流失 8669 人。提单窗口 2026-09-18～2026-09-22。S / A / B / C / D 按 score 从高到低取前 10% / 10–20% / 20–40% / 40–70% / 70–100%。提单率 = 组内提单人数 / 组内流失人数。</p>
+<div class="chart score-bar">
+<h3>score 分段提单率</h3>
+<p>意愿分越高提单率越高，单调性清晰，验证模型排序能力。</p>
+<div class="box"><canvas id="score_bar" aria-label="v2 score 五档提单率柱状图"></canvas></div>
+</div>
+<div class="table">
+<table>
+<thead><tr><th>组</th><th>分位</th><th>流失人数</th><th>提单人数</th><th>提单率</th><th>score 区间</th></tr></thead>
+<tbody>
+<tr><td>S</td><td>前 10%</td><td>867</td><td>109</td><td>12.57%</td><td>95.25～100</td></tr>
+<tr><td>A</td><td>10–20%</td><td>867</td><td>64</td><td>7.38%</td><td>90.32～95.25</td></tr>
+<tr><td>B</td><td>20–40%</td><td>1734</td><td>46</td><td>2.65%</td><td>79.61～90.32</td></tr>
+<tr><td>C</td><td>40–70%</td><td>2601</td><td>41</td><td>1.58%</td><td>60.77～79.61</td></tr>
+<tr><td>D</td><td>70–100%</td><td>2600</td><td>24</td><td>0.92%</td><td>20.22～60.77</td></tr>
+<tr><td>合计</td><td>全量</td><td>8669</td><td>284</td><td>3.28%</td><td>20.22～100</td></tr>
+</tbody>
+</table>
+</div>
+<div class="callout green"><div class="ch">4. v2 五档单调下降</div>
+S 档提单率 <b>12.57%</b>，是全体 <b>3.28%</b>（284/8669）的约 3.8 倍；D 档仅 <b>0.92%</b>。五档从高到低严格递减，说明 v2 的 score 对提单意愿排序有效。</div>
+
 <details class="fold">
 <summary>按首次提单日</summary>
 <p class="desc">累计占比用首次提单去重，跨日多次提单的人只进第一次。点击标题展开明细。</p>
@@ -78,7 +103,7 @@ v1 观察到 12 天、v2 只有 4 天。后面几天会进来更多中低分提�
 
 <details class="fold">
 <summary>附录：完整 PGSQL（可复现全部指标）</summary>
-<p class="desc">R1/R4 总览（含 D0～D3）；R2/R5 三分位人数；R3/R6 按首次提单日。占比用对应列相除。提单窗口截止 <code>2026-09-21</code>。</p>
+<p class="desc">R1/R4 总览（含 D0～D3）；R2/R5 三分位人数；R3/R6 按首次提单日。R7 为 v2 score 五档提单率（9/18～9/22）。占比用对应列相除。</p>
 <pre class="sql">-- =============================================================================
 -- T7 召回 · 提单意愿模型：v1 t7recall_active0910 vs v2 t7recalllist_active0918
 -- 库：kaby_dw · schema wangchuanliang
@@ -197,9 +222,98 @@ ORDER BY 1;
 
 -- 占比：n_apply_top / n_apply ；对齐 4 日：n_apply_top_d3 / n_apply_d3
 -- 两版 score 量纲不同，不要直接比绝对分，只比三分位排序后的提单贡献。
+
+-- R7 v2 score 五档提单率（触达 9/18 至 2026-09-22）
+-- S 前10% / A 10-20% / B 20-40% / C 40-70% / D 70-100%
+DROP TABLE IF EXISTS tmp_g_v2;
+CREATE TEMP TABLE tmp_g_v2 AS
+SELECT
+    u.user_id,
+    u.score,
+    CASE
+        WHEN pct &lt; 0.10 THEN &#x27;S&#x27;
+        WHEN pct &lt; 0.20 THEN &#x27;A&#x27;
+        WHEN pct &lt; 0.40 THEN &#x27;B&#x27;
+        WHEN pct &lt; 0.70 THEN &#x27;C&#x27;
+        ELSE &#x27;D&#x27;
+    END AS grp
+FROM (
+    SELECT
+        user_id,
+        score,
+        (ROW_NUMBER() OVER (ORDER BY score DESC NULLS LAST, user_id) - 1)::numeric
+            / NULLIF(COUNT(*) OVER (), 0) AS pct
+    FROM tmp_u_v2
+) u;
+
+DROP TABLE IF EXISTS tmp_a_v2_d22;
+CREATE TEMP TABLE tmp_a_v2_d22 AS
+SELECT o.user_id, MIN(o.apply_date) AS first_apply
+FROM tmp_u_v2 u
+INNER JOIN wangchuanliang.order_loan_f_v2_copy o ON o.user_id = u.user_id
+WHERE o.apply_date &gt;= DATE &#x27;2026-09-18&#x27; AND o.apply_date &lt;= DATE &#x27;2026-09-22&#x27;
+GROUP BY o.user_id;
+
+SELECT
+    g.grp,
+    COUNT(*) AS n_churn,
+    COUNT(a.user_id) AS n_apply,
+    ROUND(100.0 * COUNT(a.user_id) / NULLIF(COUNT(*), 0), 2) AS apply_rate_pct,
+    MIN(g.score) AS score_min,
+    MAX(g.score) AS score_max
+FROM tmp_g_v2 g
+LEFT JOIN tmp_a_v2_d22 a ON a.user_id = g.user_id
+GROUP BY g.grp
+ORDER BY CASE g.grp WHEN &#x27;S&#x27; THEN 1 WHEN &#x27;A&#x27; THEN 2 WHEN &#x27;B&#x27; THEN 3 WHEN &#x27;C&#x27; THEN 4 WHEN &#x27;D&#x27; THEN 5 END;
 </pre>
 </details>
-<p class="foot">数据截至 2026-09-21。源表：t7recall_active0910、t7recalllist_active0918、order_loan_f_v2_copy。</p>
+<p class="foot">对照主指标截至 2026-09-21；v2 五档提单率截至 2026-09-22。源表：t7recall_active0910、t7recalllist_active0918、order_loan_f_v2_copy。</p>
 </main>
+<script>
+new Chart(document.getElementById('score_bar'), {
+  type: 'bar',
+  data: {
+    labels: ['S(前10%)', 'A(10–20%)', 'B(20–40%)', 'C(40–70%)', 'D(70–100%)'],
+    datasets: [{
+      label: '提单率 %',
+      data: [12.57, 7.38, 2.65, 1.58, 0.92],
+      backgroundColor: ['#7ee8c7', '#5ec8f0', '#f5b942', '#f68ab0', '#c4b5fd'],
+      borderWidth: 0,
+      maxBarThickness: 96
+    }]
+  },
+  options: {
+    responsive: true,
+    maintainAspectRatio: false,
+    plugins: {
+      legend: {
+        position: 'top',
+        labels: { color: '#cfe6f4', boxWidth: 12, boxHeight: 12, font: { size: 13 } }
+      },
+      tooltip: {
+        callbacks: { label: ctx => ' ' + Number(ctx.parsed.y).toFixed(2) + '%' }
+      }
+    },
+    scales: {
+      x: {
+        ticks: { color: '#eff8ff', font: { size: 13 } },
+        grid: { display: false },
+        border: { color: 'rgba(42,92,126,.45)' }
+      },
+      y: {
+        min: 0,
+        max: 14,
+        ticks: {
+          color: '#9bb8cc',
+          stepSize: 2,
+          callback: v => v + '%'
+        },
+        grid: { color: 'rgba(42,92,126,.35)' },
+        border: { display: false }
+      }
+    }
+  }
+});
+</script>
 </body>
 </html>
