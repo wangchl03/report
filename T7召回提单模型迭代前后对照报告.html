@@ -4,7 +4,6 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>T7 召回提单模型迭代前后对照</title>
-<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
 <style>
 :root{--line:#2a5c7e;--text:#eff8ff;--muted:#aac5da;--cy:#43c7e7}
 *{box-sizing:border-box}body{margin:0;background:#06192b;color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei",sans-serif}
@@ -59,33 +58,7 @@ core 前 1/3 = 该批流失用户按 <code>score</code> 从高到低 <code>NTILE
 <div class="callout"><div class="ch">3. 经营含义</div>
 升级后的分更适合做触达排序和额度/券倾斜：同样覆盖前三分之一流失用户，能打到更大比例的实际提单人。</div>
 
-<h2>一、主指标对照</h2>
-<p class="desc">分母 = 该批触达日至 2026-09-22 的去重提单用户。分子 = 其中 score 最高三分之一。</p>
-<div class="grid g2">
-  <div class="chart"><h3>图1 前 1/3 占全部提单</h3><p>观察到今天 vs 对齐 D0～D4</p><div class="box"><canvas id="c1"></canvas></div></div>
-  <div class="chart"><h3>图2 对齐 5 日：三分位对提单的贡献</h3><p>堆叠 = 100%</p><div class="box"><canvas id="c2"></canvas></div></div>
-</div>
-<div class="table"><table>
-<thead><tr><th>批次</th><th>触达日</th><th>流失人数</th><th>core 前 1/3</th><th>score 区间</th><th>全部提单</th><th>前 1/3 里提单</th><th>占全部提单</th></tr></thead>
-<tbody>
-<tr><td>迭代前 t7recall_active0910</td><td>2026-09-10</td><td>7,792</td><td>2,598</td><td>15.00～115.00</td><td>862</td><td>564</td><td><b>65.43%</b></td></tr>
-<tr><td>迭代后 t7recalllist_active0918</td><td>2026-09-18</td><td>8,669</td><td>2,890</td><td>83.15～100.00</td><td>284</td><td>209</td><td><b>73.59%</b></td></tr>
-</tbody></table></div>
-
-<h2>二、对齐触达后 5 天</h2>
-<p class="desc">D0＝触达日。0910 看 9/10～9/14，0918 看 9/18～9/22。每人只按首次提单日计入。</p>
-<div class="grid g2">
-  <div class="chart"><h3>图3 累计前 1/3 占全部提单</h3><p>按触达后天数 D0～D4</p><div class="box"><canvas id="c3"></canvas></div></div>
-  <div class="chart"><h3>图4 对齐 5 日各档提单率</h3><p>该档流失用户中的提单占比</p><div class="box"><canvas id="c4"></canvas></div></div>
-</div>
-<div class="table"><table>
-<thead><tr><th>批次</th><th>D0～D4 全部提单</th><th>前 1/3 里提单</th><th>占全部提单</th><th>名单提单率</th><th>前 1/3 档内提单率</th><th>中档</th><th>低档</th></tr></thead>
-<tbody>
-<tr><td>迭代前</td><td>407</td><td>289</td><td><b>71.01%</b></td><td>5.22%</td><td>11.12%</td><td>3.08%</td><td>1.46%</td></tr>
-<tr><td>迭代后</td><td>284</td><td>209</td><td><b>73.59%</b></td><td>3.28%</td><td>7.23%</td><td>1.63%</td><td>0.97%</td></tr>
-</tbody></table></div>
-
-<h2>三、按首次提单日</h2>
+<h2>按首次提单日</h2>
 <p class="desc">累计占比用首次提单去重，跨日多次提单的人只进第一次。</p>
 <h3 style="font-size:16px;margin:18px 0 8px">迭代前 0910</h3>
 <div class="table"><table>
@@ -97,14 +70,6 @@ core 前 1/3 = 该批流失用户按 <code>score</code> 从高到低 <code>NTILE
 <thead><tr><th>日期</th><th>触达后</th><th>当日新增提单</th><th>其中前 1/3</th><th>当日占比</th><th>累计提单</th><th>累计前 1/3</th><th>累计占比</th></tr></thead>
 <tbody><tr><td>2026-09-18</td><td>D0</td><td>56</td><td>41</td><td>73.21%</td><td>56</td><td>41</td><td>73.21%</td></tr><tr><td>2026-09-19</td><td>D1</td><td>73</td><td>54</td><td>73.97%</td><td>129</td><td>95</td><td>73.64%</td></tr><tr><td>2026-09-20</td><td>D2</td><td>85</td><td>63</td><td>74.12%</td><td>214</td><td>158</td><td>73.83%</td></tr><tr><td>2026-09-21</td><td>D3</td><td>69</td><td>51</td><td>73.91%</td><td>283</td><td>209</td><td>73.85%</td></tr><tr><td>2026-09-22</td><td>D4</td><td>1</td><td>0</td><td>0.00%</td><td>284</td><td>209</td><td>73.59%</td></tr></tbody>
 </table></div>
-
-<h2>口径</h2>
-<div class="callout">
-流失用户：名单 <code>churn_user_id</code> 去重。core 分 = <code>score</code>，越高越好；<code>NTILE(3) ORDER BY score DESC, user_id</code>，tertile=1 为前 1/3。<br>
-提单：<code>order_loan_f_v2_copy.apply_date</code> 在触达日～2026-09-22（含）。每人取首次提单日。<br>
-主指标：前 1/3 里提单人数 / 该批全部提单人数。<br>
-对齐 5 日：首次提单日落在触达日 + 0～4 天。0910 与 0918 的 score 量纲不同，不做绝对分对比。
-</div>
 
 <h2>附录：完整 PGSQL（可复现全部指标）</h2>
 <p class="desc">R1/R4 总览（含 D0～D4）；R2/R5 三分位人数；R3/R6 按首次提单日。占比用对应列相除。统计日随 <code>CURRENT_DATE</code> 滚动。</p>
@@ -231,50 +196,5 @@ ORDER BY 1;
 </details>
 <p class="foot">数据截至库内 2026-09-22。源表：t7recall_active0910、t7recalllist_active0918、order_loan_f_v2_copy。</p>
 </main>
-<script>
-const D = {"labels": ["迭代前 0910", "迭代后 0918"], "share_today": [65.43, 73.59], "share_d4": [71.01, 73.59], "day": [0, 1, 2, 3, 4], "cum_v1": [72.73, 77.6, 72.6, 71.93, 71.01], "cum_v2": [73.21, 73.64, 73.83, 73.85, 73.59], "stack_t1": [71.01, 73.59], "stack_t2": [19.66, 16.55], "stack_t3": [9.34, 9.86], "rate_t1": [11.12, 7.23], "rate_t2": [3.08, 1.63], "rate_t3": [1.46, 0.97]};
-const common = {
-  responsive:true, maintainAspectRatio:false,
-  plugins:{legend:{labels:{color:'#d7ecf8'}}},
-  scales:{
-    x:{ticks:{color:'#aac5da'},grid:{color:'rgba(42,92,126,.25)'}},
-    y:{ticks:{color:'#aac5da'},grid:{color:'rgba(42,92,126,.25)'}}
-  }
-};
-new Chart(document.getElementById('c1'), {
-  type:'bar',
-  data:{labels:D.labels, datasets:[
-    {label:'观察到今天 %', data:D.share_today, backgroundColor:'rgba(67,199,231,.45)'},
-    {label:'对齐 D0～D4 %', data:D.share_d4, backgroundColor:'#43c7e7'}
-  ]},
-  options:{...common, scales:{...common.scales, y:{...common.scales.y, min:50, max:85}}}
-});
-new Chart(document.getElementById('c2'), {
-  type:'bar',
-  data:{labels:D.labels, datasets:[
-    {label:'前1/3', data:D.stack_t1, backgroundColor:'#43c7e7'},
-    {label:'中1/3', data:D.stack_t2, backgroundColor:'#ffc26b'},
-    {label:'低1/3', data:D.stack_t3, backgroundColor:'#f68ab0'}
-  ]},
-  options:{...common, plugins:{...common.plugins, legend:{labels:{color:'#d7ecf8'}}}, scales:{...common.scales, x:{...common.scales.x, stacked:true}, y:{...common.scales.y, stacked:true, max:100}}}
-});
-new Chart(document.getElementById('c3'), {
-  type:'line',
-  data:{labels:D.day.map(i=>'D'+i), datasets:[
-    {label:'迭代前', data:D.cum_v1, borderColor:'#aac5da', tension:.2, pointRadius:4},
-    {label:'迭代后', data:D.cum_v2, borderColor:'#43c7e7', tension:.2, pointRadius:4}
-  ]},
-  options:{...common, scales:{...common.scales, y:{...common.scales.y, min:60, max:85}}}
-});
-new Chart(document.getElementById('c4'), {
-  type:'bar',
-  data:{labels:D.labels, datasets:[
-    {label:'前1/3 档内提单率', data:D.rate_t1, backgroundColor:'#43c7e7'},
-    {label:'中档', data:D.rate_t2, backgroundColor:'#ffc26b'},
-    {label:'低档', data:D.rate_t3, backgroundColor:'#f68ab0'}
-  ]},
-  options:common
-});
-</script>
 </body>
 </html>
