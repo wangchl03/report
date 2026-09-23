@@ -280,15 +280,39 @@ const common = {
     y:{ticks:{color:'#aac5da'},grid:{color:'rgba(42,92,126,.25)'}}
   }
 };
+const valueLabels = {
+  id:'valueLabels',
+  afterDatasetsDraw(chart, _args, options) {
+    if (!options || !options.display) return;
+    const {ctx, chartArea} = chart;
+    chart.data.datasets.forEach((dataset, datasetIndex) => {
+      const meta = chart.getDatasetMeta(datasetIndex);
+      meta.data.forEach((element, index) => {
+        const value = dataset.data[index];
+        if (value === null || value === undefined) return;
+        const point = element.tooltipPosition();
+        const text = options.formatter ? options.formatter(value) : String(value);
+        ctx.save();
+        ctx.fillStyle = options.color || '#eff8ff';
+        ctx.font = options.font || '700 12px -apple-system,BlinkMacSystemFont,"PingFang SC",sans-serif';
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'bottom';
+        ctx.fillText(text, point.x, Math.max(chartArea.top + 14, point.y - 8));
+        ctx.restore();
+      });
+    });
+  }
+};
+Chart.register(valueLabels);
 new Chart(document.getElementById('c1'), {
   type:'line',
   data:{labels:D.labels, datasets:[{label:'点确认/获额通过 %', data:D.confirm_pct, borderColor:'#43c7e7', backgroundColor:'rgba(67,199,231,.15)', tension:.25, fill:true, pointRadius:4}]},
-  options:{...common, scales:{...common.scales, y:{...common.scales.y, min:40, max:70}}}
+  options:{...common, plugins:{...common.plugins, valueLabels:{display:true, formatter:value=>`${value.toFixed(2)}%`}}, scales:{...common.scales, y:{...common.scales.y, min:40, max:70}}}
 });
 new Chart(document.getElementById('c2'), {
   type:'bar',
   data:{labels:D.funnel_labels, datasets:[{label:'人数', data:D.funnel, backgroundColor:'#43c7e7'}]},
-  options:common
+  options:{...common, plugins:{...common.plugins, valueLabels:{display:true, formatter:value=>value.toLocaleString('zh-CN')}}}
 });
 new Chart(document.getElementById('c3'), {
   type:'line',
