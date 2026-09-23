@@ -1,0 +1,971 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>T0 升降额前后额度使用率四档对照</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+<style>
+:root{--line:#2a5c7e;--text:#eff8ff;--muted:#aac5da;--cy:#43c7e7}
+*{box-sizing:border-box}body{margin:0;background:#06192b;color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei",sans-serif}
+.wrap{max-width:1520px;margin:auto;padding:32px 36px 80px}
+.hero{text-align:center;padding:28px 12px 22px;border-bottom:1px solid var(--line)}
+.kicker{color:var(--cy);font-size:13px;letter-spacing:2px;font-weight:700}
+.hero h1{font-size:26px;line-height:1.35;margin:10px 0}
+.hero-meta{display:inline-block;text-align:left;margin-top:12px;line-height:1.75;color:var(--muted);font-size:14px}
+h2{font-size:22px;margin:40px 0 10px}
+.desc{color:var(--muted);margin:0 0 12px;line-height:1.75;font-size:14px}
+.grid{display:grid;gap:14px}.g2{grid-template-columns:repeat(2,minmax(0,1fr))}.g3{grid-template-columns:repeat(3,minmax(0,1fr))}.g4{grid-template-columns:repeat(4,minmax(0,1fr))}
+.card,.chart{background:rgba(10,41,68,.95);border:1px solid var(--line);border-radius:14px;padding:16px}
+.label{color:var(--muted);font-size:12px}.num{font-size:22px;font-weight:800;margin:4px 0 2px;color:var(--cy)}
+.sub{color:var(--muted);font-size:12px}
+.box{height:320px;position:relative}.chart h3{margin:0 0 4px;font-size:15px}.chart p{font-size:12px;color:var(--muted);margin:0 0 10px}
+.callout{background:#0a2a45;border:1px solid #2a5c7e;border-left:4px solid #43c7e7;border-radius:10px;padding:14px 18px;margin:14px 0;line-height:1.75;font-size:14px}
+.callout.gold{border-left-color:#ffc26b}.callout.red{border-left-color:#f68ab0}.callout.green{border-left-color:#64dcae}
+.callout .ch{font-weight:800;margin-bottom:8px}
+.table{overflow-x:auto;margin:12px 0}table{width:100%;border-collapse:collapse;font-size:13px}
+th,td{padding:8px 10px;border-bottom:1px solid rgba(42,92,126,.45);text-align:right;white-space:nowrap}
+th{color:var(--muted);background:rgba(12,48,78,.65)}th:first-child,td:first-child{text-align:left}
+table.heat td,table.heat th{white-space:normal;font-size:12px}
+table.heat caption{caption-side:top;text-align:left;color:var(--cy);font-weight:700;padding:6px 0 10px}
+.hm-n{font-weight:800;font-size:15px}.hm-p,.hm-sub{color:#d7ecf8;font-size:11px;line-height:1.45}
+details.code{margin:10px 0;background:rgba(10,41,68,.95);border:1px solid var(--line);border-radius:12px;padding:10px 14px}
+details.code summary{cursor:pointer;color:var(--cy);font-weight:700}
+pre.sql{overflow:auto;max-height:900px;font-size:11.5px;line-height:1.5;color:#d7ecf8;white-space:pre}
+.foot{color:#7fa6c2;font-size:12.5px;margin-top:40px;border-top:1px solid var(--line);padding-top:16px;line-height:1.9}
+.legend{display:flex;gap:14px;flex-wrap:wrap;font-size:12px;color:var(--muted);margin:6px 0 10px}
+.dot{width:10px;height:10px;border-radius:2px;display:inline-block;margin-right:6px}
+@media(max-width:980px){.g2,.g3,.g4{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<main class="wrap">
+<header class="hero">
+<div class="kicker">T0 · 2026-07～08 · 成对样本 · 四档使用率流转</div>
+<h1>降额把人推进「打超」，升额把人推回「用不满」</h1>
+<div class="hero-meta">
+分母是 7–8 月 T0 origin（loan_type_code=2、is_pass1、recycle_type=3、20 秒批次、干净结清、day_rn=1），且能对上上一笔获额。<br>
+<strong>前</strong> = 上一笔放款金额 / 上一笔获额；<strong>后</strong> = 本笔首次提单金额 / 本笔 T0 获额。四档：&lt;80% / 80–100% / ≈100%（0.999–1.001）/ &gt;100%。<br>
+成对样本只计本笔发生了首次提单的人。当天 = apply_d=0；至 30 日只保留 vir_date+30 ≤ 库日期（2026-09-22）的人。
+</div>
+</header>
+
+<section class="grid g4" style="margin-top:18px">
+<article class="card"><div class="label">T0 获额通过 · 有上一笔</div><div class="num">45,386</div><div class="sub">与 origin 人日一致</div></article>
+<article class="card"><div class="label">点确认人数 / T0 获额通过</div><div class="num">48.19%</div><div class="sub">21,870 / 45,386</div></article>
+<article class="card"><div class="label">当天提单成对</div><div class="num">18,294</div><div class="sub">降 6,613 · 不变 2,048 · 升 9,633</div></article>
+<article class="card"><div class="label">至 30 日提单成对</div><div class="num">32,233</div><div class="sub">观察截止 2026-09-22</div></article>
+</section>
+
+<h2>结论：是降额砍深了，也是升额抬猛了</h2>
+<div class="callout red"><div class="ch">1. 降额砍到上一笔的约 68%，使用率被「挤」上去</div>
+当天成对：加权使用率 82.34% → 96.97%（+14.6pp）。至 30 日 79.59% → 98.16%（+18.6pp）。<br>
+人数结构更刺眼：&gt;100% 从 29.88% 升到 55.81%（当天），至 30 日再升到 61.30%。同时 &lt;80% 从 24.60% 掉到 5.20%。<br>
+额度本身：当天降额用户本笔获额只有上一笔的 <strong>68.3%</strong>（人均 68.5%）。上一笔已经打满的人里，42.33% 本笔直接打超；上一笔本来 &lt;80% 的人里，46.53% 也被挤进 &gt;100%（757 人，砍到上一笔的 60%）。<br>
+档位移动：当天 <strong>45.88% 升档</strong>、只有 10.48% 降档。降额太多，新额度盖不住原需求。
+</div>
+<div class="callout gold"><div class="ch">2. 升额提到约 1.7 倍（金额加权）～ 2.2 倍（人），使用率被「摊」下来</div>
+当天成对：91.68% → 87.87%（-3.8pp）。至 30 日 88.17% → 82.61%（-5.6pp），缺口随时间变大。<br>
+&lt;80% 从 16.30% 升到 19.44%（当天），至 30 日冲到 <strong>30.48%</strong>；≈100% 从 43.22% 掉到 33.84% / 21.11%。<br>
+额度本身：当天本笔是上一笔的 <strong>171.2%</strong>（人均 220.4%）。上一笔打满的人里，当天 11.19%、至 30 日 16.98% 掉进 &lt;80%——这些人平均被提到接近 3 倍（当天 ≈100%→&lt;80% 额 284%，&gt;100%→&lt;80% 额 293%）。<br>
+档位移动：当天降档 25.95%，至 30 日 29.36%，明显高于降额组的约 10%。升额太多，新额度超过原需求。
+</div>
+<div class="callout green"><div class="ch">3. 不变组是对照：额度不动，使用率只轻微上移</div>
+当天 96.45% → 100.42%（+4.0pp），至 30 日 95.26% → 101.70%。≈100% 始终是主体（当天前 71.83%、后 75.15%），停留同档 62.50%。说明「前后使用率大搬家」不是结清后再借的自然规律，而是额度动得过猛。
+</div>
+<div class="callout"><div class="ch">经营含义</div>
+降额侧：新额度约等于上一笔的 2/3，连上一笔没用满的人都会打超——额度砍深于需求，后续逾期/客诉风险在「被迫超额」而不在「不愿借」。<br>
+升额侧：金额加权提到 1.7 倍后，至 30 日仍有三成首次提单停在 &lt;80%。提额没有转化成同等占用，占用被新额度稀释。<br>
+对照不变组，调整幅度应对齐上一笔真实占用，而不是按获额倍数一刀切。
+</div>
+
+<h2>一、三类用户：前后两笔金额加权使用率</h2>
+<p class="desc">金额加权 = Σ 放款或提单金额 / Σ 对应获额。成对样本里，「上一笔」和「本笔」是同一批人，才能说额度变化把使用率推到了哪一侧。</p>
+<div class="grid g2">
+  <div class="chart"><h3>图1 当天成对：加权使用率 前 → 后</h3><p>降额上冲，升额回落，不变贴着 100%</p><div class="box"><canvas id="c1"></canvas></div></div>
+  <div class="chart"><h3>图2 至 30 日成对：加权使用率 前 → 后</h3><p>方向与当天一致，缺口更大</p><div class="box"><canvas id="c2"></canvas></div></div>
+</div>
+<div class="table"><table>
+<thead><tr><th>组</th><th>全体 n</th><th>全体上一笔使用率</th><th>当天成对 n</th><th>当天·前</th><th>当天·后</th><th>当天差</th><th>至30日 n</th><th>30日·前</th><th>30日·后</th><th>30日差</th></tr></thead>
+<tbody><tr><td>降额</td><td>15,168</td><td>79.06%</td><td>6,613</td><td>82.34%</td><td>96.97%</td><td>+14.6pp</td><td>10,862</td><td>79.59%</td><td>98.16%</td><td>+18.6pp</td></tr><tr><td>不变</td><td>4,152</td><td>94.50%</td><td>2,048</td><td>96.45%</td><td>100.42%</td><td>+4.0pp</td><td>3,263</td><td>95.26%</td><td>101.70%</td><td>+6.4pp</td></tr><tr><td>升额</td><td>26,066</td><td>87.17%</td><td>9,633</td><td>91.68%</td><td>87.87%</td><td>-3.8pp</td><td>18,108</td><td>88.17%</td><td>82.61%</td><td>-5.6pp</td></tr><tr><td>合计</td><td>45,386</td><td>84.62%</td><td>18,294</td><td>88.11%</td><td>90.34%</td><td>+2.2pp</td><td>32,233</td><td>85.36%</td><td>86.05%</td><td>+0.7pp</td></tr></tbody>
+</table></div>
+
+<h2>二、四档人数占比：用户站在哪一档</h2>
+<p class="desc">看的是人数结构，不是金额。&lt;80% 变多 = 额度相对需求太大；&gt;100% 变多 = 额度相对需求太小。80–100% 本身人数很少，主体在 ≈100% 和两端。</p>
+<div class="legend">
+  <span><i class="dot" style="background:#5b8def"></i>&lt;80%</span>
+  <span><i class="dot" style="background:#64dcae"></i>80–100%</span>
+  <span><i class="dot" style="background:#ffc26b"></i>≈100%</span>
+  <span><i class="dot" style="background:#f68ab0"></i>&gt;100%</span>
+</div>
+<div class="grid g2">
+  <div class="chart"><h3>图3 当天成对四档占比 前 vs 后</h3><p>每组两根柱：上一笔 / 本笔</p><div class="box" style="height:360px"><canvas id="c3"></canvas></div></div>
+  <div class="chart"><h3>图4 至 30 日成对四档占比 前 vs 后</h3><p>升额后 &lt;80% 升到 30.48%；降额后 &gt;100% 升到 61.30%</p><div class="box" style="height:360px"><canvas id="c4"></canvas></div></div>
+</div>
+<div class="chart" style="margin-top:14px"><h3>图5 四档人数占比变化（本笔 − 上一笔）</h3><p>正值 = 该档变多。降额的粉柱（&gt;100%）向上，升额的蓝柱（&lt;80%）向上。</p><div class="box" style="height:340px"><canvas id="c5"></canvas></div></div>
+
+<div class="table"><table>
+<thead><tr><th>当天成对</th><th>前 &lt;80%</th><th>前 80–100%</th><th>前 ≈100%</th><th>前 &gt;100%</th><th>后 &lt;80%</th><th>后 80–100%</th><th>后 ≈100%</th><th>后 &gt;100%</th><th>&lt;80% 差</th><th>&gt;100% 差</th></tr></thead>
+<tbody><tr><td>降额 n=6,613</td><td>24.60%</td><td>3.72%</td><td>41.80%</td><td>29.88%</td><td>5.20%</td><td>1.48%</td><td>37.50%</td><td>55.81%</td><td>-19.4pp</td><td>+25.9pp</td></tr><tr><td>不变 n=2,048</td><td>14.26%</td><td>0.63%</td><td>71.83%</td><td>13.28%</td><td>2.10%</td><td>0.24%</td><td>75.15%</td><td>22.51%</td><td>-12.2pp</td><td>+9.2pp</td></tr><tr><td>升额 n=9,633</td><td>16.30%</td><td>3.04%</td><td>43.22%</td><td>37.44%</td><td>19.44%</td><td>4.08%</td><td>33.84%</td><td>42.63%</td><td>+3.1pp</td><td>+5.2pp</td></tr><tr><td>合计 n=18,294</td><td>19.07%</td><td>3.02%</td><td>45.91%</td><td>32.01%</td><td>12.35%</td><td>2.71%</td><td>39.79%</td><td>45.15%</td><td>-6.7pp</td><td>+13.1pp</td></tr></tbody>
+</table></div>
+<div class="table"><table>
+<thead><tr><th>至30日成对</th><th>前 &lt;80%</th><th>前 80–100%</th><th>前 ≈100%</th><th>前 &gt;100%</th><th>后 &lt;80%</th><th>后 80–100%</th><th>后 ≈100%</th><th>后 &gt;100%</th><th>&lt;80% 差</th><th>&gt;100% 差</th></tr></thead>
+<tbody><tr><td>降额 n=10,862</td><td>28.67%</td><td>4.07%</td><td>38.11%</td><td>29.16%</td><td>9.43%</td><td>3.15%</td><td>26.13%</td><td>61.30%</td><td>-19.2pp</td><td>+32.1pp</td></tr><tr><td>不变 n=3,263</td><td>17.01%</td><td>0.67%</td><td>66.26%</td><td>16.06%</td><td>3.68%</td><td>0.95%</td><td>56.39%</td><td>38.98%</td><td>-13.3pp</td><td>+22.9pp</td></tr><tr><td>升额 n=18,108</td><td>21.18%</td><td>3.45%</td><td>39.34%</td><td>36.03%</td><td>30.48%</td><td>6.07%</td><td>21.11%</td><td>42.34%</td><td>+9.3pp</td><td>+6.3pp</td></tr><tr><td>合计 n=32,233</td><td>23.28%</td><td>3.38%</td><td>41.65%</td><td>31.69%</td><td>20.67%</td><td>4.57%</td><td>26.37%</td><td>48.39%</td><td>-2.6pp</td><td>+16.7pp</td></tr></tbody>
+</table></div>
+
+<h2>三、前后档位有没有搬家：停留 / 升档 / 降档</h2>
+<p class="desc">档位顺序：&lt;80% → 80–100% → ≈100% → &gt;100%。升档 = 本笔比上一笔更打满；降档 = 本笔更用不满。不变组升档主要来自「以前没用满、额度没变后打满」，幅度远小于降额组。</p>
+<div class="grid g2">
+  <div class="chart"><h3>图6 当天：同档 / 升档 / 降档</h3><p>降额近一半升档；升额降档是降额的 2.5 倍</p><div class="box"><canvas id="c6"></canvas></div></div>
+  <div class="chart"><h3>图7 至 30 日：同档 / 升档 / 降档</h3><p>时间拉长后，升额降档到 29.36%</p><div class="box"><canvas id="c7"></canvas></div></div>
+</div>
+<div class="table"><table>
+<thead><tr><th>窗口</th><th>组</th><th>n</th><th>停留同档</th><th>升档</th><th>降档</th></tr></thead>
+<tbody><tr><td>当天</td><td>降额</td><td>6,613</td><td>43.64%</td><td>45.88%</td><td>10.48%</td></tr><tr><td>当天</td><td>不变</td><td>2,048</td><td>62.50%</td><td>26.76%</td><td>10.74%</td></tr><tr><td>当天</td><td>升额</td><td>9,633</td><td>46.78%</td><td>27.27%</td><td>25.95%</td></tr><tr><td>当天</td><td>合计</td><td>18,294</td><td>47.40%</td><td>33.94%</td><td>18.66%</td></tr><tr><td>至30日</td><td>降额</td><td>10,862</td><td>41.01%</td><td>48.81%</td><td>10.18%</td></tr><tr><td>至30日</td><td>不变</td><td>3,263</td><td>50.35%</td><td>38.92%</td><td>10.73%</td></tr><tr><td>至30日</td><td>升额</td><td>18,108</td><td>43.63%</td><td>27.02%</td><td>29.36%</td></tr><tr><td>至30日</td><td>合计</td><td>32,233</td><td>43.42%</td><td>35.57%</td><td>21.01%</td></tr></tbody>
+</table></div>
+
+<h2>四、人是怎么从上一笔档位流到本笔档位的</h2>
+<p class="desc">热力图数字：人数；占前档 = 上一笔在该档的人有多大比例流到本笔该档；占组 = 占该组成对样本；额 = 这批人的本笔获额 / 上一笔获额（人均）。粉格往右下 = 打超；蓝格往左 = 用不满。</p>
+<div class="grid g3">
+  <div class="chart"><h3>图8 降额 · 当天 · 从哪一档来</h3><p>横轴=上一笔档位，堆叠=本笔档位</p><div class="box" style="height:300px"><canvas id="c8"></canvas></div></div>
+  <div class="chart"><h3>图9 不变 · 当天 · 从哪一档来</h3><p>≈100% 大量停在 ≈100%</p><div class="box" style="height:300px"><canvas id="c9"></canvas></div></div>
+  <div class="chart"><h3>图10 升额 · 当天 · 从哪一档来</h3><p>打满档明显漏出一块到 &lt;80%</p><div class="box" style="height:300px"><canvas id="c10"></canvas></div></div>
+</div>
+
+<div class='table'><table class='heat'><caption>降额 · 当天成对流转（n=6,613）</caption><thead><tr><th>上一笔 \ 本笔</th><th>本笔 <80%</th><th>本笔 80-100%</th><th>本笔 ≈100%</th><th>本笔 >100%</th></tr></thead><tbody><tr><td><80%</td><td style='background:rgba(91,141,239,0.21);text-align:center'><div class='hm-n'>258</div><div class='hm-p'>占前档 15.86% · 占组 3.90%</div><div class='hm-sub'>额 73%</div></td><td style='background:rgba(100,220,174,0.11);text-align:center'><div class='hm-n'>57</div><div class='hm-p'>占前档 3.50% · 占组 0.86%</div><div class='hm-sub'>额 68%</div></td><td style='background:rgba(255,194,107,0.37);text-align:center'><div class='hm-n'>555</div><div class='hm-p'>占前档 34.11% · 占组 8.39%</div><div class='hm-sub'>额 61%</div></td><td style='background:rgba(246,138,176,0.48);text-align:center'><div class='hm-n'>757</div><div class='hm-p'>占前档 46.53% · 占组 11.45%</div><div class='hm-sub'>额 60%</div></td></tr><tr><td>80-100%</td><td style='background:rgba(91,141,239,0.14);text-align:center'><div class='hm-n'>16</div><div class='hm-p'>占前档 6.50% · 占组 0.24%</div><div class='hm-sub'>额 75%</div></td><td style='background:rgba(100,220,174,0.11);text-align:center'><div class='hm-n'>9</div><div class='hm-p'>占前档 3.66% · 占组 0.14%</div><div class='hm-sub'>额 75%</div></td><td style='background:rgba(255,194,107,0.38);text-align:center'><div class='hm-n'>86</div><div class='hm-p'>占前档 34.96% · 占组 1.30%</div><div class='hm-sub'>额 69%</div></td><td style='background:rgba(246,138,176,0.55);text-align:center'><div class='hm-n'>135</div><div class='hm-p'>占前档 54.88% · 占组 2.04%</div><div class='hm-sub'>额 70%</div></td></tr><tr><td>≈100%</td><td style='background:rgba(91,141,239,0.09);text-align:center'><div class='hm-n'>41</div><div class='hm-p'>占前档 1.48% · 占组 0.62%</div><div class='hm-sub'>额 78%</div></td><td style='background:rgba(100,220,174,0.08);text-align:center'><div class='hm-n'>15</div><div class='hm-p'>占前档 0.54% · 占组 0.23%</div><div class='hm-sub'>额 74%</div></td><td style='background:rgba(255,194,107,0.47);text-align:center'><div class='hm-n'>1,264</div><div class='hm-p'>占前档 45.73% · 占组 19.11%</div><div class='hm-sub'>额 67%</div></td><td style='background:rgba(246,138,176,0.52);text-align:center'><div class='hm-n'>1,444</div><div class='hm-p'>占前档 52.24% · 占组 21.84%</div><div class='hm-sub'>额 71%</div></td></tr><tr><td>>100%</td><td style='background:rgba(91,141,239,0.09);text-align:center'><div class='hm-n'>29</div><div class='hm-p'>占前档 1.47% · 占组 0.44%</div><div class='hm-sub'>额 77%</div></td><td style='background:rgba(100,220,174,0.09);text-align:center'><div class='hm-n'>17</div><div class='hm-p'>占前档 0.86% · 占组 0.26%</div><div class='hm-sub'>额 74%</div></td><td style='background:rgba(255,194,107,0.33);text-align:center'><div class='hm-n'>575</div><div class='hm-p'>占前档 29.10% · 占组 8.69%</div><div class='hm-sub'>额 71%</div></td><td style='background:rgba(246,138,176,0.66);text-align:center'><div class='hm-n'>1,355</div><div class='hm-p'>占前档 68.57% · 占组 20.49%</div><div class='hm-sub'>额 72%</div></td></tr></tbody></table></div>
+<div class='table'><table class='heat'><caption>不变 · 当天成对流转（n=2,048）</caption><thead><tr><th>上一笔 \ 本笔</th><th>本笔 <80%</th><th>本笔 80-100%</th><th>本笔 ≈100%</th><th>本笔 >100%</th></tr></thead><tbody><tr><td><80%</td><td style='background:rgba(91,141,239,0.14);text-align:center'><div class='hm-n'>19</div><div class='hm-p'>占前档 6.51% · 占组 0.93%</div><div class='hm-sub'>额 100%</div></td><td style='background:rgba(100,220,174,0.08);text-align:center'><div class='hm-n'>0</div><div class='hm-p'>占前档 0.00% · 占组 0.00%</div></td><td style='background:rgba(255,194,107,0.54);text-align:center'><div class='hm-n'>159</div><div class='hm-p'>占前档 54.45% · 占组 7.76%</div><div class='hm-sub'>额 100%</div></td><td style='background:rgba(246,138,176,0.41);text-align:center'><div class='hm-n'>114</div><div class='hm-p'>占前档 39.04% · 占组 5.57%</div><div class='hm-sub'>额 100%</div></td></tr><tr><td>80-100%</td><td style='background:rgba(91,141,239,0.15);text-align:center'><div class='hm-n'>1</div><div class='hm-p'>占前档 7.69% · 占组 0.05%</div><div class='hm-sub'>额 100%</div></td><td style='background:rgba(100,220,174,0.15);text-align:center'><div class='hm-n'>1</div><div class='hm-p'>占前档 7.69% · 占组 0.05%</div><div class='hm-sub'>额 100%</div></td><td style='background:rgba(255,194,107,0.34);text-align:center'><div class='hm-n'>4</div><div class='hm-p'>占前档 30.77% · 占组 0.20%</div><div class='hm-sub'>额 100%</div></td><td style='background:rgba(246,138,176,0.54);text-align:center'><div class='hm-n'>7</div><div class='hm-p'>占前档 53.85% · 占组 0.34%</div><div class='hm-sub'>额 100%</div></td></tr><tr><td>≈100%</td><td style='background:rgba(91,141,239,0.09);text-align:center'><div class='hm-n'>19</div><div class='hm-p'>占前档 1.29% · 占组 0.93%</div><div class='hm-sub'>额 100%</div></td><td style='background:rgba(100,220,174,0.08);text-align:center'><div class='hm-n'>4</div><div class='hm-p'>占前档 0.27% · 占组 0.20%</div><div class='hm-sub'>额 100%</div></td><td style='background:rgba(255,194,107,0.72);text-align:center'><div class='hm-n'>1,184</div><div class='hm-p'>占前档 80.49% · 占组 57.81%</div><div class='hm-sub'>额 100%</div></td><td style='background:rgba(246,138,176,0.23);text-align:center'><div class='hm-n'>264</div><div class='hm-p'>占前档 17.95% · 占组 12.89%</div><div class='hm-sub'>额 100%</div></td></tr><tr><td>>100%</td><td style='background:rgba(91,141,239,0.09);text-align:center'><div class='hm-n'>4</div><div class='hm-p'>占前档 1.47% · 占组 0.20%</div><div class='hm-sub'>额 100%</div></td><td style='background:rgba(100,220,174,0.08);text-align:center'><div class='hm-n'>0</div><div class='hm-p'>占前档 0.00% · 占组 0.00%</div></td><td style='background:rgba(255,194,107,0.68);text-align:center'><div class='hm-n'>192</div><div class='hm-p'>占前档 70.59% · 占组 9.38%</div><div class='hm-sub'>额 100%</div></td><td style='background:rgba(246,138,176,0.32);text-align:center'><div class='hm-n'>76</div><div class='hm-p'>占前档 27.94% · 占组 3.71%</div><div class='hm-sub'>额 100%</div></td></tr></tbody></table></div>
+<div class='table'><table class='heat'><caption>升额 · 当天成对流转（n=9,633）</caption><thead><tr><th>上一笔 \ 本笔</th><th>本笔 <80%</th><th>本笔 80-100%</th><th>本笔 ≈100%</th><th>本笔 >100%</th></tr></thead><tbody><tr><td><80%</td><td style='background:rgba(91,141,239,0.45);text-align:center'><div class='hm-n'>688</div><div class='hm-p'>占前档 43.82% · 占组 7.14%</div><div class='hm-sub'>额 185%</div></td><td style='background:rgba(100,220,174,0.13);text-align:center'><div class='hm-n'>87</div><div class='hm-p'>占前档 5.54% · 占组 0.90%</div><div class='hm-sub'>额 182%</div></td><td style='background:rgba(255,194,107,0.25);text-align:center'><div class='hm-n'>307</div><div class='hm-p'>占前档 19.55% · 占组 3.19%</div><div class='hm-sub'>额 171%</div></td><td style='background:rgba(246,138,176,0.34);text-align:center'><div class='hm-n'>488</div><div class='hm-p'>占前档 31.08% · 占组 5.07%</div><div class='hm-sub'>额 175%</div></td></tr><tr><td>80-100%</td><td style='background:rgba(91,141,239,0.39);text-align:center'><div class='hm-n'>107</div><div class='hm-p'>占前档 36.52% · 占组 1.11%</div><div class='hm-sub'>额 219%</div></td><td style='background:rgba(100,220,174,0.15);text-align:center'><div class='hm-n'>23</div><div class='hm-p'>占前档 7.85% · 占组 0.24%</div><div class='hm-sub'>额 202%</div></td><td style='background:rgba(255,194,107,0.25);text-align:center'><div class='hm-n'>57</div><div class='hm-p'>占前档 19.45% · 占组 0.59%</div><div class='hm-sub'>额 166%</div></td><td style='background:rgba(246,138,176,0.39);text-align:center'><div class='hm-n'>106</div><div class='hm-p'>占前档 36.18% · 占组 1.10%</div><div class='hm-sub'>额 193%</div></td></tr><tr><td>≈100%</td><td style='background:rgba(91,141,239,0.20);text-align:center'><div class='hm-n'>570</div><div class='hm-p'>占前档 13.69% · 占组 5.92%</div><div class='hm-sub'>额 284%</div></td><td style='background:rgba(100,220,174,0.11);text-align:center'><div class='hm-n'>147</div><div class='hm-p'>占前档 3.53% · 占组 1.53%</div><div class='hm-sub'>额 252%</div></td><td style='background:rgba(255,194,107,0.46);text-align:center'><div class='hm-n'>1,864</div><div class='hm-p'>占前档 44.78% · 占组 19.35%</div><div class='hm-sub'>额 220%</div></td><td style='background:rgba(246,138,176,0.40);text-align:center'><div class='hm-n'>1,582</div><div class='hm-p'>占前档 38.00% · 占组 16.42%</div><div class='hm-sub'>额 240%</div></td></tr><tr><td>>100%</td><td style='background:rgba(91,141,239,0.20);text-align:center'><div class='hm-n'>508</div><div class='hm-p'>占前档 14.08% · 占组 5.27%</div><div class='hm-sub'>额 293%</div></td><td style='background:rgba(100,220,174,0.11);text-align:center'><div class='hm-n'>136</div><div class='hm-p'>占前档 3.77% · 占组 1.41%</div><div class='hm-sub'>额 229%</div></td><td style='background:rgba(255,194,107,0.32);text-align:center'><div class='hm-n'>1,032</div><div class='hm-p'>占前档 28.61% · 占组 10.71%</div><div class='hm-sub'>额 196%</div></td><td style='background:rgba(246,138,176,0.54);text-align:center'><div class='hm-n'>1,931</div><div class='hm-p'>占前档 53.53% · 占组 20.05%</div><div class='hm-sub'>额 214%</div></td></tr></tbody></table></div>
+
+<div class="callout red"><div class="ch">降额关键流向（当天）</div>
+上一笔 ≈100% → 本笔 &gt;100%：<strong>1,444</strong> 人，占组 21.84%，占该前档 52.24%，额度砍到 71%。<br>
+上一笔 &gt;100% → 仍 &gt;100%：1,355 人，占前档 68.57%。<br>
+上一笔 &lt;80% → 本笔 &gt;100%：<strong>757</strong> 人，占该前档 46.53%，额度砍到 60%；另有 555 人从 &lt;80% 打到 ≈100%。<br>
+解读：连「上一笔没用满」的人，砍到约六成额度后也会打超。不是这批人突然更敢借，是额度小于原占用。
+</div>
+<div class="callout gold"><div class="ch">升额关键流向（当天 / 至 30 日）</div>
+当天：上一笔 ≈100% → 本笔 &lt;80% 570 人（占该前档 13.69%），平均提到 284%；上一笔 &gt;100% → &lt;80% 508 人（占该前档 14.08%），平均提到 293%。<br>
+至 30 日这两条更宽：≈100%→&lt;80% 1,632 人（占前档 22.91%）；&gt;100%→&lt;80% 1,443 人（占前档 22.11%）。<br>
+同期降额 ≈100%→&gt;100% 至 30 日有 2,525 人（占该前档 61.01%）。一边提额提空，一边降额降满。
+</div>
+
+<div class="grid g3" style="margin-top:8px">
+  <div class="chart"><h3>图11 降额 · 至30日流转</h3><p>&gt;100% 堆叠进一步加厚</p><div class="box" style="height:300px"><canvas id="c11"></canvas></div></div>
+  <div class="chart"><h3>图12 不变 · 至30日流转</h3><p>对照，结构仍以 ≈100% 为主</p><div class="box" style="height:300px"><canvas id="c12"></canvas></div></div>
+  <div class="chart"><h3>图13 升额 · 至30日流转</h3><p>&lt;80% 从打满档漏出更多</p><div class="box" style="height:300px"><canvas id="c13"></canvas></div></div>
+</div>
+<div class='table'><table class='heat'><caption>降额 · 至30日成对流转（n=10,862）</caption><thead><tr><th>上一笔 \ 本笔</th><th>本笔 <80%</th><th>本笔 80-100%</th><th>本笔 ≈100%</th><th>本笔 >100%</th></tr></thead><tbody><tr><td><80%</td><td style='background:rgba(91,141,239,0.27);text-align:center'><div class='hm-n'>699</div><div class='hm-p'>占前档 22.45% · 占组 6.44%</div><div class='hm-sub'>额 71%</div></td><td style='background:rgba(100,220,174,0.13);text-align:center'><div class='hm-n'>189</div><div class='hm-p'>占前档 6.07% · 占组 1.74%</div><div class='hm-sub'>额 65%</div></td><td style='background:rgba(255,194,107,0.26);text-align:center'><div class='hm-n'>677</div><div class='hm-p'>占前档 21.74% · 占组 6.23%</div><div class='hm-sub'>额 61%</div></td><td style='background:rgba(246,138,176,0.50);text-align:center'><div class='hm-n'>1,549</div><div class='hm-p'>占前档 49.74% · 占组 14.26%</div><div class='hm-sub'>额 59%</div></td></tr><tr><td>80-100%</td><td style='background:rgba(91,141,239,0.18);text-align:center'><div class='hm-n'>53</div><div class='hm-p'>占前档 11.99% · 占组 0.49%</div><div class='hm-sub'>额 75%</div></td><td style='background:rgba(100,220,174,0.13);text-align:center'><div class='hm-n'>27</div><div class='hm-p'>占前档 6.11% · 占组 0.25%</div><div class='hm-sub'>额 74%</div></td><td style='background:rgba(255,194,107,0.29);text-align:center'><div class='hm-n'>111</div><div class='hm-p'>占前档 25.11% · 占组 1.02%</div><div class='hm-sub'>额 70%</div></td><td style='background:rgba(246,138,176,0.56);text-align:center'><div class='hm-n'>251</div><div class='hm-p'>占前档 56.79% · 占组 2.31%</div><div class='hm-sub'>额 68%</div></td></tr><tr><td>≈100%</td><td style='background:rgba(91,141,239,0.11);text-align:center'><div class='hm-n'>151</div><div class='hm-p'>占前档 3.65% · 占组 1.39%</div><div class='hm-sub'>额 75%</div></td><td style='background:rgba(100,220,174,0.09);text-align:center'><div class='hm-n'>68</div><div class='hm-p'>占前档 1.64% · 占组 0.63%</div><div class='hm-sub'>额 70%</div></td><td style='background:rgba(255,194,107,0.37);text-align:center'><div class='hm-n'>1,395</div><div class='hm-p'>占前档 33.70% · 占组 12.84%</div><div class='hm-sub'>额 67%</div></td><td style='background:rgba(246,138,176,0.60);text-align:center'><div class='hm-n'>2,525</div><div class='hm-p'>占前档 61.01% · 占组 23.25%</div><div class='hm-sub'>额 70%</div></td></tr><tr><td>>100%</td><td style='background:rgba(91,141,239,0.11);text-align:center'><div class='hm-n'>121</div><div class='hm-p'>占前档 3.82% · 占组 1.11%</div><div class='hm-sub'>额 78%</div></td><td style='background:rgba(100,220,174,0.10);text-align:center'><div class='hm-n'>58</div><div class='hm-p'>占前档 1.83% · 占组 0.53%</div><div class='hm-sub'>额 76%</div></td><td style='background:rgba(255,194,107,0.26);text-align:center'><div class='hm-n'>655</div><div class='hm-p'>占前档 20.68% · 占组 6.03%</div><div class='hm-sub'>额 70%</div></td><td style='background:rgba(246,138,176,0.71);text-align:center'><div class='hm-n'>2,333</div><div class='hm-p'>占前档 73.67% · 占组 21.48%</div><div class='hm-sub'>额 72%</div></td></tr></tbody></table></div>
+<div class='table'><table class='heat'><caption>不变 · 至30日成对流转（n=3,263）</caption><thead><tr><th>上一笔 \ 本笔</th><th>本笔 <80%</th><th>本笔 80-100%</th><th>本笔 ≈100%</th><th>本笔 >100%</th></tr></thead><tbody><tr><td><80%</td><td style='background:rgba(91,141,239,0.16);text-align:center'><div class='hm-n'>49</div><div class='hm-p'>占前档 8.83% · 占组 1.50%</div><div class='hm-sub'>额 100%</div></td><td style='background:rgba(100,220,174,0.09);text-align:center'><div class='hm-n'>5</div><div class='hm-p'>占前档 0.90% · 占组 0.15%</div><div class='hm-sub'>额 100%</div></td><td style='background:rgba(255,194,107,0.45);text-align:center'><div class='hm-n'>244</div><div class='hm-p'>占前档 43.96% · 占组 7.48%</div><div class='hm-sub'>额 100%</div></td><td style='background:rgba(246,138,176,0.47);text-align:center'><div class='hm-n'>257</div><div class='hm-p'>占前档 46.31% · 占组 7.88%</div><div class='hm-sub'>额 100%</div></td></tr><tr><td>80-100%</td><td style='background:rgba(91,141,239,0.20);text-align:center'><div class='hm-n'>3</div><div class='hm-p'>占前档 13.64% · 占组 0.09%</div><div class='hm-sub'>额 100%</div></td><td style='background:rgba(100,220,174,0.20);text-align:center'><div class='hm-n'>3</div><div class='hm-p'>占前档 13.64% · 占组 0.09%</div><div class='hm-sub'>额 100%</div></td><td style='background:rgba(255,194,107,0.27);text-align:center'><div class='hm-n'>5</div><div class='hm-p'>占前档 22.73% · 占组 0.15%</div><div class='hm-sub'>额 100%</div></td><td style='background:rgba(246,138,176,0.51);text-align:center'><div class='hm-n'>11</div><div class='hm-p'>占前档 50.00% · 占组 0.34%</div><div class='hm-sub'>额 100%</div></td></tr><tr><td>≈100%</td><td style='background:rgba(91,141,239,0.10);text-align:center'><div class='hm-n'>59</div><div class='hm-p'>占前档 2.73% · 占组 1.81%</div><div class='hm-sub'>额 100%</div></td><td style='background:rgba(100,220,174,0.09);text-align:center'><div class='hm-n'>20</div><div class='hm-p'>占前档 0.93% · 占组 0.61%</div><div class='hm-sub'>额 100%</div></td><td style='background:rgba(255,194,107,0.60);text-align:center'><div class='hm-n'>1,335</div><div class='hm-p'>占前档 61.75% · 占组 40.91%</div><div class='hm-sub'>额 100%</div></td><td style='background:rgba(246,138,176,0.37);text-align:center'><div class='hm-n'>748</div><div class='hm-p'>占前档 34.60% · 占组 22.92%</div><div class='hm-sub'>额 100%</div></td></tr><tr><td>>100%</td><td style='background:rgba(91,141,239,0.09);text-align:center'><div class='hm-n'>9</div><div class='hm-p'>占前档 1.72% · 占组 0.28%</div><div class='hm-sub'>额 100%</div></td><td style='background:rgba(100,220,174,0.08);text-align:center'><div class='hm-n'>3</div><div class='hm-p'>占前档 0.57% · 占组 0.09%</div><div class='hm-sub'>额 100%</div></td><td style='background:rgba(255,194,107,0.50);text-align:center'><div class='hm-n'>256</div><div class='hm-p'>占前档 48.85% · 占组 7.85%</div><div class='hm-sub'>额 100%</div></td><td style='background:rgba(246,138,176,0.50);text-align:center'><div class='hm-n'>256</div><div class='hm-p'>占前档 48.85% · 占组 7.85%</div><div class='hm-sub'>额 100%</div></td></tr></tbody></table></div>
+<div class='table'><table class='heat'><caption>升额 · 至30日成对流转（n=18,108）</caption><thead><tr><th>上一笔 \ 本笔</th><th>本笔 <80%</th><th>本笔 80-100%</th><th>本笔 ≈100%</th><th>本笔 >100%</th></tr></thead><tbody><tr><td><80%</td><td style='background:rgba(91,141,239,0.56);text-align:center'><div class='hm-n'>2,169</div><div class='hm-p'>占前档 56.54% · 占组 11.98%</div><div class='hm-sub'>额 190%</div></td><td style='background:rgba(100,220,174,0.14);text-align:center'><div class='hm-n'>257</div><div class='hm-p'>占前档 6.70% · 占组 1.42%</div><div class='hm-sub'>额 174%</div></td><td style='background:rgba(255,194,107,0.18);text-align:center'><div class='hm-n'>429</div><div class='hm-p'>占前档 11.18% · 占组 2.37%</div><div class='hm-sub'>额 174%</div></td><td style='background:rgba(246,138,176,0.30);text-align:center'><div class='hm-n'>981</div><div class='hm-p'>占前档 25.57% · 占组 5.42%</div><div class='hm-sub'>额 174%</div></td></tr><tr><td>80-100%</td><td style='background:rgba(91,141,239,0.46);text-align:center'><div class='hm-n'>276</div><div class='hm-p'>占前档 44.23% · 占组 1.52%</div><div class='hm-sub'>额 229%</div></td><td style='background:rgba(100,220,174,0.17);text-align:center'><div class='hm-n'>65</div><div class='hm-p'>占前档 10.42% · 占组 0.36%</div><div class='hm-sub'>额 212%</div></td><td style='background:rgba(255,194,107,0.17);text-align:center'><div class='hm-n'>67</div><div class='hm-p'>占前档 10.74% · 占组 0.37%</div><div class='hm-sub'>额 183%</div></td><td style='background:rgba(246,138,176,0.37);text-align:center'><div class='hm-n'>216</div><div class='hm-p'>占前档 34.62% · 占组 1.19%</div><div class='hm-sub'>额 190%</div></td></tr><tr><td>≈100%</td><td style='background:rgba(91,141,239,0.27);text-align:center'><div class='hm-n'>1,632</div><div class='hm-p'>占前档 22.91% · 占组 9.01%</div><div class='hm-sub'>额 288%</div></td><td style='background:rgba(100,220,174,0.13);text-align:center'><div class='hm-n'>411</div><div class='hm-p'>占前档 5.77% · 占组 2.27%</div><div class='hm-sub'>额 254%</div></td><td style='background:rgba(255,194,107,0.34);text-align:center'><div class='hm-n'>2,138</div><div class='hm-p'>占前档 30.02% · 占组 11.81%</div><div class='hm-sub'>额 225%</div></td><td style='background:rgba(246,138,176,0.43);text-align:center'><div class='hm-n'>2,942</div><div class='hm-p'>占前档 41.30% · 占组 16.25%</div><div class='hm-sub'>额 247%</div></td></tr><tr><td>>100%</td><td style='background:rgba(91,141,239,0.27);text-align:center'><div class='hm-n'>1,443</div><div class='hm-p'>占前档 22.11% · 占组 7.97%</div><div class='hm-sub'>额 296%</div></td><td style='background:rgba(100,220,174,0.13);text-align:center'><div class='hm-n'>366</div><div class='hm-p'>占前档 5.61% · 占组 2.02%</div><div class='hm-sub'>额 250%</div></td><td style='background:rgba(255,194,107,0.23);text-align:center'><div class='hm-n'>1,188</div><div class='hm-p'>占前档 18.21% · 占组 6.56%</div><div class='hm-sub'>额 199%</div></td><td style='background:rgba(246,138,176,0.54);text-align:center'><div class='hm-n'>3,528</div><div class='hm-p'>占前档 54.07% · 占组 19.48%</div><div class='hm-sub'>额 217%</div></td></tr></tbody></table></div>
+
+<h2>五、额度本身动了多少，才把使用率档位掀翻</h2>
+<p class="desc">「打满后去向」分母仍是该组成对样本全体。pct_full_to_gt = 上一笔在 ≈100% 或 &gt;100%、本笔落到 &gt;100% 的人数占比；pct_full_to_lt80 同理落到 &lt;80%。后两列是这两类人的本笔/上一笔额度比。</p>
+<div class="chart"><h3>图14 本笔获额 / 上一笔获额（金额加权）</h3><p>降额留约 68%；升额提到约 171%（当天）/ 176%（至30日）</p><div class="box"><canvas id="c14"></canvas></div></div>
+<div class="table"><table>
+<thead><tr><th>窗口</th><th>组</th><th>n</th><th>人均额比</th><th>金额加权额比</th><th>打满→本笔&gt;100%</th><th>打满→本笔&lt;80%</th><th>打满变超时额比</th><th>打满变不满时额比</th></tr></thead>
+<tbody><tr><td>当天</td><td>降额</td><td>6,613</td><td>68.5%</td><td>68.3%</td><td>42.33%</td><td>1.06%</td><td>71.5%</td><td>77.2%</td></tr><tr><td>当天</td><td>不变</td><td>2,048</td><td>100.0%</td><td>100.0%</td><td>16.60%</td><td>1.12%</td><td>100.0%</td><td>100.0%</td></tr><tr><td>当天</td><td>升额</td><td>9,633</td><td>220.4%</td><td>171.2%</td><td>36.47%</td><td>11.19%</td><td>225.5%</td><td>288.2%</td></tr><tr><td>至30日</td><td>降额</td><td>10,862</td><td>68.2%</td><td>68.4%</td><td>44.72%</td><td>2.50%</td><td>71.1%</td><td>76.1%</td></tr><tr><td>至30日</td><td>不变</td><td>3,263</td><td>100.0%</td><td>100.0%</td><td>30.77%</td><td>2.08%</td><td>100.0%</td><td>100.0%</td></tr><tr><td>至30日</td><td>升额</td><td>18,108</td><td>228.4%</td><td>175.8%</td><td>35.73%</td><td>16.98%</td><td>230.7%</td><td>291.9%</td></tr></tbody>
+</table></div>
+<div class="callout"><div class="ch">幅度阈值（从流向反推）</div>
+降额当天：打满变超的人，额度被砍到约 72%；上一笔 &lt;80% 仍打超的人砍到 60%。砍过「原占用」就会把人从不满/打满推进超额。<br>
+升额当天：打满变 &lt;80% 的人，额度被提到约 288%。提到接近 3 倍时，即便上一笔打满，本笔也填不满。<br>
+不变组额比 100%，打满变超只有 16.60%（当天），说明没有额度冲击时，使用率档位不会大规模搬家。
+</div>
+
+<h2>口径</h2>
+<div class="callout">
+T0 origin：2026-07-01～08-31；is_pass1=1、loan_type_code=2、recycle_type=3；20 秒批次留最晚一笔；获额当天干净结清且 vir_time≥repaid_time；同一用户同一获额日 day_rn=1。<br>
+升额 / 不变 / 降额：本笔 max_credit_apply_amt 对比上一笔已放款订单的获额。<br>
+上一笔使用率：该笔 remit_amt / 上一笔 max_credit。本笔使用率：结清后首次提单 apply_amt / 本笔 T0 max_credit。金额加权分子分母各自加总。<br>
+四档：&lt;0.8；[0.8, 0.999)；[0.999, 1.001]；&gt;1.001。<br>
+当天窗口 apply_d=0；至 30 日要求首次提单在 vir_date+30 内，且 vir_date+30≤库日期 2026-09-22。<br>
+点确认：获额后 24 小时内 Loan_newconfirm / Loan_newconfirm_select，分母为上述 T0 获额通过人日。
+</div>
+
+<h2>附录：完整 PGSQL（可复现全部指标）</h2>
+<p class="desc">含 T0 origin、上一笔额度、点确认、成对使用率、四档边际、当天/至30日流转矩阵、打满后去向、同档/升档/降档。点击打开。</p>
+<details class="code"><summary>完整 PGSQL（点击打开）</summary>
+<pre class="sql">-- =============================================================================
+-- T0 7–8 月：降额 / 不变 / 升额 · 前后两笔额度使用率四档对照与流转
+-- 库：kaby_dw
+-- 前：上一笔放款 remit_amt / 上一笔获额 max_credit
+-- 后：本笔首次提单 apply_amt / 本笔 T0 max_credit
+-- 四档：&lt;80% / 80–100% / ≈100%（0.999–1.001） / &gt;100%
+-- 成对样本：本笔观察期内发生了首次提单的人
+-- =============================================================================
+
+-- =============================================================================
+-- T0 7–8 月：当天未进页用户，结清后首次进页 / 首次提单（D1、D2、1-3、1-7、1-15、1-30）
+-- 分母与额度变化报告一致：有上一笔额度的升额/不变/降额
+-- 当天进页：结清后当天 page_view_in + Loan_newpage / Loan_newpage_select
+-- 后续进页/提单：结清日次日及以后，取首次
+-- 观察截止 CURRENT_DATE；各窗口只用 vir_date+窗口末 &lt;= CURRENT_DATE 的人
+-- =============================================================================
+
+SET search_path TO wangchuanliang, public;
+SET statement_timeout = 0;
+
+DROP TABLE IF EXISTS tmp_m_origin;
+CREATE TEMP TABLE tmp_m_origin AS
+WITH params AS (
+    SELECT DATE &#x27;2026-07-01&#x27; AS start_date, DATE &#x27;2026-09-01&#x27; AS end_date
+), raw_offer AS (
+    SELECT DISTINCT ON (v.user_id, v.serial_id)
+        v.user_id, v.serial_id, v.vir_date::date AS vir_date,
+        TO_TIMESTAMP(v.vir_unix) AS vir_time, v.max_credit_apply_amt
+    FROM wangchuanliang.order_vir_f_copy v
+    INNER JOIN wangchuanliang.side_recycle_type_copy r ON r.serial_id = v.serial_id
+    CROSS JOIN params p
+    WHERE v.is_pass1 = 1 AND v.loan_type_code = 2 AND r.recycle_type = 3
+      AND v.vir_date &gt;= p.start_date - 1 AND v.vir_date &lt; p.end_date
+    ORDER BY v.user_id, v.serial_id, v.vir_unix DESC
+), lagged AS (
+    SELECT r.*, LAG(r.vir_time) OVER (PARTITION BY r.user_id ORDER BY r.vir_time, r.serial_id) AS prev_vir_time
+    FROM raw_offer r
+), batched AS (
+    SELECT l.*, SUM(CASE WHEN l.prev_vir_time IS NULL OR l.vir_time - l.prev_vir_time &gt; INTERVAL &#x27;20 seconds&#x27; THEN 1 ELSE 0 END)
+      OVER (PARTITION BY l.user_id ORDER BY l.vir_time, l.serial_id ROWS UNBOUNDED PRECEDING) AS batch_id
+    FROM lagged l
+), dedup_offer AS (
+    SELECT user_id, serial_id, vir_date, vir_time, max_credit_apply_amt
+    FROM (
+        SELECT b.*, ROW_NUMBER() OVER (PARTITION BY b.user_id, b.batch_id ORDER BY b.vir_time DESC, b.serial_id DESC) AS batch_rn
+        FROM batched b
+    ) x
+    CROSS JOIN params p
+    WHERE batch_rn = 1 AND vir_date &gt;= p.start_date AND vir_date &lt; p.end_date
+), candidate_users AS (SELECT DISTINCT user_id FROM dedup_offer),
+all_orders AS (
+    SELECT o.user_id, o.serial_id, o.apply_time, o.repaid_time, o.repaid_date::date AS repaid_date,
+           o.loan_status_code, o.is_remit, o.is_repaid
+    FROM wangchuanliang.order_loan_f_v2_copy o
+    INNER JOIN candidate_users u ON u.user_id = o.user_id
+), clean_settlement AS (
+    SELECT o.user_id, o.serial_id, o.repaid_time, o.repaid_date
+    FROM all_orders o
+    WHERE o.is_remit = 1 AND (o.is_repaid = 1 OR o.loan_status_code = 7)
+      AND o.repaid_time &gt; TIMESTAMP &#x27;2000-01-01 00:00:00&#x27;
+      AND NOT EXISTS (
+          SELECT 1 FROM all_orders x
+          WHERE x.user_id = o.user_id AND x.serial_id &lt;&gt; o.serial_id AND x.apply_time &lt; o.repaid_time
+            AND (x.loan_status_code IN (5, 8) OR (x.loan_status_code = 7 AND x.repaid_time &gt; o.repaid_time))
+      )
+), paired AS (
+    SELECT e.user_id, e.serial_id AS credit_serial_id, e.vir_date, e.vir_time, e.max_credit_apply_amt,
+           s.repaid_time,
+           ROW_NUMBER() OVER (
+               PARTITION BY e.user_id, e.vir_date, e.serial_id
+               ORDER BY s.repaid_time DESC, s.serial_id DESC
+           ) AS s_rn
+    FROM dedup_offer e
+    INNER JOIN clean_settlement s
+        ON s.user_id = e.user_id AND s.repaid_date = e.vir_date AND e.vir_time &gt;= s.repaid_time
+), day_pick AS (
+    SELECT p.*, ROW_NUMBER() OVER (PARTITION BY p.user_id, p.vir_date ORDER BY p.vir_time ASC, p.credit_serial_id DESC) AS day_rn
+    FROM paired p
+    WHERE s_rn = 1
+)
+SELECT user_id, credit_serial_id, vir_date, vir_time, repaid_time, max_credit_apply_amt AS this_amt
+FROM day_pick WHERE day_rn = 1;
+
+DROP TABLE IF EXISTS tmp_prev;
+CREATE TEMP TABLE tmp_prev AS
+SELECT user_id, vir_date, prev_serial, prev_remit_time
+FROM (
+    SELECT t.user_id, t.vir_date, o.serial_id AS prev_serial, o.remit_time AS prev_remit_time,
+           ROW_NUMBER() OVER (PARTITION BY t.user_id, t.vir_date ORDER BY o.remit_time DESC, o.serial_id DESC) AS rn
+    FROM tmp_m_origin t
+    INNER JOIN wangchuanliang.order_loan_f_v2_copy o
+      ON o.user_id = t.user_id
+     AND o.is_remit = 1 AND COALESCE(o.remit_amt, 0) &gt; 0
+     AND o.remit_time IS NOT NULL
+     AND o.remit_time &lt; t.vir_time
+) z WHERE rn = 1;
+
+DROP TABLE IF EXISTS tmp_prev_amt;
+CREATE TEMP TABLE tmp_prev_amt AS
+SELECT p.user_id, p.vir_date, p.prev_serial, p.prev_remit_time, v.max_credit_apply_amt AS prev_amt
+FROM tmp_prev p
+LEFT JOIN (
+    SELECT DISTINCT ON (serial_id) serial_id, max_credit_apply_amt
+    FROM wangchuanliang.order_vir_f_copy
+    ORDER BY serial_id, vir_unix DESC
+) v ON v.serial_id = p.prev_serial;
+
+DROP TABLE IF EXISTS tmp_enter;
+CREATE TEMP TABLE tmp_enter AS
+SELECT t.user_id, t.vir_date, 1 AS f_enter
+FROM tmp_m_origin t
+INNER JOIN wangchuanliang.event_track_record e
+  ON e.user_id = t.user_id
+ AND e.create_date &gt;= DATE &#x27;2026-07-01&#x27;
+ AND e.create_date &lt;  DATE &#x27;2026-09-01&#x27;
+ AND e.create_date = t.vir_date
+ AND e.create_time &gt;= t.repaid_time
+ AND e.create_time &lt; t.vir_date + 1
+ AND e.event_type = &#x27;page_view_in&#x27;
+ AND e.props_id IN (&#x27;Loan_newpage&#x27;,&#x27;Loan_newpage_select&#x27;)
+GROUP BY t.user_id, t.vir_date;
+
+DROP TABLE IF EXISTS tmp_confirm;
+CREATE TEMP TABLE tmp_confirm AS
+SELECT t.user_id, t.vir_date, 1 AS f_confirm
+FROM tmp_m_origin t
+INNER JOIN wangchuanliang.event_track_record e
+  ON e.user_id = t.user_id
+ AND e.create_time &gt;= t.vir_time
+ AND e.create_time &lt; t.vir_time + INTERVAL &#x27;24 hours&#x27;
+ AND e.props_id IN (&#x27;Loan_newconfirm&#x27;,&#x27;Loan_newconfirm_select&#x27;)
+GROUP BY t.user_id, t.vir_date;
+
+DROP TABLE IF EXISTS tmp_univ;
+CREATE TEMP TABLE tmp_univ AS
+SELECT
+    t.user_id,
+    t.vir_date,
+    t.vir_time,
+    t.repaid_time,
+    CASE
+        WHEN t.this_amt IS NULL OR p.prev_amt IS NULL THEN &#x27;未知&#x27;
+        WHEN t.this_amt &gt; p.prev_amt THEN &#x27;升额&#x27;
+        WHEN t.this_amt &lt; p.prev_amt THEN &#x27;降额&#x27;
+        ELSE &#x27;不变&#x27;
+    END AS chg_grp,
+    COALESCE(en.f_enter, 0) AS f_enter,
+    COALESCE(c.f_confirm, 0) AS f_confirm
+FROM tmp_m_origin t
+LEFT JOIN tmp_prev_amt p ON p.user_id = t.user_id AND p.vir_date = t.vir_date
+LEFT JOIN tmp_enter en ON en.user_id = t.user_id AND en.vir_date = t.vir_date
+LEFT JOIN tmp_confirm c ON c.user_id = t.user_id AND c.vir_date = t.vir_date
+WHERE t.this_amt IS NOT NULL AND p.prev_amt IS NOT NULL
+  AND CASE
+        WHEN t.this_amt &gt; p.prev_amt THEN &#x27;升额&#x27;
+        WHEN t.this_amt &lt; p.prev_amt THEN &#x27;降额&#x27;
+        ELSE &#x27;不变&#x27;
+      END IN (&#x27;升额&#x27;,&#x27;不变&#x27;,&#x27;降额&#x27;);
+
+
+-- R0 点确认 / T0 获额通过（本批 univ=7–8 月有上一笔额度的 T0）
+SELECT
+    (SELECT COUNT(*) FROM tmp_m_origin) AS n_t0,
+    (SELECT COUNT(*) FROM tmp_univ) AS n_univ,
+    (SELECT SUM(f_confirm) FROM tmp_univ) AS n_confirm,
+    ROUND(100.0 * (SELECT SUM(f_confirm) FROM tmp_univ) / NULLIF((SELECT COUNT(*) FROM tmp_univ), 0), 2) AS pct_confirm,
+    CURRENT_DATE::text AS as_of;
+
+-- 三类用户：上一笔放款使用率 vs 本笔结清后首次提单使用率
+-- 前：SUM(prev remit_amt) / SUM(prev max_credit)
+-- 后：SUM(首次提单 apply_amt) / SUM(本笔 T0 max_credit)
+-- 分档按人数占比；成对样本=本笔观察期内发生了首次提单的人
+
+DROP TABLE IF EXISTS tmp_prev_util;
+CREATE TEMP TABLE tmp_prev_util AS
+SELECT
+    u.user_id,
+    u.vir_date,
+    u.chg_grp,
+    u.f_enter,
+    p.prev_amt,
+    o.remit_amt,
+    t.this_amt,
+    CASE WHEN p.prev_amt &gt; 0 THEN o.remit_amt / p.prev_amt END AS util_prev
+FROM tmp_univ u
+INNER JOIN tmp_m_origin t ON t.user_id = u.user_id AND t.vir_date = u.vir_date
+INNER JOIN tmp_prev_amt p ON p.user_id = u.user_id AND p.vir_date = u.vir_date
+INNER JOIN wangchuanliang.order_loan_f_v2_copy o ON o.serial_id = p.prev_serial;
+
+DROP TABLE IF EXISTS tmp_fa;
+CREATE TEMP TABLE tmp_fa AS
+SELECT user_id, vir_date, apply_date, apply_amt, apply_d
+FROM (
+    SELECT
+        n.user_id,
+        n.vir_date,
+        o.apply_date,
+        o.apply_amt,
+        (o.apply_date - n.vir_date) AS apply_d,
+        ROW_NUMBER() OVER (PARTITION BY n.user_id, n.vir_date ORDER BY o.apply_time, o.serial_id) AS rn
+    FROM tmp_univ n
+    INNER JOIN wangchuanliang.order_loan_f_v2_copy o
+      ON o.user_id = n.user_id
+     AND o.apply_time &gt;= n.vir_time
+     AND o.apply_date &gt;= n.vir_date
+     AND o.apply_date &lt;= n.vir_date + 30
+     AND o.apply_date &lt;= CURRENT_DATE
+) z WHERE rn = 1;
+
+DROP TABLE IF EXISTS tmp_cmp;
+CREATE TEMP TABLE tmp_cmp AS
+SELECT
+    p.*,
+    f.apply_d,
+    f.apply_amt,
+    CASE WHEN p.this_amt &gt; 0 THEN f.apply_amt / p.this_amt END AS util_this
+FROM tmp_prev_util p
+LEFT JOIN tmp_fa f ON f.user_id = p.user_id AND f.vir_date = p.vir_date;
+
+-- R1 加权主指标：全体上一笔 vs 当天提单 vs 当天至30日提单（成对：提过单的人上一笔）
+SELECT * FROM (
+SELECT 1 AS ord, &#x27;降额&#x27; AS chg_grp, &#x27;全体-上一笔&#x27; AS metric, COUNT(*) AS n,
+    ROUND(SUM(remit_amt)::numeric, 0) AS sum_num, ROUND(SUM(prev_amt)::numeric, 0) AS sum_den,
+    ROUND(100.0 * SUM(remit_amt) / NULLIF(SUM(prev_amt), 0), 2) AS util_w
+FROM tmp_cmp WHERE chg_grp = &#x27;降额&#x27;
+UNION ALL SELECT 1, &#x27;降额&#x27;, &#x27;当天提单-上一笔(成对)&#x27;, COUNT(*),
+    ROUND(SUM(remit_amt)::numeric, 0), ROUND(SUM(prev_amt)::numeric, 0),
+    ROUND(100.0 * SUM(remit_amt) / NULLIF(SUM(prev_amt), 0), 2)
+FROM tmp_cmp WHERE chg_grp = &#x27;降额&#x27; AND apply_d = 0
+UNION ALL SELECT 1, &#x27;降额&#x27;, &#x27;当天提单-本笔&#x27;, COUNT(*),
+    ROUND(SUM(apply_amt)::numeric, 0), ROUND(SUM(this_amt)::numeric, 0),
+    ROUND(100.0 * SUM(apply_amt) / NULLIF(SUM(this_amt), 0), 2)
+FROM tmp_cmp WHERE chg_grp = &#x27;降额&#x27; AND apply_d = 0
+UNION ALL SELECT 1, &#x27;降额&#x27;, &#x27;至30日提单-上一笔(成对)&#x27;, COUNT(*),
+    ROUND(SUM(remit_amt)::numeric, 0), ROUND(SUM(prev_amt)::numeric, 0),
+    ROUND(100.0 * SUM(remit_amt) / NULLIF(SUM(prev_amt), 0), 2)
+FROM tmp_cmp WHERE chg_grp = &#x27;降额&#x27; AND apply_d IS NOT NULL AND vir_date + 30 &lt;= CURRENT_DATE
+UNION ALL SELECT 1, &#x27;降额&#x27;, &#x27;至30日提单-本笔&#x27;, COUNT(*),
+    ROUND(SUM(apply_amt)::numeric, 0), ROUND(SUM(this_amt)::numeric, 0),
+    ROUND(100.0 * SUM(apply_amt) / NULLIF(SUM(this_amt), 0), 2)
+FROM tmp_cmp WHERE chg_grp = &#x27;降额&#x27; AND apply_d IS NOT NULL AND vir_date + 30 &lt;= CURRENT_DATE
+UNION ALL SELECT 2, &#x27;不变&#x27;, &#x27;全体-上一笔&#x27;, COUNT(*),
+    ROUND(SUM(remit_amt)::numeric, 0), ROUND(SUM(prev_amt)::numeric, 0),
+    ROUND(100.0 * SUM(remit_amt) / NULLIF(SUM(prev_amt), 0), 2)
+FROM tmp_cmp WHERE chg_grp = &#x27;不变&#x27;
+UNION ALL SELECT 2, &#x27;不变&#x27;, &#x27;当天提单-上一笔(成对)&#x27;, COUNT(*),
+    ROUND(SUM(remit_amt)::numeric, 0), ROUND(SUM(prev_amt)::numeric, 0),
+    ROUND(100.0 * SUM(remit_amt) / NULLIF(SUM(prev_amt), 0), 2)
+FROM tmp_cmp WHERE chg_grp = &#x27;不变&#x27; AND apply_d = 0
+UNION ALL SELECT 2, &#x27;不变&#x27;, &#x27;当天提单-本笔&#x27;, COUNT(*),
+    ROUND(SUM(apply_amt)::numeric, 0), ROUND(SUM(this_amt)::numeric, 0),
+    ROUND(100.0 * SUM(apply_amt) / NULLIF(SUM(this_amt), 0), 2)
+FROM tmp_cmp WHERE chg_grp = &#x27;不变&#x27; AND apply_d = 0
+UNION ALL SELECT 2, &#x27;不变&#x27;, &#x27;至30日提单-上一笔(成对)&#x27;, COUNT(*),
+    ROUND(SUM(remit_amt)::numeric, 0), ROUND(SUM(prev_amt)::numeric, 0),
+    ROUND(100.0 * SUM(remit_amt) / NULLIF(SUM(prev_amt), 0), 2)
+FROM tmp_cmp WHERE chg_grp = &#x27;不变&#x27; AND apply_d IS NOT NULL AND vir_date + 30 &lt;= CURRENT_DATE
+UNION ALL SELECT 2, &#x27;不变&#x27;, &#x27;至30日提单-本笔&#x27;, COUNT(*),
+    ROUND(SUM(apply_amt)::numeric, 0), ROUND(SUM(this_amt)::numeric, 0),
+    ROUND(100.0 * SUM(apply_amt) / NULLIF(SUM(this_amt), 0), 2)
+FROM tmp_cmp WHERE chg_grp = &#x27;不变&#x27; AND apply_d IS NOT NULL AND vir_date + 30 &lt;= CURRENT_DATE
+UNION ALL SELECT 3, &#x27;升额&#x27;, &#x27;全体-上一笔&#x27;, COUNT(*),
+    ROUND(SUM(remit_amt)::numeric, 0), ROUND(SUM(prev_amt)::numeric, 0),
+    ROUND(100.0 * SUM(remit_amt) / NULLIF(SUM(prev_amt), 0), 2)
+FROM tmp_cmp WHERE chg_grp = &#x27;升额&#x27;
+UNION ALL SELECT 3, &#x27;升额&#x27;, &#x27;当天提单-上一笔(成对)&#x27;, COUNT(*),
+    ROUND(SUM(remit_amt)::numeric, 0), ROUND(SUM(prev_amt)::numeric, 0),
+    ROUND(100.0 * SUM(remit_amt) / NULLIF(SUM(prev_amt), 0), 2)
+FROM tmp_cmp WHERE chg_grp = &#x27;升额&#x27; AND apply_d = 0
+UNION ALL SELECT 3, &#x27;升额&#x27;, &#x27;当天提单-本笔&#x27;, COUNT(*),
+    ROUND(SUM(apply_amt)::numeric, 0), ROUND(SUM(this_amt)::numeric, 0),
+    ROUND(100.0 * SUM(apply_amt) / NULLIF(SUM(this_amt), 0), 2)
+FROM tmp_cmp WHERE chg_grp = &#x27;升额&#x27; AND apply_d = 0
+UNION ALL SELECT 3, &#x27;升额&#x27;, &#x27;至30日提单-上一笔(成对)&#x27;, COUNT(*),
+    ROUND(SUM(remit_amt)::numeric, 0), ROUND(SUM(prev_amt)::numeric, 0),
+    ROUND(100.0 * SUM(remit_amt) / NULLIF(SUM(prev_amt), 0), 2)
+FROM tmp_cmp WHERE chg_grp = &#x27;升额&#x27; AND apply_d IS NOT NULL AND vir_date + 30 &lt;= CURRENT_DATE
+UNION ALL SELECT 3, &#x27;升额&#x27;, &#x27;至30日提单-本笔&#x27;, COUNT(*),
+    ROUND(SUM(apply_amt)::numeric, 0), ROUND(SUM(this_amt)::numeric, 0),
+    ROUND(100.0 * SUM(apply_amt) / NULLIF(SUM(this_amt), 0), 2)
+FROM tmp_cmp WHERE chg_grp = &#x27;升额&#x27; AND apply_d IS NOT NULL AND vir_date + 30 &lt;= CURRENT_DATE
+UNION ALL SELECT 4, &#x27;合计&#x27;, &#x27;全体-上一笔&#x27;, COUNT(*),
+    ROUND(SUM(remit_amt)::numeric, 0), ROUND(SUM(prev_amt)::numeric, 0),
+    ROUND(100.0 * SUM(remit_amt) / NULLIF(SUM(prev_amt), 0), 2)
+FROM tmp_cmp
+UNION ALL SELECT 4, &#x27;合计&#x27;, &#x27;当天提单-上一笔(成对)&#x27;, COUNT(*),
+    ROUND(SUM(remit_amt)::numeric, 0), ROUND(SUM(prev_amt)::numeric, 0),
+    ROUND(100.0 * SUM(remit_amt) / NULLIF(SUM(prev_amt), 0), 2)
+FROM tmp_cmp WHERE apply_d = 0
+UNION ALL SELECT 4, &#x27;合计&#x27;, &#x27;当天提单-本笔&#x27;, COUNT(*),
+    ROUND(SUM(apply_amt)::numeric, 0), ROUND(SUM(this_amt)::numeric, 0),
+    ROUND(100.0 * SUM(apply_amt) / NULLIF(SUM(this_amt), 0), 2)
+FROM tmp_cmp WHERE apply_d = 0
+UNION ALL SELECT 4, &#x27;合计&#x27;, &#x27;至30日提单-上一笔(成对)&#x27;, COUNT(*),
+    ROUND(SUM(remit_amt)::numeric, 0), ROUND(SUM(prev_amt)::numeric, 0),
+    ROUND(100.0 * SUM(remit_amt) / NULLIF(SUM(prev_amt), 0), 2)
+FROM tmp_cmp WHERE apply_d IS NOT NULL AND vir_date + 30 &lt;= CURRENT_DATE
+UNION ALL SELECT 4, &#x27;合计&#x27;, &#x27;至30日提单-本笔&#x27;, COUNT(*),
+    ROUND(SUM(apply_amt)::numeric, 0), ROUND(SUM(this_amt)::numeric, 0),
+    ROUND(100.0 * SUM(apply_amt) / NULLIF(SUM(this_amt), 0), 2)
+FROM tmp_cmp WHERE apply_d IS NOT NULL AND vir_date + 30 &lt;= CURRENT_DATE
+) x ORDER BY ord,
+    CASE metric WHEN &#x27;全体-上一笔&#x27; THEN 1 WHEN &#x27;当天提单-上一笔(成对)&#x27; THEN 2 WHEN &#x27;当天提单-本笔&#x27; THEN 3
+         WHEN &#x27;至30日提单-上一笔(成对)&#x27; THEN 4 ELSE 5 END;
+
+-- R2 分档：全体上一笔 / 当天提单成对上一笔 / 当天提单本笔 / 至30日成对上一笔 / 至30日本笔
+SELECT * FROM (
+SELECT 1 AS s, CASE chg_grp WHEN &#x27;降额&#x27; THEN 1 WHEN &#x27;不变&#x27; THEN 2 WHEN &#x27;升额&#x27; THEN 3 ELSE 4 END AS ord,
+    chg_grp, &#x27;全体-上一笔&#x27; AS metric, COUNT(*) AS n,
+    ROUND(100.0 * AVG(CASE WHEN util_prev &lt; 0.5 THEN 1 ELSE 0 END), 2) AS pct_lt50,
+    ROUND(100.0 * AVG(CASE WHEN util_prev &gt;= 0.5 AND util_prev &lt; 0.8 THEN 1 ELSE 0 END), 2) AS pct_50_80,
+    ROUND(100.0 * AVG(CASE WHEN util_prev &gt;= 0.8 AND util_prev &lt; 0.999 THEN 1 ELSE 0 END), 2) AS pct_80_100,
+    ROUND(100.0 * AVG(CASE WHEN util_prev &gt;= 0.999 AND util_prev &lt;= 1.001 THEN 1 ELSE 0 END), 2) AS pct_eq100,
+    ROUND(100.0 * AVG(CASE WHEN util_prev &gt; 1.001 THEN 1 ELSE 0 END), 2) AS pct_gt100
+FROM tmp_cmp GROUP BY chg_grp
+UNION ALL
+SELECT 1, 4, &#x27;合计&#x27;, &#x27;全体-上一笔&#x27;, COUNT(*),
+    ROUND(100.0 * AVG(CASE WHEN util_prev &lt; 0.5 THEN 1 ELSE 0 END), 2),
+    ROUND(100.0 * AVG(CASE WHEN util_prev &gt;= 0.5 AND util_prev &lt; 0.8 THEN 1 ELSE 0 END), 2),
+    ROUND(100.0 * AVG(CASE WHEN util_prev &gt;= 0.8 AND util_prev &lt; 0.999 THEN 1 ELSE 0 END), 2),
+    ROUND(100.0 * AVG(CASE WHEN util_prev &gt;= 0.999 AND util_prev &lt;= 1.001 THEN 1 ELSE 0 END), 2),
+    ROUND(100.0 * AVG(CASE WHEN util_prev &gt; 1.001 THEN 1 ELSE 0 END), 2)
+FROM tmp_cmp
+UNION ALL
+SELECT 2, CASE chg_grp WHEN &#x27;降额&#x27; THEN 1 WHEN &#x27;不变&#x27; THEN 2 WHEN &#x27;升额&#x27; THEN 3 ELSE 4 END,
+    chg_grp, &#x27;当天提单-上一笔&#x27;, COUNT(*),
+    ROUND(100.0 * AVG(CASE WHEN util_prev &lt; 0.5 THEN 1 ELSE 0 END), 2),
+    ROUND(100.0 * AVG(CASE WHEN util_prev &gt;= 0.5 AND util_prev &lt; 0.8 THEN 1 ELSE 0 END), 2),
+    ROUND(100.0 * AVG(CASE WHEN util_prev &gt;= 0.8 AND util_prev &lt; 0.999 THEN 1 ELSE 0 END), 2),
+    ROUND(100.0 * AVG(CASE WHEN util_prev &gt;= 0.999 AND util_prev &lt;= 1.001 THEN 1 ELSE 0 END), 2),
+    ROUND(100.0 * AVG(CASE WHEN util_prev &gt; 1.001 THEN 1 ELSE 0 END), 2)
+FROM tmp_cmp WHERE apply_d = 0 GROUP BY chg_grp
+UNION ALL
+SELECT 2, 4, &#x27;合计&#x27;, &#x27;当天提单-上一笔&#x27;, COUNT(*),
+    ROUND(100.0 * AVG(CASE WHEN util_prev &lt; 0.5 THEN 1 ELSE 0 END), 2),
+    ROUND(100.0 * AVG(CASE WHEN util_prev &gt;= 0.5 AND util_prev &lt; 0.8 THEN 1 ELSE 0 END), 2),
+    ROUND(100.0 * AVG(CASE WHEN util_prev &gt;= 0.8 AND util_prev &lt; 0.999 THEN 1 ELSE 0 END), 2),
+    ROUND(100.0 * AVG(CASE WHEN util_prev &gt;= 0.999 AND util_prev &lt;= 1.001 THEN 1 ELSE 0 END), 2),
+    ROUND(100.0 * AVG(CASE WHEN util_prev &gt; 1.001 THEN 1 ELSE 0 END), 2)
+FROM tmp_cmp WHERE apply_d = 0
+UNION ALL
+SELECT 3, CASE chg_grp WHEN &#x27;降额&#x27; THEN 1 WHEN &#x27;不变&#x27; THEN 2 WHEN &#x27;升额&#x27; THEN 3 ELSE 4 END,
+    chg_grp, &#x27;当天提单-本笔&#x27;, COUNT(*),
+    ROUND(100.0 * AVG(CASE WHEN util_this &lt; 0.5 THEN 1 ELSE 0 END), 2),
+    ROUND(100.0 * AVG(CASE WHEN util_this &gt;= 0.5 AND util_this &lt; 0.8 THEN 1 ELSE 0 END), 2),
+    ROUND(100.0 * AVG(CASE WHEN util_this &gt;= 0.8 AND util_this &lt; 0.999 THEN 1 ELSE 0 END), 2),
+    ROUND(100.0 * AVG(CASE WHEN util_this &gt;= 0.999 AND util_this &lt;= 1.001 THEN 1 ELSE 0 END), 2),
+    ROUND(100.0 * AVG(CASE WHEN util_this &gt; 1.001 THEN 1 ELSE 0 END), 2)
+FROM tmp_cmp WHERE apply_d = 0 GROUP BY chg_grp
+UNION ALL
+SELECT 3, 4, &#x27;合计&#x27;, &#x27;当天提单-本笔&#x27;, COUNT(*),
+    ROUND(100.0 * AVG(CASE WHEN util_this &lt; 0.5 THEN 1 ELSE 0 END), 2),
+    ROUND(100.0 * AVG(CASE WHEN util_this &gt;= 0.5 AND util_this &lt; 0.8 THEN 1 ELSE 0 END), 2),
+    ROUND(100.0 * AVG(CASE WHEN util_this &gt;= 0.8 AND util_this &lt; 0.999 THEN 1 ELSE 0 END), 2),
+    ROUND(100.0 * AVG(CASE WHEN util_this &gt;= 0.999 AND util_this &lt;= 1.001 THEN 1 ELSE 0 END), 2),
+    ROUND(100.0 * AVG(CASE WHEN util_this &gt; 1.001 THEN 1 ELSE 0 END), 2)
+FROM tmp_cmp WHERE apply_d = 0
+UNION ALL
+SELECT 4, CASE chg_grp WHEN &#x27;降额&#x27; THEN 1 WHEN &#x27;不变&#x27; THEN 2 WHEN &#x27;升额&#x27; THEN 3 ELSE 4 END,
+    chg_grp, &#x27;至30日提单-上一笔&#x27;, COUNT(*),
+    ROUND(100.0 * AVG(CASE WHEN util_prev &lt; 0.5 THEN 1 ELSE 0 END), 2),
+    ROUND(100.0 * AVG(CASE WHEN util_prev &gt;= 0.5 AND util_prev &lt; 0.8 THEN 1 ELSE 0 END), 2),
+    ROUND(100.0 * AVG(CASE WHEN util_prev &gt;= 0.8 AND util_prev &lt; 0.999 THEN 1 ELSE 0 END), 2),
+    ROUND(100.0 * AVG(CASE WHEN util_prev &gt;= 0.999 AND util_prev &lt;= 1.001 THEN 1 ELSE 0 END), 2),
+    ROUND(100.0 * AVG(CASE WHEN util_prev &gt; 1.001 THEN 1 ELSE 0 END), 2)
+FROM tmp_cmp WHERE apply_d IS NOT NULL AND vir_date + 30 &lt;= CURRENT_DATE GROUP BY chg_grp
+UNION ALL
+SELECT 4, 4, &#x27;合计&#x27;, &#x27;至30日提单-上一笔&#x27;, COUNT(*),
+    ROUND(100.0 * AVG(CASE WHEN util_prev &lt; 0.5 THEN 1 ELSE 0 END), 2),
+    ROUND(100.0 * AVG(CASE WHEN util_prev &gt;= 0.5 AND util_prev &lt; 0.8 THEN 1 ELSE 0 END), 2),
+    ROUND(100.0 * AVG(CASE WHEN util_prev &gt;= 0.8 AND util_prev &lt; 0.999 THEN 1 ELSE 0 END), 2),
+    ROUND(100.0 * AVG(CASE WHEN util_prev &gt;= 0.999 AND util_prev &lt;= 1.001 THEN 1 ELSE 0 END), 2),
+    ROUND(100.0 * AVG(CASE WHEN util_prev &gt; 1.001 THEN 1 ELSE 0 END), 2)
+FROM tmp_cmp WHERE apply_d IS NOT NULL AND vir_date + 30 &lt;= CURRENT_DATE
+UNION ALL
+SELECT 5, CASE chg_grp WHEN &#x27;降额&#x27; THEN 1 WHEN &#x27;不变&#x27; THEN 2 WHEN &#x27;升额&#x27; THEN 3 ELSE 4 END,
+    chg_grp, &#x27;至30日提单-本笔&#x27;, COUNT(*),
+    ROUND(100.0 * AVG(CASE WHEN util_this &lt; 0.5 THEN 1 ELSE 0 END), 2),
+    ROUND(100.0 * AVG(CASE WHEN util_this &gt;= 0.5 AND util_this &lt; 0.8 THEN 1 ELSE 0 END), 2),
+    ROUND(100.0 * AVG(CASE WHEN util_this &gt;= 0.8 AND util_this &lt; 0.999 THEN 1 ELSE 0 END), 2),
+    ROUND(100.0 * AVG(CASE WHEN util_this &gt;= 0.999 AND util_this &lt;= 1.001 THEN 1 ELSE 0 END), 2),
+    ROUND(100.0 * AVG(CASE WHEN util_this &gt; 1.001 THEN 1 ELSE 0 END), 2)
+FROM tmp_cmp WHERE apply_d IS NOT NULL AND vir_date + 30 &lt;= CURRENT_DATE GROUP BY chg_grp
+UNION ALL
+SELECT 5, 4, &#x27;合计&#x27;, &#x27;至30日提单-本笔&#x27;, COUNT(*),
+    ROUND(100.0 * AVG(CASE WHEN util_this &lt; 0.5 THEN 1 ELSE 0 END), 2),
+    ROUND(100.0 * AVG(CASE WHEN util_this &gt;= 0.5 AND util_this &lt; 0.8 THEN 1 ELSE 0 END), 2),
+    ROUND(100.0 * AVG(CASE WHEN util_this &gt;= 0.8 AND util_this &lt; 0.999 THEN 1 ELSE 0 END), 2),
+    ROUND(100.0 * AVG(CASE WHEN util_this &gt;= 0.999 AND util_this &lt;= 1.001 THEN 1 ELSE 0 END), 2),
+    ROUND(100.0 * AVG(CASE WHEN util_this &gt; 1.001 THEN 1 ELSE 0 END), 2)
+FROM tmp_cmp WHERE apply_d IS NOT NULL AND vir_date + 30 &lt;= CURRENT_DATE
+) x ORDER BY s, ord;
+
+-- 四档 + 前后流转（依赖 tmp_cmp）
+
+DROP TABLE IF EXISTS tmp_flow;
+CREATE TEMP TABLE tmp_flow AS
+SELECT
+    chg_grp,
+    apply_d,
+    vir_date,
+    prev_amt,
+    this_amt,
+    CASE
+        WHEN util_prev &lt; 0.8 THEN &#x27;&lt;80%&#x27;
+        WHEN util_prev &lt; 0.999 THEN &#x27;80-100%&#x27;
+        WHEN util_prev &lt;= 1.001 THEN &#x27;≈100%&#x27;
+        ELSE &#x27;&gt;100%&#x27;
+    END AS b_prev,
+    CASE
+        WHEN util_this IS NULL THEN NULL
+        WHEN util_this &lt; 0.8 THEN &#x27;&lt;80%&#x27;
+        WHEN util_this &lt; 0.999 THEN &#x27;80-100%&#x27;
+        WHEN util_this &lt;= 1.001 THEN &#x27;≈100%&#x27;
+        ELSE &#x27;&gt;100%&#x27;
+    END AS b_this,
+    CASE WHEN prev_amt &gt; 0 THEN this_amt / prev_amt END AS credit_ratio
+FROM tmp_cmp;
+
+-- 四档边际
+SELECT * FROM (
+SELECT 1 AS s, CASE chg_grp WHEN &#x27;降额&#x27; THEN 1 WHEN &#x27;不变&#x27; THEN 2 WHEN &#x27;升额&#x27; THEN 3 ELSE 4 END AS ord,
+    chg_grp, &#x27;上一笔&#x27; AS side, COUNT(*) AS n,
+    ROUND(100.0 * AVG(CASE WHEN b_prev = &#x27;&lt;80%&#x27; THEN 1 ELSE 0 END), 2) AS pct_lt80,
+    ROUND(100.0 * AVG(CASE WHEN b_prev = &#x27;80-100%&#x27; THEN 1 ELSE 0 END), 2) AS pct_80,
+    ROUND(100.0 * AVG(CASE WHEN b_prev = &#x27;≈100%&#x27; THEN 1 ELSE 0 END), 2) AS pct_eq,
+    ROUND(100.0 * AVG(CASE WHEN b_prev = &#x27;&gt;100%&#x27; THEN 1 ELSE 0 END), 2) AS pct_gt
+FROM tmp_flow WHERE apply_d = 0 GROUP BY chg_grp
+UNION ALL
+SELECT 1, 4, &#x27;合计&#x27;, &#x27;上一笔&#x27;, COUNT(*),
+    ROUND(100.0 * AVG(CASE WHEN b_prev = &#x27;&lt;80%&#x27; THEN 1 ELSE 0 END), 2),
+    ROUND(100.0 * AVG(CASE WHEN b_prev = &#x27;80-100%&#x27; THEN 1 ELSE 0 END), 2),
+    ROUND(100.0 * AVG(CASE WHEN b_prev = &#x27;≈100%&#x27; THEN 1 ELSE 0 END), 2),
+    ROUND(100.0 * AVG(CASE WHEN b_prev = &#x27;&gt;100%&#x27; THEN 1 ELSE 0 END), 2)
+FROM tmp_flow WHERE apply_d = 0
+UNION ALL
+SELECT 2, CASE chg_grp WHEN &#x27;降额&#x27; THEN 1 WHEN &#x27;不变&#x27; THEN 2 WHEN &#x27;升额&#x27; THEN 3 ELSE 4 END,
+    chg_grp, &#x27;本笔当天&#x27;, COUNT(*),
+    ROUND(100.0 * AVG(CASE WHEN b_this = &#x27;&lt;80%&#x27; THEN 1 ELSE 0 END), 2),
+    ROUND(100.0 * AVG(CASE WHEN b_this = &#x27;80-100%&#x27; THEN 1 ELSE 0 END), 2),
+    ROUND(100.0 * AVG(CASE WHEN b_this = &#x27;≈100%&#x27; THEN 1 ELSE 0 END), 2),
+    ROUND(100.0 * AVG(CASE WHEN b_this = &#x27;&gt;100%&#x27; THEN 1 ELSE 0 END), 2)
+FROM tmp_flow WHERE apply_d = 0 GROUP BY chg_grp
+UNION ALL
+SELECT 2, 4, &#x27;合计&#x27;, &#x27;本笔当天&#x27;, COUNT(*),
+    ROUND(100.0 * AVG(CASE WHEN b_this = &#x27;&lt;80%&#x27; THEN 1 ELSE 0 END), 2),
+    ROUND(100.0 * AVG(CASE WHEN b_this = &#x27;80-100%&#x27; THEN 1 ELSE 0 END), 2),
+    ROUND(100.0 * AVG(CASE WHEN b_this = &#x27;≈100%&#x27; THEN 1 ELSE 0 END), 2),
+    ROUND(100.0 * AVG(CASE WHEN b_this = &#x27;&gt;100%&#x27; THEN 1 ELSE 0 END), 2)
+FROM tmp_flow WHERE apply_d = 0
+UNION ALL
+SELECT 3, CASE chg_grp WHEN &#x27;降额&#x27; THEN 1 WHEN &#x27;不变&#x27; THEN 2 WHEN &#x27;升额&#x27; THEN 3 ELSE 4 END,
+    chg_grp, &#x27;上一笔30日&#x27;, COUNT(*),
+    ROUND(100.0 * AVG(CASE WHEN b_prev = &#x27;&lt;80%&#x27; THEN 1 ELSE 0 END), 2),
+    ROUND(100.0 * AVG(CASE WHEN b_prev = &#x27;80-100%&#x27; THEN 1 ELSE 0 END), 2),
+    ROUND(100.0 * AVG(CASE WHEN b_prev = &#x27;≈100%&#x27; THEN 1 ELSE 0 END), 2),
+    ROUND(100.0 * AVG(CASE WHEN b_prev = &#x27;&gt;100%&#x27; THEN 1 ELSE 0 END), 2)
+FROM tmp_flow WHERE apply_d IS NOT NULL AND vir_date + 30 &lt;= CURRENT_DATE GROUP BY chg_grp
+UNION ALL
+SELECT 3, 4, &#x27;合计&#x27;, &#x27;上一笔30日&#x27;, COUNT(*),
+    ROUND(100.0 * AVG(CASE WHEN b_prev = &#x27;&lt;80%&#x27; THEN 1 ELSE 0 END), 2),
+    ROUND(100.0 * AVG(CASE WHEN b_prev = &#x27;80-100%&#x27; THEN 1 ELSE 0 END), 2),
+    ROUND(100.0 * AVG(CASE WHEN b_prev = &#x27;≈100%&#x27; THEN 1 ELSE 0 END), 2),
+    ROUND(100.0 * AVG(CASE WHEN b_prev = &#x27;&gt;100%&#x27; THEN 1 ELSE 0 END), 2)
+FROM tmp_flow WHERE apply_d IS NOT NULL AND vir_date + 30 &lt;= CURRENT_DATE
+UNION ALL
+SELECT 4, CASE chg_grp WHEN &#x27;降额&#x27; THEN 1 WHEN &#x27;不变&#x27; THEN 2 WHEN &#x27;升额&#x27; THEN 3 ELSE 4 END,
+    chg_grp, &#x27;本笔30日&#x27;, COUNT(*),
+    ROUND(100.0 * AVG(CASE WHEN b_this = &#x27;&lt;80%&#x27; THEN 1 ELSE 0 END), 2),
+    ROUND(100.0 * AVG(CASE WHEN b_this = &#x27;80-100%&#x27; THEN 1 ELSE 0 END), 2),
+    ROUND(100.0 * AVG(CASE WHEN b_this = &#x27;≈100%&#x27; THEN 1 ELSE 0 END), 2),
+    ROUND(100.0 * AVG(CASE WHEN b_this = &#x27;&gt;100%&#x27; THEN 1 ELSE 0 END), 2)
+FROM tmp_flow WHERE apply_d IS NOT NULL AND vir_date + 30 &lt;= CURRENT_DATE GROUP BY chg_grp
+UNION ALL
+SELECT 4, 4, &#x27;合计&#x27;, &#x27;本笔30日&#x27;, COUNT(*),
+    ROUND(100.0 * AVG(CASE WHEN b_this = &#x27;&lt;80%&#x27; THEN 1 ELSE 0 END), 2),
+    ROUND(100.0 * AVG(CASE WHEN b_this = &#x27;80-100%&#x27; THEN 1 ELSE 0 END), 2),
+    ROUND(100.0 * AVG(CASE WHEN b_this = &#x27;≈100%&#x27; THEN 1 ELSE 0 END), 2),
+    ROUND(100.0 * AVG(CASE WHEN b_this = &#x27;&gt;100%&#x27; THEN 1 ELSE 0 END), 2)
+FROM tmp_flow WHERE apply_d IS NOT NULL AND vir_date + 30 &lt;= CURRENT_DATE
+) x ORDER BY s, ord;
+
+-- 流转当天
+SELECT chg_grp, b_prev, b_this, COUNT(*) AS n,
+    ROUND(100.0 * COUNT(*) / SUM(COUNT(*)) OVER (PARTITION BY chg_grp), 2) AS pct_grp,
+    ROUND(100.0 * COUNT(*) / SUM(COUNT(*)) OVER (PARTITION BY chg_grp, b_prev), 2) AS pct_from,
+    ROUND(AVG(credit_ratio) * 100, 1) AS avg_credit_pct
+FROM tmp_flow WHERE apply_d = 0
+GROUP BY chg_grp, b_prev, b_this
+ORDER BY CASE chg_grp WHEN &#x27;降额&#x27; THEN 1 WHEN &#x27;不变&#x27; THEN 2 ELSE 3 END, b_prev, b_this;
+
+-- 流转至30日
+SELECT chg_grp, b_prev, b_this, COUNT(*) AS n,
+    ROUND(100.0 * COUNT(*) / SUM(COUNT(*)) OVER (PARTITION BY chg_grp), 2) AS pct_grp,
+    ROUND(100.0 * COUNT(*) / SUM(COUNT(*)) OVER (PARTITION BY chg_grp, b_prev), 2) AS pct_from,
+    ROUND(AVG(credit_ratio) * 100, 1) AS avg_credit_pct
+FROM tmp_flow WHERE apply_d IS NOT NULL AND vir_date + 30 &lt;= CURRENT_DATE
+GROUP BY chg_grp, b_prev, b_this
+ORDER BY CASE chg_grp WHEN &#x27;降额&#x27; THEN 1 WHEN &#x27;不变&#x27; THEN 2 ELSE 3 END, b_prev, b_this;
+
+-- 降额/升额幅度 × 打满后是否超额或掉到不满
+SELECT * FROM (
+SELECT CASE chg_grp WHEN &#x27;降额&#x27; THEN 1 WHEN &#x27;不变&#x27; THEN 2 ELSE 3 END AS ord,
+    chg_grp, &#x27;当天&#x27; AS win, COUNT(*) AS n,
+    ROUND(AVG(credit_ratio) * 100, 1) AS avg_credit_pct,
+    ROUND(100.0 * SUM(this_amt) / NULLIF(SUM(prev_amt), 0), 1) AS w_credit_pct,
+    ROUND(100.0 * AVG(CASE WHEN b_prev IN (&#x27;≈100%&#x27;,&#x27;&gt;100%&#x27;) AND b_this = &#x27;&gt;100%&#x27; THEN 1 ELSE 0 END), 2) AS pct_full_to_gt,
+    ROUND(100.0 * AVG(CASE WHEN b_prev IN (&#x27;≈100%&#x27;,&#x27;&gt;100%&#x27;) AND b_this = &#x27;&lt;80%&#x27; THEN 1 ELSE 0 END), 2) AS pct_full_to_lt80,
+    ROUND(AVG(CASE WHEN b_prev IN (&#x27;≈100%&#x27;,&#x27;&gt;100%&#x27;) AND b_this = &#x27;&gt;100%&#x27; THEN credit_ratio END) * 100, 1) AS cut_when_full_to_gt,
+    ROUND(AVG(CASE WHEN b_prev IN (&#x27;≈100%&#x27;,&#x27;&gt;100%&#x27;) AND b_this = &#x27;&lt;80%&#x27; THEN credit_ratio END) * 100, 1) AS cut_when_full_to_lt80
+FROM tmp_flow WHERE apply_d = 0
+GROUP BY chg_grp
+UNION ALL
+SELECT CASE chg_grp WHEN &#x27;降额&#x27; THEN 1 WHEN &#x27;不变&#x27; THEN 2 ELSE 3 END,
+    chg_grp, &#x27;至30日&#x27;, COUNT(*),
+    ROUND(AVG(credit_ratio) * 100, 1),
+    ROUND(100.0 * SUM(this_amt) / NULLIF(SUM(prev_amt), 0), 1),
+    ROUND(100.0 * AVG(CASE WHEN b_prev IN (&#x27;≈100%&#x27;,&#x27;&gt;100%&#x27;) AND b_this = &#x27;&gt;100%&#x27; THEN 1 ELSE 0 END), 2),
+    ROUND(100.0 * AVG(CASE WHEN b_prev IN (&#x27;≈100%&#x27;,&#x27;&gt;100%&#x27;) AND b_this = &#x27;&lt;80%&#x27; THEN 1 ELSE 0 END), 2),
+    ROUND(AVG(CASE WHEN b_prev IN (&#x27;≈100%&#x27;,&#x27;&gt;100%&#x27;) AND b_this = &#x27;&gt;100%&#x27; THEN credit_ratio END) * 100, 1),
+    ROUND(AVG(CASE WHEN b_prev IN (&#x27;≈100%&#x27;,&#x27;&gt;100%&#x27;) AND b_this = &#x27;&lt;80%&#x27; THEN credit_ratio END) * 100, 1)
+FROM tmp_flow WHERE apply_d IS NOT NULL AND vir_date + 30 &lt;= CURRENT_DATE
+GROUP BY chg_grp
+) x ORDER BY win, ord;
+
+-- 同档停留 / 升档 / 降档（档位：&lt;80 &lt; 80-100 &lt; ≈100 &lt; &gt;100）
+SELECT * FROM (
+SELECT CASE chg_grp WHEN &#x27;降额&#x27; THEN 1 WHEN &#x27;不变&#x27; THEN 2 ELSE 3 END AS ord,
+    chg_grp, &#x27;当天&#x27; AS win, COUNT(*) AS n,
+    ROUND(100.0 * AVG(CASE WHEN b_prev = b_this THEN 1 ELSE 0 END), 2) AS pct_stay,
+    ROUND(100.0 * AVG(CASE
+        WHEN (CASE b_this WHEN &#x27;&lt;80%&#x27; THEN 1 WHEN &#x27;80-100%&#x27; THEN 2 WHEN &#x27;≈100%&#x27; THEN 3 ELSE 4 END)
+           &gt; (CASE b_prev WHEN &#x27;&lt;80%&#x27; THEN 1 WHEN &#x27;80-100%&#x27; THEN 2 WHEN &#x27;≈100%&#x27; THEN 3 ELSE 4 END)
+        THEN 1 ELSE 0 END), 2) AS pct_up,
+    ROUND(100.0 * AVG(CASE
+        WHEN (CASE b_this WHEN &#x27;&lt;80%&#x27; THEN 1 WHEN &#x27;80-100%&#x27; THEN 2 WHEN &#x27;≈100%&#x27; THEN 3 ELSE 4 END)
+           &lt; (CASE b_prev WHEN &#x27;&lt;80%&#x27; THEN 1 WHEN &#x27;80-100%&#x27; THEN 2 WHEN &#x27;≈100%&#x27; THEN 3 ELSE 4 END)
+        THEN 1 ELSE 0 END), 2) AS pct_down
+FROM tmp_flow WHERE apply_d = 0
+GROUP BY chg_grp
+UNION ALL
+SELECT 4, &#x27;合计&#x27;, &#x27;当天&#x27;, COUNT(*),
+    ROUND(100.0 * AVG(CASE WHEN b_prev = b_this THEN 1 ELSE 0 END), 2),
+    ROUND(100.0 * AVG(CASE
+        WHEN (CASE b_this WHEN &#x27;&lt;80%&#x27; THEN 1 WHEN &#x27;80-100%&#x27; THEN 2 WHEN &#x27;≈100%&#x27; THEN 3 ELSE 4 END)
+           &gt; (CASE b_prev WHEN &#x27;&lt;80%&#x27; THEN 1 WHEN &#x27;80-100%&#x27; THEN 2 WHEN &#x27;≈100%&#x27; THEN 3 ELSE 4 END)
+        THEN 1 ELSE 0 END), 2),
+    ROUND(100.0 * AVG(CASE
+        WHEN (CASE b_this WHEN &#x27;&lt;80%&#x27; THEN 1 WHEN &#x27;80-100%&#x27; THEN 2 WHEN &#x27;≈100%&#x27; THEN 3 ELSE 4 END)
+           &lt; (CASE b_prev WHEN &#x27;&lt;80%&#x27; THEN 1 WHEN &#x27;80-100%&#x27; THEN 2 WHEN &#x27;≈100%&#x27; THEN 3 ELSE 4 END)
+        THEN 1 ELSE 0 END), 2)
+FROM tmp_flow WHERE apply_d = 0
+UNION ALL
+SELECT CASE chg_grp WHEN &#x27;降额&#x27; THEN 1 WHEN &#x27;不变&#x27; THEN 2 ELSE 3 END,
+    chg_grp, &#x27;至30日&#x27;, COUNT(*),
+    ROUND(100.0 * AVG(CASE WHEN b_prev = b_this THEN 1 ELSE 0 END), 2),
+    ROUND(100.0 * AVG(CASE
+        WHEN (CASE b_this WHEN &#x27;&lt;80%&#x27; THEN 1 WHEN &#x27;80-100%&#x27; THEN 2 WHEN &#x27;≈100%&#x27; THEN 3 ELSE 4 END)
+           &gt; (CASE b_prev WHEN &#x27;&lt;80%&#x27; THEN 1 WHEN &#x27;80-100%&#x27; THEN 2 WHEN &#x27;≈100%&#x27; THEN 3 ELSE 4 END)
+        THEN 1 ELSE 0 END), 2),
+    ROUND(100.0 * AVG(CASE
+        WHEN (CASE b_this WHEN &#x27;&lt;80%&#x27; THEN 1 WHEN &#x27;80-100%&#x27; THEN 2 WHEN &#x27;≈100%&#x27; THEN 3 ELSE 4 END)
+           &lt; (CASE b_prev WHEN &#x27;&lt;80%&#x27; THEN 1 WHEN &#x27;80-100%&#x27; THEN 2 WHEN &#x27;≈100%&#x27; THEN 3 ELSE 4 END)
+        THEN 1 ELSE 0 END), 2)
+FROM tmp_flow WHERE apply_d IS NOT NULL AND vir_date + 30 &lt;= CURRENT_DATE
+GROUP BY chg_grp
+UNION ALL
+SELECT 4, &#x27;合计&#x27;, &#x27;至30日&#x27;, COUNT(*),
+    ROUND(100.0 * AVG(CASE WHEN b_prev = b_this THEN 1 ELSE 0 END), 2),
+    ROUND(100.0 * AVG(CASE
+        WHEN (CASE b_this WHEN &#x27;&lt;80%&#x27; THEN 1 WHEN &#x27;80-100%&#x27; THEN 2 WHEN &#x27;≈100%&#x27; THEN 3 ELSE 4 END)
+           &gt; (CASE b_prev WHEN &#x27;&lt;80%&#x27; THEN 1 WHEN &#x27;80-100%&#x27; THEN 2 WHEN &#x27;≈100%&#x27; THEN 3 ELSE 4 END)
+        THEN 1 ELSE 0 END), 2),
+    ROUND(100.0 * AVG(CASE
+        WHEN (CASE b_this WHEN &#x27;&lt;80%&#x27; THEN 1 WHEN &#x27;80-100%&#x27; THEN 2 WHEN &#x27;≈100%&#x27; THEN 3 ELSE 4 END)
+           &lt; (CASE b_prev WHEN &#x27;&lt;80%&#x27; THEN 1 WHEN &#x27;80-100%&#x27; THEN 2 WHEN &#x27;≈100%&#x27; THEN 3 ELSE 4 END)
+        THEN 1 ELSE 0 END), 2)
+FROM tmp_flow WHERE apply_d IS NOT NULL AND vir_date + 30 &lt;= CURRENT_DATE
+) x ORDER BY win, ord;
+</pre>
+</details>
+
+<p class="foot">数据截止库日期 2026-09-22。点确认 21,870 / 45,386 = 48.19%。报告只解释额度变化与使用率档位搬家，不替代风控规则。</p>
+</main>
+<script>
+const D = {"weighted": [{"ord": 1, "chg_grp": "降额", "metric": "全体-上一笔", "n": 15168, "sum_num": 30323982.0, "sum_den": 38355853.0, "util_w": 79.06}, {"ord": 1, "chg_grp": "降额", "metric": "当天提单-上一笔(成对)", "n": 6613, "sum_num": 12916957.0, "sum_den": 15686861.0, "util_w": 82.34}, {"ord": 1, "chg_grp": "降额", "metric": "当天提单-本笔", "n": 6613, "sum_num": 10392341.0, "sum_den": 10717019.0, "util_w": 96.97}, {"ord": 1, "chg_grp": "降额", "metric": "至30日提单-上一笔(成对)", "n": 10862, "sum_num": 21612865.0, "sum_den": 27155759.0, "util_w": 79.59}, {"ord": 1, "chg_grp": "降额", "metric": "至30日提单-本笔", "n": 10862, "sum_num": 18221097.0, "sum_den": 18562398.0, "util_w": 98.16}, {"ord": 2, "chg_grp": "不变", "metric": "全体-上一笔", "n": 4152, "sum_num": 3520068.0, "sum_den": 3725097.0, "util_w": 94.5}, {"ord": 2, "chg_grp": "不变", "metric": "当天提单-上一笔(成对)", "n": 2048, "sum_num": 1740311.0, "sum_den": 1804428.0, "util_w": 96.45}, {"ord": 2, "chg_grp": "不变", "metric": "当天提单-本笔", "n": 2048, "sum_num": 1812093.0, "sum_den": 1804428.0, "util_w": 100.42}, {"ord": 2, "chg_grp": "不变", "metric": "至30日提单-上一笔(成对)", "n": 3263, "sum_num": 2862341.0, "sum_den": 3004691.0, "util_w": 95.26}, {"ord": 2, "chg_grp": "不变", "metric": "至30日提单-本笔", "n": 3263, "sum_num": 3055911.0, "sum_den": 3004691.0, "util_w": 101.7}, {"ord": 3, "chg_grp": "升额", "metric": "全体-上一笔", "n": 26066, "sum_num": 60304976.0, "sum_den": 69177116.0, "util_w": 87.17}, {"ord": 3, "chg_grp": "升额", "metric": "当天提单-上一笔(成对)", "n": 9633, "sum_num": 19360747.0, "sum_den": 21116914.0, "util_w": 91.68}, {"ord": 3, "chg_grp": "升额", "metric": "当天提单-本笔", "n": 9633, "sum_num": 31773908.0, "sum_den": 36158413.0, "util_w": 87.87}, {"ord": 3, "chg_grp": "升额", "metric": "至30日提单-上一笔(成对)", "n": 18108, "sum_num": 39701512.0, "sum_den": 45027336.0, "util_w": 88.17}, {"ord": 3, "chg_grp": "升额", "metric": "至30日提单-本笔", "n": 18108, "sum_num": 65396988.0, "sum_den": 79161254.0, "util_w": 82.61}, {"ord": 4, "chg_grp": "合计", "metric": "全体-上一笔", "n": 45386, "sum_num": 94149026.0, "sum_den": 111258066.0, "util_w": 84.62}, {"ord": 4, "chg_grp": "合计", "metric": "当天提单-上一笔(成对)", "n": 18294, "sum_num": 34018015.0, "sum_den": 38608203.0, "util_w": 88.11}, {"ord": 4, "chg_grp": "合计", "metric": "当天提单-本笔", "n": 18294, "sum_num": 43978342.0, "sum_den": 48679860.0, "util_w": 90.34}, {"ord": 4, "chg_grp": "合计", "metric": "至30日提单-上一笔(成对)", "n": 32233, "sum_num": 64176718.0, "sum_den": 75187786.0, "util_w": 85.36}, {"ord": 4, "chg_grp": "合计", "metric": "至30日提单-本笔", "n": 32233, "sum_num": 86673996.0, "sum_den": 100728343.0, "util_w": 86.05}], "bucket4": [{"s": 1, "ord": 1, "chg_grp": "降额", "side": "上一笔", "n": 6613, "pct_lt80": 24.6, "pct_80": 3.72, "pct_eq": 41.8, "pct_gt": 29.88}, {"s": 1, "ord": 2, "chg_grp": "不变", "side": "上一笔", "n": 2048, "pct_lt80": 14.26, "pct_80": 0.63, "pct_eq": 71.83, "pct_gt": 13.28}, {"s": 1, "ord": 3, "chg_grp": "升额", "side": "上一笔", "n": 9633, "pct_lt80": 16.3, "pct_80": 3.04, "pct_eq": 43.22, "pct_gt": 37.44}, {"s": 1, "ord": 4, "chg_grp": "合计", "side": "上一笔", "n": 18294, "pct_lt80": 19.07, "pct_80": 3.02, "pct_eq": 45.91, "pct_gt": 32.01}, {"s": 2, "ord": 1, "chg_grp": "降额", "side": "本笔当天", "n": 6613, "pct_lt80": 5.2, "pct_80": 1.48, "pct_eq": 37.5, "pct_gt": 55.81}, {"s": 2, "ord": 2, "chg_grp": "不变", "side": "本笔当天", "n": 2048, "pct_lt80": 2.1, "pct_80": 0.24, "pct_eq": 75.15, "pct_gt": 22.51}, {"s": 2, "ord": 3, "chg_grp": "升额", "side": "本笔当天", "n": 9633, "pct_lt80": 19.44, "pct_80": 4.08, "pct_eq": 33.84, "pct_gt": 42.63}, {"s": 2, "ord": 4, "chg_grp": "合计", "side": "本笔当天", "n": 18294, "pct_lt80": 12.35, "pct_80": 2.71, "pct_eq": 39.79, "pct_gt": 45.15}, {"s": 3, "ord": 1, "chg_grp": "降额", "side": "上一笔30日", "n": 10862, "pct_lt80": 28.67, "pct_80": 4.07, "pct_eq": 38.11, "pct_gt": 29.16}, {"s": 3, "ord": 2, "chg_grp": "不变", "side": "上一笔30日", "n": 3263, "pct_lt80": 17.01, "pct_80": 0.67, "pct_eq": 66.26, "pct_gt": 16.06}, {"s": 3, "ord": 3, "chg_grp": "升额", "side": "上一笔30日", "n": 18108, "pct_lt80": 21.18, "pct_80": 3.45, "pct_eq": 39.34, "pct_gt": 36.03}, {"s": 3, "ord": 4, "chg_grp": "合计", "side": "上一笔30日", "n": 32233, "pct_lt80": 23.28, "pct_80": 3.38, "pct_eq": 41.65, "pct_gt": 31.69}, {"s": 4, "ord": 1, "chg_grp": "降额", "side": "本笔30日", "n": 10862, "pct_lt80": 9.43, "pct_80": 3.15, "pct_eq": 26.13, "pct_gt": 61.3}, {"s": 4, "ord": 2, "chg_grp": "不变", "side": "本笔30日", "n": 3263, "pct_lt80": 3.68, "pct_80": 0.95, "pct_eq": 56.39, "pct_gt": 38.98}, {"s": 4, "ord": 3, "chg_grp": "升额", "side": "本笔30日", "n": 18108, "pct_lt80": 30.48, "pct_80": 6.07, "pct_eq": 21.11, "pct_gt": 42.34}, {"s": 4, "ord": 4, "chg_grp": "合计", "side": "本笔30日", "n": 32233, "pct_lt80": 20.67, "pct_80": 4.57, "pct_eq": 26.37, "pct_gt": 48.39}], "stay_move": [{"ord": 1, "chg_grp": "降额", "win": "当天", "n": 6613, "pct_stay": 43.64, "pct_up": 45.88, "pct_down": 10.48}, {"ord": 2, "chg_grp": "不变", "win": "当天", "n": 2048, "pct_stay": 62.5, "pct_up": 26.76, "pct_down": 10.74}, {"ord": 3, "chg_grp": "升额", "win": "当天", "n": 9633, "pct_stay": 46.78, "pct_up": 27.27, "pct_down": 25.95}, {"ord": 4, "chg_grp": "合计", "win": "当天", "n": 18294, "pct_stay": 47.4, "pct_up": 33.94, "pct_down": 18.66}, {"ord": 1, "chg_grp": "降额", "win": "至30日", "n": 10862, "pct_stay": 41.01, "pct_up": 48.81, "pct_down": 10.18}, {"ord": 2, "chg_grp": "不变", "win": "至30日", "n": 3263, "pct_stay": 50.35, "pct_up": 38.92, "pct_down": 10.73}, {"ord": 3, "chg_grp": "升额", "win": "至30日", "n": 18108, "pct_stay": 43.63, "pct_up": 27.02, "pct_down": 29.36}, {"ord": 4, "chg_grp": "合计", "win": "至30日", "n": 32233, "pct_stay": 43.42, "pct_up": 35.57, "pct_down": 21.01}], "flow_d0": [{"chg_grp": "降额", "b_prev": "80-100%", "b_this": "80-100%", "n": 9, "pct_grp": 0.14, "pct_from": 3.66, "avg_credit_pct": 74.8}, {"chg_grp": "降额", "b_prev": "80-100%", "b_this": "<80%", "n": 16, "pct_grp": 0.24, "pct_from": 6.5, "avg_credit_pct": 74.6}, {"chg_grp": "降额", "b_prev": "80-100%", "b_this": ">100%", "n": 135, "pct_grp": 2.04, "pct_from": 54.88, "avg_credit_pct": 70.1}, {"chg_grp": "降额", "b_prev": "80-100%", "b_this": "≈100%", "n": 86, "pct_grp": 1.3, "pct_from": 34.96, "avg_credit_pct": 69.2}, {"chg_grp": "降额", "b_prev": "<80%", "b_this": "80-100%", "n": 57, "pct_grp": 0.86, "pct_from": 3.5, "avg_credit_pct": 68.0}, {"chg_grp": "降额", "b_prev": "<80%", "b_this": "<80%", "n": 258, "pct_grp": 3.9, "pct_from": 15.86, "avg_credit_pct": 73.3}, {"chg_grp": "降额", "b_prev": "<80%", "b_this": ">100%", "n": 757, "pct_grp": 11.45, "pct_from": 46.53, "avg_credit_pct": 59.7}, {"chg_grp": "降额", "b_prev": "<80%", "b_this": "≈100%", "n": 555, "pct_grp": 8.39, "pct_from": 34.11, "avg_credit_pct": 61.2}, {"chg_grp": "降额", "b_prev": ">100%", "b_this": "80-100%", "n": 17, "pct_grp": 0.26, "pct_from": 0.86, "avg_credit_pct": 73.9}, {"chg_grp": "降额", "b_prev": ">100%", "b_this": "<80%", "n": 29, "pct_grp": 0.44, "pct_from": 1.47, "avg_credit_pct": 76.7}, {"chg_grp": "降额", "b_prev": ">100%", "b_this": ">100%", "n": 1355, "pct_grp": 20.49, "pct_from": 68.57, "avg_credit_pct": 71.9}, {"chg_grp": "降额", "b_prev": ">100%", "b_this": "≈100%", "n": 575, "pct_grp": 8.69, "pct_from": 29.1, "avg_credit_pct": 70.6}, {"chg_grp": "降额", "b_prev": "≈100%", "b_this": "80-100%", "n": 15, "pct_grp": 0.23, "pct_from": 0.54, "avg_credit_pct": 73.8}, {"chg_grp": "降额", "b_prev": "≈100%", "b_this": "<80%", "n": 41, "pct_grp": 0.62, "pct_from": 1.48, "avg_credit_pct": 77.6}, {"chg_grp": "降额", "b_prev": "≈100%", "b_this": ">100%", "n": 1444, "pct_grp": 21.84, "pct_from": 52.24, "avg_credit_pct": 71.2}, {"chg_grp": "降额", "b_prev": "≈100%", "b_this": "≈100%", "n": 1264, "pct_grp": 19.11, "pct_from": 45.73, "avg_credit_pct": 67.2}, {"chg_grp": "不变", "b_prev": "80-100%", "b_this": "80-100%", "n": 1, "pct_grp": 0.05, "pct_from": 7.69, "avg_credit_pct": 100.0}, {"chg_grp": "不变", "b_prev": "80-100%", "b_this": "<80%", "n": 1, "pct_grp": 0.05, "pct_from": 7.69, "avg_credit_pct": 100.0}, {"chg_grp": "不变", "b_prev": "80-100%", "b_this": ">100%", "n": 7, "pct_grp": 0.34, "pct_from": 53.85, "avg_credit_pct": 100.0}, {"chg_grp": "不变", "b_prev": "80-100%", "b_this": "≈100%", "n": 4, "pct_grp": 0.2, "pct_from": 30.77, "avg_credit_pct": 100.0}, {"chg_grp": "不变", "b_prev": "<80%", "b_this": "<80%", "n": 19, "pct_grp": 0.93, "pct_from": 6.51, "avg_credit_pct": 100.0}, {"chg_grp": "不变", "b_prev": "<80%", "b_this": ">100%", "n": 114, "pct_grp": 5.57, "pct_from": 39.04, "avg_credit_pct": 100.0}, {"chg_grp": "不变", "b_prev": "<80%", "b_this": "≈100%", "n": 159, "pct_grp": 7.76, "pct_from": 54.45, "avg_credit_pct": 100.0}, {"chg_grp": "不变", "b_prev": ">100%", "b_this": "<80%", "n": 4, "pct_grp": 0.2, "pct_from": 1.47, "avg_credit_pct": 100.0}, {"chg_grp": "不变", "b_prev": ">100%", "b_this": ">100%", "n": 76, "pct_grp": 3.71, "pct_from": 27.94, "avg_credit_pct": 100.0}, {"chg_grp": "不变", "b_prev": ">100%", "b_this": "≈100%", "n": 192, "pct_grp": 9.38, "pct_from": 70.59, "avg_credit_pct": 100.0}, {"chg_grp": "不变", "b_prev": "≈100%", "b_this": "80-100%", "n": 4, "pct_grp": 0.2, "pct_from": 0.27, "avg_credit_pct": 100.0}, {"chg_grp": "不变", "b_prev": "≈100%", "b_this": "<80%", "n": 19, "pct_grp": 0.93, "pct_from": 1.29, "avg_credit_pct": 100.0}, {"chg_grp": "不变", "b_prev": "≈100%", "b_this": ">100%", "n": 264, "pct_grp": 12.89, "pct_from": 17.95, "avg_credit_pct": 100.0}, {"chg_grp": "不变", "b_prev": "≈100%", "b_this": "≈100%", "n": 1184, "pct_grp": 57.81, "pct_from": 80.49, "avg_credit_pct": 100.0}, {"chg_grp": "升额", "b_prev": "80-100%", "b_this": "80-100%", "n": 23, "pct_grp": 0.24, "pct_from": 7.85, "avg_credit_pct": 201.6}, {"chg_grp": "升额", "b_prev": "80-100%", "b_this": "<80%", "n": 107, "pct_grp": 1.11, "pct_from": 36.52, "avg_credit_pct": 218.7}, {"chg_grp": "升额", "b_prev": "80-100%", "b_this": ">100%", "n": 106, "pct_grp": 1.1, "pct_from": 36.18, "avg_credit_pct": 193.1}, {"chg_grp": "升额", "b_prev": "80-100%", "b_this": "≈100%", "n": 57, "pct_grp": 0.59, "pct_from": 19.45, "avg_credit_pct": 166.2}, {"chg_grp": "升额", "b_prev": "<80%", "b_this": "80-100%", "n": 87, "pct_grp": 0.9, "pct_from": 5.54, "avg_credit_pct": 181.9}, {"chg_grp": "升额", "b_prev": "<80%", "b_this": "<80%", "n": 688, "pct_grp": 7.14, "pct_from": 43.82, "avg_credit_pct": 184.6}, {"chg_grp": "升额", "b_prev": "<80%", "b_this": ">100%", "n": 488, "pct_grp": 5.07, "pct_from": 31.08, "avg_credit_pct": 175.4}, {"chg_grp": "升额", "b_prev": "<80%", "b_this": "≈100%", "n": 307, "pct_grp": 3.19, "pct_from": 19.55, "avg_credit_pct": 171.2}, {"chg_grp": "升额", "b_prev": ">100%", "b_this": "80-100%", "n": 136, "pct_grp": 1.41, "pct_from": 3.77, "avg_credit_pct": 229.0}, {"chg_grp": "升额", "b_prev": ">100%", "b_this": "<80%", "n": 508, "pct_grp": 5.27, "pct_from": 14.08, "avg_credit_pct": 292.6}, {"chg_grp": "升额", "b_prev": ">100%", "b_this": ">100%", "n": 1931, "pct_grp": 20.05, "pct_from": 53.53, "avg_credit_pct": 213.8}, {"chg_grp": "升额", "b_prev": ">100%", "b_this": "≈100%", "n": 1032, "pct_grp": 10.71, "pct_from": 28.61, "avg_credit_pct": 195.7}, {"chg_grp": "升额", "b_prev": "≈100%", "b_this": "80-100%", "n": 147, "pct_grp": 1.53, "pct_from": 3.53, "avg_credit_pct": 252.2}, {"chg_grp": "升额", "b_prev": "≈100%", "b_this": "<80%", "n": 570, "pct_grp": 5.92, "pct_from": 13.69, "avg_credit_pct": 284.3}, {"chg_grp": "升额", "b_prev": "≈100%", "b_this": ">100%", "n": 1582, "pct_grp": 16.42, "pct_from": 38.0, "avg_credit_pct": 239.7}, {"chg_grp": "升额", "b_prev": "≈100%", "b_this": "≈100%", "n": 1864, "pct_grp": 19.35, "pct_from": 44.78, "avg_credit_pct": 220.5}], "flow_d30": [{"chg_grp": "降额", "b_prev": "80-100%", "b_this": "80-100%", "n": 27, "pct_grp": 0.25, "pct_from": 6.11, "avg_credit_pct": 73.5}, {"chg_grp": "降额", "b_prev": "80-100%", "b_this": "<80%", "n": 53, "pct_grp": 0.49, "pct_from": 11.99, "avg_credit_pct": 75.4}, {"chg_grp": "降额", "b_prev": "80-100%", "b_this": ">100%", "n": 251, "pct_grp": 2.31, "pct_from": 56.79, "avg_credit_pct": 67.9}, {"chg_grp": "降额", "b_prev": "80-100%", "b_this": "≈100%", "n": 111, "pct_grp": 1.02, "pct_from": 25.11, "avg_credit_pct": 70.5}, {"chg_grp": "降额", "b_prev": "<80%", "b_this": "80-100%", "n": 189, "pct_grp": 1.74, "pct_from": 6.07, "avg_credit_pct": 65.1}, {"chg_grp": "降额", "b_prev": "<80%", "b_this": "<80%", "n": 699, "pct_grp": 6.44, "pct_from": 22.45, "avg_credit_pct": 70.8}, {"chg_grp": "降额", "b_prev": "<80%", "b_this": ">100%", "n": 1549, "pct_grp": 14.26, "pct_from": 49.74, "avg_credit_pct": 59.1}, {"chg_grp": "降额", "b_prev": "<80%", "b_this": "≈100%", "n": 677, "pct_grp": 6.23, "pct_from": 21.74, "avg_credit_pct": 61.0}, {"chg_grp": "降额", "b_prev": ">100%", "b_this": "80-100%", "n": 58, "pct_grp": 0.53, "pct_from": 1.83, "avg_credit_pct": 75.9}, {"chg_grp": "降额", "b_prev": ">100%", "b_this": "<80%", "n": 121, "pct_grp": 1.11, "pct_from": 3.82, "avg_credit_pct": 77.9}, {"chg_grp": "降额", "b_prev": ">100%", "b_this": ">100%", "n": 2333, "pct_grp": 21.48, "pct_from": 73.67, "avg_credit_pct": 72.2}, {"chg_grp": "降额", "b_prev": ">100%", "b_this": "≈100%", "n": 655, "pct_grp": 6.03, "pct_from": 20.68, "avg_credit_pct": 70.2}, {"chg_grp": "降额", "b_prev": "≈100%", "b_this": "80-100%", "n": 68, "pct_grp": 0.63, "pct_from": 1.64, "avg_credit_pct": 70.3}, {"chg_grp": "降额", "b_prev": "≈100%", "b_this": "<80%", "n": 151, "pct_grp": 1.39, "pct_from": 3.65, "avg_credit_pct": 74.6}, {"chg_grp": "降额", "b_prev": "≈100%", "b_this": ">100%", "n": 2525, "pct_grp": 23.25, "pct_from": 61.01, "avg_credit_pct": 70.1}, {"chg_grp": "降额", "b_prev": "≈100%", "b_this": "≈100%", "n": 1395, "pct_grp": 12.84, "pct_from": 33.7, "avg_credit_pct": 67.1}, {"chg_grp": "不变", "b_prev": "80-100%", "b_this": "80-100%", "n": 3, "pct_grp": 0.09, "pct_from": 13.64, "avg_credit_pct": 100.0}, {"chg_grp": "不变", "b_prev": "80-100%", "b_this": "<80%", "n": 3, "pct_grp": 0.09, "pct_from": 13.64, "avg_credit_pct": 100.0}, {"chg_grp": "不变", "b_prev": "80-100%", "b_this": ">100%", "n": 11, "pct_grp": 0.34, "pct_from": 50.0, "avg_credit_pct": 100.0}, {"chg_grp": "不变", "b_prev": "80-100%", "b_this": "≈100%", "n": 5, "pct_grp": 0.15, "pct_from": 22.73, "avg_credit_pct": 100.0}, {"chg_grp": "不变", "b_prev": "<80%", "b_this": "80-100%", "n": 5, "pct_grp": 0.15, "pct_from": 0.9, "avg_credit_pct": 100.0}, {"chg_grp": "不变", "b_prev": "<80%", "b_this": "<80%", "n": 49, "pct_grp": 1.5, "pct_from": 8.83, "avg_credit_pct": 100.0}, {"chg_grp": "不变", "b_prev": "<80%", "b_this": ">100%", "n": 257, "pct_grp": 7.88, "pct_from": 46.31, "avg_credit_pct": 100.0}, {"chg_grp": "不变", "b_prev": "<80%", "b_this": "≈100%", "n": 244, "pct_grp": 7.48, "pct_from": 43.96, "avg_credit_pct": 100.0}, {"chg_grp": "不变", "b_prev": ">100%", "b_this": "80-100%", "n": 3, "pct_grp": 0.09, "pct_from": 0.57, "avg_credit_pct": 100.0}, {"chg_grp": "不变", "b_prev": ">100%", "b_this": "<80%", "n": 9, "pct_grp": 0.28, "pct_from": 1.72, "avg_credit_pct": 100.0}, {"chg_grp": "不变", "b_prev": ">100%", "b_this": ">100%", "n": 256, "pct_grp": 7.85, "pct_from": 48.85, "avg_credit_pct": 100.0}, {"chg_grp": "不变", "b_prev": ">100%", "b_this": "≈100%", "n": 256, "pct_grp": 7.85, "pct_from": 48.85, "avg_credit_pct": 100.0}, {"chg_grp": "不变", "b_prev": "≈100%", "b_this": "80-100%", "n": 20, "pct_grp": 0.61, "pct_from": 0.93, "avg_credit_pct": 100.0}, {"chg_grp": "不变", "b_prev": "≈100%", "b_this": "<80%", "n": 59, "pct_grp": 1.81, "pct_from": 2.73, "avg_credit_pct": 100.0}, {"chg_grp": "不变", "b_prev": "≈100%", "b_this": ">100%", "n": 748, "pct_grp": 22.92, "pct_from": 34.6, "avg_credit_pct": 100.0}, {"chg_grp": "不变", "b_prev": "≈100%", "b_this": "≈100%", "n": 1335, "pct_grp": 40.91, "pct_from": 61.75, "avg_credit_pct": 100.0}, {"chg_grp": "升额", "b_prev": "80-100%", "b_this": "80-100%", "n": 65, "pct_grp": 0.36, "pct_from": 10.42, "avg_credit_pct": 211.8}, {"chg_grp": "升额", "b_prev": "80-100%", "b_this": "<80%", "n": 276, "pct_grp": 1.52, "pct_from": 44.23, "avg_credit_pct": 229.1}, {"chg_grp": "升额", "b_prev": "80-100%", "b_this": ">100%", "n": 216, "pct_grp": 1.19, "pct_from": 34.62, "avg_credit_pct": 189.9}, {"chg_grp": "升额", "b_prev": "80-100%", "b_this": "≈100%", "n": 67, "pct_grp": 0.37, "pct_from": 10.74, "avg_credit_pct": 183.2}, {"chg_grp": "升额", "b_prev": "<80%", "b_this": "80-100%", "n": 257, "pct_grp": 1.42, "pct_from": 6.7, "avg_credit_pct": 174.0}, {"chg_grp": "升额", "b_prev": "<80%", "b_this": "<80%", "n": 2169, "pct_grp": 11.98, "pct_from": 56.54, "avg_credit_pct": 189.7}, {"chg_grp": "升额", "b_prev": "<80%", "b_this": ">100%", "n": 981, "pct_grp": 5.42, "pct_from": 25.57, "avg_credit_pct": 174.0}, {"chg_grp": "升额", "b_prev": "<80%", "b_this": "≈100%", "n": 429, "pct_grp": 2.37, "pct_from": 11.18, "avg_credit_pct": 173.8}, {"chg_grp": "升额", "b_prev": ">100%", "b_this": "80-100%", "n": 366, "pct_grp": 2.02, "pct_from": 5.61, "avg_credit_pct": 250.5}, {"chg_grp": "升额", "b_prev": ">100%", "b_this": "<80%", "n": 1443, "pct_grp": 7.97, "pct_from": 22.11, "avg_credit_pct": 296.1}, {"chg_grp": "升额", "b_prev": ">100%", "b_this": ">100%", "n": 3528, "pct_grp": 19.48, "pct_from": 54.07, "avg_credit_pct": 217.2}, {"chg_grp": "升额", "b_prev": ">100%", "b_this": "≈100%", "n": 1188, "pct_grp": 6.56, "pct_from": 18.21, "avg_credit_pct": 199.4}, {"chg_grp": "升额", "b_prev": "≈100%", "b_this": "80-100%", "n": 411, "pct_grp": 2.27, "pct_from": 5.77, "avg_credit_pct": 254.0}, {"chg_grp": "升额", "b_prev": "≈100%", "b_this": "<80%", "n": 1632, "pct_grp": 9.01, "pct_from": 22.91, "avg_credit_pct": 288.2}, {"chg_grp": "升额", "b_prev": "≈100%", "b_this": ">100%", "n": 2942, "pct_grp": 16.25, "pct_from": 41.3, "avg_credit_pct": 246.9}, {"chg_grp": "升额", "b_prev": "≈100%", "b_this": "≈100%", "n": 2138, "pct_grp": 11.81, "pct_from": 30.02, "avg_credit_pct": 224.9}], "full_shift": [{"ord": 1, "chg_grp": "降额", "win": "当天", "n": 6613, "avg_credit_pct": 68.5, "w_credit_pct": 68.3, "pct_full_to_gt": 42.33, "pct_full_to_lt80": 1.06, "cut_when_full_to_gt": 71.5, "cut_when_full_to_lt80": 77.2}, {"ord": 2, "chg_grp": "不变", "win": "当天", "n": 2048, "avg_credit_pct": 100.0, "w_credit_pct": 100.0, "pct_full_to_gt": 16.6, "pct_full_to_lt80": 1.12, "cut_when_full_to_gt": 100.0, "cut_when_full_to_lt80": 100.0}, {"ord": 3, "chg_grp": "升额", "win": "当天", "n": 9633, "avg_credit_pct": 220.4, "w_credit_pct": 171.2, "pct_full_to_gt": 36.47, "pct_full_to_lt80": 11.19, "cut_when_full_to_gt": 225.5, "cut_when_full_to_lt80": 288.2}, {"ord": 1, "chg_grp": "降额", "win": "至30日", "n": 10862, "avg_credit_pct": 68.2, "w_credit_pct": 68.4, "pct_full_to_gt": 44.72, "pct_full_to_lt80": 2.5, "cut_when_full_to_gt": 71.1, "cut_when_full_to_lt80": 76.1}, {"ord": 2, "chg_grp": "不变", "win": "至30日", "n": 3263, "avg_credit_pct": 100.0, "w_credit_pct": 100.0, "pct_full_to_gt": 30.77, "pct_full_to_lt80": 2.08, "cut_when_full_to_gt": 100.0, "cut_when_full_to_lt80": 100.0}, {"ord": 3, "chg_grp": "升额", "win": "至30日", "n": 18108, "avg_credit_pct": 228.4, "w_credit_pct": 175.8, "pct_full_to_gt": 35.73, "pct_full_to_lt80": 16.98, "cut_when_full_to_gt": 230.7, "cut_when_full_to_lt80": 291.9}]};
+const pal = {
+  cut:'#f68ab0', keep:'#ffc26b', up:'#43c7e7',
+  lt80:'#5b8def', mid:'#64dcae', eq:'#ffc26b', gt:'#f68ab0'
+};
+const BKT = ['<80%','80-100%','≈100%','>100%'];
+Chart.defaults.color = '#aac5da';
+Chart.defaults.borderColor = 'rgba(42,92,126,.35)';
+Chart.defaults.font.family = '-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei",sans-serif';
+
+function wget(grp, metric) {
+  return D.weighted.find(r => r.chg_grp===grp && r.metric===metric);
+}
+function bget(grp, side) {
+  return D.bucket4.find(r => r.chg_grp===grp && r.side===side);
+}
+function sget(grp, win) {
+  return D.stay_move.find(r => r.chg_grp===grp && r.win===win);
+}
+function fget(grp, win) {
+  return D.full_shift.find(r => r.chg_grp===grp && r.win===win);
+}
+function flowStack(rows, grp) {
+  const out = {lt80:[], mid:[], eq:[], gt:[]};
+  for (const prev of BKT) {
+    const slice = rows.filter(r => r.chg_grp===grp && r.b_prev===prev);
+    const tot = slice.reduce((s,r)=>s+Number(r.n||0),0) || 1;
+    const m = Object.fromEntries(slice.map(r => [r.b_this, Number(r.n||0)]));
+    out.lt80.push(100*(m['<80%']||0)/tot);
+    out.mid.push(100*(m['80-100%']||0)/tot);
+    out.eq.push(100*(m['≈100%']||0)/tot);
+    out.gt.push(100*(m['>100%']||0)/tot);
+  }
+  return out;
+}
+function labelsPlugin() {
+  return {
+    id: 'lbl',
+    afterDatasetsDraw(chart) {
+      const {ctx} = chart;
+      ctx.save();
+      ctx.fillStyle = '#eff8ff';
+      ctx.font = '11px sans-serif';
+      ctx.textAlign = 'center';
+      chart.data.datasets.forEach((ds, i) => {
+        const meta = chart.getDatasetMeta(i);
+        meta.data.forEach((el, idx) => {
+          const v = ds.data[idx];
+          if (v==null || Math.abs(v) < 1.2) return;
+          const y = ds.stack ? el.y + (el.base-el.y)/2 : el.y - 6;
+          ctx.fillText(Number(v).toFixed(1)+'%', el.x, ds.stack ? y+3 : y);
+        });
+      });
+      ctx.restore();
+    }
+  };
+}
+
+const grps = ['降额','不变','升额'];
+new Chart(document.getElementById('c1'), {
+  type:'bar',
+  data: {
+    labels: grps,
+    datasets: [
+      {label:'上一笔', backgroundColor:'#5b8def', data: grps.map(g=>wget(g,'当天提单-上一笔(成对)').util_w)},
+      {label:'本笔当天', backgroundColor:'#43c7e7', data: grps.map(g=>wget(g,'当天提单-本笔').util_w)}
+    ]
+  },
+  options: {responsive:true, maintainAspectRatio:false, plugins:{legend:{position:'bottom'}}, scales:{y:{ticks:{callback:v=>v+'%'}}}},
+  plugins:[labelsPlugin()]
+});
+new Chart(document.getElementById('c2'), {
+  type:'bar',
+  data: {
+    labels: grps,
+    datasets: [
+      {label:'上一笔', backgroundColor:'#5b8def', data: grps.map(g=>wget(g,'至30日提单-上一笔(成对)').util_w)},
+      {label:'本笔至30日', backgroundColor:'#f68ab0', data: grps.map(g=>wget(g,'至30日提单-本笔').util_w)}
+    ]
+  },
+  options: {responsive:true, maintainAspectRatio:false, plugins:{legend:{position:'bottom'}}, scales:{y:{ticks:{callback:v=>v+'%'}}}},
+  plugins:[labelsPlugin()]
+});
+
+function stackedCfg(labels, rows) {
+  return {
+    type:'bar',
+    data: {
+      labels,
+      datasets: [
+        {label:'<80%', backgroundColor:pal.lt80, data: rows.map(r=>r.pct_lt80), stack:'s'},
+        {label:'80-100%', backgroundColor:pal.mid, data: rows.map(r=>r.pct_80), stack:'s'},
+        {label:'≈100%', backgroundColor:pal.eq, data: rows.map(r=>r.pct_eq), stack:'s'},
+        {label:'>100%', backgroundColor:pal.gt, data: rows.map(r=>r.pct_gt), stack:'s'}
+      ]
+    },
+    options: {
+      responsive:true, maintainAspectRatio:false,
+      plugins:{legend:{position:'bottom'}},
+      scales: {x:{stacked:true}, y:{stacked:true, max:100, ticks:{callback:v=>v+'%'}}}
+    }
+  };
+}
+const d0labs = ['降额·前','降额·后','不变·前','不变·后','升额·前','升额·后'];
+const d0rows = [bget('降额','上一笔'), bget('降额','本笔当天'), bget('不变','上一笔'), bget('不变','本笔当天'), bget('升额','上一笔'), bget('升额','本笔当天')];
+const d30rows = [bget('降额','上一笔30日'), bget('降额','本笔30日'), bget('不变','上一笔30日'), bget('不变','本笔30日'), bget('升额','上一笔30日'), bget('升额','本笔30日')];
+new Chart(document.getElementById('c3'), stackedCfg(d0labs, d0rows));
+new Chart(document.getElementById('c4'), stackedCfg(d0labs, d30rows));
+
+new Chart(document.getElementById('c5'), {
+  type:'bar',
+  data: {
+    labels: grps,
+    datasets: [
+      {label:'<80% 差', backgroundColor:pal.lt80, data: grps.map(g => bget(g,'本笔当天').pct_lt80 - bget(g,'上一笔').pct_lt80)},
+      {label:'≈100% 差', backgroundColor:pal.eq, data: grps.map(g => bget(g,'本笔当天').pct_eq - bget(g,'上一笔').pct_eq)},
+      {label:'>100% 差', backgroundColor:pal.gt, data: grps.map(g => bget(g,'本笔当天').pct_gt - bget(g,'上一笔').pct_gt)}
+    ]
+  },
+  options: {
+    responsive:true, maintainAspectRatio:false,
+    plugins:{legend:{position:'bottom'}},
+    scales:{y:{ticks:{callback:v=>v+'pp'}, title:{display:true, text:'百分点'}}}
+  },
+  plugins:[{
+    id:'lbl2',
+    afterDatasetsDraw(chart) {
+      const {ctx} = chart;
+      ctx.save(); ctx.fillStyle='#eff8ff'; ctx.font='11px sans-serif'; ctx.textAlign='center';
+      chart.data.datasets.forEach((ds,i) => {
+        chart.getDatasetMeta(i).data.forEach((el,idx) => {
+          const v = ds.data[idx];
+          if (v==null || Math.abs(v)<0.8) return;
+          ctx.fillText((v>0?'+':'')+Number(v).toFixed(1)+'pp', el.x, v>=0 ? el.y-6 : el.y+12);
+        });
+      });
+      ctx.restore();
+    }
+  }]
+});
+
+function stayChart(id, win) {
+  new Chart(document.getElementById(id), {
+    type:'bar',
+    data: {
+      labels: grps,
+      datasets: [
+        {label:'停留同档', backgroundColor:'#7fa6c2', data: grps.map(g=>sget(g,win).pct_stay)},
+        {label:'升档（更打满）', backgroundColor:pal.gt, data: grps.map(g=>sget(g,win).pct_up)},
+        {label:'降档（更不满）', backgroundColor:pal.lt80, data: grps.map(g=>sget(g,win).pct_down)}
+      ]
+    },
+    options: {responsive:true, maintainAspectRatio:false, plugins:{legend:{position:'bottom'}}, scales:{y:{ticks:{callback:v=>v+'%'}}}},
+    plugins:[labelsPlugin()]
+  });
+}
+stayChart('c6','当天');
+stayChart('c7','至30日');
+
+function flowChart(id, rows, grp) {
+  const s = flowStack(rows, grp);
+  new Chart(document.getElementById(id), {
+    type:'bar',
+    data: {
+      labels: BKT.map(b=>'上一笔 '+b),
+      datasets: [
+        {label:'本笔 <80%', backgroundColor:pal.lt80, data:s.lt80, stack:'s'},
+        {label:'本笔 80-100%', backgroundColor:pal.mid, data:s.mid, stack:'s'},
+        {label:'本笔 ≈100%', backgroundColor:pal.eq, data:s.eq, stack:'s'},
+        {label:'本笔 >100%', backgroundColor:pal.gt, data:s.gt, stack:'s'}
+      ]
+    },
+    options: {
+      responsive:true, maintainAspectRatio:false,
+      plugins:{legend:{position:'bottom'}},
+      scales: {x:{stacked:true}, y:{stacked:true, max:100, ticks:{callback:v=>v+'%'}}}
+    }
+  });
+}
+flowChart('c8', D.flow_d0, '降额');
+flowChart('c9', D.flow_d0, '不变');
+flowChart('c10', D.flow_d0, '升额');
+flowChart('c11', D.flow_d30, '降额');
+flowChart('c12', D.flow_d30, '不变');
+flowChart('c13', D.flow_d30, '升额');
+
+new Chart(document.getElementById('c14'), {
+  type:'bar',
+  data: {
+    labels: grps,
+    datasets: [
+      {label:'当天 加权额比', backgroundColor:'#43c7e7', data: grps.map(g=>fget(g,'当天').w_credit_pct)},
+      {label:'至30日 加权额比', backgroundColor:'#ffc26b', data: grps.map(g=>fget(g,'至30日').w_credit_pct)}
+    ]
+  },
+  options: {responsive:true, maintainAspectRatio:false, plugins:{legend:{position:'bottom'}}, scales:{y:{ticks:{callback:v=>v+'%'}}}},
+  plugins:[labelsPlugin()]
+});
+</script>
+</body>
+</html>
