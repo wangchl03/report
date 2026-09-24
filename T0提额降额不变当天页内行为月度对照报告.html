@@ -1,0 +1,500 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>T0 提额 / 降额 / 不变 · 当天页内行为月度对照</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+<style>
+:root{--line:#2a5c7e;--text:#eff8ff;--muted:#aac5da;--cy:#43c7e7}
+*{box-sizing:border-box}body{margin:0;background:#06192b;color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei",sans-serif}
+.wrap{max-width:1540px;margin:auto;padding:32px 36px 80px}
+.hero{text-align:center;padding:28px 12px 22px;border-bottom:1px solid var(--line)}
+.kicker{color:var(--cy);font-size:13px;letter-spacing:2px;font-weight:700}
+.hero h1{font-size:26px;line-height:1.35;margin:10px 0}
+.hero-meta{display:inline-block;text-align:left;margin-top:12px;line-height:1.75;color:var(--muted);font-size:14px}
+h2{font-size:22px;margin:40px 0 10px}
+.desc{color:var(--muted);margin:0 0 12px;line-height:1.75;font-size:14px}
+.grid{display:grid;gap:14px}.g2{grid-template-columns:repeat(2,minmax(0,1fr))}.g4{grid-template-columns:repeat(4,minmax(0,1fr))}
+.card,.chart{background:rgba(10,41,68,.95);border:1px solid var(--line);border-radius:14px;padding:16px}
+.label{color:var(--muted);font-size:12px}.num{font-size:22px;font-weight:800;margin:4px 0 2px;color:var(--cy)}
+.sub{color:var(--muted);font-size:12px}
+.box{height:320px;position:relative}.chart h3{margin:0 0 4px;font-size:15px}.chart p{font-size:12px;color:var(--muted);margin:0 0 10px}
+.callout{background:#0a2a45;border:1px solid #2a5c7e;border-left:4px solid #43c7e7;border-radius:10px;padding:14px 18px;margin:14px 0;line-height:1.75;font-size:14px}
+.callout.gold{border-left-color:#ffc26b}.callout.red{border-left-color:#f68ab0}
+.callout .ch{font-weight:800;margin-bottom:8px}
+.table{overflow-x:auto;margin:12px 0}table{width:100%;border-collapse:collapse;font-size:13px}
+th,td{padding:8px 10px;border-bottom:1px solid rgba(42,92,126,.45);text-align:right;white-space:nowrap}
+th{color:var(--muted);background:rgba(12,48,78,.65)}th:first-child,td:first-child{text-align:left}
+details.code{margin:10px 0;background:rgba(10,41,68,.95);border:1px solid var(--line);border-radius:12px;padding:10px 14px}
+details.code summary{cursor:pointer;color:var(--cy);font-weight:700}
+pre.sql{overflow:auto;max-height:900px;font-size:11.5px;line-height:1.5;color:#d7ecf8;white-space:pre}
+.foot{color:#7fa6c2;font-size:12.5px;margin-top:40px;border-top:1px solid var(--line);padding-top:16px;line-height:1.9}
+@media(max-width:980px){.g2,.g4{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<main class="wrap">
+<header class="hero">
+<div class="kicker">T0 · 2026-01-01～09-20 · 人日 · 结清当天页内行为</div>
+<h1>额度变不变，进页差不多；升额更爱改金额和看计划，当天点确认最低</h1>
+<div class="hero-meta">
+卡在历史上每一次 T0：结清 0 在贷、获额已通过、下一笔还没提。升/降/不变 = 本笔获额 − 上一笔已放款订单获额。20 秒批次留订单编号最大。<br>
+行为窗口 = 结清后当天，不是 24 小时。分母 = 该月该类 T0 人日。点确认规则指标仍报获额后 24 小时。库日期 2026-09-23。9 月只到 20 日。
+</div>
+</header>
+
+<section class="grid g4" style="margin-top:18px">
+<article class="card"><div class="label">点确认 24h / T0 获额通过</div><div class="num">53.21%</div><div class="sub">101,893 / 191,510 · 1–8 月 53.65%</div></article>
+<article class="card"><div class="label">当天点确认 / T0</div><div class="num">46.34%</div><div class="sub">88,739 / 191,510</div></article>
+<article class="card"><div class="label">有上一笔 · 升额占比</div><div class="num">55.14%</div><div class="sub">升额 105,594 · 降额 63,933 · 不变 21,983</div></article>
+<article class="card"><div class="label">当天进提单页</div><div class="num">82.21%</div><div class="sub">三类全年都在 81%～83%</div></article>
+</section>
+
+<h2>结论</h2>
+<div class="callout"><div class="ch">1. 进页率几乎不被额度变化拉开</div>
+全年升额进页 82.04%，降额 82.67%，不变 81.69%。5 月以后三类都抬到 85% 以上，差距仍只有两三个点。额度变了不会挡人进提单页。
+</div>
+<div class="callout gold"><div class="ch">2. 当天点确认：不变 &gt; 降额 &gt; 升额</div>
+不变 53.54%，降额 48.00%，升额 43.83%。升额人更多在改金额（34.91%）和看计划（41.08%），确认按钮点得更少。8–9 月升额当天确认掉到 37%～38%。
+</div>
+<div class="callout red"><div class="ch">3. 升额客群页内更「挑额度」，不变客群更「直接确认」</div>
+看计划：升额 41.08%，降额 31.15%，不变 22.82%。改金额同样是升额最高。选借款原因反过来，升额 14.13% 低于降额/不变（都是 17.43%）。改期次、看合同三类接近，合同全年只有约 2%。
+</div>
+
+<h2>一、样本：每月 T0 人日都进分母</h2>
+<p class="desc">1–8 月 T0 177,133、24 小时点确认 95,023 = 53.65%，与规则表一致。1–9 月 20 日共 191,510 人日，都能对上上一笔获额（n_chg = n_t0）。升额占 55.14%，降额 33.38%，不变 11.48%。</p>
+<div class="grid g2">
+  <div class="chart"><h3>图1 月度人日：升额 / 降额 / 不变</h3><p>9 月截至 20 日</p><div class="box"><canvas id="c1"></canvas></div></div>
+  <div class="chart"><h3>图2 24 小时点确认 / 当月 T0</h3><p>规则口径，分母是当月全部 T0</p><div class="box"><canvas id="c2"></canvas></div></div>
+</div>
+<details class="code"><summary>月度人日漏斗（点击打开）</summary>
+<div class="table"><table>
+<thead><tr><th>月</th><th>T0 人日</th><th>升额</th><th>降额</th><th>不变</th><th>点确认 24h</th></tr></thead>
+<tbody><tr><td>2026-01</td><td>19,520</td><td>11,682</td><td>6,169</td><td>1,669</td><td>60.46%</td></tr><tr><td>2026-02</td><td>22,739</td><td>12,595</td><td>8,026</td><td>2,118</td><td>59.52%</td></tr><tr><td>2026-03</td><td>22,198</td><td>10,635</td><td>8,117</td><td>3,446</td><td>54.49%</td></tr><tr><td>2026-04</td><td>20,780</td><td>10,912</td><td>6,644</td><td>3,224</td><td>54.59%</td></tr><tr><td>2026-05</td><td>23,875</td><td>13,066</td><td>7,989</td><td>2,820</td><td>52.91%</td></tr><tr><td>2026-06</td><td>22,635</td><td>12,041</td><td>7,440</td><td>3,154</td><td>51.89%</td></tr><tr><td>2026-07</td><td>23,275</td><td>13,513</td><td>7,437</td><td>2,325</td><td>49.14%</td></tr><tr><td>2026-08</td><td>22,111</td><td>12,553</td><td>7,731</td><td>1,827</td><td>47.18%</td></tr><tr><td>2026-09</td><td>14,377</td><td>8,597</td><td>4,380</td><td>1,400</td><td>47.78%</td></tr><tr><td>合计</td><td>191,510</td><td>105,594</td><td>63,933</td><td>21,983</td><td>53.21%</td></tr></tbody>
+</table></div>
+</details>
+
+<h2>二、当天行为：三类对照</h2>
+<p class="desc">占比分母是该类当月人日。进页 = page_view_in + Loan_newpage。点确认、改金额、改期次、看合同、看计划、选原因均为结清后当天。</p>
+<div class="grid g2">
+  <div class="chart"><h3>图3 当天进页率</h3><p>三类几乎贴在一起</p><div class="box"><canvas id="c3"></canvas></div></div>
+  <div class="chart"><h3>图4 当天点确认率</h3><p>不变最高，升额最低且下行</p><div class="box"><canvas id="c4"></canvas></div></div>
+</div>
+<div class="grid g2">
+  <div class="chart"><h3>图5 当天改金额率</h3><p>升额始终高一截</p><div class="box"><canvas id="c5"></canvas></div></div>
+  <div class="chart"><h3>图6 当天看还款计划率</h3><p>升额最高，不变最低</p><div class="box"><canvas id="c6"></canvas></div></div>
+</div>
+<div class="chart"><h3>图7 全年七项行为（三类并排）</h3><p>分母 = 该类全部人日</p><div class="box" style="height:380px"><canvas id="c7"></canvas></div></div>
+
+<div class="table"><table>
+<thead><tr><th>客群</th><th>人日</th><th>占有上一笔</th><th>进页</th><th>点确认</th><th>改金额</th><th>改期次</th><th>看合同</th><th>看计划</th><th>选原因</th></tr></thead>
+<tbody><tr><td>升额</td><td>105,594</td><td>55.14%</td><td>82.04%</td><td>43.83%</td><td>34.91%</td><td>18.67%</td><td>1.98%</td><td>41.08%</td><td>14.13%</td></tr><tr><td>降额</td><td>63,933</td><td>33.38%</td><td>82.67%</td><td>48.00%</td><td>26.06%</td><td>17.32%</td><td>2.43%</td><td>31.15%</td><td>17.43%</td></tr><tr><td>不变</td><td>21,983</td><td>11.48%</td><td>81.69%</td><td>53.54%</td><td>24.42%</td><td>16.94%</td><td>2.58%</td><td>22.82%</td><td>17.43%</td></tr></tbody>
+</table></div>
+
+<details class="code"><summary>月 × 升/降/不变明细（点击打开）</summary>
+<div class="table"><table>
+<thead><tr><th>月</th><th>客群</th><th>人日</th><th>占当月</th><th>进页</th><th>点确认</th><th>改金额</th><th>改期次</th><th>看合同</th><th>看计划</th><th>选原因</th></tr></thead>
+<tbody><tr><td>2026-01</td><td>升额</td><td>11,682</td><td>59.85%</td><td>79.11%</td><td>53.12%</td><td>34.76%</td><td>28.64%</td><td>2.56%</td><td>41.64%</td><td>14.47%</td></tr><tr><td>2026-01</td><td>降额</td><td>6,169</td><td>31.60%</td><td>77.00%</td><td>54.00%</td><td>22.27%</td><td>28.34%</td><td>3.21%</td><td>29.99%</td><td>16.31%</td></tr><tr><td>2026-01</td><td>不变</td><td>1,669</td><td>8.55%</td><td>74.96%</td><td>55.90%</td><td>17.62%</td><td>31.52%</td><td>2.82%</td><td>23.85%</td><td>17.20%</td></tr><tr><td>2026-02</td><td>升额</td><td>12,595</td><td>55.39%</td><td>77.50%</td><td>51.16%</td><td>34.04%</td><td>27.96%</td><td>2.46%</td><td>40.13%</td><td>15.05%</td></tr><tr><td>2026-02</td><td>降额</td><td>8,026</td><td>35.30%</td><td>77.01%</td><td>53.23%</td><td>23.04%</td><td>26.75%</td><td>2.52%</td><td>28.53%</td><td>17.62%</td></tr><tr><td>2026-02</td><td>不变</td><td>2,118</td><td>9.31%</td><td>75.40%</td><td>57.32%</td><td>19.31%</td><td>29.08%</td><td>2.88%</td><td>22.71%</td><td>16.67%</td></tr><tr><td>2026-03</td><td>升额</td><td>10,635</td><td>47.91%</td><td>73.50%</td><td>45.78%</td><td>30.79%</td><td>21.47%</td><td>1.99%</td><td>37.19%</td><td>13.28%</td></tr><tr><td>2026-03</td><td>降额</td><td>8,117</td><td>36.57%</td><td>73.61%</td><td>47.05%</td><td>21.17%</td><td>20.55%</td><td>2.44%</td><td>28.21%</td><td>16.62%</td></tr><tr><td>2026-03</td><td>不变</td><td>3,446</td><td>15.52%</td><td>73.77%</td><td>52.18%</td><td>19.99%</td><td>20.86%</td><td>2.52%</td><td>20.40%</td><td>17.15%</td></tr><tr><td>2026-04</td><td>升额</td><td>10,912</td><td>52.51%</td><td>78.95%</td><td>46.04%</td><td>32.92%</td><td>20.45%</td><td>2.14%</td><td>38.58%</td><td>14.07%</td></tr><tr><td>2026-04</td><td>降额</td><td>6,644</td><td>31.97%</td><td>78.85%</td><td>47.49%</td><td>22.17%</td><td>18.06%</td><td>2.60%</td><td>28.76%</td><td>17.25%</td></tr><tr><td>2026-04</td><td>不变</td><td>3,224</td><td>15.51%</td><td>76.92%</td><td>53.35%</td><td>19.88%</td><td>16.69%</td><td>2.39%</td><td>18.73%</td><td>15.76%</td></tr><tr><td>2026-05</td><td>升额</td><td>13,066</td><td>54.73%</td><td>85.79%</td><td>43.36%</td><td>35.38%</td><td>14.76%</td><td>1.73%</td><td>40.56%</td><td>13.81%</td></tr><tr><td>2026-05</td><td>降额</td><td>7,989</td><td>33.46%</td><td>88.05%</td><td>47.89%</td><td>27.16%</td><td>12.50%</td><td>2.47%</td><td>32.26%</td><td>17.32%</td></tr><tr><td>2026-05</td><td>不变</td><td>2,820</td><td>11.81%</td><td>87.23%</td><td>53.79%</td><td>28.58%</td><td>12.09%</td><td>2.91%</td><td>21.95%</td><td>19.43%</td></tr><tr><td>2026-06</td><td>升额</td><td>12,041</td><td>53.20%</td><td>85.80%</td><td>40.88%</td><td>36.75%</td><td>10.84%</td><td>1.77%</td><td>42.19%</td><td>14.43%</td></tr><tr><td>2026-06</td><td>降额</td><td>7,440</td><td>32.87%</td><td>88.15%</td><td>47.41%</td><td>31.10%</td><td>9.97%</td><td>2.37%</td><td>34.48%</td><td>18.80%</td></tr><tr><td>2026-06</td><td>不变</td><td>3,154</td><td>13.93%</td><td>88.87%</td><td>54.69%</td><td>30.03%</td><td>9.16%</td><td>2.16%</td><td>24.89%</td><td>19.31%</td></tr><tr><td>2026-07</td><td>升额</td><td>13,513</td><td>58.06%</td><td>85.65%</td><td>38.73%</td><td>37.28%</td><td>11.95%</td><td>1.78%</td><td>43.32%</td><td>14.20%</td></tr><tr><td>2026-07</td><td>降额</td><td>7,437</td><td>31.95%</td><td>87.67%</td><td>46.87%</td><td>30.85%</td><td>10.96%</td><td>2.22%</td><td>33.95%</td><td>18.49%</td></tr><tr><td>2026-07</td><td>不变</td><td>2,325</td><td>9.99%</td><td>86.32%</td><td>51.01%</td><td>27.48%</td><td>9.33%</td><td>2.45%</td><td>24.43%</td><td>15.14%</td></tr><tr><td>2026-08</td><td>升额</td><td>12,553</td><td>56.77%</td><td>85.70%</td><td>37.13%</td><td>35.96%</td><td>14.96%</td><td>1.83%</td><td>43.42%</td><td>14.32%</td></tr><tr><td>2026-08</td><td>降额</td><td>7,731</td><td>34.96%</td><td>87.60%</td><td>43.31%</td><td>28.42%</td><td>13.19%</td><td>1.97%</td><td>32.29%</td><td>16.71%</td></tr><tr><td>2026-08</td><td>不变</td><td>1,827</td><td>8.26%</td><td>87.25%</td><td>51.72%</td><td>28.63%</td><td>14.56%</td><td>2.57%</td><td>25.12%</td><td>17.95%</td></tr><tr><td>2026-09</td><td>升额</td><td>8,597</td><td>59.80%</td><td>85.19%</td><td>37.91%</td><td>35.50%</td><td>18.69%</td><td>1.50%</td><td>41.93%</td><td>13.13%</td></tr><tr><td>2026-09</td><td>降额</td><td>4,380</td><td>30.47%</td><td>87.33%</td><td>43.88%</td><td>28.97%</td><td>16.78%</td><td>2.05%</td><td>32.24%</td><td>17.76%</td></tr><tr><td>2026-09</td><td>不变</td><td>1,400</td><td>9.74%</td><td>87.36%</td><td>52.29%</td><td>30.00%</td><td>15.07%</td><td>2.93%</td><td>28.50%</td><td>18.29%</td></tr></tbody>
+</table></div>
+</details>
+
+<details class="code"><summary>有上一笔合计（不分升降）月表明细（点击打开）</summary>
+<div class="table"><table>
+<thead><tr><th>月</th><th>人日</th><th>进页</th><th>点确认</th><th>改金额</th><th>改期次</th><th>看合同</th><th>看计划</th><th>选原因</th></tr></thead>
+<tbody><tr><td>2026-01</td><td>19,520</td><td>78.09%</td><td>53.63%</td><td>29.35%</td><td>28.79%</td><td>2.79%</td><td>36.43%</td><td>15.28%</td></tr><tr><td>2026-02</td><td>22,739</td><td>77.13%</td><td>52.46%</td><td>28.78%</td><td>27.64%</td><td>2.52%</td><td>34.42%</td><td>16.11%</td></tr><tr><td>2026-03</td><td>22,198</td><td>73.58%</td><td>47.24%</td><td>25.60%</td><td>21.04%</td><td>2.24%</td><td>31.30%</td><td>15.10%</td></tr><tr><td>2026-04</td><td>20,780</td><td>78.60%</td><td>47.64%</td><td>27.46%</td><td>19.10%</td><td>2.32%</td><td>32.36%</td><td>15.35%</td></tr><tr><td>2026-05</td><td>23,875</td><td>86.71%</td><td>46.11%</td><td>31.83%</td><td>13.69%</td><td>2.12%</td><td>35.59%</td><td>15.65%</td></tr><tr><td>2026-06</td><td>22,635</td><td>87.00%</td><td>44.95%</td><td>33.96%</td><td>10.32%</td><td>2.02%</td><td>37.24%</td><td>16.55%</td></tr><tr><td>2026-07</td><td>23,275</td><td>86.36%</td><td>42.56%</td><td>34.25%</td><td>11.37%</td><td>1.99%</td><td>38.44%</td><td>15.66%</td></tr><tr><td>2026-08</td><td>22,111</td><td>86.49%</td><td>40.50%</td><td>32.72%</td><td>14.31%</td><td>1.94%</td><td>38.01%</td><td>15.46%</td></tr><tr><td>2026-09</td><td>14,377</td><td>86.05%</td><td>41.13%</td><td>32.98%</td><td>17.76%</td><td>1.81%</td><td>37.67%</td><td>15.04%</td></tr><tr><td>合计</td><td>191,510</td><td>82.21%</td><td>46.34%</td><td>30.75%</td><td>18.02%</td><td>2.20%</td><td>35.67%</td><td>15.61%</td></tr></tbody>
+</table></div>
+</details>
+
+<h2>口径</h2>
+<div class="callout">
+T0 origin：2026-01-01～09-20；loan_type_code=2、is_pass1=1、recycle_type=3；20 秒批次留 serial_id 最大；干净结清；vir_time≥repaid_time；day_rn=1。人日不去重。<br>
+升额/降额/不变：本笔 max_credit − 上一笔已放款订单获额。上一笔 = 获额前 remit_time 最晚且 remit_amt&gt;0。<br>
+行为窗口：create_date=获额日，create_time≥结清时间且 &lt;次日。进页须 event_type=page_view_in。<br>
+进页 Loan_newpage / Loan_newpage_select；点确认 Loan_newconfirm / Loan_newconfirm_select；改金额 amount_modification 与 loan_form_loan_amount_selectionn_new(_select)；改期次 loan_form_term_selection_new(_select)；合同 / 计划 / 原因对应 Loan_contract_newdetails、Loan_plan_newdetails、Loan_purpose_newdetails 及 _select。<br>
+规则点确认：获额后 24 小时，分母为全部 T0 获额通过人日。1–8 月 95,023 / 177,133 = 53.65%。<br>
+使用率四档这次不做：圈人应用结清订单占用，不用刚获额订单。
+</div>
+
+<h2>附录：完整 PGSQL</h2>
+<details class="code"><summary>完整 PGSQL（点击打开）</summary>
+<pre class="sql">-- =============================================================================
+-- T0 2026-01-01～09-20：升额 / 降额 / 不变 × 当天页内行为占比
+-- 库：kaby_dw · 单位 = 用户 × 获额日（人日），不去重用户
+--
+-- 圈人时点：结清 0 在贷、新额度已获额通过、下一笔还没提
+-- 20 秒批次：只留 serial_id 最大
+-- 升降：this_amt - prev_amt（两笔获额）
+-- 页面行为窗口：结清后当天（create_date=vir_date，create_time≥repaid_time 且 &lt;次日）
+-- 点确认（规则必带）：获额后 24 小时；与「当天点确认」分开报
+-- =============================================================================
+
+SET search_path TO wangchuanliang, public;
+SET statement_timeout = 0;
+
+DROP TABLE IF EXISTS tmp_m_origin;
+CREATE TEMP TABLE tmp_m_origin AS
+WITH params AS (
+    SELECT DATE &#x27;2026-01-01&#x27; AS start_date, DATE &#x27;2026-09-21&#x27; AS end_date
+), raw_offer AS (
+    SELECT DISTINCT ON (v.user_id, v.serial_id)
+        v.user_id, v.serial_id, v.vir_date::date AS vir_date,
+        TO_TIMESTAMP(v.vir_unix) AS vir_time, v.max_credit_apply_amt
+    FROM wangchuanliang.order_vir_f_copy v
+    INNER JOIN wangchuanliang.side_recycle_type_copy r ON r.serial_id = v.serial_id
+    CROSS JOIN params p
+    WHERE v.is_pass1 = 1 AND v.loan_type_code = 2 AND r.recycle_type = 3
+      AND v.vir_date &gt;= p.start_date - 1 AND v.vir_date &lt; p.end_date
+    ORDER BY v.user_id, v.serial_id, v.vir_unix DESC
+), lagged AS (
+    SELECT r.*, LAG(r.vir_time) OVER (PARTITION BY r.user_id ORDER BY r.vir_time, r.serial_id) AS prev_vir_time
+    FROM raw_offer r
+), batched AS (
+    SELECT l.*, SUM(CASE WHEN l.prev_vir_time IS NULL OR l.vir_time - l.prev_vir_time &gt; INTERVAL &#x27;20 seconds&#x27; THEN 1 ELSE 0 END)
+      OVER (PARTITION BY l.user_id ORDER BY l.vir_time, l.serial_id ROWS UNBOUNDED PRECEDING) AS batch_id
+    FROM lagged l
+), dedup_offer AS (
+    SELECT user_id, serial_id, vir_date, vir_time, max_credit_apply_amt
+    FROM (
+        SELECT b.*, ROW_NUMBER() OVER (PARTITION BY b.user_id, b.batch_id ORDER BY b.serial_id DESC) AS batch_rn
+        FROM batched b
+    ) x
+    CROSS JOIN params p
+    WHERE batch_rn = 1 AND vir_date &gt;= p.start_date AND vir_date &lt; p.end_date
+), candidate_users AS (SELECT DISTINCT user_id FROM dedup_offer),
+all_orders AS (
+    SELECT o.user_id, o.serial_id, o.apply_time, o.repaid_time, o.repaid_date::date AS repaid_date,
+           o.loan_status_code, o.is_remit, o.is_repaid
+    FROM wangchuanliang.order_loan_f_v2_copy o
+    INNER JOIN candidate_users u ON u.user_id = o.user_id
+), clean_settlement AS (
+    SELECT o.user_id, o.serial_id, o.repaid_time, o.repaid_date
+    FROM all_orders o
+    WHERE o.is_remit = 1 AND (o.is_repaid = 1 OR o.loan_status_code = 7)
+      AND o.repaid_time &gt; TIMESTAMP &#x27;2000-01-01 00:00:00&#x27;
+      AND NOT EXISTS (
+          SELECT 1 FROM all_orders x
+          WHERE x.user_id = o.user_id AND x.serial_id &lt;&gt; o.serial_id AND x.apply_time &lt; o.repaid_time
+            AND (x.loan_status_code IN (5, 8) OR (x.loan_status_code = 7 AND x.repaid_time &gt; o.repaid_time))
+      )
+), paired AS (
+    SELECT e.user_id, e.serial_id AS credit_serial_id, e.vir_date, e.vir_time, e.max_credit_apply_amt,
+           s.repaid_time,
+           ROW_NUMBER() OVER (
+               PARTITION BY e.user_id, e.vir_date, e.serial_id
+               ORDER BY s.repaid_time DESC, s.serial_id DESC
+           ) AS s_rn
+    FROM dedup_offer e
+    INNER JOIN clean_settlement s
+        ON s.user_id = e.user_id AND s.repaid_date = e.vir_date AND e.vir_time &gt;= s.repaid_time
+), day_pick AS (
+    SELECT p.*, ROW_NUMBER() OVER (PARTITION BY p.user_id, p.vir_date ORDER BY p.vir_time ASC, p.credit_serial_id DESC) AS day_rn
+    FROM paired p
+    WHERE s_rn = 1
+)
+SELECT user_id, credit_serial_id, vir_date, vir_time, repaid_time, max_credit_apply_amt AS this_amt
+FROM day_pick WHERE day_rn = 1;
+
+DROP TABLE IF EXISTS tmp_prev;
+CREATE TEMP TABLE tmp_prev AS
+SELECT user_id, vir_date, prev_serial
+FROM (
+    SELECT t.user_id, t.vir_date, o.serial_id AS prev_serial,
+           ROW_NUMBER() OVER (PARTITION BY t.user_id, t.vir_date ORDER BY o.remit_time DESC, o.serial_id DESC) AS rn
+    FROM tmp_m_origin t
+    INNER JOIN wangchuanliang.order_loan_f_v2_copy o
+      ON o.user_id = t.user_id
+     AND o.is_remit = 1 AND COALESCE(o.remit_amt, 0) &gt; 0
+     AND o.remit_time IS NOT NULL
+     AND o.remit_time &lt; t.vir_time
+) z WHERE rn = 1;
+
+DROP TABLE IF EXISTS tmp_prev_amt;
+CREATE TEMP TABLE tmp_prev_amt AS
+SELECT p.user_id, p.vir_date, p.prev_serial, v.max_credit_apply_amt AS prev_amt
+FROM tmp_prev p
+LEFT JOIN (
+    SELECT DISTINCT ON (serial_id) serial_id, max_credit_apply_amt
+    FROM wangchuanliang.order_vir_f_copy
+    ORDER BY serial_id, vir_unix DESC
+) v ON v.serial_id = p.prev_serial;
+
+DROP TABLE IF EXISTS tmp_confirm_24h;
+CREATE TEMP TABLE tmp_confirm_24h AS
+SELECT t.user_id, t.vir_date, 1 AS f_confirm_24h
+FROM tmp_m_origin t
+INNER JOIN wangchuanliang.event_track_record e
+  ON e.user_id = t.user_id
+ AND e.create_date &gt;= DATE &#x27;2026-01-01&#x27;
+ AND e.create_date &lt;  DATE &#x27;2026-09-22&#x27;
+ AND e.create_time &gt;= t.vir_time
+ AND e.create_time &lt; t.vir_time + INTERVAL &#x27;24 hours&#x27;
+ AND e.props_id IN (&#x27;Loan_newconfirm&#x27;,&#x27;Loan_newconfirm_select&#x27;)
+GROUP BY t.user_id, t.vir_date;
+
+DROP TABLE IF EXISTS tmp_confirm_day;
+CREATE TEMP TABLE tmp_confirm_day AS
+SELECT t.user_id, t.vir_date, 1 AS f_confirm
+FROM tmp_m_origin t
+INNER JOIN wangchuanliang.event_track_record e
+  ON e.user_id = t.user_id
+ AND e.create_date = t.vir_date
+ AND e.create_time &gt;= t.repaid_time
+ AND e.create_time &lt; t.vir_date + 1
+ AND e.props_id IN (&#x27;Loan_newconfirm&#x27;,&#x27;Loan_newconfirm_select&#x27;)
+GROUP BY t.user_id, t.vir_date;
+
+DROP TABLE IF EXISTS tmp_enter;
+CREATE TEMP TABLE tmp_enter AS
+SELECT t.user_id, t.vir_date, 1 AS f_enter
+FROM tmp_m_origin t
+INNER JOIN wangchuanliang.event_track_record e
+  ON e.user_id = t.user_id
+ AND e.create_date = t.vir_date
+ AND e.create_time &gt;= t.repaid_time
+ AND e.create_time &lt; t.vir_date + 1
+ AND e.event_type = &#x27;page_view_in&#x27;
+ AND e.props_id IN (&#x27;Loan_newpage&#x27;,&#x27;Loan_newpage_select&#x27;)
+GROUP BY t.user_id, t.vir_date;
+
+DROP TABLE IF EXISTS tmp_beh;
+CREATE TEMP TABLE tmp_beh AS
+SELECT
+    t.user_id, t.vir_date,
+    MAX(CASE WHEN e.props_id IN (
+        &#x27;amount_modification&#x27;,&#x27;loan_form_loan_amount_selectionn_new&#x27;,&#x27;loan_form_loan_amount_selectionn_new_select&#x27;
+    ) THEN 1 ELSE 0 END) AS f_amt,
+    MAX(CASE WHEN e.props_id IN (
+        &#x27;loan_form_term_selection_new&#x27;,&#x27;loan_form_term_selection_new_select&#x27;
+    ) THEN 1 ELSE 0 END) AS f_term,
+    MAX(CASE WHEN e.props_id IN (
+        &#x27;Loan_contract_newdetails&#x27;,&#x27;Loan_contract_newdetails_select&#x27;
+    ) THEN 1 ELSE 0 END) AS f_contract,
+    MAX(CASE WHEN e.props_id IN (
+        &#x27;Loan_plan_newdetails&#x27;,&#x27;Loan_plan_newdetails_select&#x27;
+    ) THEN 1 ELSE 0 END) AS f_plan,
+    MAX(CASE WHEN e.props_id IN (
+        &#x27;Loan_purpose_newdetails&#x27;,&#x27;Loan_purpose_newdetails_select&#x27;
+    ) THEN 1 ELSE 0 END) AS f_purpose
+FROM tmp_m_origin t
+INNER JOIN wangchuanliang.event_track_record e
+  ON e.user_id = t.user_id
+ AND e.create_date = t.vir_date
+ AND e.create_time &gt;= t.repaid_time
+ AND e.create_time &lt; t.vir_date + 1
+ AND e.props_id IN (
+   &#x27;amount_modification&#x27;,&#x27;loan_form_loan_amount_selectionn_new&#x27;,&#x27;loan_form_loan_amount_selectionn_new_select&#x27;,
+   &#x27;loan_form_term_selection_new&#x27;,&#x27;loan_form_term_selection_new_select&#x27;,
+   &#x27;Loan_contract_newdetails&#x27;,&#x27;Loan_contract_newdetails_select&#x27;,
+   &#x27;Loan_plan_newdetails&#x27;,&#x27;Loan_plan_newdetails_select&#x27;,
+   &#x27;Loan_purpose_newdetails&#x27;,&#x27;Loan_purpose_newdetails_select&#x27;
+ )
+GROUP BY t.user_id, t.vir_date;
+
+DROP TABLE IF EXISTS tmp_univ;
+CREATE TEMP TABLE tmp_univ AS
+SELECT
+    t.user_id,
+    t.vir_date,
+    DATE_TRUNC(&#x27;month&#x27;, t.vir_date)::date AS ym,
+    t.this_amt,
+    p.prev_amt,
+    CASE
+        WHEN t.this_amt IS NULL OR p.prev_amt IS NULL THEN &#x27;未知&#x27;
+        WHEN t.this_amt &gt; p.prev_amt THEN &#x27;升额&#x27;
+        WHEN t.this_amt &lt; p.prev_amt THEN &#x27;降额&#x27;
+        ELSE &#x27;不变&#x27;
+    END AS chg_grp,
+    COALESCE(c24.f_confirm_24h, 0) AS f_confirm_24h,
+    COALESCE(cd.f_confirm, 0) AS f_confirm,
+    COALESCE(en.f_enter, 0) AS f_enter,
+    COALESCE(b.f_amt, 0) AS f_amt,
+    COALESCE(b.f_term, 0) AS f_term,
+    COALESCE(b.f_contract, 0) AS f_contract,
+    COALESCE(b.f_plan, 0) AS f_plan,
+    COALESCE(b.f_purpose, 0) AS f_purpose
+FROM tmp_m_origin t
+LEFT JOIN tmp_prev_amt p ON p.user_id = t.user_id AND p.vir_date = t.vir_date
+LEFT JOIN tmp_confirm_24h c24 ON c24.user_id = t.user_id AND c24.vir_date = t.vir_date
+LEFT JOIN tmp_confirm_day cd ON cd.user_id = t.user_id AND cd.vir_date = t.vir_date
+LEFT JOIN tmp_enter en ON en.user_id = t.user_id AND en.vir_date = t.vir_date
+LEFT JOIN tmp_beh b ON b.user_id = t.user_id AND b.vir_date = t.vir_date;
+
+DROP TABLE IF EXISTS tmp_chg;
+CREATE TEMP TABLE tmp_chg AS
+SELECT * FROM tmp_univ
+WHERE chg_grp IN (&#x27;升额&#x27;,&#x27;降额&#x27;,&#x27;不变&#x27;);
+
+-- R0 点确认 / T0
+SELECT
+    COUNT(*) AS n_t0,
+    SUM(f_confirm_24h) AS n_confirm_24h,
+    ROUND(100.0 * AVG(f_confirm_24h), 2) AS pct_confirm_24h,
+    SUM(f_confirm) AS n_confirm_day,
+    ROUND(100.0 * AVG(f_confirm), 2) AS pct_confirm_day,
+    SUM(CASE WHEN vir_date &lt; DATE &#x27;2026-09-01&#x27; THEN 1 ELSE 0 END) AS n_t0_jan_aug,
+    SUM(CASE WHEN vir_date &lt; DATE &#x27;2026-09-01&#x27; THEN f_confirm_24h ELSE 0 END) AS n_confirm_24h_jan_aug,
+    ROUND(100.0 * SUM(CASE WHEN vir_date &lt; DATE &#x27;2026-09-01&#x27; THEN f_confirm_24h ELSE 0 END)
+        / NULLIF(SUM(CASE WHEN vir_date &lt; DATE &#x27;2026-09-01&#x27; THEN 1 ELSE 0 END), 0), 2) AS pct_confirm_24h_jan_aug,
+    SUM(CASE WHEN chg_grp IN (&#x27;升额&#x27;,&#x27;降额&#x27;,&#x27;不变&#x27;) THEN 1 ELSE 0 END) AS n_chg,
+    CURRENT_DATE::text AS as_of
+FROM tmp_univ;
+
+-- R1 月度漏斗
+SELECT * FROM (
+SELECT
+    TO_CHAR(DATE_TRUNC(&#x27;month&#x27;, vir_date), &#x27;YYYY-MM&#x27;) AS ym,
+    COUNT(*) AS n_t0,
+    SUM(CASE WHEN chg_grp IN (&#x27;升额&#x27;,&#x27;降额&#x27;,&#x27;不变&#x27;) THEN 1 ELSE 0 END) AS n_chg,
+    SUM(CASE WHEN chg_grp = &#x27;升额&#x27; THEN 1 ELSE 0 END) AS n_up,
+    SUM(CASE WHEN chg_grp = &#x27;降额&#x27; THEN 1 ELSE 0 END) AS n_down,
+    SUM(CASE WHEN chg_grp = &#x27;不变&#x27; THEN 1 ELSE 0 END) AS n_same,
+    ROUND(100.0 * AVG(f_confirm_24h), 2) AS pct_confirm_24h
+FROM tmp_univ
+GROUP BY 1
+UNION ALL
+SELECT
+    &#x27;合计&#x27;,
+    COUNT(*),
+    SUM(CASE WHEN chg_grp IN (&#x27;升额&#x27;,&#x27;降额&#x27;,&#x27;不变&#x27;) THEN 1 ELSE 0 END),
+    SUM(CASE WHEN chg_grp = &#x27;升额&#x27; THEN 1 ELSE 0 END),
+    SUM(CASE WHEN chg_grp = &#x27;降额&#x27; THEN 1 ELSE 0 END),
+    SUM(CASE WHEN chg_grp = &#x27;不变&#x27; THEN 1 ELSE 0 END),
+    ROUND(100.0 * AVG(f_confirm_24h), 2)
+FROM tmp_univ
+) z ORDER BY ym;
+
+-- R2 月 × 升降组：当天行为占比
+SELECT * FROM (
+SELECT
+    TO_CHAR(ym, &#x27;YYYY-MM&#x27;) AS ym,
+    CASE chg_grp WHEN &#x27;升额&#x27; THEN 1 WHEN &#x27;降额&#x27; THEN 2 ELSE 3 END AS ord,
+    chg_grp,
+    COUNT(*) AS n,
+    ROUND(100.0 * COUNT(*) / SUM(COUNT(*)) OVER (PARTITION BY ym), 2) AS pct_share,
+    ROUND(100.0 * AVG(f_enter), 2) AS pct_enter,
+    ROUND(100.0 * AVG(f_confirm), 2) AS pct_confirm,
+    ROUND(100.0 * AVG(f_amt), 2) AS pct_amt,
+    ROUND(100.0 * AVG(f_term), 2) AS pct_term,
+    ROUND(100.0 * AVG(f_contract), 2) AS pct_contract,
+    ROUND(100.0 * AVG(f_plan), 2) AS pct_plan,
+    ROUND(100.0 * AVG(f_purpose), 2) AS pct_purpose
+FROM tmp_chg
+GROUP BY ym, chg_grp
+UNION ALL
+SELECT
+    &#x27;合计&#x27;,
+    CASE chg_grp WHEN &#x27;升额&#x27; THEN 1 WHEN &#x27;降额&#x27; THEN 2 ELSE 3 END,
+    chg_grp,
+    COUNT(*),
+    ROUND(100.0 * COUNT(*) / SUM(COUNT(*)) OVER (), 2),
+    ROUND(100.0 * AVG(f_enter), 2),
+    ROUND(100.0 * AVG(f_confirm), 2),
+    ROUND(100.0 * AVG(f_amt), 2),
+    ROUND(100.0 * AVG(f_term), 2),
+    ROUND(100.0 * AVG(f_contract), 2),
+    ROUND(100.0 * AVG(f_plan), 2),
+    ROUND(100.0 * AVG(f_purpose), 2)
+FROM tmp_chg
+GROUP BY chg_grp
+) z ORDER BY ym, ord;
+
+-- R3 有上一笔合计（不分升降）按月
+SELECT * FROM (
+SELECT
+    TO_CHAR(ym, &#x27;YYYY-MM&#x27;) AS ym,
+    COUNT(*) AS n,
+    ROUND(100.0 * AVG(f_enter), 2) AS pct_enter,
+    ROUND(100.0 * AVG(f_confirm), 2) AS pct_confirm,
+    ROUND(100.0 * AVG(f_amt), 2) AS pct_amt,
+    ROUND(100.0 * AVG(f_term), 2) AS pct_term,
+    ROUND(100.0 * AVG(f_contract), 2) AS pct_contract,
+    ROUND(100.0 * AVG(f_plan), 2) AS pct_plan,
+    ROUND(100.0 * AVG(f_purpose), 2) AS pct_purpose
+FROM tmp_chg
+GROUP BY ym
+UNION ALL
+SELECT
+    &#x27;合计&#x27;,
+    COUNT(*),
+    ROUND(100.0 * AVG(f_enter), 2),
+    ROUND(100.0 * AVG(f_confirm), 2),
+    ROUND(100.0 * AVG(f_amt), 2),
+    ROUND(100.0 * AVG(f_term), 2),
+    ROUND(100.0 * AVG(f_contract), 2),
+    ROUND(100.0 * AVG(f_plan), 2),
+    ROUND(100.0 * AVG(f_purpose), 2)
+FROM tmp_chg
+) z ORDER BY ym;
+</pre>
+</details>
+<p class="foot">数据截止样本日 2026-09-20，库日期 2026-09-23。9 月为人日非整月。升额客群进页不差、确认更低，页内在挑金额和计划；不要把「升额当天确认低」理解成没进页。</p>
+</main>
+<script>
+const D = {"funnel": [{"ym": "2026-01", "n_t0": 19520, "n_chg": 19520, "n_up": 11682, "n_down": 6169, "n_same": 1669, "pct_confirm_24h": 60.46}, {"ym": "2026-02", "n_t0": 22739, "n_chg": 22739, "n_up": 12595, "n_down": 8026, "n_same": 2118, "pct_confirm_24h": 59.52}, {"ym": "2026-03", "n_t0": 22198, "n_chg": 22198, "n_up": 10635, "n_down": 8117, "n_same": 3446, "pct_confirm_24h": 54.49}, {"ym": "2026-04", "n_t0": 20780, "n_chg": 20780, "n_up": 10912, "n_down": 6644, "n_same": 3224, "pct_confirm_24h": 54.59}, {"ym": "2026-05", "n_t0": 23875, "n_chg": 23875, "n_up": 13066, "n_down": 7989, "n_same": 2820, "pct_confirm_24h": 52.91}, {"ym": "2026-06", "n_t0": 22635, "n_chg": 22635, "n_up": 12041, "n_down": 7440, "n_same": 3154, "pct_confirm_24h": 51.89}, {"ym": "2026-07", "n_t0": 23275, "n_chg": 23275, "n_up": 13513, "n_down": 7437, "n_same": 2325, "pct_confirm_24h": 49.14}, {"ym": "2026-08", "n_t0": 22111, "n_chg": 22111, "n_up": 12553, "n_down": 7731, "n_same": 1827, "pct_confirm_24h": 47.18}, {"ym": "2026-09", "n_t0": 14377, "n_chg": 14377, "n_up": 8597, "n_down": 4380, "n_same": 1400, "pct_confirm_24h": 47.78}, {"ym": "合计", "n_t0": 191510, "n_chg": 191510, "n_up": 105594, "n_down": 63933, "n_same": 21983, "pct_confirm_24h": 53.21}], "month_chg": [{"ym": "2026-01", "ord": 1, "chg_grp": "升额", "n": 11682, "pct_share": 59.85, "pct_enter": 79.11, "pct_confirm": 53.12, "pct_amt": 34.76, "pct_term": 28.64, "pct_contract": 2.56, "pct_plan": 41.64, "pct_purpose": 14.47}, {"ym": "2026-01", "ord": 2, "chg_grp": "降额", "n": 6169, "pct_share": 31.6, "pct_enter": 77.0, "pct_confirm": 54.0, "pct_amt": 22.27, "pct_term": 28.34, "pct_contract": 3.21, "pct_plan": 29.99, "pct_purpose": 16.31}, {"ym": "2026-01", "ord": 3, "chg_grp": "不变", "n": 1669, "pct_share": 8.55, "pct_enter": 74.96, "pct_confirm": 55.9, "pct_amt": 17.62, "pct_term": 31.52, "pct_contract": 2.82, "pct_plan": 23.85, "pct_purpose": 17.2}, {"ym": "2026-02", "ord": 1, "chg_grp": "升额", "n": 12595, "pct_share": 55.39, "pct_enter": 77.5, "pct_confirm": 51.16, "pct_amt": 34.04, "pct_term": 27.96, "pct_contract": 2.46, "pct_plan": 40.13, "pct_purpose": 15.05}, {"ym": "2026-02", "ord": 2, "chg_grp": "降额", "n": 8026, "pct_share": 35.3, "pct_enter": 77.01, "pct_confirm": 53.23, "pct_amt": 23.04, "pct_term": 26.75, "pct_contract": 2.52, "pct_plan": 28.53, "pct_purpose": 17.62}, {"ym": "2026-02", "ord": 3, "chg_grp": "不变", "n": 2118, "pct_share": 9.31, "pct_enter": 75.4, "pct_confirm": 57.32, "pct_amt": 19.31, "pct_term": 29.08, "pct_contract": 2.88, "pct_plan": 22.71, "pct_purpose": 16.67}, {"ym": "2026-03", "ord": 1, "chg_grp": "升额", "n": 10635, "pct_share": 47.91, "pct_enter": 73.5, "pct_confirm": 45.78, "pct_amt": 30.79, "pct_term": 21.47, "pct_contract": 1.99, "pct_plan": 37.19, "pct_purpose": 13.28}, {"ym": "2026-03", "ord": 2, "chg_grp": "降额", "n": 8117, "pct_share": 36.57, "pct_enter": 73.61, "pct_confirm": 47.05, "pct_amt": 21.17, "pct_term": 20.55, "pct_contract": 2.44, "pct_plan": 28.21, "pct_purpose": 16.62}, {"ym": "2026-03", "ord": 3, "chg_grp": "不变", "n": 3446, "pct_share": 15.52, "pct_enter": 73.77, "pct_confirm": 52.18, "pct_amt": 19.99, "pct_term": 20.86, "pct_contract": 2.52, "pct_plan": 20.4, "pct_purpose": 17.15}, {"ym": "2026-04", "ord": 1, "chg_grp": "升额", "n": 10912, "pct_share": 52.51, "pct_enter": 78.95, "pct_confirm": 46.04, "pct_amt": 32.92, "pct_term": 20.45, "pct_contract": 2.14, "pct_plan": 38.58, "pct_purpose": 14.07}, {"ym": "2026-04", "ord": 2, "chg_grp": "降额", "n": 6644, "pct_share": 31.97, "pct_enter": 78.85, "pct_confirm": 47.49, "pct_amt": 22.17, "pct_term": 18.06, "pct_contract": 2.6, "pct_plan": 28.76, "pct_purpose": 17.25}, {"ym": "2026-04", "ord": 3, "chg_grp": "不变", "n": 3224, "pct_share": 15.51, "pct_enter": 76.92, "pct_confirm": 53.35, "pct_amt": 19.88, "pct_term": 16.69, "pct_contract": 2.39, "pct_plan": 18.73, "pct_purpose": 15.76}, {"ym": "2026-05", "ord": 1, "chg_grp": "升额", "n": 13066, "pct_share": 54.73, "pct_enter": 85.79, "pct_confirm": 43.36, "pct_amt": 35.38, "pct_term": 14.76, "pct_contract": 1.73, "pct_plan": 40.56, "pct_purpose": 13.81}, {"ym": "2026-05", "ord": 2, "chg_grp": "降额", "n": 7989, "pct_share": 33.46, "pct_enter": 88.05, "pct_confirm": 47.89, "pct_amt": 27.16, "pct_term": 12.5, "pct_contract": 2.47, "pct_plan": 32.26, "pct_purpose": 17.32}, {"ym": "2026-05", "ord": 3, "chg_grp": "不变", "n": 2820, "pct_share": 11.81, "pct_enter": 87.23, "pct_confirm": 53.79, "pct_amt": 28.58, "pct_term": 12.09, "pct_contract": 2.91, "pct_plan": 21.95, "pct_purpose": 19.43}, {"ym": "2026-06", "ord": 1, "chg_grp": "升额", "n": 12041, "pct_share": 53.2, "pct_enter": 85.8, "pct_confirm": 40.88, "pct_amt": 36.75, "pct_term": 10.84, "pct_contract": 1.77, "pct_plan": 42.19, "pct_purpose": 14.43}, {"ym": "2026-06", "ord": 2, "chg_grp": "降额", "n": 7440, "pct_share": 32.87, "pct_enter": 88.15, "pct_confirm": 47.41, "pct_amt": 31.1, "pct_term": 9.97, "pct_contract": 2.37, "pct_plan": 34.48, "pct_purpose": 18.8}, {"ym": "2026-06", "ord": 3, "chg_grp": "不变", "n": 3154, "pct_share": 13.93, "pct_enter": 88.87, "pct_confirm": 54.69, "pct_amt": 30.03, "pct_term": 9.16, "pct_contract": 2.16, "pct_plan": 24.89, "pct_purpose": 19.31}, {"ym": "2026-07", "ord": 1, "chg_grp": "升额", "n": 13513, "pct_share": 58.06, "pct_enter": 85.65, "pct_confirm": 38.73, "pct_amt": 37.28, "pct_term": 11.95, "pct_contract": 1.78, "pct_plan": 43.32, "pct_purpose": 14.2}, {"ym": "2026-07", "ord": 2, "chg_grp": "降额", "n": 7437, "pct_share": 31.95, "pct_enter": 87.67, "pct_confirm": 46.87, "pct_amt": 30.85, "pct_term": 10.96, "pct_contract": 2.22, "pct_plan": 33.95, "pct_purpose": 18.49}, {"ym": "2026-07", "ord": 3, "chg_grp": "不变", "n": 2325, "pct_share": 9.99, "pct_enter": 86.32, "pct_confirm": 51.01, "pct_amt": 27.48, "pct_term": 9.33, "pct_contract": 2.45, "pct_plan": 24.43, "pct_purpose": 15.14}, {"ym": "2026-08", "ord": 1, "chg_grp": "升额", "n": 12553, "pct_share": 56.77, "pct_enter": 85.7, "pct_confirm": 37.13, "pct_amt": 35.96, "pct_term": 14.96, "pct_contract": 1.83, "pct_plan": 43.42, "pct_purpose": 14.32}, {"ym": "2026-08", "ord": 2, "chg_grp": "降额", "n": 7731, "pct_share": 34.96, "pct_enter": 87.6, "pct_confirm": 43.31, "pct_amt": 28.42, "pct_term": 13.19, "pct_contract": 1.97, "pct_plan": 32.29, "pct_purpose": 16.71}, {"ym": "2026-08", "ord": 3, "chg_grp": "不变", "n": 1827, "pct_share": 8.26, "pct_enter": 87.25, "pct_confirm": 51.72, "pct_amt": 28.63, "pct_term": 14.56, "pct_contract": 2.57, "pct_plan": 25.12, "pct_purpose": 17.95}, {"ym": "2026-09", "ord": 1, "chg_grp": "升额", "n": 8597, "pct_share": 59.8, "pct_enter": 85.19, "pct_confirm": 37.91, "pct_amt": 35.5, "pct_term": 18.69, "pct_contract": 1.5, "pct_plan": 41.93, "pct_purpose": 13.13}, {"ym": "2026-09", "ord": 2, "chg_grp": "降额", "n": 4380, "pct_share": 30.47, "pct_enter": 87.33, "pct_confirm": 43.88, "pct_amt": 28.97, "pct_term": 16.78, "pct_contract": 2.05, "pct_plan": 32.24, "pct_purpose": 17.76}, {"ym": "2026-09", "ord": 3, "chg_grp": "不变", "n": 1400, "pct_share": 9.74, "pct_enter": 87.36, "pct_confirm": 52.29, "pct_amt": 30.0, "pct_term": 15.07, "pct_contract": 2.93, "pct_plan": 28.5, "pct_purpose": 18.29}], "month_all": [{"ym": "2026-01", "n": 19520, "pct_enter": 78.09, "pct_confirm": 53.63, "pct_amt": 29.35, "pct_term": 28.79, "pct_contract": 2.79, "pct_plan": 36.43, "pct_purpose": 15.28}, {"ym": "2026-02", "n": 22739, "pct_enter": 77.13, "pct_confirm": 52.46, "pct_amt": 28.78, "pct_term": 27.64, "pct_contract": 2.52, "pct_plan": 34.42, "pct_purpose": 16.11}, {"ym": "2026-03", "n": 22198, "pct_enter": 73.58, "pct_confirm": 47.24, "pct_amt": 25.6, "pct_term": 21.04, "pct_contract": 2.24, "pct_plan": 31.3, "pct_purpose": 15.1}, {"ym": "2026-04", "n": 20780, "pct_enter": 78.6, "pct_confirm": 47.64, "pct_amt": 27.46, "pct_term": 19.1, "pct_contract": 2.32, "pct_plan": 32.36, "pct_purpose": 15.35}, {"ym": "2026-05", "n": 23875, "pct_enter": 86.71, "pct_confirm": 46.11, "pct_amt": 31.83, "pct_term": 13.69, "pct_contract": 2.12, "pct_plan": 35.59, "pct_purpose": 15.65}, {"ym": "2026-06", "n": 22635, "pct_enter": 87.0, "pct_confirm": 44.95, "pct_amt": 33.96, "pct_term": 10.32, "pct_contract": 2.02, "pct_plan": 37.24, "pct_purpose": 16.55}, {"ym": "2026-07", "n": 23275, "pct_enter": 86.36, "pct_confirm": 42.56, "pct_amt": 34.25, "pct_term": 11.37, "pct_contract": 1.99, "pct_plan": 38.44, "pct_purpose": 15.66}, {"ym": "2026-08", "n": 22111, "pct_enter": 86.49, "pct_confirm": 40.5, "pct_amt": 32.72, "pct_term": 14.31, "pct_contract": 1.94, "pct_plan": 38.01, "pct_purpose": 15.46}, {"ym": "2026-09", "n": 14377, "pct_enter": 86.05, "pct_confirm": 41.13, "pct_amt": 32.98, "pct_term": 17.76, "pct_contract": 1.81, "pct_plan": 37.67, "pct_purpose": 15.04}], "year": [{"ym": "合计", "ord": 1, "chg_grp": "升额", "n": 105594, "pct_share": 55.14, "pct_enter": 82.04, "pct_confirm": 43.83, "pct_amt": 34.91, "pct_term": 18.67, "pct_contract": 1.98, "pct_plan": 41.08, "pct_purpose": 14.13}, {"ym": "合计", "ord": 2, "chg_grp": "降额", "n": 63933, "pct_share": 33.38, "pct_enter": 82.67, "pct_confirm": 48.0, "pct_amt": 26.06, "pct_term": 17.32, "pct_contract": 2.43, "pct_plan": 31.15, "pct_purpose": 17.43}, {"ym": "合计", "ord": 3, "chg_grp": "不变", "n": 21983, "pct_share": 11.48, "pct_enter": 81.69, "pct_confirm": 53.54, "pct_amt": 24.42, "pct_term": 16.94, "pct_contract": 2.58, "pct_plan": 22.82, "pct_purpose": 17.43}]};
+const months = D.funnel.filter(r => r.ym!=='合计').map(r=>r.ym.slice(5)+'月');
+const pal = {up:'#43c7e7', down:'#f68ab0', same:'#ffc26b'};
+Chart.defaults.color='#aac5da';
+Chart.defaults.borderColor='rgba(42,92,126,.35)';
+Chart.defaults.font.family='-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei",sans-serif';
+function series(grp, field){
+  return months.map((_,i) => {
+    const ym = D.funnel.filter(r=>r.ym!=='合计')[i].ym;
+    const row = D.month_chg.find(r => r.ym===ym && r.chg_grp===grp);
+    return row ? row[field] : null;
+  });
+}
+new Chart(document.getElementById('c1'), {
+  type:'bar',
+  data: {
+    labels: months,
+    datasets: [
+      {label:'升额', backgroundColor:pal.up, data: D.funnel.filter(r=>r.ym!=='合计').map(r=>r.n_up), stack:'s'},
+      {label:'降额', backgroundColor:pal.down, data: D.funnel.filter(r=>r.ym!=='合计').map(r=>r.n_down), stack:'s'},
+      {label:'不变', backgroundColor:pal.same, data: D.funnel.filter(r=>r.ym!=='合计').map(r=>r.n_same), stack:'s'}
+    ]
+  },
+  options: {responsive:true, maintainAspectRatio:false, plugins:{legend:{position:'bottom'}}, scales:{x:{stacked:true}, y:{stacked:true}}}
+});
+new Chart(document.getElementById('c2'), {
+  type:'line',
+  data: {labels: months, datasets:[{label:'点确认24h', borderColor:'#43c7e7', tension:.25, data: D.funnel.filter(r=>r.ym!=='合计').map(r=>r.pct_confirm_24h)}]},
+  options: {responsive:true, maintainAspectRatio:false, plugins:{legend:{display:false}}, scales:{y:{ticks:{callback:v=>v+'%'}}}}
+});
+function line3(id, field){
+  new Chart(document.getElementById(id), {
+    type:'line',
+    data: {
+      labels: months,
+      datasets: [
+        {label:'升额', borderColor:pal.up, tension:.25, data: series('升额', field)},
+        {label:'降额', borderColor:pal.down, tension:.25, data: series('降额', field)},
+        {label:'不变', borderColor:pal.same, tension:.25, data: series('不变', field)}
+      ]
+    },
+    options: {responsive:true, maintainAspectRatio:false, plugins:{legend:{position:'bottom'}}, scales:{y:{ticks:{callback:v=>v+'%'}}}}
+  });
+}
+line3('c3','pct_enter');
+line3('c4','pct_confirm');
+line3('c5','pct_amt');
+line3('c6','pct_plan');
+const labs = ['进页','点确认','改金额','改期次','看合同','看计划','选原因'];
+const keys = ['pct_enter','pct_confirm','pct_amt','pct_term','pct_contract','pct_plan','pct_purpose'];
+const ymap = {};
+D.year.forEach(r => ymap[r.chg_grp]=r);
+new Chart(document.getElementById('c7'), {
+  type:'bar',
+  data: {
+    labels: labs,
+    datasets: [
+      {label:'升额', backgroundColor:pal.up, data: keys.map(k=>ymap['升额'][k])},
+      {label:'降额', backgroundColor:pal.down, data: keys.map(k=>ymap['降额'][k])},
+      {label:'不变', backgroundColor:pal.same, data: keys.map(k=>ymap['不变'][k])}
+    ]
+  },
+  options: {responsive:true, maintainAspectRatio:false, plugins:{legend:{position:'bottom'}}, scales:{y:{ticks:{callback:v=>v+'%'}}}}
+});
+</script>
+</body>
+</html>
