@@ -39,21 +39,21 @@ details.code pre{overflow:auto;max-height:520px;font-size:11px;line-height:1.45;
 <div class="top">
   <div class="kicker">DASHBOARD · T7+ RECALL · CREDIT PASS · 2026-09-17</div>
   <h1>流失 7 天以上召回 · 获额通过口径看板</h1>
-  <p class="meta">名单 1,493 人 · 获额通过 243 人 · 统计至 2026-09-22 · 本周 2026-09-21 起（周一）</p>
+  <p class="meta">名单 1,493 人 · 获额通过 299 人 · 统计至 2026-09-23 · 本周 2026-09-21 起（周一）</p>
 </div>
 <section class="kpis">
-  <article class="card"><div class="label">获额人数</div><div class="num">250</div><div class="sub">9/17至今发起获额</div></article>
-  <article class="card"><div class="label">获额通过人数</div><div class="num g">243</div><div class="sub">is_pass1=1</div></article>
-  <article class="card"><div class="label">获额通过率</div><div class="num a">97.20%</div><div class="sub">243 / 250</div></article>
-  <article class="card"><div class="label">提单人数</div><div class="num g">106</div><div class="sub">获额通过后提单去重用户</div></article>
-  <article class="card"><div class="label">提单率</div><div class="num a">43.62%</div><div class="sub">106 / 243 · 截至统计日累计提单 / 累计获额通过</div></article>
-  <article class="card"><div class="label">提单订单量</div><div class="num">107</div><div class="sub">获额通过后提单订单数</div></article>
-  <article class="card"><div class="label">本周提单人数</div><div class="num">36</div><div class="sub">通过后本周有过提单的去重用户</div></article>
-  <article class="card"><div class="label">本周新增提单人数</div><div class="num p">36</div><div class="sub">通过后首次提单落在本周</div></article>
-  <article class="card"><div class="label">放款单量</div><div class="num g">218</div><div class="sub">9/17至今已放款订单数</div></article>
-  <article class="card"><div class="label">本周新增放款单量</div><div class="num">46</div><div class="sub">本周新放款订单数</div></article>
-  <article class="card"><div class="label">订单盈利率</div><div class="num a">—</div><div class="sub">到期订单</div></article>
-  <article class="card"><div class="label">订单逾期率</div><div class="num p">—</div><div class="sub">到期订单</div></article>
+  <article class="card"><div class="label">获额人数</div><div class="num">306</div><div class="sub">9/17至今发起获额</div></article>
+  <article class="card"><div class="label">获额通过人数</div><div class="num g">299</div><div class="sub">is_pass1=1</div></article>
+  <article class="card"><div class="label">获额通过率</div><div class="num a">97.71%</div><div class="sub">299 / 306</div></article>
+  <article class="card"><div class="label">提单人数</div><div class="num g">127</div><div class="sub">获额通过后提单去重用户</div></article>
+  <article class="card"><div class="label">提单率</div><div class="num a">42.47%</div><div class="sub">127 / 299 · 截至统计日累计提单 / 累计获额通过</div></article>
+  <article class="card"><div class="label">提单订单量</div><div class="num">130</div><div class="sub">获额通过后提单订单数</div></article>
+  <article class="card"><div class="label">本周提单人数</div><div class="num">59</div><div class="sub">通过后本周有过提单的去重用户</div></article>
+  <article class="card"><div class="label">本周新增提单人数</div><div class="num p">57</div><div class="sub">通过后首次提单落在本周</div></article>
+  <article class="card"><div class="label">放款单量</div><div class="num g">243</div><div class="sub">9/17至今已放款订单数</div></article>
+  <article class="card"><div class="label">本周新增放款单量</div><div class="num">71</div><div class="sub">本周新放款订单数</div></article>
+  <article class="card"><div class="label">订单盈利率</div><div class="num a">-100.00%</div><div class="sub">到期订单</div></article>
+  <article class="card"><div class="label">订单逾期率</div><div class="num p">100.00%</div><div class="sub">到期订单</div></article>
 </section>
 <div class="grid">
   <div class="card chart"><h3>累计提单人数与提单率</h3><p>提单率 = 截至当日累计提单用户 / 截至当日累计获额通过人数（分母随日期滚动，不是统计截止日的全部通过人数）</p><div class="box"><canvas id="c1"></canvas></div></div>
@@ -387,10 +387,10 @@ GROUP BY
   END;
 </pre></details>
 </section>
-<p class="foot">数据：kaby_dw · wangchuanliang.t7recalllist_0917 · recall_date=2026-09-17 · 获额通过口径 · 统计至 CURRENT_DATE-1=2026-09-22 · 到期 due_date &lt; CURRENT_DATE</p>
+<p class="foot">数据：kaby_dw · wangchuanliang.t7recalllist_0917 · recall_date=2026-09-17 · 获额通过口径 · 统计至 CURRENT_DATE-1=2026-09-23 · 到期 due_date &lt; CURRENT_DATE</p>
 </main>
 <script>
-const D = {"kpi": {"n_user": 1493, "n_vir": 250, "n_pass": 243, "n_apply": 106, "n_apply_order": 107, "pass_rate": 97.2, "apply_rate": 43.62, "n_apply_week": 36, "n_first_week": 36, "n_remit": 218, "n_remit_week": 46, "n_due": 0, "n_due_od": 0, "profit_pct": null, "overdue_pct": null, "week_start": "2026-09-21", "as_of": "2026-09-22", "recall_date": "2026-09-17", "remit_day": "o.remit_date::date"}, "first_daily": [{"d": "2026-09-17", "n": 11, "n_pass": 31, "cum": 11, "cum_pass": 31, "rate": 35.48}, {"d": "2026-09-18", "n": 16, "n_pass": 29, "cum": 27, "cum_pass": 60, "rate": 45.0}, {"d": "2026-09-19", "n": 26, "n_pass": 47, "cum": 53, "cum_pass": 107, "rate": 49.53}, {"d": "2026-09-20", "n": 17, "n_pass": 42, "cum": 70, "cum_pass": 149, "rate": 46.98}, {"d": "2026-09-21", "n": 13, "n_pass": 40, "cum": 83, "cum_pass": 189, "rate": 43.92}, {"d": "2026-09-22", "n": 23, "n_pass": 54, "cum": 106, "cum_pass": 243, "rate": 43.62}], "apply_daily": [{"d": "2026-09-17", "n_order": 11, "n_user": 11}, {"d": "2026-09-18", "n_order": 16, "n_user": 16}, {"d": "2026-09-19", "n_order": 26, "n_user": 26}, {"d": "2026-09-20", "n_order": 17, "n_user": 17}, {"d": "2026-09-21", "n_order": 13, "n_user": 13}, {"d": "2026-09-22", "n_order": 24, "n_user": 23}], "remit_daily": [{"d": "2026-09-17", "n": 53, "cum": 53}, {"d": "2026-09-18", "n": 44, "cum": 97}, {"d": "2026-09-19", "n": 45, "cum": 142}, {"d": "2026-09-20", "n": 30, "cum": 172}, {"d": "2026-09-21", "n": 21, "cum": 193}, {"d": "2026-09-22", "n": 25, "cum": 218}], "due_daily": [], "strat": [{"strat": "20d+10r", "n_user": 62, "n_apply": 34, "pct": 54.84}, {"strat": "20d", "n_user": 47, "n_apply": 15, "pct": 31.91}, {"strat": "30d", "n_user": 45, "n_apply": 15, "pct": 33.33}, {"strat": "30d+10r", "n_user": 43, "n_apply": 18, "pct": 41.86}, {"strat": "10d", "n_user": 24, "n_apply": 10, "pct": 41.67}, {"strat": "10d+10r", "n_user": 22, "n_apply": 14, "pct": 63.64}], "churn": [{"bin": "7-15d", "n_user": 243, "n_apply": 106, "pct": 43.62}]};
+const D = {"kpi": {"n_user": 1493, "n_vir": 306, "n_pass": 299, "n_apply": 127, "n_apply_order": 130, "pass_rate": 97.71, "apply_rate": 42.47, "n_apply_week": 59, "n_first_week": 57, "n_remit": 243, "n_remit_week": 71, "n_due": 1, "n_due_od": 1, "profit_pct": -100.0, "overdue_pct": 100.0, "week_start": "2026-09-21", "as_of": "2026-09-23", "recall_date": "2026-09-17", "remit_day": "o.remit_date::date"}, "first_daily": [{"d": "2026-09-17", "n": 11, "n_pass": 31, "cum": 11, "cum_pass": 31, "rate": 35.48}, {"d": "2026-09-18", "n": 16, "n_pass": 29, "cum": 27, "cum_pass": 60, "rate": 45.0}, {"d": "2026-09-19", "n": 26, "n_pass": 47, "cum": 53, "cum_pass": 107, "rate": 49.53}, {"d": "2026-09-20", "n": 17, "n_pass": 42, "cum": 70, "cum_pass": 149, "rate": 46.98}, {"d": "2026-09-21", "n": 13, "n_pass": 40, "cum": 83, "cum_pass": 189, "rate": 43.92}, {"d": "2026-09-22", "n": 23, "n_pass": 54, "cum": 106, "cum_pass": 243, "rate": 43.62}, {"d": "2026-09-23", "n": 21, "n_pass": 56, "cum": 127, "cum_pass": 299, "rate": 42.47}], "apply_daily": [{"d": "2026-09-17", "n_order": 11, "n_user": 11}, {"d": "2026-09-18", "n_order": 16, "n_user": 16}, {"d": "2026-09-19", "n_order": 26, "n_user": 26}, {"d": "2026-09-20", "n_order": 17, "n_user": 17}, {"d": "2026-09-21", "n_order": 13, "n_user": 13}, {"d": "2026-09-22", "n_order": 24, "n_user": 23}, {"d": "2026-09-23", "n_order": 23, "n_user": 23}], "remit_daily": [{"d": "2026-09-17", "n": 53, "cum": 53}, {"d": "2026-09-18", "n": 44, "cum": 97}, {"d": "2026-09-19", "n": 45, "cum": 142}, {"d": "2026-09-20", "n": 30, "cum": 172}, {"d": "2026-09-21", "n": 21, "cum": 193}, {"d": "2026-09-22", "n": 25, "cum": 218}, {"d": "2026-09-23", "n": 25, "cum": 243}], "due_daily": [{"d": "2026-09-23", "n_due": 1, "n_od": 1, "repaid": 0.0, "remit": 214.0, "profit_pct": -100.0, "overdue_pct": 100.0, "cum_profit_pct": -100.0, "cum_overdue_pct": 100.0}], "strat": [{"strat": "20d+10r", "n_user": 76, "n_apply": 39, "pct": 51.32}, {"strat": "20d", "n_user": 60, "n_apply": 16, "pct": 26.67}, {"strat": "30d", "n_user": 54, "n_apply": 19, "pct": 35.19}, {"strat": "30d+10r", "n_user": 53, "n_apply": 26, "pct": 49.06}, {"strat": "10d", "n_user": 32, "n_apply": 13, "pct": 40.62}, {"strat": "10d+10r", "n_user": 24, "n_apply": 14, "pct": 58.33}], "churn": [{"bin": "7-15d", "n_user": 299, "n_apply": 127, "pct": 42.47}]};
 
 const col = {cy:'#43c7e7', gr:'#64dcae', am:'#ffc26b', pk:'#f68ab0'};
 Chart.defaults.font.family='-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei",sans-serif';
