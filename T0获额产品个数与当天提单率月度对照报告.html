@@ -24,10 +24,11 @@ h2{font-size:22px;margin:40px 0 10px}
 .callout.gold{border-left-color:#ffc26b}.callout.red{border-left-color:#f68ab0}
 .callout .ch{font-weight:800;margin-bottom:8px}
 .concs{display:grid;gap:12px;grid-template-columns:repeat(2,minmax(0,1fr));margin:12px 0 8px}
-.conc{display:grid;grid-template-columns:44px 1fr;gap:2px 14px;background:rgba(10,41,68,.95);border:1px solid var(--line);border-radius:14px;padding:16px 18px}
-.conc .n{width:36px;height:36px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:16px;color:#06192b;grid-row:1 / span 2;margin-top:2px}
-.conc .ttl{font-size:15px;font-weight:800;line-height:1.4;margin:0}
-.conc .bd{font-size:13px;color:#9fbcd4;line-height:1.65;margin:4px 0 0}
+.conc{display:flex;gap:14px;align-items:flex-start;background:rgba(10,41,68,.95);border:1px solid var(--line);border-radius:14px;padding:16px 18px}
+.conc .n{flex:0 0 36px;width:36px;height:36px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:16px;color:#06192b}
+.conc .txt{min-width:0;flex:1}
+.conc .ttl{font-size:15px;font-weight:800;line-height:1.4;margin:0 0 6px}
+.conc .bd{font-size:13px;color:#9fbcd4;line-height:1.65;margin:0}
 .conc .bd b{color:#eff8ff;font-weight:700}
 .conc.c1 .n{background:#43c7e7}.conc.c1 .ttl{color:#43c7e7}
 .conc.c2 .n{background:#ffc26b}.conc.c2 .ttl{color:#ffc26b}
@@ -65,14 +66,14 @@ pre.sql{overflow:auto;max-height:900px;font-size:11.5px;line-height:1.5;color:#d
 
 <h2>结论</h2>
 <div class="concs">
-<article class="conc c1"><div class="n">1</div><div class="ttl">双产品占比先塌后回，没回到年初</div>
-<p class="bd">1 月 <b>66.71%</b> → 6 月 <b>0%</b> → 9 月（至 20 日）<b>26.67%</b>。全期只有 1 个或 2 个产品。</p></article>
-<article class="conc c2"><div class="n">2</div><div class="ttl">当天提单率两边都在掉</div>
-<p class="bd">全体 <b>52.89%</b> → <b>40.00%</b>。1–5 月双产品高 2～7 个点；8–9 月回来后和单产品打平。</p></article>
-<article class="conc c3"><div class="n">3</div><div class="ttl">结构回升撑不起整体提单率</div>
-<p class="bd">8–9 月双产品份额回升，但当天提单率已掉到约 <b>39%～41%</b>，和单产品同一水平。</p></article>
-<article class="conc c4"><div class="n">4</div><div class="ttl">到期后：双产品逾期更低，盈利打平</div>
-<p class="bd">1–8 月首次提单已到期。单产品盈利 <b>10.05%</b> / 逾期 <b>38.12%</b>；双产品 <b>9.86%</b> / <b>34.16%</b>。6–7 月双产品样本很小。</p></article>
+<article class="conc c1"><div class="n">1</div><div class="txt"><div class="ttl">双产品占比先塌后回，没回到年初</div>
+<p class="bd">1 月 <b>66.71%</b> → 6 月 <b>0%</b> → 9 月（至 20 日）<b>26.67%</b>。全期只有 1 个或 2 个产品。</p></div></article>
+<article class="conc c2"><div class="n">2</div><div class="txt"><div class="ttl">当天提单率两边都在掉</div>
+<p class="bd">全体 <b>52.89%</b> → <b>40.00%</b>。1–5 月双产品高 2～7 个点；8–9 月回来后和单产品打平。</p></div></article>
+<article class="conc c3"><div class="n">3</div><div class="txt"><div class="ttl">结构回升撑不起整体提单率</div>
+<p class="bd">8–9 月双产品份额回升，但当天提单率已掉到约 <b>39%～41%</b>，和单产品同一水平。</p></div></article>
+<article class="conc c4"><div class="n">4</div><div class="txt"><div class="ttl">到期后：双产品逾期更低，盈利打平</div>
+<p class="bd">1–8 月首次提单已到期。单产品盈利 <b>10.05%</b> / 逾期 <b>38.12%</b>；双产品 <b>9.86%</b> / <b>34.16%</b>。6–7 月双产品样本很小。</p></div></article>
 </div>
 
 <h2>一、产品个数占比与当天提单率</h2>
