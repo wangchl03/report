@@ -23,6 +23,10 @@ h2{font-size:22px;margin:40px 0 10px}
 .callout{background:#0a2a45;border:1px solid #2a5c7e;border-left:4px solid #43c7e7;border-radius:10px;padding:14px 18px;margin:14px 0;line-height:1.75;font-size:14px}
 .callout.gold{border-left-color:#ffc26b}.callout.red{border-left-color:#f68ab0}
 .callout .ch{font-weight:800;margin-bottom:8px}
+.kj{display:flex;flex-direction:column;gap:8px;margin:12px 0 8px}
+.kj .row{display:grid;grid-template-columns:9em minmax(0,1fr);column-gap:16px;align-items:start;background:rgba(10,41,68,.95);border:1px solid var(--line);border-left:3px solid var(--cy);border-radius:10px;padding:10px 16px}
+.kj .k{color:var(--cy);font-weight:800;font-size:13px;line-height:1.65}
+.kj .v{color:#c5d8e8;font-size:13.5px;line-height:1.7}
 .concs{display:grid;gap:14px;grid-template-columns:repeat(2,minmax(0,1fr));margin:12px 0 8px}
 .conc{display:grid;grid-template-columns:42px minmax(0,1fr);column-gap:14px;row-gap:8px;align-items:start;background:rgba(10,41,68,.95);border:1px solid var(--line);border-left-width:4px;border-radius:14px;padding:16px 18px}
 .conc .n{grid-column:1;grid-row:1 / span 2;width:42px;height:42px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:18px;color:#06192b}
@@ -44,7 +48,7 @@ details.code summary{cursor:pointer;color:var(--cy);font-weight:700}
 pre.sql{overflow:auto;max-height:900px;font-size:11.5px;line-height:1.5;color:#d7ecf8;white-space:pre}
 .foot{color:#7fa6c2;font-size:12.5px;margin-top:40px;border-top:1px solid var(--line);padding-top:16px;line-height:1.9}
 @media(max-width:1100px){.g3{grid-template-columns:1fr}}
-@media(max-width:980px){.g2,.g4,.concs{grid-template-columns:1fr}}
+@media(max-width:980px){.g2,.g4,.concs{grid-template-columns:1fr}.kj .row{grid-template-columns:1fr}}
 </style>
 </head>
 <body>
@@ -202,16 +206,30 @@ pre.sql{overflow:auto;max-height:900px;font-size:11.5px;line-height:1.5;color:#d
 </details>
 
 <h2>口径</h2>
-<div class="callout">
-T0 origin：2026-01-01～09-20；loan_type_code=2、is_pass1=1、recycle_type=3；20 秒批次留 serial_id 最大；干净结清；vir_time≥repaid_time；day_rn=1。人日不去重。<br>
-升额/降额/不变：本笔 max_credit − 上一笔已放款订单获额。上一笔 = 获额前 remit_time 最晚且 remit_amt&gt;0。<br>
-行为窗口：create_date=获额日，create_time≥结清时间且 &lt;次日。进页须 event_type=page_view_in。<br>
-进页 Loan_newpage / Loan_newpage_select；点确认 Loan_newconfirm / Loan_newconfirm_select；改金额 amount_modification 与 loan_form_loan_amount_selectionn_new(_select)；改期次 loan_form_term_selection_new(_select)；合同 / 计划 / 原因对应 Loan_contract_newdetails、Loan_plan_newdetails、Loan_purpose_newdetails 及 _select。<br>
-规则点确认：获额后 24 小时，分母为全部 T0 获额通过人日。1–8 月 95,023 / 177,133 = 53.65%。<br>
-当天提单：获额后当天首次 apply，apply_time≥vir_time。改期次对照的分母是有上一笔的 T0 人日；进页子集另报。<br>
-产品个数：order_vir_f_copy.risk_product 去空格后按逗号拆开；全期只有 1 个或 2 个。图13 分母是该类 T0 人日，与升/降/不变同一套 origin。<br>
-当天提单质量：获额后当天首次 apply（apply_time≥vir_time 且 apply_date=vir_date）。非当天提单不进息费/盈利/逾期。按获额月分组。加权息费 = 已放款 Σ(pre_amt+post_amt)/Σ remit_amt，不卡到期，含 9 月（至 20 日）。到期 = is_remit=1 且 remit_amt&gt;0 且 due_date &lt; CURRENT_DATE。盈利率 = Σ(repayment_record_copy.amount，payin_date≤due_date) / Σ remit_amt − 1。整笔逾期 = repaid_date &gt; due_date 或空/≤2000-01-01。全体 = 当天提单全样本金额加权（附录 SQL 的 prod_grp=合计）。图14–16 全体为红虚线。6 月双产品当天提单为 0。只做验证，不圈人。<br>
-使用率四档这次不做：圈人应用结清订单占用，不用刚获额订单。
+<div class="kj">
+<div class="row"><div class="k">窗口</div><div class="v">2026-01-01～09-20，9 月截至 20 日</div></div>
+<div class="row"><div class="k">T0 origin</div><div class="v">loan_type_code=2、is_pass1=1、recycle_type=3。不是全量 is_pass1</div></div>
+<div class="row"><div class="k">20 秒批次</div><div class="v">同一用户相邻获额间隔 ≤20 秒合成一批，该批只留 serial_id 最大</div></div>
+<div class="row"><div class="k">干净结清</div><div class="v">获额当天已打款且已还清 / 状态 7；结清时点后无更早未结清单；vir_time≥repaid_time；同一获额日只留最早一轮（day_rn=1）</div></div>
+<div class="row"><div class="k">人日</div><div class="v">用户 × 获额日，不去重</div></div>
+<div class="row"><div class="k">升额/降额/不变</div><div class="v">本笔获额 max_credit − 上一笔已放款订单获额。上一笔 = 获额前 remit_time 最晚且 remit_amt&gt;0</div></div>
+<div class="row"><div class="k">行为窗口</div><div class="v">结清后当天：create_date=获额日，create_time≥结清时间且 &lt;次日。进页须 event_type=page_view_in</div></div>
+<div class="row"><div class="k">进页</div><div class="v">Loan_newpage / Loan_newpage_select</div></div>
+<div class="row"><div class="k">当天点确认</div><div class="v">Loan_newconfirm / Loan_newconfirm_select，结清后当天</div></div>
+<div class="row"><div class="k">改金额</div><div class="v">amount_modification 与 loan_form_loan_amount_selectionn_new(_select)</div></div>
+<div class="row"><div class="k">改期次</div><div class="v">loan_form_term_selection_new(_select)</div></div>
+<div class="row"><div class="k">看合同</div><div class="v">Loan_contract_newdetails / Loan_contract_newdetails_select</div></div>
+<div class="row"><div class="k">看计划</div><div class="v">Loan_plan_newdetails / Loan_plan_newdetails_select</div></div>
+<div class="row"><div class="k">选原因</div><div class="v">Loan_purpose_newdetails / Loan_purpose_newdetails_select</div></div>
+<div class="row"><div class="k">点确认 24h</div><div class="v">获额后 24 小时，分母为全部 T0 获额通过人日。1–8 月 95,023 / 177,133 = 53.65%</div></div>
+<div class="row"><div class="k">当天提单</div><div class="v">获额后当天首次 apply，apply_time≥vir_time 且 apply_date=获额日。改期次对照分母是有上一笔的 T0 人日；进页子集另报。验证，不圈人</div></div>
+<div class="row"><div class="k">产品个数</div><div class="v">risk_product 去空格后按逗号拆开，非空产品号个数。全期只有 1 或 2。图13 分母是该类 T0 人日</div></div>
+<div class="row"><div class="k">加权息费</div><div class="v">当天提单且已放款（is_remit=1 且 remit_amt&gt;0），不卡到期。Σ(pre_amt+post_amt) / Σ remit_amt。含 9 月（至 20 日）</div></div>
+<div class="row"><div class="k">盈利率</div><div class="v">上述放款单里 due_date &lt; 统计日。Σ(payin_date≤due_date 的还款) / Σ remit_amt − 1</div></div>
+<div class="row"><div class="k">整笔逾期</div><div class="v">到期样本里 repaid_date &gt; due_date，或结清日空 / ≤2000-01-01</div></div>
+<div class="row"><div class="k">全体</div><div class="v">当天提单全样本金额加权（附录 SQL 的 prod_grp=合计），不是单/双产品比率平均。图14–16 全体为红虚线</div></div>
+<div class="row"><div class="k">6 月双产品</div><div class="v">当天提单为 0，息费/盈利/逾期记为 —。折线用虚线跨过 6 月</div></div>
+<div class="row"><div class="k">使用率四档</div><div class="v">这次不做。圈人应用结清订单占用，不用刚获额订单</div></div>
 </div>
 
 <h2>附录：完整 PGSQL</h2>
