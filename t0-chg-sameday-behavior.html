@@ -161,7 +161,7 @@ pre.sql{overflow:auto;max-height:900px;font-size:11.5px;line-height:1.5;color:#d
 
 <h2>四、单产品 / 双产品：当天提单率</h2>
 <p class="desc">产品个数 = 该次获额 risk_product 去空格按逗号拆开的非空产品号，只有 1 个或 2 个。当天提单 = 获额后首次 apply 且 apply_date = 获额日。分母是该类当月 T0 人日。6 月双产品为 0，折线在 6 月断开。9 月截至 20 日。</p>
-<div class="chart"><h3>图13 当天提单率：全体 T0 / 1 个产品 / 2 个产品</h3><p>1–5 月双产品高于单产品；6 月双产品停掉；8–9 月双产品回来后提单率掉到和单产品同一水平</p><div class="box" style="height:380px"><canvas id="c13"></canvas></div></div>
+<div class="chart"><h3>图13 当天提单率：全体 T0 / 1 个产品 / 2 个产品</h3><p>1–5 月双产品高于单产品；6 月双产品无数据，跨月虚线；8–9 月回来后提单率掉到和单产品同一水平</p><div class="box" style="height:380px"><canvas id="c13"></canvas></div></div>
 <details class="code"><summary>月度人日与当天提单明细（点击打开）</summary>
 <div class="table"><table>
 <thead><tr><th>月</th><th>T0</th><th>1 个产品</th><th>2 个产品</th><th>1 个当天提单</th><th>2 个当天提单</th><th>全体当天提单</th></tr></thead>
@@ -170,7 +170,7 @@ pre.sql{overflow:auto;max-height:900px;font-size:11.5px;line-height:1.5;color:#d
 </details>
 
 <h2>五、当天提单放款：息费 / 到期盈利 / 逾期</h2>
-<p class="desc">只统计 T0 当天提单（apply_time≥vir_time 且 apply_date=获额日）及其放款。折线：1 个产品 / 2 个产品 / 全体（红虚线，口径同图13）。横轴是获额月。6 月双产品无线。9 月盈利/逾期到期很少，不画。</p>
+<p class="desc">只统计 T0 当天提单（apply_time≥vir_time 且 apply_date=获额日）及其放款。折线：1 个产品 / 2 个产品 / 全体（红虚线，口径同图13）。横轴是获额月。6 月双产品无数据，双产品折线用虚线跨过。9 月盈利/逾期到期很少，不画。</p>
 <div class="callout gold">
 <div class="ch">盈利 / 逾期 / 息费口径（验证，不圈人）</div>
 <strong>样本</strong>：T0 当天首次 apply（apply_time≥vir_time 且 apply_date=vir_date）。非当天提单不进。产品个数是该次获额槽数，不是提单选的那个号。<br>
@@ -186,9 +186,9 @@ pre.sql{overflow:auto;max-height:900px;font-size:11.5px;line-height:1.5;color:#d
 <article class="card"><div class="label">2 个产品盈利 / 逾期</div><div class="num">4.57%</div><div class="sub">逾期 36.45% · 到期 26,996</div></article>
 </section>
 <div class="grid g3" style="margin-top:14px">
-  <div class="chart"><h3>图14 放款加权息费：1 个 / 2 个 / 全体</h3><p>T0 当天提单 · 已放款 · 不卡到期 · 含 9 月（至 20 日）· 全体红虚线</p><div class="box"><canvas id="c14"></canvas></div></div>
-  <div class="chart"><h3>图15 到期盈利率：1 个 / 2 个 / 全体</h3><p>T0 当天提单 · 已放款且已到期 · 9 月到期很少，不画 · 全体红虚线</p><div class="box"><canvas id="c15"></canvas></div></div>
-  <div class="chart"><h3>图16 整笔逾期率：1 个 / 2 个 / 全体</h3><p>T0 当天提单 · 已放款且已到期 · 9 月到期很少，不画 · 全体红虚线</p><div class="box"><canvas id="c16"></canvas></div></div>
+  <div class="chart"><h3>图14 放款加权息费：1 个 / 2 个 / 全体</h3><p>T0 当天提单 · 已放款 · 不卡到期 · 含 9 月（至 20 日）· 全体红虚线 · 双产品跨 6 月虚线</p><div class="box"><canvas id="c14"></canvas></div></div>
+  <div class="chart"><h3>图15 到期盈利率：1 个 / 2 个 / 全体</h3><p>T0 当天提单 · 已放款且已到期 · 9 月到期很少，不画 · 全体红虚线 · 双产品跨 6 月虚线</p><div class="box"><canvas id="c15"></canvas></div></div>
+  <div class="chart"><h3>图16 整笔逾期率：1 个 / 2 个 / 全体</h3><p>T0 当天提单 · 已放款且已到期 · 9 月到期很少，不画 · 全体红虚线 · 双产品跨 6 月虚线</p><div class="box"><canvas id="c16"></canvas></div></div>
 </div>
 <details class="code"><summary>息费 / 盈利 / 逾期明细（点击打开）</summary>
 <div class="table"><table>
@@ -210,7 +210,7 @@ T0 origin：2026-01-01～09-20；loan_type_code=2、is_pass1=1、recycle_type=3�
 规则点确认：获额后 24 小时，分母为全部 T0 获额通过人日。1–8 月 95,023 / 177,133 = 53.65%。<br>
 当天提单：获额后当天首次 apply，apply_time≥vir_time。改期次对照的分母是有上一笔的 T0 人日；进页子集另报。<br>
 产品个数：order_vir_f_copy.risk_product 去空格后按逗号拆开；全期只有 1 个或 2 个。图13 分母是该类 T0 人日，与升/降/不变同一套 origin。<br>
-当天提单质量：获额后当天首次 apply（apply_time≥vir_time 且 apply_date=vir_date）。非当天提单不进息费/盈利/逾期。按获额月分组。加权息费 = 已放款 Σ(pre_amt+post_amt)/Σ remit_amt，不卡到期，含 9 月（至 20 日）。到期 = is_remit=1 且 remit_amt&gt;0 且 due_date &lt; CURRENT_DATE。盈利率 = Σ(repayment_record_copy.amount，payin_date≤due_date) / Σ remit_amt − 1。整笔逾期 = repaid_date &gt; due_date 或空/≤2000-01-01。6 月双产品当天提单为 0。只做验证，不圈人。<br>
+当天提单质量：获额后当天首次 apply（apply_time≥vir_time 且 apply_date=vir_date）。非当天提单不进息费/盈利/逾期。按获额月分组。加权息费 = 已放款 Σ(pre_amt+post_amt)/Σ remit_amt，不卡到期，含 9 月（至 20 日）。到期 = is_remit=1 且 remit_amt&gt;0 且 due_date &lt; CURRENT_DATE。盈利率 = Σ(repayment_record_copy.amount，payin_date≤due_date) / Σ remit_amt − 1。整笔逾期 = repaid_date &gt; due_date 或空/≤2000-01-01。全体 = 当天提单全样本金额加权（附录 SQL 的 prod_grp=合计）。图14–16 全体为红虚线。6 月双产品当天提单为 0。只做验证，不圈人。<br>
 使用率四档这次不做：圈人应用结清订单占用，不用刚获额订单。
 </div>
 
@@ -1162,6 +1162,11 @@ const pal = {up:'#43c7e7', down:'#f68ab0', same:'#ffc26b'};
 Chart.defaults.color='#aac5da';
 Chart.defaults.borderColor='rgba(42,92,126,.35)';
 Chart.defaults.font.family='-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei",sans-serif';
+function gapDash(ctx){
+  if (ctx.p0.skip || ctx.p1.skip) return [6, 6];
+  if ((ctx.p1DataIndex - ctx.p0DataIndex) > 1) return [6, 6];
+  return undefined;
+}
 function series(grp, field){
   return months.map((_,i) => {
     const ym = D.funnel.filter(r=>r.ym!=='合计')[i].ym;
@@ -1264,7 +1269,7 @@ new Chart(document.getElementById('c13'), {
     datasets: [
       {label:'全体 T0', borderColor:'#f68ab0', tension:.25, borderDash:[5,4], spanGaps:false, data: D.prod.map(r=>r.pct_apply)},
       {label:'1 个产品', borderColor:'#43c7e7', tension:.25, spanGaps:false, data: D.prod.map(r=>r.pct_apply_1)},
-      {label:'2 个产品', borderColor:'#ffc26b', tension:.25, spanGaps:false, data: D.prod.map(r=>r.pct_apply_2)}
+      {label:'2 个产品', borderColor:'#ffc26b', tension:.25, spanGaps:true, segment:{borderDash: gapDash}, data: D.prod.map(r=>r.pct_apply_2)}
     ]
   },
   options: {responsive:true, maintainAspectRatio:false, plugins:{legend:{position:'bottom'}}, scales:{y:{ticks:{callback:v=>v+'%'}}}}
@@ -1284,7 +1289,7 @@ new Chart(document.getElementById('c14'), {
     labels: qLabs,
     datasets: [
       {label:'1 个产品', borderColor:'#43c7e7', tension:.25, spanGaps:true, data: qf('1个产品','fee_rate')},
-      {label:'2 个产品', borderColor:'#ffc26b', tension:.25, spanGaps:true, data: qf('2个产品','fee_rate')},
+      {label:'2 个产品', borderColor:'#ffc26b', tension:.25, spanGaps:true, segment:{borderDash: gapDash}, data: qf('2个产品','fee_rate')},
       {label:'全体', borderColor:'#f68ab0', tension:.25, borderDash:[5,4], spanGaps:true, data: qf('合计','fee_rate')}
     ]
   },
@@ -1296,7 +1301,7 @@ new Chart(document.getElementById('c15'), {
     labels: qLabs,
     datasets: [
       {label:'1 个产品', borderColor:'#43c7e7', tension:.25, spanGaps:true, data: qf('1个产品','profit_rate')},
-      {label:'2 个产品', borderColor:'#ffc26b', tension:.25, spanGaps:true, data: qf('2个产品','profit_rate')},
+      {label:'2 个产品', borderColor:'#ffc26b', tension:.25, spanGaps:true, segment:{borderDash: gapDash}, data: qf('2个产品','profit_rate')},
       {label:'全体', borderColor:'#f68ab0', tension:.25, borderDash:[5,4], spanGaps:true, data: qf('合计','profit_rate')}
     ]
   },
@@ -1308,7 +1313,7 @@ new Chart(document.getElementById('c16'), {
     labels: qLabs,
     datasets: [
       {label:'1 个产品', borderColor:'#43c7e7', tension:.25, spanGaps:true, data: qf('1个产品','overdue_pct')},
-      {label:'2 个产品', borderColor:'#ffc26b', tension:.25, spanGaps:true, data: qf('2个产品','overdue_pct')},
+      {label:'2 个产品', borderColor:'#ffc26b', tension:.25, spanGaps:true, segment:{borderDash: gapDash}, data: qf('2个产品','overdue_pct')},
       {label:'全体', borderColor:'#f68ab0', tension:.25, borderDash:[5,4], spanGaps:true, data: qf('合计','overdue_pct')}
     ]
   },
