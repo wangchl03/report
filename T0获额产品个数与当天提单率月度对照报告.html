@@ -76,6 +76,7 @@ pre.sql{overflow:auto;max-height:900px;font-size:11.5px;line-height:1.5;color:#d
   <div class="chart"><h3>图4 当天提单人数</h3><p>分子，不是占比</p><div class="box"><canvas id="c4"></canvas></div></div>
 </div>
 
+<details class="code"><summary>月度人日与当天提单明细（点击打开）</summary>
 <div class="table"><table>
 <thead><tr>
 <th>月</th><th>T0</th><th>均产品数</th><th>1 个产品</th><th>2 个产品</th>
@@ -83,6 +84,7 @@ pre.sql{overflow:auto;max-height:900px;font-size:11.5px;line-height:1.5;color:#d
 </tr></thead>
 <tbody><tr><td>01月</td><td>19,520</td><td>1.6671</td><td>6,499（33.29%）</td><td>13,021（66.71%）</td><td>3,347（51.50%）</td><td>6,978（53.59%）</td><td>10,325（52.89%）</td></tr><tr><td>02月</td><td>22,739</td><td>1.6209</td><td>8,620（37.91%）</td><td>14,119（62.09%）</td><td>4,299（49.87%）</td><td>7,481（52.99%）</td><td>11,780（51.81%）</td></tr><tr><td>03月</td><td>22,198</td><td>1.4834</td><td>11,468（51.66%）</td><td>10,730（48.34%）</td><td>5,068（44.19%）</td><td>5,225（48.70%）</td><td>10,293（46.37%）</td></tr><tr><td>04月</td><td>20,780</td><td>1.4115</td><td>12,228（58.85%）</td><td>8,552（41.15%）</td><td>5,462（44.67%）</td><td>4,274（49.98%）</td><td>9,736（46.85%）</td></tr><tr><td>05月</td><td>23,875</td><td>1.1848</td><td>19,463（81.52%）</td><td>4,412（18.48%）</td><td>8,552（43.94%）</td><td>2,231（50.57%）</td><td>10,783（45.16%）</td></tr><tr><td>06月</td><td>22,635</td><td>1.0000</td><td>22,635（100.00%）</td><td>0（0.00%）</td><td>9,907（43.77%）</td><td>—</td><td>9,907（43.77%）</td></tr><tr><td>07月</td><td>23,275</td><td>1.0028</td><td>23,209（99.72%）</td><td>66（0.28%）</td><td>9,594（41.34%）</td><td>32（48.48%）</td><td>9,626（41.36%）</td></tr><tr><td>08月</td><td>22,111</td><td>1.1467</td><td>18,868（85.33%）</td><td>3,243（14.67%）</td><td>7,410（39.27%）</td><td>1,258（38.79%）</td><td>8,668（39.20%）</td></tr><tr><td>9月（至20日）</td><td>14,377</td><td>1.2667</td><td>10,543（73.33%）</td><td>3,834（26.67%）</td><td>4,198（39.82%）</td><td>1,553（40.51%）</td><td>5,751（40.00%）</td></tr><tr><td>合计</td><td>191,510</td><td>1.3027</td><td>133,533（69.73%）</td><td>57,977（30.27%）</td><td>57,837（43.31%）</td><td>29,032（50.08%）</td><td>86,869（45.36%）</td></tr></tbody>
 </table></div>
+</details>
 
 <h2>二、1–8 月提单：到期盈利率与逾期率</h2>
 <p class="desc">获额后首次提单、申请日在 2026-01-01～08-31。盈利率、逾期率只走已放款且 due_date &lt; 统计日的订单。盈利率 = 到期日及之前还款 / 放款 − 1。整笔逾期 = 结清日晚于到期日，或结清日空/≤2000-01-01。产品个数是获额槽数。6–7 月双产品提单很少。</p>
@@ -90,6 +92,7 @@ pre.sql{overflow:auto;max-height:900px;font-size:11.5px;line-height:1.5;color:#d
   <div class="chart"><h3>图5 到期盈利率</h3><p>1–8 月提单月 · 已到期加权</p><div class="box"><canvas id="c5"></canvas></div></div>
   <div class="chart"><h3>图6 整笔逾期率</h3><p>1–8 月提单月 · 已到期订单数</p><div class="box"><canvas id="c6"></canvas></div></div>
 </div>
+<details class="code"><summary>1–8 月提单到期盈利息逾期明细（点击打开）</summary>
 <div class="table"><table>
 <thead><tr>
 <th>提单月</th><th>1个提单</th><th>1个到期</th><th>1个盈利率</th><th>1个逾期率</th>
@@ -98,6 +101,7 @@ pre.sql{overflow:auto;max-height:900px;font-size:11.5px;line-height:1.5;color:#d
 </tr></thead>
 <tbody><tr><td>01月</td><td>5,098</td><td>5,019</td><td>8.48%</td><td>33.43%</td><td>10,498</td><td>10,330</td><td>5.93%</td><td>35.62%</td><td>6.89%</td><td>34.91%</td></tr><tr><td>02月</td><td>7,324</td><td>7,153</td><td>7.94%</td><td>35.24%</td><td>12,606</td><td>12,323</td><td>6.75%</td><td>34.89%</td><td>7.21%</td><td>35.02%</td></tr><tr><td>03月</td><td>9,848</td><td>9,637</td><td>12.86%</td><td>35.38%</td><td>10,262</td><td>10,046</td><td>12.46%</td><td>32.31%</td><td>12.64%</td><td>33.82%</td></tr><tr><td>04月</td><td>10,721</td><td>10,516</td><td>14.49%</td><td>36.18%</td><td>8,404</td><td>8,246</td><td>13.09%</td><td>31.83%</td><td>13.80%</td><td>34.27%</td></tr><tr><td>05月</td><td>16,093</td><td>15,627</td><td>12.13%</td><td>35.81%</td><td>4,948</td><td>4,835</td><td>13.69%</td><td>32.39%</td><td>12.55%</td><td>35.00%</td></tr><tr><td>06月</td><td>20,040</td><td>19,464</td><td>8.81%</td><td>39.53%</td><td>673</td><td>631</td><td>15.91%</td><td>39.46%</td><td>9.16%</td><td>39.53%</td></tr><tr><td>07月</td><td>20,358</td><td>19,817</td><td>8.33%</td><td>40.71%</td><td>399</td><td>369</td><td>11.84%</td><td>37.94%</td><td>8.41%</td><td>40.66%</td></tr><tr><td>08月</td><td>17,435</td><td>16,273</td><td>9.71%</td><td>41.06%</td><td>2,473</td><td>1,961</td><td>12.30%</td><td>43.19%</td><td>9.98%</td><td>41.29%</td></tr><tr><td>合计</td><td>106,917</td><td>103,506</td><td>10.05%</td><td>38.12%</td><td>50,263</td><td>48,741</td><td>9.86%</td><td>34.16%</td><td>9.99%</td><td>36.85%</td></tr></tbody>
 </table></div>
+</details>
 
 <h2>口径</h2>
 <div class="callout">
