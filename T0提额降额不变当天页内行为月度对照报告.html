@@ -58,8 +58,9 @@ pre.sql{overflow:auto;max-height:900px;font-size:11.5px;line-height:1.5;color:#d
 <div class="callout gold"><div class="ch">2. 当天点确认：不变 &gt; 降额 &gt; 升额</div>
 不变 53.54%，降额 48.00%，升额 43.83%。升额人更多在改金额（34.91%）和看计划（41.08%），确认按钮点得更少。8–9 月升额当天确认掉到 37%～38%。
 </div>
-<div class="callout red"><div class="ch">3. 升额客群页内更「挑额度」，不变客群更「直接确认」</div>
-看计划：升额 41.08%，降额 31.15%，不变 22.82%。改金额同样是升额最高。选借款原因反过来，升额 14.13% 低于降额/不变（都是 17.43%）。改期次、看合同三类接近，合同全年只有约 2%。
+<div class="callout red"><div class="ch">3. 七项当天行为都进表：升额挑金额/计划，确认更低</div>
+进页三类都在 81%～83%。当天点确认：不变 53.54% &gt; 降额 48.00% &gt; 升额 43.83%。<br>
+改金额 升/降/不变 = 34.91% / 26.06% / 24.42%；改期次 18.67% / 17.32% / 16.94%；看合同 1.98% / 2.43% / 2.58%；看计划 41.08% / 31.15% / 22.82%；选原因 14.13% / 17.43% / 17.43%。
 </div>
 
 <h2>一、样本：每月 T0 人日都进分母</h2>
@@ -83,9 +84,16 @@ pre.sql{overflow:auto;max-height:900px;font-size:11.5px;line-height:1.5;color:#d
 </div>
 <div class="grid g2">
   <div class="chart"><h3>图5 当天改金额率</h3><p>升额始终高一截</p><div class="box"><canvas id="c5"></canvas></div></div>
-  <div class="chart"><h3>图6 当天看还款计划率</h3><p>升额最高，不变最低</p><div class="box"><canvas id="c6"></canvas></div></div>
+  <div class="chart"><h3>图6 当天改期次率</h3><p>三类接近，年后下行</p><div class="box"><canvas id="c6"></canvas></div></div>
 </div>
-<div class="chart"><h3>图7 全年七项行为（三类并排）</h3><p>分母 = 该类全部人日</p><div class="box" style="height:380px"><canvas id="c7"></canvas></div></div>
+<div class="grid g2">
+  <div class="chart"><h3>图7 当天看合同率</h3><p>全年约 2%，三类都低</p><div class="box"><canvas id="c7"></canvas></div></div>
+  <div class="chart"><h3>图8 当天看还款计划率</h3><p>升额最高，不变最低</p><div class="box"><canvas id="c8"></canvas></div></div>
+</div>
+<div class="grid g2">
+  <div class="chart"><h3>图9 当天选借款原因率</h3><p>升额略低</p><div class="box"><canvas id="c9"></canvas></div></div>
+  <div class="chart"><h3>图10 全年七项行为（三类并排）</h3><p>分母 = 该类全部人日</p><div class="box"><canvas id="c10"></canvas></div></div>
+</div>
 
 <div class="table"><table>
 <thead><tr><th>客群</th><th>人日</th><th>占有上一笔</th><th>进页</th><th>点确认</th><th>改金额</th><th>改期次</th><th>看合同</th><th>看计划</th><th>选原因</th></tr></thead>
@@ -478,12 +486,15 @@ function line3(id, field){
 line3('c3','pct_enter');
 line3('c4','pct_confirm');
 line3('c5','pct_amt');
-line3('c6','pct_plan');
+line3('c6','pct_term');
+line3('c7','pct_contract');
+line3('c8','pct_plan');
+line3('c9','pct_purpose');
 const labs = ['进页','点确认','改金额','改期次','看合同','看计划','选原因'];
 const keys = ['pct_enter','pct_confirm','pct_amt','pct_term','pct_contract','pct_plan','pct_purpose'];
 const ymap = {};
 D.year.forEach(r => ymap[r.chg_grp]=r);
-new Chart(document.getElementById('c7'), {
+new Chart(document.getElementById('c10'), {
   type:'bar',
   data: {
     labels: labs,
