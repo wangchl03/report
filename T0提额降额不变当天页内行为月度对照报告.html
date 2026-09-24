@@ -62,6 +62,11 @@ pre.sql{overflow:auto;max-height:900px;font-size:11.5px;line-height:1.5;color:#d
 进页三类都在 81%～83%。当天点确认：不变 53.54% &gt; 降额 48.00% &gt; 升额 43.83%。<br>
 改金额 升/降/不变 = 34.91% / 26.06% / 24.42%；改期次 18.67% / 17.32% / 16.94%；看合同 1.98% / 2.43% / 2.58%；看计划 41.08% / 31.15% / 22.82%；选原因 14.13% / 17.43% / 17.43%。
 </div>
+<div class="callout gold"><div class="ch">4. 当天改过期次的人，当天提单率明显高于没改的</div>
+全体：有改期次 34,512 人日（占 18.02%），当天提单 <strong>67.60%</strong>；无改期次 156,998 人日，提单 <strong>40.47%</strong>，差 27.13 个百分点。<br>
+几乎所有改期次的人都进了页（进页 99.99%）。只看进页子集，有改期次仍是 67.61%，无改期次 51.64%，差 15.97 个点，不是「没进页所以没提」造成的。<br>
+升/降/不变里方向一样：升额 63.11% vs 38.51%；降额 71.82% vs 41.51%；不变 78.83% vs 46.68%。这是事后相关，不是「改期次导致提单」。
+</div>
 
 <h2>一、样本：每月 T0 人日都进分母</h2>
 <p class="desc">1–8 月 T0 177,133、24 小时点确认 95,023 = 53.65%，与规则表一致。1–9 月 20 日共 191,510 人日，都能对上上一笔获额（n_chg = n_t0）。升额占 55.14%，降额 33.38%，不变 11.48%。</p>
@@ -114,6 +119,33 @@ pre.sql{overflow:auto;max-height:900px;font-size:11.5px;line-height:1.5;color:#d
 </table></div>
 </details>
 
+<h2>三、有改期次 vs 无改期次：当天提单率</h2>
+<p class="desc">提单 = 获额后当天首次 apply（apply_time≥vir_time 且 apply_date=获额日）。改期次 = 当天 loan_form_term_selection_new(_select)。这是事后对照，筛选时下一笔还没发生。</p>
+<div class="grid g2">
+  <div class="chart"><h3>图11 当天提单率：有改期次 vs 无改期次</h3><p>全体人日</p><div class="box"><canvas id="c11"></canvas></div></div>
+  <div class="chart"><h3>图12 三类额度 × 改期次</h3><p>柱 = 当天提单率</p><div class="box"><canvas id="c12"></canvas></div></div>
+</div>
+<div class="table"><table>
+<thead><tr><th>范围</th><th>改期次</th><th>人日</th><th>占比</th><th>进页人数</th><th>进页率</th><th>当天提单</th><th>当天提单率</th></tr></thead>
+<tbody><tr><td>全体</td><td>有改期次</td><td>34,512</td><td>18.02%</td><td>34,508</td><td>99.99%</td><td>23,331</td><td>67.60%</td></tr><tr><td>全体</td><td>无改期次</td><td>156,998</td><td>81.98%</td><td>122,934</td><td>78.30%</td><td>63,538</td><td>40.47%</td></tr><tr><td>全体</td><td>合计</td><td>191,510</td><td>100.00%</td><td>157,442</td><td>82.21%</td><td>86,869</td><td>45.36%</td></tr><tr><td>进页</td><td>有改期次</td><td>34,508</td><td>21.92%</td><td>34,508</td><td>100.00%</td><td>23,331</td><td>67.61%</td></tr><tr><td>进页</td><td>无改期次</td><td>122,934</td><td>78.08%</td><td>122,934</td><td>100.00%</td><td>63,478</td><td>51.64%</td></tr><tr><td>进页</td><td>合计</td><td>157,442</td><td>100.00%</td><td>157,442</td><td>100.00%</td><td>86,809</td><td>55.14%</td></tr></tbody>
+</table></div>
+<div class="table"><table>
+<thead><tr><th>客群</th><th>改期次</th><th>人日</th><th>当天提单</th><th>当天提单率</th></tr></thead>
+<tbody><tr><td>升额</td><td>有改期次</td><td>19,715</td><td>12,443</td><td>63.11%</td></tr><tr><td>升额</td><td>无改期次</td><td>85,879</td><td>33,075</td><td>38.51%</td></tr><tr><td>升额</td><td>合计</td><td>105,594</td><td>45,518</td><td>43.11%</td></tr><tr><td>降额</td><td>有改期次</td><td>11,074</td><td>7,953</td><td>71.82%</td></tr><tr><td>降额</td><td>无改期次</td><td>52,859</td><td>21,940</td><td>41.51%</td></tr><tr><td>降额</td><td>合计</td><td>63,933</td><td>29,893</td><td>46.76%</td></tr><tr><td>不变</td><td>有改期次</td><td>3,723</td><td>2,935</td><td>78.83%</td></tr><tr><td>不变</td><td>无改期次</td><td>18,260</td><td>8,523</td><td>46.68%</td></tr><tr><td>不变</td><td>合计</td><td>21,983</td><td>11,458</td><td>52.12%</td></tr></tbody>
+</table></div>
+<details class="code"><summary>月 × 有/无改期次明细（点击打开）</summary>
+<div class="table"><table>
+<thead><tr><th>月</th><th>改期次</th><th>人日</th><th>当天提单</th><th>当天提单率</th></tr></thead>
+<tbody><tr><td>2026-01</td><td>有改期次</td><td>5,620</td><td>4,145</td><td>73.75%</td></tr><tr><td>2026-01</td><td>无改期次</td><td>13,900</td><td>6,180</td><td>44.46%</td></tr><tr><td>2026-02</td><td>有改期次</td><td>6,284</td><td>4,603</td><td>73.25%</td></tr><tr><td>2026-02</td><td>无改期次</td><td>16,455</td><td>7,177</td><td>43.62%</td></tr><tr><td>2026-03</td><td>有改期次</td><td>4,670</td><td>3,401</td><td>72.83%</td></tr><tr><td>2026-03</td><td>无改期次</td><td>17,528</td><td>6,892</td><td>39.32%</td></tr><tr><td>2026-04</td><td>有改期次</td><td>3,969</td><td>2,733</td><td>68.86%</td></tr><tr><td>2026-04</td><td>无改期次</td><td>16,811</td><td>7,003</td><td>41.66%</td></tr><tr><td>2026-05</td><td>有改期次</td><td>3,269</td><td>2,135</td><td>65.31%</td></tr><tr><td>2026-05</td><td>无改期次</td><td>20,606</td><td>8,648</td><td>41.97%</td></tr><tr><td>2026-06</td><td>有改期次</td><td>2,336</td><td>1,408</td><td>60.27%</td></tr><tr><td>2026-06</td><td>无改期次</td><td>20,299</td><td>8,499</td><td>41.87%</td></tr><tr><td>2026-07</td><td>有改期次</td><td>2,647</td><td>1,566</td><td>59.16%</td></tr><tr><td>2026-07</td><td>无改期次</td><td>20,628</td><td>8,060</td><td>39.07%</td></tr><tr><td>2026-08</td><td>有改期次</td><td>3,164</td><td>1,817</td><td>57.43%</td></tr><tr><td>2026-08</td><td>无改期次</td><td>18,947</td><td>6,851</td><td>36.16%</td></tr><tr><td>2026-09</td><td>有改期次</td><td>2,553</td><td>1,523</td><td>59.66%</td></tr><tr><td>2026-09</td><td>无改期次</td><td>11,824</td><td>4,228</td><td>35.76%</td></tr></tbody>
+</table></div>
+</details>
+<details class="code"><summary>月 × 升/降/不变 × 改期次明细（点击打开）</summary>
+<div class="table"><table>
+<thead><tr><th>月</th><th>客群</th><th>改期次</th><th>人日</th><th>当天提单</th><th>当天提单率</th></tr></thead>
+<tbody><tr><td>2026-01</td><td>升额</td><td>有改期次</td><td>3,346</td><td>2,350</td><td>70.23%</td></tr><tr><td>2026-01</td><td>升额</td><td>无改期次</td><td>8,336</td><td>3,807</td><td>45.67%</td></tr><tr><td>2026-01</td><td>降额</td><td>有改期次</td><td>1,748</td><td>1,348</td><td>77.12%</td></tr><tr><td>2026-01</td><td>降额</td><td>无改期次</td><td>4,421</td><td>1,901</td><td>43.00%</td></tr><tr><td>2026-01</td><td>不变</td><td>有改期次</td><td>526</td><td>447</td><td>84.98%</td></tr><tr><td>2026-01</td><td>不变</td><td>无改期次</td><td>1,143</td><td>472</td><td>41.29%</td></tr><tr><td>2026-02</td><td>升额</td><td>有改期次</td><td>3,521</td><td>2,402</td><td>68.22%</td></tr><tr><td>2026-02</td><td>升额</td><td>无改期次</td><td>9,074</td><td>3,989</td><td>43.96%</td></tr><tr><td>2026-02</td><td>降额</td><td>有改期次</td><td>2,147</td><td>1,683</td><td>78.39%</td></tr><tr><td>2026-02</td><td>降额</td><td>无改期次</td><td>5,879</td><td>2,510</td><td>42.69%</td></tr><tr><td>2026-02</td><td>不变</td><td>有改期次</td><td>616</td><td>518</td><td>84.09%</td></tr><tr><td>2026-02</td><td>不变</td><td>无改期次</td><td>1,502</td><td>678</td><td>45.14%</td></tr><tr><td>2026-03</td><td>升额</td><td>有改期次</td><td>2,283</td><td>1,562</td><td>68.42%</td></tr><tr><td>2026-03</td><td>升额</td><td>无改期次</td><td>8,352</td><td>3,238</td><td>38.77%</td></tr><tr><td>2026-03</td><td>降额</td><td>有改期次</td><td>1,668</td><td>1,258</td><td>75.42%</td></tr><tr><td>2026-03</td><td>降额</td><td>无改期次</td><td>6,449</td><td>2,470</td><td>38.30%</td></tr><tr><td>2026-03</td><td>不变</td><td>有改期次</td><td>719</td><td>581</td><td>80.81%</td></tr><tr><td>2026-03</td><td>不变</td><td>无改期次</td><td>2,727</td><td>1,184</td><td>43.42%</td></tr><tr><td>2026-04</td><td>升额</td><td>有改期次</td><td>2,231</td><td>1,445</td><td>64.77%</td></tr><tr><td>2026-04</td><td>升额</td><td>无改期次</td><td>8,681</td><td>3,529</td><td>40.65%</td></tr><tr><td>2026-04</td><td>降额</td><td>有改期次</td><td>1,200</td><td>852</td><td>71.00%</td></tr><tr><td>2026-04</td><td>降额</td><td>无改期次</td><td>5,444</td><td>2,225</td><td>40.87%</td></tr><tr><td>2026-04</td><td>不变</td><td>有改期次</td><td>538</td><td>436</td><td>81.04%</td></tr><tr><td>2026-04</td><td>不变</td><td>无改期次</td><td>2,686</td><td>1,249</td><td>46.50%</td></tr><tr><td>2026-05</td><td>升额</td><td>有改期次</td><td>1,929</td><td>1,183</td><td>61.33%</td></tr><tr><td>2026-05</td><td>升额</td><td>无改期次</td><td>11,137</td><td>4,382</td><td>39.35%</td></tr><tr><td>2026-05</td><td>降额</td><td>有改期次</td><td>999</td><td>689</td><td>68.97%</td></tr><tr><td>2026-05</td><td>降额</td><td>无改期次</td><td>6,990</td><td>3,056</td><td>43.72%</td></tr><tr><td>2026-05</td><td>不变</td><td>有改期次</td><td>341</td><td>263</td><td>77.13%</td></tr><tr><td>2026-05</td><td>不变</td><td>无改期次</td><td>2,479</td><td>1,210</td><td>48.81%</td></tr><tr><td>2026-06</td><td>升额</td><td>有改期次</td><td>1,305</td><td>716</td><td>54.87%</td></tr><tr><td>2026-06</td><td>升额</td><td>无改期次</td><td>10,736</td><td>4,100</td><td>38.19%</td></tr><tr><td>2026-06</td><td>降额</td><td>有改期次</td><td>742</td><td>484</td><td>65.23%</td></tr><tr><td>2026-06</td><td>降额</td><td>无改期次</td><td>6,698</td><td>2,939</td><td>43.88%</td></tr><tr><td>2026-06</td><td>不变</td><td>有改期次</td><td>289</td><td>208</td><td>71.97%</td></tr><tr><td>2026-06</td><td>不变</td><td>无改期次</td><td>2,865</td><td>1,460</td><td>50.96%</td></tr><tr><td>2026-07</td><td>升额</td><td>有改期次</td><td>1,615</td><td>895</td><td>55.42%</td></tr><tr><td>2026-07</td><td>升额</td><td>无改期次</td><td>11,898</td><td>4,212</td><td>35.40%</td></tr><tr><td>2026-07</td><td>降额</td><td>有改期次</td><td>815</td><td>522</td><td>64.05%</td></tr><tr><td>2026-07</td><td>降额</td><td>无改期次</td><td>6,622</td><td>2,857</td><td>43.14%</td></tr><tr><td>2026-07</td><td>不变</td><td>有改期次</td><td>217</td><td>149</td><td>68.66%</td></tr><tr><td>2026-07</td><td>不变</td><td>无改期次</td><td>2,108</td><td>991</td><td>47.01%</td></tr><tr><td>2026-08</td><td>升额</td><td>有改期次</td><td>1,878</td><td>994</td><td>52.93%</td></tr><tr><td>2026-08</td><td>升额</td><td>无改期次</td><td>10,675</td><td>3,532</td><td>33.09%</td></tr><tr><td>2026-08</td><td>降额</td><td>有改期次</td><td>1,020</td><td>646</td><td>63.33%</td></tr><tr><td>2026-08</td><td>降额</td><td>无改期次</td><td>6,711</td><td>2,588</td><td>38.56%</td></tr><tr><td>2026-08</td><td>不变</td><td>有改期次</td><td>266</td><td>177</td><td>66.54%</td></tr><tr><td>2026-08</td><td>不变</td><td>无改期次</td><td>1,561</td><td>731</td><td>46.83%</td></tr><tr><td>2026-09</td><td>升额</td><td>有改期次</td><td>1,607</td><td>896</td><td>55.76%</td></tr><tr><td>2026-09</td><td>升额</td><td>无改期次</td><td>6,990</td><td>2,286</td><td>32.70%</td></tr><tr><td>2026-09</td><td>降额</td><td>有改期次</td><td>735</td><td>471</td><td>64.08%</td></tr><tr><td>2026-09</td><td>降额</td><td>无改期次</td><td>3,645</td><td>1,394</td><td>38.24%</td></tr><tr><td>2026-09</td><td>不变</td><td>有改期次</td><td>211</td><td>156</td><td>73.93%</td></tr><tr><td>2026-09</td><td>不变</td><td>无改期次</td><td>1,189</td><td>548</td><td>46.09%</td></tr></tbody>
+</table></div>
+</details>
+
 <h2>口径</h2>
 <div class="callout">
 T0 origin：2026-01-01～09-20；loan_type_code=2、is_pass1=1、recycle_type=3；20 秒批次留 serial_id 最大；干净结清；vir_time≥repaid_time；day_rn=1。人日不去重。<br>
@@ -121,6 +153,7 @@ T0 origin：2026-01-01～09-20；loan_type_code=2、is_pass1=1、recycle_type=3�
 行为窗口：create_date=获额日，create_time≥结清时间且 &lt;次日。进页须 event_type=page_view_in。<br>
 进页 Loan_newpage / Loan_newpage_select；点确认 Loan_newconfirm / Loan_newconfirm_select；改金额 amount_modification 与 loan_form_loan_amount_selectionn_new(_select)；改期次 loan_form_term_selection_new(_select)；合同 / 计划 / 原因对应 Loan_contract_newdetails、Loan_plan_newdetails、Loan_purpose_newdetails 及 _select。<br>
 规则点确认：获额后 24 小时，分母为全部 T0 获额通过人日。1–8 月 95,023 / 177,133 = 53.65%。<br>
+当天提单：获额后当天首次 apply，apply_time≥vir_time。改期次对照的分母是有上一笔的 T0 人日；进页子集另报。<br>
 使用率四档这次不做：圈人应用结清订单占用，不用刚获额订单。
 </div>
 
@@ -299,6 +332,19 @@ INNER JOIN wangchuanliang.event_track_record e
  )
 GROUP BY t.user_id, t.vir_date;
 
+DROP TABLE IF EXISTS tmp_apply;
+CREATE TEMP TABLE tmp_apply AS
+SELECT z.user_id, z.vir_date, 1 AS f_apply
+FROM (
+    SELECT t.user_id, t.vir_date,
+           ROW_NUMBER() OVER (PARTITION BY t.user_id, t.vir_date ORDER BY a.apply_time, a.serial_id) AS rn
+    FROM tmp_m_origin t
+    INNER JOIN wangchuanliang.order_loan_f_v2_copy a
+      ON a.user_id = t.user_id
+     AND a.apply_time &gt;= t.vir_time
+     AND a.apply_date = t.vir_date
+) z WHERE rn = 1;
+
 DROP TABLE IF EXISTS tmp_univ;
 CREATE TEMP TABLE tmp_univ AS
 SELECT
@@ -320,13 +366,15 @@ SELECT
     COALESCE(b.f_term, 0) AS f_term,
     COALESCE(b.f_contract, 0) AS f_contract,
     COALESCE(b.f_plan, 0) AS f_plan,
-    COALESCE(b.f_purpose, 0) AS f_purpose
+    COALESCE(b.f_purpose, 0) AS f_purpose,
+    COALESCE(a.f_apply, 0) AS f_apply
 FROM tmp_m_origin t
 LEFT JOIN tmp_prev_amt p ON p.user_id = t.user_id AND p.vir_date = t.vir_date
 LEFT JOIN tmp_confirm_24h c24 ON c24.user_id = t.user_id AND c24.vir_date = t.vir_date
 LEFT JOIN tmp_confirm_day cd ON cd.user_id = t.user_id AND cd.vir_date = t.vir_date
 LEFT JOIN tmp_enter en ON en.user_id = t.user_id AND en.vir_date = t.vir_date
-LEFT JOIN tmp_beh b ON b.user_id = t.user_id AND b.vir_date = t.vir_date;
+LEFT JOIN tmp_beh b ON b.user_id = t.user_id AND b.vir_date = t.vir_date
+LEFT JOIN tmp_apply a ON a.user_id = t.user_id AND a.vir_date = t.vir_date;
 
 DROP TABLE IF EXISTS tmp_chg;
 CREATE TEMP TABLE tmp_chg AS
@@ -434,12 +482,111 @@ SELECT
     ROUND(100.0 * AVG(f_purpose), 2)
 FROM tmp_chg
 ) z ORDER BY ym;
+
+-- R4 有/无改期次 × 当天提单（全体 + 进页）
+SELECT * FROM (
+SELECT
+    1 AS slice_ord, &#x27;全体&#x27; AS slice,
+    CASE WHEN f_term = 1 THEN 1 ELSE 2 END AS term_ord,
+    CASE WHEN f_term = 1 THEN &#x27;有改期次&#x27; ELSE &#x27;无改期次&#x27; END AS term_grp,
+    COUNT(*) AS n,
+    ROUND(100.0 * COUNT(*) / SUM(COUNT(*)) OVER (), 2) AS pct_share,
+    SUM(f_enter) AS n_enter,
+    ROUND(100.0 * AVG(f_enter), 2) AS pct_enter,
+    SUM(f_apply) AS n_apply,
+    ROUND(100.0 * AVG(f_apply), 2) AS pct_apply
+FROM tmp_chg
+GROUP BY f_term
+UNION ALL
+SELECT 1, &#x27;全体&#x27;, 3, &#x27;合计&#x27;, COUNT(*), 100.00,
+    SUM(f_enter), ROUND(100.0 * AVG(f_enter), 2),
+    SUM(f_apply), ROUND(100.0 * AVG(f_apply), 2)
+FROM tmp_chg
+UNION ALL
+SELECT
+    2, &#x27;进页&#x27;,
+    CASE WHEN f_term = 1 THEN 1 ELSE 2 END,
+    CASE WHEN f_term = 1 THEN &#x27;有改期次&#x27; ELSE &#x27;无改期次&#x27; END,
+    COUNT(*),
+    ROUND(100.0 * COUNT(*) / SUM(COUNT(*)) OVER (), 2),
+    COUNT(*), 100.00,
+    SUM(f_apply), ROUND(100.0 * AVG(f_apply), 2)
+FROM tmp_chg
+WHERE f_enter = 1
+GROUP BY f_term
+UNION ALL
+SELECT 2, &#x27;进页&#x27;, 3, &#x27;合计&#x27;, COUNT(*), 100.00,
+    COUNT(*), 100.00,
+    SUM(f_apply), ROUND(100.0 * AVG(f_apply), 2)
+FROM tmp_chg
+WHERE f_enter = 1
+) z ORDER BY slice_ord, term_ord;
+
+-- R5 月 × 有/无改期次（全体）
+SELECT * FROM (
+SELECT
+    TO_CHAR(ym, &#x27;YYYY-MM&#x27;) AS ym,
+    CASE WHEN f_term = 1 THEN 1 ELSE 2 END AS term_ord,
+    CASE WHEN f_term = 1 THEN &#x27;有改期次&#x27; ELSE &#x27;无改期次&#x27; END AS term_grp,
+    COUNT(*) AS n,
+    SUM(f_apply) AS n_apply,
+    ROUND(100.0 * AVG(f_apply), 2) AS pct_apply
+FROM tmp_chg
+GROUP BY ym, f_term
+UNION ALL
+SELECT TO_CHAR(ym, &#x27;YYYY-MM&#x27;), 3, &#x27;合计&#x27;, COUNT(*), SUM(f_apply), ROUND(100.0 * AVG(f_apply), 2)
+FROM tmp_chg
+GROUP BY ym
+UNION ALL
+SELECT &#x27;合计&#x27;, CASE WHEN f_term = 1 THEN 1 ELSE 2 END,
+    CASE WHEN f_term = 1 THEN &#x27;有改期次&#x27; ELSE &#x27;无改期次&#x27; END,
+    COUNT(*), SUM(f_apply), ROUND(100.0 * AVG(f_apply), 2)
+FROM tmp_chg
+GROUP BY f_term
+UNION ALL
+SELECT &#x27;合计&#x27;, 3, &#x27;合计&#x27;, COUNT(*), SUM(f_apply), ROUND(100.0 * AVG(f_apply), 2)
+FROM tmp_chg
+) z ORDER BY ym, term_ord;
+
+-- R6 升/降/不变 × 有/无改期次
+SELECT * FROM (
+SELECT
+    CASE chg_grp WHEN &#x27;升额&#x27; THEN 1 WHEN &#x27;降额&#x27; THEN 2 ELSE 3 END AS chg_ord,
+    chg_grp,
+    CASE WHEN f_term = 1 THEN 1 ELSE 2 END AS term_ord,
+    CASE WHEN f_term = 1 THEN &#x27;有改期次&#x27; ELSE &#x27;无改期次&#x27; END AS term_grp,
+    COUNT(*) AS n,
+    SUM(f_apply) AS n_apply,
+    ROUND(100.0 * AVG(f_apply), 2) AS pct_apply
+FROM tmp_chg
+GROUP BY chg_grp, f_term
+UNION ALL
+SELECT CASE chg_grp WHEN &#x27;升额&#x27; THEN 1 WHEN &#x27;降额&#x27; THEN 2 ELSE 3 END,
+    chg_grp, 3, &#x27;合计&#x27;, COUNT(*), SUM(f_apply), ROUND(100.0 * AVG(f_apply), 2)
+FROM tmp_chg
+GROUP BY chg_grp
+) z ORDER BY chg_ord, term_ord;
+
+-- R7 月 × 升降 × 改期次
+SELECT * FROM (
+SELECT
+    TO_CHAR(ym, &#x27;YYYY-MM&#x27;) AS ym,
+    CASE chg_grp WHEN &#x27;升额&#x27; THEN 1 WHEN &#x27;降额&#x27; THEN 2 ELSE 3 END AS chg_ord,
+    chg_grp,
+    CASE WHEN f_term = 1 THEN 1 ELSE 2 END AS term_ord,
+    CASE WHEN f_term = 1 THEN &#x27;有改期次&#x27; ELSE &#x27;无改期次&#x27; END AS term_grp,
+    COUNT(*) AS n,
+    SUM(f_apply) AS n_apply,
+    ROUND(100.0 * AVG(f_apply), 2) AS pct_apply
+FROM tmp_chg
+GROUP BY ym, chg_grp, f_term
+) z ORDER BY ym, chg_ord, term_ord;
 </pre>
 </details>
 <p class="foot">数据截止样本日 2026-09-20，库日期 2026-09-23。9 月为人日非整月。升额客群进页不差、确认更低，页内在挑金额和计划；不要把「升额当天确认低」理解成没进页。</p>
 </main>
 <script>
-const D = {"funnel": [{"ym": "2026-01", "n_t0": 19520, "n_chg": 19520, "n_up": 11682, "n_down": 6169, "n_same": 1669, "pct_confirm_24h": 60.46}, {"ym": "2026-02", "n_t0": 22739, "n_chg": 22739, "n_up": 12595, "n_down": 8026, "n_same": 2118, "pct_confirm_24h": 59.52}, {"ym": "2026-03", "n_t0": 22198, "n_chg": 22198, "n_up": 10635, "n_down": 8117, "n_same": 3446, "pct_confirm_24h": 54.49}, {"ym": "2026-04", "n_t0": 20780, "n_chg": 20780, "n_up": 10912, "n_down": 6644, "n_same": 3224, "pct_confirm_24h": 54.59}, {"ym": "2026-05", "n_t0": 23875, "n_chg": 23875, "n_up": 13066, "n_down": 7989, "n_same": 2820, "pct_confirm_24h": 52.91}, {"ym": "2026-06", "n_t0": 22635, "n_chg": 22635, "n_up": 12041, "n_down": 7440, "n_same": 3154, "pct_confirm_24h": 51.89}, {"ym": "2026-07", "n_t0": 23275, "n_chg": 23275, "n_up": 13513, "n_down": 7437, "n_same": 2325, "pct_confirm_24h": 49.14}, {"ym": "2026-08", "n_t0": 22111, "n_chg": 22111, "n_up": 12553, "n_down": 7731, "n_same": 1827, "pct_confirm_24h": 47.18}, {"ym": "2026-09", "n_t0": 14377, "n_chg": 14377, "n_up": 8597, "n_down": 4380, "n_same": 1400, "pct_confirm_24h": 47.78}, {"ym": "合计", "n_t0": 191510, "n_chg": 191510, "n_up": 105594, "n_down": 63933, "n_same": 21983, "pct_confirm_24h": 53.21}], "month_chg": [{"ym": "2026-01", "ord": 1, "chg_grp": "升额", "n": 11682, "pct_share": 59.85, "pct_enter": 79.11, "pct_confirm": 53.12, "pct_amt": 34.76, "pct_term": 28.64, "pct_contract": 2.56, "pct_plan": 41.64, "pct_purpose": 14.47}, {"ym": "2026-01", "ord": 2, "chg_grp": "降额", "n": 6169, "pct_share": 31.6, "pct_enter": 77.0, "pct_confirm": 54.0, "pct_amt": 22.27, "pct_term": 28.34, "pct_contract": 3.21, "pct_plan": 29.99, "pct_purpose": 16.31}, {"ym": "2026-01", "ord": 3, "chg_grp": "不变", "n": 1669, "pct_share": 8.55, "pct_enter": 74.96, "pct_confirm": 55.9, "pct_amt": 17.62, "pct_term": 31.52, "pct_contract": 2.82, "pct_plan": 23.85, "pct_purpose": 17.2}, {"ym": "2026-02", "ord": 1, "chg_grp": "升额", "n": 12595, "pct_share": 55.39, "pct_enter": 77.5, "pct_confirm": 51.16, "pct_amt": 34.04, "pct_term": 27.96, "pct_contract": 2.46, "pct_plan": 40.13, "pct_purpose": 15.05}, {"ym": "2026-02", "ord": 2, "chg_grp": "降额", "n": 8026, "pct_share": 35.3, "pct_enter": 77.01, "pct_confirm": 53.23, "pct_amt": 23.04, "pct_term": 26.75, "pct_contract": 2.52, "pct_plan": 28.53, "pct_purpose": 17.62}, {"ym": "2026-02", "ord": 3, "chg_grp": "不变", "n": 2118, "pct_share": 9.31, "pct_enter": 75.4, "pct_confirm": 57.32, "pct_amt": 19.31, "pct_term": 29.08, "pct_contract": 2.88, "pct_plan": 22.71, "pct_purpose": 16.67}, {"ym": "2026-03", "ord": 1, "chg_grp": "升额", "n": 10635, "pct_share": 47.91, "pct_enter": 73.5, "pct_confirm": 45.78, "pct_amt": 30.79, "pct_term": 21.47, "pct_contract": 1.99, "pct_plan": 37.19, "pct_purpose": 13.28}, {"ym": "2026-03", "ord": 2, "chg_grp": "降额", "n": 8117, "pct_share": 36.57, "pct_enter": 73.61, "pct_confirm": 47.05, "pct_amt": 21.17, "pct_term": 20.55, "pct_contract": 2.44, "pct_plan": 28.21, "pct_purpose": 16.62}, {"ym": "2026-03", "ord": 3, "chg_grp": "不变", "n": 3446, "pct_share": 15.52, "pct_enter": 73.77, "pct_confirm": 52.18, "pct_amt": 19.99, "pct_term": 20.86, "pct_contract": 2.52, "pct_plan": 20.4, "pct_purpose": 17.15}, {"ym": "2026-04", "ord": 1, "chg_grp": "升额", "n": 10912, "pct_share": 52.51, "pct_enter": 78.95, "pct_confirm": 46.04, "pct_amt": 32.92, "pct_term": 20.45, "pct_contract": 2.14, "pct_plan": 38.58, "pct_purpose": 14.07}, {"ym": "2026-04", "ord": 2, "chg_grp": "降额", "n": 6644, "pct_share": 31.97, "pct_enter": 78.85, "pct_confirm": 47.49, "pct_amt": 22.17, "pct_term": 18.06, "pct_contract": 2.6, "pct_plan": 28.76, "pct_purpose": 17.25}, {"ym": "2026-04", "ord": 3, "chg_grp": "不变", "n": 3224, "pct_share": 15.51, "pct_enter": 76.92, "pct_confirm": 53.35, "pct_amt": 19.88, "pct_term": 16.69, "pct_contract": 2.39, "pct_plan": 18.73, "pct_purpose": 15.76}, {"ym": "2026-05", "ord": 1, "chg_grp": "升额", "n": 13066, "pct_share": 54.73, "pct_enter": 85.79, "pct_confirm": 43.36, "pct_amt": 35.38, "pct_term": 14.76, "pct_contract": 1.73, "pct_plan": 40.56, "pct_purpose": 13.81}, {"ym": "2026-05", "ord": 2, "chg_grp": "降额", "n": 7989, "pct_share": 33.46, "pct_enter": 88.05, "pct_confirm": 47.89, "pct_amt": 27.16, "pct_term": 12.5, "pct_contract": 2.47, "pct_plan": 32.26, "pct_purpose": 17.32}, {"ym": "2026-05", "ord": 3, "chg_grp": "不变", "n": 2820, "pct_share": 11.81, "pct_enter": 87.23, "pct_confirm": 53.79, "pct_amt": 28.58, "pct_term": 12.09, "pct_contract": 2.91, "pct_plan": 21.95, "pct_purpose": 19.43}, {"ym": "2026-06", "ord": 1, "chg_grp": "升额", "n": 12041, "pct_share": 53.2, "pct_enter": 85.8, "pct_confirm": 40.88, "pct_amt": 36.75, "pct_term": 10.84, "pct_contract": 1.77, "pct_plan": 42.19, "pct_purpose": 14.43}, {"ym": "2026-06", "ord": 2, "chg_grp": "降额", "n": 7440, "pct_share": 32.87, "pct_enter": 88.15, "pct_confirm": 47.41, "pct_amt": 31.1, "pct_term": 9.97, "pct_contract": 2.37, "pct_plan": 34.48, "pct_purpose": 18.8}, {"ym": "2026-06", "ord": 3, "chg_grp": "不变", "n": 3154, "pct_share": 13.93, "pct_enter": 88.87, "pct_confirm": 54.69, "pct_amt": 30.03, "pct_term": 9.16, "pct_contract": 2.16, "pct_plan": 24.89, "pct_purpose": 19.31}, {"ym": "2026-07", "ord": 1, "chg_grp": "升额", "n": 13513, "pct_share": 58.06, "pct_enter": 85.65, "pct_confirm": 38.73, "pct_amt": 37.28, "pct_term": 11.95, "pct_contract": 1.78, "pct_plan": 43.32, "pct_purpose": 14.2}, {"ym": "2026-07", "ord": 2, "chg_grp": "降额", "n": 7437, "pct_share": 31.95, "pct_enter": 87.67, "pct_confirm": 46.87, "pct_amt": 30.85, "pct_term": 10.96, "pct_contract": 2.22, "pct_plan": 33.95, "pct_purpose": 18.49}, {"ym": "2026-07", "ord": 3, "chg_grp": "不变", "n": 2325, "pct_share": 9.99, "pct_enter": 86.32, "pct_confirm": 51.01, "pct_amt": 27.48, "pct_term": 9.33, "pct_contract": 2.45, "pct_plan": 24.43, "pct_purpose": 15.14}, {"ym": "2026-08", "ord": 1, "chg_grp": "升额", "n": 12553, "pct_share": 56.77, "pct_enter": 85.7, "pct_confirm": 37.13, "pct_amt": 35.96, "pct_term": 14.96, "pct_contract": 1.83, "pct_plan": 43.42, "pct_purpose": 14.32}, {"ym": "2026-08", "ord": 2, "chg_grp": "降额", "n": 7731, "pct_share": 34.96, "pct_enter": 87.6, "pct_confirm": 43.31, "pct_amt": 28.42, "pct_term": 13.19, "pct_contract": 1.97, "pct_plan": 32.29, "pct_purpose": 16.71}, {"ym": "2026-08", "ord": 3, "chg_grp": "不变", "n": 1827, "pct_share": 8.26, "pct_enter": 87.25, "pct_confirm": 51.72, "pct_amt": 28.63, "pct_term": 14.56, "pct_contract": 2.57, "pct_plan": 25.12, "pct_purpose": 17.95}, {"ym": "2026-09", "ord": 1, "chg_grp": "升额", "n": 8597, "pct_share": 59.8, "pct_enter": 85.19, "pct_confirm": 37.91, "pct_amt": 35.5, "pct_term": 18.69, "pct_contract": 1.5, "pct_plan": 41.93, "pct_purpose": 13.13}, {"ym": "2026-09", "ord": 2, "chg_grp": "降额", "n": 4380, "pct_share": 30.47, "pct_enter": 87.33, "pct_confirm": 43.88, "pct_amt": 28.97, "pct_term": 16.78, "pct_contract": 2.05, "pct_plan": 32.24, "pct_purpose": 17.76}, {"ym": "2026-09", "ord": 3, "chg_grp": "不变", "n": 1400, "pct_share": 9.74, "pct_enter": 87.36, "pct_confirm": 52.29, "pct_amt": 30.0, "pct_term": 15.07, "pct_contract": 2.93, "pct_plan": 28.5, "pct_purpose": 18.29}], "month_all": [{"ym": "2026-01", "n": 19520, "pct_enter": 78.09, "pct_confirm": 53.63, "pct_amt": 29.35, "pct_term": 28.79, "pct_contract": 2.79, "pct_plan": 36.43, "pct_purpose": 15.28}, {"ym": "2026-02", "n": 22739, "pct_enter": 77.13, "pct_confirm": 52.46, "pct_amt": 28.78, "pct_term": 27.64, "pct_contract": 2.52, "pct_plan": 34.42, "pct_purpose": 16.11}, {"ym": "2026-03", "n": 22198, "pct_enter": 73.58, "pct_confirm": 47.24, "pct_amt": 25.6, "pct_term": 21.04, "pct_contract": 2.24, "pct_plan": 31.3, "pct_purpose": 15.1}, {"ym": "2026-04", "n": 20780, "pct_enter": 78.6, "pct_confirm": 47.64, "pct_amt": 27.46, "pct_term": 19.1, "pct_contract": 2.32, "pct_plan": 32.36, "pct_purpose": 15.35}, {"ym": "2026-05", "n": 23875, "pct_enter": 86.71, "pct_confirm": 46.11, "pct_amt": 31.83, "pct_term": 13.69, "pct_contract": 2.12, "pct_plan": 35.59, "pct_purpose": 15.65}, {"ym": "2026-06", "n": 22635, "pct_enter": 87.0, "pct_confirm": 44.95, "pct_amt": 33.96, "pct_term": 10.32, "pct_contract": 2.02, "pct_plan": 37.24, "pct_purpose": 16.55}, {"ym": "2026-07", "n": 23275, "pct_enter": 86.36, "pct_confirm": 42.56, "pct_amt": 34.25, "pct_term": 11.37, "pct_contract": 1.99, "pct_plan": 38.44, "pct_purpose": 15.66}, {"ym": "2026-08", "n": 22111, "pct_enter": 86.49, "pct_confirm": 40.5, "pct_amt": 32.72, "pct_term": 14.31, "pct_contract": 1.94, "pct_plan": 38.01, "pct_purpose": 15.46}, {"ym": "2026-09", "n": 14377, "pct_enter": 86.05, "pct_confirm": 41.13, "pct_amt": 32.98, "pct_term": 17.76, "pct_contract": 1.81, "pct_plan": 37.67, "pct_purpose": 15.04}], "year": [{"ym": "合计", "ord": 1, "chg_grp": "升额", "n": 105594, "pct_share": 55.14, "pct_enter": 82.04, "pct_confirm": 43.83, "pct_amt": 34.91, "pct_term": 18.67, "pct_contract": 1.98, "pct_plan": 41.08, "pct_purpose": 14.13}, {"ym": "合计", "ord": 2, "chg_grp": "降额", "n": 63933, "pct_share": 33.38, "pct_enter": 82.67, "pct_confirm": 48.0, "pct_amt": 26.06, "pct_term": 17.32, "pct_contract": 2.43, "pct_plan": 31.15, "pct_purpose": 17.43}, {"ym": "合计", "ord": 3, "chg_grp": "不变", "n": 21983, "pct_share": 11.48, "pct_enter": 81.69, "pct_confirm": 53.54, "pct_amt": 24.42, "pct_term": 16.94, "pct_contract": 2.58, "pct_plan": 22.82, "pct_purpose": 17.43}]};
+const D = {"funnel": [{"ym": "2026-01", "n_t0": 19520, "n_chg": 19520, "n_up": 11682, "n_down": 6169, "n_same": 1669, "pct_confirm_24h": 60.46}, {"ym": "2026-02", "n_t0": 22739, "n_chg": 22739, "n_up": 12595, "n_down": 8026, "n_same": 2118, "pct_confirm_24h": 59.52}, {"ym": "2026-03", "n_t0": 22198, "n_chg": 22198, "n_up": 10635, "n_down": 8117, "n_same": 3446, "pct_confirm_24h": 54.49}, {"ym": "2026-04", "n_t0": 20780, "n_chg": 20780, "n_up": 10912, "n_down": 6644, "n_same": 3224, "pct_confirm_24h": 54.59}, {"ym": "2026-05", "n_t0": 23875, "n_chg": 23875, "n_up": 13066, "n_down": 7989, "n_same": 2820, "pct_confirm_24h": 52.91}, {"ym": "2026-06", "n_t0": 22635, "n_chg": 22635, "n_up": 12041, "n_down": 7440, "n_same": 3154, "pct_confirm_24h": 51.89}, {"ym": "2026-07", "n_t0": 23275, "n_chg": 23275, "n_up": 13513, "n_down": 7437, "n_same": 2325, "pct_confirm_24h": 49.14}, {"ym": "2026-08", "n_t0": 22111, "n_chg": 22111, "n_up": 12553, "n_down": 7731, "n_same": 1827, "pct_confirm_24h": 47.18}, {"ym": "2026-09", "n_t0": 14377, "n_chg": 14377, "n_up": 8597, "n_down": 4380, "n_same": 1400, "pct_confirm_24h": 47.78}, {"ym": "合计", "n_t0": 191510, "n_chg": 191510, "n_up": 105594, "n_down": 63933, "n_same": 21983, "pct_confirm_24h": 53.21}], "month_chg": [{"ym": "2026-01", "ord": 1, "chg_grp": "升额", "n": 11682, "pct_share": 59.85, "pct_enter": 79.11, "pct_confirm": 53.12, "pct_amt": 34.76, "pct_term": 28.64, "pct_contract": 2.56, "pct_plan": 41.64, "pct_purpose": 14.47}, {"ym": "2026-01", "ord": 2, "chg_grp": "降额", "n": 6169, "pct_share": 31.6, "pct_enter": 77.0, "pct_confirm": 54.0, "pct_amt": 22.27, "pct_term": 28.34, "pct_contract": 3.21, "pct_plan": 29.99, "pct_purpose": 16.31}, {"ym": "2026-01", "ord": 3, "chg_grp": "不变", "n": 1669, "pct_share": 8.55, "pct_enter": 74.96, "pct_confirm": 55.9, "pct_amt": 17.62, "pct_term": 31.52, "pct_contract": 2.82, "pct_plan": 23.85, "pct_purpose": 17.2}, {"ym": "2026-02", "ord": 1, "chg_grp": "升额", "n": 12595, "pct_share": 55.39, "pct_enter": 77.5, "pct_confirm": 51.16, "pct_amt": 34.04, "pct_term": 27.96, "pct_contract": 2.46, "pct_plan": 40.13, "pct_purpose": 15.05}, {"ym": "2026-02", "ord": 2, "chg_grp": "降额", "n": 8026, "pct_share": 35.3, "pct_enter": 77.01, "pct_confirm": 53.23, "pct_amt": 23.04, "pct_term": 26.75, "pct_contract": 2.52, "pct_plan": 28.53, "pct_purpose": 17.62}, {"ym": "2026-02", "ord": 3, "chg_grp": "不变", "n": 2118, "pct_share": 9.31, "pct_enter": 75.4, "pct_confirm": 57.32, "pct_amt": 19.31, "pct_term": 29.08, "pct_contract": 2.88, "pct_plan": 22.71, "pct_purpose": 16.67}, {"ym": "2026-03", "ord": 1, "chg_grp": "升额", "n": 10635, "pct_share": 47.91, "pct_enter": 73.5, "pct_confirm": 45.78, "pct_amt": 30.79, "pct_term": 21.47, "pct_contract": 1.99, "pct_plan": 37.19, "pct_purpose": 13.28}, {"ym": "2026-03", "ord": 2, "chg_grp": "降额", "n": 8117, "pct_share": 36.57, "pct_enter": 73.61, "pct_confirm": 47.05, "pct_amt": 21.17, "pct_term": 20.55, "pct_contract": 2.44, "pct_plan": 28.21, "pct_purpose": 16.62}, {"ym": "2026-03", "ord": 3, "chg_grp": "不变", "n": 3446, "pct_share": 15.52, "pct_enter": 73.77, "pct_confirm": 52.18, "pct_amt": 19.99, "pct_term": 20.86, "pct_contract": 2.52, "pct_plan": 20.4, "pct_purpose": 17.15}, {"ym": "2026-04", "ord": 1, "chg_grp": "升额", "n": 10912, "pct_share": 52.51, "pct_enter": 78.95, "pct_confirm": 46.04, "pct_amt": 32.92, "pct_term": 20.45, "pct_contract": 2.14, "pct_plan": 38.58, "pct_purpose": 14.07}, {"ym": "2026-04", "ord": 2, "chg_grp": "降额", "n": 6644, "pct_share": 31.97, "pct_enter": 78.85, "pct_confirm": 47.49, "pct_amt": 22.17, "pct_term": 18.06, "pct_contract": 2.6, "pct_plan": 28.76, "pct_purpose": 17.25}, {"ym": "2026-04", "ord": 3, "chg_grp": "不变", "n": 3224, "pct_share": 15.51, "pct_enter": 76.92, "pct_confirm": 53.35, "pct_amt": 19.88, "pct_term": 16.69, "pct_contract": 2.39, "pct_plan": 18.73, "pct_purpose": 15.76}, {"ym": "2026-05", "ord": 1, "chg_grp": "升额", "n": 13066, "pct_share": 54.73, "pct_enter": 85.79, "pct_confirm": 43.36, "pct_amt": 35.38, "pct_term": 14.76, "pct_contract": 1.73, "pct_plan": 40.56, "pct_purpose": 13.81}, {"ym": "2026-05", "ord": 2, "chg_grp": "降额", "n": 7989, "pct_share": 33.46, "pct_enter": 88.05, "pct_confirm": 47.89, "pct_amt": 27.16, "pct_term": 12.5, "pct_contract": 2.47, "pct_plan": 32.26, "pct_purpose": 17.32}, {"ym": "2026-05", "ord": 3, "chg_grp": "不变", "n": 2820, "pct_share": 11.81, "pct_enter": 87.23, "pct_confirm": 53.79, "pct_amt": 28.58, "pct_term": 12.09, "pct_contract": 2.91, "pct_plan": 21.95, "pct_purpose": 19.43}, {"ym": "2026-06", "ord": 1, "chg_grp": "升额", "n": 12041, "pct_share": 53.2, "pct_enter": 85.8, "pct_confirm": 40.88, "pct_amt": 36.75, "pct_term": 10.84, "pct_contract": 1.77, "pct_plan": 42.19, "pct_purpose": 14.43}, {"ym": "2026-06", "ord": 2, "chg_grp": "降额", "n": 7440, "pct_share": 32.87, "pct_enter": 88.15, "pct_confirm": 47.41, "pct_amt": 31.1, "pct_term": 9.97, "pct_contract": 2.37, "pct_plan": 34.48, "pct_purpose": 18.8}, {"ym": "2026-06", "ord": 3, "chg_grp": "不变", "n": 3154, "pct_share": 13.93, "pct_enter": 88.87, "pct_confirm": 54.69, "pct_amt": 30.03, "pct_term": 9.16, "pct_contract": 2.16, "pct_plan": 24.89, "pct_purpose": 19.31}, {"ym": "2026-07", "ord": 1, "chg_grp": "升额", "n": 13513, "pct_share": 58.06, "pct_enter": 85.65, "pct_confirm": 38.73, "pct_amt": 37.28, "pct_term": 11.95, "pct_contract": 1.78, "pct_plan": 43.32, "pct_purpose": 14.2}, {"ym": "2026-07", "ord": 2, "chg_grp": "降额", "n": 7437, "pct_share": 31.95, "pct_enter": 87.67, "pct_confirm": 46.87, "pct_amt": 30.85, "pct_term": 10.96, "pct_contract": 2.22, "pct_plan": 33.95, "pct_purpose": 18.49}, {"ym": "2026-07", "ord": 3, "chg_grp": "不变", "n": 2325, "pct_share": 9.99, "pct_enter": 86.32, "pct_confirm": 51.01, "pct_amt": 27.48, "pct_term": 9.33, "pct_contract": 2.45, "pct_plan": 24.43, "pct_purpose": 15.14}, {"ym": "2026-08", "ord": 1, "chg_grp": "升额", "n": 12553, "pct_share": 56.77, "pct_enter": 85.7, "pct_confirm": 37.13, "pct_amt": 35.96, "pct_term": 14.96, "pct_contract": 1.83, "pct_plan": 43.42, "pct_purpose": 14.32}, {"ym": "2026-08", "ord": 2, "chg_grp": "降额", "n": 7731, "pct_share": 34.96, "pct_enter": 87.6, "pct_confirm": 43.31, "pct_amt": 28.42, "pct_term": 13.19, "pct_contract": 1.97, "pct_plan": 32.29, "pct_purpose": 16.71}, {"ym": "2026-08", "ord": 3, "chg_grp": "不变", "n": 1827, "pct_share": 8.26, "pct_enter": 87.25, "pct_confirm": 51.72, "pct_amt": 28.63, "pct_term": 14.56, "pct_contract": 2.57, "pct_plan": 25.12, "pct_purpose": 17.95}, {"ym": "2026-09", "ord": 1, "chg_grp": "升额", "n": 8597, "pct_share": 59.8, "pct_enter": 85.19, "pct_confirm": 37.91, "pct_amt": 35.5, "pct_term": 18.69, "pct_contract": 1.5, "pct_plan": 41.93, "pct_purpose": 13.13}, {"ym": "2026-09", "ord": 2, "chg_grp": "降额", "n": 4380, "pct_share": 30.47, "pct_enter": 87.33, "pct_confirm": 43.88, "pct_amt": 28.97, "pct_term": 16.78, "pct_contract": 2.05, "pct_plan": 32.24, "pct_purpose": 17.76}, {"ym": "2026-09", "ord": 3, "chg_grp": "不变", "n": 1400, "pct_share": 9.74, "pct_enter": 87.36, "pct_confirm": 52.29, "pct_amt": 30.0, "pct_term": 15.07, "pct_contract": 2.93, "pct_plan": 28.5, "pct_purpose": 18.29}], "month_all": [{"ym": "2026-01", "n": 19520, "pct_enter": 78.09, "pct_confirm": 53.63, "pct_amt": 29.35, "pct_term": 28.79, "pct_contract": 2.79, "pct_plan": 36.43, "pct_purpose": 15.28}, {"ym": "2026-02", "n": 22739, "pct_enter": 77.13, "pct_confirm": 52.46, "pct_amt": 28.78, "pct_term": 27.64, "pct_contract": 2.52, "pct_plan": 34.42, "pct_purpose": 16.11}, {"ym": "2026-03", "n": 22198, "pct_enter": 73.58, "pct_confirm": 47.24, "pct_amt": 25.6, "pct_term": 21.04, "pct_contract": 2.24, "pct_plan": 31.3, "pct_purpose": 15.1}, {"ym": "2026-04", "n": 20780, "pct_enter": 78.6, "pct_confirm": 47.64, "pct_amt": 27.46, "pct_term": 19.1, "pct_contract": 2.32, "pct_plan": 32.36, "pct_purpose": 15.35}, {"ym": "2026-05", "n": 23875, "pct_enter": 86.71, "pct_confirm": 46.11, "pct_amt": 31.83, "pct_term": 13.69, "pct_contract": 2.12, "pct_plan": 35.59, "pct_purpose": 15.65}, {"ym": "2026-06", "n": 22635, "pct_enter": 87.0, "pct_confirm": 44.95, "pct_amt": 33.96, "pct_term": 10.32, "pct_contract": 2.02, "pct_plan": 37.24, "pct_purpose": 16.55}, {"ym": "2026-07", "n": 23275, "pct_enter": 86.36, "pct_confirm": 42.56, "pct_amt": 34.25, "pct_term": 11.37, "pct_contract": 1.99, "pct_plan": 38.44, "pct_purpose": 15.66}, {"ym": "2026-08", "n": 22111, "pct_enter": 86.49, "pct_confirm": 40.5, "pct_amt": 32.72, "pct_term": 14.31, "pct_contract": 1.94, "pct_plan": 38.01, "pct_purpose": 15.46}, {"ym": "2026-09", "n": 14377, "pct_enter": 86.05, "pct_confirm": 41.13, "pct_amt": 32.98, "pct_term": 17.76, "pct_contract": 1.81, "pct_plan": 37.67, "pct_purpose": 15.04}], "year": [{"ym": "合计", "ord": 1, "chg_grp": "升额", "n": 105594, "pct_share": 55.14, "pct_enter": 82.04, "pct_confirm": 43.83, "pct_amt": 34.91, "pct_term": 18.67, "pct_contract": 1.98, "pct_plan": 41.08, "pct_purpose": 14.13}, {"ym": "合计", "ord": 2, "chg_grp": "降额", "n": 63933, "pct_share": 33.38, "pct_enter": 82.67, "pct_confirm": 48.0, "pct_amt": 26.06, "pct_term": 17.32, "pct_contract": 2.43, "pct_plan": 31.15, "pct_purpose": 17.43}, {"ym": "合计", "ord": 3, "chg_grp": "不变", "n": 21983, "pct_share": 11.48, "pct_enter": 81.69, "pct_confirm": 53.54, "pct_amt": 24.42, "pct_term": 16.94, "pct_contract": 2.58, "pct_plan": 22.82, "pct_purpose": 17.43}], "month_term": [{"ym": "2026-01", "term_ord": 1, "term_grp": "有改期次", "n": 5620, "n_apply": 4145, "pct_apply": 73.75}, {"ym": "2026-01", "term_ord": 2, "term_grp": "无改期次", "n": 13900, "n_apply": 6180, "pct_apply": 44.46}, {"ym": "2026-02", "term_ord": 1, "term_grp": "有改期次", "n": 6284, "n_apply": 4603, "pct_apply": 73.25}, {"ym": "2026-02", "term_ord": 2, "term_grp": "无改期次", "n": 16455, "n_apply": 7177, "pct_apply": 43.62}, {"ym": "2026-03", "term_ord": 1, "term_grp": "有改期次", "n": 4670, "n_apply": 3401, "pct_apply": 72.83}, {"ym": "2026-03", "term_ord": 2, "term_grp": "无改期次", "n": 17528, "n_apply": 6892, "pct_apply": 39.32}, {"ym": "2026-04", "term_ord": 1, "term_grp": "有改期次", "n": 3969, "n_apply": 2733, "pct_apply": 68.86}, {"ym": "2026-04", "term_ord": 2, "term_grp": "无改期次", "n": 16811, "n_apply": 7003, "pct_apply": 41.66}, {"ym": "2026-05", "term_ord": 1, "term_grp": "有改期次", "n": 3269, "n_apply": 2135, "pct_apply": 65.31}, {"ym": "2026-05", "term_ord": 2, "term_grp": "无改期次", "n": 20606, "n_apply": 8648, "pct_apply": 41.97}, {"ym": "2026-06", "term_ord": 1, "term_grp": "有改期次", "n": 2336, "n_apply": 1408, "pct_apply": 60.27}, {"ym": "2026-06", "term_ord": 2, "term_grp": "无改期次", "n": 20299, "n_apply": 8499, "pct_apply": 41.87}, {"ym": "2026-07", "term_ord": 1, "term_grp": "有改期次", "n": 2647, "n_apply": 1566, "pct_apply": 59.16}, {"ym": "2026-07", "term_ord": 2, "term_grp": "无改期次", "n": 20628, "n_apply": 8060, "pct_apply": 39.07}, {"ym": "2026-08", "term_ord": 1, "term_grp": "有改期次", "n": 3164, "n_apply": 1817, "pct_apply": 57.43}, {"ym": "2026-08", "term_ord": 2, "term_grp": "无改期次", "n": 18947, "n_apply": 6851, "pct_apply": 36.16}, {"ym": "2026-09", "term_ord": 1, "term_grp": "有改期次", "n": 2553, "n_apply": 1523, "pct_apply": 59.66}, {"ym": "2026-09", "term_ord": 2, "term_grp": "无改期次", "n": 11824, "n_apply": 4228, "pct_apply": 35.76}], "chg_term": [{"chg_ord": 1, "chg_grp": "升额", "term_ord": 1, "term_grp": "有改期次", "n": 19715, "n_apply": 12443, "pct_apply": 63.11}, {"chg_ord": 1, "chg_grp": "升额", "term_ord": 2, "term_grp": "无改期次", "n": 85879, "n_apply": 33075, "pct_apply": 38.51}, {"chg_ord": 2, "chg_grp": "降额", "term_ord": 1, "term_grp": "有改期次", "n": 11074, "n_apply": 7953, "pct_apply": 71.82}, {"chg_ord": 2, "chg_grp": "降额", "term_ord": 2, "term_grp": "无改期次", "n": 52859, "n_apply": 21940, "pct_apply": 41.51}, {"chg_ord": 3, "chg_grp": "不变", "term_ord": 1, "term_grp": "有改期次", "n": 3723, "n_apply": 2935, "pct_apply": 78.83}, {"chg_ord": 3, "chg_grp": "不变", "term_ord": 2, "term_grp": "无改期次", "n": 18260, "n_apply": 8523, "pct_apply": 46.68}], "term_apply": [{"slice_ord": 1, "slice": "全体", "term_ord": 1, "term_grp": "有改期次", "n": 34512, "pct_share": 18.02, "n_enter": 34508, "pct_enter": 99.99, "n_apply": 23331, "pct_apply": 67.6}, {"slice_ord": 1, "slice": "全体", "term_ord": 2, "term_grp": "无改期次", "n": 156998, "pct_share": 81.98, "n_enter": 122934, "pct_enter": 78.3, "n_apply": 63538, "pct_apply": 40.47}, {"slice_ord": 1, "slice": "全体", "term_ord": 3, "term_grp": "合计", "n": 191510, "pct_share": 100.0, "n_enter": 157442, "pct_enter": 82.21, "n_apply": 86869, "pct_apply": 45.36}, {"slice_ord": 2, "slice": "进页", "term_ord": 1, "term_grp": "有改期次", "n": 34508, "pct_share": 21.92, "n_enter": 34508, "pct_enter": 100.0, "n_apply": 23331, "pct_apply": 67.61}, {"slice_ord": 2, "slice": "进页", "term_ord": 2, "term_grp": "无改期次", "n": 122934, "pct_share": 78.08, "n_enter": 122934, "pct_enter": 100.0, "n_apply": 63478, "pct_apply": 51.64}, {"slice_ord": 2, "slice": "进页", "term_ord": 3, "term_grp": "合计", "n": 157442, "pct_share": 100.0, "n_enter": 157442, "pct_enter": 100.0, "n_apply": 86809, "pct_apply": 55.14}]};
 const months = D.funnel.filter(r => r.ym!=='合计').map(r=>r.ym.slice(5)+'月');
 const pal = {up:'#43c7e7', down:'#f68ab0', same:'#ffc26b'};
 Chart.defaults.color='#aac5da';
@@ -502,6 +649,40 @@ new Chart(document.getElementById('c10'), {
       {label:'升额', backgroundColor:pal.up, data: keys.map(k=>ymap['升额'][k])},
       {label:'降额', backgroundColor:pal.down, data: keys.map(k=>ymap['降额'][k])},
       {label:'不变', backgroundColor:pal.same, data: keys.map(k=>ymap['不变'][k])}
+    ]
+  },
+  options: {responsive:true, maintainAspectRatio:false, plugins:{legend:{position:'bottom'}}, scales:{y:{ticks:{callback:v=>v+'%'}}}}
+});
+function termSeries(grp){
+  return months.map((_,i) => {
+    const ym = D.funnel.filter(r=>r.ym!=='合计')[i].ym;
+    const row = D.month_term.find(r => r.ym===ym && r.term_grp===grp);
+    return row ? row.pct_apply : null;
+  });
+}
+new Chart(document.getElementById('c11'), {
+  type:'line',
+  data: {
+    labels: months,
+    datasets: [
+      {label:'有改期次', borderColor:'#64dcae', tension:.25, data: termSeries('有改期次')},
+      {label:'无改期次', borderColor:'#f68ab0', tension:.25, data: termSeries('无改期次')}
+    ]
+  },
+  options: {responsive:true, maintainAspectRatio:false, plugins:{legend:{position:'bottom'}}, scales:{y:{ticks:{callback:v=>v+'%'}}}}
+});
+const grps = ['升额','降额','不变'];
+function ct(g, t){
+  const row = D.chg_term.find(r => r.chg_grp===g && r.term_grp===t);
+  return row ? row.pct_apply : null;
+}
+new Chart(document.getElementById('c12'), {
+  type:'bar',
+  data: {
+    labels: grps,
+    datasets: [
+      {label:'有改期次', backgroundColor:'#64dcae', data: grps.map(g=>ct(g,'有改期次'))},
+      {label:'无改期次', backgroundColor:'#f68ab0', data: grps.map(g=>ct(g,'无改期次'))}
     ]
   },
   options: {responsive:true, maintainAspectRatio:false, plugins:{legend:{position:'bottom'}}, scales:{y:{ticks:{callback:v=>v+'%'}}}}
