@@ -71,6 +71,9 @@ pre.sql{overflow:auto;max-height:900px;font-size:11.5px;line-height:1.5;color:#d
 1–5 月双产品当天提单率一直高于单产品（差 2～7 个点）。双产品占比从 1 月 66.71% 掉到 6 月 0.00%（0 人日）。同期全体当天提单率 52.89% → 43.77%。双产品本来就比单产品高一截，份额被抽掉后，整体会被单产品那条更低的线拉下去，所以 1–6 月的下降和双产品占比下降<strong>有一定关系</strong>。结构只能解释其中大约 1.4 个百分点（1 月双、单差距 × 双产品份额），单产品自己也从 51.50% 掉到 43.77%，不是结构一项能说完。<br>
 6 月双产品停掉。7 月只有 66 人日，当天提单率 48.48% 仍接近 1–5 月，样本太小。8 月、9 月双产品份额回到 14.67%、26.67%，但当天提单率只有 38.79%、40.51%，比 1–5 月的 49%～54% 低十来个点，8 月还略低于单产品。6 月停掉之后新加回来的双产品，逻辑可能和 1–5 月不是同一套，不宜直接跟前期双产品比。
 </div>
+<div class="callout gold"><div class="ch">6. 1–8 月提单订单到期后：双产品逾期更低，盈利率和单产品几乎打平</div>
+样本是获额后首次提单、申请日在 1–8 月的订单，只算已放款且已到期。产品个数是获额当时提供的槽数。全期单产品到期盈利率 10.05%、整笔逾期 38.12%（到期 103,506）；双产品 9.86%、34.16%（到期 48,741）。逾期双产品低约 4 个点，盈利率几乎一样（双产品还略低 0.2 个点）。1–4 月双产品盈利率低于单产品；5 月以后双产品盈利更高，但 6–7 月双产品提单很少（673、399），多半是前期获额的延迟提单，不要单独读。这是事后验证，圈人时下一笔还没到期。
+</div>
 
 <h2>一、样本：每月 T0 人日都进分母</h2>
 <p class="desc">1–8 月 T0 177,133、24 小时点确认 95,023 = 53.65%，与规则表一致。1–9 月 20 日共 191,510 人日，都能对上上一笔获额（n_chg = n_t0）。升额占 55.14%，降额 33.38%，不变 11.48%。</p>
@@ -158,6 +161,21 @@ pre.sql{overflow:auto;max-height:900px;font-size:11.5px;line-height:1.5;color:#d
 <tbody><tr><td>01月</td><td>19,520</td><td>6,499（33.29%）</td><td>13,021（66.71%）</td><td>3,347（51.50%）</td><td>6,978（53.59%）</td><td>10,325（52.89%）</td></tr><tr><td>02月</td><td>22,739</td><td>8,620（37.91%）</td><td>14,119（62.09%）</td><td>4,299（49.87%）</td><td>7,481（52.99%）</td><td>11,780（51.81%）</td></tr><tr><td>03月</td><td>22,198</td><td>11,468（51.66%）</td><td>10,730（48.34%）</td><td>5,068（44.19%）</td><td>5,225（48.70%）</td><td>10,293（46.37%）</td></tr><tr><td>04月</td><td>20,780</td><td>12,228（58.85%）</td><td>8,552（41.15%）</td><td>5,462（44.67%）</td><td>4,274（49.98%）</td><td>9,736（46.85%）</td></tr><tr><td>05月</td><td>23,875</td><td>19,463（81.52%）</td><td>4,412（18.48%）</td><td>8,552（43.94%）</td><td>2,231（50.57%）</td><td>10,783（45.16%）</td></tr><tr><td>06月</td><td>22,635</td><td>22,635（100.00%）</td><td>0（0.00%）</td><td>9,907（43.77%）</td><td>—</td><td>9,907（43.77%）</td></tr><tr><td>07月</td><td>23,275</td><td>23,209（99.72%）</td><td>66（0.28%）</td><td>9,594（41.34%）</td><td>32（48.48%）</td><td>9,626（41.36%）</td></tr><tr><td>08月</td><td>22,111</td><td>18,868（85.33%）</td><td>3,243（14.67%）</td><td>7,410（39.27%）</td><td>1,258（38.79%）</td><td>8,668（39.20%）</td></tr><tr><td>9月（至20日）</td><td>14,377</td><td>10,543（73.33%）</td><td>3,834（26.67%）</td><td>4,198（39.82%）</td><td>1,553（40.51%）</td><td>5,751（40.00%）</td></tr><tr><td>合计</td><td>191,510</td><td>133,533（69.73%）</td><td>57,977（30.27%）</td><td>57,837（43.31%）</td><td>29,032（50.08%）</td><td>86,869（45.36%）</td></tr></tbody>
 </table></div>
 
+<h2>五、1–8 月提单：单产品 / 双产品到期盈利率与逾期率</h2>
+<p class="desc">获额后首次提单、申请日在 2026-01-01～08-31。盈利率、逾期率只走已放款且 due_date &lt; 统计日的订单。盈利率 = 到期日及之前还款 / 放款 − 1。整笔逾期 = 结清日晚于到期日，或结清日空/≤2000-01-01。产品个数是获额槽数，不是提单选的那个号。6–7 月双产品提单很少。</p>
+<div class="grid g2">
+  <div class="chart"><h3>图14 到期盈利率</h3><p>1–8 月提单月 · 已到期加权</p><div class="box"><canvas id="c14"></canvas></div></div>
+  <div class="chart"><h3>图15 整笔逾期率</h3><p>1–8 月提单月 · 已到期订单数</p><div class="box"><canvas id="c15"></canvas></div></div>
+</div>
+<div class="table"><table>
+<thead><tr>
+<th>提单月</th><th>1个提单</th><th>1个到期</th><th>1个盈利率</th><th>1个逾期率</th>
+<th>2个提单</th><th>2个到期</th><th>2个盈利率</th><th>2个逾期率</th>
+<th>全体盈利率</th><th>全体逾期率</th>
+</tr></thead>
+<tbody><tr><td>01月</td><td>5,098</td><td>5,019</td><td>8.48%</td><td>33.43%</td><td>10,498</td><td>10,330</td><td>5.93%</td><td>35.62%</td><td>6.89%</td><td>34.91%</td></tr><tr><td>02月</td><td>7,324</td><td>7,153</td><td>7.94%</td><td>35.24%</td><td>12,606</td><td>12,323</td><td>6.75%</td><td>34.89%</td><td>7.21%</td><td>35.02%</td></tr><tr><td>03月</td><td>9,848</td><td>9,637</td><td>12.86%</td><td>35.38%</td><td>10,262</td><td>10,046</td><td>12.46%</td><td>32.31%</td><td>12.64%</td><td>33.82%</td></tr><tr><td>04月</td><td>10,721</td><td>10,516</td><td>14.49%</td><td>36.18%</td><td>8,404</td><td>8,246</td><td>13.09%</td><td>31.83%</td><td>13.80%</td><td>34.27%</td></tr><tr><td>05月</td><td>16,093</td><td>15,627</td><td>12.13%</td><td>35.81%</td><td>4,948</td><td>4,835</td><td>13.69%</td><td>32.39%</td><td>12.55%</td><td>35.00%</td></tr><tr><td>06月</td><td>20,040</td><td>19,464</td><td>8.81%</td><td>39.53%</td><td>673</td><td>631</td><td>15.91%</td><td>39.46%</td><td>9.16%</td><td>39.53%</td></tr><tr><td>07月</td><td>20,358</td><td>19,817</td><td>8.33%</td><td>40.71%</td><td>399</td><td>369</td><td>11.84%</td><td>37.94%</td><td>8.41%</td><td>40.66%</td></tr><tr><td>08月</td><td>17,435</td><td>16,273</td><td>9.71%</td><td>41.06%</td><td>2,473</td><td>1,961</td><td>12.30%</td><td>43.19%</td><td>9.98%</td><td>41.29%</td></tr><tr><td>合计</td><td>106,917</td><td>103,506</td><td>10.05%</td><td>38.12%</td><td>50,263</td><td>48,741</td><td>9.86%</td><td>34.16%</td><td>9.99%</td><td>36.85%</td></tr></tbody>
+</table></div>
+
 <h2>口径</h2>
 <div class="callout">
 T0 origin：2026-01-01～09-20；loan_type_code=2、is_pass1=1、recycle_type=3；20 秒批次留 serial_id 最大；干净结清；vir_time≥repaid_time；day_rn=1。人日不去重。<br>
@@ -167,6 +185,7 @@ T0 origin：2026-01-01～09-20；loan_type_code=2、is_pass1=1、recycle_type=3�
 规则点确认：获额后 24 小时，分母为全部 T0 获额通过人日。1–8 月 95,023 / 177,133 = 53.65%。<br>
 当天提单：获额后当天首次 apply，apply_time≥vir_time。改期次对照的分母是有上一笔的 T0 人日；进页子集另报。<br>
 产品个数：order_vir_f_copy.risk_product 去空格后按逗号拆开；全期只有 1 个或 2 个。图13 分母是该类 T0 人日，与升/降/不变同一套 origin。<br>
+1–8 月提单质量：获额后首次 apply，apply_date 在 1–8 月。到期 = is_remit=1 且 remit_amt&gt;0 且 due_date &lt; CURRENT_DATE。盈利率 = Σ(repayment_record_copy.amount，payin_date≤due_date) / Σ remit_amt − 1。整笔逾期 = repaid_date &gt; due_date 或空/≤2000-01-01。只做验证，不圈人。<br>
 使用率四档这次不做：圈人应用结清订单占用，不用刚获额订单。
 </div>
 
@@ -602,6 +621,9 @@ GROUP BY ym, chg_grp, f_term
 -- 窗口：2026-01-01～09-20
 -- 产品个数 = risk_product 去空格、按逗号拆开后非空 product_no 个数（最多看到第 10 槽）
 -- 当天提单 = 获额后首次 apply 且 apply_date = vir_date 且 apply_time &gt;= vir_time
+-- 到期盈利/逾期：获额后首次提单、申请日在 1–8 月、已放款且 due_date &lt; CURRENT_DATE
+--   盈利率 = Σ(payin_date≤due_date 的还款) / Σ remit_amt − 1
+--   整笔逾期：repaid_date &gt; due_date，或 repaid_date 空/≤2000-01-01
 -- =============================================================================
 
 SET search_path TO wangchuanliang, public;
@@ -802,12 +824,143 @@ SELECT
     ROUND(100.0 * AVG(f_confirm), 2)
 FROM tmp_univ
 ) z ORDER BY ym;
+
+DROP TABLE IF EXISTS tmp_fa;
+CREATE TEMP TABLE tmp_fa AS
+SELECT z.user_id, z.vir_date, z.n_prod, z.serial_id, z.apply_date,
+       z.is_remit, z.remit_amt, z.due_date, z.repaid_date
+FROM (
+    SELECT
+        n.user_id,
+        n.vir_date,
+        n.n_prod,
+        a.serial_id,
+        a.apply_date::date AS apply_date,
+        a.is_remit,
+        a.remit_amt,
+        a.due_date,
+        a.repaid_date::date AS repaid_date,
+        ROW_NUMBER() OVER (PARTITION BY n.user_id, n.vir_date ORDER BY a.apply_time, a.serial_id) AS rn
+    FROM tmp_nprod n
+    INNER JOIN tmp_m_origin t ON t.user_id = n.user_id AND t.vir_date = n.vir_date
+    INNER JOIN wangchuanliang.order_loan_f_v2_copy a
+      ON a.user_id = t.user_id
+     AND a.apply_time &gt;= t.vir_time
+) z
+WHERE rn = 1
+  AND apply_date &gt;= DATE &#x27;2026-01-01&#x27;
+  AND apply_date &lt; DATE &#x27;2026-09-01&#x27;;
+
+DROP TABLE IF EXISTS tmp_repay;
+CREATE TEMP TABLE tmp_repay AS
+SELECT f.serial_id, SUM(r.amount) AS repay_amt
+FROM tmp_fa f
+INNER JOIN wangchuanliang.repayment_record_copy r ON r.serial_id = f.serial_id
+WHERE f.is_remit = 1
+  AND COALESCE(f.remit_amt, 0) &gt; 0
+  AND f.due_date &lt; CURRENT_DATE
+  AND r.payin_date &lt;= f.due_date
+GROUP BY f.serial_id;
+
+DROP TABLE IF EXISTS tmp_q;
+CREATE TEMP TABLE tmp_q AS
+SELECT
+    f.user_id,
+    f.vir_date,
+    DATE_TRUNC(&#x27;month&#x27;, f.apply_date)::date AS ym,
+    CASE WHEN f.n_prod = 1 THEN &#x27;1个产品&#x27; WHEN f.n_prod = 2 THEN &#x27;2个产品&#x27; ELSE &#x27;其他&#x27; END AS prod_grp,
+    1 AS n_apply,
+    CASE WHEN f.is_remit = 1 AND COALESCE(f.remit_amt, 0) &gt; 0 THEN 1 ELSE 0 END AS is_loan,
+    CASE WHEN f.is_remit = 1 AND COALESCE(f.remit_amt, 0) &gt; 0 AND f.due_date &lt; CURRENT_DATE THEN 1 ELSE 0 END AS is_due,
+    CASE WHEN f.is_remit = 1 AND COALESCE(f.remit_amt, 0) &gt; 0 AND f.due_date &lt; CURRENT_DATE
+          AND (f.repaid_date IS NULL OR f.repaid_date &lt;= DATE &#x27;2000-01-01&#x27; OR f.repaid_date &gt; f.due_date)
+         THEN 1 ELSE 0 END AS is_od,
+    CASE WHEN f.is_remit = 1 AND COALESCE(f.remit_amt, 0) &gt; 0 AND f.due_date &lt; CURRENT_DATE
+         THEN COALESCE(p.repay_amt, 0) ELSE 0 END AS repay_due,
+    CASE WHEN f.is_remit = 1 AND COALESCE(f.remit_amt, 0) &gt; 0 AND f.due_date &lt; CURRENT_DATE
+         THEN f.remit_amt ELSE 0 END AS remit_due
+FROM tmp_fa f
+LEFT JOIN tmp_repay p ON p.serial_id = f.serial_id;
+
+-- R2 1–8 月提单：单/双产品到期盈利与逾期
+SELECT * FROM (
+SELECT
+    prod_grp,
+    SUM(n_apply) AS n_apply,
+    SUM(is_loan) AS n_remit,
+    SUM(is_due) AS n_due,
+    SUM(is_od) AS n_od,
+    ROUND(100.0 * SUM(is_od) / NULLIF(SUM(is_due), 0), 2) AS overdue_pct,
+    ROUND(100.0 * SUM(repay_due) / NULLIF(SUM(remit_due), 0) - 100.0, 2) AS profit_rate
+FROM tmp_q
+GROUP BY prod_grp
+UNION ALL
+SELECT
+    &#x27;合计&#x27;,
+    SUM(n_apply),
+    SUM(is_loan),
+    SUM(is_due),
+    SUM(is_od),
+    ROUND(100.0 * SUM(is_od) / NULLIF(SUM(is_due), 0), 2),
+    ROUND(100.0 * SUM(repay_due) / NULLIF(SUM(remit_due), 0) - 100.0, 2)
+FROM tmp_q
+) z ORDER BY prod_grp;
+
+-- R3 按提单月 × 产品个数
+SELECT * FROM (
+SELECT
+    TO_CHAR(ym, &#x27;YYYY-MM&#x27;) AS ym,
+    prod_grp,
+    SUM(n_apply) AS n_apply,
+    SUM(is_loan) AS n_remit,
+    SUM(is_due) AS n_due,
+    SUM(is_od) AS n_od,
+    ROUND(100.0 * SUM(is_od) / NULLIF(SUM(is_due), 0), 2) AS overdue_pct,
+    ROUND(100.0 * SUM(repay_due) / NULLIF(SUM(remit_due), 0) - 100.0, 2) AS profit_rate
+FROM tmp_q
+GROUP BY ym, prod_grp
+UNION ALL
+SELECT
+    TO_CHAR(ym, &#x27;YYYY-MM&#x27;),
+    &#x27;合计&#x27;,
+    SUM(n_apply),
+    SUM(is_loan),
+    SUM(is_due),
+    SUM(is_od),
+    ROUND(100.0 * SUM(is_od) / NULLIF(SUM(is_due), 0), 2),
+    ROUND(100.0 * SUM(repay_due) / NULLIF(SUM(remit_due), 0) - 100.0, 2)
+FROM tmp_q
+GROUP BY ym
+UNION ALL
+SELECT
+    &#x27;合计&#x27;,
+    prod_grp,
+    SUM(n_apply),
+    SUM(is_loan),
+    SUM(is_due),
+    SUM(is_od),
+    ROUND(100.0 * SUM(is_od) / NULLIF(SUM(is_due), 0), 2),
+    ROUND(100.0 * SUM(repay_due) / NULLIF(SUM(remit_due), 0) - 100.0, 2)
+FROM tmp_q
+GROUP BY prod_grp
+UNION ALL
+SELECT
+    &#x27;合计&#x27;,
+    &#x27;合计&#x27;,
+    SUM(n_apply),
+    SUM(is_loan),
+    SUM(is_due),
+    SUM(is_od),
+    ROUND(100.0 * SUM(is_od) / NULLIF(SUM(is_due), 0), 2),
+    ROUND(100.0 * SUM(repay_due) / NULLIF(SUM(remit_due), 0) - 100.0, 2)
+FROM tmp_q
+) z ORDER BY ym, prod_grp;
 </pre>
 </details>
 <p class="foot">数据截止样本日 2026-09-20，库日期 2026-09-23。9 月为人日非整月。升额客群进页不差、确认更低，页内在挑金额和计划；不要把「升额当天确认低」理解成没进页。7–9 月双产品不要直接当成 1–5 月双产品的延续。</p>
 </main>
 <script>
-const D = {"funnel": [{"ym": "2026-01", "n_t0": 19520, "n_chg": 19520, "n_up": 11682, "n_down": 6169, "n_same": 1669, "pct_confirm_24h": 60.46}, {"ym": "2026-02", "n_t0": 22739, "n_chg": 22739, "n_up": 12595, "n_down": 8026, "n_same": 2118, "pct_confirm_24h": 59.52}, {"ym": "2026-03", "n_t0": 22198, "n_chg": 22198, "n_up": 10635, "n_down": 8117, "n_same": 3446, "pct_confirm_24h": 54.49}, {"ym": "2026-04", "n_t0": 20780, "n_chg": 20780, "n_up": 10912, "n_down": 6644, "n_same": 3224, "pct_confirm_24h": 54.59}, {"ym": "2026-05", "n_t0": 23875, "n_chg": 23875, "n_up": 13066, "n_down": 7989, "n_same": 2820, "pct_confirm_24h": 52.91}, {"ym": "2026-06", "n_t0": 22635, "n_chg": 22635, "n_up": 12041, "n_down": 7440, "n_same": 3154, "pct_confirm_24h": 51.89}, {"ym": "2026-07", "n_t0": 23275, "n_chg": 23275, "n_up": 13513, "n_down": 7437, "n_same": 2325, "pct_confirm_24h": 49.14}, {"ym": "2026-08", "n_t0": 22111, "n_chg": 22111, "n_up": 12553, "n_down": 7731, "n_same": 1827, "pct_confirm_24h": 47.18}, {"ym": "2026-09", "n_t0": 14377, "n_chg": 14377, "n_up": 8597, "n_down": 4380, "n_same": 1400, "pct_confirm_24h": 47.78}, {"ym": "合计", "n_t0": 191510, "n_chg": 191510, "n_up": 105594, "n_down": 63933, "n_same": 21983, "pct_confirm_24h": 53.21}], "month_chg": [{"ym": "2026-01", "ord": 1, "chg_grp": "升额", "n": 11682, "pct_share": 59.85, "pct_enter": 79.11, "pct_confirm": 53.12, "pct_amt": 34.76, "pct_term": 28.64, "pct_contract": 2.56, "pct_plan": 41.64, "pct_purpose": 14.47}, {"ym": "2026-01", "ord": 2, "chg_grp": "降额", "n": 6169, "pct_share": 31.6, "pct_enter": 77.0, "pct_confirm": 54.0, "pct_amt": 22.27, "pct_term": 28.34, "pct_contract": 3.21, "pct_plan": 29.99, "pct_purpose": 16.31}, {"ym": "2026-01", "ord": 3, "chg_grp": "不变", "n": 1669, "pct_share": 8.55, "pct_enter": 74.96, "pct_confirm": 55.9, "pct_amt": 17.62, "pct_term": 31.52, "pct_contract": 2.82, "pct_plan": 23.85, "pct_purpose": 17.2}, {"ym": "2026-02", "ord": 1, "chg_grp": "升额", "n": 12595, "pct_share": 55.39, "pct_enter": 77.5, "pct_confirm": 51.16, "pct_amt": 34.04, "pct_term": 27.96, "pct_contract": 2.46, "pct_plan": 40.13, "pct_purpose": 15.05}, {"ym": "2026-02", "ord": 2, "chg_grp": "降额", "n": 8026, "pct_share": 35.3, "pct_enter": 77.01, "pct_confirm": 53.23, "pct_amt": 23.04, "pct_term": 26.75, "pct_contract": 2.52, "pct_plan": 28.53, "pct_purpose": 17.62}, {"ym": "2026-02", "ord": 3, "chg_grp": "不变", "n": 2118, "pct_share": 9.31, "pct_enter": 75.4, "pct_confirm": 57.32, "pct_amt": 19.31, "pct_term": 29.08, "pct_contract": 2.88, "pct_plan": 22.71, "pct_purpose": 16.67}, {"ym": "2026-03", "ord": 1, "chg_grp": "升额", "n": 10635, "pct_share": 47.91, "pct_enter": 73.5, "pct_confirm": 45.78, "pct_amt": 30.79, "pct_term": 21.47, "pct_contract": 1.99, "pct_plan": 37.19, "pct_purpose": 13.28}, {"ym": "2026-03", "ord": 2, "chg_grp": "降额", "n": 8117, "pct_share": 36.57, "pct_enter": 73.61, "pct_confirm": 47.05, "pct_amt": 21.17, "pct_term": 20.55, "pct_contract": 2.44, "pct_plan": 28.21, "pct_purpose": 16.62}, {"ym": "2026-03", "ord": 3, "chg_grp": "不变", "n": 3446, "pct_share": 15.52, "pct_enter": 73.77, "pct_confirm": 52.18, "pct_amt": 19.99, "pct_term": 20.86, "pct_contract": 2.52, "pct_plan": 20.4, "pct_purpose": 17.15}, {"ym": "2026-04", "ord": 1, "chg_grp": "升额", "n": 10912, "pct_share": 52.51, "pct_enter": 78.95, "pct_confirm": 46.04, "pct_amt": 32.92, "pct_term": 20.45, "pct_contract": 2.14, "pct_plan": 38.58, "pct_purpose": 14.07}, {"ym": "2026-04", "ord": 2, "chg_grp": "降额", "n": 6644, "pct_share": 31.97, "pct_enter": 78.85, "pct_confirm": 47.49, "pct_amt": 22.17, "pct_term": 18.06, "pct_contract": 2.6, "pct_plan": 28.76, "pct_purpose": 17.25}, {"ym": "2026-04", "ord": 3, "chg_grp": "不变", "n": 3224, "pct_share": 15.51, "pct_enter": 76.92, "pct_confirm": 53.35, "pct_amt": 19.88, "pct_term": 16.69, "pct_contract": 2.39, "pct_plan": 18.73, "pct_purpose": 15.76}, {"ym": "2026-05", "ord": 1, "chg_grp": "升额", "n": 13066, "pct_share": 54.73, "pct_enter": 85.79, "pct_confirm": 43.36, "pct_amt": 35.38, "pct_term": 14.76, "pct_contract": 1.73, "pct_plan": 40.56, "pct_purpose": 13.81}, {"ym": "2026-05", "ord": 2, "chg_grp": "降额", "n": 7989, "pct_share": 33.46, "pct_enter": 88.05, "pct_confirm": 47.89, "pct_amt": 27.16, "pct_term": 12.5, "pct_contract": 2.47, "pct_plan": 32.26, "pct_purpose": 17.32}, {"ym": "2026-05", "ord": 3, "chg_grp": "不变", "n": 2820, "pct_share": 11.81, "pct_enter": 87.23, "pct_confirm": 53.79, "pct_amt": 28.58, "pct_term": 12.09, "pct_contract": 2.91, "pct_plan": 21.95, "pct_purpose": 19.43}, {"ym": "2026-06", "ord": 1, "chg_grp": "升额", "n": 12041, "pct_share": 53.2, "pct_enter": 85.8, "pct_confirm": 40.88, "pct_amt": 36.75, "pct_term": 10.84, "pct_contract": 1.77, "pct_plan": 42.19, "pct_purpose": 14.43}, {"ym": "2026-06", "ord": 2, "chg_grp": "降额", "n": 7440, "pct_share": 32.87, "pct_enter": 88.15, "pct_confirm": 47.41, "pct_amt": 31.1, "pct_term": 9.97, "pct_contract": 2.37, "pct_plan": 34.48, "pct_purpose": 18.8}, {"ym": "2026-06", "ord": 3, "chg_grp": "不变", "n": 3154, "pct_share": 13.93, "pct_enter": 88.87, "pct_confirm": 54.69, "pct_amt": 30.03, "pct_term": 9.16, "pct_contract": 2.16, "pct_plan": 24.89, "pct_purpose": 19.31}, {"ym": "2026-07", "ord": 1, "chg_grp": "升额", "n": 13513, "pct_share": 58.06, "pct_enter": 85.65, "pct_confirm": 38.73, "pct_amt": 37.28, "pct_term": 11.95, "pct_contract": 1.78, "pct_plan": 43.32, "pct_purpose": 14.2}, {"ym": "2026-07", "ord": 2, "chg_grp": "降额", "n": 7437, "pct_share": 31.95, "pct_enter": 87.67, "pct_confirm": 46.87, "pct_amt": 30.85, "pct_term": 10.96, "pct_contract": 2.22, "pct_plan": 33.95, "pct_purpose": 18.49}, {"ym": "2026-07", "ord": 3, "chg_grp": "不变", "n": 2325, "pct_share": 9.99, "pct_enter": 86.32, "pct_confirm": 51.01, "pct_amt": 27.48, "pct_term": 9.33, "pct_contract": 2.45, "pct_plan": 24.43, "pct_purpose": 15.14}, {"ym": "2026-08", "ord": 1, "chg_grp": "升额", "n": 12553, "pct_share": 56.77, "pct_enter": 85.7, "pct_confirm": 37.13, "pct_amt": 35.96, "pct_term": 14.96, "pct_contract": 1.83, "pct_plan": 43.42, "pct_purpose": 14.32}, {"ym": "2026-08", "ord": 2, "chg_grp": "降额", "n": 7731, "pct_share": 34.96, "pct_enter": 87.6, "pct_confirm": 43.31, "pct_amt": 28.42, "pct_term": 13.19, "pct_contract": 1.97, "pct_plan": 32.29, "pct_purpose": 16.71}, {"ym": "2026-08", "ord": 3, "chg_grp": "不变", "n": 1827, "pct_share": 8.26, "pct_enter": 87.25, "pct_confirm": 51.72, "pct_amt": 28.63, "pct_term": 14.56, "pct_contract": 2.57, "pct_plan": 25.12, "pct_purpose": 17.95}, {"ym": "2026-09", "ord": 1, "chg_grp": "升额", "n": 8597, "pct_share": 59.8, "pct_enter": 85.19, "pct_confirm": 37.91, "pct_amt": 35.5, "pct_term": 18.69, "pct_contract": 1.5, "pct_plan": 41.93, "pct_purpose": 13.13}, {"ym": "2026-09", "ord": 2, "chg_grp": "降额", "n": 4380, "pct_share": 30.47, "pct_enter": 87.33, "pct_confirm": 43.88, "pct_amt": 28.97, "pct_term": 16.78, "pct_contract": 2.05, "pct_plan": 32.24, "pct_purpose": 17.76}, {"ym": "2026-09", "ord": 3, "chg_grp": "不变", "n": 1400, "pct_share": 9.74, "pct_enter": 87.36, "pct_confirm": 52.29, "pct_amt": 30.0, "pct_term": 15.07, "pct_contract": 2.93, "pct_plan": 28.5, "pct_purpose": 18.29}], "month_all": [{"ym": "2026-01", "n": 19520, "pct_enter": 78.09, "pct_confirm": 53.63, "pct_amt": 29.35, "pct_term": 28.79, "pct_contract": 2.79, "pct_plan": 36.43, "pct_purpose": 15.28}, {"ym": "2026-02", "n": 22739, "pct_enter": 77.13, "pct_confirm": 52.46, "pct_amt": 28.78, "pct_term": 27.64, "pct_contract": 2.52, "pct_plan": 34.42, "pct_purpose": 16.11}, {"ym": "2026-03", "n": 22198, "pct_enter": 73.58, "pct_confirm": 47.24, "pct_amt": 25.6, "pct_term": 21.04, "pct_contract": 2.24, "pct_plan": 31.3, "pct_purpose": 15.1}, {"ym": "2026-04", "n": 20780, "pct_enter": 78.6, "pct_confirm": 47.64, "pct_amt": 27.46, "pct_term": 19.1, "pct_contract": 2.32, "pct_plan": 32.36, "pct_purpose": 15.35}, {"ym": "2026-05", "n": 23875, "pct_enter": 86.71, "pct_confirm": 46.11, "pct_amt": 31.83, "pct_term": 13.69, "pct_contract": 2.12, "pct_plan": 35.59, "pct_purpose": 15.65}, {"ym": "2026-06", "n": 22635, "pct_enter": 87.0, "pct_confirm": 44.95, "pct_amt": 33.96, "pct_term": 10.32, "pct_contract": 2.02, "pct_plan": 37.24, "pct_purpose": 16.55}, {"ym": "2026-07", "n": 23275, "pct_enter": 86.36, "pct_confirm": 42.56, "pct_amt": 34.25, "pct_term": 11.37, "pct_contract": 1.99, "pct_plan": 38.44, "pct_purpose": 15.66}, {"ym": "2026-08", "n": 22111, "pct_enter": 86.49, "pct_confirm": 40.5, "pct_amt": 32.72, "pct_term": 14.31, "pct_contract": 1.94, "pct_plan": 38.01, "pct_purpose": 15.46}, {"ym": "2026-09", "n": 14377, "pct_enter": 86.05, "pct_confirm": 41.13, "pct_amt": 32.98, "pct_term": 17.76, "pct_contract": 1.81, "pct_plan": 37.67, "pct_purpose": 15.04}], "year": [{"ym": "合计", "ord": 1, "chg_grp": "升额", "n": 105594, "pct_share": 55.14, "pct_enter": 82.04, "pct_confirm": 43.83, "pct_amt": 34.91, "pct_term": 18.67, "pct_contract": 1.98, "pct_plan": 41.08, "pct_purpose": 14.13}, {"ym": "合计", "ord": 2, "chg_grp": "降额", "n": 63933, "pct_share": 33.38, "pct_enter": 82.67, "pct_confirm": 48.0, "pct_amt": 26.06, "pct_term": 17.32, "pct_contract": 2.43, "pct_plan": 31.15, "pct_purpose": 17.43}, {"ym": "合计", "ord": 3, "chg_grp": "不变", "n": 21983, "pct_share": 11.48, "pct_enter": 81.69, "pct_confirm": 53.54, "pct_amt": 24.42, "pct_term": 16.94, "pct_contract": 2.58, "pct_plan": 22.82, "pct_purpose": 17.43}], "month_term": [{"ym": "2026-01", "term_ord": 1, "term_grp": "有改期次", "n": 5620, "n_apply": 4145, "pct_apply": 73.75}, {"ym": "2026-01", "term_ord": 2, "term_grp": "无改期次", "n": 13900, "n_apply": 6180, "pct_apply": 44.46}, {"ym": "2026-02", "term_ord": 1, "term_grp": "有改期次", "n": 6284, "n_apply": 4603, "pct_apply": 73.25}, {"ym": "2026-02", "term_ord": 2, "term_grp": "无改期次", "n": 16455, "n_apply": 7177, "pct_apply": 43.62}, {"ym": "2026-03", "term_ord": 1, "term_grp": "有改期次", "n": 4670, "n_apply": 3401, "pct_apply": 72.83}, {"ym": "2026-03", "term_ord": 2, "term_grp": "无改期次", "n": 17528, "n_apply": 6892, "pct_apply": 39.32}, {"ym": "2026-04", "term_ord": 1, "term_grp": "有改期次", "n": 3969, "n_apply": 2733, "pct_apply": 68.86}, {"ym": "2026-04", "term_ord": 2, "term_grp": "无改期次", "n": 16811, "n_apply": 7003, "pct_apply": 41.66}, {"ym": "2026-05", "term_ord": 1, "term_grp": "有改期次", "n": 3269, "n_apply": 2135, "pct_apply": 65.31}, {"ym": "2026-05", "term_ord": 2, "term_grp": "无改期次", "n": 20606, "n_apply": 8648, "pct_apply": 41.97}, {"ym": "2026-06", "term_ord": 1, "term_grp": "有改期次", "n": 2336, "n_apply": 1408, "pct_apply": 60.27}, {"ym": "2026-06", "term_ord": 2, "term_grp": "无改期次", "n": 20299, "n_apply": 8499, "pct_apply": 41.87}, {"ym": "2026-07", "term_ord": 1, "term_grp": "有改期次", "n": 2647, "n_apply": 1566, "pct_apply": 59.16}, {"ym": "2026-07", "term_ord": 2, "term_grp": "无改期次", "n": 20628, "n_apply": 8060, "pct_apply": 39.07}, {"ym": "2026-08", "term_ord": 1, "term_grp": "有改期次", "n": 3164, "n_apply": 1817, "pct_apply": 57.43}, {"ym": "2026-08", "term_ord": 2, "term_grp": "无改期次", "n": 18947, "n_apply": 6851, "pct_apply": 36.16}, {"ym": "2026-09", "term_ord": 1, "term_grp": "有改期次", "n": 2553, "n_apply": 1523, "pct_apply": 59.66}, {"ym": "2026-09", "term_ord": 2, "term_grp": "无改期次", "n": 11824, "n_apply": 4228, "pct_apply": 35.76}], "chg_term": [{"chg_ord": 1, "chg_grp": "升额", "term_ord": 1, "term_grp": "有改期次", "n": 19715, "n_apply": 12443, "pct_apply": 63.11}, {"chg_ord": 1, "chg_grp": "升额", "term_ord": 2, "term_grp": "无改期次", "n": 85879, "n_apply": 33075, "pct_apply": 38.51}, {"chg_ord": 2, "chg_grp": "降额", "term_ord": 1, "term_grp": "有改期次", "n": 11074, "n_apply": 7953, "pct_apply": 71.82}, {"chg_ord": 2, "chg_grp": "降额", "term_ord": 2, "term_grp": "无改期次", "n": 52859, "n_apply": 21940, "pct_apply": 41.51}, {"chg_ord": 3, "chg_grp": "不变", "term_ord": 1, "term_grp": "有改期次", "n": 3723, "n_apply": 2935, "pct_apply": 78.83}, {"chg_ord": 3, "chg_grp": "不变", "term_ord": 2, "term_grp": "无改期次", "n": 18260, "n_apply": 8523, "pct_apply": 46.68}], "term_apply": [{"slice_ord": 1, "slice": "全体", "term_ord": 1, "term_grp": "有改期次", "n": 34512, "pct_share": 18.02, "n_enter": 34508, "pct_enter": 99.99, "n_apply": 23331, "pct_apply": 67.6}, {"slice_ord": 1, "slice": "全体", "term_ord": 2, "term_grp": "无改期次", "n": 156998, "pct_share": 81.98, "n_enter": 122934, "pct_enter": 78.3, "n_apply": 63538, "pct_apply": 40.47}, {"slice_ord": 1, "slice": "全体", "term_ord": 3, "term_grp": "合计", "n": 191510, "pct_share": 100.0, "n_enter": 157442, "pct_enter": 82.21, "n_apply": 86869, "pct_apply": 45.36}, {"slice_ord": 2, "slice": "进页", "term_ord": 1, "term_grp": "有改期次", "n": 34508, "pct_share": 21.92, "n_enter": 34508, "pct_enter": 100.0, "n_apply": 23331, "pct_apply": 67.61}, {"slice_ord": 2, "slice": "进页", "term_ord": 2, "term_grp": "无改期次", "n": 122934, "pct_share": 78.08, "n_enter": 122934, "pct_enter": 100.0, "n_apply": 63478, "pct_apply": 51.64}, {"slice_ord": 2, "slice": "进页", "term_ord": 3, "term_grp": "合计", "n": 157442, "pct_share": 100.0, "n_enter": 157442, "pct_enter": 100.0, "n_apply": 86809, "pct_apply": 55.14}], "prod": [{"ym": "2026-01", "n_t0": 19520, "avg_n_prod": 1.6671, "n_1": 6499, "n_2": 13021, "pct_1": 33.29, "pct_2": 66.71, "n_apply": 10325, "pct_apply": 52.89, "n_apply_1": 3347, "n_apply_2": 6978, "pct_apply_1": 51.5, "pct_apply_2": 53.59, "pct_confirm": 60.46}, {"ym": "2026-02", "n_t0": 22739, "avg_n_prod": 1.6209, "n_1": 8620, "n_2": 14119, "pct_1": 37.91, "pct_2": 62.09, "n_apply": 11780, "pct_apply": 51.81, "n_apply_1": 4299, "n_apply_2": 7481, "pct_apply_1": 49.87, "pct_apply_2": 52.99, "pct_confirm": 59.52}, {"ym": "2026-03", "n_t0": 22198, "avg_n_prod": 1.4834, "n_1": 11468, "n_2": 10730, "pct_1": 51.66, "pct_2": 48.34, "n_apply": 10293, "pct_apply": 46.37, "n_apply_1": 5068, "n_apply_2": 5225, "pct_apply_1": 44.19, "pct_apply_2": 48.7, "pct_confirm": 54.49}, {"ym": "2026-04", "n_t0": 20780, "avg_n_prod": 1.4115, "n_1": 12228, "n_2": 8552, "pct_1": 58.85, "pct_2": 41.15, "n_apply": 9736, "pct_apply": 46.85, "n_apply_1": 5462, "n_apply_2": 4274, "pct_apply_1": 44.67, "pct_apply_2": 49.98, "pct_confirm": 54.59}, {"ym": "2026-05", "n_t0": 23875, "avg_n_prod": 1.1848, "n_1": 19463, "n_2": 4412, "pct_1": 81.52, "pct_2": 18.48, "n_apply": 10783, "pct_apply": 45.16, "n_apply_1": 8552, "n_apply_2": 2231, "pct_apply_1": 43.94, "pct_apply_2": 50.57, "pct_confirm": 52.91}, {"ym": "2026-06", "n_t0": 22635, "avg_n_prod": 1.0, "n_1": 22635, "n_2": 0, "pct_1": 100.0, "pct_2": 0.0, "n_apply": 9907, "pct_apply": 43.77, "n_apply_1": 9907, "n_apply_2": 0, "pct_apply_1": 43.77, "pct_apply_2": null, "pct_confirm": 51.89}, {"ym": "2026-07", "n_t0": 23275, "avg_n_prod": 1.0028, "n_1": 23209, "n_2": 66, "pct_1": 99.72, "pct_2": 0.28, "n_apply": 9626, "pct_apply": 41.36, "n_apply_1": 9594, "n_apply_2": 32, "pct_apply_1": 41.34, "pct_apply_2": 48.48, "pct_confirm": 49.14}, {"ym": "2026-08", "n_t0": 22111, "avg_n_prod": 1.1467, "n_1": 18868, "n_2": 3243, "pct_1": 85.33, "pct_2": 14.67, "n_apply": 8668, "pct_apply": 39.2, "n_apply_1": 7410, "n_apply_2": 1258, "pct_apply_1": 39.27, "pct_apply_2": 38.79, "pct_confirm": 47.18}, {"ym": "2026-09", "n_t0": 14377, "avg_n_prod": 1.2667, "n_1": 10543, "n_2": 3834, "pct_1": 73.33, "pct_2": 26.67, "n_apply": 5751, "pct_apply": 40.0, "n_apply_1": 4198, "n_apply_2": 1553, "pct_apply_1": 39.82, "pct_apply_2": 40.51, "pct_confirm": 47.78}]};
+const D = {"funnel": [{"ym": "2026-01", "n_t0": 19520, "n_chg": 19520, "n_up": 11682, "n_down": 6169, "n_same": 1669, "pct_confirm_24h": 60.46}, {"ym": "2026-02", "n_t0": 22739, "n_chg": 22739, "n_up": 12595, "n_down": 8026, "n_same": 2118, "pct_confirm_24h": 59.52}, {"ym": "2026-03", "n_t0": 22198, "n_chg": 22198, "n_up": 10635, "n_down": 8117, "n_same": 3446, "pct_confirm_24h": 54.49}, {"ym": "2026-04", "n_t0": 20780, "n_chg": 20780, "n_up": 10912, "n_down": 6644, "n_same": 3224, "pct_confirm_24h": 54.59}, {"ym": "2026-05", "n_t0": 23875, "n_chg": 23875, "n_up": 13066, "n_down": 7989, "n_same": 2820, "pct_confirm_24h": 52.91}, {"ym": "2026-06", "n_t0": 22635, "n_chg": 22635, "n_up": 12041, "n_down": 7440, "n_same": 3154, "pct_confirm_24h": 51.89}, {"ym": "2026-07", "n_t0": 23275, "n_chg": 23275, "n_up": 13513, "n_down": 7437, "n_same": 2325, "pct_confirm_24h": 49.14}, {"ym": "2026-08", "n_t0": 22111, "n_chg": 22111, "n_up": 12553, "n_down": 7731, "n_same": 1827, "pct_confirm_24h": 47.18}, {"ym": "2026-09", "n_t0": 14377, "n_chg": 14377, "n_up": 8597, "n_down": 4380, "n_same": 1400, "pct_confirm_24h": 47.78}, {"ym": "合计", "n_t0": 191510, "n_chg": 191510, "n_up": 105594, "n_down": 63933, "n_same": 21983, "pct_confirm_24h": 53.21}], "month_chg": [{"ym": "2026-01", "ord": 1, "chg_grp": "升额", "n": 11682, "pct_share": 59.85, "pct_enter": 79.11, "pct_confirm": 53.12, "pct_amt": 34.76, "pct_term": 28.64, "pct_contract": 2.56, "pct_plan": 41.64, "pct_purpose": 14.47}, {"ym": "2026-01", "ord": 2, "chg_grp": "降额", "n": 6169, "pct_share": 31.6, "pct_enter": 77.0, "pct_confirm": 54.0, "pct_amt": 22.27, "pct_term": 28.34, "pct_contract": 3.21, "pct_plan": 29.99, "pct_purpose": 16.31}, {"ym": "2026-01", "ord": 3, "chg_grp": "不变", "n": 1669, "pct_share": 8.55, "pct_enter": 74.96, "pct_confirm": 55.9, "pct_amt": 17.62, "pct_term": 31.52, "pct_contract": 2.82, "pct_plan": 23.85, "pct_purpose": 17.2}, {"ym": "2026-02", "ord": 1, "chg_grp": "升额", "n": 12595, "pct_share": 55.39, "pct_enter": 77.5, "pct_confirm": 51.16, "pct_amt": 34.04, "pct_term": 27.96, "pct_contract": 2.46, "pct_plan": 40.13, "pct_purpose": 15.05}, {"ym": "2026-02", "ord": 2, "chg_grp": "降额", "n": 8026, "pct_share": 35.3, "pct_enter": 77.01, "pct_confirm": 53.23, "pct_amt": 23.04, "pct_term": 26.75, "pct_contract": 2.52, "pct_plan": 28.53, "pct_purpose": 17.62}, {"ym": "2026-02", "ord": 3, "chg_grp": "不变", "n": 2118, "pct_share": 9.31, "pct_enter": 75.4, "pct_confirm": 57.32, "pct_amt": 19.31, "pct_term": 29.08, "pct_contract": 2.88, "pct_plan": 22.71, "pct_purpose": 16.67}, {"ym": "2026-03", "ord": 1, "chg_grp": "升额", "n": 10635, "pct_share": 47.91, "pct_enter": 73.5, "pct_confirm": 45.78, "pct_amt": 30.79, "pct_term": 21.47, "pct_contract": 1.99, "pct_plan": 37.19, "pct_purpose": 13.28}, {"ym": "2026-03", "ord": 2, "chg_grp": "降额", "n": 8117, "pct_share": 36.57, "pct_enter": 73.61, "pct_confirm": 47.05, "pct_amt": 21.17, "pct_term": 20.55, "pct_contract": 2.44, "pct_plan": 28.21, "pct_purpose": 16.62}, {"ym": "2026-03", "ord": 3, "chg_grp": "不变", "n": 3446, "pct_share": 15.52, "pct_enter": 73.77, "pct_confirm": 52.18, "pct_amt": 19.99, "pct_term": 20.86, "pct_contract": 2.52, "pct_plan": 20.4, "pct_purpose": 17.15}, {"ym": "2026-04", "ord": 1, "chg_grp": "升额", "n": 10912, "pct_share": 52.51, "pct_enter": 78.95, "pct_confirm": 46.04, "pct_amt": 32.92, "pct_term": 20.45, "pct_contract": 2.14, "pct_plan": 38.58, "pct_purpose": 14.07}, {"ym": "2026-04", "ord": 2, "chg_grp": "降额", "n": 6644, "pct_share": 31.97, "pct_enter": 78.85, "pct_confirm": 47.49, "pct_amt": 22.17, "pct_term": 18.06, "pct_contract": 2.6, "pct_plan": 28.76, "pct_purpose": 17.25}, {"ym": "2026-04", "ord": 3, "chg_grp": "不变", "n": 3224, "pct_share": 15.51, "pct_enter": 76.92, "pct_confirm": 53.35, "pct_amt": 19.88, "pct_term": 16.69, "pct_contract": 2.39, "pct_plan": 18.73, "pct_purpose": 15.76}, {"ym": "2026-05", "ord": 1, "chg_grp": "升额", "n": 13066, "pct_share": 54.73, "pct_enter": 85.79, "pct_confirm": 43.36, "pct_amt": 35.38, "pct_term": 14.76, "pct_contract": 1.73, "pct_plan": 40.56, "pct_purpose": 13.81}, {"ym": "2026-05", "ord": 2, "chg_grp": "降额", "n": 7989, "pct_share": 33.46, "pct_enter": 88.05, "pct_confirm": 47.89, "pct_amt": 27.16, "pct_term": 12.5, "pct_contract": 2.47, "pct_plan": 32.26, "pct_purpose": 17.32}, {"ym": "2026-05", "ord": 3, "chg_grp": "不变", "n": 2820, "pct_share": 11.81, "pct_enter": 87.23, "pct_confirm": 53.79, "pct_amt": 28.58, "pct_term": 12.09, "pct_contract": 2.91, "pct_plan": 21.95, "pct_purpose": 19.43}, {"ym": "2026-06", "ord": 1, "chg_grp": "升额", "n": 12041, "pct_share": 53.2, "pct_enter": 85.8, "pct_confirm": 40.88, "pct_amt": 36.75, "pct_term": 10.84, "pct_contract": 1.77, "pct_plan": 42.19, "pct_purpose": 14.43}, {"ym": "2026-06", "ord": 2, "chg_grp": "降额", "n": 7440, "pct_share": 32.87, "pct_enter": 88.15, "pct_confirm": 47.41, "pct_amt": 31.1, "pct_term": 9.97, "pct_contract": 2.37, "pct_plan": 34.48, "pct_purpose": 18.8}, {"ym": "2026-06", "ord": 3, "chg_grp": "不变", "n": 3154, "pct_share": 13.93, "pct_enter": 88.87, "pct_confirm": 54.69, "pct_amt": 30.03, "pct_term": 9.16, "pct_contract": 2.16, "pct_plan": 24.89, "pct_purpose": 19.31}, {"ym": "2026-07", "ord": 1, "chg_grp": "升额", "n": 13513, "pct_share": 58.06, "pct_enter": 85.65, "pct_confirm": 38.73, "pct_amt": 37.28, "pct_term": 11.95, "pct_contract": 1.78, "pct_plan": 43.32, "pct_purpose": 14.2}, {"ym": "2026-07", "ord": 2, "chg_grp": "降额", "n": 7437, "pct_share": 31.95, "pct_enter": 87.67, "pct_confirm": 46.87, "pct_amt": 30.85, "pct_term": 10.96, "pct_contract": 2.22, "pct_plan": 33.95, "pct_purpose": 18.49}, {"ym": "2026-07", "ord": 3, "chg_grp": "不变", "n": 2325, "pct_share": 9.99, "pct_enter": 86.32, "pct_confirm": 51.01, "pct_amt": 27.48, "pct_term": 9.33, "pct_contract": 2.45, "pct_plan": 24.43, "pct_purpose": 15.14}, {"ym": "2026-08", "ord": 1, "chg_grp": "升额", "n": 12553, "pct_share": 56.77, "pct_enter": 85.7, "pct_confirm": 37.13, "pct_amt": 35.96, "pct_term": 14.96, "pct_contract": 1.83, "pct_plan": 43.42, "pct_purpose": 14.32}, {"ym": "2026-08", "ord": 2, "chg_grp": "降额", "n": 7731, "pct_share": 34.96, "pct_enter": 87.6, "pct_confirm": 43.31, "pct_amt": 28.42, "pct_term": 13.19, "pct_contract": 1.97, "pct_plan": 32.29, "pct_purpose": 16.71}, {"ym": "2026-08", "ord": 3, "chg_grp": "不变", "n": 1827, "pct_share": 8.26, "pct_enter": 87.25, "pct_confirm": 51.72, "pct_amt": 28.63, "pct_term": 14.56, "pct_contract": 2.57, "pct_plan": 25.12, "pct_purpose": 17.95}, {"ym": "2026-09", "ord": 1, "chg_grp": "升额", "n": 8597, "pct_share": 59.8, "pct_enter": 85.19, "pct_confirm": 37.91, "pct_amt": 35.5, "pct_term": 18.69, "pct_contract": 1.5, "pct_plan": 41.93, "pct_purpose": 13.13}, {"ym": "2026-09", "ord": 2, "chg_grp": "降额", "n": 4380, "pct_share": 30.47, "pct_enter": 87.33, "pct_confirm": 43.88, "pct_amt": 28.97, "pct_term": 16.78, "pct_contract": 2.05, "pct_plan": 32.24, "pct_purpose": 17.76}, {"ym": "2026-09", "ord": 3, "chg_grp": "不变", "n": 1400, "pct_share": 9.74, "pct_enter": 87.36, "pct_confirm": 52.29, "pct_amt": 30.0, "pct_term": 15.07, "pct_contract": 2.93, "pct_plan": 28.5, "pct_purpose": 18.29}], "month_all": [{"ym": "2026-01", "n": 19520, "pct_enter": 78.09, "pct_confirm": 53.63, "pct_amt": 29.35, "pct_term": 28.79, "pct_contract": 2.79, "pct_plan": 36.43, "pct_purpose": 15.28}, {"ym": "2026-02", "n": 22739, "pct_enter": 77.13, "pct_confirm": 52.46, "pct_amt": 28.78, "pct_term": 27.64, "pct_contract": 2.52, "pct_plan": 34.42, "pct_purpose": 16.11}, {"ym": "2026-03", "n": 22198, "pct_enter": 73.58, "pct_confirm": 47.24, "pct_amt": 25.6, "pct_term": 21.04, "pct_contract": 2.24, "pct_plan": 31.3, "pct_purpose": 15.1}, {"ym": "2026-04", "n": 20780, "pct_enter": 78.6, "pct_confirm": 47.64, "pct_amt": 27.46, "pct_term": 19.1, "pct_contract": 2.32, "pct_plan": 32.36, "pct_purpose": 15.35}, {"ym": "2026-05", "n": 23875, "pct_enter": 86.71, "pct_confirm": 46.11, "pct_amt": 31.83, "pct_term": 13.69, "pct_contract": 2.12, "pct_plan": 35.59, "pct_purpose": 15.65}, {"ym": "2026-06", "n": 22635, "pct_enter": 87.0, "pct_confirm": 44.95, "pct_amt": 33.96, "pct_term": 10.32, "pct_contract": 2.02, "pct_plan": 37.24, "pct_purpose": 16.55}, {"ym": "2026-07", "n": 23275, "pct_enter": 86.36, "pct_confirm": 42.56, "pct_amt": 34.25, "pct_term": 11.37, "pct_contract": 1.99, "pct_plan": 38.44, "pct_purpose": 15.66}, {"ym": "2026-08", "n": 22111, "pct_enter": 86.49, "pct_confirm": 40.5, "pct_amt": 32.72, "pct_term": 14.31, "pct_contract": 1.94, "pct_plan": 38.01, "pct_purpose": 15.46}, {"ym": "2026-09", "n": 14377, "pct_enter": 86.05, "pct_confirm": 41.13, "pct_amt": 32.98, "pct_term": 17.76, "pct_contract": 1.81, "pct_plan": 37.67, "pct_purpose": 15.04}], "year": [{"ym": "合计", "ord": 1, "chg_grp": "升额", "n": 105594, "pct_share": 55.14, "pct_enter": 82.04, "pct_confirm": 43.83, "pct_amt": 34.91, "pct_term": 18.67, "pct_contract": 1.98, "pct_plan": 41.08, "pct_purpose": 14.13}, {"ym": "合计", "ord": 2, "chg_grp": "降额", "n": 63933, "pct_share": 33.38, "pct_enter": 82.67, "pct_confirm": 48.0, "pct_amt": 26.06, "pct_term": 17.32, "pct_contract": 2.43, "pct_plan": 31.15, "pct_purpose": 17.43}, {"ym": "合计", "ord": 3, "chg_grp": "不变", "n": 21983, "pct_share": 11.48, "pct_enter": 81.69, "pct_confirm": 53.54, "pct_amt": 24.42, "pct_term": 16.94, "pct_contract": 2.58, "pct_plan": 22.82, "pct_purpose": 17.43}], "month_term": [{"ym": "2026-01", "term_ord": 1, "term_grp": "有改期次", "n": 5620, "n_apply": 4145, "pct_apply": 73.75}, {"ym": "2026-01", "term_ord": 2, "term_grp": "无改期次", "n": 13900, "n_apply": 6180, "pct_apply": 44.46}, {"ym": "2026-02", "term_ord": 1, "term_grp": "有改期次", "n": 6284, "n_apply": 4603, "pct_apply": 73.25}, {"ym": "2026-02", "term_ord": 2, "term_grp": "无改期次", "n": 16455, "n_apply": 7177, "pct_apply": 43.62}, {"ym": "2026-03", "term_ord": 1, "term_grp": "有改期次", "n": 4670, "n_apply": 3401, "pct_apply": 72.83}, {"ym": "2026-03", "term_ord": 2, "term_grp": "无改期次", "n": 17528, "n_apply": 6892, "pct_apply": 39.32}, {"ym": "2026-04", "term_ord": 1, "term_grp": "有改期次", "n": 3969, "n_apply": 2733, "pct_apply": 68.86}, {"ym": "2026-04", "term_ord": 2, "term_grp": "无改期次", "n": 16811, "n_apply": 7003, "pct_apply": 41.66}, {"ym": "2026-05", "term_ord": 1, "term_grp": "有改期次", "n": 3269, "n_apply": 2135, "pct_apply": 65.31}, {"ym": "2026-05", "term_ord": 2, "term_grp": "无改期次", "n": 20606, "n_apply": 8648, "pct_apply": 41.97}, {"ym": "2026-06", "term_ord": 1, "term_grp": "有改期次", "n": 2336, "n_apply": 1408, "pct_apply": 60.27}, {"ym": "2026-06", "term_ord": 2, "term_grp": "无改期次", "n": 20299, "n_apply": 8499, "pct_apply": 41.87}, {"ym": "2026-07", "term_ord": 1, "term_grp": "有改期次", "n": 2647, "n_apply": 1566, "pct_apply": 59.16}, {"ym": "2026-07", "term_ord": 2, "term_grp": "无改期次", "n": 20628, "n_apply": 8060, "pct_apply": 39.07}, {"ym": "2026-08", "term_ord": 1, "term_grp": "有改期次", "n": 3164, "n_apply": 1817, "pct_apply": 57.43}, {"ym": "2026-08", "term_ord": 2, "term_grp": "无改期次", "n": 18947, "n_apply": 6851, "pct_apply": 36.16}, {"ym": "2026-09", "term_ord": 1, "term_grp": "有改期次", "n": 2553, "n_apply": 1523, "pct_apply": 59.66}, {"ym": "2026-09", "term_ord": 2, "term_grp": "无改期次", "n": 11824, "n_apply": 4228, "pct_apply": 35.76}], "chg_term": [{"chg_ord": 1, "chg_grp": "升额", "term_ord": 1, "term_grp": "有改期次", "n": 19715, "n_apply": 12443, "pct_apply": 63.11}, {"chg_ord": 1, "chg_grp": "升额", "term_ord": 2, "term_grp": "无改期次", "n": 85879, "n_apply": 33075, "pct_apply": 38.51}, {"chg_ord": 2, "chg_grp": "降额", "term_ord": 1, "term_grp": "有改期次", "n": 11074, "n_apply": 7953, "pct_apply": 71.82}, {"chg_ord": 2, "chg_grp": "降额", "term_ord": 2, "term_grp": "无改期次", "n": 52859, "n_apply": 21940, "pct_apply": 41.51}, {"chg_ord": 3, "chg_grp": "不变", "term_ord": 1, "term_grp": "有改期次", "n": 3723, "n_apply": 2935, "pct_apply": 78.83}, {"chg_ord": 3, "chg_grp": "不变", "term_ord": 2, "term_grp": "无改期次", "n": 18260, "n_apply": 8523, "pct_apply": 46.68}], "term_apply": [{"slice_ord": 1, "slice": "全体", "term_ord": 1, "term_grp": "有改期次", "n": 34512, "pct_share": 18.02, "n_enter": 34508, "pct_enter": 99.99, "n_apply": 23331, "pct_apply": 67.6}, {"slice_ord": 1, "slice": "全体", "term_ord": 2, "term_grp": "无改期次", "n": 156998, "pct_share": 81.98, "n_enter": 122934, "pct_enter": 78.3, "n_apply": 63538, "pct_apply": 40.47}, {"slice_ord": 1, "slice": "全体", "term_ord": 3, "term_grp": "合计", "n": 191510, "pct_share": 100.0, "n_enter": 157442, "pct_enter": 82.21, "n_apply": 86869, "pct_apply": 45.36}, {"slice_ord": 2, "slice": "进页", "term_ord": 1, "term_grp": "有改期次", "n": 34508, "pct_share": 21.92, "n_enter": 34508, "pct_enter": 100.0, "n_apply": 23331, "pct_apply": 67.61}, {"slice_ord": 2, "slice": "进页", "term_ord": 2, "term_grp": "无改期次", "n": 122934, "pct_share": 78.08, "n_enter": 122934, "pct_enter": 100.0, "n_apply": 63478, "pct_apply": 51.64}, {"slice_ord": 2, "slice": "进页", "term_ord": 3, "term_grp": "合计", "n": 157442, "pct_share": 100.0, "n_enter": 157442, "pct_enter": 100.0, "n_apply": 86809, "pct_apply": 55.14}], "prod": [{"ym": "2026-01", "n_t0": 19520, "avg_n_prod": 1.6671, "n_1": 6499, "n_2": 13021, "pct_1": 33.29, "pct_2": 66.71, "n_apply": 10325, "pct_apply": 52.89, "n_apply_1": 3347, "n_apply_2": 6978, "pct_apply_1": 51.5, "pct_apply_2": 53.59, "pct_confirm": 60.46}, {"ym": "2026-02", "n_t0": 22739, "avg_n_prod": 1.6209, "n_1": 8620, "n_2": 14119, "pct_1": 37.91, "pct_2": 62.09, "n_apply": 11780, "pct_apply": 51.81, "n_apply_1": 4299, "n_apply_2": 7481, "pct_apply_1": 49.87, "pct_apply_2": 52.99, "pct_confirm": 59.52}, {"ym": "2026-03", "n_t0": 22198, "avg_n_prod": 1.4834, "n_1": 11468, "n_2": 10730, "pct_1": 51.66, "pct_2": 48.34, "n_apply": 10293, "pct_apply": 46.37, "n_apply_1": 5068, "n_apply_2": 5225, "pct_apply_1": 44.19, "pct_apply_2": 48.7, "pct_confirm": 54.49}, {"ym": "2026-04", "n_t0": 20780, "avg_n_prod": 1.4115, "n_1": 12228, "n_2": 8552, "pct_1": 58.85, "pct_2": 41.15, "n_apply": 9736, "pct_apply": 46.85, "n_apply_1": 5462, "n_apply_2": 4274, "pct_apply_1": 44.67, "pct_apply_2": 49.98, "pct_confirm": 54.59}, {"ym": "2026-05", "n_t0": 23875, "avg_n_prod": 1.1848, "n_1": 19463, "n_2": 4412, "pct_1": 81.52, "pct_2": 18.48, "n_apply": 10783, "pct_apply": 45.16, "n_apply_1": 8552, "n_apply_2": 2231, "pct_apply_1": 43.94, "pct_apply_2": 50.57, "pct_confirm": 52.91}, {"ym": "2026-06", "n_t0": 22635, "avg_n_prod": 1.0, "n_1": 22635, "n_2": 0, "pct_1": 100.0, "pct_2": 0.0, "n_apply": 9907, "pct_apply": 43.77, "n_apply_1": 9907, "n_apply_2": 0, "pct_apply_1": 43.77, "pct_apply_2": null, "pct_confirm": 51.89}, {"ym": "2026-07", "n_t0": 23275, "avg_n_prod": 1.0028, "n_1": 23209, "n_2": 66, "pct_1": 99.72, "pct_2": 0.28, "n_apply": 9626, "pct_apply": 41.36, "n_apply_1": 9594, "n_apply_2": 32, "pct_apply_1": 41.34, "pct_apply_2": 48.48, "pct_confirm": 49.14}, {"ym": "2026-08", "n_t0": 22111, "avg_n_prod": 1.1467, "n_1": 18868, "n_2": 3243, "pct_1": 85.33, "pct_2": 14.67, "n_apply": 8668, "pct_apply": 39.2, "n_apply_1": 7410, "n_apply_2": 1258, "pct_apply_1": 39.27, "pct_apply_2": 38.79, "pct_confirm": 47.18}, {"ym": "2026-09", "n_t0": 14377, "avg_n_prod": 1.2667, "n_1": 10543, "n_2": 3834, "pct_1": 73.33, "pct_2": 26.67, "n_apply": 5751, "pct_apply": 40.0, "n_apply_1": 4198, "n_apply_2": 1553, "pct_apply_1": 39.82, "pct_apply_2": 40.51, "pct_confirm": 47.78}], "quality": [{"ym": "2026-01", "prod_grp": "1个产品", "n_apply": 5098, "n_remit": 5019, "n_due": 5019, "n_od": 1678, "overdue_pct": 33.43, "profit_rate": 8.48}, {"ym": "2026-01", "prod_grp": "2个产品", "n_apply": 10498, "n_remit": 10330, "n_due": 10330, "n_od": 3680, "overdue_pct": 35.62, "profit_rate": 5.93}, {"ym": "2026-02", "prod_grp": "1个产品", "n_apply": 7324, "n_remit": 7153, "n_due": 7153, "n_od": 2521, "overdue_pct": 35.24, "profit_rate": 7.94}, {"ym": "2026-02", "prod_grp": "2个产品", "n_apply": 12606, "n_remit": 12323, "n_due": 12323, "n_od": 4299, "overdue_pct": 34.89, "profit_rate": 6.75}, {"ym": "2026-03", "prod_grp": "1个产品", "n_apply": 9848, "n_remit": 9637, "n_due": 9637, "n_od": 3410, "overdue_pct": 35.38, "profit_rate": 12.86}, {"ym": "2026-03", "prod_grp": "2个产品", "n_apply": 10262, "n_remit": 10046, "n_due": 10046, "n_od": 3246, "overdue_pct": 32.31, "profit_rate": 12.46}, {"ym": "2026-04", "prod_grp": "1个产品", "n_apply": 10721, "n_remit": 10516, "n_due": 10516, "n_od": 3805, "overdue_pct": 36.18, "profit_rate": 14.49}, {"ym": "2026-04", "prod_grp": "2个产品", "n_apply": 8404, "n_remit": 8246, "n_due": 8246, "n_od": 2625, "overdue_pct": 31.83, "profit_rate": 13.09}, {"ym": "2026-05", "prod_grp": "1个产品", "n_apply": 16093, "n_remit": 15627, "n_due": 15627, "n_od": 5596, "overdue_pct": 35.81, "profit_rate": 12.13}, {"ym": "2026-05", "prod_grp": "2个产品", "n_apply": 4948, "n_remit": 4835, "n_due": 4835, "n_od": 1566, "overdue_pct": 32.39, "profit_rate": 13.69}, {"ym": "2026-06", "prod_grp": "1个产品", "n_apply": 20040, "n_remit": 19464, "n_due": 19464, "n_od": 7694, "overdue_pct": 39.53, "profit_rate": 8.81}, {"ym": "2026-06", "prod_grp": "2个产品", "n_apply": 673, "n_remit": 631, "n_due": 631, "n_od": 249, "overdue_pct": 39.46, "profit_rate": 15.91}, {"ym": "2026-07", "prod_grp": "1个产品", "n_apply": 20358, "n_remit": 19842, "n_due": 19817, "n_od": 8067, "overdue_pct": 40.71, "profit_rate": 8.33}, {"ym": "2026-07", "prod_grp": "2个产品", "n_apply": 399, "n_remit": 370, "n_due": 369, "n_od": 140, "overdue_pct": 37.94, "profit_rate": 11.84}, {"ym": "2026-08", "prod_grp": "1个产品", "n_apply": 17435, "n_remit": 16992, "n_due": 16273, "n_od": 6681, "overdue_pct": 41.06, "profit_rate": 9.71}, {"ym": "2026-08", "prod_grp": "2个产品", "n_apply": 2473, "n_remit": 2403, "n_due": 1961, "n_od": 847, "overdue_pct": 43.19, "profit_rate": 12.3}]};
 const months = D.funnel.filter(r => r.ym!=='合计').map(r=>r.ym.slice(5)+'月');
 const pal = {up:'#43c7e7', down:'#f68ab0', same:'#ffc26b'};
 Chart.defaults.color='#aac5da';
@@ -916,6 +1069,36 @@ new Chart(document.getElementById('c13'), {
       {label:'全体 T0', borderColor:'#f68ab0', tension:.25, borderDash:[5,4], spanGaps:false, data: D.prod.map(r=>r.pct_apply)},
       {label:'1 个产品', borderColor:'#43c7e7', tension:.25, spanGaps:false, data: D.prod.map(r=>r.pct_apply_1)},
       {label:'2 个产品', borderColor:'#ffc26b', tension:.25, spanGaps:false, data: D.prod.map(r=>r.pct_apply_2)}
+    ]
+  },
+  options: {responsive:true, maintainAspectRatio:false, plugins:{legend:{position:'bottom'}}, scales:{y:{ticks:{callback:v=>v+'%'}}}}
+});
+const qMonths = [...new Set(D.quality.map(r=>r.ym))].sort();
+const qLabs = qMonths.map(ym => ym.slice(5)+'月');
+function qf(grp, field){
+  return qMonths.map(ym => {
+    const row = D.quality.find(r => r.ym===ym && r.prod_grp===grp);
+    return row ? row[field] : null;
+  });
+}
+new Chart(document.getElementById('c14'), {
+  type:'line',
+  data: {
+    labels: qLabs,
+    datasets: [
+      {label:'1 个产品', borderColor:'#43c7e7', tension:.25, data: qf('1个产品','profit_rate')},
+      {label:'2 个产品', borderColor:'#ffc26b', tension:.25, data: qf('2个产品','profit_rate')}
+    ]
+  },
+  options: {responsive:true, maintainAspectRatio:false, plugins:{legend:{position:'bottom'}}, scales:{y:{ticks:{callback:v=>v+'%'}}}}
+});
+new Chart(document.getElementById('c15'), {
+  type:'line',
+  data: {
+    labels: qLabs,
+    datasets: [
+      {label:'1 个产品', borderColor:'#43c7e7', tension:.25, data: qf('1个产品','overdue_pct')},
+      {label:'2 个产品', borderColor:'#ffc26b', tension:.25, data: qf('2个产品','overdue_pct')}
     ]
   },
   options: {responsive:true, maintainAspectRatio:false, plugins:{legend:{position:'bottom'}}, scales:{y:{ticks:{callback:v=>v+'%'}}}}
