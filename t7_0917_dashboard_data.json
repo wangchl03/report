@@ -1,18 +1,18 @@
 {
   "kpi": {
     "n_user": 1493,
-    "n_apply": 291,
-    "apply_rate": 19.49,
-    "n_apply_week": 113,
-    "n_first_week": 102,
-    "n_remit": 277,
-    "n_remit_week": 105,
-    "n_due": 2,
-    "n_due_od": 2,
+    "n_apply": 320,
+    "apply_rate": 21.43,
+    "n_apply_week": 144,
+    "n_first_week": 131,
+    "n_remit": 309,
+    "n_remit_week": 137,
+    "n_due": 3,
+    "n_due_od": 3,
     "profit_pct": -100.0,
     "overdue_pct": 100.0,
     "week_start": "2026-09-21",
-    "as_of": "2026-09-24",
+    "as_of": "2026-09-25",
     "recall_date": "2026-09-17",
     "remit_day": "o.remit_date::date"
   },
@@ -64,6 +64,12 @@
       "n": 30,
       "cum": 291,
       "rate": 19.49
+    },
+    {
+      "d": "2026-09-25",
+      "n": 29,
+      "cum": 320,
+      "rate": 21.43
     }
   ],
   "apply_daily": [
@@ -106,6 +112,11 @@
       "d": "2026-09-24",
       "n_order": 36,
       "n_user": 36
+    },
+    {
+      "d": "2026-09-25",
+      "n_order": 32,
+      "n_user": 32
     }
   ],
   "remit_daily": [
@@ -148,6 +159,11 @@
       "d": "2026-09-24",
       "n": 34,
       "cum": 277
+    },
+    {
+      "d": "2026-09-25",
+      "n": 32,
+      "cum": 309
     }
   ],
   "due_daily": [
@@ -172,52 +188,63 @@
       "overdue_pct": 100.0,
       "cum_profit_pct": -100.0,
       "cum_overdue_pct": 100.0
+    },
+    {
+      "d": "2026-09-25",
+      "n_due": 1,
+      "n_od": 1,
+      "repaid": 0.0,
+      "remit": 214.0,
+      "profit_pct": -100.0,
+      "overdue_pct": 100.0,
+      "cum_profit_pct": -100.0,
+      "cum_overdue_pct": 100.0
     }
   ],
   "strat": [
     {
       "strat": "20d+10r",
       "n_user": 498,
-      "n_apply": 97,
-      "pct": 19.48
+      "n_apply": 108,
+      "pct": 21.69
     },
     {
       "strat": "30d+10r",
       "n_user": 319,
-      "n_apply": 55,
-      "pct": 17.24
+      "n_apply": 60,
+      "pct": 18.81
     },
     {
       "strat": "30d",
       "n_user": 210,
-      "n_apply": 41,
-      "pct": 19.52
+      "n_apply": 43,
+      "pct": 20.48
     },
     {
       "strat": "20d",
       "n_user": 199,
-      "n_apply": 33,
-      "pct": 16.58
+      "n_apply": 36,
+      "pct": 18.09
     },
     {
       "strat": "10d",
       "n_user": 142,
-      "n_apply": 34,
-      "pct": 23.94
+      "n_apply": 38,
+      "pct": 26.76
     },
     {
       "strat": "10d+10r",
       "n_user": 125,
-      "n_apply": 31,
-      "pct": 24.8
+      "n_apply": 35,
+      "pct": 28.0
     }
   ],
   "churn": [
     {
       "bin": "7-15d",
       "n_user": 1493,
-      "n_apply": 291,
-      "pct": 19.49
+      "n_apply": 320,
+      "pct": 21.43
     }
   ]
 }
