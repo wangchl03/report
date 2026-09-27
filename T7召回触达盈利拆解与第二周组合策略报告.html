@@ -16,23 +16,45 @@
 .nav{position:sticky;top:0;z-index:5;background:rgba(6,25,43,.94);backdrop-filter:blur(10px);border-bottom:1px solid var(--line);display:flex;gap:18px;overflow:auto;padding:12px 0;margin:0 -36px;padding-left:36px}
 .nav a{white-space:nowrap;color:#c6dae7;font-size:14px;text-decoration:none}
 .nav a:hover{color:var(--cy)}
-h2{font-size:22px;margin:42px 0 10px}h3{font-size:16px;margin:18px 0 8px}
-.desc{color:var(--muted);margin:0 0 14px;font-size:14px}
+h2{font-size:26px;font-weight:800;color:#fff;letter-spacing:.01em;margin:48px 0 6px;padding:0 0 10px;border-bottom:1px solid var(--line);scroll-margin-top:58px;line-height:1.3}
+h3{font-size:17px;font-weight:750;color:#f3fbff;margin:18px 0 8px;line-height:1.35}
+.desc{color:var(--muted);margin:0 0 16px;font-size:14px;font-weight:400;line-height:1.7}
+.card h3{color:#f3fbff;font-weight:750}
+.card p{color:var(--muted);font-size:14px;font-weight:400;margin:0;line-height:1.7}
 .grid{display:grid;gap:14px}.g2{grid-template-columns:repeat(2,minmax(0,1fr))}.g3{grid-template-columns:repeat(3,minmax(0,1fr))}.g4{grid-template-columns:repeat(4,minmax(0,1fr))}.g5{grid-template-columns:repeat(5,minmax(0,1fr))}
 .card,.chart{background:rgba(10,41,68,.95);border:1px solid var(--line);border-radius:14px;padding:16px}
 .label{color:var(--muted);font-size:12px}.num{font-size:26px;font-weight:800;margin:4px 0 2px;color:var(--cy)}
 .sub{color:var(--muted);font-size:12px}.mint{color:var(--gr)}.gold{color:var(--am)}.pink{color:var(--pk)}.red{color:var(--rd)}
-.box{height:320px;position:relative}.chart h3{margin:0 0 4px;font-size:15px}.chart p{font-size:12px;color:var(--muted);margin:0 0 10px}
-.callout{background:#0a2a45;border:1px solid #2a5c7e;border-left:4px solid #43c7e7;border-radius:10px;padding:14px 18px;margin:14px 0;line-height:1.75;font-size:14px}
+.box{height:320px;position:relative}.chart h3{margin:0 0 2px;font-size:16px;font-weight:750;color:#fff}.chart p{font-size:12.5px;color:var(--muted);font-weight:400;margin:0 0 10px}
+.callout{background:#0a2a45;border:1px solid #2a5c7e;border-left:4px solid #43c7e7;border-radius:10px;padding:14px 18px 16px;margin:14px 0}
 .callout.gold{border-left-color:#ffc26b}.callout.red{border-left-color:#f68ab0}.callout.green{border-left-color:#64dcae}
-.callout .ch{font-weight:800;margin-bottom:8px}
+.callout .ch{display:block;font-size:16px;font-weight:800;color:#fff;line-height:1.35;margin:0 0 8px;letter-spacing:.01em}
+.callout .bd{color:var(--muted);font-size:14px;font-weight:400;line-height:1.7}
+.callout .bd p{margin:0 0 8px}.callout .bd p:last-child{margin:0}
+.callout .bd ul{margin:0;padding-left:1.15em}.callout .bd li{margin:5px 0}
+.conclusions{display:grid;gap:14px;margin:16px 0 8px}
+.concl{display:grid;grid-template-columns:48px 1fr;gap:14px;align-items:start;background:rgba(10,41,68,.95);border:1px solid var(--line);border-radius:14px;padding:18px 20px 16px}
+.concl.g{border-left:4px solid var(--gr)}.concl.a{border-left:4px solid var(--am)}.concl.c{border-left:4px solid var(--cy)}.concl.r{border-left:4px solid var(--pk)}
+.concl .idx{width:40px;height:40px;border-radius:10px;display:grid;place-items:center;font-weight:800;font-size:18px;color:#06192b;background:var(--cy)}
+.concl.g .idx{background:var(--gr)}.concl.a .idx{background:var(--am)}.concl.r .idx{background:var(--pk)}
+.concl h3{margin:2px 0 10px;font-size:18px;font-weight:800;color:#fff;line-height:1.35}
+.concl .bd{color:#b7cddd;font-size:14px;font-weight:400;line-height:1.7}
+.concl .bd ul{margin:0;padding-left:1.15em}.concl .bd li{margin:6px 0}
+.concl .bd b{color:#eaf6ff;font-weight:700}
+.rule-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin-top:10px}
+.rule{background:rgba(6,25,43,.55);border:1px solid rgba(42,92,126,.55);border-radius:10px;padding:10px 12px}
+.rule .k{display:block;font-size:12px;font-weight:800;letter-spacing:.06em;margin-bottom:4px}
+.rule .v{display:block;font-size:13.5px;color:#c5d8e6;font-weight:400;line-height:1.55}
+.rule.go .k{color:var(--gr)}.rule.warn .k{color:var(--am)}.rule.stop .k{color:var(--pk)}
 .table{overflow-x:auto;margin:12px 0}table{width:100%;border-collapse:collapse;font-size:13px}
 th,td{padding:8px 10px;border-bottom:1px solid rgba(42,92,126,.45);text-align:right;white-space:nowrap}
 th{color:var(--muted);background:rgba(12,48,78,.65)}th:first-child,td:first-child{text-align:left}
 tr.good td{background:rgba(100,220,174,.08)}tr.bad td{background:rgba(246,138,176,.08)}tr.mid td{background:rgba(255,194,107,.07)}
 .tag{display:inline-block;border:1px solid #306484;padding:1px 8px;border-radius:99px;font-size:12px;color:#b6d8e9;margin-right:5px}
-.step{display:grid;grid-template-columns:38px 1fr;gap:12px;margin:12px 0}
-.numc{width:30px;height:30px;border-radius:50%;display:grid;place-items:center;background:#164969;color:var(--gr);font-weight:750}
+.step{display:grid;grid-template-columns:38px 1fr;gap:12px;margin:16px 0;align-items:start}
+.numc{width:30px;height:30px;border-radius:50%;display:grid;place-items:center;background:#164969;color:var(--gr);font-weight:750;margin-top:2px}
+.step .ttl{display:block;font-size:16px;font-weight:800;color:#fff;margin:0 0 6px;line-height:1.35}
+.step .bd{color:var(--muted);font-size:14px;font-weight:400;line-height:1.7}
 details.code{margin:10px 0;background:rgba(10,41,68,.95);border:1px solid var(--line);border-radius:12px;padding:10px 14px}
 details.code summary{cursor:pointer;color:var(--cy);font-weight:700}
 pre.sql{overflow:auto;max-height:720px;font-size:11.5px;line-height:1.5;color:#d7ecf8;white-space:pre}
@@ -40,7 +62,7 @@ pre.sql{overflow:auto;max-height:720px;font-size:11.5px;line-height:1.5;color:#d
 .heat{display:grid;grid-template-columns:140px repeat(2,1fr);gap:8px;margin:12px 0}
 .heat .h{padding:12px;border-radius:10px;border:1px solid var(--line);background:#0a2a45}
 .heat .lab{font-size:12px;color:var(--muted)}
-@media(max-width:900px){.g2,.g3,.g4,.g5{grid-template-columns:1fr}.wrap{padding:18px 16px 56px}.nav{margin:0 -16px;padding-left:16px}.hero h1{font-size:22px}.heat{grid-template-columns:1fr}}
+@media(max-width:900px){.g2,.g3,.g4,.g5,.rule-grid{grid-template-columns:1fr}.wrap{padding:18px 16px 56px}.nav{margin:0 -16px;padding-left:16px}.hero h1{font-size:22px}.heat{grid-template-columns:1fr}.concl{grid-template-columns:1fr}.concl .idx{width:36px;height:36px;font-size:16px}}
 </style>
 </head>
 <body>
@@ -56,6 +78,7 @@ pre.sql{overflow:auto;max-height:720px;font-size:11.5px;line-height:1.5;color:#d
 </header>
 <nav class="nav">
   <a href="#kpi">现在赚多少</a>
+  <a href="#conclusions">核心结论</a>
   <a href="#split">三类拆解</a>
   <a href="#tradeoff">提单 vs 盈利</a>
   <a href="#feat">触达前特征</a>
@@ -73,15 +96,71 @@ pre.sql{overflow:auto;max-height:720px;font-size:11.5px;line-height:1.5;color:#d
   <article class="card"><div class="label">金额逾期占比</div><div class="num pink">33.4%</div><div class="sub">到期单 loan_status=8</div></article>
 </section>
 
-<h2>结论先看</h2>
-<div class="callout green"><div class="ch">1. 现在这套触达能赚钱，但钱不是进页的人贡献的</div>
-8/18 全量首次当周到期盈利 <b>11.31%</b>。去掉第一周后，等待期「活跃未进页」<b>24.4%</b>，「没活跃」<b>13.6%</b>，「进过提单页」只有 <b>6.8%</b>。3/26、7/8、40% 券同一方向：看过报价还不提的人最差。</div>
-<div class="callout gold"><div class="ch">2. 提单率和盈利率是反的，第二周不能按提单率加让利</div>
-第一周过后还没提单的人：已进页后来提单 <b>51.8%</b>、盈利 <b>6.6%</b>；活跃未进页提单 <b>42.0%</b>、盈利 <b>27.5%</b>；没活跃提单 <b>14.5%</b>、盈利 <b>11.0%</b>。进页的人最好转化、最差质量；未进页最好质量。</div>
-<div class="callout"><div class="ch">3. 没活跃不能整包打。热且没进过页才值得召回，热但进过页和已进页一样差</div>
-没活跃里，触达前 14 天活跃且 30 天没进过页：提单 22.8%、盈利约 50%（到期 13 笔，方向对、样本小）。同一批「热」但 30 天进过页：提单 32.6%、盈利只有 <b>4.6%</b>。冷且从未进页：提单 9.5%、盈利 17.4%。</div>
-<div class="callout red"><div class="ch">4. 推荐组合：第二周主打「活跃未进页」，次打「没活跃 × 未进过页 × 还热或放款次数多」；已进页和「进过页的热用户」只轻触达、不追加让利</div>
-只做活跃未进页，人均到期利润 <b>201 元</b>，但只有 255 人。未进页 + 热没活跃共 2,869 人，提单 26.8%、盈利 12.3%、人均 37 元，优于第二周全量（17.7% / 11.0% / 22 元）。加上已进页会把盈利率从 12.3% 拉到 9.8%。</div>
+<h2 id="conclusions">核心结论</h2>
+<p class="desc">四条分开看：先看现在赚在哪，再看提单和盈利为什么不能一起加码，然后把没活跃拆开，最后落到第二周圈人。</p>
+<div class="conclusions">
+
+<article class="concl g">
+  <div class="idx">1</div>
+  <div>
+    <h3>现有触达能赚钱，但钱不在进页的人身上</h3>
+    <div class="bd">
+      <ul>
+        <li>8/18 全量首次当周到期盈利 <b>11.31%</b>。</li>
+        <li>去掉第一周后：活跃未进页 <b>24.4%</b>，没活跃 <b>13.6%</b>，进过提单页只有 <b>6.8%</b>。</li>
+        <li>3/26、7/8、40% 券同一方向：看过报价还不提的人最差。</li>
+      </ul>
+    </div>
+  </div>
+</article>
+
+<article class="concl a">
+  <div class="idx">2</div>
+  <div>
+    <h3>提单率和盈利率是反的，第二周不能按谁爱提就给谁让利</h3>
+    <div class="bd">
+      <ul>
+        <li>已进页：后来提单 <b>51.8%</b>，盈利 <b>6.6%</b> —— 最好转化，最差质量。</li>
+        <li>活跃未进页：提单 <b>42.0%</b>，盈利 <b>27.5%</b> —— 转化高，质量最好。</li>
+        <li>没活跃整包：提单 <b>14.5%</b>，盈利 <b>11.0%</b> —— 人多，人均贡献低。</li>
+      </ul>
+    </div>
+  </div>
+</article>
+
+<article class="concl c">
+  <div class="idx">3</div>
+  <div>
+    <h3>没活跃不能整包打，要按「热不热 × 进过页没有」再切</h3>
+    <div class="bd">
+      <ul>
+        <li>热 × 近 30 天未进页：提单 22.8%，盈利约 50%（到期 13 笔，方向对、样本小）。</li>
+        <li>热 × 近 30 天进过页：提单 32.6%，盈利只有 <b>4.6%</b>，和已进页同类。</li>
+        <li>冷 × 从未进页：提单 9.5%，盈利 17.4%，只适合覆盖、不加券。</li>
+      </ul>
+    </div>
+  </div>
+</article>
+
+<article class="concl r">
+  <div class="idx">4</div>
+  <div>
+    <h3>第二周按四档圈人，不要把让利打在已进页上</h3>
+    <div class="bd">
+      <div class="rule-grid">
+        <div class="rule go"><span class="k">主触达</span><span class="v">第一周活跃未进页。255 人，人均到期利润 201 元。</span></div>
+        <div class="rule go"><span class="k">次触达</span><span class="v">没活跃 × 近 30 天未进页 ×（还热，或放款 4 次以上）。</span></div>
+        <div class="rule warn"><span class="k">覆盖不让利</span><span class="v">冷、没进过页。提单低，盈利尚可，便宜渠道即可。</span></div>
+        <div class="rule stop"><span class="k">禁止加码</span><span class="v">第一周已进页，以及热但进过页的人。加上他们会把盈利率从 12.3% 拉到 9.8%。</span></div>
+      </div>
+      <ul>
+        <li>只做活跃未进页人数太少；未进页 + 热没活跃共 2,869 人，提单 26.8%、盈利 12.3%、人均 37 元，优于第二周全量（17.7% / 11.0% / 22 元）。</li>
+      </ul>
+    </div>
+  </div>
+</article>
+
+</div>
 
 <h2 id="split">一、现在触达策略赚在哪一类人</h2>
 <p class="desc">等待期三类是「已经提单的人」里的质量拆解，不是圈人时点的申请率。跨批次只看第一次提单当周到期盈利。6/12 批次中途改策略，不进入本表。</p>
@@ -98,7 +177,12 @@ pre.sql{overflow:auto;max-height:720px;font-size:11.5px;line-height:1.5;color:#d
 <tr><td>8/18 召回</td><td>全部首次提单</td><td>237</td><td>20.4%</td><td>1,445</td><td>9.4%</td><td>1,105</td><td>12.3%</td><td>未进页最好；W1 污染没活跃</td></tr>
 <tr class="good"><td>8/18 召回</td><td>去掉第一周</td><td>195</td><td>24.4%</td><td>848</td><td>13.6%</td><td>852</td><td>6.8%</td><td>未进页 &gt; 没活跃 &gt; 进页</td></tr>
 </tbody></table></div>
-<div class="callout">8/18 第一周比较特殊：当天提单被记进「没活跃」（等待窗口为空），后几天未打开再提的人盈利只有约 4%。所以评估第二周策略时，<b>第一周已提单的人要剔除</b>。剔除后排序与 3/26、40% 券、7/8 前三周一致。</div>
+<div class="callout"><div class="ch">评估第二周时，要先把第一周已提单的人拿掉</div>
+<div class="bd"><ul>
+<li>8/18 当天提单会被记进「没活跃」，因为等待窗口是空的。</li>
+<li>第一周后几天未打开再提的人，盈利大约只有 4%。</li>
+<li>剔除第一周后，排序才与 3/26、40% 券、7/8 前三周一致：未进页 &gt; 没活跃 &gt; 进页。</li>
+</ul></div></div>
 <div class="grid g3">
   <div class="card"><h3>未进页 · 去掉 W1</h3><div class="num mint">24.4%</div><div class="sub">195 人 · 到期利润 4.9 万 · 逾期金额 27.0%</div></div>
   <div class="card"><h3>没活跃 · 去掉 W1</h3><div class="num">13.6%</div><div class="sub">848 人 · 到期利润 11.3 万 · 逾期金额 34.9%</div></div>
@@ -118,8 +202,12 @@ pre.sql{overflow:auto;max-height:720px;font-size:11.5px;line-height:1.5;color:#d
 <tr class="bad"><td>已进页</td><td>732</td><td>379</td><td>51.78%</td><td>199</td><td>66.9 万</td><td>6.55%</td><td>4.38 万</td><td>60 元</td></tr>
 <tr class="mid"><td>没活跃（整包）</td><td>9,706</td><td>1,409</td><td>14.52%</td><td>493</td><td>132.6 万</td><td>10.97%</td><td>14.54 万</td><td>15 元</td></tr>
 </tbody></table></div>
-<div class="callout red"><div class="ch">为什么不能给已进页加让利</div>
-他们第二周仍会以 52% 的概率提单，但到期盈利只有 6.6%，逾期金额 36%。让利买来的增量转化，大概率买在最差的价格敏感客群上。活跃未进页人数只有已进页的 1/3，利润额却更高（5.1 万 vs 4.4 万）。</div>
+<div class="callout red"><div class="ch">不要给已进页追加让利</div>
+<div class="bd"><ul>
+<li>他们第二周仍有 52% 会提单，但到期盈利只有 6.6%，逾期金额 36%。</li>
+<li>让利买来的增量，大概率买在最差的价格敏感客群上。</li>
+<li>活跃未进页人数只有已进页的 1/3，利润额却更高（5.1 万 vs 4.4 万）。</li>
+</ul></div></div>
 
 <h2 id="feat">三、没活跃内部：哪些触达前特征能提单、哪些能盈利</h2>
 <p class="desc">样本：第一周没活跃且未提单的 9,706 人。特征全部来自 8 月 18 日之前的名单快照和埋点。盈利率是其中后来提单的人、第一次当周到期单。</p>
@@ -150,10 +238,13 @@ pre.sql{overflow:auto;max-height:720px;font-size:11.5px;line-height:1.5;color:#d
 <tr class="good"><td>策略分层 strat</td><td>30d</td><td>1,668</td><td>17.15%</td><td>71</td><td>21.11%</td><td>28 元</td><td>相对干净</td></tr>
 <tr class="bad"><td>策略分层 strat</td><td>30d+10r</td><td>1,634</td><td>8.20%</td><td>53</td><td>4.45%</td><td>4 元</td><td>转化差、盈利差</td></tr>
 </tbody></table></div>
-<div class="callout gold"><div class="ch">特征层面的平衡规则</div>
-<b>提单能力</b>看最近是否还活着：触达前 7 天活跃 34.9%，流失 &lt;15 天 27.7%。<br>
-<b>盈利能力</b>看有没有看过报价、借过几次、额度用没满：30 天未进页 17.5%，放款 7+ 次 24.7%，使用率 &lt;80% 22.1%。<br>
-两头不能混：热且进过页 = 高转化低盈利；冷且未进页 = 低转化中高盈利。fpd7、高息、期数几乎分不开，不用来圈第二周。</div>
+<div class="callout gold"><div class="ch">圈人时把「会提」和「能赚」拆开</div>
+<div class="bd"><ul>
+<li><b>提单能力</b>看最近是否还活着：触达前 7 天活跃 34.9%，流失 &lt;15 天 27.7%。</li>
+<li><b>盈利能力</b>看有没有看过报价、借过几次、额度用没满：30 天未进页 17.5%，放款 7+ 次 24.7%，使用率 &lt;80% 22.1%。</li>
+<li>两头不能混：热且进过页 = 高转化低盈利；冷且未进页 = 低转化中高盈利。</li>
+<li>fpd7、高息、期数几乎分不开，不用来圈第二周。</li>
+</ul></div></div>
 
 <h2 id="combo">四、六组真实用户组合：提单和盈利放在同一张图</h2>
 <p class="desc">下面六组都是 8/18 第二周池里、用触达前特征或第一周行为切出来的真实人群，人数、提单率、盈利率、利润额都是实测，不是模型分。</p>
@@ -172,9 +263,13 @@ pre.sql{overflow:auto;max-height:720px;font-size:11.5px;line-height:1.5;color:#d
 <tr class="bad"><td>G5 伪装热用户</td><td>第一周没活跃 ∩ 近 14 天活跃 ∩ 近 30 天进过页</td><td>1,153</td><td>32.6%</td><td>4.6%</td><td>135</td><td>—</td><td>15 元</td><td>和 G4 同类，禁止大额让利</td></tr>
 </tbody></table></div>
 <div class="callout green"><div class="ch">组合特征怎么写进圈人规则</div>
-<strong>要召回（转化 + 盈利）：</strong>第一周活跃未进页，或（第一周没活跃 且 近 30 天没进过提单页 且（近 14 天活跃 或 历史放款 ≥4 或 上一笔使用率 &lt;80%））。<br>
-<strong>只覆盖不让利：</strong>第一周没活跃、近 30 天没进页、但已经很冷、放款次数 &lt;4。<br>
-<strong>禁止加码让利：</strong>第一周已进页；或名单上近 30 天进过页 / 历史进页 ≥4 次；券档 −90；历史只放款 1 次。</div>
+<div class="bd">
+<div class="rule-grid">
+  <div class="rule go"><span class="k">要召回</span><span class="v">第一周活跃未进页；或没活跃且近 30 天没进过页，并且（近 14 天活跃，或历史放款 ≥4，或上一笔使用率 &lt;80%）。</span></div>
+  <div class="rule warn"><span class="k">只覆盖不让利</span><span class="v">第一周没活跃、近 30 天没进页，但已经很冷、放款次数 &lt;4。</span></div>
+  <div class="rule stop"><span class="k">禁止加码让利</span><span class="v">第一周已进页；近 30 天进过页 / 历史进页 ≥4 次；券档 −90；历史只放款 1 次。</span></div>
+</div>
+</div></div>
 
 <h2 id="plan">五、四套第二周方案，用同一批实测数据对比</h2>
 <p class="desc">这是反事实对照：假设第二周只把预算花在这些包上，看这些人后来实际发生的提单和第一次当周盈利。不是随机实验，但分子分母都是同一批 8/18 用户、同一观察日。</p>
@@ -195,16 +290,25 @@ pre.sql{overflow:auto;max-height:720px;font-size:11.5px;line-height:1.5;color:#d
   <div class="card"><h3>提单率</h3><div class="num">+9.1pp</div><div class="sub">17.7% → 26.8%</div></div>
   <div class="card"><h3>盈利率</h3><div class="num gold">+1.3pp</div><div class="sub">11.0% → 12.3%，人均利润 22→37 元</div></div>
 </div>
-<div class="callout">方案 D 人均利润 42 元看起来不差，是已进页 52% 的转化把「人均」抬上去的；盈利率被拉到 9.8%。如果 D 里对已进页继续发深券，盈利率还会更低。利润总额 15.1 万里有 4.4 万来自已进页——那 4.4 万不需要靠让利买。</div>
-<div class="callout gold"><div class="ch">热没活跃整包为什么不是最终答案</div>
-方案 B 里的「热没活跃」2,614 人，提单 25.3%，但盈利只有 8.1%，逾期金额 40%。拆开就是图 7 的 G2 和 G5：同一「热」标签，没进过页的人赚钱，进过页的人不赚钱。落地时要把方案 B 收成 <b>G1 + G2 +（G6 从冷池里提权）</b>，不要把 G5 和 G1 混发同一张券。</div>
+<div class="callout"><div class="ch">方案 D 的人均利润被已进页抬高了</div>
+<div class="bd"><ul>
+<li>人均 42 元看起来不差，来自已进页 52% 的转化，不是来自更好的质量。</li>
+<li>盈利率被拉到 9.8%。若继续给已进页发深券，还会更低。</li>
+<li>利润总额 15.1 万里有 4.4 万来自已进页，这笔不需要靠让利去买。</li>
+</ul></div></div>
+<div class="callout gold"><div class="ch">热没活跃整包不能直接当主方案</div>
+<div class="bd"><ul>
+<li>方案 B 里的「热没活跃」2,614 人：提单 25.3%，盈利只有 8.1%，逾期金额 40%。</li>
+<li>拆开就是 G2 和 G5：同一「热」标签，没进过页的人赚钱，进过页的人不赚钱。</li>
+<li>落地应收成 <b>G1 + G2 +（G6 从冷池里提权）</b>，不要把 G5 和 G1 混发同一张券。</li>
+</ul></div></div>
 
 <h2 id="ops">六、按周执行手册</h2>
-<div class="step"><div class="numc">1</div><div><strong>第一周：</strong>维持现有高意向名单全量触达，但券力度按「还没看到报价」来，不要一上来深让利。目标是把人唤醒、看谁进页。第一周已经提单的人，第二周移出。</div></div>
-<div class="step"><div class="numc">2</div><div><strong>第二周主触达 G1：</strong>第一周打开 App 但 newpage=0。实测 255 人、提单 42%、盈利 27.5%、人均 201 元。动作是推到提单页并点确认，券只用于跨过确认，不用于打价格战。</div></div>
-<div class="step"><div class="numc">3</div><div><strong>第二周次触达 G2 + G6：</strong>没活跃、近 30 天没进过页，且（近 14 天还活跃，或历史放款 ≥4，或上一笔使用率 &lt;80%）。允许中等券。G2 到期样本小，先用 30d / 使用率&lt;80% / 放款 4+ 这些更稳的切片放量。</div></div>
-<div class="step"><div class="numc">4</div><div><strong>第二周覆盖不让利 G3：</strong>冷、没进过页的 6,552 人，提单 9.5%、盈利 17.4%。短信 / 推送即可，不加券。从里面用 G6 把老客提权进第 3 步。</div></div>
-<div class="step"><div class="numc">5</div><div><strong>明确不做什么 G4 / G5 / −90：</strong>第一周已进页 732 人不要再加码；没活跃但近 30 天进过页的热用户 1,153 人按已进页管理；券档 −90 的 600 人停止触达。</div></div>
+<div class="step"><div class="numc">1</div><div><div class="ttl">第一周：全量唤醒，不深让利</div><div class="bd">维持现有高意向名单全量触达，券按「还没看到报价」来。目标是把人唤醒、看谁进页。第一周已经提单的人，第二周移出。</div></div></div>
+<div class="step"><div class="numc">2</div><div><div class="ttl">第二周主触达 G1：活跃未进页</div><div class="bd">第一周打开 App 但 newpage=0。实测 255 人、提单 42%、盈利 27.5%、人均 201 元。推到提单页并点确认，券只用于跨过确认，不用于打价格战。</div></div></div>
+<div class="step"><div class="numc">3</div><div><div class="ttl">第二周次触达 G2 + G6</div><div class="bd">没活跃、近 30 天没进过页，且（近 14 天还活跃，或历史放款 ≥4，或上一笔使用率 &lt;80%）。允许中等券。G2 到期样本小，先用 30d / 使用率&lt;80% / 放款 4+ 这些更稳的切片放量。</div></div></div>
+<div class="step"><div class="numc">4</div><div><div class="ttl">第二周覆盖不让利 G3</div><div class="bd">冷、没进过页的 6,552 人，提单 9.5%、盈利 17.4%。短信 / 推送即可，不加券。从里面用 G6 把老客提权进第 3 步。</div></div></div>
+<div class="step"><div class="numc">5</div><div><div class="ttl">明确不做什么：G4 / G5 / 券档 −90</div><div class="bd">第一周已进页 732 人不要再加码；没活跃但近 30 天进过页的热用户 1,153 人按已进页管理；券档 −90 的 600 人停止触达。</div></div></div>
 <div class="grid g2">
   <div class="card"><h3>成功看起来像什么</h3>
     <p>第二周触达人数降到全量未提单的 25%–35%。这批人的首次当周盈利率应高于全量 11%，并接近 12%–20%。已进页用户的提单率允许下降，只要他们的盈利率不再被券拉低。</p>
