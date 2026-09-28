@@ -1,0 +1,405 @@
+<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>T0额度变化×借款次数：7日提单率归因分析</title><script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"></script><style>
+:root{--bg:#071c2d;--panel:#0b2a40;--panel2:#0e344e;--line:#28536e;--text:#e7f1f7;--muted:#9db5c7;--cyan:#43c7e7;--green:#64dcae;--amber:#ffc26b;--pink:#f68ab0;--violet:#b49aff;--red:#ff7f86}*{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;background:linear-gradient(180deg,#071c2d,#082238 48%,#061724);color:var(--text);font:15px/1.72 -apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei",sans-serif}.wrap{max-width:1260px;margin:auto;padding:26px 28px 72px}.hero{padding:46px 24px 36px;text-align:center;border-bottom:1px solid var(--line)}.eyebrow{color:var(--cyan);font-weight:800;letter-spacing:1.2px}h1{margin:12px 0;font-size:35px;line-height:1.3}.hero p{margin:3px 0;color:var(--muted)}.nav{position:sticky;top:0;z-index:20;display:flex;flex-wrap:wrap;justify-content:center;gap:8px;margin:0 -28px;padding:12px 22px;background:rgba(7,28,45,.96);border-bottom:1px solid var(--line)}.nav a{color:#cce6f3;text-decoration:none;border:1px solid var(--line);border-radius:18px;padding:3px 11px;font-size:13px}.nav a:hover{color:var(--cyan);border-color:var(--cyan)}section>h2{display:flex;align-items:center;gap:14px;margin:36px 0 16px;padding-bottom:10px;color:#fff;font-size:24px;border-bottom:1px solid rgba(67,199,231,.32);scroll-margin-top:76px}section>h2:after{content:"";height:2px;flex:1;background:linear-gradient(90deg,rgba(67,199,231,.55),transparent)}h3{margin:0 0 9px;color:#fff;font-size:18px}p{margin:8px 0}.muted,.small{color:var(--muted);font-size:13px}.grid2{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}.grid3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px}.grid4{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px}.card,.chart-card,.callout{background:rgba(11,42,64,.93);border:1px solid var(--line);border-radius:12px}.card{padding:18px}.chart-card{padding:17px;min-height:420px}.chart-card p{color:var(--muted);font-size:13px}.chart-box{position:relative;height:350px}.chart-box.tall{height:430px}.callout{margin:18px 0;padding:17px 20px;border-left:4px solid var(--amber)}.callout strong{color:var(--amber)}.good{border-left-color:var(--green)}.good strong{color:var(--green)}.warn{border-left-color:var(--pink)}.warn strong{color:var(--pink)}.kpi{padding:17px;background:#0b2a40;border:1px solid var(--line);border-radius:11px}.kpi .label{color:var(--muted);font-size:13px}.kpi .value{margin-top:4px;color:#fff;font-size:27px;font-weight:800;line-height:1.35}.kpi .context{color:var(--cyan);font-size:12px}.outline-card{position:relative;padding:18px 17px 17px 57px}.outline-card .step{position:absolute;left:17px;top:18px;display:flex;width:27px;height:27px;align-items:center;justify-content:center;border-radius:50%;background:var(--cyan);color:#062437;font-weight:850}.outline-card h3{color:var(--cyan)}.finding{--accent:var(--cyan);border-top:3px solid var(--accent)}.finding h3{color:var(--accent)}.finding.pink{--accent:var(--pink)}.finding.green{--accent:var(--green)}.finding.amber{--accent:var(--amber)}.formula{padding:12px 14px;background:#103852;border:1px solid #30637f;border-radius:8px;color:#cce6f3;font:13px/1.65 ui-monospace,SFMono-Regular,Menlo,monospace;overflow:auto}.table-wrap{max-height:650px;overflow:auto;margin-top:12px;border:1px solid var(--line);border-radius:10px}table{width:100%;min-width:850px;border-collapse:collapse}th,td{padding:9px 11px;border-bottom:1px solid rgba(40,83,110,.7);text-align:right;white-space:nowrap}th:first-child,td:first-child{text-align:left}th{position:sticky;top:0;z-index:2;background:#10344c;color:#bfe6f5;font-size:13px}td{font-variant-numeric:tabular-nums}details{margin:12px 0;border:1px solid var(--line);border-radius:10px;background:rgba(11,42,64,.74)}summary{cursor:pointer;padding:13px 16px;color:#d6edf6;font-weight:750}summary:hover{color:var(--cyan)}details>.table-wrap,details>pre{margin:0;border:0;border-top:1px solid var(--line);border-radius:0 0 10px 10px}pre{max-height:760px;overflow:auto;margin:0;padding:18px;background:#061725;color:#cce6f3;font:12px/1.58 ui-monospace,SFMono-Regular,Menlo,monospace;white-space:pre}.badge{display:inline-flex;margin-right:8px;padding:2px 9px;border-radius:13px;background:rgba(67,199,231,.18);color:var(--cyan);font-size:12px;font-weight:800}.decision{padding:15px 17px;border:1px solid rgba(100,220,174,.45);border-radius:10px;background:linear-gradient(90deg,rgba(100,220,174,.14),rgba(11,42,64,.92))}.decision b{color:var(--green)}ul{padding-left:22px}li{margin:6px 0}.footer{margin-top:46px;text-align:center;color:#7896aa;font-size:13px}@media(max-width:900px){.grid2,.grid3,.grid4{grid-template-columns:1fr}.wrap{padding:18px}.nav{margin:0 -18px}h1{font-size:28px}}
+</style></head><body><main class="wrap"><header class="hero"><div class="eyebrow">T0 CREDIT CHANGE · LOAN COUNT ATTRIBUTION</div><h1>T0额度变化 × 借款次数<br>7日提单率下降归因分析</h1><p>用户 × T0事件｜2026-01-01—2026-08-31｜成功放款次数取T0结清时点累计值</p><p class="small">从“额度规律”下钻到“借款生命周期阶段”，定位可执行的提额与降额客群</p></header><nav class="nav"><a href="#outline">简要提纲</a><a href="#summary">核心结论</a><a href="#scope">口径</a><a href="#trend">整体趋势</a><a href="#loan">借款次数</a><a href="#matrix">交叉归因</a><a href="#increase">提额下钻</a><a href="#decrease">降额下钻</a><a href="#target">目标客群</a><a href="#detail">数据</a><a href="#sql">PGSQL</a></nav>
+<section id="outline"><h2>一、简要版汇报提纲</h2><div class="grid4"><div class="card outline-card"><span class="step">1</span><h3>先确认大盘</h3><p>1—8月三类额度方向的7日提单率都下降，提额下降最深、对整体下降贡献最大。</p></div><div class="card outline-card"><span class="step">2</span><h3>再验证生命周期</h3><p>用T0结清时累计成功放款次数划分用户阶段，验证下降是否集中在第1—3次借款。</p></div><div class="card outline-card"><span class="step">3</span><h3>继续拆变额幅度</h3><p>在前3次用户中，分别寻找提额和降额的核心金额区间，并兼顾规模与归因贡献。</p></div><div class="card outline-card"><span class="step">4</span><h3>形成可运营规则</h3><p>输出“借款次数＋额度方向＋变额幅度”的圈选条件，作为后续行为机制分析和策略实验入口。</p></div></div></section>
+<section id="summary"><h2>二、核心结论</h2><div class="grid4"><div class="kpi"><div class="label">整体1月→8月</div><div class="value" style="color:var(--pink)">-10.8pp</div><div class="context">77.1% → 66.3%</div></div><div class="kpi"><div class="label">提额总归因贡献</div><div class="value" style="color:var(--pink)">-8.09pp</div><div class="context">解释整体下降 74.6%</div></div><div class="kpi"><div class="label">第1—3次借款归因</div><div class="value">-9.02pp</div><div class="context">解释整体下降 83.3%</div></div><div class="kpi"><div class="label">核心两规则合计</div><div class="value" style="color:var(--green)">-7.33pp</div><div class="context">45.8%事件解释67.7%下降</div></div></div><div class="grid2"><div class="card finding pink"><h3>结论1｜提额仍是整体下降的大头</h3><p>提额贡献<b>-8.085pp</b>，占整体净下降的<b>74.6%</b>；降额贡献<b>-2.565pp</b>。提额不是“提额导致用户不提单”的因果结论，而是提额客群的提单率下降最深、规模又最大。</p></div><div class="card finding"><h3>结论2｜借款生命周期验证成立</h3><p>第1—3次成功放款用户合计贡献<b>-9.020pp</b>，解释整体下降<b>83.3%</b>。其中前3次提额解释提额归因的<b>81.9%</b>，前3次降额解释降额归因的<b>89.3%</b>。</p></div><div class="card finding amber"><h3>结论3｜低额度是入口，但不能单独圈人</h3><p>0—1,000区间内及0—1,000→1,000—2,000的提额路径、0—1,000区间内及1,000—2,000→0—1,000的降额路径均是重要来源；但只按额度区间仍过宽，必须叠加借款次数与变额幅度。</p></div><div class="card finding green"><h3>结论4｜核心规则可以解释多数下降</h3><p>“前3次且提额≥500”贡献<b>-5.601pp</b>；“前3次且降额≤1,000”贡献<b>-1.732pp</b>。两组用<b>45.8%</b>事件解释<b>67.7%</b>的整体下降，是后续机制分析的优先客群。</p></div></div></section>
+<section id="scope"><h2>三、统计口径与归因方法</h2><div class="grid3"><div class="card"><h3>分析单位</h3><p>用户 × T0获额事件。同一用户20秒内多笔获额合为一批，按获额时间倒序、订单编号倒序取第一笔；7日提单窗口为 apply_time ≥ vir_time 且 apply_time &lt; vir_date + 8 days，覆盖T0、D+1……D+7，并归属提单前最近一次T0事件。</p></div><div class="card"><h3>借款次数</h3><p>截至本次T0结清时点，用户历史累计成功放款订单数，包含刚结清订单。只使用当时已经发生的信息，不使用下一笔提单或放款结果。</p></div><div class="card"><h3>额度变化</h3><p>当前额度为结清0在贷后获额通过额度；上一笔额度为刚结清放款订单对应获额。当前－上一笔：正为提额、0为不变、负为降额。</p></div></div><div class="formula">总归因贡献 = 基准档内效应 + 纯结构效应 + 交互效应；所有互斥客群贡献之和 = 8月整体提单率 − 1月整体提单率。</div><div class="callout warn"><strong>解释边界：</strong>归因用于定位“哪些客群承载了下降”，不是额度策略的因果效应。借款次数、用户资质、息费、产品和流量结构仍可能共同变化。</div></section>
+<section id="trend"><h2>四、整体与三类额度方向趋势</h2><div class="grid2"><div class="chart-card"><h3>1—8月整体7日提单率</h3><p>整体从77.12%下降至66.29%。</p><div class="chart-box"><canvas id="overallTrend"></canvas></div></div><div class="chart-card"><h3>提额 / 不变 / 降额月度提单率</h3><p>三类均下降，提额下降幅度最大。</p><div class="chart-box"><canvas id="directionTrend"></canvas></div></div></div><div class="table-wrap"><table><thead><tr><th>额度方向</th><th>1—8月事件</th><th>1月提单率</th><th>8月提单率</th><th>变化</th><th>总归因贡献</th></tr></thead><tbody><tr><td>额度增加</td><td>99,077</td><td>77.90%</td><td>63.66%</td><td>-14.243pp</td><td>-8.085pp</td></tr><tr><td>额度不变</td><td>20,882</td><td>77.92%</td><td>75.73%</td><td>-2.191pp</td><td>-0.183pp</td></tr><tr><td>额度降低</td><td>61,539</td><td>75.47%</td><td>68.33%</td><td>-7.140pp</td><td>-2.565pp</td></tr></tbody></table></div></section>
+<section id="loan"><h2>五、借款次数：下降是否集中在前几次</h2><div class="grid2"><div class="chart-card"><h3>各借款次数月度提单率</h3><p>第1—3次不是只在单月异常，而是随整体趋势持续下行。</p><div class="chart-box tall"><canvas id="loanTrend"></canvas></div></div><div class="chart-card"><h3>各借款次数对整体下降的归因贡献</h3><p>负值越大，说明该生命周期阶段承载的整体下降越多。</p><div class="chart-box tall"><canvas id="loanAttr"></canvas></div></div></div><div class="callout good"><strong>生命周期结论：</strong>第1、2、3次借款分别贡献-4.759pp、-2.853pp、-1.409pp；三者合计解释整体下降83.3%。后续下钻应优先锁定前3次用户。</div><div class="table-wrap"><table><thead><tr><th>结清时成功放款次数</th><th>1—8月事件</th><th>1月提单率</th><th>8月提单率</th><th>变化</th><th>总归因贡献</th></tr></thead><tbody><tr><td>1次</td><td>69,553</td><td>75.07%</td><td>63.09%</td><td>-11.985pp</td><td>-4.759pp</td></tr><tr><td>2次</td><td>36,668</td><td>78.89%</td><td>65.18%</td><td>-13.702pp</td><td>-2.853pp</td></tr><tr><td>3次</td><td>23,809</td><td>78.52%</td><td>67.23%</td><td>-11.288pp</td><td>-1.409pp</td></tr><tr><td>4次</td><td>15,630</td><td>78.17%</td><td>70.23%</td><td>-7.941pp</td><td>-0.643pp</td></tr><tr><td>5次</td><td>10,430</td><td>79.15%</td><td>69.13%</td><td>-10.022pp</td><td>-0.552pp</td></tr><tr><td>6次及以上</td><td>25,408</td><td>78.28%</td><td>73.53%</td><td>-4.754pp</td><td>-0.618pp</td></tr></tbody></table></div></section>
+<section id="matrix"><h2>六、额度方向 × 借款次数：交叉归因</h2><div class="chart-card"><h3>18个交叉客群总归因贡献</h3><p>按借款次数展示提额、不变、降额三类贡献；同一借款次数内可直接比较额度方向。</p><div class="chart-box tall"><canvas id="directionLoanAttr"></canvas></div></div><div class="grid2" style="margin-top:16px"><div class="card finding pink"><h3>提额前3次</h3><p>贡献-6.624pp，占全部提额归因81.9%；其中第1次和第2次是最重要的两个生命周期阶段。</p></div><div class="card finding amber"><h3>降额前3次</h3><p>贡献-2.292pp，占全部降额归因89.3%；说明降额影响同样更集中在借款早期。</p></div></div><details><summary>查看18个交叉客群完整数据</summary><div class="table-wrap"><table><thead><tr><th>额度方向</th><th>借款次数</th><th>事件数</th><th>1月提单率</th><th>8月提单率</th><th>变化</th><th>总归因贡献</th></tr></thead><tbody><tr><td>额度增加</td><td>1次</td><td>37,660</td><td>76.63%</td><td>60.82%</td><td>-15.816pp</td><td>-3.568pp</td></tr><tr><td>额度增加</td><td>2次</td><td>20,244</td><td>79.97%</td><td>62.87%</td><td>-17.101pp</td><td>-2.070pp</td></tr><tr><td>额度增加</td><td>3次</td><td>12,481</td><td>79.45%</td><td>65.28%</td><td>-14.170pp</td><td>-0.985pp</td></tr><tr><td>额度增加</td><td>4次</td><td>8,348</td><td>77.89%</td><td>68.19%</td><td>-9.704pp</td><td>-0.428pp</td></tr><tr><td>额度增加</td><td>5次</td><td>5,930</td><td>78.98%</td><td>65.62%</td><td>-13.359pp</td><td>-0.425pp</td></tr><tr><td>额度增加</td><td>6次及以上</td><td>14,414</td><td>77.30%</td><td>68.86%</td><td>-8.441pp</td><td>-0.609pp</td></tr><tr><td>额度不变</td><td>1次</td><td>9,363</td><td>75.53%</td><td>74.85%</td><td>-0.677pp</td><td>+0.010pp</td></tr><tr><td>额度不变</td><td>2次</td><td>3,977</td><td>80.77%</td><td>75.41%</td><td>-5.359pp</td><td>-0.103pp</td></tr><tr><td>额度不变</td><td>3次</td><td>2,520</td><td>78.99%</td><td>77.08%</td><td>-1.915pp</td><td>-0.012pp</td></tr><tr><td>额度不变</td><td>4次</td><td>1,807</td><td>88.14%</td><td>71.36%</td><td>-16.779pp</td><td>-0.083pp</td></tr><tr><td>额度不变</td><td>5次</td><td>1,123</td><td>77.50%</td><td>75.79%</td><td>-1.711pp</td><td>-0.006pp</td></tr><tr><td>额度不变</td><td>6次及以上</td><td>2,092</td><td>82.24%</td><td>81.34%</td><td>-0.903pp</td><td>+0.012pp</td></tr><tr><td>额度降低</td><td>1次</td><td>22,530</td><td>71.68%</td><td>64.19%</td><td>-7.483pp</td><td>-1.201pp</td></tr><tr><td>额度降低</td><td>2次</td><td>12,447</td><td>76.98%</td><td>67.03%</td><td>-9.946pp</td><td>-0.680pp</td></tr><tr><td>额度降低</td><td>3次</td><td>8,808</td><td>75.96%</td><td>67.22%</td><td>-8.740pp</td><td>-0.411pp</td></tr><tr><td>额度降低</td><td>4次</td><td>5,475</td><td>77.59%</td><td>72.98%</td><td>-4.609pp</td><td>-0.132pp</td></tr><tr><td>额度降低</td><td>5次</td><td>3,377</td><td>79.70%</td><td>73.21%</td><td>-6.487pp</td><td>-0.120pp</td></tr><tr><td>额度降低</td><td>6次及以上</td><td>8,902</td><td>79.45%</td><td>79.27%</td><td>-0.188pp</td><td>-0.021pp</td></tr></tbody></table></div></details></section>
+<section id="increase"><h2>七、提额用户：前3次借款的变额幅度下钻</h2><div class="grid2"><div class="chart-card"><h3>各提额幅度的归因贡献</h3><p>仅统计第1—3次借款的提额事件；柱形越向下，负向贡献越大。</p><div class="chart-box tall"><canvas id="incAmount"></canvas></div></div><div class="card"><h3>提额核心群体</h3><p><span class="badge">圈选规则</span>成功放款≤3次，且本次提额金额≥500元。</p><ul><li>1—8月事件：<b>47,368</b>，占全部T0事件26.1%；</li><li>提单率：75.53% → 56.13%，下降-19.40pp；</li><li>归因贡献：<b>-5.601pp</b>，解释整体下降51.7%、全部提额下降69.3%。</li></ul><div class="decision"><b>判断：</b>提额用户的问题不是少数准确额度路径，而是早期借款用户在500元以上多个提额幅度中同步下滑。行为机制分析应从这一规则进入，而不是继续追逐零散的4—5条准确迁移路径。</div></div></div><details><summary>查看前3次借款各提额幅度数据</summary><div class="table-wrap"><table><thead><tr><th>提额幅度</th><th>前3次事件</th><th>1月提单率</th><th>8月提单率</th><th>变化</th><th>总归因贡献</th></tr></thead><tbody><tr><td>提额≤100</td><td>4,656</td><td>77.98%</td><td>75.00%</td><td>-2.984pp</td><td>-0.074pp</td></tr><tr><td>提额100–300</td><td>10,025</td><td>84.85%</td><td>74.68%</td><td>-10.165pp</td><td>-0.457pp</td></tr><tr><td>提额300–500</td><td>8,336</td><td>85.15%</td><td>76.18%</td><td>-8.976pp</td><td>-0.491pp</td></tr><tr><td>提额500–1000</td><td>15,726</td><td>80.97%</td><td>69.69%</td><td>-11.286pp</td><td>-1.074pp</td></tr><tr><td>提额1000–2000</td><td>15,120</td><td>74.85%</td><td>56.49%</td><td>-18.355pp</td><td>-1.238pp</td></tr><tr><td>提额2000–4000</td><td>11,510</td><td>73.65%</td><td>49.39%</td><td>-24.256pp</td><td>-2.027pp</td></tr><tr><td>提额&gt;4000</td><td>5,012</td><td>65.18%</td><td>39.09%</td><td>-26.081pp</td><td>-1.262pp</td></tr></tbody></table></div></details></section>
+<section id="decrease"><h2>八、降额用户：前3次借款的变额幅度下钻</h2><div class="grid2"><div class="chart-card"><h3>各降额幅度的归因贡献</h3><p>仅统计第1—3次借款的降额事件。</p><div class="chart-box tall"><canvas id="decAmount"></canvas></div></div><div class="card"><h3>降额核心群体</h3><p><span class="badge">圈选规则</span>成功放款≤3次，且本次降额金额≤1,000元。</p><ul><li>1—8月事件：<b>35,697</b>，占全部T0事件19.7%；</li><li>提单率：74.60% → 66.60%，下降-7.99pp；</li><li>归因贡献：<b>-1.732pp</b>，解释整体下降16.0%、全部降额下降67.5%。</li></ul><div class="decision"><b>判断：</b>降额的负向影响主要不是超大幅降额，而是发生频率更高的1,000元以内降额，尤其集中在前3次借款阶段。</div></div></div><details><summary>查看前3次借款各降额幅度数据</summary><div class="table-wrap"><table><thead><tr><th>降额幅度</th><th>前3次事件</th><th>1月提单率</th><th>8月提单率</th><th>变化</th><th>总归因贡献</th></tr></thead><tbody><tr><td>降额≤100</td><td>10,841</td><td>73.19%</td><td>68.53%</td><td>-4.663pp</td><td>-0.419pp</td></tr><tr><td>降额100–200</td><td>5,571</td><td>77.36%</td><td>67.97%</td><td>-9.389pp</td><td>-0.328pp</td></tr><tr><td>降额200–300</td><td>4,621</td><td>74.04%</td><td>65.79%</td><td>-8.250pp</td><td>-0.172pp</td></tr><tr><td>降额300–500</td><td>6,505</td><td>75.31%</td><td>63.55%</td><td>-11.763pp</td><td>-0.422pp</td></tr><tr><td>降额500–1000</td><td>8,159</td><td>74.30%</td><td>65.15%</td><td>-9.147pp</td><td>-0.391pp</td></tr><tr><td>降额1000–2000</td><td>4,661</td><td>74.14%</td><td>65.62%</td><td>-8.519pp</td><td>-0.198pp</td></tr><tr><td>降额&gt;2000</td><td>3,427</td><td>67.08%</td><td>55.72%</td><td>-11.368pp</td><td>-0.362pp</td></tr></tbody></table></div></details></section>
+<section id="target"><h2>九、目标客群与下一步机制分析</h2><div class="grid2"><div class="chart-card"><h3>事件覆盖率 vs 整体下降解释度</h3><p>解释度高于事件覆盖率，代表该规则对下降客群具有一定浓缩能力。</p><div class="chart-box tall"><canvas id="coverage"></canvas></div></div><div class="chart-card"><h3>两类核心客群月度提单率</h3><p>后续页面行为、息费和产品机制分析应以这两类客群为母群。</p><div class="chart-box tall"><canvas id="coreTrend"></canvas></div></div></div><div class="grid2" style="margin-top:16px"><div class="card finding green"><h3>优先级A｜提额早期用户</h3><p>成功放款≤3次且提额≥500元。重点验证：提额后进页率、金额切换、期次切换、合同/还款计划查看，以及最终确认提单的流失节点。</p></div><div class="card finding amber"><h3>优先级B｜降额早期用户</h3><p>成功放款≤3次且降额≤1,000元。重点验证：用户是否在看到新额度后直接离开，降额比例、绝对额度和息费是否共同导致流失。</p></div></div><div class="callout"><strong>低额度假设的结论：</strong>0—2,000元确实是重要规模来源，但“低额度”本身不足以形成高浓缩客群；叠加“前3次借款＋变额幅度”后，核心两规则以45.8%事件覆盖解释67.7%的整体下降。下一步应在这两组中进入页面行为和息费机制层。</div><details><summary>查看低额度四条重点迁移区间</summary><div class="table-wrap"><table><thead><tr><th>额度方向</th><th>千元额度区间</th><th>事件数</th><th>1月提单率</th><th>8月提单率</th><th>变化</th><th>总归因贡献</th></tr></thead><tbody><tr><td>额度增加</td><td>0–1,000→0–1,000</td><td>20,442</td><td>84.11%</td><td>78.62%</td><td>-5.489pp</td><td>-0.597pp</td></tr><tr><td>额度增加</td><td>0–1,000→1,000–2,000</td><td>19,916</td><td>81.23%</td><td>70.97%</td><td>-10.263pp</td><td>-1.119pp</td></tr><tr><td>额度降低</td><td>0–1,000→0–1,000</td><td>26,730</td><td>74.40%</td><td>69.45%</td><td>-4.948pp</td><td>-0.831pp</td></tr><tr><td>额度降低</td><td>1,000–2,000→0–1,000</td><td>9,503</td><td>74.35%</td><td>67.22%</td><td>-7.121pp</td><td>-0.359pp</td></tr></tbody></table></div></details></section>
+<section id="detail"><h2>十、数据明细</h2><details><summary>月度整体指标</summary><div class="table-wrap"><table><thead><tr><th>月份</th><th>T0事件</th><th>用户数</th><th>7日提单事件</th><th>7日提单率</th></tr></thead><tbody><tr><td>2026-01</td><td>20,095</td><td>14,665</td><td>15,498</td><td>77.12%</td></tr><tr><td>2026-02</td><td>23,391</td><td>17,117</td><td>17,963</td><td>76.79%</td></tr><tr><td>2026-03</td><td>22,921</td><td>16,239</td><td>16,751</td><td>73.08%</td></tr><tr><td>2026-04</td><td>21,262</td><td>15,558</td><td>15,672</td><td>73.71%</td></tr><tr><td>2026-05</td><td>24,283</td><td>17,876</td><td>17,282</td><td>71.17%</td></tr><tr><td>2026-06</td><td>23,154</td><td>17,685</td><td>16,166</td><td>69.82%</td></tr><tr><td>2026-07</td><td>23,778</td><td>18,492</td><td>16,112</td><td>67.76%</td></tr><tr><td>2026-08</td><td>22,614</td><td>18,063</td><td>14,991</td><td>66.29%</td></tr></tbody></table></div></details><details><summary>额度方向汇总</summary><div class="table-wrap"><table><thead><tr><th>额度方向</th><th>1—8月事件</th><th>1月提单率</th><th>8月提单率</th><th>变化</th><th>总归因贡献</th></tr></thead><tbody><tr><td>额度增加</td><td>99,077</td><td>77.90%</td><td>63.66%</td><td>-14.243pp</td><td>-8.085pp</td></tr><tr><td>额度不变</td><td>20,882</td><td>77.92%</td><td>75.73%</td><td>-2.191pp</td><td>-0.183pp</td></tr><tr><td>额度降低</td><td>61,539</td><td>75.47%</td><td>68.33%</td><td>-7.140pp</td><td>-2.565pp</td></tr></tbody></table></div></details><details><summary>借款次数汇总</summary><div class="table-wrap"><table><thead><tr><th>结清时成功放款次数</th><th>1—8月事件</th><th>1月提单率</th><th>8月提单率</th><th>变化</th><th>总归因贡献</th></tr></thead><tbody><tr><td>1次</td><td>69,553</td><td>75.07%</td><td>63.09%</td><td>-11.985pp</td><td>-4.759pp</td></tr><tr><td>2次</td><td>36,668</td><td>78.89%</td><td>65.18%</td><td>-13.702pp</td><td>-2.853pp</td></tr><tr><td>3次</td><td>23,809</td><td>78.52%</td><td>67.23%</td><td>-11.288pp</td><td>-1.409pp</td></tr><tr><td>4次</td><td>15,630</td><td>78.17%</td><td>70.23%</td><td>-7.941pp</td><td>-0.643pp</td></tr><tr><td>5次</td><td>10,430</td><td>79.15%</td><td>69.13%</td><td>-10.022pp</td><td>-0.552pp</td></tr><tr><td>6次及以上</td><td>25,408</td><td>78.28%</td><td>73.53%</td><td>-4.754pp</td><td>-0.618pp</td></tr></tbody></table></div></details><p class="small">更细的月度交叉结果已同时输出为CSV：T0额度变化_借款次数与额度区间_月度交叉数据.csv。</p></section>
+<section id="sql"><h2>十一、附录：完整可复现PGSQL</h2><details><summary>展开完整PGSQL（默认折叠）</summary><pre>-- =============================================================================
+-- T0额度变化与获额后7日提单率：用户 × T0事件母表
+-- 时间：2026-01-01 至 2026-09-20（含）
+-- 20秒批次：相邻获额时间差&lt;=20秒归为同批，批内按获额时间、订单号倒序取第一笔。
+-- T0至D+7首次提单：apply_time &gt;= vir_time 且早于T0自然日D+8零点。
+-- 多T0归属：同一订单归给其提单前最近一次T0事件，避免重复。
+-- =============================================================================
+SET search_path TO wangchuanliang, public;
+SET statement_timeout = 0;
+DROP TABLE IF EXISTS tmp_t0_credit_change_d7_apply;
+CREATE TEMP TABLE tmp_t0_credit_change_d7_apply AS
+WITH params AS (
+    SELECT DATE &#x27;2026-01-01&#x27; AS start_date,
+           DATE &#x27;2026-09-21&#x27; AS end_date
+), raw_offer AS (
+    SELECT DISTINCT ON (v.user_id, v.serial_id)
+        v.user_id,
+        v.serial_id AS credit_serial_id,
+        v.vir_date::date AS vir_date,
+        TO_TIMESTAMP(v.vir_unix) AS vir_time,
+        v.max_credit_apply_amt::numeric AS current_credit_amt
+    FROM wangchuanliang.order_vir_f_copy v
+    JOIN wangchuanliang.side_recycle_type_copy r
+      ON r.serial_id = v.serial_id
+    CROSS JOIN params p
+    WHERE v.is_pass1 = 1
+      AND v.loan_type_code = 2
+      AND r.recycle_type = 3
+      AND v.vir_date &gt;= p.start_date - 1
+      AND v.vir_date &lt; p.end_date
+    ORDER BY v.user_id, v.serial_id, v.vir_unix DESC
+), lagged_offer AS (
+    SELECT r.*,
+      LAG(r.vir_time) OVER (
+        PARTITION BY r.user_id ORDER BY r.vir_time, r.credit_serial_id
+      ) AS prev_vir_time
+    FROM raw_offer r
+), batched_offer AS (
+    SELECT l.*,
+      SUM(
+        CASE WHEN l.prev_vir_time IS NULL
+                   OR l.vir_time - l.prev_vir_time &gt; INTERVAL &#x27;20 seconds&#x27;
+             THEN 1 ELSE 0 END
+      ) OVER (
+        PARTITION BY l.user_id
+        ORDER BY l.vir_time, l.credit_serial_id
+        ROWS UNBOUNDED PRECEDING
+      ) AS batch_id
+    FROM lagged_offer l
+), dedup_offer AS (
+    SELECT user_id, credit_serial_id, vir_date, vir_time,
+           current_credit_amt, batch_id
+    FROM (
+      SELECT b.*,
+        ROW_NUMBER() OVER (
+          PARTITION BY b.user_id, b.batch_id
+          ORDER BY b.vir_time DESC, b.credit_serial_id DESC
+        ) AS batch_rn
+      FROM batched_offer b
+    ) x
+    CROSS JOIN params p
+    WHERE x.batch_rn = 1
+      AND x.vir_date &gt;= p.start_date
+      AND x.vir_date &lt; p.end_date
+), candidate_users AS (
+    SELECT DISTINCT user_id FROM dedup_offer
+), all_orders AS (
+    SELECT o.user_id, o.serial_id, o.apply_time, o.apply_date,
+           o.remit_time, o.remit_amt, o.is_remit,
+           o.repaid_time, o.repaid_date::date AS repaid_date,
+           o.is_repaid, o.loan_status_code
+    FROM wangchuanliang.order_loan_f_v2_copy o
+    JOIN candidate_users u ON u.user_id = o.user_id
+), clean_settlement AS (
+    SELECT o.user_id, o.serial_id AS settled_serial_id,
+           o.remit_amt::numeric AS settled_remit_amt,
+           o.repaid_time, o.repaid_date
+    FROM all_orders o
+    WHERE o.is_remit = 1
+      AND COALESCE(o.remit_amt, 0) &gt; 0
+      AND (o.is_repaid = 1 OR o.loan_status_code = 7)
+      AND o.repaid_time &gt; TIMESTAMP &#x27;2000-01-01 00:00:00&#x27;
+      AND NOT EXISTS (
+        SELECT 1
+        FROM all_orders x
+        WHERE x.user_id = o.user_id
+          AND x.serial_id &lt;&gt; o.serial_id
+          AND x.apply_time &lt; o.repaid_time
+          AND (
+            x.loan_status_code IN (5, 8)
+            OR (x.loan_status_code = 7 AND x.repaid_time &gt; o.repaid_time)
+          )
+      )
+), offer_settlement_pair AS (
+    SELECT e.user_id, e.credit_serial_id, e.vir_date, e.vir_time,
+           e.current_credit_amt, e.batch_id,
+           s.settled_serial_id, s.settled_remit_amt, s.repaid_time,
+      ROW_NUMBER() OVER (
+        PARTITION BY e.user_id, e.credit_serial_id, e.vir_time
+        ORDER BY s.repaid_time DESC, s.settled_serial_id DESC
+      ) AS settlement_rn
+    FROM dedup_offer e
+    JOIN clean_settlement s
+      ON s.user_id = e.user_id
+     AND s.repaid_date = e.vir_date
+     AND e.vir_time &gt;= s.repaid_time
+), strict_t0 AS (
+    SELECT user_id, credit_serial_id, vir_date, vir_time,
+           current_credit_amt, batch_id,
+           settled_serial_id, settled_remit_amt, repaid_time
+    FROM offer_settlement_pair
+    WHERE settlement_rn = 1
+), previous_credit_ranked AS (
+    SELECT s.user_id, s.credit_serial_id, s.vir_time, s.settled_serial_id,
+           v.max_credit_apply_amt::numeric AS previous_credit_amt,
+      ROW_NUMBER() OVER (
+        PARTITION BY s.user_id, s.credit_serial_id, s.vir_time
+        ORDER BY v.vir_unix DESC, v.serial_id DESC
+      ) AS rn
+    FROM strict_t0 s
+    JOIN wangchuanliang.order_vir_f_copy v
+      ON v.serial_id = s.settled_serial_id
+     AND v.is_pass1 = 1
+), previous_credit AS (
+    SELECT user_id, credit_serial_id, vir_time, settled_serial_id,
+           previous_credit_amt
+    FROM previous_credit_ranked
+    WHERE rn = 1
+), loan_count_at_settlement AS (
+    SELECT s.user_id, s.credit_serial_id, s.vir_time,
+           COUNT(DISTINCT h.serial_id) AS successful_loan_n
+    FROM strict_t0 s
+    JOIN all_orders h
+      ON h.user_id = s.user_id
+     AND h.is_remit = 1
+     AND COALESCE(h.remit_amt, 0) &gt; 0
+     AND h.remit_time IS NOT NULL
+     AND h.remit_time &lt;= s.repaid_time
+    GROUP BY s.user_id, s.credit_serial_id, s.vir_time
+), event_base AS (
+    SELECT s.user_id, s.credit_serial_id, s.vir_date, s.vir_time,
+           s.repaid_time, s.settled_serial_id,
+           s.settled_remit_amt AS previous_remit_amt,
+           p.previous_credit_amt,
+           s.current_credit_amt,
+           s.current_credit_amt - p.previous_credit_amt AS credit_change_amt,
+           s.current_credit_amt / NULLIF(p.previous_credit_amt, 0) - 1
+             AS credit_change_rate,
+           s.settled_remit_amt / NULLIF(p.previous_credit_amt, 0)
+             AS previous_util_ratio,
+           l.successful_loan_n
+    FROM strict_t0 s
+    JOIN previous_credit p
+      ON p.user_id = s.user_id
+     AND p.credit_serial_id = s.credit_serial_id
+     AND p.vir_time = s.vir_time
+     AND p.settled_serial_id = s.settled_serial_id
+    JOIN loan_count_at_settlement l
+      ON l.user_id = s.user_id
+     AND l.credit_serial_id = s.credit_serial_id
+     AND l.vir_time = s.vir_time
+    WHERE s.current_credit_amt &gt; 0
+      AND p.previous_credit_amt &gt; 0
+      AND s.settled_remit_amt &gt; 0
+), candidate_d7_orders AS (
+    SELECT e.user_id, e.credit_serial_id, e.vir_time,
+           o.serial_id AS apply_serial_id, o.apply_time,
+      ROW_NUMBER() OVER (
+        PARTITION BY o.serial_id
+        ORDER BY e.vir_time DESC, e.credit_serial_id DESC
+      ) AS event_match_rn
+    FROM event_base e
+    JOIN all_orders o
+      ON o.user_id = e.user_id
+     AND o.apply_time &gt;= e.vir_time
+     AND o.apply_time &lt; e.vir_date + 8
+), assigned_d7_orders AS (
+    SELECT *
+    FROM candidate_d7_orders
+    WHERE event_match_rn = 1
+), first_d7_apply AS (
+    SELECT user_id, credit_serial_id, vir_time,
+           apply_serial_id, apply_time
+    FROM (
+      SELECT a.*,
+        ROW_NUMBER() OVER (
+          PARTITION BY a.user_id, a.credit_serial_id, a.vir_time
+          ORDER BY a.apply_time, a.apply_serial_id
+        ) AS rn
+      FROM assigned_d7_orders a
+    ) x
+    WHERE rn = 1
+)
+SELECT
+    DATE_TRUNC(&#x27;month&#x27;, e.vir_date)::date AS t0_month,
+    e.user_id,
+    e.credit_serial_id,
+    e.vir_date,
+    e.vir_time,
+    e.repaid_time,
+    e.settled_serial_id,
+    e.previous_credit_amt,
+    e.current_credit_amt,
+    e.credit_change_amt,
+    e.credit_change_rate,
+    CASE WHEN e.credit_change_amt &lt; 0 THEN &#x27;额度降低&#x27;
+         WHEN e.credit_change_amt = 0 THEN &#x27;额度不变&#x27;
+         ELSE &#x27;额度增加&#x27; END AS credit_change_type,
+    CASE
+      WHEN e.credit_change_amt &lt; -1000 THEN &#x27;降额&gt;1000&#x27;
+      WHEN e.credit_change_amt &lt; 0 THEN &#x27;降额≤1000&#x27;
+      WHEN e.credit_change_amt = 0 THEN &#x27;额度不变&#x27;
+      WHEN e.credit_change_amt &lt;= 150 THEN &#x27;提额≤150&#x27;
+      WHEN e.credit_change_amt &lt;= 1200 THEN &#x27;提额(150,1200]&#x27;
+      ELSE &#x27;提额&gt;1200&#x27;
+    END AS change_amount_bucket,
+    CASE
+      WHEN e.credit_change_rate &lt;= -0.50 THEN &#x27;降幅50%及以上&#x27;
+      WHEN e.credit_change_rate &lt;= -0.20 THEN &#x27;降幅20%-50%&#x27;
+      WHEN e.credit_change_rate &lt; 0 THEN &#x27;降幅0%-20%&#x27;
+      WHEN e.credit_change_rate = 0 THEN &#x27;额度不变&#x27;
+      WHEN e.credit_change_rate &lt; 0.20 THEN &#x27;涨幅0%-20%&#x27;
+      WHEN e.credit_change_rate &lt; 0.50 THEN &#x27;涨幅20%-50%&#x27;
+      ELSE &#x27;涨幅50%及以上&#x27;
+    END AS change_rate_bucket,
+    e.previous_remit_amt,
+    e.previous_util_ratio,
+    CASE WHEN e.previous_util_ratio &lt; 0.800 THEN &#x27;&lt;80%&#x27;
+         WHEN e.previous_util_ratio &lt; 0.999 THEN &#x27;80%-100%&#x27;
+         WHEN e.previous_util_ratio &lt;= 1.001 THEN &#x27;接近100%&#x27;
+         ELSE &#x27;&gt;100%&#x27; END AS previous_util_band,
+    e.successful_loan_n,
+    CASE WHEN e.successful_loan_n = 1 THEN &#x27;1次&#x27;
+         WHEN e.successful_loan_n = 2 THEN &#x27;2次&#x27;
+         WHEN e.successful_loan_n = 3 THEN &#x27;3次&#x27;
+         WHEN e.successful_loan_n = 4 THEN &#x27;4次&#x27;
+         WHEN e.successful_loan_n = 5 THEN &#x27;5次&#x27;
+         ELSE &#x27;6次及以上&#x27; END AS loan_count_bucket,
+    CASE WHEN a.apply_serial_id IS NULL THEN 0 ELSE 1 END AS has_d7_apply,
+    a.apply_serial_id,
+    a.apply_time AS d7_apply_time,
+    CASE WHEN a.apply_time IS NULL THEN NULL
+         ELSE EXTRACT(EPOCH FROM (a.apply_time - e.vir_time)) / 60.0
+    END AS minutes_to_apply
+FROM event_base e
+LEFT JOIN first_d7_apply a
+  ON a.user_id = e.user_id
+ AND a.credit_serial_id = e.credit_serial_id
+ AND a.vir_time = e.vir_time;
+
+-- R1：monthly_overall
+SELECT TO_CHAR(t0_month, &#x27;YYYY-MM&#x27;) AS t0_month,
+               COUNT(*) AS event_n,
+               COUNT(DISTINCT user_id) AS user_n,
+               SUM(has_d7_apply) AS apply_n,
+               ROUND(100.0 * AVG(has_d7_apply::numeric), 4) AS apply_rate_pct
+        FROM tmp_t0_credit_change_d7_apply
+        WHERE t0_month &gt;= DATE &#x27;2026-01-01&#x27;
+          AND t0_month &lt;  DATE &#x27;2026-09-01&#x27;
+        GROUP BY t0_month
+        ORDER BY t0_month;
+
+-- R2：monthly_direction_loan
+SELECT TO_CHAR(t0_month, &#x27;YYYY-MM&#x27;) AS t0_month,
+               credit_change_type, loan_count_bucket,
+               COUNT(*) AS event_n,
+               COUNT(DISTINCT user_id) AS user_n,
+               SUM(has_d7_apply) AS apply_n,
+               ROUND(100.0 * AVG(has_d7_apply::numeric), 4) AS apply_rate_pct
+        FROM tmp_t0_credit_change_d7_apply
+        WHERE t0_month &gt;= DATE &#x27;2026-01-01&#x27;
+          AND t0_month &lt;  DATE &#x27;2026-09-01&#x27;
+        GROUP BY t0_month, credit_change_type, loan_count_bucket
+        ORDER BY t0_month,
+          CASE credit_change_type
+            WHEN &#x27;额度增加&#x27; THEN 1 WHEN &#x27;额度不变&#x27; THEN 2 ELSE 3 END,
+          CASE loan_count_bucket
+            WHEN &#x27;1次&#x27; THEN 1 WHEN &#x27;2次&#x27; THEN 2 WHEN &#x27;3次&#x27; THEN 3
+            WHEN &#x27;4次&#x27; THEN 4 WHEN &#x27;5次&#x27; THEN 5 ELSE 6 END;
+
+-- R3：monthly_cross
+WITH banded AS (
+          SELECT t.*,
+                 FLOOR(previous_credit_amt / 1000.0)::int * 1000
+                   AS previous_band_lower,
+                 FLOOR(current_credit_amt / 1000.0)::int * 1000
+                   AS current_band_lower,
+                 CASE
+                   WHEN credit_change_type = &#x27;额度增加&#x27; AND ABS(credit_change_amt) &lt;= 100
+                     THEN &#x27;提额≤100&#x27;
+                   WHEN credit_change_type = &#x27;额度增加&#x27; AND ABS(credit_change_amt) &lt;= 300
+                     THEN &#x27;提额100–300&#x27;
+                   WHEN credit_change_type = &#x27;额度增加&#x27; AND ABS(credit_change_amt) &lt;= 500
+                     THEN &#x27;提额300–500&#x27;
+                   WHEN credit_change_type = &#x27;额度增加&#x27; AND ABS(credit_change_amt) &lt;= 1000
+                     THEN &#x27;提额500–1000&#x27;
+                   WHEN credit_change_type = &#x27;额度增加&#x27; AND ABS(credit_change_amt) &lt;= 2000
+                     THEN &#x27;提额1000–2000&#x27;
+                   WHEN credit_change_type = &#x27;额度增加&#x27; AND ABS(credit_change_amt) &lt;= 4000
+                     THEN &#x27;提额2000–4000&#x27;
+                   WHEN credit_change_type = &#x27;额度增加&#x27; THEN &#x27;提额&gt;4000&#x27;
+                   WHEN credit_change_type = &#x27;额度降低&#x27; AND ABS(credit_change_amt) &lt;= 100
+                     THEN &#x27;降额≤100&#x27;
+                   WHEN credit_change_type = &#x27;额度降低&#x27; AND ABS(credit_change_amt) &lt;= 200
+                     THEN &#x27;降额100–200&#x27;
+                   WHEN credit_change_type = &#x27;额度降低&#x27; AND ABS(credit_change_amt) &lt;= 300
+                     THEN &#x27;降额200–300&#x27;
+                   WHEN credit_change_type = &#x27;额度降低&#x27; AND ABS(credit_change_amt) &lt;= 500
+                     THEN &#x27;降额300–500&#x27;
+                   WHEN credit_change_type = &#x27;额度降低&#x27; AND ABS(credit_change_amt) &lt;= 1000
+                     THEN &#x27;降额500–1000&#x27;
+                   WHEN credit_change_type = &#x27;额度降低&#x27; AND ABS(credit_change_amt) &lt;= 2000
+                     THEN &#x27;降额1000–2000&#x27;
+                   WHEN credit_change_type = &#x27;额度降低&#x27; THEN &#x27;降额&gt;2000&#x27;
+                   ELSE &#x27;额度不变&#x27;
+                 END AS change_amount_band
+          FROM tmp_t0_credit_change_d7_apply t
+          WHERE t0_month &gt;= DATE &#x27;2026-01-01&#x27;
+            AND t0_month &lt;  DATE &#x27;2026-09-01&#x27;
+        )
+        SELECT TO_CHAR(t0_month, &#x27;YYYY-MM&#x27;) AS t0_month,
+               credit_change_type, loan_count_bucket,
+               previous_band_lower, current_band_lower, change_amount_band,
+               COUNT(*) AS event_n,
+               SUM(has_d7_apply) AS apply_n
+        FROM banded
+        GROUP BY t0_month, credit_change_type, loan_count_bucket,
+                 previous_band_lower, current_band_lower, change_amount_band
+        ORDER BY t0_month, credit_change_type, loan_count_bucket,
+                 previous_band_lower, current_band_lower, change_amount_band;
+
+-- R4：额度方向 × 借款次数，1月→8月归因
+WITH monthly AS (
+  SELECT t0_month, credit_change_type, loan_count_bucket,
+         COUNT(*)::numeric AS n, SUM(has_d7_apply)::numeric AS apply_n,
+         AVG(has_d7_apply::numeric) AS rate
+  FROM tmp_t0_credit_change_d7_apply
+  WHERE t0_month &gt;= DATE &#x27;2026-01-01&#x27; AND t0_month &lt; DATE &#x27;2026-09-01&#x27;
+  GROUP BY t0_month, credit_change_type, loan_count_bucket
+), total AS (
+  SELECT t0_month, SUM(n) AS total_n, SUM(apply_n)/SUM(n) AS overall_rate
+  FROM monthly GROUP BY t0_month
+), weighted AS (
+  SELECT m.*, m.n/t.total_n AS weight, t.overall_rate
+  FROM monthly m JOIN total t USING(t0_month)
+), jan AS (SELECT * FROM weighted WHERE t0_month=DATE &#x27;2026-01-01&#x27;),
+aug AS (SELECT * FROM weighted WHERE t0_month=DATE &#x27;2026-08-01&#x27;)
+SELECT a.credit_change_type, a.loan_count_bucket,
+       j.n AS jan_event_n, a.n AS aug_event_n,
+       ROUND(100*j.rate,2) AS jan_rate_pct,
+       ROUND(100*a.rate,2) AS aug_rate_pct,
+       ROUND(100*(a.rate-j.rate),2) AS rate_change_pp,
+       ROUND(100*(
+         j.weight*(a.rate-j.rate)
+         +(a.weight-j.weight)*(j.rate-j.overall_rate)
+         +(a.weight-j.weight)*(a.rate-j.rate)
+       ),3) AS total_attribution_pp
+FROM aug a JOIN jan j USING(credit_change_type,loan_count_bucket)
+ORDER BY total_attribution_pp;
+
+-- R5：核心规则（前3次提额&gt;=500；前3次降额&lt;=1000）月度指标与归因输入
+WITH labeled AS (
+  SELECT t.*,
+    CASE
+      WHEN credit_change_type=&#x27;额度增加&#x27; AND successful_loan_n&lt;=3
+           AND credit_change_amt&gt;=500 THEN &#x27;提额核心｜前3次且提额&gt;=500&#x27;
+      WHEN credit_change_type=&#x27;额度降低&#x27; AND successful_loan_n&lt;=3
+           AND ABS(credit_change_amt)&lt;=1000 THEN &#x27;降额核心｜前3次且降额&lt;=1000&#x27;
+      ELSE &#x27;其他事件&#x27; END AS target_group
+  FROM tmp_t0_credit_change_d7_apply t
+  WHERE t0_month &gt;= DATE &#x27;2026-01-01&#x27; AND t0_month &lt; DATE &#x27;2026-09-01&#x27;
+)
+SELECT TO_CHAR(t0_month,&#x27;YYYY-MM&#x27;) AS t0_month, target_group,
+       COUNT(*) AS event_n, COUNT(DISTINCT user_id) AS user_n,
+       SUM(has_d7_apply) AS apply_n,
+       ROUND(100.0*AVG(has_d7_apply::numeric),2) AS apply_rate_pct
+FROM labeled
+GROUP BY t0_month,target_group
+ORDER BY t0_month,target_group;
+</pre></details></section><footer class="footer">T0额度变化 × 借款次数7日提单率归因分析｜生成于2026-09-27</footer></main><script>
+const D={"overall": [{"t0_month": "2026-01", "event_n": 20095, "user_n": 14665, "apply_n": 15498, "apply_rate_pct": 77.1237}, {"t0_month": "2026-02", "event_n": 23391, "user_n": 17117, "apply_n": 17963, "apply_rate_pct": 76.7945}, {"t0_month": "2026-03", "event_n": 22921, "user_n": 16239, "apply_n": 16751, "apply_rate_pct": 73.0815}, {"t0_month": "2026-04", "event_n": 21262, "user_n": 15558, "apply_n": 15672, "apply_rate_pct": 73.709}, {"t0_month": "2026-05", "event_n": 24283, "user_n": 17876, "apply_n": 17282, "apply_rate_pct": 71.1691}, {"t0_month": "2026-06", "event_n": 23154, "user_n": 17685, "apply_n": 16166, "apply_rate_pct": 69.8195}, {"t0_month": "2026-07", "event_n": 23778, "user_n": 18492, "apply_n": 16112, "apply_rate_pct": 67.7601}, {"t0_month": "2026-08", "event_n": 22614, "user_n": 18063, "apply_n": 14991, "apply_rate_pct": 66.2908}], "monthlyDirection": [{"t0_month": "2026-01", "credit_change_type": "额度不变", "event_n": 1730, "apply_n": 1348, "apply_rate_pct": 77.91907514450867}, {"t0_month": "2026-01", "credit_change_type": "额度增加", "event_n": 11932, "apply_n": 9295, "apply_rate_pct": 77.89976533690916}, {"t0_month": "2026-01", "credit_change_type": "额度降低", "event_n": 6433, "apply_n": 4855, "apply_rate_pct": 75.47023161821856}, {"t0_month": "2026-02", "credit_change_type": "额度不变", "event_n": 2177, "apply_n": 1738, "apply_rate_pct": 79.83463481855765}, {"t0_month": "2026-02", "credit_change_type": "额度增加", "event_n": 12906, "apply_n": 9889, "apply_rate_pct": 76.62327599566093}, {"t0_month": "2026-02", "credit_change_type": "额度降低", "event_n": 8308, "apply_n": 6336, "apply_rate_pct": 76.26384207992297}, {"t0_month": "2026-03", "credit_change_type": "额度不变", "event_n": 3531, "apply_n": 2693, "apply_rate_pct": 76.26734636080431}, {"t0_month": "2026-03", "credit_change_type": "额度增加", "event_n": 10930, "apply_n": 7973, "apply_rate_pct": 72.94602012808784}, {"t0_month": "2026-03", "credit_change_type": "额度降低", "event_n": 8460, "apply_n": 6085, "apply_rate_pct": 71.92671394799055}, {"t0_month": "2026-04", "credit_change_type": "额度不变", "event_n": 3268, "apply_n": 2473, "apply_rate_pct": 75.67319461444309}, {"t0_month": "2026-04", "credit_change_type": "额度增加", "event_n": 11142, "apply_n": 8215, "apply_rate_pct": 73.73003051516784}, {"t0_month": "2026-04", "credit_change_type": "额度降低", "event_n": 6852, "apply_n": 4984, "apply_rate_pct": 72.73788674839463}, {"t0_month": "2026-05", "credit_change_type": "额度不变", "event_n": 2779, "apply_n": 2148, "apply_rate_pct": 77.29399064411659}, {"t0_month": "2026-05", "credit_change_type": "额度增加", "event_n": 13285, "apply_n": 9193, "apply_rate_pct": 69.19834399698908}, {"t0_month": "2026-05", "credit_change_type": "额度降低", "event_n": 8219, "apply_n": 5941, "apply_rate_pct": 72.28373281421098}, {"t0_month": "2026-06", "credit_change_type": "额度不变", "event_n": 3179, "apply_n": 2450, "apply_rate_pct": 77.06826045926393}, {"t0_month": "2026-06", "credit_change_type": "额度增加", "event_n": 12311, "apply_n": 8258, "apply_rate_pct": 67.07822272764194}, {"t0_month": "2026-06", "credit_change_type": "额度降低", "event_n": 7664, "apply_n": 5458, "apply_rate_pct": 71.2160751565762}, {"t0_month": "2026-07", "credit_change_type": "额度不变", "event_n": 2364, "apply_n": 1800, "apply_rate_pct": 76.14213197969544}, {"t0_month": "2026-07", "credit_change_type": "额度增加", "event_n": 13768, "apply_n": 8883, "apply_rate_pct": 64.51917489831493}, {"t0_month": "2026-07", "credit_change_type": "额度降低", "event_n": 7646, "apply_n": 5429, "apply_rate_pct": 71.0044467695527}, {"t0_month": "2026-08", "credit_change_type": "额度不变", "event_n": 1854, "apply_n": 1404, "apply_rate_pct": 75.72815533980582}, {"t0_month": "2026-08", "credit_change_type": "额度增加", "event_n": 12803, "apply_n": 8150, "apply_rate_pct": 63.65695540107787}, {"t0_month": "2026-08", "credit_change_type": "额度降低", "event_n": 7957, "apply_n": 5437, "apply_rate_pct": 68.32977252733443}], "monthlyLoan": [{"t0_month": "2026-01", "loan_count_bucket": "1次", "event_n": 8401, "apply_n": 6307, "apply_rate_pct": 75.07439590524938}, {"t0_month": "2026-01", "loan_count_bucket": "2次", "event_n": 3841, "apply_n": 3030, "apply_rate_pct": 78.88570684717521}, {"t0_month": "2026-01", "loan_count_bucket": "3次", "event_n": 2388, "apply_n": 1875, "apply_rate_pct": 78.51758793969849}, {"t0_month": "2026-01", "loan_count_bucket": "4次", "event_n": 1567, "apply_n": 1225, "apply_rate_pct": 78.17485641352904}, {"t0_month": "2026-01", "loan_count_bucket": "5次", "event_n": 1103, "apply_n": 873, "apply_rate_pct": 79.14777878513146}, {"t0_month": "2026-01", "loan_count_bucket": "6次及以上", "event_n": 2795, "apply_n": 2188, "apply_rate_pct": 78.28264758497316}, {"t0_month": "2026-02", "loan_count_bucket": "1次", "event_n": 9600, "apply_n": 7112, "apply_rate_pct": 74.08333333333333}, {"t0_month": "2026-02", "loan_count_bucket": "2次", "event_n": 4854, "apply_n": 3726, "apply_rate_pct": 76.76143386897404}, {"t0_month": "2026-02", "loan_count_bucket": "3次", "event_n": 3097, "apply_n": 2493, "apply_rate_pct": 80.4972554084598}, {"t0_month": "2026-02", "loan_count_bucket": "4次", "event_n": 1921, "apply_n": 1529, "apply_rate_pct": 79.59396147839666}, {"t0_month": "2026-02", "loan_count_bucket": "5次", "event_n": 1160, "apply_n": 936, "apply_rate_pct": 80.6896551724138}, {"t0_month": "2026-02", "loan_count_bucket": "6次及以上", "event_n": 2759, "apply_n": 2167, "apply_rate_pct": 78.54295034432765}, {"t0_month": "2026-03", "loan_count_bucket": "1次", "event_n": 7555, "apply_n": 5251, "apply_rate_pct": 69.50363997352747}, {"t0_month": "2026-03", "loan_count_bucket": "2次", "event_n": 4916, "apply_n": 3472, "apply_rate_pct": 70.62652563059397}, {"t0_month": "2026-03", "loan_count_bucket": "3次", "event_n": 3509, "apply_n": 2647, "apply_rate_pct": 75.43459675121117}, {"t0_month": "2026-03", "loan_count_bucket": "4次", "event_n": 2267, "apply_n": 1735, "apply_rate_pct": 76.53286281429202}, {"t0_month": "2026-03", "loan_count_bucket": "5次", "event_n": 1489, "apply_n": 1185, "apply_rate_pct": 79.58361316319677}, {"t0_month": "2026-03", "loan_count_bucket": "6次及以上", "event_n": 3185, "apply_n": 2461, "apply_rate_pct": 77.26844583987442}, {"t0_month": "2026-04", "loan_count_bucket": "1次", "event_n": 7868, "apply_n": 5496, "apply_rate_pct": 69.85256736146415}, {"t0_month": "2026-04", "loan_count_bucket": "2次", "event_n": 4023, "apply_n": 3011, "apply_rate_pct": 74.84464330101915}, {"t0_month": "2026-04", "loan_count_bucket": "3次", "event_n": 2720, "apply_n": 2009, "apply_rate_pct": 73.86029411764706}, {"t0_month": "2026-04", "loan_count_bucket": "4次", "event_n": 1945, "apply_n": 1447, "apply_rate_pct": 74.39588688946016}, {"t0_month": "2026-04", "loan_count_bucket": "5次", "event_n": 1309, "apply_n": 1020, "apply_rate_pct": 77.92207792207792}, {"t0_month": "2026-04", "loan_count_bucket": "6次及以上", "event_n": 3397, "apply_n": 2689, "apply_rate_pct": 79.15808065940536}, {"t0_month": "2026-05", "loan_count_bucket": "1次", "event_n": 9125, "apply_n": 6246, "apply_rate_pct": 68.44931506849315}, {"t0_month": "2026-05", "loan_count_bucket": "2次", "event_n": 4654, "apply_n": 3295, "apply_rate_pct": 70.79931241942415}, {"t0_month": "2026-05", "loan_count_bucket": "3次", "event_n": 3091, "apply_n": 2150, "apply_rate_pct": 69.55677774183113}, {"t0_month": "2026-05", "loan_count_bucket": "4次", "event_n": 2059, "apply_n": 1549, "apply_rate_pct": 75.23069451189897}, {"t0_month": "2026-05", "loan_count_bucket": "5次", "event_n": 1452, "apply_n": 1064, "apply_rate_pct": 73.27823691460055}, {"t0_month": "2026-05", "loan_count_bucket": "6次及以上", "event_n": 3902, "apply_n": 2978, "apply_rate_pct": 76.31983598154793}, {"t0_month": "2026-06", "loan_count_bucket": "1次", "event_n": 8791, "apply_n": 5880, "apply_rate_pct": 66.88658855647822}, {"t0_month": "2026-06", "loan_count_bucket": "2次", "event_n": 4621, "apply_n": 3154, "apply_rate_pct": 68.2536247565462}, {"t0_month": "2026-06", "loan_count_bucket": "3次", "event_n": 3128, "apply_n": 2243, "apply_rate_pct": 71.70716112531969}, {"t0_month": "2026-06", "loan_count_bucket": "4次", "event_n": 2057, "apply_n": 1492, "apply_rate_pct": 72.53281477880408}, {"t0_month": "2026-06", "loan_count_bucket": "5次", "event_n": 1301, "apply_n": 955, "apply_rate_pct": 73.40507302075326}, {"t0_month": "2026-06", "loan_count_bucket": "6次及以上", "event_n": 3256, "apply_n": 2442, "apply_rate_pct": 75.0}, {"t0_month": "2026-07", "loan_count_bucket": "1次", "event_n": 9164, "apply_n": 5925, "apply_rate_pct": 64.65517241379311}, {"t0_month": "2026-07", "loan_count_bucket": "2次", "event_n": 4994, "apply_n": 3310, "apply_rate_pct": 66.27953544253104}, {"t0_month": "2026-07", "loan_count_bucket": "3次", "event_n": 3035, "apply_n": 2130, "apply_rate_pct": 70.18121911037892}, {"t0_month": "2026-07", "loan_count_bucket": "4次", "event_n": 1973, "apply_n": 1410, "apply_rate_pct": 71.46477445514445}, {"t0_month": "2026-07", "loan_count_bucket": "5次", "event_n": 1369, "apply_n": 992, "apply_rate_pct": 72.46165084002922}, {"t0_month": "2026-07", "loan_count_bucket": "6次及以上", "event_n": 3243, "apply_n": 2345, "apply_rate_pct": 72.30958988590811}, {"t0_month": "2026-08", "loan_count_bucket": "1次", "event_n": 9049, "apply_n": 5709, "apply_rate_pct": 63.089844181677535}, {"t0_month": "2026-08", "loan_count_bucket": "2次", "event_n": 4765, "apply_n": 3106, "apply_rate_pct": 65.18363064008395}, {"t0_month": "2026-08", "loan_count_bucket": "3次", "event_n": 2841, "apply_n": 1910, "apply_rate_pct": 67.22984864484337}, {"t0_month": "2026-08", "loan_count_bucket": "4次", "event_n": 1841, "apply_n": 1293, "apply_rate_pct": 70.23356871265617}, {"t0_month": "2026-08", "loan_count_bucket": "5次", "event_n": 1247, "apply_n": 862, "apply_rate_pct": 69.12590216519646}, {"t0_month": "2026-08", "loan_count_bucket": "6次及以上", "event_n": 2871, "apply_n": 2111, "apply_rate_pct": 73.52838732149077}], "loanAttr": [{"loan_count_bucket": "1次", "full_n": 69553.0, "full_rate_pct": 68.90572656822854, "jan_n": 8401.0, "aug_n": 9049.0, "jan_rate_pct": 75.07439590524938, "aug_rate_pct": 63.089844181677535, "rate_change_pp": -11.984551723571846, "jan_share_pct": 41.80641950734014, "aug_share_pct": 40.01503493411161, "base_within_pp": -5.010311969630608, "structure_pp": 0.03671024748132009, "interaction_pp": 0.21468941074665962, "total_attribution_pp": -4.758912311402629}, {"loan_count_bucket": "2次", "full_n": 36668.0, "full_rate_pct": 71.19013854041671, "jan_n": 3841.0, "aug_n": 4765.0, "jan_rate_pct": 78.88570684717521, "aug_rate_pct": 65.18363064008395, "rate_change_pp": -13.702076207091274, "jan_share_pct": 19.11420751430704, "aug_share_pct": 21.071017953480144, "base_within_pp": -2.6190432799919177, "structure_pp": 0.03447986571996338, "interaction_pp": -0.2681236576038161, "total_attribution_pp": -2.85268707187577}, {"loan_count_bucket": "3次", "full_n": 23809.0, "full_rate_pct": 73.32101306228736, "jan_n": 2388.0, "aug_n": 2841.0, "jan_rate_pct": 78.5175879396985, "aug_rate_pct": 67.22984864484336, "rate_change_pp": -11.287739294855136, "jan_share_pct": 11.88355312266733, "aug_share_pct": 12.563014062085434, "base_within_pp": -1.3413844954523049, "structure_pp": 0.009471178189981779, "interaction_pp": -0.07669577945188921, "total_attribution_pp": -1.4086090967142122}, {"loan_count_bucket": "4次", "full_n": 15630.0, "full_rate_pct": 74.72808701215611, "jan_n": 1567.0, "aug_n": 1841.0, "jan_rate_pct": 78.17485641352904, "aug_rate_pct": 70.23356871265617, "rate_change_pp": -7.941287700872868, "jan_share_pct": 7.79795969146554, "aug_share_pct": 8.140974617493587, "base_within_pp": -0.6192584138973767, "structure_pp": 0.0036057516728411074, "interaction_pp": -0.027239802132823582, "total_attribution_pp": -0.6428924643573591}, {"loan_count_bucket": "5次", "full_n": 10430.0, "full_rate_pct": 75.61840843720037, "jan_n": 1103.0, "aug_n": 1247.0, "jan_rate_pct": 79.14777878513146, "aug_rate_pct": 69.12590216519648, "rate_change_pp": -10.02187661993499, "jan_share_pct": 5.488927593928838, "aug_share_pct": 5.514283187406031, "base_within_pp": -0.5500935512211143, "structure_pp": 0.0005132266707392649, "interaction_pp": -0.0025411062945366264, "total_attribution_pp": -0.5521214308449116}, {"loan_count_bucket": "6次及以上", "full_n": 25408.0, "full_rate_pct": 76.27912468513854, "jan_n": 2795.0, "aug_n": 2871.0, "jan_rate_pct": 78.28264758497316, "aug_rate_pct": 73.52838732149077, "rate_change_pp": -4.75426026348239, "jan_share_pct": 13.908932570291116, "aug_share_pct": 12.695675245423189, "base_within_pp": -0.6612668542639104, "structure_pp": -0.01406147019230698, "interaction_pp": 0.057681410889985345, "total_attribution_pp": -0.617646913566232}], "directionLoanAttr": [{"credit_change_type": "额度增加", "loan_count_bucket": "1次", "full_n": 37660.0, "full_rate_pct": 68.39086563993627, "jan_n": 4990.0, "aug_n": 5117.0, "jan_rate_pct": 76.63326653306613, "aug_rate_pct": 60.816884893492286, "rate_change_pp": -15.816381639573851, "jan_share_pct": 24.832047773077882, "aug_share_pct": 22.627575837976472, "base_within_pp": -3.9275314447112972, "structure_pp": 0.010810643724540596, "interaction_pp": 0.3486676943929373, "total_attribution_pp": -3.5680531065938195}, {"credit_change_type": "额度增加", "loan_count_bucket": "2次", "full_n": 20244.0, "full_rate_pct": 70.17387868010275, "jan_n": 1922.0, "aug_n": 2852.0, "jan_rate_pct": 79.9687825182102, "aug_rate_pct": 62.86816269284713, "rate_change_pp": -17.100619825363072, "jan_share_pct": 9.564568300572281, "aug_share_pct": 12.611656495975945, "base_within_pp": -1.6356004630180558, "structure_pp": 0.08669331309249516, "interaction_pp": -0.5210709680394967, "total_attribution_pp": -2.069978117965057}, {"credit_change_type": "额度增加", "loan_count_bucket": "3次", "full_n": 12481.0, "full_rate_pct": 71.917314317763, "jan_n": 1645.0, "aug_n": 1518.0, "jan_rate_pct": 79.45288753799392, "aug_rate_pct": 65.2832674571805, "rate_change_pp": -14.169620080813417, "jan_share_pct": 8.186115949241104, "aug_share_pct": 6.712655876890422, "base_within_pp": -1.1599415293823374, "structure_pp": -0.0343201994177132, "interaction_pp": 0.2087836942945702, "total_attribution_pp": -0.9854780345054804}, {"credit_change_type": "额度增加", "loan_count_bucket": "4次", "full_n": 8348.0, "full_rate_pct": 72.65213224724485, "jan_n": 986.0, "aug_n": 987.0, "jan_rate_pct": 77.89046653144015, "aug_rate_pct": 68.18642350557245, "rate_change_pp": -9.704043025867715, "jan_share_pct": 4.906693207265489, "aug_share_pct": 4.364552931812152, "base_within_pp": -0.4761476199803716, "structure_pp": -0.004157152931797883, "interaction_pp": 0.052609525590549586, "total_attribution_pp": -0.42769524732161995}, {"credit_change_type": "额度增加", "loan_count_bucket": "5次", "full_n": 5930.0, "full_rate_pct": 73.18718381112986, "jan_n": 728.0, "aug_n": 704.0, "jan_rate_pct": 78.98351648351648, "aug_rate_pct": 65.625, "rate_change_pp": -13.35851648351648, "jan_share_pct": 3.6227917392386164, "aug_share_pct": 3.1131157689926594, "base_within_pp": -0.48395123164966397, "structure_pp": -0.009479228312527144, "interaction_pp": 0.0680851484978287, "total_attribution_pp": -0.42534531146436233}, {"credit_change_type": "额度增加", "loan_count_bucket": "6次及以上", "full_n": 14414.0, "full_rate_pct": 72.93603441098931, "jan_n": 1661.0, "aug_n": 1625.0, "jan_rate_pct": 77.30282962071041, "aug_rate_pct": 68.86153846153846, "rate_change_pp": -8.441291159171948, "jan_share_pct": 8.265737745707888, "aug_share_pct": 7.1858140974617495, "base_within_pp": -0.6977349895687787, "structure_pp": -0.00193486699802705, "interaction_pp": 0.09115949944520842, "total_attribution_pp": -0.6085103571215974}, {"credit_change_type": "额度不变", "loan_count_bucket": "1次", "full_n": 9363.0, "full_rate_pct": 73.77977144077754, "jan_n": 989.0, "aug_n": 684.0, "jan_rate_pct": 75.53083923154702, "aug_rate_pct": 74.85380116959064, "rate_change_pp": -0.6770380619563809, "jan_share_pct": 4.9216222941030106, "aug_share_pct": 3.0246749801008224, "base_within_pp": -0.033321256196808195, "structure_pp": 0.03021502015469953, "interaction_pp": 0.01284305533105404, "total_attribution_pp": 0.00973681928894537}, {"credit_change_type": "额度不变", "loan_count_bucket": "2次", "full_n": 3977.0, "full_rate_pct": 77.04299723409605, "jan_n": 416.0, "aug_n": 366.0, "jan_rate_pct": 80.76923076923077, "aug_rate_pct": 75.40983606557377, "rate_change_pp": -5.3593947036570055, "jan_share_pct": 2.070166708136352, "aug_share_pct": 1.6184664367206156, "base_within_pp": -0.11094840491273025, "structure_pp": -0.01646704130314761, "interaction_pp": 0.024208400422659315, "total_attribution_pp": -0.10320704579321854}, {"credit_change_type": "额度不变", "loan_count_bucket": "3次", "full_n": 2520.0, "full_rate_pct": 77.22222222222223, "jan_n": 119.0, "aug_n": 301.0, "jan_rate_pct": 78.99159663865547, "aug_rate_pct": 77.0764119601329, "rate_change_pp": -1.9151846785225635, "jan_share_pct": 0.592187111221697, "aug_share_pct": 1.3310338728221456, "base_within_pp": -0.011341476822303314, "structure_pp": 0.013801170133951416, "interaction_pp": -0.01415027997593192, "total_attribution_pp": -0.011690586664283818}, {"credit_change_type": "额度不变", "loan_count_bucket": "4次", "full_n": 1807.0, "full_rate_pct": 80.18815716657444, "jan_n": 59.0, "aug_n": 199.0, "jan_rate_pct": 88.13559322033898, "aug_rate_pct": 71.35678391959799, "rate_change_pp": -16.778809300740992, "jan_share_pct": 0.2936053744712615, "aug_share_pct": 0.8799858494737772, "base_within_pp": -0.049263485879259446, "structure_pp": 0.06457181106302554, "interaction_pp": -0.09838766167745133, "total_attribution_pp": -0.08307933649368524}, {"credit_change_type": "额度不变", "loan_count_bucket": "5次", "full_n": 1123.0, "full_rate_pct": 80.94390026714159, "jan_n": 40.0, "aug_n": 95.0, "jan_rate_pct": 77.5, "aug_rate_pct": 75.78947368421053, "rate_change_pp": -1.7105263157894735, "jan_share_pct": 0.19905449116695695, "aug_share_pct": 0.42009374723622533, "base_within_pp": -0.0034048794541716317, "structure_pp": 0.0008318533834405717, "interaction_pp": -0.003780934643290117, "total_attribution_pp": -0.006353960714021177}, {"credit_change_type": "额度不变", "loan_count_bucket": "6次及以上", "full_n": 2092.0, "full_rate_pct": 84.99043977055449, "jan_n": 107.0, "aug_n": 209.0, "jan_rate_pct": 82.2429906542056, "aug_rate_pct": 81.3397129186603, "rate_change_pp": -0.9032777355453159, "jan_share_pct": 0.5324707638716099, "aug_share_pct": 0.9242062439196957, "base_within_pp": -0.004809689858340324, "structure_pp": 0.020054224318046723, "interaction_pp": -0.0035384593735059222, "total_attribution_pp": 0.011706075086200479}, {"credit_change_type": "额度降低", "loan_count_bucket": "1次", "full_n": 22530.0, "full_rate_pct": 67.74079005770083, "jan_n": 2422.0, "aug_n": 3248.0, "jan_rate_pct": 71.67630057803468, "aug_rate_pct": 64.19334975369459, "rate_change_pp": -7.4829508243400955, "jan_share_pct": 12.052749440159245, "aug_share_pct": 14.362784116034316, "base_within_pp": -0.9019013135880425, "structure_pp": -0.125835951688775, "interaction_pp": -0.17285875882093577, "total_attribution_pp": -1.2005960240977533}, {"credit_change_type": "额度降低", "loan_count_bucket": "2次", "full_n": 12447.0, "full_rate_pct": 70.97292520286013, "jan_n": 1503.0, "aug_n": 1547.0, "jan_rate_pct": 76.979374584165, "aug_rate_pct": 67.03296703296702, "rate_change_pp": -9.946407551197979, "jan_share_pct": 7.479472505598407, "aug_share_pct": 6.840895020783585, "base_within_pp": -0.7439388180866165, "structure_pp": 0.0009213907992506537, "interaction_pp": 0.06351551916987153, "total_attribution_pp": -0.6795019081174943}, {"credit_change_type": "额度降低", "loan_count_bucket": "3次", "full_n": 8808.0, "full_rate_pct": 74.19391462306993, "jan_n": 624.0, "aug_n": 1022.0, "jan_rate_pct": 75.96153846153845, "aug_rate_pct": 67.2211350293542, "rate_change_pp": -8.740403432184252, "jan_share_pct": 3.1052500622045285, "aug_share_pct": 4.519324312372866, "base_within_pp": -0.2714113830148282, "structure_pp": -0.016433298234271188, "interaction_pp": -0.12359579429534712, "total_attribution_pp": -0.4114404755444465}, {"credit_change_type": "额度降低", "loan_count_bucket": "4次", "full_n": 5475.0, "full_rate_pct": 76.09132420091325, "jan_n": 522.0, "aug_n": 655.0, "jan_rate_pct": 77.58620689655173, "aug_rate_pct": 72.97709923664122, "rate_change_pp": -4.609107659910505, "jan_share_pct": 2.5976611097287883, "aug_share_pct": 2.896435836207659, "base_within_pp": -0.11972899718702582, "structure_pp": 0.001381965448985914, "interaction_pp": -0.013770848804014291, "total_attribution_pp": -0.13211788054205417}, {"credit_change_type": "额度降低", "loan_count_bucket": "5次", "full_n": 3377.0, "full_rate_pct": 78.11667160201362, "jan_n": 335.0, "aug_n": 448.0, "jan_rate_pct": 79.70149253731343, "aug_rate_pct": 73.21428571428571, "rate_change_pp": -6.487206823027725, "jan_share_pct": 1.6670813635232644, "aug_share_pct": 1.981073671177147, "base_within_pp": -0.10814701595990484, "structure_pp": 0.008094187699281613, "interaction_pp": -0.02036933040590488, "total_attribution_pp": -0.1204221586665281}, {"credit_change_type": "额度降低", "loan_count_bucket": "6次及以上", "full_n": 8902.0, "full_rate_pct": 79.64502359020445, "jan_n": 1027.0, "aug_n": 1037.0, "jan_rate_pct": 79.45472249269717, "aug_rate_pct": 79.26711668273867, "rate_change_pp": -0.18760580995850207, "jan_share_pct": 5.11072406071162, "aug_share_pct": 4.5856549040417445, "base_within_pp": -0.00958801526884208, "structure_pp": -0.01223967650620616, "interaction_pp": 0.0009850602442127957, "total_attribution_pp": -0.020842631530835445}], "incAmount": [{"credit_change_type": "额度增加", "loan_stage": "前3次", "change_amount_band": "提额≤100", "full_n": 4656.0, "full_rate_pct": 74.95704467353951, "jan_n": 645.0, "aug_n": 492.0, "jan_rate_pct": 77.98449612403101, "aug_rate_pct": 75.0, "rate_change_pp": -2.984496124031011, "jan_share_pct": 3.209753670067181, "aug_share_pct": 2.175643406739188, "base_within_pp": -0.09579497387409813, "structure_pp": -0.008901967794898302, "interaction_pp": 0.03086298072723082, "total_attribution_pp": -0.0738339609417656, "sort": 0}, {"credit_change_type": "额度增加", "loan_stage": "前3次", "change_amount_band": "提额100–300", "full_n": 10025.0, "full_rate_pct": 76.54862842892769, "jan_n": 924.0, "aug_n": 948.0, "jan_rate_pct": 84.84848484848484, "aug_rate_pct": 74.68354430379746, "rate_change_pp": -10.164940544687385, "jan_share_pct": 4.598158745956706, "aug_share_pct": 4.19209339347307, "base_within_pp": -0.4674001026768421, "structure_pp": -0.03136782668133446, "interaction_pp": 0.04127630165253685, "total_attribution_pp": -0.45749162770563967, "sort": 1}, {"credit_change_type": "额度增加", "loan_stage": "前3次", "change_amount_band": "提额300–500", "full_n": 8336.0, "full_rate_pct": 77.47120921305182, "jan_n": 1071.0, "aug_n": 1507.0, "jan_rate_pct": 85.15406162464986, "aug_rate_pct": 76.17783676177837, "rate_change_pp": -8.976224862871485, "jan_share_pct": 5.329684000995273, "aug_share_pct": 6.664013442999911, "base_within_pp": -0.47840442040982134, "structure_pp": 0.10715197846116373, "interaction_pp": -0.11977241112583473, "total_attribution_pp": -0.49102485307449234, "sort": 2}, {"credit_change_type": "额度增加", "loan_stage": "前3次", "change_amount_band": "提额500–1000", "full_n": 15726.0, "full_rate_pct": 74.55805672135317, "jan_n": 1971.0, "aug_n": 2118.0, "jan_rate_pct": 80.97412480974124, "aug_rate_pct": 69.68838526912181, "rate_change_pp": -11.285739540619433, "jan_share_pct": 9.808410052251803, "aug_share_pct": 9.36587954364553, "base_within_pp": -1.106951611573073, "structure_pp": -0.017039469988788677, "interaction_pp": 0.0499428405890826, "total_attribution_pp": -1.0740482409727792, "sort": 3}, {"credit_change_type": "额度增加", "loan_stage": "前3次", "change_amount_band": "提额1000–2000", "full_n": 15120.0, "full_rate_pct": 66.6931216931217, "jan_n": 1658.0, "aug_n": 1563.0, "jan_rate_pct": 74.84921592279855, "aug_rate_pct": 56.49392194497761, "rate_change_pp": -18.355293977820942, "jan_share_pct": 8.250808658870366, "aug_share_pct": 6.911647651897054, "base_within_pp": -1.5144601848831611, "structure_pp": 0.030458503060802024, "interaction_pp": 0.2458069396662986, "total_attribution_pp": -1.2381947421560604, "sort": 4}, {"credit_change_type": "额度增加", "loan_stage": "前3次", "change_amount_band": "提额2000–4000", "full_n": 11510.0, "full_rate_pct": 60.573414422241534, "jan_n": 1662.0, "aug_n": 1887.0, "jan_rate_pct": 73.6462093862816, "aug_rate_pct": 49.39056703762586, "rate_change_pp": -24.25564234865573, "jan_share_pct": 8.270714107987061, "aug_share_pct": 8.344388431944813, "base_within_pp": -2.0061148337131534, "structure_pp": -0.0025619901480973106, "interaction_pp": -0.01787018052198237, "total_attribution_pp": -2.026547004383233, "sort": 5}, {"credit_change_type": "额度增加", "loan_stage": "前3次", "change_amount_band": "提额>4000", "full_n": 5012.0, "full_rate_pct": 50.57861133280128, "jan_n": 626.0, "aug_n": 972.0, "jan_rate_pct": 65.17571884984025, "aug_rate_pct": 39.09465020576132, "rate_change_pp": -26.081068644078943, "jan_share_pct": 3.115202786762876, "aug_share_pct": 4.298222340143274, "base_within_pp": -0.8124781772178858, "structure_pp": -0.1413465108224828, "interaction_pp": -0.30854414179001766, "total_attribution_pp": -1.2623688298303861, "sort": 6}], "decAmount": [{"credit_change_type": "额度降低", "loan_stage": "前3次", "change_amount_band": "降额≤100", "full_n": 10841.0, "full_rate_pct": 70.44553085508717, "jan_n": 1063.0, "aug_n": 1649.0, "jan_rate_pct": 73.18908748824083, "aug_rate_pct": 68.52637962401455, "rate_change_pp": -4.662707864226268, "jan_share_pct": 5.289873102761881, "aug_share_pct": 7.291943044131953, "base_within_pp": -0.24665132917006827, "structure_pp": -0.07877294568596256, "interaction_pp": -0.09335067260357259, "total_attribution_pp": -0.4187749474596035, "sort": 0}, {"credit_change_type": "额度降低", "loan_stage": "前3次", "change_amount_band": "降额100–200", "full_n": 5571.0, "full_rate_pct": 70.74133907736493, "jan_n": 583.0, "aug_n": 793.0, "jan_rate_pct": 77.35849056603774, "aug_rate_pct": 67.96973518284993, "rate_change_pp": -9.388755383187808, "jan_share_pct": 2.901219208758398, "aug_share_pct": 3.5066772795613335, "base_within_pp": -0.2723883746403828, "structure_pp": 0.0014217848569090606, "interaction_pp": -0.056844977215455686, "total_attribution_pp": -0.32781156699892944, "sort": 1}, {"credit_change_type": "额度降低", "loan_stage": "前3次", "change_amount_band": "降额200–300", "full_n": 4621.0, "full_rate_pct": 70.07141311404457, "jan_n": 628.0, "aug_n": 535.0, "jan_rate_pct": 74.04458598726114, "aug_rate_pct": 65.7943925233645, "rate_change_pp": -8.250193463896661, "jan_share_pct": 3.125155511321224, "aug_share_pct": 2.3657911028566376, "base_within_pp": -0.25783137573162984, "structure_pp": 0.02338141192652388, "interaction_pp": 0.06264903279430284, "total_attribution_pp": -0.17180093101080315, "sort": 2}, {"credit_change_type": "额度降低", "loan_stage": "前3次", "change_amount_band": "降额300–500", "full_n": 6505.0, "full_rate_pct": 70.28439661798616, "jan_n": 648.0, "aug_n": 801.0, "jan_rate_pct": 75.30864197530865, "aug_rate_pct": 63.54556803995006, "rate_change_pp": -11.76307393535858, "jan_share_pct": 3.2246827569047025, "aug_share_pct": 3.5420535951180687, "base_within_pp": -0.37932181687545957, "structure_pp": -0.005760346178699018, "interaction_pp": -0.037332566348305535, "total_attribution_pp": -0.42241472940246405, "sort": 3}, {"credit_change_type": "额度降低", "loan_stage": "前3次", "change_amount_band": "降额500–1000", "full_n": 8159.0, "full_rate_pct": 70.0330922907219, "jan_n": 786.0, "aug_n": 947.0, "jan_rate_pct": 74.30025445292621, "aug_rate_pct": 65.1531151003168, "rate_change_pp": -9.147139352609413, "jan_share_pct": 3.911420751430704, "aug_share_pct": 4.187671354028478, "base_within_pp": -0.3577831068002487, "structure_pp": -0.007799682027372043, "interaction_pp": -0.025269027582041612, "total_attribution_pp": -0.3908518164096623, "sort": 4}, {"credit_change_type": "额度降低", "loan_stage": "前3次", "change_amount_band": "降额1000–2000", "full_n": 4661.0, "full_rate_pct": 70.2638918686977, "jan_n": 522.0, "aug_n": 541.0, "jan_rate_pct": 74.13793103448276, "aug_rate_pct": 65.61922365988909, "rate_change_pp": -8.51870737459367, "jan_share_pct": 2.5976611097287883, "aug_share_pct": 2.3923233395241885, "base_within_pp": -0.22128714852141804, "structure_pp": 0.006130834626343717, "interaction_pp": 0.01749212377324543, "total_attribution_pp": -0.19766419012182893, "sort": 5}, {"credit_change_type": "额度降低", "loan_stage": "前3次", "change_amount_band": "降额>2000", "full_n": 3427.0, "full_rate_pct": 65.77181208053692, "jan_n": 319.0, "aug_n": 551.0, "jan_rate_pct": 67.0846394984326, "aug_rate_pct": 55.716878402903816, "rate_change_pp": -11.367761095528783, "jan_share_pct": 1.5874595670564817, "aug_share_pct": 2.436543733970107, "base_within_pp": -0.18045861107109637, "structure_pp": -0.08523975569060437, "interaction_pp": -0.09652185959470176, "total_attribution_pp": -0.36222022635640255, "sort": 6}], "monthlyCore": [{"t0_month": "2026-01", "group": "提额核心", "event_n": 5917, "apply_rate_pct": 75.52813925976001}, {"t0_month": "2026-01", "group": "降额核心", "event_n": 3708, "apply_rate_pct": 74.59546925566343}, {"t0_month": "2026-02", "group": "提额核心", "event_n": 6263, "apply_rate_pct": 73.87833306722018}, {"t0_month": "2026-02", "group": "降额核心", "event_n": 5012, "apply_rate_pct": 74.20191540303271}, {"t0_month": "2026-03", "group": "提额核心", "event_n": 4507, "apply_rate_pct": 69.8690925227424}, {"t0_month": "2026-03", "group": "降额核心", "event_n": 4526, "apply_rate_pct": 68.47105612019443}, {"t0_month": "2026-04", "group": "提额核心", "event_n": 4443, "apply_rate_pct": 70.15530047265361}, {"t0_month": "2026-04", "group": "降额核心", "event_n": 3912, "apply_rate_pct": 69.40184049079754}, {"t0_month": "2026-05", "group": "提额核心", "event_n": 6483, "apply_rate_pct": 65.8645688724356}, {"t0_month": "2026-05", "group": "降额核心", "event_n": 4431, "apply_rate_pct": 69.93906567366282}, {"t0_month": "2026-06", "group": "提额核心", "event_n": 6025, "apply_rate_pct": 62.63900414937759}, {"t0_month": "2026-06", "group": "降额核心", "event_n": 4575, "apply_rate_pct": 69.90163934426229}, {"t0_month": "2026-07", "group": "提额核心", "event_n": 7190, "apply_rate_pct": 58.95688456189151}, {"t0_month": "2026-07", "group": "降额核心", "event_n": 4808, "apply_rate_pct": 69.86272878535773}, {"t0_month": "2026-08", "group": "提额核心", "event_n": 6540, "apply_rate_pct": 56.13149847094801}, {"t0_month": "2026-08", "group": "降额核心", "event_n": 4725, "apply_rate_pct": 66.60317460317461}], "coverage": [{"name": "全部第1—3次借款事件", "event_pct": 71.64266272906589, "explain_pct": 83.26679356398209}, {"name": "核心提额＋核心降额", "event_pct": 45.76634453272212, "explain_pct": 67.69021045725452}, {"name": "核心提额", "event_pct": 26.098359210569814, "explain_pct": 51.70507267068341}, {"name": "核心降额", "event_pct": 19.66798532215231, "explain_pct": 15.98513778657111}]};const C={cyan:'#43c7e7',green:'#64dcae',amber:'#ffc26b',pink:'#f68ab0',violet:'#b49aff',muted:'#9db5c7',grid:'rgba(157,181,199,.16)'};Chart.defaults.color='#b9cfdb';Chart.defaults.borderColor=C.grid;Chart.defaults.font.family='-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei",sans-serif';
+const labelPlugin={id:'labels',afterDatasetsDraw(chart,args,opts){if(opts===false)return;const ctx=chart.ctx,boxes=[];ctx.save();const area=chart.chartArea;const hit=b=>boxes.some(a=>!(b.r<a.l||b.l>a.r||b.b<a.t||b.t>a.b));chart.data.datasets.forEach((ds,di)=>{if(ds.hideLabels)return;const meta=chart.getDatasetMeta(di);if(meta.hidden)return;ctx.font=ds.labelFont||'600 10.5px sans-serif';meta.data.forEach((el,i)=>{const v=ds.data[i];if(v===null||v===undefined)return;const txt=ds.labelFormat==='pp'?(Number(v)>=0?'+':'')+Number(v).toFixed(2)+'pp':Number(v).toFixed(1)+'%';const pos=el.tooltipPosition(),w=ctx.measureText(txt).width,h=14;let x=pos.x+(ds.labelOffsetX||0),y=pos.y-8+(ds.labelOffsetY||0),align='center';if(ds.labelPosition==='bar-end'){x=pos.x+(Number(v)<0?-8:8);y=pos.y;align=Number(v)<0?'right':'left'}else if(ds.labelPosition==='bar-inside-end'){x=pos.x+(Number(v)<0?8:-8);y=pos.y;align=Number(v)<0?'left':'right'}const isBarLabel=ds.labelPosition==='bar-end'||ds.labelPosition==='bar-inside-end';const shifts=isBarLabel?[[0,0],[0,-14],[0,14],[0,-28],[0,28]]:[[0,0],[0,-14],[0,14],[-22,0],[22,0],[-22,-14],[22,14]];let chosen=null;for(const [dx,dy] of shifts){const tx=x+dx,ty=y+dy;const l=align==='right'?tx-w:align==='left'?tx:tx-w/2;const box={l:l-3,r:l+w+3,t:ty-h/2-2,b:ty+h/2+2};if(box.l>=area.left-3&&box.r<=area.right+3&&box.t>=area.top-16&&box.b<=area.bottom+8&&!hit(box)){chosen={x:tx,y:ty,box};break}}if(!chosen)return;boxes.push(chosen.box);const pick=value=>Array.isArray(value)?value[i]:value;ctx.fillStyle=pick(ds.labelColor)||pick(ds.borderColor)||pick(ds.backgroundColor)||'#fff';ctx.strokeStyle=ds.labelStrokeColor||'rgba(6,23,37,.98)';ctx.lineWidth=ds.labelStrokeWidth||3;ctx.textAlign=align;ctx.textBaseline='middle';ctx.strokeText(txt,chosen.x,chosen.y);ctx.fillText(txt,chosen.x,chosen.y)})});ctx.restore()}};Chart.register(labelPlugin);
+const base={responsive:true,maintainAspectRatio:false,plugins:{legend:{labels:{usePointStyle:true,boxWidth:9}},tooltip:{mode:'index',intersect:false},labels:{}},scales:{x:{grid:{color:C.grid}},y:{grid:{color:C.grid}}}};
+new Chart(document.getElementById('overallTrend'),{type:'line',data:{labels:D.overall.map(x=>x.t0_month),datasets:[{label:'整体7日提单率',data:D.overall.map(x=>x.apply_rate_pct),borderColor:C.cyan,backgroundColor:'rgba(67,199,231,.16)',fill:true,tension:.28,pointRadius:4}]},options:{...base,scales:{x:base.scales.x,y:{min:62,max:80,ticks:{callback:v=>v+'%'},grid:{color:C.grid}}}}});
+const dirColors={'额度增加':C.cyan,'额度不变':C.amber,'额度降低':C.pink};new Chart(document.getElementById('directionTrend'),{type:'line',data:{labels:["2026-01", "2026-02", "2026-03", "2026-04", "2026-05", "2026-06", "2026-07", "2026-08"],datasets:["\u989d\u5ea6\u589e\u52a0", "\u989d\u5ea6\u4e0d\u53d8", "\u989d\u5ea6\u964d\u4f4e"].map((name,i)=>({label:name,data:["2026-01", "2026-02", "2026-03", "2026-04", "2026-05", "2026-06", "2026-07", "2026-08"].map(m=>{const r=D.monthlyDirection.find(x=>x.t0_month===m&&x.credit_change_type===name);return r?r.apply_rate_pct:null}),borderColor:dirColors[name],tension:.25,pointRadius:3,labelOffsetY:[-12,0,12][i]}))},options:{...base,scales:{x:base.scales.x,y:{min:60,max:82,ticks:{callback:v=>v+'%'},grid:{color:C.grid}}}}});
+const loanColors=['#43c7e7','#64dcae','#ffc26b','#f68ab0','#b49aff','#8fb8ff'];new Chart(document.getElementById('loanTrend'),{type:'line',data:{labels:["2026-01", "2026-02", "2026-03", "2026-04", "2026-05", "2026-06", "2026-07", "2026-08"],datasets:["1\u6b21", "2\u6b21", "3\u6b21", "4\u6b21", "5\u6b21", "6\u6b21\u53ca\u4ee5\u4e0a"].map((name,i)=>({label:name,data:["2026-01", "2026-02", "2026-03", "2026-04", "2026-05", "2026-06", "2026-07", "2026-08"].map(m=>{const r=D.monthlyLoan.find(x=>x.t0_month===m&&x.loan_count_bucket===name);return r?r.apply_rate_pct:null}),borderColor:loanColors[i],backgroundColor:loanColors[i],pointBackgroundColor:loanColors[i],pointBorderColor:loanColors[i],pointBorderWidth:0,pointStyle:'circle',tension:.22,pointRadius:2,hideLabels:true}))},options:{...base,plugins:{...base.plugins,legend:{labels:{usePointStyle:true,pointStyle:'circle',boxWidth:9,boxHeight:9}},labels:false},scales:{x:base.scales.x,y:{min:58,max:90,ticks:{callback:v=>v+'%'},grid:{color:C.grid}}}}});
+new Chart(document.getElementById('loanAttr'),{type:'bar',data:{labels:D.loanAttr.map(x=>x.loan_count_bucket),datasets:[{label:'总归因贡献',data:D.loanAttr.map(x=>x.total_attribution_pp),backgroundColor:D.loanAttr.map((x,i)=>loanColors[i]+'88'),borderColor:D.loanAttr.map((x,i)=>loanColors[i]),borderWidth:1.5,labelFormat:'pp',labelPosition:'bar-inside-end',labelColor:loanColors,labelFont:'800 12px sans-serif',labelStrokeWidth:4}]},options:{...base,indexAxis:'y',layout:{padding:{left:38,right:22}},plugins:{...base.plugins,legend:{display:false}},scales:{x:{ticks:{callback:v=>v+'pp'},grid:{color:C.grid}},y:{grid:{display:false}}}}});
+new Chart(document.getElementById('directionLoanAttr'),{type:'bar',data:{labels:["1\u6b21", "2\u6b21", "3\u6b21", "4\u6b21", "5\u6b21", "6\u6b21\u53ca\u4ee5\u4e0a"],datasets:["\u989d\u5ea6\u589e\u52a0", "\u989d\u5ea6\u4e0d\u53d8", "\u989d\u5ea6\u964d\u4f4e"].map(name=>({label:name,data:["1\u6b21", "2\u6b21", "3\u6b21", "4\u6b21", "5\u6b21", "6\u6b21\u53ca\u4ee5\u4e0a"].map(l=>{const r=D.directionLoanAttr.find(x=>x.credit_change_type===name&&x.loan_count_bucket===l);return r?r.total_attribution_pp:0}),backgroundColor:dirColors[name],labelFormat:'pp'}))},options:{...base,plugins:{...base.plugins,labels:{}},scales:{x:{stacked:true,grid:{display:false}},y:{stacked:true,ticks:{callback:v=>v+'pp'},grid:{color:C.grid}}}}});
+const decAmountColors=['#ff7f86','#f68ab0','#ffc26b','#b49aff','#43c7e7','#64dcae','#8fb8ff'];function amountChart(id,rows,color,labelColors=null){const barColors=labelColors||color;new Chart(document.getElementById(id),{type:'bar',data:{labels:rows.map(x=>x.change_amount_band),datasets:[{label:'总归因贡献',data:rows.map(x=>x.total_attribution_pp),backgroundColor:barColors,labelColor:labelColors||color,labelFormat:'pp'}]},options:{...base,plugins:{...base.plugins,legend:{display:false}},scales:{x:{grid:{display:false},ticks:{maxRotation:35,minRotation:20}},y:{ticks:{callback:v=>Number(v).toFixed(1)+'pp'},grid:{color:C.grid}}}}})}amountChart('incAmount',D.incAmount,C.cyan);amountChart('decAmount',D.decAmount,C.pink,decAmountColors);
+new Chart(document.getElementById('coverage'),{type:'bar',data:{labels:D.coverage.map(x=>x.name),datasets:[{label:'事件覆盖率',data:D.coverage.map(x=>x.event_pct),backgroundColor:C.cyan,labelPosition:'bar-end',labelOffsetY:-5},{label:'整体下降解释度',data:D.coverage.map(x=>x.explain_pct),backgroundColor:C.green,labelPosition:'bar-end',labelOffsetY:5}]},options:{...base,indexAxis:'y',layout:{padding:{right:32}},scales:{x:{ticks:{callback:v=>v+'%'},grid:{color:C.grid}},y:{grid:{display:false}}}}});
+new Chart(document.getElementById('coreTrend'),{type:'line',data:{labels:["2026-01", "2026-02", "2026-03", "2026-04", "2026-05", "2026-06", "2026-07", "2026-08"],datasets:['提额核心','降额核心'].map((name,i)=>({label:name,data:["2026-01", "2026-02", "2026-03", "2026-04", "2026-05", "2026-06", "2026-07", "2026-08"].map(m=>D.monthlyCore.find(x=>x.t0_month===m&&x.group===name).apply_rate_pct),borderColor:i===0?C.cyan:C.pink,tension:.25,pointRadius:4,labelOffsetY:i===0?-11:11}))},options:{...base,scales:{x:base.scales.x,y:{min:55,max:85,ticks:{callback:v=>v+'%'},grid:{color:C.grid}}}}});
+</script></body></html>

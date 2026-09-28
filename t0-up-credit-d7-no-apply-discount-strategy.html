@@ -1,0 +1,1962 @@
+<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>T0提额后未提单用户识别与息费让利策略</title><script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"></script><script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.2.0"></script><style>
+:root{--bg:#07121e;--panel:#0d2030;--panel2:#11283a;--line:#27485d;--text:#eef8ff;--muted:#9db8c9;--cyan:#4dd7ec;--green:#58d6a4;--amber:#ffbe62;--pink:#ff7f9f;--violet:#b19cff}*{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;background:radial-gradient(circle at 12% -8%,rgba(77,215,236,.14),transparent 30rem),radial-gradient(circle at 90% 5%,rgba(177,156,255,.10),transparent 30rem),var(--bg);color:var(--text);font:15px/1.68 -apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei",sans-serif}.wrap{width:min(1200px,calc(100% - 36px));margin:auto;padding:36px 0 70px}.hero{padding:44px 42px 38px;text-align:center;border:1px solid var(--line);border-radius:24px;background:linear-gradient(135deg,rgba(17,40,58,.96),rgba(8,25,38,.94))}.eyebrow{color:var(--cyan);font-size:13px;font-weight:800;letter-spacing:.14em}h1{margin:10px 0 12px;font-size:clamp(30px,4.4vw,50px);line-height:1.16}.subtitle{max-width:920px;margin:auto;color:#bed3df;font-size:17px}.nav{display:flex;justify-content:center;gap:8px;flex-wrap:wrap;margin-top:22px}.nav a,.source-link{color:#dffaff;text-decoration:none;border:1px solid #315a72;background:#102a3c;border-radius:999px;padding:7px 12px;font-size:13px}section{margin-top:26px;padding:28px;border:1px solid var(--line);border-radius:20px;background:rgba(13,32,48,.94)}h2{margin:0 0 7px;font-size:25px}h3{margin:0 0 7px;color:#def5ff;font-size:18px}p{margin:7px 0}.lead,.small{color:var(--muted)}.kpis{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:12px;margin-top:22px}.kpi,.card,.chart-card{border:1px solid #294c61;border-radius:16px;background:rgba(7,24,37,.68)}.kpi{padding:18px}.kpi .v{font-size:28px;font-weight:850;line-height:1.2}.kpi .l{margin-top:6px;color:var(--muted);font-size:13px}.cyan{color:var(--cyan)}.pink{color:var(--pink)}.amber{color:var(--amber)}.green{color:var(--green)}.grid2{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}.grid3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px}.card,.chart-card{padding:18px}.chart-card p{color:var(--muted);font-size:13px}.chart{position:relative;height:340px}.chart.tall{height:400px}.callout{margin-top:16px;padding:16px 18px;border-left:4px solid var(--cyan);border-radius:10px;background:rgba(77,215,236,.08)}.callout.warn{border-color:var(--amber);background:rgba(255,190,98,.08)}.callout.good{border-color:var(--green);background:rgba(88,214,164,.08)}.source-row{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-top:16px;padding-top:14px;border-top:1px solid #28485b;color:var(--muted);font-size:13px}.flow{display:grid;grid-template-columns:1fr auto 1fr auto 1fr;gap:12px;align-items:stretch;margin-top:18px}.node{padding:16px;text-align:center;border:1px solid #2b5269;border-radius:14px;background:#0a1d2b}.node b{display:block;color:var(--cyan);font-size:18px}.arrow{display:grid;place-items:center;color:var(--amber);font-size:25px}ul,ol{padding-left:22px}li{margin:5px 0}.table-wrap{overflow:auto;border:1px solid var(--line);border-radius:12px;margin-top:14px}table{width:100%;min-width:900px;border-collapse:collapse}th,td{padding:10px 11px;border-bottom:1px solid #28485b;text-align:right}th:first-child,td:first-child{text-align:left}th{background:#10283a;color:#b9d7e6}td{color:#dcebf3}.tag{display:inline-flex;padding:3px 8px;border-radius:999px;font-size:12px;font-weight:750}.tag.ok{color:var(--green);background:rgba(88,214,164,.12)}.tag.wait{color:var(--amber);background:rgba(255,190,98,.12)}.tag.test{color:var(--pink);background:rgba(255,127,159,.12)}details{margin-top:14px;border:1px solid var(--line);border-radius:12px}summary{cursor:pointer;padding:13px 15px;color:var(--cyan);font-weight:750}footer{padding-top:28px;text-align:center;color:#7897aa;font-size:12px}@media(max-width:900px){.kpis{grid-template-columns:repeat(2,1fr)}.grid2,.grid3,.flow{grid-template-columns:1fr}.arrow{transform:rotate(90deg)}section{padding:20px}}@media(max-width:520px){.kpis{grid-template-columns:1fr}.wrap{width:calc(100% - 20px)}}
+</style></head><body><main class="wrap"><header class="hero"><div class="eyebrow">EVIDENCE BRIEF · 2026 JAN–AUG</div><h1>T0提额后未提单用户识别<br>历史证据与息费让利实施方案</h1><p class="subtitle">基于四份额度变化报告，把“为什么聚焦前3次、为什么先做息费让利、哪些结论仍需验证”收敛成一条可落地的证据链。</p><nav class="nav"><a href="#conclusion">结论</a><a href="#evidence">证据链</a><a href="#target">目标客群</a><a href="#behavior">行为机制</a><a href="#model">预测模型</a><a href="#strategy">实施策略</a><a href="#matrix">论据矩阵</a></nav></header>
+
+<section id="conclusion"><h2>一、汇报结论</h2><p class="lead">短期不做全量产品改造：先用模型识别“提额后高概率不提单”且风险、利润可控的用户，通过息费让利做小流量随机对照实验。</p><div class="kpis"><div class="kpi"><div class="v pink">-10.83pp</div><div class="l">整体7日提单率变化</div></div><div class="kpi"><div class="v amber">74.6%</div><div class="l">提额客群在同期下降统计分解中的占比</div></div><div class="kpi"><div class="v cyan">81.9%</div><div class="l">前3次占提额客群同期下降贡献</div></div><div class="kpi"><div class="v cyan">69.7%</div><div class="l">1–2次占提额客群同期下降贡献</div></div><div class="kpi"><div class="v green">MX$1,532</div><div class="l">1–2次提额用户上一笔放款均值</div></div></div><div class="grid3" style="margin-top:16px"><div class="card"><h3>1｜聚焦前3次</h3><p>提额客群的同期下降统计贡献中，前3次占81.9%；其中1–2次已占69.7%，是第一优先级。</p></div><div class="card"><h3>2｜先做息费让利</h3><p>产品双选项需要产品部门开发；短期先对模型圈选用户提供更低息费，验证是否存在增量提单。</p></div><div class="card"><h3>3｜不把假设当结论</h3><p>当前只能证明流失发生在进页后。风险更低、息费敏感和让利效果仍需补数或A/B实验。</p></div></div><div class="callout"><b>最终目标：</b>建立“提额事件→不提单概率→风险/利润二次过滤→息费让利→增量提单与增量利润评估”的闭环。</div></section>
+
+<section id="evidence"><h2>二、证据链：提额未带来预期的提单增长</h2><p class="lead">三类客群的7日提单率都在下降，其中提额客群同期降幅最大。提额用户是后续需要重点识别并提升提单率的人群。</p><div class="grid2"><div class="chart-card"><h3>1–8月三类客群7日提单率</h3><div class="chart"><canvas id="directionTrend"></canvas></div></div><div class="chart-card"><h3>8月较1月：各客群的同期下降统计贡献</h3><div class="chart"><canvas id="directionAttr"></canvas></div></div></div><div class="callout warn"><b>数据结论：</b>提额客群7日提单率<b>77.9%→63.7%</b>，变化<b>-14.24pp</b>；在1月到8月的整体下降统计分解中，该客群贡献<b>-8.09pp</b>，占<b>74.6%</b>。</div><p class="small">本报告中的“归因/贡献”均指1月至8月提单率变化的统计分解，不是“有提额”与“无提额”的随机对照因果效果。</p><div class="source-row"><span>数据来源：</span><a class="source-link" href="https://wangchl03.github.io/report/t0-credit-change-d7-exact-transition-attribution.html" target="_blank">额度方向与7日提单率报告 →</a><a class="source-link" href="https://wangchl03.github.io/report/t0-credit-change-d7-apply-attribution.html" target="_blank">额度区间与具体客群下钻 →</a></div></section>
+
+<section id="target"><h2>三、为什么聚焦前3次，并以1–2次为主</h2><p class="lead">这个范围同时满足“负向归因集中、用户规模足够、上一笔放款件均相对较低”三个条件。</p><div class="grid2"><div class="chart-card"><h3>提额用户：各借款次数提单率变化与归因</h3><div class="chart tall"><canvas id="loanAttr"></canvas></div></div><div class="chart-card"><h3>提额事件结构：1–2次已是主体</h3><div class="chart tall"><canvas id="eventShare"></canvas></div></div></div><div class="grid2" style="margin-top:16px"><div class="chart-card"><h3>按借款次数：上一笔放款件均</h3><div class="chart"><canvas id="unitAmount"></canvas></div><p>1–2次加权均值MX$1,532，4次及以上MX$3,860，前者低60.3%。</p></div><div class="card"><h3>定量收敛</h3><ul><li>前3次提额事件占比：1月71.7%，8月74.1%。</li><li>前3次负向归因-6.62pp，占提额负向归因81.9%，占整体下降61.1%。</li><li>1–2次提额事件占比：1月57.9%，8月62.2%。</li><li>1–2次负向归因-5.64pp，已占提额负向归因69.7%。</li></ul><div class="callout good"><b>实施优先级：</b>模型可以覆盖前3次，但息费实验第一批建议优先从1–2次中的高概率不提单用户开始。</div></div></div><div class="source-row"><span>数据来源：</span><a class="source-link" href="https://wangchl03.github.io/report/t0-credit-change-loan-count-d7-apply-attribution.html" target="_blank">借款次数×变额幅度归因报告 →</a></div></section>
+
+<section id="behavior"><h2>四、行为证据：用户进了页面，但没有确认</h2><p class="lead">额度已经提升，进页行为也没有减少；主要损失发生在“进入提单页→确认提单”之间。</p><div class="grid2"><div class="chart-card"><h3>核心提额客群：1月与8月行为链路</h3><div class="chart"><canvas id="behaviorCompare"></canvas></div></div><div class="card"><h3>可以证明什么</h3><ul><li>7日提单率：76.3%→57.2%，-19.07pp。</li><li>进页率：90.8%→95.4%，反而提升。</li><li>确认率：76.2%→58.0%，与提单率同向大幅下降。</li><li>切金额和看还款计划占比基本没有下降，用户仍在比较方案。</li></ul><div class="callout warn"><b>证据边界：</b>可以把问题定位到产品方案接受阶段，但现有埋点不能证明息费是唯一原因。这正是为什么需要息费A/B实验。</div></div></div><div class="source-row"><span>数据来源：</span><a class="source-link" href="https://wangchl03.github.io/report/t0-credit-change-d7-behavior-mechanism.html" target="_blank">额度变化×行为传导机制报告 →</a></div></section>
+
+<section id="model"><h2>五、预测模型：找出提额后高概率不提单用户</h2><p class="lead">本文档完成的是建模证据和实施定义，不伪装成已经训练完成的模型。</p><div class="flow"><div class="node"><b>样本</b>提额的T0事件<br>优先前3次</div><div class="arrow">→</div><div class="node"><b>标签</b>T0至D+7<br>是否未提单</div><div class="arrow">→</div><div class="node"><b>输出</b>不提单概率<br>与主要特征</div></div><div class="grid3" style="margin-top:16px"><div class="card"><h3>建模时已发生的信息</h3><ul><li>实时风险分与资质层</li><li>当前/上笔额度、提额额度与比例</li><li>成功借款次数、获额次数</li><li>最近1–3次提单、金额、期次和使用率</li></ul></div><div class="card"><h3>不能穿越</h3><ul><li>触达后的提单结果</li><li>后续放款金额</li><li>后续还款、逾期和盈利</li><li>触达后才发生的页面行为</li></ul></div><div class="card"><h3>模型验收</h3><ul><li>时间外验证</li><li>Top 10% / 20% / 30%不提单率</li><li>排序区分度与概率校准</li><li>各风险层、借款次数的稳定性</li></ul></div></div><div class="callout">模型筛选后还要做<b>风险与利润二次过滤</b>：不对所有高概率不提单用户让利，只对让利后仍有预期利润空间的用户进行实验。</div></section>
+
+<section id="strategy"><h2>六、实施策略：短期息费让利，中期两个产品选择</h2><div class="grid2"><div class="card"><h3>短期｜息费让利</h3><ol><li>模型筛选提额后高概率不提单用户。</li><li>用风险、历史盈利和预估让利成本二次过滤。</li><li>随机分为对照组和息费让利组。</li><li>同时观察增量提单、放款、到期盈利和逾期。</li></ol><p class="small">这是目前不依赖大规模产品改造、最容易落地的路径。</p></div><div class="card"><h3>中期｜两个产品选择</h3><ol><li>一个保留当前方案。</li><li>另一个在息费、期次或每期还款额上形成差异。</li><li>根据历史金额、期次和使用率做产品推荐。</li><li>保留用户自主选择。</li></ol><p class="small">该方案需要产品部门配合页面和推荐逻辑改造，当前排期紧张，不作为第一阶段依赖。</p></div></div><div class="callout good"><b>建议顺序：</b>先用1–2次借款用户做小流量息费实验，确认存在真实增量收益后，再扩展到前3次并推进双产品选择。</div></section>
+
+<section id="matrix"><h2>七、观点—数据—状态矩阵</h2><p class="lead">每个观点都标明是“已验证”还是“待验证”，防止把业务猜想写成历史事实。</p><div class="table-wrap"><table><thead><tr><th>观点</th><th>数据支持/缺口</th><th>状态</th><th>来源</th></tr></thead><tbody><tr><td>提额未带来预期的提单增长</td><td>提额客群7日提单率77.9%→63.7%；同期下降统计贡献-8.09pp，占整体下降74.6%</td><td>已验证</td><td>额度方向报告</td></tr><tr><td>目标集中于前3次借款</td><td>前3次占提额事件71.7%→74.1%；贡献提额负向归因81.9%</td><td>已验证</td><td>借款次数报告</td></tr><tr><td>其中以1–2次为主</td><td>1–2次占提额事件57.9%→62.2%；贡献提额负向归因69.7%</td><td>已验证</td><td>借款次数报告</td></tr><tr><td>主要损失发生在进页后</td><td>核心提额进页率90.8%→95.4%，确认率76.2%→58.0%</td><td>已验证</td><td>行为机制报告</td></tr><tr><td>1–2次用户件均较低</td><td>上一笔放款加权均值MX$1,532，较4次及以上MX$3,860低60.3%</td><td>本次补充验证</td><td>同口径T0事件补数</td></tr><tr><td>提额用户风险更低</td><td>四份报告未包含实时风险分数分布，建模前需按订单ID关联当时模型分验证</td><td>待验证</td><td>不可直接作为已证实结论</td></tr><tr><td>息费让利能提升提单</td><td>现有埋点只能定位进页后流失，无法证明息费是唯一原因；必须通过随机对照实验验证</td><td>待实验</td><td>策略假设</td></tr></tbody></table></div><div class="callout warn"><b>启动建模前必须补齐：</b>按本次T0订单ID关联当时实时风险分；补充当时展示的总息费、期次和每期还款额；根据到期盈利口径测算每个让利档的盈亏平衡点。</div><details><summary>查看提额用户按借款次数的件均明细</summary><div class="table-wrap"><table><thead><tr><th>借款次数</th><th>事件数</th><th>用户数</th><th>全期提单率</th><th>上笔放款均值</th><th>上笔放款中位数</th><th>上笔获额均值</th><th>当前获额均值</th></tr></thead><tbody><tr><td>1次</td><td>37,660</td><td>37,063</td><td>68.39%</td><td>MX$1,484</td><td>MX$600</td><td>MX$1,482</td><td>MX$2,768</td></tr><tr><td>2次</td><td>20,244</td><td>19,935</td><td>70.17%</td><td>MX$1,622</td><td>MX$900</td><td>MX$1,755</td><td>MX$3,073</td></tr><tr><td>3次</td><td>12,481</td><td>12,280</td><td>71.92%</td><td>MX$2,166</td><td>MX$1,200</td><td>MX$2,463</td><td>MX$4,492</td></tr><tr><td>4次</td><td>8,348</td><td>8,207</td><td>72.65%</td><td>MX$2,587</td><td>MX$1,400</td><td>MX$3,008</td><td>MX$5,166</td></tr><tr><td>5次</td><td>5,930</td><td>5,828</td><td>73.19%</td><td>MX$3,087</td><td>MX$1,700</td><td>MX$3,642</td><td>MX$5,993</td></tr><tr><td>6次及以上</td><td>14,414</td><td>7,978</td><td>72.94%</td><td>MX$4,916</td><td>MX$2,970</td><td>MX$6,008</td><td>MX$9,123</td></tr></tbody></table></div></details></section>
+
+<section id="sql"><h2>八、附录：完整可复现PGSQL</h2><details><summary>展开完整PGSQL（默认折叠）</summary><pre>-- =============================================================================
+-- T0额度变化与获额后7日提单率：用户 × T0事件母表
+-- 时间：2026-01-01 至 2026-09-20（含）
+-- 20秒批次：相邻获额时间差&lt;=20秒归为同批，批内按获额时间、订单号倒序取第一笔。
+-- T0至D+7首次提单：apply_time &gt;= vir_time 且早于T0自然日D+8零点。
+-- 多T0归属：同一订单归给其提单前最近一次T0事件，避免重复。
+-- =============================================================================
+SET search_path TO wangchuanliang, public;
+SET statement_timeout = 0;
+DROP TABLE IF EXISTS tmp_t0_credit_change_d7_apply;
+CREATE TEMP TABLE tmp_t0_credit_change_d7_apply AS
+WITH params AS (
+    SELECT DATE &#x27;2026-01-01&#x27; AS start_date,
+           DATE &#x27;2026-09-21&#x27; AS end_date
+), raw_offer AS (
+    SELECT DISTINCT ON (v.user_id, v.serial_id)
+        v.user_id,
+        v.serial_id AS credit_serial_id,
+        v.vir_date::date AS vir_date,
+        TO_TIMESTAMP(v.vir_unix) AS vir_time,
+        v.max_credit_apply_amt::numeric AS current_credit_amt
+    FROM wangchuanliang.order_vir_f_copy v
+    JOIN wangchuanliang.side_recycle_type_copy r
+      ON r.serial_id = v.serial_id
+    CROSS JOIN params p
+    WHERE v.is_pass1 = 1
+      AND v.loan_type_code = 2
+      AND r.recycle_type = 3
+      AND v.vir_date &gt;= p.start_date - 1
+      AND v.vir_date &lt; p.end_date
+    ORDER BY v.user_id, v.serial_id, v.vir_unix DESC
+), lagged_offer AS (
+    SELECT r.*,
+      LAG(r.vir_time) OVER (
+        PARTITION BY r.user_id ORDER BY r.vir_time, r.credit_serial_id
+      ) AS prev_vir_time
+    FROM raw_offer r
+), batched_offer AS (
+    SELECT l.*,
+      SUM(
+        CASE WHEN l.prev_vir_time IS NULL
+                   OR l.vir_time - l.prev_vir_time &gt; INTERVAL &#x27;20 seconds&#x27;
+             THEN 1 ELSE 0 END
+      ) OVER (
+        PARTITION BY l.user_id
+        ORDER BY l.vir_time, l.credit_serial_id
+        ROWS UNBOUNDED PRECEDING
+      ) AS batch_id
+    FROM lagged_offer l
+), dedup_offer AS (
+    SELECT user_id, credit_serial_id, vir_date, vir_time,
+           current_credit_amt, batch_id
+    FROM (
+      SELECT b.*,
+        ROW_NUMBER() OVER (
+          PARTITION BY b.user_id, b.batch_id
+          ORDER BY b.vir_time DESC, b.credit_serial_id DESC
+        ) AS batch_rn
+      FROM batched_offer b
+    ) x
+    CROSS JOIN params p
+    WHERE x.batch_rn = 1
+      AND x.vir_date &gt;= p.start_date
+      AND x.vir_date &lt; p.end_date
+), candidate_users AS (
+    SELECT DISTINCT user_id FROM dedup_offer
+), all_orders AS (
+    SELECT o.user_id, o.serial_id, o.apply_time, o.apply_date,
+           o.remit_time, o.remit_amt, o.is_remit,
+           o.repaid_time, o.repaid_date::date AS repaid_date,
+           o.is_repaid, o.loan_status_code
+    FROM wangchuanliang.order_loan_f_v2_copy o
+    JOIN candidate_users u ON u.user_id = o.user_id
+), clean_settlement AS (
+    SELECT o.user_id, o.serial_id AS settled_serial_id,
+           o.remit_amt::numeric AS settled_remit_amt,
+           o.repaid_time, o.repaid_date
+    FROM all_orders o
+    WHERE o.is_remit = 1
+      AND COALESCE(o.remit_amt, 0) &gt; 0
+      AND (o.is_repaid = 1 OR o.loan_status_code = 7)
+      AND o.repaid_time &gt; TIMESTAMP &#x27;2000-01-01 00:00:00&#x27;
+      AND NOT EXISTS (
+        SELECT 1
+        FROM all_orders x
+        WHERE x.user_id = o.user_id
+          AND x.serial_id &lt;&gt; o.serial_id
+          AND x.apply_time &lt; o.repaid_time
+          AND (
+            x.loan_status_code IN (5, 8)
+            OR (x.loan_status_code = 7 AND x.repaid_time &gt; o.repaid_time)
+          )
+      )
+), offer_settlement_pair AS (
+    SELECT e.user_id, e.credit_serial_id, e.vir_date, e.vir_time,
+           e.current_credit_amt, e.batch_id,
+           s.settled_serial_id, s.settled_remit_amt, s.repaid_time,
+      ROW_NUMBER() OVER (
+        PARTITION BY e.user_id, e.credit_serial_id, e.vir_time
+        ORDER BY s.repaid_time DESC, s.settled_serial_id DESC
+      ) AS settlement_rn
+    FROM dedup_offer e
+    JOIN clean_settlement s
+      ON s.user_id = e.user_id
+     AND s.repaid_date = e.vir_date
+     AND e.vir_time &gt;= s.repaid_time
+), strict_t0 AS (
+    SELECT user_id, credit_serial_id, vir_date, vir_time,
+           current_credit_amt, batch_id,
+           settled_serial_id, settled_remit_amt, repaid_time
+    FROM offer_settlement_pair
+    WHERE settlement_rn = 1
+), previous_credit_ranked AS (
+    SELECT s.user_id, s.credit_serial_id, s.vir_time, s.settled_serial_id,
+           v.max_credit_apply_amt::numeric AS previous_credit_amt,
+      ROW_NUMBER() OVER (
+        PARTITION BY s.user_id, s.credit_serial_id, s.vir_time
+        ORDER BY v.vir_unix DESC, v.serial_id DESC
+      ) AS rn
+    FROM strict_t0 s
+    JOIN wangchuanliang.order_vir_f_copy v
+      ON v.serial_id = s.settled_serial_id
+     AND v.is_pass1 = 1
+), previous_credit AS (
+    SELECT user_id, credit_serial_id, vir_time, settled_serial_id,
+           previous_credit_amt
+    FROM previous_credit_ranked
+    WHERE rn = 1
+), loan_count_at_settlement AS (
+    SELECT s.user_id, s.credit_serial_id, s.vir_time,
+           COUNT(DISTINCT h.serial_id) AS successful_loan_n
+    FROM strict_t0 s
+    JOIN all_orders h
+      ON h.user_id = s.user_id
+     AND h.is_remit = 1
+     AND COALESCE(h.remit_amt, 0) &gt; 0
+     AND h.remit_time IS NOT NULL
+     AND h.remit_time &lt;= s.repaid_time
+    GROUP BY s.user_id, s.credit_serial_id, s.vir_time
+), event_base AS (
+    SELECT s.user_id, s.credit_serial_id, s.vir_date, s.vir_time,
+           s.repaid_time, s.settled_serial_id,
+           s.settled_remit_amt AS previous_remit_amt,
+           p.previous_credit_amt,
+           s.current_credit_amt,
+           s.current_credit_amt - p.previous_credit_amt AS credit_change_amt,
+           s.current_credit_amt / NULLIF(p.previous_credit_amt, 0) - 1
+             AS credit_change_rate,
+           s.settled_remit_amt / NULLIF(p.previous_credit_amt, 0)
+             AS previous_util_ratio,
+           l.successful_loan_n
+    FROM strict_t0 s
+    JOIN previous_credit p
+      ON p.user_id = s.user_id
+     AND p.credit_serial_id = s.credit_serial_id
+     AND p.vir_time = s.vir_time
+     AND p.settled_serial_id = s.settled_serial_id
+    JOIN loan_count_at_settlement l
+      ON l.user_id = s.user_id
+     AND l.credit_serial_id = s.credit_serial_id
+     AND l.vir_time = s.vir_time
+    WHERE s.current_credit_amt &gt; 0
+      AND p.previous_credit_amt &gt; 0
+      AND s.settled_remit_amt &gt; 0
+), candidate_d7_orders AS (
+    SELECT e.user_id, e.credit_serial_id, e.vir_time,
+           o.serial_id AS apply_serial_id, o.apply_time,
+      ROW_NUMBER() OVER (
+        PARTITION BY o.serial_id
+        ORDER BY e.vir_time DESC, e.credit_serial_id DESC
+      ) AS event_match_rn
+    FROM event_base e
+    JOIN all_orders o
+      ON o.user_id = e.user_id
+     AND o.apply_time &gt;= e.vir_time
+     AND o.apply_time &lt; e.vir_date + 8
+), assigned_d7_orders AS (
+    SELECT *
+    FROM candidate_d7_orders
+    WHERE event_match_rn = 1
+), first_d7_apply AS (
+    SELECT user_id, credit_serial_id, vir_time,
+           apply_serial_id, apply_time
+    FROM (
+      SELECT a.*,
+        ROW_NUMBER() OVER (
+          PARTITION BY a.user_id, a.credit_serial_id, a.vir_time
+          ORDER BY a.apply_time, a.apply_serial_id
+        ) AS rn
+      FROM assigned_d7_orders a
+    ) x
+    WHERE rn = 1
+)
+SELECT
+    DATE_TRUNC(&#x27;month&#x27;, e.vir_date)::date AS t0_month,
+    e.user_id,
+    e.credit_serial_id,
+    e.vir_date,
+    e.vir_time,
+    e.repaid_time,
+    e.settled_serial_id,
+    e.previous_credit_amt,
+    e.current_credit_amt,
+    e.credit_change_amt,
+    e.credit_change_rate,
+    CASE WHEN e.credit_change_amt &lt; 0 THEN &#x27;额度降低&#x27;
+         WHEN e.credit_change_amt = 0 THEN &#x27;额度不变&#x27;
+         ELSE &#x27;额度增加&#x27; END AS credit_change_type,
+    CASE
+      WHEN e.credit_change_amt &lt; -1000 THEN &#x27;降额&gt;1000&#x27;
+      WHEN e.credit_change_amt &lt; 0 THEN &#x27;降额≤1000&#x27;
+      WHEN e.credit_change_amt = 0 THEN &#x27;额度不变&#x27;
+      WHEN e.credit_change_amt &lt;= 150 THEN &#x27;提额≤150&#x27;
+      WHEN e.credit_change_amt &lt;= 1200 THEN &#x27;提额(150,1200]&#x27;
+      ELSE &#x27;提额&gt;1200&#x27;
+    END AS change_amount_bucket,
+    CASE
+      WHEN e.credit_change_rate &lt;= -0.50 THEN &#x27;降幅50%及以上&#x27;
+      WHEN e.credit_change_rate &lt;= -0.20 THEN &#x27;降幅20%-50%&#x27;
+      WHEN e.credit_change_rate &lt; 0 THEN &#x27;降幅0%-20%&#x27;
+      WHEN e.credit_change_rate = 0 THEN &#x27;额度不变&#x27;
+      WHEN e.credit_change_rate &lt; 0.20 THEN &#x27;涨幅0%-20%&#x27;
+      WHEN e.credit_change_rate &lt; 0.50 THEN &#x27;涨幅20%-50%&#x27;
+      ELSE &#x27;涨幅50%及以上&#x27;
+    END AS change_rate_bucket,
+    e.previous_remit_amt,
+    e.previous_util_ratio,
+    CASE WHEN e.previous_util_ratio &lt; 0.800 THEN &#x27;&lt;80%&#x27;
+         WHEN e.previous_util_ratio &lt; 0.999 THEN &#x27;80%-100%&#x27;
+         WHEN e.previous_util_ratio &lt;= 1.001 THEN &#x27;接近100%&#x27;
+         ELSE &#x27;&gt;100%&#x27; END AS previous_util_band,
+    e.successful_loan_n,
+    CASE WHEN e.successful_loan_n = 1 THEN &#x27;1次&#x27;
+         WHEN e.successful_loan_n = 2 THEN &#x27;2次&#x27;
+         WHEN e.successful_loan_n = 3 THEN &#x27;3次&#x27;
+         WHEN e.successful_loan_n = 4 THEN &#x27;4次&#x27;
+         WHEN e.successful_loan_n = 5 THEN &#x27;5次&#x27;
+         ELSE &#x27;6次及以上&#x27; END AS loan_count_bucket,
+    CASE WHEN a.apply_serial_id IS NULL THEN 0 ELSE 1 END AS has_d7_apply,
+    a.apply_serial_id,
+    a.apply_time AS d7_apply_time,
+    CASE WHEN a.apply_time IS NULL THEN NULL
+         ELSE EXTRACT(EPOCH FROM (a.apply_time - e.vir_time)) / 60.0
+    END AS minutes_to_apply
+FROM event_base e
+LEFT JOIN first_d7_apply a
+  ON a.user_id = e.user_id
+ AND a.credit_serial_id = e.credit_serial_id
+ AND a.vir_time = e.vir_time;
+
+
+-- 额度方向与归因：overall
+SELECT 
+  COUNT(*) AS event_n,
+  COUNT(DISTINCT user_id) AS user_n,
+  SUM(has_d7_apply) AS d7_apply_n,
+  ROUND(100.0 * SUM(has_d7_apply) / NULLIF(COUNT(*), 0), 2)
+    AS d7_apply_rate_pct,
+  ROUND(AVG(previous_credit_amt), 2) AS avg_previous_credit_amt,
+  ROUND(AVG(current_credit_amt), 2) AS avg_current_credit_amt,
+  ROUND(AVG(credit_change_amt), 2) AS avg_credit_change_amt,
+  ROUND(100.0 * AVG(credit_change_rate), 2) AS avg_credit_change_rate_pct,
+  ROUND(100.0 * SUM(previous_remit_amt) / NULLIF(SUM(previous_credit_amt), 0), 2)
+    AS previous_utilization_rate_pct,
+  ROUND(AVG(CASE WHEN has_d7_apply=1 THEN minutes_to_apply END), 2)
+    AS avg_minutes_to_apply
+ FROM tmp_t0_credit_change_d7_apply;
+
+
+-- 额度方向与归因：monthly_overall
+SELECT TO_CHAR(t0_month, &#x27;YYYY-MM&#x27;) AS t0_month, 
+  COUNT(*) AS event_n,
+  COUNT(DISTINCT user_id) AS user_n,
+  SUM(has_d7_apply) AS d7_apply_n,
+  ROUND(100.0 * SUM(has_d7_apply) / NULLIF(COUNT(*), 0), 2)
+    AS d7_apply_rate_pct,
+  ROUND(AVG(previous_credit_amt), 2) AS avg_previous_credit_amt,
+  ROUND(AVG(current_credit_amt), 2) AS avg_current_credit_amt,
+  ROUND(AVG(credit_change_amt), 2) AS avg_credit_change_amt,
+  ROUND(100.0 * AVG(credit_change_rate), 2) AS avg_credit_change_rate_pct,
+  ROUND(100.0 * SUM(previous_remit_amt) / NULLIF(SUM(previous_credit_amt), 0), 2)
+    AS previous_utilization_rate_pct,
+  ROUND(AVG(CASE WHEN has_d7_apply=1 THEN minutes_to_apply END), 2)
+    AS avg_minutes_to_apply
+,
+        ROUND(100.0 * SUM(has_d7_apply) / NULLIF(COUNT(*), 0)
+          - LAG(100.0 * SUM(has_d7_apply) / NULLIF(COUNT(*), 0))
+            OVER (ORDER BY t0_month), 2) AS mom_change_pp
+      FROM tmp_t0_credit_change_d7_apply
+      GROUP BY t0_month ORDER BY t0_month;
+
+
+-- 额度方向与归因：direction_overall
+SELECT credit_change_type, 
+  COUNT(*) AS event_n,
+  COUNT(DISTINCT user_id) AS user_n,
+  SUM(has_d7_apply) AS d7_apply_n,
+  ROUND(100.0 * SUM(has_d7_apply) / NULLIF(COUNT(*), 0), 2)
+    AS d7_apply_rate_pct,
+  ROUND(AVG(previous_credit_amt), 2) AS avg_previous_credit_amt,
+  ROUND(AVG(current_credit_amt), 2) AS avg_current_credit_amt,
+  ROUND(AVG(credit_change_amt), 2) AS avg_credit_change_amt,
+  ROUND(100.0 * AVG(credit_change_rate), 2) AS avg_credit_change_rate_pct,
+  ROUND(100.0 * SUM(previous_remit_amt) / NULLIF(SUM(previous_credit_amt), 0), 2)
+    AS previous_utilization_rate_pct,
+  ROUND(AVG(CASE WHEN has_d7_apply=1 THEN minutes_to_apply END), 2)
+    AS avg_minutes_to_apply
+,
+        ROUND(100.0 * COUNT(*) / SUM(COUNT(*)) OVER (), 2) AS event_share_pct,
+        ROUND(100.0 * SUM(has_d7_apply) / SUM(SUM(has_d7_apply)) OVER (), 2)
+          AS apply_share_pct
+      FROM tmp_t0_credit_change_d7_apply
+      GROUP BY credit_change_type ORDER BY CASE credit_change_type
+  WHEN &#x27;额度降低&#x27; THEN 1 WHEN &#x27;额度不变&#x27; THEN 2 ELSE 3 END;
+
+
+-- 额度方向与归因：monthly_direction
+SELECT TO_CHAR(t0_month, &#x27;YYYY-MM&#x27;) AS t0_month,
+        credit_change_type, 
+  COUNT(*) AS event_n,
+  COUNT(DISTINCT user_id) AS user_n,
+  SUM(has_d7_apply) AS d7_apply_n,
+  ROUND(100.0 * SUM(has_d7_apply) / NULLIF(COUNT(*), 0), 2)
+    AS d7_apply_rate_pct,
+  ROUND(AVG(previous_credit_amt), 2) AS avg_previous_credit_amt,
+  ROUND(AVG(current_credit_amt), 2) AS avg_current_credit_amt,
+  ROUND(AVG(credit_change_amt), 2) AS avg_credit_change_amt,
+  ROUND(100.0 * AVG(credit_change_rate), 2) AS avg_credit_change_rate_pct,
+  ROUND(100.0 * SUM(previous_remit_amt) / NULLIF(SUM(previous_credit_amt), 0), 2)
+    AS previous_utilization_rate_pct,
+  ROUND(AVG(CASE WHEN has_d7_apply=1 THEN minutes_to_apply END), 2)
+    AS avg_minutes_to_apply
+,
+        ROUND(100.0 * COUNT(*) / SUM(COUNT(*)) OVER (PARTITION BY t0_month), 2)
+          AS event_share_pct,
+        ROUND(100.0 * SUM(has_d7_apply) / SUM(COUNT(*)) OVER (PARTITION BY t0_month), 2)
+          AS contribution_to_overall_rate_pp
+      FROM tmp_t0_credit_change_d7_apply
+      GROUP BY t0_month, credit_change_type
+      ORDER BY t0_month, CASE credit_change_type
+  WHEN &#x27;额度降低&#x27; THEN 1 WHEN &#x27;额度不变&#x27; THEN 2 ELSE 3 END;
+
+
+-- 额度方向与归因：amount_bucket_overall
+SELECT change_amount_bucket, 
+  COUNT(*) AS event_n,
+  COUNT(DISTINCT user_id) AS user_n,
+  SUM(has_d7_apply) AS d7_apply_n,
+  ROUND(100.0 * SUM(has_d7_apply) / NULLIF(COUNT(*), 0), 2)
+    AS d7_apply_rate_pct,
+  ROUND(AVG(previous_credit_amt), 2) AS avg_previous_credit_amt,
+  ROUND(AVG(current_credit_amt), 2) AS avg_current_credit_amt,
+  ROUND(AVG(credit_change_amt), 2) AS avg_credit_change_amt,
+  ROUND(100.0 * AVG(credit_change_rate), 2) AS avg_credit_change_rate_pct,
+  ROUND(100.0 * SUM(previous_remit_amt) / NULLIF(SUM(previous_credit_amt), 0), 2)
+    AS previous_utilization_rate_pct,
+  ROUND(AVG(CASE WHEN has_d7_apply=1 THEN minutes_to_apply END), 2)
+    AS avg_minutes_to_apply
+,
+        ROUND(100.0 * COUNT(*) / SUM(COUNT(*)) OVER (), 2) AS event_share_pct
+      FROM tmp_t0_credit_change_d7_apply
+      GROUP BY change_amount_bucket ORDER BY CASE change_amount_bucket
+  WHEN &#x27;提额≤150&#x27; THEN 1 WHEN &#x27;提额(150,1200]&#x27; THEN 2
+  WHEN &#x27;提额&gt;1200&#x27; THEN 3 WHEN &#x27;额度不变&#x27; THEN 4
+  WHEN &#x27;降额≤1000&#x27; THEN 5 ELSE 6 END;
+
+
+-- 额度方向与归因：monthly_amount_bucket
+SELECT TO_CHAR(t0_month, &#x27;YYYY-MM&#x27;) AS t0_month,
+        change_amount_bucket, 
+  COUNT(*) AS event_n,
+  COUNT(DISTINCT user_id) AS user_n,
+  SUM(has_d7_apply) AS d7_apply_n,
+  ROUND(100.0 * SUM(has_d7_apply) / NULLIF(COUNT(*), 0), 2)
+    AS d7_apply_rate_pct,
+  ROUND(AVG(previous_credit_amt), 2) AS avg_previous_credit_amt,
+  ROUND(AVG(current_credit_amt), 2) AS avg_current_credit_amt,
+  ROUND(AVG(credit_change_amt), 2) AS avg_credit_change_amt,
+  ROUND(100.0 * AVG(credit_change_rate), 2) AS avg_credit_change_rate_pct,
+  ROUND(100.0 * SUM(previous_remit_amt) / NULLIF(SUM(previous_credit_amt), 0), 2)
+    AS previous_utilization_rate_pct,
+  ROUND(AVG(CASE WHEN has_d7_apply=1 THEN minutes_to_apply END), 2)
+    AS avg_minutes_to_apply
+,
+        ROUND(100.0 * COUNT(*) / SUM(COUNT(*)) OVER (PARTITION BY t0_month), 2)
+          AS event_share_pct,
+        ROUND(100.0 * SUM(has_d7_apply) / SUM(COUNT(*)) OVER (PARTITION BY t0_month), 2)
+          AS contribution_to_overall_rate_pp
+      FROM tmp_t0_credit_change_d7_apply
+      GROUP BY t0_month, change_amount_bucket
+      ORDER BY t0_month, CASE change_amount_bucket
+  WHEN &#x27;提额≤150&#x27; THEN 1 WHEN &#x27;提额(150,1200]&#x27; THEN 2
+  WHEN &#x27;提额&gt;1200&#x27; THEN 3 WHEN &#x27;额度不变&#x27; THEN 4
+  WHEN &#x27;降额≤1000&#x27; THEN 5 ELSE 6 END;
+
+
+-- 额度方向与归因：monthly_target_bucket
+WITH bucketed AS (
+        SELECT t.*, CASE
+  WHEN credit_change_type=&#x27;额度增加&#x27; AND credit_change_amt &lt;= 150 THEN &#x27;提额≤150&#x27;
+  WHEN credit_change_type=&#x27;额度增加&#x27; AND credit_change_amt &lt;= 1200 THEN &#x27;提额(150,1200]&#x27;
+  WHEN credit_change_type=&#x27;额度增加&#x27; THEN &#x27;提额&gt;1200&#x27;
+  WHEN credit_change_type=&#x27;额度不变&#x27; THEN &#x27;额度不变&#x27;
+  WHEN credit_change_type=&#x27;额度降低&#x27; AND ABS(credit_change_amt) &lt;= 1000 THEN &#x27;降额≤1000&#x27;
+  ELSE &#x27;降额&gt;1000&#x27; END AS target_bucket
+        FROM tmp_t0_credit_change_d7_apply t
+      )
+      SELECT TO_CHAR(t0_month, &#x27;YYYY-MM&#x27;) AS t0_month,
+        target_bucket, 
+  COUNT(*) AS event_n,
+  COUNT(DISTINCT user_id) AS user_n,
+  SUM(has_d7_apply) AS d7_apply_n,
+  ROUND(100.0 * SUM(has_d7_apply) / NULLIF(COUNT(*), 0), 2)
+    AS d7_apply_rate_pct,
+  ROUND(AVG(previous_credit_amt), 2) AS avg_previous_credit_amt,
+  ROUND(AVG(current_credit_amt), 2) AS avg_current_credit_amt,
+  ROUND(AVG(credit_change_amt), 2) AS avg_credit_change_amt,
+  ROUND(100.0 * AVG(credit_change_rate), 2) AS avg_credit_change_rate_pct,
+  ROUND(100.0 * SUM(previous_remit_amt) / NULLIF(SUM(previous_credit_amt), 0), 2)
+    AS previous_utilization_rate_pct,
+  ROUND(AVG(CASE WHEN has_d7_apply=1 THEN minutes_to_apply END), 2)
+    AS avg_minutes_to_apply
+,
+        ROUND(100.0 * COUNT(*) / SUM(COUNT(*)) OVER (PARTITION BY t0_month), 2)
+          AS event_share_pct
+      FROM bucketed
+      GROUP BY t0_month, target_bucket
+      ORDER BY t0_month, CASE target_bucket
+  WHEN &#x27;提额≤150&#x27; THEN 1 WHEN &#x27;提额(150,1200]&#x27; THEN 2
+  WHEN &#x27;提额&gt;1200&#x27; THEN 3 WHEN &#x27;额度不变&#x27; THEN 4
+  WHEN &#x27;降额≤1000&#x27; THEN 5 ELSE 6 END;
+
+
+-- 额度方向与归因：target_bucket_contribution_vs_jan
+WITH bucketed AS (
+        SELECT t.*, CASE
+  WHEN credit_change_type=&#x27;额度增加&#x27; AND credit_change_amt &lt;= 150 THEN &#x27;提额≤150&#x27;
+  WHEN credit_change_type=&#x27;额度增加&#x27; AND credit_change_amt &lt;= 1200 THEN &#x27;提额(150,1200]&#x27;
+  WHEN credit_change_type=&#x27;额度增加&#x27; THEN &#x27;提额&gt;1200&#x27;
+  WHEN credit_change_type=&#x27;额度不变&#x27; THEN &#x27;额度不变&#x27;
+  WHEN credit_change_type=&#x27;额度降低&#x27; AND ABS(credit_change_amt) &lt;= 1000 THEN &#x27;降额≤1000&#x27;
+  ELSE &#x27;降额&gt;1000&#x27; END AS target_bucket
+        FROM tmp_t0_credit_change_d7_apply t
+      ), monthly AS (
+        SELECT t0_month, target_bucket,
+          COUNT(*)::numeric AS n,
+          SUM(has_d7_apply)::numeric AS apply_n,
+          SUM(has_d7_apply)::numeric / NULLIF(COUNT(*),0) AS rate
+        FROM bucketed
+        GROUP BY t0_month, target_bucket
+      ), total AS (
+        SELECT t0_month, SUM(n) AS total_n,
+          SUM(apply_n)/NULLIF(SUM(n),0) AS overall_rate
+        FROM monthly GROUP BY t0_month
+      ), weighted AS (
+        SELECT m.*, m.n/t.total_n AS weight, t.overall_rate
+        FROM monthly m JOIN total t USING (t0_month)
+      ), jan AS (
+        SELECT * FROM weighted WHERE t0_month=DATE &#x27;2026-01-01&#x27;
+      ), paired AS (
+        SELECT c.t0_month, c.target_bucket,
+          j.n AS jan_n, c.n AS current_n,
+          j.weight AS jan_weight, c.weight AS current_weight,
+          j.rate AS jan_rate, c.rate AS current_rate,
+          j.overall_rate AS jan_overall_rate
+        FROM weighted c JOIN jan j USING(target_bucket)
+      )
+      SELECT TO_CHAR(t0_month,&#x27;YYYY-MM&#x27;) AS t0_month, target_bucket,
+        jan_n, current_n,
+        ROUND(100*jan_weight,2) AS jan_share_pct,
+        ROUND(100*current_weight,2) AS current_share_pct,
+        ROUND(100*jan_rate,2) AS jan_rate_pct,
+        ROUND(100*current_rate,2) AS current_rate_pct,
+        ROUND(100*jan_weight*(current_rate-jan_rate),2) AS base_within_effect_pp,
+        ROUND(100*(current_weight-jan_weight)*(jan_rate-jan_overall_rate),2)
+          AS structure_effect_pp,
+        ROUND(100*(current_weight-jan_weight)*(current_rate-jan_rate),2)
+          AS interaction_effect_pp,
+        ROUND(100*(
+          jan_weight*(current_rate-jan_rate)
+          +(current_weight-jan_weight)*(jan_rate-jan_overall_rate)
+          +(current_weight-jan_weight)*(current_rate-jan_rate)
+        ),2) AS total_attribution_pp
+      FROM paired
+      ORDER BY t0_month, CASE target_bucket
+  WHEN &#x27;提额≤150&#x27; THEN 1 WHEN &#x27;提额(150,1200]&#x27; THEN 2
+  WHEN &#x27;提额&gt;1200&#x27; THEN 3 WHEN &#x27;额度不变&#x27; THEN 4
+  WHEN &#x27;降额≤1000&#x27; THEN 5 ELSE 6 END;
+
+
+-- 额度方向与归因：target_bucket_summary_jan_aug
+WITH bucketed AS (
+        SELECT t.*, CASE
+  WHEN credit_change_type=&#x27;额度增加&#x27; AND credit_change_amt &lt;= 150 THEN &#x27;提额≤150&#x27;
+  WHEN credit_change_type=&#x27;额度增加&#x27; AND credit_change_amt &lt;= 1200 THEN &#x27;提额(150,1200]&#x27;
+  WHEN credit_change_type=&#x27;额度增加&#x27; THEN &#x27;提额&gt;1200&#x27;
+  WHEN credit_change_type=&#x27;额度不变&#x27; THEN &#x27;额度不变&#x27;
+  WHEN credit_change_type=&#x27;额度降低&#x27; AND ABS(credit_change_amt) &lt;= 1000 THEN &#x27;降额≤1000&#x27;
+  ELSE &#x27;降额&gt;1000&#x27; END AS target_bucket
+        FROM tmp_t0_credit_change_d7_apply t
+        WHERE t0_month &gt;= DATE &#x27;2026-01-01&#x27;
+          AND t0_month &lt; DATE &#x27;2026-09-01&#x27;
+      ), period AS (
+        SELECT target_bucket, credit_change_type,
+          COUNT(*)::numeric AS event_n,
+          SUM(has_d7_apply)::numeric AS apply_n
+        FROM bucketed
+        GROUP BY target_bucket, credit_change_type
+      ), period_direction AS (
+        SELECT credit_change_type, SUM(event_n) AS direction_event_n
+        FROM period GROUP BY credit_change_type
+      ), period_total AS (
+        SELECT SUM(event_n) AS all_event_n FROM period
+      ), monthly AS (
+        SELECT t0_month, target_bucket, credit_change_type,
+          COUNT(*)::numeric AS n,
+          SUM(has_d7_apply)::numeric AS apply_n,
+          SUM(has_d7_apply)::numeric / NULLIF(COUNT(*),0) AS rate
+        FROM bucketed
+        GROUP BY t0_month, target_bucket, credit_change_type
+      ), monthly_total AS (
+        SELECT t0_month, SUM(n) AS total_n,
+          SUM(apply_n)/NULLIF(SUM(n),0) AS overall_rate
+        FROM monthly GROUP BY t0_month
+      ), weighted AS (
+        SELECT m.*, m.n/t.total_n AS weight, t.overall_rate
+        FROM monthly m JOIN monthly_total t USING (t0_month)
+      ), paired AS (
+        SELECT j.target_bucket, j.credit_change_type,
+          j.n AS jan_event_n, a.n AS aug_event_n,
+          j.rate AS jan_rate, a.rate AS aug_rate,
+          j.weight AS jan_weight, a.weight AS aug_weight,
+          j.overall_rate AS jan_overall_rate
+        FROM weighted j
+        JOIN weighted a USING (target_bucket, credit_change_type)
+        WHERE j.t0_month=DATE &#x27;2026-01-01&#x27;
+          AND a.t0_month=DATE &#x27;2026-08-01&#x27;
+      ), attributed AS (
+        SELECT p.*,
+          100*(
+            jan_weight*(aug_rate-jan_rate)
+            +(aug_weight-jan_weight)*(jan_rate-jan_overall_rate)
+            +(aug_weight-jan_weight)*(aug_rate-jan_rate)
+          ) AS total_attribution_pp
+        FROM paired p
+      ), direction_attribution AS (
+        SELECT credit_change_type,
+          SUM(total_attribution_pp) AS direction_attribution_pp
+        FROM attributed GROUP BY credit_change_type
+      )
+      SELECT p.target_bucket, p.credit_change_type,
+        p.event_n,
+        ROUND(100*p.event_n/d.direction_event_n,2) AS direction_share_pct,
+        ROUND(100*p.event_n/t.all_event_n,2) AS overall_event_share_pct,
+        ROUND(100*p.apply_n/NULLIF(p.event_n,0),2) AS overall_rate_pct,
+        a.jan_event_n, a.aug_event_n,
+        ROUND(100*a.jan_rate,2) AS jan_rate_pct,
+        ROUND(100*a.aug_rate,2) AS aug_rate_pct,
+        ROUND(100*(a.aug_rate-a.jan_rate),2) AS rate_change_pp,
+        ROUND(a.total_attribution_pp,2) AS total_attribution_pp,
+        ROUND(100*a.total_attribution_pp/NULLIF(da.direction_attribution_pp,0),2)
+          AS direction_attribution_share_pct
+      FROM period p
+      JOIN period_direction d USING (credit_change_type)
+      CROSS JOIN period_total t
+      JOIN attributed a USING (target_bucket, credit_change_type)
+      JOIN direction_attribution da USING (credit_change_type)
+      ORDER BY CASE target_bucket
+  WHEN &#x27;提额≤150&#x27; THEN 1 WHEN &#x27;提额(150,1200]&#x27; THEN 2
+  WHEN &#x27;提额&gt;1200&#x27; THEN 3 WHEN &#x27;额度不变&#x27; THEN 4
+  WHEN &#x27;降额≤1000&#x27; THEN 5 ELSE 6 END;
+
+
+-- 额度方向与归因：large_increase_drilldown_summary
+WITH membership AS (
+  SELECT t.*, 1 AS group_order, &#x27;层级节点&#x27;::text AS group_kind,
+    &#x27;提额&gt;1200父群&#x27;::text AS group_name
+  FROM tmp_t0_credit_change_d7_apply t
+  WHERE t.t0_month&gt;=DATE &#x27;2026-01-01&#x27; AND t.t0_month&lt;DATE &#x27;2026-09-01&#x27;
+    AND t.credit_change_type=&#x27;额度增加&#x27; AND t.credit_change_amt&gt;1200
+  UNION ALL
+  SELECT t.*, 2, &#x27;层级节点&#x27;, &#x27;借款≤2次&#x27;
+  FROM tmp_t0_credit_change_d7_apply t
+  WHERE t.t0_month&gt;=DATE &#x27;2026-01-01&#x27; AND t.t0_month&lt;DATE &#x27;2026-09-01&#x27;
+    AND t.credit_change_type=&#x27;额度增加&#x27; AND t.credit_change_amt&gt;1200
+    AND t.successful_loan_n&lt;=2
+  UNION ALL
+  SELECT t.*, 3, &#x27;层级节点&#x27;, &#x27;借款≤2次且提额&gt;2400&#x27;
+  FROM tmp_t0_credit_change_d7_apply t
+  WHERE t.t0_month&gt;=DATE &#x27;2026-01-01&#x27; AND t.t0_month&lt;DATE &#x27;2026-09-01&#x27;
+    AND t.credit_change_type=&#x27;额度增加&#x27; AND t.credit_change_amt&gt;2400
+    AND t.successful_loan_n&lt;=2
+  UNION ALL
+  SELECT t.*, 4, &#x27;层级节点&#x27;, &#x27;三个优先叶子合集&#x27;
+  FROM tmp_t0_credit_change_d7_apply t
+  WHERE t.t0_month&gt;=DATE &#x27;2026-01-01&#x27; AND t.t0_month&lt;DATE &#x27;2026-09-01&#x27;
+    AND t.credit_change_type=&#x27;额度增加&#x27; AND t.credit_change_amt&gt;1200
+    AND t.successful_loan_n&lt;=2
+    AND (
+      (t.credit_change_amt&lt;=2400 AND t.previous_util_ratio&lt;=0.90)
+      OR (t.credit_change_amt&gt;2400 AND t.credit_change_amt&lt;=4500
+          AND t.credit_change_rate&gt;1.50)
+      OR t.credit_change_amt&gt;4500
+    )
+  UNION ALL
+  SELECT t.*, 5, &#x27;目标叶子&#x27;, &#x27;A｜低幅提额＋低历史使用&#x27;
+  FROM tmp_t0_credit_change_d7_apply t
+  WHERE t.t0_month&gt;=DATE &#x27;2026-01-01&#x27; AND t.t0_month&lt;DATE &#x27;2026-09-01&#x27;
+    AND t.credit_change_type=&#x27;额度增加&#x27; AND t.credit_change_amt&gt;1200
+    AND t.successful_loan_n&lt;=2 AND t.credit_change_amt&lt;=2400
+    AND t.previous_util_ratio&lt;=0.90
+  UNION ALL
+  SELECT t.*, 6, &#x27;目标叶子&#x27;, &#x27;B｜中幅提额＋高提额倍数&#x27;
+  FROM tmp_t0_credit_change_d7_apply t
+  WHERE t.t0_month&gt;=DATE &#x27;2026-01-01&#x27; AND t.t0_month&lt;DATE &#x27;2026-09-01&#x27;
+    AND t.credit_change_type=&#x27;额度增加&#x27; AND t.successful_loan_n&lt;=2
+    AND t.credit_change_amt&gt;2400 AND t.credit_change_amt&lt;=4500
+    AND t.credit_change_rate&gt;1.50
+  UNION ALL
+  SELECT t.*, 7, &#x27;目标叶子&#x27;, &#x27;C｜超大额提额&#x27;
+  FROM tmp_t0_credit_change_d7_apply t
+  WHERE t.t0_month&gt;=DATE &#x27;2026-01-01&#x27; AND t.t0_month&lt;DATE &#x27;2026-09-01&#x27;
+    AND t.credit_change_type=&#x27;额度增加&#x27; AND t.successful_loan_n&lt;=2
+    AND t.credit_change_amt&gt;4500
+), period AS (
+        SELECT group_order, group_kind, group_name,
+          COUNT(*)::numeric AS event_n,
+          COUNT(DISTINCT user_id)::numeric AS user_n
+        FROM membership GROUP BY group_order, group_kind, group_name
+      ), monthly AS (
+        SELECT group_order, group_kind, group_name, t0_month,
+          COUNT(*)::numeric AS n,
+          SUM(has_d7_apply)::numeric AS apply_n,
+          AVG(has_d7_apply::numeric) AS rate
+        FROM membership
+        GROUP BY group_order, group_kind, group_name, t0_month
+      ), overall_monthly AS (
+        SELECT t0_month, COUNT(*)::numeric AS n,
+          SUM(has_d7_apply)::numeric AS apply_n,
+          AVG(has_d7_apply::numeric) AS rate
+        FROM tmp_t0_credit_change_d7_apply
+        WHERE t0_month IN (DATE &#x27;2026-01-01&#x27;,DATE &#x27;2026-08-01&#x27;)
+        GROUP BY t0_month
+      ), paired AS (
+        SELECT j.group_order, j.group_kind, j.group_name,
+          j.n AS jan_event_n, a.n AS aug_event_n,
+          j.rate AS jan_rate, a.rate AS aug_rate,
+          j.n/oj.n AS jan_weight, a.n/oa.n AS aug_weight,
+          oj.rate AS jan_overall_rate,
+          100*(oa.rate-oj.rate) AS overall_change_pp
+        FROM monthly j JOIN monthly a USING(group_order,group_kind,group_name)
+        CROSS JOIN overall_monthly oj CROSS JOIN overall_monthly oa
+        WHERE j.t0_month=DATE &#x27;2026-01-01&#x27;
+          AND a.t0_month=DATE &#x27;2026-08-01&#x27;
+          AND oj.t0_month=DATE &#x27;2026-01-01&#x27;
+          AND oa.t0_month=DATE &#x27;2026-08-01&#x27;
+      ), attributed AS (
+        SELECT p.*,
+          100*(
+            jan_weight*(aug_rate-jan_rate)
+            +(aug_weight-jan_weight)*(jan_rate-jan_overall_rate)
+            +(aug_weight-jan_weight)*(aug_rate-jan_rate)
+          ) AS total_attribution_pp
+        FROM paired p
+      ), reference AS (
+        SELECT total_attribution_pp AS parent_attribution_pp
+        FROM attributed WHERE group_order=1
+      ), period_total AS (
+        SELECT COUNT(*)::numeric AS all_event_n
+        FROM tmp_t0_credit_change_d7_apply
+        WHERE t0_month&gt;=DATE &#x27;2026-01-01&#x27; AND t0_month&lt;DATE &#x27;2026-09-01&#x27;
+      ), parent_period AS (
+        SELECT event_n AS parent_event_n FROM period WHERE group_order=1
+      )
+      SELECT p.group_order,p.group_kind,p.group_name,
+        p.event_n,p.user_n,a.jan_event_n,a.aug_event_n,
+        ROUND(100*a.jan_rate,2) AS jan_rate_pct,
+        ROUND(100*a.aug_rate,2) AS aug_rate_pct,
+        ROUND(100*(a.aug_rate-a.jan_rate),2) AS rate_change_pp,
+        ROUND(a.total_attribution_pp,3) AS total_attribution_pp,
+        ROUND(100*p.event_n/t.all_event_n,2) AS all_event_share_pct,
+        ROUND(100*a.total_attribution_pp/a.overall_change_pp,2)
+          AS overall_decline_share_pct,
+        ROUND(100*p.event_n/pp.parent_event_n,2) AS parent_event_share_pct,
+        ROUND(100*a.total_attribution_pp/r.parent_attribution_pp,2)
+          AS parent_attribution_share_pct,
+        ROUND(
+          (a.total_attribution_pp/a.overall_change_pp)
+          /(p.event_n/t.all_event_n),2
+        ) AS concentration_multiple
+      FROM period p JOIN attributed a USING(group_order,group_kind,group_name)
+      CROSS JOIN reference r CROSS JOIN period_total t CROSS JOIN parent_period pp
+      ORDER BY p.group_order;
+
+
+-- 额度方向与归因：large_increase_drilldown_monthly
+WITH membership AS (
+  SELECT t.*, 1 AS group_order, &#x27;层级节点&#x27;::text AS group_kind,
+    &#x27;提额&gt;1200父群&#x27;::text AS group_name
+  FROM tmp_t0_credit_change_d7_apply t
+  WHERE t.t0_month&gt;=DATE &#x27;2026-01-01&#x27; AND t.t0_month&lt;DATE &#x27;2026-09-01&#x27;
+    AND t.credit_change_type=&#x27;额度增加&#x27; AND t.credit_change_amt&gt;1200
+  UNION ALL
+  SELECT t.*, 2, &#x27;层级节点&#x27;, &#x27;借款≤2次&#x27;
+  FROM tmp_t0_credit_change_d7_apply t
+  WHERE t.t0_month&gt;=DATE &#x27;2026-01-01&#x27; AND t.t0_month&lt;DATE &#x27;2026-09-01&#x27;
+    AND t.credit_change_type=&#x27;额度增加&#x27; AND t.credit_change_amt&gt;1200
+    AND t.successful_loan_n&lt;=2
+  UNION ALL
+  SELECT t.*, 3, &#x27;层级节点&#x27;, &#x27;借款≤2次且提额&gt;2400&#x27;
+  FROM tmp_t0_credit_change_d7_apply t
+  WHERE t.t0_month&gt;=DATE &#x27;2026-01-01&#x27; AND t.t0_month&lt;DATE &#x27;2026-09-01&#x27;
+    AND t.credit_change_type=&#x27;额度增加&#x27; AND t.credit_change_amt&gt;2400
+    AND t.successful_loan_n&lt;=2
+  UNION ALL
+  SELECT t.*, 4, &#x27;层级节点&#x27;, &#x27;三个优先叶子合集&#x27;
+  FROM tmp_t0_credit_change_d7_apply t
+  WHERE t.t0_month&gt;=DATE &#x27;2026-01-01&#x27; AND t.t0_month&lt;DATE &#x27;2026-09-01&#x27;
+    AND t.credit_change_type=&#x27;额度增加&#x27; AND t.credit_change_amt&gt;1200
+    AND t.successful_loan_n&lt;=2
+    AND (
+      (t.credit_change_amt&lt;=2400 AND t.previous_util_ratio&lt;=0.90)
+      OR (t.credit_change_amt&gt;2400 AND t.credit_change_amt&lt;=4500
+          AND t.credit_change_rate&gt;1.50)
+      OR t.credit_change_amt&gt;4500
+    )
+  UNION ALL
+  SELECT t.*, 5, &#x27;目标叶子&#x27;, &#x27;A｜低幅提额＋低历史使用&#x27;
+  FROM tmp_t0_credit_change_d7_apply t
+  WHERE t.t0_month&gt;=DATE &#x27;2026-01-01&#x27; AND t.t0_month&lt;DATE &#x27;2026-09-01&#x27;
+    AND t.credit_change_type=&#x27;额度增加&#x27; AND t.credit_change_amt&gt;1200
+    AND t.successful_loan_n&lt;=2 AND t.credit_change_amt&lt;=2400
+    AND t.previous_util_ratio&lt;=0.90
+  UNION ALL
+  SELECT t.*, 6, &#x27;目标叶子&#x27;, &#x27;B｜中幅提额＋高提额倍数&#x27;
+  FROM tmp_t0_credit_change_d7_apply t
+  WHERE t.t0_month&gt;=DATE &#x27;2026-01-01&#x27; AND t.t0_month&lt;DATE &#x27;2026-09-01&#x27;
+    AND t.credit_change_type=&#x27;额度增加&#x27; AND t.successful_loan_n&lt;=2
+    AND t.credit_change_amt&gt;2400 AND t.credit_change_amt&lt;=4500
+    AND t.credit_change_rate&gt;1.50
+  UNION ALL
+  SELECT t.*, 7, &#x27;目标叶子&#x27;, &#x27;C｜超大额提额&#x27;
+  FROM tmp_t0_credit_change_d7_apply t
+  WHERE t.t0_month&gt;=DATE &#x27;2026-01-01&#x27; AND t.t0_month&lt;DATE &#x27;2026-09-01&#x27;
+    AND t.credit_change_type=&#x27;额度增加&#x27; AND t.successful_loan_n&lt;=2
+    AND t.credit_change_amt&gt;4500
+)
+      SELECT TO_CHAR(t0_month,&#x27;YYYY-MM&#x27;) AS t0_month,
+        group_order,group_kind,group_name,
+        COUNT(*) AS event_n,COUNT(DISTINCT user_id) AS user_n,
+        SUM(has_d7_apply) AS d7_apply_n,
+        ROUND(100.0*AVG(has_d7_apply::numeric),2) AS d7_apply_rate_pct
+      FROM membership
+      GROUP BY t0_month,group_order,group_kind,group_name
+      ORDER BY group_order,t0_month;
+
+
+-- 额度方向与归因：decrease_drilldown_summary
+WITH membership AS (
+  SELECT t.*, 1 AS group_order, &#x27;层级节点&#x27;::text AS group_kind,
+    &#x27;全部降额父群&#x27;::text AS group_name
+  FROM tmp_t0_credit_change_d7_apply t
+  WHERE t.t0_month&gt;=DATE &#x27;2026-01-01&#x27; AND t.t0_month&lt;DATE &#x27;2026-09-01&#x27;
+    AND t.credit_change_type=&#x27;额度降低&#x27;
+  UNION ALL
+  SELECT t.*, 2, &#x27;层级节点&#x27;, &#x27;降额金额≤1000&#x27;
+  FROM tmp_t0_credit_change_d7_apply t
+  WHERE t.t0_month&gt;=DATE &#x27;2026-01-01&#x27; AND t.t0_month&lt;DATE &#x27;2026-09-01&#x27;
+    AND t.credit_change_type=&#x27;额度降低&#x27;
+    AND ABS(t.credit_change_amt)&lt;=1000
+  UNION ALL
+  SELECT t.*, 3, &#x27;层级节点&#x27;, &#x27;降额≤1000且降额比例≤20%&#x27;
+  FROM tmp_t0_credit_change_d7_apply t
+  WHERE t.t0_month&gt;=DATE &#x27;2026-01-01&#x27; AND t.t0_month&lt;DATE &#x27;2026-09-01&#x27;
+    AND t.credit_change_type=&#x27;额度降低&#x27;
+    AND ABS(t.credit_change_amt)&lt;=1000 AND ABS(t.credit_change_rate)&lt;=0.20
+  UNION ALL
+  SELECT t.*, 4, &#x27;层级节点&#x27;, &#x27;三个高归因叶子合集&#x27;
+  FROM tmp_t0_credit_change_d7_apply t
+  WHERE t.t0_month&gt;=DATE &#x27;2026-01-01&#x27; AND t.t0_month&lt;DATE &#x27;2026-09-01&#x27;
+    AND t.credit_change_type=&#x27;额度降低&#x27;
+    AND ABS(t.credit_change_amt)&lt;=1000
+    AND (
+      (ABS(t.credit_change_rate)&lt;=0.08 AND t.successful_loan_n&lt;=4)
+      OR (ABS(t.credit_change_rate)&gt;0.08 AND ABS(t.credit_change_rate)&lt;=0.12
+          AND t.successful_loan_n&lt;=4)
+      OR (ABS(t.credit_change_rate)&gt;0.12 AND ABS(t.credit_change_rate)&lt;=0.20
+          AND t.successful_loan_n&lt;=2)
+    )
+  UNION ALL
+  SELECT t.*, 5, &#x27;目标叶子&#x27;, &#x27;A｜降额比例≤8%＋借款≤4次&#x27;
+  FROM tmp_t0_credit_change_d7_apply t
+  WHERE t.t0_month&gt;=DATE &#x27;2026-01-01&#x27; AND t.t0_month&lt;DATE &#x27;2026-09-01&#x27;
+    AND t.credit_change_type=&#x27;额度降低&#x27;
+    AND ABS(t.credit_change_amt)&lt;=1000 AND ABS(t.credit_change_rate)&lt;=0.08
+    AND t.successful_loan_n&lt;=4
+  UNION ALL
+  SELECT t.*, 6, &#x27;目标叶子&#x27;, &#x27;B｜降额比例8%—12%＋借款≤4次&#x27;
+  FROM tmp_t0_credit_change_d7_apply t
+  WHERE t.t0_month&gt;=DATE &#x27;2026-01-01&#x27; AND t.t0_month&lt;DATE &#x27;2026-09-01&#x27;
+    AND t.credit_change_type=&#x27;额度降低&#x27;
+    AND ABS(t.credit_change_amt)&lt;=1000
+    AND ABS(t.credit_change_rate)&gt;0.08 AND ABS(t.credit_change_rate)&lt;=0.12
+    AND t.successful_loan_n&lt;=4
+  UNION ALL
+  SELECT t.*, 7, &#x27;目标叶子&#x27;, &#x27;C｜降额比例12%—20%＋借款≤2次&#x27;
+  FROM tmp_t0_credit_change_d7_apply t
+  WHERE t.t0_month&gt;=DATE &#x27;2026-01-01&#x27; AND t.t0_month&lt;DATE &#x27;2026-09-01&#x27;
+    AND t.credit_change_type=&#x27;额度降低&#x27;
+    AND ABS(t.credit_change_amt)&lt;=1000
+    AND ABS(t.credit_change_rate)&gt;0.12 AND ABS(t.credit_change_rate)&lt;=0.20
+    AND t.successful_loan_n&lt;=2
+), period AS (
+        SELECT group_order, group_kind, group_name,
+          COUNT(*)::numeric AS event_n,
+          COUNT(DISTINCT user_id)::numeric AS user_n
+        FROM membership GROUP BY group_order, group_kind, group_name
+      ), monthly AS (
+        SELECT group_order, group_kind, group_name, t0_month,
+          COUNT(*)::numeric AS n,
+          SUM(has_d7_apply)::numeric AS apply_n,
+          AVG(has_d7_apply::numeric) AS rate
+        FROM membership
+        GROUP BY group_order, group_kind, group_name, t0_month
+      ), overall_monthly AS (
+        SELECT t0_month, COUNT(*)::numeric AS n,
+          SUM(has_d7_apply)::numeric AS apply_n,
+          AVG(has_d7_apply::numeric) AS rate
+        FROM tmp_t0_credit_change_d7_apply
+        WHERE t0_month IN (DATE &#x27;2026-01-01&#x27;,DATE &#x27;2026-08-01&#x27;)
+        GROUP BY t0_month
+      ), paired AS (
+        SELECT j.group_order, j.group_kind, j.group_name,
+          j.n AS jan_event_n, a.n AS aug_event_n,
+          j.rate AS jan_rate, a.rate AS aug_rate,
+          j.n/oj.n AS jan_weight, a.n/oa.n AS aug_weight,
+          oj.rate AS jan_overall_rate,
+          100*(oa.rate-oj.rate) AS overall_change_pp
+        FROM monthly j JOIN monthly a USING(group_order,group_kind,group_name)
+        CROSS JOIN overall_monthly oj CROSS JOIN overall_monthly oa
+        WHERE j.t0_month=DATE &#x27;2026-01-01&#x27;
+          AND a.t0_month=DATE &#x27;2026-08-01&#x27;
+          AND oj.t0_month=DATE &#x27;2026-01-01&#x27;
+          AND oa.t0_month=DATE &#x27;2026-08-01&#x27;
+      ), attributed AS (
+        SELECT p.*,
+          100*(
+            jan_weight*(aug_rate-jan_rate)
+            +(aug_weight-jan_weight)*(jan_rate-jan_overall_rate)
+            +(aug_weight-jan_weight)*(aug_rate-jan_rate)
+          ) AS total_attribution_pp
+        FROM paired p
+      ), reference AS (
+        SELECT total_attribution_pp AS parent_attribution_pp
+        FROM attributed WHERE group_order=1
+      ), ratio_reference AS (
+        SELECT total_attribution_pp AS ratio_parent_attribution_pp
+        FROM attributed WHERE group_order=3
+      ), period_total AS (
+        SELECT COUNT(*)::numeric AS all_event_n
+        FROM tmp_t0_credit_change_d7_apply
+        WHERE t0_month&gt;=DATE &#x27;2026-01-01&#x27; AND t0_month&lt;DATE &#x27;2026-09-01&#x27;
+      ), parent_period AS (
+        SELECT event_n AS parent_event_n FROM period WHERE group_order=1
+      ), ratio_parent_period AS (
+        SELECT event_n AS ratio_parent_event_n FROM period WHERE group_order=3
+      )
+      SELECT p.group_order,p.group_kind,p.group_name,
+        p.event_n,p.user_n,a.jan_event_n,a.aug_event_n,
+        ROUND(100*a.jan_rate,2) AS jan_rate_pct,
+        ROUND(100*a.aug_rate,2) AS aug_rate_pct,
+        ROUND(100*(a.aug_rate-a.jan_rate),2) AS rate_change_pp,
+        ROUND(a.total_attribution_pp,3) AS total_attribution_pp,
+        ROUND(100*p.event_n/t.all_event_n,2) AS all_event_share_pct,
+        ROUND(100*a.total_attribution_pp/a.overall_change_pp,2)
+          AS overall_decline_share_pct,
+        ROUND(100*p.event_n/pp.parent_event_n,2) AS parent_event_share_pct,
+        ROUND(100*a.total_attribution_pp/r.parent_attribution_pp,2)
+          AS parent_attribution_share_pct,
+        CASE WHEN p.group_order&gt;=4 THEN
+          ROUND(100*p.event_n/rpp.ratio_parent_event_n,2) END
+          AS ratio_parent_event_share_pct,
+        CASE WHEN p.group_order&gt;=4 THEN
+          ROUND(100*a.total_attribution_pp/rr.ratio_parent_attribution_pp,2) END
+          AS ratio_parent_attribution_share_pct,
+        ROUND(
+          (a.total_attribution_pp/a.overall_change_pp)
+          /(p.event_n/t.all_event_n),2
+        ) AS concentration_multiple
+      FROM period p JOIN attributed a USING(group_order,group_kind,group_name)
+      CROSS JOIN reference r CROSS JOIN ratio_reference rr
+      CROSS JOIN period_total t CROSS JOIN parent_period pp
+      CROSS JOIN ratio_parent_period rpp
+      ORDER BY p.group_order;
+
+
+-- 额度方向与归因：decrease_drilldown_monthly
+WITH membership AS (
+  SELECT t.*, 1 AS group_order, &#x27;层级节点&#x27;::text AS group_kind,
+    &#x27;全部降额父群&#x27;::text AS group_name
+  FROM tmp_t0_credit_change_d7_apply t
+  WHERE t.t0_month&gt;=DATE &#x27;2026-01-01&#x27; AND t.t0_month&lt;DATE &#x27;2026-09-01&#x27;
+    AND t.credit_change_type=&#x27;额度降低&#x27;
+  UNION ALL
+  SELECT t.*, 2, &#x27;层级节点&#x27;, &#x27;降额金额≤1000&#x27;
+  FROM tmp_t0_credit_change_d7_apply t
+  WHERE t.t0_month&gt;=DATE &#x27;2026-01-01&#x27; AND t.t0_month&lt;DATE &#x27;2026-09-01&#x27;
+    AND t.credit_change_type=&#x27;额度降低&#x27;
+    AND ABS(t.credit_change_amt)&lt;=1000
+  UNION ALL
+  SELECT t.*, 3, &#x27;层级节点&#x27;, &#x27;降额≤1000且降额比例≤20%&#x27;
+  FROM tmp_t0_credit_change_d7_apply t
+  WHERE t.t0_month&gt;=DATE &#x27;2026-01-01&#x27; AND t.t0_month&lt;DATE &#x27;2026-09-01&#x27;
+    AND t.credit_change_type=&#x27;额度降低&#x27;
+    AND ABS(t.credit_change_amt)&lt;=1000 AND ABS(t.credit_change_rate)&lt;=0.20
+  UNION ALL
+  SELECT t.*, 4, &#x27;层级节点&#x27;, &#x27;三个高归因叶子合集&#x27;
+  FROM tmp_t0_credit_change_d7_apply t
+  WHERE t.t0_month&gt;=DATE &#x27;2026-01-01&#x27; AND t.t0_month&lt;DATE &#x27;2026-09-01&#x27;
+    AND t.credit_change_type=&#x27;额度降低&#x27;
+    AND ABS(t.credit_change_amt)&lt;=1000
+    AND (
+      (ABS(t.credit_change_rate)&lt;=0.08 AND t.successful_loan_n&lt;=4)
+      OR (ABS(t.credit_change_rate)&gt;0.08 AND ABS(t.credit_change_rate)&lt;=0.12
+          AND t.successful_loan_n&lt;=4)
+      OR (ABS(t.credit_change_rate)&gt;0.12 AND ABS(t.credit_change_rate)&lt;=0.20
+          AND t.successful_loan_n&lt;=2)
+    )
+  UNION ALL
+  SELECT t.*, 5, &#x27;目标叶子&#x27;, &#x27;A｜降额比例≤8%＋借款≤4次&#x27;
+  FROM tmp_t0_credit_change_d7_apply t
+  WHERE t.t0_month&gt;=DATE &#x27;2026-01-01&#x27; AND t.t0_month&lt;DATE &#x27;2026-09-01&#x27;
+    AND t.credit_change_type=&#x27;额度降低&#x27;
+    AND ABS(t.credit_change_amt)&lt;=1000 AND ABS(t.credit_change_rate)&lt;=0.08
+    AND t.successful_loan_n&lt;=4
+  UNION ALL
+  SELECT t.*, 6, &#x27;目标叶子&#x27;, &#x27;B｜降额比例8%—12%＋借款≤4次&#x27;
+  FROM tmp_t0_credit_change_d7_apply t
+  WHERE t.t0_month&gt;=DATE &#x27;2026-01-01&#x27; AND t.t0_month&lt;DATE &#x27;2026-09-01&#x27;
+    AND t.credit_change_type=&#x27;额度降低&#x27;
+    AND ABS(t.credit_change_amt)&lt;=1000
+    AND ABS(t.credit_change_rate)&gt;0.08 AND ABS(t.credit_change_rate)&lt;=0.12
+    AND t.successful_loan_n&lt;=4
+  UNION ALL
+  SELECT t.*, 7, &#x27;目标叶子&#x27;, &#x27;C｜降额比例12%—20%＋借款≤2次&#x27;
+  FROM tmp_t0_credit_change_d7_apply t
+  WHERE t.t0_month&gt;=DATE &#x27;2026-01-01&#x27; AND t.t0_month&lt;DATE &#x27;2026-09-01&#x27;
+    AND t.credit_change_type=&#x27;额度降低&#x27;
+    AND ABS(t.credit_change_amt)&lt;=1000
+    AND ABS(t.credit_change_rate)&gt;0.12 AND ABS(t.credit_change_rate)&lt;=0.20
+    AND t.successful_loan_n&lt;=2
+)
+      SELECT TO_CHAR(t0_month,&#x27;YYYY-MM&#x27;) AS t0_month,
+        group_order,group_kind,group_name,
+        COUNT(*) AS event_n,COUNT(DISTINCT user_id) AS user_n,
+        SUM(has_d7_apply) AS d7_apply_n,
+        ROUND(100.0*AVG(has_d7_apply::numeric),2) AS d7_apply_rate_pct
+      FROM membership
+      GROUP BY t0_month,group_order,group_kind,group_name
+      ORDER BY group_order,t0_month;
+
+
+-- 额度方向与归因：rate_bucket_overall
+SELECT change_rate_bucket, 
+  COUNT(*) AS event_n,
+  COUNT(DISTINCT user_id) AS user_n,
+  SUM(has_d7_apply) AS d7_apply_n,
+  ROUND(100.0 * SUM(has_d7_apply) / NULLIF(COUNT(*), 0), 2)
+    AS d7_apply_rate_pct,
+  ROUND(AVG(previous_credit_amt), 2) AS avg_previous_credit_amt,
+  ROUND(AVG(current_credit_amt), 2) AS avg_current_credit_amt,
+  ROUND(AVG(credit_change_amt), 2) AS avg_credit_change_amt,
+  ROUND(100.0 * AVG(credit_change_rate), 2) AS avg_credit_change_rate_pct,
+  ROUND(100.0 * SUM(previous_remit_amt) / NULLIF(SUM(previous_credit_amt), 0), 2)
+    AS previous_utilization_rate_pct,
+  ROUND(AVG(CASE WHEN has_d7_apply=1 THEN minutes_to_apply END), 2)
+    AS avg_minutes_to_apply
+,
+        ROUND(100.0 * COUNT(*) / SUM(COUNT(*)) OVER (), 2) AS event_share_pct
+      FROM tmp_t0_credit_change_d7_apply
+      GROUP BY change_rate_bucket
+      ORDER BY MIN(credit_change_rate);
+
+
+-- 额度方向与归因：credit_band_transition_summary
+WITH banded AS (
+        SELECT *,
+          FLOOR(previous_credit_amt / 1000.0)::int * 1000 AS previous_band_lower,
+          FLOOR(current_credit_amt / 1000.0)::int * 1000 AS current_band_lower
+        FROM tmp_t0_credit_change_d7_apply
+        WHERE credit_change_type IN (&#x27;额度增加&#x27;, &#x27;额度降低&#x27;)
+      ), grouped AS (
+        SELECT credit_change_type, previous_band_lower, current_band_lower,
+          COUNT(*)::numeric AS event_n,
+          COUNT(DISTINCT user_id)::numeric AS user_n,
+          SUM(has_d7_apply)::numeric AS d7_apply_n,
+          SUM(CASE WHEN t0_month = DATE &#x27;2026-01-01&#x27; THEN 1 ELSE 0 END)::numeric
+            AS jan_event_n,
+          SUM(CASE WHEN t0_month = DATE &#x27;2026-01-01&#x27;
+                   THEN has_d7_apply ELSE 0 END)::numeric AS jan_apply_n,
+          SUM(CASE WHEN t0_month = DATE &#x27;2026-08-01&#x27; THEN 1 ELSE 0 END)::numeric
+            AS aug_event_n,
+          SUM(CASE WHEN t0_month = DATE &#x27;2026-08-01&#x27;
+                   THEN has_d7_apply ELSE 0 END)::numeric AS aug_apply_n
+        FROM banded
+        GROUP BY credit_change_type, previous_band_lower, current_band_lower
+      )
+      SELECT credit_change_type, previous_band_lower, current_band_lower,
+        event_n, user_n, d7_apply_n,
+        ROUND(100.0 * d7_apply_n / NULLIF(event_n, 0), 2) AS full_rate_pct,
+        ROUND(100.0 * event_n / SUM(event_n) OVER (
+          PARTITION BY credit_change_type
+        ), 2) AS event_share_pct,
+        jan_event_n,
+        ROUND(100.0 * jan_event_n / NULLIF(SUM(jan_event_n) OVER (
+          PARTITION BY credit_change_type
+        ), 0), 2) AS jan_event_share_pct,
+        ROUND(100.0 * jan_apply_n / NULLIF(jan_event_n, 0), 2) AS jan_rate_pct,
+        aug_event_n,
+        ROUND(100.0 * aug_event_n / NULLIF(SUM(aug_event_n) OVER (
+          PARTITION BY credit_change_type
+        ), 0), 2) AS aug_event_share_pct,
+        ROUND(100.0 * aug_apply_n / NULLIF(aug_event_n, 0), 2) AS aug_rate_pct,
+        ROUND(
+          100.0 * aug_apply_n / NULLIF(aug_event_n, 0)
+          - 100.0 * jan_apply_n / NULLIF(jan_event_n, 0), 2
+        ) AS jan_to_aug_change_pp
+      FROM grouped
+      ORDER BY
+        CASE credit_change_type WHEN &#x27;额度增加&#x27; THEN 1 ELSE 2 END,
+        event_n DESC, previous_band_lower, current_band_lower;
+
+
+-- 额度方向与归因：credit_previous_band_summary
+WITH banded AS (
+        SELECT *,
+          FLOOR(previous_credit_amt / 1000.0)::int * 1000 AS previous_band_lower
+        FROM tmp_t0_credit_change_d7_apply
+        WHERE credit_change_type IN (&#x27;额度增加&#x27;, &#x27;额度降低&#x27;)
+      ), direction_total AS (
+        SELECT credit_change_type,
+          COUNT(*)::numeric AS direction_event_n,
+          COUNT(DISTINCT user_id)::numeric AS direction_user_n
+        FROM banded
+        GROUP BY credit_change_type
+      ), grouped AS (
+        SELECT credit_change_type, previous_band_lower,
+          COUNT(*)::numeric AS event_n,
+          COUNT(DISTINCT user_id)::numeric AS user_n,
+          SUM(has_d7_apply)::numeric AS d7_apply_n,
+          SUM(CASE WHEN t0_month = DATE &#x27;2026-01-01&#x27; THEN 1 ELSE 0 END)::numeric
+            AS jan_event_n,
+          SUM(CASE WHEN t0_month = DATE &#x27;2026-01-01&#x27;
+                   THEN has_d7_apply ELSE 0 END)::numeric AS jan_apply_n,
+          SUM(CASE WHEN t0_month = DATE &#x27;2026-08-01&#x27; THEN 1 ELSE 0 END)::numeric
+            AS aug_event_n,
+          SUM(CASE WHEN t0_month = DATE &#x27;2026-08-01&#x27;
+                   THEN has_d7_apply ELSE 0 END)::numeric AS aug_apply_n
+        FROM banded
+        GROUP BY credit_change_type, previous_band_lower
+      )
+      SELECT g.credit_change_type, g.previous_band_lower,
+        g.event_n, g.user_n,
+        ROUND(100.0 * g.event_n / NULLIF(t.direction_event_n, 0), 2)
+          AS event_share_pct,
+        ROUND(100.0 * g.user_n / NULLIF(t.direction_user_n, 0), 2)
+          AS user_coverage_pct,
+        ROUND(100.0 * g.d7_apply_n / NULLIF(g.event_n, 0), 2) AS full_rate_pct,
+        g.jan_event_n,
+        ROUND(100.0 * g.jan_apply_n / NULLIF(g.jan_event_n, 0), 2) AS jan_rate_pct,
+        g.aug_event_n,
+        ROUND(100.0 * g.aug_apply_n / NULLIF(g.aug_event_n, 0), 2) AS aug_rate_pct,
+        ROUND(
+          100.0 * g.aug_apply_n / NULLIF(g.aug_event_n, 0)
+          - 100.0 * g.jan_apply_n / NULLIF(g.jan_event_n, 0), 2
+        ) AS jan_to_aug_change_pp
+      FROM grouped g
+      JOIN direction_total t USING (credit_change_type)
+      ORDER BY
+        CASE g.credit_change_type WHEN &#x27;额度增加&#x27; THEN 1 ELSE 2 END,
+        g.event_n DESC, g.previous_band_lower;
+
+
+-- 额度方向与归因：transition_overall
+SELECT previous_credit_amt, current_credit_amt, credit_change_type,
+        previous_credit_amt::text || &#x27;→&#x27; || current_credit_amt::text AS transition_label,
+        
+  COUNT(*) AS event_n,
+  COUNT(DISTINCT user_id) AS user_n,
+  SUM(has_d7_apply) AS d7_apply_n,
+  ROUND(100.0 * SUM(has_d7_apply) / NULLIF(COUNT(*), 0), 2)
+    AS d7_apply_rate_pct,
+  ROUND(AVG(previous_credit_amt), 2) AS avg_previous_credit_amt,
+  ROUND(AVG(current_credit_amt), 2) AS avg_current_credit_amt,
+  ROUND(AVG(credit_change_amt), 2) AS avg_credit_change_amt,
+  ROUND(100.0 * AVG(credit_change_rate), 2) AS avg_credit_change_rate_pct,
+  ROUND(100.0 * SUM(previous_remit_amt) / NULLIF(SUM(previous_credit_amt), 0), 2)
+    AS previous_utilization_rate_pct,
+  ROUND(AVG(CASE WHEN has_d7_apply=1 THEN minutes_to_apply END), 2)
+    AS avg_minutes_to_apply
+,
+        ROUND(100.0 * COUNT(*) / SUM(COUNT(*)) OVER (), 2) AS event_share_pct
+      FROM tmp_t0_credit_change_d7_apply
+      GROUP BY previous_credit_amt, current_credit_amt, credit_change_type
+      HAVING COUNT(*) &gt;= 20
+      ORDER BY event_n DESC, previous_credit_amt, current_credit_amt;
+
+
+-- 额度方向与归因：monthly_transition
+WITH retained AS (
+        SELECT previous_credit_amt, current_credit_amt, credit_change_type
+        FROM tmp_t0_credit_change_d7_apply
+        GROUP BY previous_credit_amt, current_credit_amt, credit_change_type
+        HAVING COUNT(*) &gt;= 100
+      )
+      SELECT TO_CHAR(t.t0_month, &#x27;YYYY-MM&#x27;) AS t0_month,
+        previous_credit_amt, current_credit_amt, credit_change_type,
+        previous_credit_amt::text || &#x27;→&#x27; || current_credit_amt::text AS transition_label,
+        
+  COUNT(*) AS event_n,
+  COUNT(DISTINCT user_id) AS user_n,
+  SUM(has_d7_apply) AS d7_apply_n,
+  ROUND(100.0 * SUM(has_d7_apply) / NULLIF(COUNT(*), 0), 2)
+    AS d7_apply_rate_pct,
+  ROUND(AVG(previous_credit_amt), 2) AS avg_previous_credit_amt,
+  ROUND(AVG(current_credit_amt), 2) AS avg_current_credit_amt,
+  ROUND(AVG(credit_change_amt), 2) AS avg_credit_change_amt,
+  ROUND(100.0 * AVG(credit_change_rate), 2) AS avg_credit_change_rate_pct,
+  ROUND(100.0 * SUM(previous_remit_amt) / NULLIF(SUM(previous_credit_amt), 0), 2)
+    AS previous_utilization_rate_pct,
+  ROUND(AVG(CASE WHEN has_d7_apply=1 THEN minutes_to_apply END), 2)
+    AS avg_minutes_to_apply
+,
+        ROUND(100.0 * COUNT(*) / SUM(COUNT(*)) OVER (PARTITION BY t0_month), 2)
+          AS event_share_pct,
+        ROUND(100.0 * SUM(has_d7_apply) / SUM(COUNT(*)) OVER (PARTITION BY t0_month), 2)
+          AS contribution_to_overall_rate_pp
+      FROM tmp_t0_credit_change_d7_apply t
+      JOIN retained r USING(previous_credit_amt,current_credit_amt,credit_change_type)
+      GROUP BY t0_month, previous_credit_amt, current_credit_amt, credit_change_type
+      ORDER BY t0_month, event_n DESC, previous_credit_amt, current_credit_amt;
+
+
+-- 额度方向与归因：direction_contribution_vs_jan
+WITH monthly AS (
+        SELECT t0_month, credit_change_type,
+          COUNT(*)::numeric AS n,
+          SUM(has_d7_apply)::numeric AS apply_n,
+          SUM(has_d7_apply)::numeric / NULLIF(COUNT(*),0) AS rate
+        FROM tmp_t0_credit_change_d7_apply
+        GROUP BY t0_month, credit_change_type
+      ), total AS (
+        SELECT t0_month, SUM(n) AS total_n,
+          SUM(apply_n)/NULLIF(SUM(n),0) AS overall_rate
+        FROM monthly GROUP BY t0_month
+      ), m AS (
+        SELECT x.*, x.n/t.total_n AS weight, t.overall_rate
+        FROM monthly x JOIN total t USING (t0_month)
+      ), jan AS (
+        SELECT * FROM m WHERE t0_month=DATE &#x27;2026-01-01&#x27;
+      ), months AS (
+        SELECT DISTINCT t0_month FROM m
+      ), types AS (
+        SELECT DISTINCT credit_change_type FROM m
+      ), grid AS (
+        SELECT mo.t0_month, ty.credit_change_type FROM months mo CROSS JOIN types ty
+      ), paired AS (
+        SELECT g.t0_month, g.credit_change_type,
+          COALESCE(j.n,0) AS jan_n, COALESCE(c.n,0) AS current_n,
+          COALESCE(j.weight,0) AS jan_weight, COALESCE(c.weight,0) AS current_weight,
+          COALESCE(j.rate,c.rate,0) AS jan_rate,
+          COALESCE(c.rate,j.rate,0) AS current_rate,
+          j.overall_rate AS jan_overall_rate
+        FROM grid g
+        LEFT JOIN jan j USING (credit_change_type)
+        LEFT JOIN m c ON c.t0_month=g.t0_month AND c.credit_change_type=g.credit_change_type
+      )
+      SELECT TO_CHAR(t0_month,&#x27;YYYY-MM&#x27;) AS t0_month, credit_change_type,
+        jan_n, current_n,
+        ROUND(100*jan_weight,2) AS jan_share_pct,
+        ROUND(100*current_weight,2) AS current_share_pct,
+        ROUND(100*jan_rate,2) AS jan_rate_pct,
+        ROUND(100*current_rate,2) AS current_rate_pct,
+        ROUND(100*jan_weight*(current_rate-jan_rate),2)
+          AS base_within_effect_pp,
+        ROUND(100*(current_weight-jan_weight)*(jan_rate-jan_overall_rate),2)
+          AS structure_effect_pp,
+        ROUND(100*(current_weight-jan_weight)*(current_rate-jan_rate),2)
+          AS interaction_effect_pp,
+        ROUND(100*current_weight*(current_rate-jan_rate),2)
+          AS result_within_effect_pp,
+        ROUND(100*(
+          jan_weight*(current_rate-jan_rate)
+          +(current_weight-jan_weight)*(jan_rate-jan_overall_rate)
+          +(current_weight-jan_weight)*(current_rate-jan_rate)
+        ),2) AS total_attribution_pp,
+        ROUND(100*(current_weight*current_rate-jan_weight*jan_rate),2)
+          AS direct_weighted_change_pp
+      FROM paired
+      ORDER BY t0_month,
+        CASE credit_change_type WHEN &#x27;额度降低&#x27; THEN 1 WHEN &#x27;额度不变&#x27; THEN 2 ELSE 3 END;
+
+
+-- 额度方向与归因：transition_contribution_vs_jan
+WITH monthly AS (
+        SELECT t0_month, previous_credit_amt, current_credit_amt, credit_change_type,
+          COUNT(*)::numeric AS n,
+          SUM(has_d7_apply)::numeric / NULLIF(COUNT(*),0) AS rate
+        FROM tmp_t0_credit_change_d7_apply
+        GROUP BY t0_month, previous_credit_amt, current_credit_amt, credit_change_type
+      ), retained AS (
+        SELECT previous_credit_amt,current_credit_amt,credit_change_type
+        FROM monthly
+        GROUP BY previous_credit_amt,current_credit_amt,credit_change_type
+        HAVING SUM(n) &gt;= 100
+      ), total AS (
+        SELECT t0_month, SUM(n) AS total_n,
+          SUM(n*rate)/NULLIF(SUM(n),0) AS overall_rate
+        FROM monthly GROUP BY t0_month
+      ), m AS (
+        SELECT x.*, x.n/t.total_n AS weight, t.overall_rate
+        FROM monthly x JOIN total t USING (t0_month)
+        JOIN retained r USING(previous_credit_amt,current_credit_amt,credit_change_type)
+      ), jan AS (
+        SELECT * FROM m WHERE t0_month=DATE &#x27;2026-01-01&#x27;
+      ), months AS (
+        SELECT DISTINCT t0_month FROM m
+      ), paths AS (
+        SELECT DISTINCT previous_credit_amt, current_credit_amt, credit_change_type FROM m
+      ), grid AS (
+        SELECT mo.t0_month, p.* FROM months mo CROSS JOIN paths p
+      ), paired AS (
+        SELECT g.*,
+          COALESCE(j.n,0) AS jan_n, COALESCE(c.n,0) AS current_n,
+          COALESCE(j.weight,0) AS jan_weight, COALESCE(c.weight,0) AS current_weight,
+          COALESCE(j.rate,c.rate,0) AS jan_rate,
+          COALESCE(c.rate,j.rate,0) AS current_rate,
+          (SELECT overall_rate FROM total WHERE t0_month=DATE &#x27;2026-01-01&#x27;)
+            AS jan_overall_rate
+        FROM grid g
+        LEFT JOIN jan j USING (previous_credit_amt,current_credit_amt,credit_change_type)
+        LEFT JOIN m c ON c.t0_month=g.t0_month
+          AND c.previous_credit_amt=g.previous_credit_amt
+          AND c.current_credit_amt=g.current_credit_amt
+          AND c.credit_change_type=g.credit_change_type
+      )
+      SELECT TO_CHAR(t0_month,&#x27;YYYY-MM&#x27;) AS t0_month,
+        previous_credit_amt, current_credit_amt, credit_change_type,
+        previous_credit_amt::text || &#x27;→&#x27; || current_credit_amt::text AS transition_label,
+        jan_n, current_n,
+        ROUND(100*jan_weight,2) AS jan_share_pct,
+        ROUND(100*current_weight,2) AS current_share_pct,
+        ROUND(100*jan_rate,2) AS jan_rate_pct,
+        ROUND(100*current_rate,2) AS current_rate_pct,
+        ROUND(100*jan_weight*(current_rate-jan_rate),3)
+          AS base_within_effect_pp,
+        ROUND(100*(current_weight-jan_weight)*(jan_rate-jan_overall_rate),3)
+          AS structure_effect_pp,
+        ROUND(100*(current_weight-jan_weight)*(current_rate-jan_rate),3)
+          AS interaction_effect_pp,
+        ROUND(100*current_weight*(current_rate-jan_rate),3)
+          AS result_within_effect_pp,
+        ROUND(100*(
+          jan_weight*(current_rate-jan_rate)
+          +(current_weight-jan_weight)*(jan_rate-jan_overall_rate)
+          +(current_weight-jan_weight)*(current_rate-jan_rate)
+        ),3) AS total_attribution_pp,
+        ROUND(100*(current_weight*current_rate-jan_weight*jan_rate),3)
+          AS direct_weighted_change_pp
+      FROM paired
+      ORDER BY t0_month, total_attribution_pp, current_n DESC;
+
+
+-- 额度方向与归因：transition_diagnostics
+WITH monthly AS (
+        SELECT t0_month, previous_credit_amt, current_credit_amt, credit_change_type,
+          COUNT(*) AS event_n,
+          100.0*SUM(has_d7_apply)/NULLIF(COUNT(*),0) AS rate_pct
+        FROM tmp_t0_credit_change_d7_apply
+        GROUP BY t0_month, previous_credit_amt, current_credit_amt, credit_change_type
+      ), total AS (
+        SELECT previous_credit_amt, current_credit_amt, credit_change_type,
+          COUNT(*) AS total_event_n,
+          COUNT(DISTINCT user_id) AS total_user_n,
+          100.0*SUM(has_d7_apply)/NULLIF(COUNT(*),0) AS overall_rate_pct
+        FROM tmp_t0_credit_change_d7_apply
+        GROUP BY previous_credit_amt, current_credit_amt, credit_change_type
+        HAVING COUNT(*) &gt;= 100
+      ), contribution AS (
+        WITH monthly2 AS (
+          SELECT t0_month, previous_credit_amt, current_credit_amt, credit_change_type,
+            COUNT(*)::numeric AS n,
+            SUM(has_d7_apply)::numeric/NULLIF(COUNT(*),0) AS rate
+          FROM tmp_t0_credit_change_d7_apply
+          GROUP BY t0_month, previous_credit_amt, current_credit_amt, credit_change_type
+        ), retained2 AS (
+          SELECT previous_credit_amt,current_credit_amt,credit_change_type
+          FROM monthly2 GROUP BY previous_credit_amt,current_credit_amt,credit_change_type
+          HAVING SUM(n) &gt;= 100
+        ), mt AS (
+          SELECT t0_month,SUM(n) AS total_n FROM monthly2 GROUP BY t0_month
+        ), m AS (
+          SELECT x.*,x.n/mt.total_n AS weight FROM monthly2 x JOIN mt USING(t0_month)
+          JOIN retained2 r USING(previous_credit_amt,current_credit_amt,credit_change_type)
+        ), jan AS (SELECT * FROM m WHERE t0_month=DATE &#x27;2026-01-01&#x27;)
+        SELECT c.previous_credit_amt,c.current_credit_amt,c.credit_change_type,
+          100*(c.weight*c.rate-COALESCE(j.weight,0)*COALESCE(j.rate,c.rate)) AS sep_contribution_pp
+        FROM m c LEFT JOIN jan j USING(previous_credit_amt,current_credit_amt,credit_change_type)
+        WHERE c.t0_month=DATE &#x27;2026-09-01&#x27;
+      )
+      SELECT t.*,
+        t.previous_credit_amt::text || &#x27;→&#x27; || t.current_credit_amt::text AS transition_label,
+        ROUND(t.overall_rate_pct,2) AS overall_rate_pct,
+        COALESCE(MAX(CASE WHEN m.t0_month=DATE &#x27;2026-01-01&#x27; THEN m.event_n END),0) AS jan_event_n,
+        COALESCE(MAX(CASE WHEN m.t0_month=DATE &#x27;2026-09-01&#x27; THEN m.event_n END),0) AS sep_event_n,
+        ROUND(MAX(CASE WHEN m.t0_month=DATE &#x27;2026-01-01&#x27; THEN m.rate_pct END),2) AS jan_rate_pct,
+        ROUND(MAX(CASE WHEN m.t0_month=DATE &#x27;2026-09-01&#x27; THEN m.rate_pct END),2) AS sep_rate_pct,
+        ROUND(MAX(CASE WHEN m.t0_month=DATE &#x27;2026-09-01&#x27; THEN m.rate_pct END)
+             - MAX(CASE WHEN m.t0_month=DATE &#x27;2026-01-01&#x27; THEN m.rate_pct END),2)
+          AS sep_vs_jan_change_pp,
+        COUNT(*) AS observed_month_n,
+        SUM(CASE WHEN m.event_n&gt;=50 THEN 1 ELSE 0 END) AS month_n_ge50,
+        ROUND(MIN(CASE WHEN m.event_n&gt;=50 THEN m.rate_pct END),2) AS min_rate_pct_ge50,
+        ROUND(MAX(CASE WHEN m.event_n&gt;=50 THEN m.rate_pct END),2) AS max_rate_pct_ge50,
+        ROUND(COALESCE(c.sep_contribution_pp,0),3) AS sep_contribution_change_pp
+      FROM total t
+      LEFT JOIN monthly m USING(previous_credit_amt,current_credit_amt,credit_change_type)
+      LEFT JOIN contribution c USING(previous_credit_amt,current_credit_amt,credit_change_type)
+      GROUP BY t.previous_credit_amt,t.current_credit_amt,t.credit_change_type,
+        t.total_event_n,t.total_user_n,t.overall_rate_pct,c.sep_contribution_pp
+      ORDER BY t.total_event_n DESC;
+
+
+-- 额度方向与归因：standardized_direction_overall
+WITH expanded AS (
+        SELECT e.*,
+          CASE WHEN previous_credit_amt &lt; 500 THEN &#x27;&lt;500&#x27;
+               WHEN previous_credit_amt &lt; 1000 THEN &#x27;500-999&#x27;
+               WHEN previous_credit_amt &lt; 2000 THEN &#x27;1000-1999&#x27;
+               WHEN previous_credit_amt &lt; 3000 THEN &#x27;2000-2999&#x27;
+               WHEN previous_credit_amt &lt; 5000 THEN &#x27;3000-4999&#x27;
+               ELSE &#x27;5000及以上&#x27; END AS previous_credit_band
+        FROM tmp_t0_credit_change_d7_apply e
+      ), cell AS (
+        SELECT t0_month, previous_credit_band, loan_count_bucket, previous_util_band,
+          credit_change_type, COUNT(*) AS n, AVG(has_d7_apply::numeric) AS rate
+        FROM expanded
+        GROUP BY t0_month, previous_credit_band, loan_count_bucket,
+          previous_util_band, credit_change_type
+      ), common AS (
+        SELECT t0_month, previous_credit_band, loan_count_bucket, previous_util_band
+        FROM cell
+        GROUP BY t0_month, previous_credit_band, loan_count_bucket, previous_util_band
+        HAVING COUNT(DISTINCT credit_change_type)=3 AND MIN(n)&gt;=20
+      ), supported AS (
+        SELECT c.* FROM cell c JOIN common s USING
+          (t0_month,previous_credit_band,loan_count_bucket,previous_util_band)
+      ), weights AS (
+        SELECT t0_month,previous_credit_band,loan_count_bucket,previous_util_band,
+          SUM(n)::numeric / SUM(SUM(n)) OVER () AS ref_weight
+        FROM supported
+        GROUP BY t0_month,previous_credit_band,loan_count_bucket,previous_util_band
+      ), coverage AS (
+        SELECT COUNT(*) AS all_n,
+          SUM(CASE WHEN c.t0_month IS NOT NULL THEN 1 ELSE 0 END) AS supported_n
+        FROM expanded e
+        LEFT JOIN common c USING(t0_month,previous_credit_band,loan_count_bucket,previous_util_band)
+      )
+      SELECT s.credit_change_type,
+        SUM(s.n) AS supported_event_n,
+        ROUND(100*SUM(w.ref_weight*s.rate),2) AS standardized_d7_apply_rate_pct,
+        ROUND(100.0*MAX(c.supported_n)/MAX(c.all_n),2) AS common_support_coverage_pct
+      FROM supported s
+      JOIN weights w USING(t0_month,previous_credit_band,loan_count_bucket,previous_util_band)
+      CROSS JOIN coverage c
+      GROUP BY s.credit_change_type
+      ORDER BY CASE s.credit_change_type WHEN &#x27;额度降低&#x27; THEN 1 WHEN &#x27;额度不变&#x27; THEN 2 ELSE 3 END;
+
+
+-- 额度方向与归因：standardized_direction_monthly
+WITH expanded AS (
+        SELECT e.*,
+          CASE WHEN previous_credit_amt &lt; 500 THEN &#x27;&lt;500&#x27;
+               WHEN previous_credit_amt &lt; 1000 THEN &#x27;500-999&#x27;
+               WHEN previous_credit_amt &lt; 2000 THEN &#x27;1000-1999&#x27;
+               WHEN previous_credit_amt &lt; 3000 THEN &#x27;2000-2999&#x27;
+               WHEN previous_credit_amt &lt; 5000 THEN &#x27;3000-4999&#x27;
+               ELSE &#x27;5000及以上&#x27; END AS previous_credit_band
+        FROM tmp_t0_credit_change_d7_apply e
+      ), cell AS (
+        SELECT t0_month, previous_credit_band, loan_count_bucket, previous_util_band,
+          credit_change_type, COUNT(*) AS n, AVG(has_d7_apply::numeric) AS rate
+        FROM expanded
+        GROUP BY t0_month, previous_credit_band, loan_count_bucket,
+          previous_util_band, credit_change_type
+      ), common AS (
+        SELECT t0_month, previous_credit_band, loan_count_bucket, previous_util_band
+        FROM cell
+        GROUP BY t0_month, previous_credit_band, loan_count_bucket, previous_util_band
+        HAVING COUNT(DISTINCT credit_change_type)=3 AND MIN(n)&gt;=20
+      ), supported AS (
+        SELECT c.* FROM cell c JOIN common s USING
+          (t0_month,previous_credit_band,loan_count_bucket,previous_util_band)
+      ), weights AS (
+        SELECT t0_month,previous_credit_band,loan_count_bucket,previous_util_band,
+          SUM(n)::numeric / SUM(SUM(n)) OVER (PARTITION BY t0_month) AS ref_weight
+        FROM supported
+        GROUP BY t0_month,previous_credit_band,loan_count_bucket,previous_util_band
+      ), total AS (
+        SELECT t0_month,COUNT(*) AS all_n FROM expanded GROUP BY t0_month
+      ), supported_total AS (
+        SELECT e.t0_month,COUNT(*) AS supported_n
+        FROM expanded e JOIN common c USING
+          (t0_month,previous_credit_band,loan_count_bucket,previous_util_band)
+        GROUP BY e.t0_month
+      )
+      SELECT TO_CHAR(s.t0_month,&#x27;YYYY-MM&#x27;) AS t0_month,s.credit_change_type,
+        SUM(s.n) AS supported_event_n,
+        ROUND(100*SUM(w.ref_weight*s.rate),2) AS standardized_d7_apply_rate_pct,
+        ROUND(100.0*MAX(st.supported_n)/MAX(t.all_n),2) AS common_support_coverage_pct
+      FROM supported s
+      JOIN weights w USING(t0_month,previous_credit_band,loan_count_bucket,previous_util_band)
+      JOIN total t USING(t0_month) JOIN supported_total st USING(t0_month)
+      GROUP BY s.t0_month,s.credit_change_type
+      ORDER BY s.t0_month,
+        CASE s.credit_change_type WHEN &#x27;额度降低&#x27; THEN 1 WHEN &#x27;额度不变&#x27; THEN 2 ELSE 3 END;
+
+
+-- 借款次数交叉：monthly_overall
+SELECT TO_CHAR(t0_month, &#x27;YYYY-MM&#x27;) AS t0_month,
+               COUNT(*) AS event_n,
+               COUNT(DISTINCT user_id) AS user_n,
+               SUM(has_d7_apply) AS apply_n,
+               ROUND(100.0 * AVG(has_d7_apply::numeric), 4) AS apply_rate_pct
+        FROM tmp_t0_credit_change_d7_apply
+        WHERE t0_month &gt;= DATE &#x27;2026-01-01&#x27;
+          AND t0_month &lt;  DATE &#x27;2026-09-01&#x27;
+        GROUP BY t0_month
+        ORDER BY t0_month;
+
+
+-- 借款次数交叉：monthly_direction_loan
+SELECT TO_CHAR(t0_month, &#x27;YYYY-MM&#x27;) AS t0_month,
+               credit_change_type, loan_count_bucket,
+               COUNT(*) AS event_n,
+               COUNT(DISTINCT user_id) AS user_n,
+               SUM(has_d7_apply) AS apply_n,
+               ROUND(100.0 * AVG(has_d7_apply::numeric), 4) AS apply_rate_pct
+        FROM tmp_t0_credit_change_d7_apply
+        WHERE t0_month &gt;= DATE &#x27;2026-01-01&#x27;
+          AND t0_month &lt;  DATE &#x27;2026-09-01&#x27;
+        GROUP BY t0_month, credit_change_type, loan_count_bucket
+        ORDER BY t0_month,
+          CASE credit_change_type
+            WHEN &#x27;额度增加&#x27; THEN 1 WHEN &#x27;额度不变&#x27; THEN 2 ELSE 3 END,
+          CASE loan_count_bucket
+            WHEN &#x27;1次&#x27; THEN 1 WHEN &#x27;2次&#x27; THEN 2 WHEN &#x27;3次&#x27; THEN 3
+            WHEN &#x27;4次&#x27; THEN 4 WHEN &#x27;5次&#x27; THEN 5 ELSE 6 END;
+
+
+-- 借款次数交叉：monthly_cross
+WITH banded AS (
+          SELECT t.*,
+                 FLOOR(previous_credit_amt / 1000.0)::int * 1000
+                   AS previous_band_lower,
+                 FLOOR(current_credit_amt / 1000.0)::int * 1000
+                   AS current_band_lower,
+                 CASE
+                   WHEN credit_change_type = &#x27;额度增加&#x27; AND ABS(credit_change_amt) &lt;= 100
+                     THEN &#x27;提额≤100&#x27;
+                   WHEN credit_change_type = &#x27;额度增加&#x27; AND ABS(credit_change_amt) &lt;= 300
+                     THEN &#x27;提额100–300&#x27;
+                   WHEN credit_change_type = &#x27;额度增加&#x27; AND ABS(credit_change_amt) &lt;= 500
+                     THEN &#x27;提额300–500&#x27;
+                   WHEN credit_change_type = &#x27;额度增加&#x27; AND ABS(credit_change_amt) &lt;= 1000
+                     THEN &#x27;提额500–1000&#x27;
+                   WHEN credit_change_type = &#x27;额度增加&#x27; AND ABS(credit_change_amt) &lt;= 2000
+                     THEN &#x27;提额1000–2000&#x27;
+                   WHEN credit_change_type = &#x27;额度增加&#x27; AND ABS(credit_change_amt) &lt;= 4000
+                     THEN &#x27;提额2000–4000&#x27;
+                   WHEN credit_change_type = &#x27;额度增加&#x27; THEN &#x27;提额&gt;4000&#x27;
+                   WHEN credit_change_type = &#x27;额度降低&#x27; AND ABS(credit_change_amt) &lt;= 100
+                     THEN &#x27;降额≤100&#x27;
+                   WHEN credit_change_type = &#x27;额度降低&#x27; AND ABS(credit_change_amt) &lt;= 200
+                     THEN &#x27;降额100–200&#x27;
+                   WHEN credit_change_type = &#x27;额度降低&#x27; AND ABS(credit_change_amt) &lt;= 300
+                     THEN &#x27;降额200–300&#x27;
+                   WHEN credit_change_type = &#x27;额度降低&#x27; AND ABS(credit_change_amt) &lt;= 500
+                     THEN &#x27;降额300–500&#x27;
+                   WHEN credit_change_type = &#x27;额度降低&#x27; AND ABS(credit_change_amt) &lt;= 1000
+                     THEN &#x27;降额500–1000&#x27;
+                   WHEN credit_change_type = &#x27;额度降低&#x27; AND ABS(credit_change_amt) &lt;= 2000
+                     THEN &#x27;降额1000–2000&#x27;
+                   WHEN credit_change_type = &#x27;额度降低&#x27; THEN &#x27;降额&gt;2000&#x27;
+                   ELSE &#x27;额度不变&#x27;
+                 END AS change_amount_band
+          FROM tmp_t0_credit_change_d7_apply t
+          WHERE t0_month &gt;= DATE &#x27;2026-01-01&#x27;
+            AND t0_month &lt;  DATE &#x27;2026-09-01&#x27;
+        )
+        SELECT TO_CHAR(t0_month, &#x27;YYYY-MM&#x27;) AS t0_month,
+               credit_change_type, loan_count_bucket,
+               previous_band_lower, current_band_lower, change_amount_band,
+               COUNT(*) AS event_n,
+               SUM(has_d7_apply) AS apply_n
+        FROM banded
+        GROUP BY t0_month, credit_change_type, loan_count_bucket,
+                 previous_band_lower, current_band_lower, change_amount_band
+        ORDER BY t0_month, credit_change_type, loan_count_bucket,
+                 previous_band_lower, current_band_lower, change_amount_band;
+
+
+-- 7日累计行为窗口
+DROP TABLE IF EXISTS tmp_t0_behavior_window;
+CREATE TEMP TABLE tmp_t0_behavior_window AS
+SELECT t.*,
+       LEAST(
+         COALESCE(
+           LEAD(vir_time) OVER (
+             PARTITION BY user_id ORDER BY vir_time, credit_serial_id
+           ),
+           vir_date + INTERVAL &#x27;8 days&#x27;
+         ),
+         vir_date + INTERVAL &#x27;8 days&#x27;
+       ) AS behavior_end_time,
+       FLOOR(previous_credit_amt / 1000.0)::int * 1000 AS previous_band_lower,
+       FLOOR(current_credit_amt / 1000.0)::int * 1000 AS current_band_lower,
+       CASE
+         WHEN credit_change_type = &#x27;额度增加&#x27; AND ABS(credit_change_amt) &lt;= 100
+           THEN &#x27;提额≤100&#x27;
+         WHEN credit_change_type = &#x27;额度增加&#x27; AND ABS(credit_change_amt) &lt;= 300
+           THEN &#x27;提额100–300&#x27;
+         WHEN credit_change_type = &#x27;额度增加&#x27; AND ABS(credit_change_amt) &lt;= 500
+           THEN &#x27;提额300–500&#x27;
+         WHEN credit_change_type = &#x27;额度增加&#x27; AND ABS(credit_change_amt) &lt;= 1000
+           THEN &#x27;提额500–1000&#x27;
+         WHEN credit_change_type = &#x27;额度增加&#x27; AND ABS(credit_change_amt) &lt;= 2000
+           THEN &#x27;提额1000–2000&#x27;
+         WHEN credit_change_type = &#x27;额度增加&#x27; AND ABS(credit_change_amt) &lt;= 4000
+           THEN &#x27;提额2000–4000&#x27;
+         WHEN credit_change_type = &#x27;额度增加&#x27; THEN &#x27;提额&gt;4000&#x27;
+         WHEN credit_change_type = &#x27;额度降低&#x27; AND ABS(credit_change_amt) &lt;= 100
+           THEN &#x27;降额≤100&#x27;
+         WHEN credit_change_type = &#x27;额度降低&#x27; AND ABS(credit_change_amt) &lt;= 200
+           THEN &#x27;降额100–200&#x27;
+         WHEN credit_change_type = &#x27;额度降低&#x27; AND ABS(credit_change_amt) &lt;= 300
+           THEN &#x27;降额200–300&#x27;
+         WHEN credit_change_type = &#x27;额度降低&#x27; AND ABS(credit_change_amt) &lt;= 500
+           THEN &#x27;降额300–500&#x27;
+         WHEN credit_change_type = &#x27;额度降低&#x27; AND ABS(credit_change_amt) &lt;= 1000
+           THEN &#x27;降额500–1000&#x27;
+         WHEN credit_change_type = &#x27;额度降低&#x27; AND ABS(credit_change_amt) &lt;= 2000
+           THEN &#x27;降额1000–2000&#x27;
+         WHEN credit_change_type = &#x27;额度降低&#x27; THEN &#x27;降额&gt;2000&#x27;
+         ELSE &#x27;额度不变&#x27;
+       END AS change_amount_band
+FROM tmp_t0_credit_change_d7_apply t
+WHERE t0_month &gt;= DATE &#x27;2026-01-01&#x27;
+  AND t0_month &lt;  DATE &#x27;2026-09-01&#x27;;
+
+DROP TABLE IF EXISTS tmp_t0_behavior_event;
+CREATE TEMP TABLE tmp_t0_behavior_event AS
+SELECT w.t0_month, w.user_id, w.credit_serial_id, w.vir_date, w.vir_time,
+       w.credit_change_type, w.loan_count_bucket, w.successful_loan_n,
+       w.previous_credit_amt, w.current_credit_amt, w.credit_change_amt,
+       w.previous_band_lower, w.current_band_lower, w.change_amount_band,
+       w.has_d7_apply,
+       0::bigint AS active_status,
+       0::bigint AS newpage,
+       0::bigint AS amount_selection,
+       0::bigint AS contract_newdetails,
+       0::bigint AS term_selection,
+       0::bigint AS newconfirm,
+       0::bigint AS plan_newdetails,
+       0::bigint AS purpose_newdetails,
+       0::bigint AS coupons_back,
+       0::bigint AS coupons_confirm,
+       0::bigint AS coupons_page,
+       0::double precision AS active_duration,
+       0::double precision AS apply_duration,
+       0::double precision AS non_apply_duration
+FROM tmp_t0_behavior_window w
+WHERE 1=0;
+
+
+-- 按T0月份循环执行，end_date为下月1日；行为源表额外读取D+7
+INSERT INTO tmp_t0_behavior_event
+SELECT w.t0_month, w.user_id, w.credit_serial_id, w.vir_date, w.vir_time,
+       w.credit_change_type, w.loan_count_bucket, w.successful_loan_n,
+       w.previous_credit_amt, w.current_credit_amt, w.credit_change_amt,
+       w.previous_band_lower, w.current_band_lower, w.change_amount_band,
+       w.has_d7_apply,
+       COUNT(e.user_id)::bigint AS active_status,
+       SUM(CASE WHEN e.event_type=&#x27;page_view_in&#x27;
+                     AND e.props_id IN (&#x27;Loan_newpage&#x27;,&#x27;Loan_newpage_select&#x27;)
+                THEN 1 ELSE 0 END)::bigint AS newpage,
+       SUM(CASE WHEN e.props_id IN (
+                     &#x27;amount_modification&#x27;,
+                     &#x27;loan_form_loan_amount_selectionn_new&#x27;,
+                     &#x27;loan_form_loan_amount_selectionn_new_select&#x27;)
+                THEN 1 ELSE 0 END)::bigint AS amount_selection,
+       SUM(CASE WHEN e.props_id IN (
+                     &#x27;Loan_contract_newdetails&#x27;,&#x27;Loan_contract_newdetails_select&#x27;)
+                THEN 1 ELSE 0 END)::bigint AS contract_newdetails,
+       SUM(CASE WHEN e.props_id IN (
+                     &#x27;loan_form_term_selection_new&#x27;,
+                     &#x27;loan_form_term_selection_new_select&#x27;)
+                THEN 1 ELSE 0 END)::bigint AS term_selection,
+       SUM(CASE WHEN e.props_id IN (&#x27;Loan_newconfirm&#x27;,&#x27;Loan_newconfirm_select&#x27;)
+                THEN 1 ELSE 0 END)::bigint AS newconfirm,
+       SUM(CASE WHEN e.props_id IN (
+                     &#x27;Loan_plan_newdetails&#x27;,&#x27;Loan_plan_newdetails_select&#x27;)
+                THEN 1 ELSE 0 END)::bigint AS plan_newdetails,
+       SUM(CASE WHEN e.props_id IN (
+                     &#x27;Loan_purpose_newdetails&#x27;,&#x27;Loan_purpose_newdetails_select&#x27;)
+                THEN 1 ELSE 0 END)::bigint AS purpose_newdetails,
+       SUM(CASE WHEN e.props_id IN (&#x27;Order_coupons_back&#x27;,&#x27;Order_coupons_back_select&#x27;)
+                THEN 1 ELSE 0 END)::bigint AS coupons_back,
+       SUM(CASE WHEN e.props_id IN (
+                     &#x27;Order_coupons_confirm&#x27;,&#x27;Order_coupons_confirm_select&#x27;)
+                THEN 1 ELSE 0 END)::bigint AS coupons_confirm,
+       SUM(CASE WHEN e.props_id IN (&#x27;Order_coupons_page&#x27;,&#x27;Order_coupons_page_select&#x27;)
+                THEN 1 ELSE 0 END)::bigint AS coupons_page,
+       SUM(CASE WHEN e.event_end_time IS NOT NULL
+                     AND e.event_start_time IS NOT NULL
+                     AND e.event_end_time &gt;= e.event_start_time
+                THEN (e.event_end_time-e.event_start_time)/1000.0 ELSE 0 END)
+         ::double precision AS active_duration,
+       SUM(CASE WHEN e.event_type=&#x27;page_view_out&#x27;
+                     AND e.props_id IN (&#x27;Loan_newpage&#x27;,&#x27;Loan_newpage_select&#x27;)
+                     AND e.event_end_time IS NOT NULL
+                     AND e.event_start_time IS NOT NULL
+                     AND e.event_end_time &gt;= e.event_start_time
+                THEN (e.event_end_time-e.event_start_time)/1000.0 ELSE 0 END)
+         ::double precision AS apply_duration,
+       (
+         SUM(CASE WHEN e.event_end_time IS NOT NULL
+                       AND e.event_start_time IS NOT NULL
+                       AND e.event_end_time &gt;= e.event_start_time
+                  THEN (e.event_end_time-e.event_start_time)/1000.0 ELSE 0 END)
+         - SUM(CASE WHEN e.event_type=&#x27;page_view_out&#x27;
+                         AND e.props_id IN (&#x27;Loan_newpage&#x27;,&#x27;Loan_newpage_select&#x27;)
+                         AND e.event_end_time IS NOT NULL
+                         AND e.event_start_time IS NOT NULL
+                         AND e.event_end_time &gt;= e.event_start_time
+                    THEN (e.event_end_time-e.event_start_time)/1000.0 ELSE 0 END)
+       )::double precision AS non_apply_duration
+FROM tmp_t0_behavior_window w
+LEFT JOIN wangchuanliang.event_track_record e
+  ON e.user_id = w.user_id
+ AND e.create_date &gt;= DATE &#x27;{start_date}&#x27;
+ AND e.create_date &lt;  DATE &#x27;{end_date}&#x27; + 7
+ AND e.create_date &gt;= w.vir_date
+ AND e.create_date &lt;  w.vir_date + 8
+ AND e.create_time &gt;= w.vir_time
+ AND e.create_time &lt;  w.behavior_end_time
+WHERE w.t0_month &gt;= DATE &#x27;{start_date}&#x27;
+  AND w.t0_month &lt;  DATE &#x27;{end_date}&#x27;
+GROUP BY w.t0_month, w.user_id, w.credit_serial_id, w.vir_date, w.vir_time,
+         w.credit_change_type, w.loan_count_bucket, w.successful_loan_n,
+         w.previous_credit_amt, w.current_credit_amt, w.credit_change_amt,
+         w.previous_band_lower, w.current_band_lower, w.change_amount_band,
+         w.has_d7_apply;
+
+
+-- 7日累计行为：monthly_direction_apply
+SELECT TO_CHAR(t0_month,&#x27;YYYY-MM&#x27;) AS t0_month,
+             credit_change_type, has_d7_apply, 
+       COUNT(*) AS event_n,
+       SUM(has_d7_apply) AS apply_n,
+       ROUND(100.0*AVG(has_d7_apply::numeric),4) AS apply_rate_pct,
+       ROUND(100.0*AVG(CASE WHEN active_status&gt;0 THEN 1 ELSE 0 END),4)
+         AS active_user_rate_pct,
+       ROUND(100.0*AVG(CASE WHEN newpage&gt;0 THEN 1 ELSE 0 END),4)
+         AS newpage_user_rate_pct,
+       ROUND(100.0*AVG(CASE WHEN amount_selection&gt;0 THEN 1 ELSE 0 END),4)
+         AS amount_user_rate_pct,
+       ROUND(100.0*AVG(CASE WHEN contract_newdetails&gt;0 THEN 1 ELSE 0 END),4)
+         AS contract_user_rate_pct,
+       ROUND(100.0*AVG(CASE WHEN term_selection&gt;0 THEN 1 ELSE 0 END),4)
+         AS term_user_rate_pct,
+       ROUND(100.0*AVG(CASE WHEN newconfirm&gt;0 THEN 1 ELSE 0 END),4)
+         AS confirm_user_rate_pct,
+       ROUND(100.0*AVG(CASE WHEN plan_newdetails&gt;0 THEN 1 ELSE 0 END),4)
+         AS plan_user_rate_pct,
+       ROUND(100.0*AVG(CASE WHEN purpose_newdetails&gt;0 THEN 1 ELSE 0 END),4)
+         AS purpose_user_rate_pct,
+       ROUND(100.0*AVG(CASE WHEN coupons_back&gt;0 THEN 1 ELSE 0 END),4)
+         AS coupons_back_user_rate_pct,
+       ROUND(100.0*AVG(CASE WHEN coupons_confirm&gt;0 THEN 1 ELSE 0 END),4)
+         AS coupons_confirm_user_rate_pct,
+       ROUND(100.0*AVG(CASE WHEN coupons_page&gt;0 THEN 1 ELSE 0 END),4)
+         AS coupons_page_user_rate_pct,
+       ROUND(AVG(active_status),4) AS avg_active_status,
+       ROUND(AVG(newpage),4) AS avg_newpage,
+       ROUND(AVG(amount_selection),4) AS avg_amount_selection,
+       ROUND(AVG(term_selection),4) AS avg_term_selection,
+       ROUND(AVG(newconfirm),4) AS avg_newconfirm,
+       ROUND(AVG(active_duration),4) AS avg_active_duration_sec,
+       ROUND(AVG(apply_duration),4) AS avg_apply_duration_sec,
+       ROUND(AVG(non_apply_duration),4) AS avg_non_apply_duration_sec,
+       ROUND(PERCENTILE_CONT(0.5) WITHIN GROUP (
+         ORDER BY CASE WHEN active_status&gt;0 THEN active_duration END
+       ),4) AS median_active_duration_sec,
+       ROUND(PERCENTILE_CONT(0.5) WITHIN GROUP (
+         ORDER BY CASE WHEN newpage&gt;0 THEN apply_duration END
+       ),4) AS median_apply_duration_sec
+
+      FROM tmp_t0_behavior_event
+      GROUP BY t0_month,credit_change_type,has_d7_apply
+      ORDER BY t0_month,
+        CASE credit_change_type WHEN &#x27;额度增加&#x27; THEN 1
+             WHEN &#x27;额度不变&#x27; THEN 2 ELSE 3 END,
+        has_d7_apply;
+
+
+-- 7日累计行为：monthly_segment_apply
+WITH labeled AS (
+        SELECT t.*,
+          CASE
+            WHEN credit_change_type=&#x27;额度增加&#x27; AND successful_loan_n&lt;=3
+                 AND credit_change_amt&gt;=500 THEN &#x27;提额核心｜前3次且提额&gt;=500&#x27;
+            WHEN credit_change_type=&#x27;额度降低&#x27; AND successful_loan_n&lt;=3
+                 AND ABS(credit_change_amt)&lt;=1000 THEN &#x27;降额核心｜前3次且降额&lt;=1000&#x27;
+            WHEN credit_change_type=&#x27;额度增加&#x27; THEN &#x27;其他提额&#x27;
+            WHEN credit_change_type=&#x27;额度降低&#x27; THEN &#x27;其他降额&#x27;
+            ELSE &#x27;额度不变&#x27; END AS segment
+        FROM tmp_t0_behavior_event t
+      )
+      SELECT TO_CHAR(t0_month,&#x27;YYYY-MM&#x27;) AS t0_month,
+             segment,has_d7_apply,
+       COUNT(*) AS event_n,
+       SUM(has_d7_apply) AS apply_n,
+       ROUND(100.0*AVG(has_d7_apply::numeric),4) AS apply_rate_pct,
+       ROUND(100.0*AVG(CASE WHEN active_status&gt;0 THEN 1 ELSE 0 END),4)
+         AS active_user_rate_pct,
+       ROUND(100.0*AVG(CASE WHEN newpage&gt;0 THEN 1 ELSE 0 END),4)
+         AS newpage_user_rate_pct,
+       ROUND(100.0*AVG(CASE WHEN amount_selection&gt;0 THEN 1 ELSE 0 END),4)
+         AS amount_user_rate_pct,
+       ROUND(100.0*AVG(CASE WHEN contract_newdetails&gt;0 THEN 1 ELSE 0 END),4)
+         AS contract_user_rate_pct,
+       ROUND(100.0*AVG(CASE WHEN term_selection&gt;0 THEN 1 ELSE 0 END),4)
+         AS term_user_rate_pct,
+       ROUND(100.0*AVG(CASE WHEN newconfirm&gt;0 THEN 1 ELSE 0 END),4)
+         AS confirm_user_rate_pct,
+       ROUND(100.0*AVG(CASE WHEN plan_newdetails&gt;0 THEN 1 ELSE 0 END),4)
+         AS plan_user_rate_pct,
+       ROUND(100.0*AVG(CASE WHEN purpose_newdetails&gt;0 THEN 1 ELSE 0 END),4)
+         AS purpose_user_rate_pct,
+       ROUND(100.0*AVG(CASE WHEN coupons_back&gt;0 THEN 1 ELSE 0 END),4)
+         AS coupons_back_user_rate_pct,
+       ROUND(100.0*AVG(CASE WHEN coupons_confirm&gt;0 THEN 1 ELSE 0 END),4)
+         AS coupons_confirm_user_rate_pct,
+       ROUND(100.0*AVG(CASE WHEN coupons_page&gt;0 THEN 1 ELSE 0 END),4)
+         AS coupons_page_user_rate_pct,
+       ROUND(AVG(active_status),4) AS avg_active_status,
+       ROUND(AVG(newpage),4) AS avg_newpage,
+       ROUND(AVG(amount_selection),4) AS avg_amount_selection,
+       ROUND(AVG(term_selection),4) AS avg_term_selection,
+       ROUND(AVG(newconfirm),4) AS avg_newconfirm,
+       ROUND(AVG(active_duration),4) AS avg_active_duration_sec,
+       ROUND(AVG(apply_duration),4) AS avg_apply_duration_sec,
+       ROUND(AVG(non_apply_duration),4) AS avg_non_apply_duration_sec,
+       ROUND(PERCENTILE_CONT(0.5) WITHIN GROUP (
+         ORDER BY CASE WHEN active_status&gt;0 THEN active_duration END
+       ),4) AS median_active_duration_sec,
+       ROUND(PERCENTILE_CONT(0.5) WITHIN GROUP (
+         ORDER BY CASE WHEN newpage&gt;0 THEN apply_duration END
+       ),4) AS median_apply_duration_sec
+
+      FROM labeled
+      GROUP BY t0_month,segment,has_d7_apply
+      ORDER BY t0_month,segment,has_d7_apply;
+
+
+-- 7日累计行为：monthly_segment
+WITH labeled AS (
+        SELECT t.*,
+          CASE
+            WHEN credit_change_type=&#x27;额度增加&#x27; AND successful_loan_n&lt;=3
+                 AND credit_change_amt&gt;=500 THEN &#x27;提额核心｜前3次且提额&gt;=500&#x27;
+            WHEN credit_change_type=&#x27;额度降低&#x27; AND successful_loan_n&lt;=3
+                 AND ABS(credit_change_amt)&lt;=1000 THEN &#x27;降额核心｜前3次且降额&lt;=1000&#x27;
+            WHEN credit_change_type=&#x27;额度增加&#x27; THEN &#x27;其他提额&#x27;
+            WHEN credit_change_type=&#x27;额度降低&#x27; THEN &#x27;其他降额&#x27;
+            ELSE &#x27;额度不变&#x27; END AS segment
+        FROM tmp_t0_behavior_event t
+      )
+      SELECT TO_CHAR(t0_month,&#x27;YYYY-MM&#x27;) AS t0_month,segment,
+       COUNT(*) AS event_n,
+       SUM(has_d7_apply) AS apply_n,
+       ROUND(100.0*AVG(has_d7_apply::numeric),4) AS apply_rate_pct,
+       ROUND(100.0*AVG(CASE WHEN active_status&gt;0 THEN 1 ELSE 0 END),4)
+         AS active_user_rate_pct,
+       ROUND(100.0*AVG(CASE WHEN newpage&gt;0 THEN 1 ELSE 0 END),4)
+         AS newpage_user_rate_pct,
+       ROUND(100.0*AVG(CASE WHEN amount_selection&gt;0 THEN 1 ELSE 0 END),4)
+         AS amount_user_rate_pct,
+       ROUND(100.0*AVG(CASE WHEN contract_newdetails&gt;0 THEN 1 ELSE 0 END),4)
+         AS contract_user_rate_pct,
+       ROUND(100.0*AVG(CASE WHEN term_selection&gt;0 THEN 1 ELSE 0 END),4)
+         AS term_user_rate_pct,
+       ROUND(100.0*AVG(CASE WHEN newconfirm&gt;0 THEN 1 ELSE 0 END),4)
+         AS confirm_user_rate_pct,
+       ROUND(100.0*AVG(CASE WHEN plan_newdetails&gt;0 THEN 1 ELSE 0 END),4)
+         AS plan_user_rate_pct,
+       ROUND(100.0*AVG(CASE WHEN purpose_newdetails&gt;0 THEN 1 ELSE 0 END),4)
+         AS purpose_user_rate_pct,
+       ROUND(100.0*AVG(CASE WHEN coupons_back&gt;0 THEN 1 ELSE 0 END),4)
+         AS coupons_back_user_rate_pct,
+       ROUND(100.0*AVG(CASE WHEN coupons_confirm&gt;0 THEN 1 ELSE 0 END),4)
+         AS coupons_confirm_user_rate_pct,
+       ROUND(100.0*AVG(CASE WHEN coupons_page&gt;0 THEN 1 ELSE 0 END),4)
+         AS coupons_page_user_rate_pct,
+       ROUND(AVG(active_status),4) AS avg_active_status,
+       ROUND(AVG(newpage),4) AS avg_newpage,
+       ROUND(AVG(amount_selection),4) AS avg_amount_selection,
+       ROUND(AVG(term_selection),4) AS avg_term_selection,
+       ROUND(AVG(newconfirm),4) AS avg_newconfirm,
+       ROUND(AVG(active_duration),4) AS avg_active_duration_sec,
+       ROUND(AVG(apply_duration),4) AS avg_apply_duration_sec,
+       ROUND(AVG(non_apply_duration),4) AS avg_non_apply_duration_sec,
+       ROUND(PERCENTILE_CONT(0.5) WITHIN GROUP (
+         ORDER BY CASE WHEN active_status&gt;0 THEN active_duration END
+       ),4) AS median_active_duration_sec,
+       ROUND(PERCENTILE_CONT(0.5) WITHIN GROUP (
+         ORDER BY CASE WHEN newpage&gt;0 THEN apply_duration END
+       ),4) AS median_apply_duration_sec
+
+      FROM labeled
+      GROUP BY t0_month,segment
+      ORDER BY t0_month,segment;
+
+
+-- 7日累计行为：behavior_apply_lift
+WITH labeled AS (
+        SELECT t.*,
+          CASE
+            WHEN credit_change_type=&#x27;额度增加&#x27; AND successful_loan_n&lt;=3
+                 AND credit_change_amt&gt;=500 THEN &#x27;提额核心｜前3次且提额&gt;=500&#x27;
+            WHEN credit_change_type=&#x27;额度降低&#x27; AND successful_loan_n&lt;=3
+                 AND ABS(credit_change_amt)&lt;=1000 THEN &#x27;降额核心｜前3次且降额&lt;=1000&#x27;
+            WHEN credit_change_type=&#x27;额度增加&#x27; THEN &#x27;其他提额&#x27;
+            WHEN credit_change_type=&#x27;额度降低&#x27; THEN &#x27;其他降额&#x27;
+            ELSE &#x27;额度不变&#x27; END AS segment
+        FROM tmp_t0_behavior_event t
+      ), flags AS (
+        SELECT t0_month,segment,has_d7_apply,&#x27;进入提单页&#x27;::text AS behavior,
+               CASE WHEN newpage&gt;0 THEN 1 ELSE 0 END AS behavior_flag FROM labeled
+        UNION ALL SELECT t0_month,segment,has_d7_apply,&#x27;切换借款金额&#x27;,
+               CASE WHEN amount_selection&gt;0 THEN 1 ELSE 0 END FROM labeled
+        UNION ALL SELECT t0_month,segment,has_d7_apply,&#x27;查看借款合同&#x27;,
+               CASE WHEN contract_newdetails&gt;0 THEN 1 ELSE 0 END FROM labeled
+        UNION ALL SELECT t0_month,segment,has_d7_apply,&#x27;切换借款期次&#x27;,
+               CASE WHEN term_selection&gt;0 THEN 1 ELSE 0 END FROM labeled
+        UNION ALL SELECT t0_month,segment,has_d7_apply,&#x27;确认提单&#x27;,
+               CASE WHEN newconfirm&gt;0 THEN 1 ELSE 0 END FROM labeled
+        UNION ALL SELECT t0_month,segment,has_d7_apply,&#x27;查看还款计划&#x27;,
+               CASE WHEN plan_newdetails&gt;0 THEN 1 ELSE 0 END FROM labeled
+        UNION ALL SELECT t0_month,segment,has_d7_apply,&#x27;选择借款原因&#x27;,
+               CASE WHEN purpose_newdetails&gt;0 THEN 1 ELSE 0 END FROM labeled
+        UNION ALL SELECT t0_month,segment,has_d7_apply,&#x27;优惠券拦截关闭&#x27;,
+               CASE WHEN coupons_back&gt;0 THEN 1 ELSE 0 END FROM labeled
+        UNION ALL SELECT t0_month,segment,has_d7_apply,&#x27;优惠券拦截点击&#x27;,
+               CASE WHEN coupons_confirm&gt;0 THEN 1 ELSE 0 END FROM labeled
+        UNION ALL SELECT t0_month,segment,has_d7_apply,&#x27;进入优惠券挽留页&#x27;,
+               CASE WHEN coupons_page&gt;0 THEN 1 ELSE 0 END FROM labeled
+      )
+      SELECT TO_CHAR(t0_month,&#x27;YYYY-MM&#x27;) AS t0_month,segment,behavior,behavior_flag,
+             COUNT(*) AS event_n,SUM(has_d7_apply) AS apply_n,
+             ROUND(100.0*AVG(has_d7_apply::numeric),4) AS apply_rate_pct
+      FROM flags
+      GROUP BY t0_month,segment,behavior,behavior_flag
+      ORDER BY t0_month,segment,behavior,behavior_flag;
+
+
+-- 7日累计行为：monthly_multidim
+WITH labeled AS (
+        SELECT t.*,
+          CASE WHEN successful_loan_n&lt;=3 THEN &#x27;前3次&#x27; ELSE &#x27;第4次及以上&#x27; END
+            AS loan_stage,
+          CASE WHEN previous_credit_amt&lt;1000 THEN &#x27;上笔额度&lt;1000&#x27;
+               WHEN previous_credit_amt&lt;2000 THEN &#x27;上笔额度1000–2000&#x27;
+               ELSE &#x27;上笔额度&gt;=2000&#x27; END AS previous_credit_group
+        FROM tmp_t0_behavior_event t
+      )
+      SELECT TO_CHAR(t0_month,&#x27;YYYY-MM&#x27;) AS t0_month,credit_change_type,
+             loan_stage,previous_credit_group,change_amount_band,
+       COUNT(*) AS event_n,
+       SUM(has_d7_apply) AS apply_n,
+       ROUND(100.0*AVG(has_d7_apply::numeric),4) AS apply_rate_pct,
+       ROUND(100.0*AVG(CASE WHEN active_status&gt;0 THEN 1 ELSE 0 END),4)
+         AS active_user_rate_pct,
+       ROUND(100.0*AVG(CASE WHEN newpage&gt;0 THEN 1 ELSE 0 END),4)
+         AS newpage_user_rate_pct,
+       ROUND(100.0*AVG(CASE WHEN amount_selection&gt;0 THEN 1 ELSE 0 END),4)
+         AS amount_user_rate_pct,
+       ROUND(100.0*AVG(CASE WHEN contract_newdetails&gt;0 THEN 1 ELSE 0 END),4)
+         AS contract_user_rate_pct,
+       ROUND(100.0*AVG(CASE WHEN term_selection&gt;0 THEN 1 ELSE 0 END),4)
+         AS term_user_rate_pct,
+       ROUND(100.0*AVG(CASE WHEN newconfirm&gt;0 THEN 1 ELSE 0 END),4)
+         AS confirm_user_rate_pct,
+       ROUND(100.0*AVG(CASE WHEN plan_newdetails&gt;0 THEN 1 ELSE 0 END),4)
+         AS plan_user_rate_pct,
+       ROUND(100.0*AVG(CASE WHEN purpose_newdetails&gt;0 THEN 1 ELSE 0 END),4)
+         AS purpose_user_rate_pct,
+       ROUND(100.0*AVG(CASE WHEN coupons_back&gt;0 THEN 1 ELSE 0 END),4)
+         AS coupons_back_user_rate_pct,
+       ROUND(100.0*AVG(CASE WHEN coupons_confirm&gt;0 THEN 1 ELSE 0 END),4)
+         AS coupons_confirm_user_rate_pct,
+       ROUND(100.0*AVG(CASE WHEN coupons_page&gt;0 THEN 1 ELSE 0 END),4)
+         AS coupons_page_user_rate_pct,
+       ROUND(AVG(active_status),4) AS avg_active_status,
+       ROUND(AVG(newpage),4) AS avg_newpage,
+       ROUND(AVG(amount_selection),4) AS avg_amount_selection,
+       ROUND(AVG(term_selection),4) AS avg_term_selection,
+       ROUND(AVG(newconfirm),4) AS avg_newconfirm,
+       ROUND(AVG(active_duration),4) AS avg_active_duration_sec,
+       ROUND(AVG(apply_duration),4) AS avg_apply_duration_sec,
+       ROUND(AVG(non_apply_duration),4) AS avg_non_apply_duration_sec,
+       ROUND(PERCENTILE_CONT(0.5) WITHIN GROUP (
+         ORDER BY CASE WHEN active_status&gt;0 THEN active_duration END
+       ),4) AS median_active_duration_sec,
+       ROUND(PERCENTILE_CONT(0.5) WITHIN GROUP (
+         ORDER BY CASE WHEN newpage&gt;0 THEN apply_duration END
+       ),4) AS median_apply_duration_sec
+
+      FROM labeled
+      GROUP BY t0_month,credit_change_type,loan_stage,
+               previous_credit_group,change_amount_band
+      ORDER BY t0_month,credit_change_type,loan_stage,
+               previous_credit_group,change_amount_band;
+</pre></details></section>
+<footer>T0提额后7日未提单用户识别｜历史证据与息费让利实施方案｜2026-09-28</footer></main><script>
+const D={"months": ["2026-01", "2026-02", "2026-03", "2026-04", "2026-05", "2026-06", "2026-07", "2026-08"], "overall": [{"t0_month": "2026-01", "event_n": 20095, "user_n": 14665, "apply_n": 15498, "apply_rate_pct": 77.1237}, {"t0_month": "2026-02", "event_n": 23391, "user_n": 17117, "apply_n": 17963, "apply_rate_pct": 76.7945}, {"t0_month": "2026-03", "event_n": 22921, "user_n": 16239, "apply_n": 16751, "apply_rate_pct": 73.0815}, {"t0_month": "2026-04", "event_n": 21262, "user_n": 15558, "apply_n": 15672, "apply_rate_pct": 73.709}, {"t0_month": "2026-05", "event_n": 24283, "user_n": 17876, "apply_n": 17282, "apply_rate_pct": 71.1691}, {"t0_month": "2026-06", "event_n": 23154, "user_n": 17685, "apply_n": 16166, "apply_rate_pct": 69.8195}, {"t0_month": "2026-07", "event_n": 23778, "user_n": 18492, "apply_n": 16112, "apply_rate_pct": 67.7601}, {"t0_month": "2026-08", "event_n": 22614, "user_n": 18063, "apply_n": 14991, "apply_rate_pct": 66.2908}], "direction": [{"t0_month": "2026-01", "credit_change_type": "额度降低", "event_n": 6433, "user_n": 5638, "d7_apply_n": 4855, "d7_apply_rate_pct": 75.47, "avg_previous_credit_amt": 3122.89, "avg_current_credit_amt": 2135.55, "avg_credit_change_amt": -987.34, "avg_credit_change_rate_pct": -37.04, "previous_utilization_rate_pct": 79.91, "avg_minutes_to_apply": 1207.14, "event_share_pct": 32.01, "contribution_to_overall_rate_pp": 24.16}, {"t0_month": "2026-01", "credit_change_type": "额度不变", "event_n": 1730, "user_n": 1525, "d7_apply_n": 1348, "d7_apply_rate_pct": 77.92, "avg_previous_credit_amt": 858.48, "avg_current_credit_amt": 858.48, "avg_credit_change_amt": 0.0, "avg_credit_change_rate_pct": 0.0, "previous_utilization_rate_pct": 92.89, "avg_minutes_to_apply": 1157.35, "event_share_pct": 8.61, "contribution_to_overall_rate_pp": 6.71}, {"t0_month": "2026-01", "credit_change_type": "额度增加", "event_n": 11932, "user_n": 9773, "d7_apply_n": 9295, "d7_apply_rate_pct": 77.9, "avg_previous_credit_amt": 2820.19, "avg_current_credit_amt": 4648.8, "avg_credit_change_amt": 1828.61, "avg_credit_change_rate_pct": 138.94, "previous_utilization_rate_pct": 89.82, "avg_minutes_to_apply": 1284.93, "event_share_pct": 59.38, "contribution_to_overall_rate_pp": 46.26}, {"t0_month": "2026-02", "credit_change_type": "额度降低", "event_n": 8308, "user_n": 7233, "d7_apply_n": 6336, "d7_apply_rate_pct": 76.26, "avg_previous_credit_amt": 2905.16, "avg_current_credit_amt": 1999.51, "avg_credit_change_amt": -905.65, "avg_credit_change_rate_pct": -36.44, "previous_utilization_rate_pct": 80.8, "avg_minutes_to_apply": 1284.89, "event_share_pct": 35.52, "contribution_to_overall_rate_pp": 27.09}, {"t0_month": "2026-02", "credit_change_type": "额度不变", "event_n": 2177, "user_n": 1893, "d7_apply_n": 1738, "d7_apply_rate_pct": 79.83, "avg_previous_credit_amt": 1016.91, "avg_current_credit_amt": 1016.91, "avg_credit_change_amt": 0.0, "avg_credit_change_rate_pct": 0.0, "previous_utilization_rate_pct": 92.39, "avg_minutes_to_apply": 1206.09, "event_share_pct": 9.31, "contribution_to_overall_rate_pp": 7.43}, {"t0_month": "2026-02", "credit_change_type": "额度增加", "event_n": 12906, "user_n": 10815, "d7_apply_n": 9889, "d7_apply_rate_pct": 76.62, "avg_previous_credit_amt": 2674.67, "avg_current_credit_amt": 4329.09, "avg_credit_change_amt": 1654.42, "avg_credit_change_rate_pct": 122.62, "previous_utilization_rate_pct": 90.22, "avg_minutes_to_apply": 1312.71, "event_share_pct": 55.18, "contribution_to_overall_rate_pp": 42.28}, {"t0_month": "2026-03", "credit_change_type": "额度降低", "event_n": 8460, "user_n": 7262, "d7_apply_n": 6085, "d7_apply_rate_pct": 71.93, "avg_previous_credit_amt": 2862.03, "avg_current_credit_amt": 1833.79, "avg_credit_change_amt": -1028.25, "avg_credit_change_rate_pct": -40.0, "previous_utilization_rate_pct": 80.17, "avg_minutes_to_apply": 1418.52, "event_share_pct": 36.91, "contribution_to_overall_rate_pp": 26.55}, {"t0_month": "2026-03", "credit_change_type": "额度不变", "event_n": 3531, "user_n": 2917, "d7_apply_n": 2693, "d7_apply_rate_pct": 76.27, "avg_previous_credit_amt": 1025.48, "avg_current_credit_amt": 1025.48, "avg_credit_change_amt": 0.0, "avg_credit_change_rate_pct": 0.0, "previous_utilization_rate_pct": 94.15, "avg_minutes_to_apply": 1291.67, "event_share_pct": 15.41, "contribution_to_overall_rate_pp": 11.75}, {"t0_month": "2026-03", "credit_change_type": "额度增加", "event_n": 10930, "user_n": 9106, "d7_apply_n": 7973, "d7_apply_rate_pct": 72.95, "avg_previous_credit_amt": 2717.88, "avg_current_credit_amt": 4282.67, "avg_credit_change_amt": 1564.8, "avg_credit_change_rate_pct": 107.78, "previous_utilization_rate_pct": 89.35, "avg_minutes_to_apply": 1508.31, "event_share_pct": 47.69, "contribution_to_overall_rate_pp": 34.78}, {"t0_month": "2026-04", "credit_change_type": "额度降低", "event_n": 6852, "user_n": 6016, "d7_apply_n": 4984, "d7_apply_rate_pct": 72.74, "avg_previous_credit_amt": 2588.66, "avg_current_credit_amt": 1687.46, "avg_credit_change_amt": -901.2, "avg_credit_change_rate_pct": -36.93, "previous_utilization_rate_pct": 82.01, "avg_minutes_to_apply": 1433.21, "event_share_pct": 32.23, "contribution_to_overall_rate_pp": 23.44}, {"t0_month": "2026-04", "credit_change_type": "额度不变", "event_n": 3268, "user_n": 2758, "d7_apply_n": 2473, "d7_apply_rate_pct": 75.67, "avg_previous_credit_amt": 810.0, "avg_current_credit_amt": 810.0, "avg_credit_change_amt": 0.0, "avg_credit_change_rate_pct": 0.0, "previous_utilization_rate_pct": 94.52, "avg_minutes_to_apply": 1265.81, "event_share_pct": 15.37, "contribution_to_overall_rate_pp": 11.63}, {"t0_month": "2026-04", "credit_change_type": "额度增加", "event_n": 11142, "user_n": 9342, "d7_apply_n": 8215, "d7_apply_rate_pct": 73.73, "avg_previous_credit_amt": 2406.64, "avg_current_credit_amt": 3972.06, "avg_credit_change_amt": 1565.42, "avg_credit_change_rate_pct": 121.81, "previous_utilization_rate_pct": 88.39, "avg_minutes_to_apply": 1521.78, "event_share_pct": 52.4, "contribution_to_overall_rate_pp": 38.64}, {"t0_month": "2026-05", "credit_change_type": "额度降低", "event_n": 8219, "user_n": 6902, "d7_apply_n": 5941, "d7_apply_rate_pct": 72.28, "avg_previous_credit_amt": 2636.78, "avg_current_credit_amt": 1762.18, "avg_credit_change_amt": -874.6, "avg_credit_change_rate_pct": -35.76, "previous_utilization_rate_pct": 80.72, "avg_minutes_to_apply": 1405.92, "event_share_pct": 33.85, "contribution_to_overall_rate_pp": 24.47}, {"t0_month": "2026-05", "credit_change_type": "额度不变", "event_n": 2779, "user_n": 2257, "d7_apply_n": 2148, "d7_apply_rate_pct": 77.29, "avg_previous_credit_amt": 847.24, "avg_current_credit_amt": 847.24, "avg_credit_change_amt": 0.0, "avg_credit_change_rate_pct": 0.0, "previous_utilization_rate_pct": 94.28, "avg_minutes_to_apply": 1272.08, "event_share_pct": 11.44, "contribution_to_overall_rate_pp": 8.85}, {"t0_month": "2026-05", "credit_change_type": "额度增加", "event_n": 13285, "user_n": 11481, "d7_apply_n": 9193, "d7_apply_rate_pct": 69.2, "avg_previous_credit_amt": 2304.45, "avg_current_credit_amt": 3926.67, "avg_credit_change_amt": 1622.22, "avg_credit_change_rate_pct": 137.99, "previous_utilization_rate_pct": 88.7, "avg_minutes_to_apply": 1560.79, "event_share_pct": 54.71, "contribution_to_overall_rate_pp": 37.86}, {"t0_month": "2026-06", "credit_change_type": "额度降低", "event_n": 7664, "user_n": 6605, "d7_apply_n": 5458, "d7_apply_rate_pct": 71.22, "avg_previous_credit_amt": 2498.68, "avg_current_credit_amt": 1705.86, "avg_credit_change_amt": -792.82, "avg_credit_change_rate_pct": -34.18, "previous_utilization_rate_pct": 80.92, "avg_minutes_to_apply": 1414.15, "event_share_pct": 33.1, "contribution_to_overall_rate_pp": 23.57}, {"t0_month": "2026-06", "credit_change_type": "额度不变", "event_n": 3179, "user_n": 2581, "d7_apply_n": 2450, "d7_apply_rate_pct": 77.07, "avg_previous_credit_amt": 816.74, "avg_current_credit_amt": 816.74, "avg_credit_change_amt": 0.0, "avg_credit_change_rate_pct": 0.0, "previous_utilization_rate_pct": 92.58, "avg_minutes_to_apply": 1248.54, "event_share_pct": 13.73, "contribution_to_overall_rate_pp": 10.58}, {"t0_month": "2026-06", "credit_change_type": "额度增加", "event_n": 12311, "user_n": 10721, "d7_apply_n": 8258, "d7_apply_rate_pct": 67.08, "avg_previous_credit_amt": 2415.84, "avg_current_credit_amt": 4341.48, "avg_credit_change_amt": 1925.64, "avg_credit_change_rate_pct": 134.73, "previous_utilization_rate_pct": 88.92, "avg_minutes_to_apply": 1676.93, "event_share_pct": 53.17, "contribution_to_overall_rate_pp": 35.67}, {"t0_month": "2026-07", "credit_change_type": "额度降低", "event_n": 7646, "user_n": 6703, "d7_apply_n": 5429, "d7_apply_rate_pct": 71.0, "avg_previous_credit_amt": 2597.92, "avg_current_credit_amt": 1791.89, "avg_credit_change_amt": -806.04, "avg_credit_change_rate_pct": -31.54, "previous_utilization_rate_pct": 79.31, "avg_minutes_to_apply": 1455.75, "event_share_pct": 32.16, "contribution_to_overall_rate_pp": 22.83}, {"t0_month": "2026-07", "credit_change_type": "额度不变", "event_n": 2364, "user_n": 1982, "d7_apply_n": 1800, "d7_apply_rate_pct": 76.14, "avg_previous_credit_amt": 900.11, "avg_current_credit_amt": 900.11, "avg_credit_change_amt": 0.0, "avg_credit_change_rate_pct": 0.0, "previous_utilization_rate_pct": 95.45, "avg_minutes_to_apply": 1453.55, "event_share_pct": 9.94, "contribution_to_overall_rate_pp": 7.57}, {"t0_month": "2026-07", "credit_change_type": "额度增加", "event_n": 13768, "user_n": 11975, "d7_apply_n": 8883, "d7_apply_rate_pct": 64.52, "avg_previous_credit_amt": 2610.18, "avg_current_credit_amt": 4698.98, "avg_credit_change_amt": 2088.8, "avg_credit_change_rate_pct": 136.34, "previous_utilization_rate_pct": 87.42, "avg_minutes_to_apply": 1740.92, "event_share_pct": 57.9, "contribution_to_overall_rate_pp": 37.36}, {"t0_month": "2026-08", "credit_change_type": "额度降低", "event_n": 7957, "user_n": 7094, "d7_apply_n": 5437, "d7_apply_rate_pct": 68.33, "avg_previous_credit_amt": 2600.34, "avg_current_credit_amt": 1676.87, "avg_credit_change_amt": -923.47, "avg_credit_change_rate_pct": -34.41, "previous_utilization_rate_pct": 79.57, "avg_minutes_to_apply": 1585.03, "event_share_pct": 35.19, "contribution_to_overall_rate_pp": 24.04}, {"t0_month": "2026-08", "credit_change_type": "额度不变", "event_n": 1854, "user_n": 1580, "d7_apply_n": 1404, "d7_apply_rate_pct": 75.73, "avg_previous_credit_amt": 880.3, "avg_current_credit_amt": 880.3, "avg_credit_change_amt": 0.0, "avg_credit_change_rate_pct": 0.0, "previous_utilization_rate_pct": 93.02, "avg_minutes_to_apply": 1349.7, "event_share_pct": 8.2, "contribution_to_overall_rate_pp": 6.21}, {"t0_month": "2026-08", "credit_change_type": "额度增加", "event_n": 12803, "user_n": 11380, "d7_apply_n": 8150, "d7_apply_rate_pct": 63.66, "avg_previous_credit_amt": 2686.94, "avg_current_credit_amt": 4682.49, "avg_credit_change_amt": 1995.55, "avg_credit_change_rate_pct": 125.29, "previous_utilization_rate_pct": 86.86, "avg_minutes_to_apply": 1820.16, "event_share_pct": 56.62, "contribution_to_overall_rate_pp": 36.04}], "directionAttr": [{"t0_month": "2026-08", "credit_change_type": "额度降低", "jan_n": 6433.0, "current_n": 7957.0, "jan_share_pct": 32.01, "current_share_pct": 35.19, "jan_rate_pct": 75.47, "current_rate_pct": 68.33, "base_within_effect_pp": -2.29, "structure_effect_pp": -0.05, "interaction_effect_pp": -0.23, "result_within_effect_pp": -2.51, "total_attribution_pp": -2.56, "direct_weighted_change_pp": -0.12}, {"t0_month": "2026-08", "credit_change_type": "额度不变", "jan_n": 1730.0, "current_n": 1854.0, "jan_share_pct": 8.61, "current_share_pct": 8.2, "jan_rate_pct": 77.92, "current_rate_pct": 75.73, "base_within_effect_pp": -0.19, "structure_effect_pp": 0.0, "interaction_effect_pp": 0.01, "result_within_effect_pp": -0.18, "total_attribution_pp": -0.18, "direct_weighted_change_pp": -0.5}, {"t0_month": "2026-08", "credit_change_type": "额度增加", "jan_n": 11932.0, "current_n": 12803.0, "jan_share_pct": 59.38, "current_share_pct": 56.62, "jan_rate_pct": 77.9, "current_rate_pct": 63.66, "base_within_effect_pp": -8.46, "structure_effect_pp": -0.02, "interaction_effect_pp": 0.39, "result_within_effect_pp": -8.06, "total_attribution_pp": -8.09, "direct_weighted_change_pp": -10.22}], "loanAttr": [{"loan_count_bucket": "1次", "jan_n": 4990.0, "aug_n": 5117.0, "jan_rate_pct": 76.63326653306613, "aug_rate_pct": 60.816884893492286, "rate_change_pp": -15.816381639573851, "total_attribution_pp": -3.5680531065938195, "loan_order": 0}, {"loan_count_bucket": "2次", "jan_n": 1922.0, "aug_n": 2852.0, "jan_rate_pct": 79.9687825182102, "aug_rate_pct": 62.86816269284713, "rate_change_pp": -17.100619825363072, "total_attribution_pp": -2.069978117965057, "loan_order": 1}, {"loan_count_bucket": "3次", "jan_n": 1645.0, "aug_n": 1518.0, "jan_rate_pct": 79.45288753799392, "aug_rate_pct": 65.2832674571805, "rate_change_pp": -14.169620080813417, "total_attribution_pp": -0.9854780345054804, "loan_order": 2}, {"loan_count_bucket": "4次", "jan_n": 986.0, "aug_n": 987.0, "jan_rate_pct": 77.89046653144015, "aug_rate_pct": 68.18642350557245, "rate_change_pp": -9.704043025867715, "total_attribution_pp": -0.42769524732161995, "loan_order": 3}, {"loan_count_bucket": "5次", "jan_n": 728.0, "aug_n": 704.0, "jan_rate_pct": 78.98351648351648, "aug_rate_pct": 65.625, "rate_change_pp": -13.35851648351648, "total_attribution_pp": -0.42534531146436233, "loan_order": 4}, {"loan_count_bucket": "6次及以上", "jan_n": 1661.0, "aug_n": 1625.0, "jan_rate_pct": 77.30282962071041, "aug_rate_pct": 68.86153846153846, "rate_change_pp": -8.441291159171948, "total_attribution_pp": -0.6085103571215974, "loan_order": 5}], "upMonthly": [{"t0_month": "2026-01", "credit_change_type": "额度增加", "loan_count_bucket": "1次", "event_n": 4990, "user_n": 4902, "apply_n": 3824, "apply_rate_pct": 76.6333}, {"t0_month": "2026-01", "credit_change_type": "额度增加", "loan_count_bucket": "2次", "event_n": 1922, "user_n": 1902, "apply_n": 1537, "apply_rate_pct": 79.9688}, {"t0_month": "2026-01", "credit_change_type": "额度增加", "loan_count_bucket": "3次", "event_n": 1645, "user_n": 1619, "apply_n": 1307, "apply_rate_pct": 79.4529}, {"t0_month": "2026-01", "credit_change_type": "额度增加", "loan_count_bucket": "4次", "event_n": 986, "user_n": 969, "apply_n": 768, "apply_rate_pct": 77.8905}, {"t0_month": "2026-01", "credit_change_type": "额度增加", "loan_count_bucket": "5次", "event_n": 728, "user_n": 724, "apply_n": 575, "apply_rate_pct": 78.9835}, {"t0_month": "2026-01", "credit_change_type": "额度增加", "loan_count_bucket": "6次及以上", "event_n": 1661, "user_n": 1413, "apply_n": 1284, "apply_rate_pct": 77.3028}, {"t0_month": "2026-02", "credit_change_type": "额度增加", "loan_count_bucket": "1次", "event_n": 5378, "user_n": 5299, "apply_n": 4036, "apply_rate_pct": 75.0465}, {"t0_month": "2026-02", "credit_change_type": "额度增加", "loan_count_bucket": "2次", "event_n": 2556, "user_n": 2524, "apply_n": 1970, "apply_rate_pct": 77.0736}, {"t0_month": "2026-02", "credit_change_type": "额度增加", "loan_count_bucket": "3次", "event_n": 1715, "user_n": 1690, "apply_n": 1365, "apply_rate_pct": 79.5918}, {"t0_month": "2026-02", "credit_change_type": "额度增加", "loan_count_bucket": "4次", "event_n": 1080, "user_n": 1065, "apply_n": 842, "apply_rate_pct": 77.963}, {"t0_month": "2026-02", "credit_change_type": "额度增加", "loan_count_bucket": "5次", "event_n": 621, "user_n": 602, "apply_n": 476, "apply_rate_pct": 76.6506}, {"t0_month": "2026-02", "credit_change_type": "额度增加", "loan_count_bucket": "6次及以上", "event_n": 1556, "user_n": 1344, "apply_n": 1200, "apply_rate_pct": 77.1208}, {"t0_month": "2026-03", "credit_change_type": "额度增加", "loan_count_bucket": "1次", "event_n": 3111, "user_n": 3039, "apply_n": 2184, "apply_rate_pct": 70.2025}, {"t0_month": "2026-03", "credit_change_type": "额度增加", "loan_count_bucket": "2次", "event_n": 2628, "user_n": 2583, "apply_n": 1901, "apply_rate_pct": 72.3364}, {"t0_month": "2026-03", "credit_change_type": "额度增加", "loan_count_bucket": "3次", "event_n": 1659, "user_n": 1626, "apply_n": 1258, "apply_rate_pct": 75.8288}, {"t0_month": "2026-03", "credit_change_type": "额度增加", "loan_count_bucket": "4次", "event_n": 1096, "user_n": 1076, "apply_n": 818, "apply_rate_pct": 74.635}, {"t0_month": "2026-03", "credit_change_type": "额度增加", "loan_count_bucket": "5次", "event_n": 755, "user_n": 745, "apply_n": 584, "apply_rate_pct": 77.351}, {"t0_month": "2026-03", "credit_change_type": "额度增加", "loan_count_bucket": "6次及以上", "event_n": 1681, "user_n": 1417, "apply_n": 1228, "apply_rate_pct": 73.0518}, {"t0_month": "2026-04", "credit_change_type": "额度增加", "loan_count_bucket": "1次", "event_n": 3673, "user_n": 3622, "apply_n": 2596, "apply_rate_pct": 70.6779}, {"t0_month": "2026-04", "credit_change_type": "额度增加", "loan_count_bucket": "2次", "event_n": 2314, "user_n": 2288, "apply_n": 1753, "apply_rate_pct": 75.7563}, {"t0_month": "2026-04", "credit_change_type": "额度增加", "loan_count_bucket": "3次", "event_n": 1358, "user_n": 1343, "apply_n": 1003, "apply_rate_pct": 73.8586}, {"t0_month": "2026-04", "credit_change_type": "额度增加", "loan_count_bucket": "4次", "event_n": 1024, "user_n": 1010, "apply_n": 744, "apply_rate_pct": 72.6563}, {"t0_month": "2026-04", "credit_change_type": "额度增加", "loan_count_bucket": "5次", "event_n": 771, "user_n": 759, "apply_n": 593, "apply_rate_pct": 76.9131}, {"t0_month": "2026-04", "credit_change_type": "额度增加", "loan_count_bucket": "6次及以上", "event_n": 2002, "user_n": 1669, "apply_n": 1526, "apply_rate_pct": 76.2238}, {"t0_month": "2026-05", "credit_change_type": "额度增加", "loan_count_bucket": "1次", "event_n": 5414, "user_n": 5344, "apply_n": 3637, "apply_rate_pct": 67.1777}, {"t0_month": "2026-05", "credit_change_type": "额度增加", "loan_count_bucket": "2次", "event_n": 2660, "user_n": 2629, "apply_n": 1868, "apply_rate_pct": 70.2256}, {"t0_month": "2026-05", "credit_change_type": "额度增加", "loan_count_bucket": "3次", "event_n": 1384, "user_n": 1365, "apply_n": 913, "apply_rate_pct": 65.9682}, {"t0_month": "2026-05", "credit_change_type": "额度增加", "loan_count_bucket": "4次", "event_n": 997, "user_n": 975, "apply_n": 732, "apply_rate_pct": 73.4203}, {"t0_month": "2026-05", "credit_change_type": "额度增加", "loan_count_bucket": "5次", "event_n": 819, "user_n": 811, "apply_n": 589, "apply_rate_pct": 71.917}, {"t0_month": "2026-05", "credit_change_type": "额度增加", "loan_count_bucket": "6次及以上", "event_n": 2011, "user_n": 1716, "apply_n": 1454, "apply_rate_pct": 72.3023}, {"t0_month": "2026-06", "credit_change_type": "额度增加", "loan_count_bucket": "1次", "event_n": 4707, "user_n": 4635, "apply_n": 3097, "apply_rate_pct": 65.7956}, {"t0_month": "2026-06", "credit_change_type": "额度增加", "loan_count_bucket": "2次", "event_n": 2463, "user_n": 2414, "apply_n": 1610, "apply_rate_pct": 65.3674}, {"t0_month": "2026-06", "credit_change_type": "额度增加", "loan_count_bucket": "3次", "event_n": 1482, "user_n": 1456, "apply_n": 999, "apply_rate_pct": 67.4089}, {"t0_month": "2026-06", "credit_change_type": "额度增加", "loan_count_bucket": "4次", "event_n": 1036, "user_n": 1014, "apply_n": 698, "apply_rate_pct": 67.3745}, {"t0_month": "2026-06", "credit_change_type": "额度增加", "loan_count_bucket": "5次", "event_n": 743, "user_n": 729, "apply_n": 516, "apply_rate_pct": 69.4482}, {"t0_month": "2026-06", "credit_change_type": "额度增加", "loan_count_bucket": "6次及以上", "event_n": 1880, "user_n": 1574, "apply_n": 1338, "apply_rate_pct": 71.1702}, {"t0_month": "2026-07", "credit_change_type": "额度增加", "loan_count_bucket": "1次", "event_n": 5270, "user_n": 5197, "apply_n": 3270, "apply_rate_pct": 62.0493}, {"t0_month": "2026-07", "credit_change_type": "额度增加", "loan_count_bucket": "2次", "event_n": 2849, "user_n": 2806, "apply_n": 1774, "apply_rate_pct": 62.2675}, {"t0_month": "2026-07", "credit_change_type": "额度增加", "loan_count_bucket": "3次", "event_n": 1720, "user_n": 1687, "apply_n": 1140, "apply_rate_pct": 66.2791}, {"t0_month": "2026-07", "credit_change_type": "额度增加", "loan_count_bucket": "4次", "event_n": 1142, "user_n": 1127, "apply_n": 790, "apply_rate_pct": 69.1769}, {"t0_month": "2026-07", "credit_change_type": "额度增加", "loan_count_bucket": "5次", "event_n": 789, "user_n": 773, "apply_n": 545, "apply_rate_pct": 69.0748}, {"t0_month": "2026-07", "credit_change_type": "额度增加", "loan_count_bucket": "6次及以上", "event_n": 1998, "user_n": 1694, "apply_n": 1364, "apply_rate_pct": 68.2683}, {"t0_month": "2026-08", "credit_change_type": "额度增加", "loan_count_bucket": "1次", "event_n": 5117, "user_n": 5025, "apply_n": 3112, "apply_rate_pct": 60.8169}, {"t0_month": "2026-08", "credit_change_type": "额度增加", "loan_count_bucket": "2次", "event_n": 2852, "user_n": 2789, "apply_n": 1793, "apply_rate_pct": 62.8682}, {"t0_month": "2026-08", "credit_change_type": "额度增加", "loan_count_bucket": "3次", "event_n": 1518, "user_n": 1494, "apply_n": 991, "apply_rate_pct": 65.2833}, {"t0_month": "2026-08", "credit_change_type": "额度增加", "loan_count_bucket": "4次", "event_n": 987, "user_n": 971, "apply_n": 673, "apply_rate_pct": 68.1864}, {"t0_month": "2026-08", "credit_change_type": "额度增加", "loan_count_bucket": "5次", "event_n": 704, "user_n": 685, "apply_n": 462, "apply_rate_pct": 65.625}, {"t0_month": "2026-08", "credit_change_type": "额度增加", "loan_count_bucket": "6次及以上", "event_n": 1625, "user_n": 1424, "apply_n": 1119, "apply_rate_pct": 68.8615}], "core": [{"t0_month": "2026-01", "segment": "提额核心｜前3次且提额>=500", "event_n": 6334, "apply_n": 4830, "apply_rate_pct": 76.2551, "active_user_rate_pct": 96.7319, "newpage_user_rate_pct": 90.7799, "amount_user_rate_pct": 47.5845, "contract_user_rate_pct": 4.2153, "term_user_rate_pct": 36.1699, "confirm_user_rate_pct": 76.2236, "plan_user_rate_pct": 55.1626, "purpose_user_rate_pct": 23.2554, "coupons_back_user_rate_pct": 0.0, "coupons_confirm_user_rate_pct": 0.0, "coupons_page_user_rate_pct": 0.0, "avg_active_status": 77.4994, "avg_newpage": 3.9416, "avg_amount_selection": 2.4013, "avg_term_selection": 1.4871, "avg_newconfirm": 0.9493, "avg_active_duration_sec": 374.1949, "avg_apply_duration_sec": 110.6867, "avg_non_apply_duration_sec": 263.5082, "median_active_duration_sec": 259.845, "median_apply_duration_sec": 76.402}, {"t0_month": "2026-02", "segment": "提额核心｜前3次且提额>=500", "event_n": 6491, "apply_n": 4808, "apply_rate_pct": 74.0718, "active_user_rate_pct": 96.1485, "newpage_user_rate_pct": 90.0478, "amount_user_rate_pct": 49.5609, "contract_user_rate_pct": 3.3277, "term_user_rate_pct": 35.8804, "confirm_user_rate_pct": 74.3337, "plan_user_rate_pct": 55.4614, "purpose_user_rate_pct": 23.417, "coupons_back_user_rate_pct": 0.0, "coupons_confirm_user_rate_pct": 0.0, "coupons_page_user_rate_pct": 0.0, "avg_active_status": 73.1556, "avg_newpage": 3.9792, "avg_amount_selection": 2.5196, "avg_term_selection": 1.454, "avg_newconfirm": 0.918, "avg_active_duration_sec": 338.9426, "avg_apply_duration_sec": 112.6644, "avg_non_apply_duration_sec": 226.2782, "median_active_duration_sec": 261.98, "median_apply_duration_sec": 79.872}, {"t0_month": "2026-03", "segment": "提额核心｜前3次且提额>=500", "event_n": 4627, "apply_n": 3239, "apply_rate_pct": 70.0022, "active_user_rate_pct": 94.8995, "newpage_user_rate_pct": 88.1781, "amount_user_rate_pct": 49.0599, "contract_user_rate_pct": 3.4796, "term_user_rate_pct": 28.2256, "confirm_user_rate_pct": 70.2615, "plan_user_rate_pct": 54.5278, "purpose_user_rate_pct": 22.5416, "coupons_back_user_rate_pct": 0.0, "coupons_confirm_user_rate_pct": 0.0, "coupons_page_user_rate_pct": 0.0, "avg_active_status": 65.6503, "avg_newpage": 3.815, "avg_amount_selection": 2.3449, "avg_term_selection": 1.1132, "avg_newconfirm": 0.8749, "avg_active_duration_sec": 307.1784, "avg_apply_duration_sec": 107.8716, "avg_non_apply_duration_sec": 199.3068, "median_active_duration_sec": 228.706, "median_apply_duration_sec": 77.3665}, {"t0_month": "2026-04", "segment": "提额核心｜前3次且提额>=500", "event_n": 4573, "apply_n": 3220, "apply_rate_pct": 70.4133, "active_user_rate_pct": 96.4793, "newpage_user_rate_pct": 92.0621, "amount_user_rate_pct": 50.995, "contract_user_rate_pct": 3.5644, "term_user_rate_pct": 28.2309, "confirm_user_rate_pct": 70.7413, "plan_user_rate_pct": 56.3744, "purpose_user_rate_pct": 23.9668, "coupons_back_user_rate_pct": 0.0, "coupons_confirm_user_rate_pct": 0.0, "coupons_page_user_rate_pct": 0.0, "avg_active_status": 71.1695, "avg_newpage": 4.6783, "avg_amount_selection": 2.6283, "avg_term_selection": 1.1104, "avg_newconfirm": 0.902, "avg_active_duration_sec": 411.9465, "avg_apply_duration_sec": 117.0339, "avg_non_apply_duration_sec": 294.9125, "median_active_duration_sec": 232.468, "median_apply_duration_sec": 80.7735}, {"t0_month": "2026-05", "segment": "提额核心｜前3次且提额>=500", "event_n": 6649, "apply_n": 4395, "apply_rate_pct": 66.1002, "active_user_rate_pct": 97.6387, "newpage_user_rate_pct": 95.5783, "amount_user_rate_pct": 50.3986, "contract_user_rate_pct": 3.1734, "term_user_rate_pct": 22.4996, "confirm_user_rate_pct": 66.6266, "plan_user_rate_pct": 56.3543, "purpose_user_rate_pct": 23.1614, "coupons_back_user_rate_pct": 0.0, "coupons_confirm_user_rate_pct": 0.0, "coupons_page_user_rate_pct": 0.0, "avg_active_status": 70.6759, "avg_newpage": 5.0335, "avg_amount_selection": 2.5935, "avg_term_selection": 0.7882, "avg_newconfirm": 0.8332, "avg_active_duration_sec": 326.4247, "avg_apply_duration_sec": 118.8242, "avg_non_apply_duration_sec": 207.6005, "median_active_duration_sec": 230.4265, "median_apply_duration_sec": 78.112}, {"t0_month": "2026-06", "segment": "提额核心｜前3次且提额>=500", "event_n": 6177, "apply_n": 3889, "apply_rate_pct": 62.9594, "active_user_rate_pct": 97.5393, "newpage_user_rate_pct": 94.8357, "amount_user_rate_pct": 53.3754, "contract_user_rate_pct": 3.4807, "term_user_rate_pct": 19.3298, "confirm_user_rate_pct": 63.6231, "plan_user_rate_pct": 59.2521, "purpose_user_rate_pct": 23.6846, "coupons_back_user_rate_pct": 0.0, "coupons_confirm_user_rate_pct": 0.0, "coupons_page_user_rate_pct": 0.0, "avg_active_status": 82.4748, "avg_newpage": 5.4578, "avg_amount_selection": 3.363, "avg_term_selection": 0.6561, "avg_newconfirm": 0.8504, "avg_active_duration_sec": 349.9652, "avg_apply_duration_sec": 127.628, "avg_non_apply_duration_sec": 222.3371, "median_active_duration_sec": 244.51, "median_apply_duration_sec": 80.6835}, {"t0_month": "2026-07", "segment": "提额核心｜前3次且提额>=500", "event_n": 7494, "apply_n": 4454, "apply_rate_pct": 59.4342, "active_user_rate_pct": 97.2912, "newpage_user_rate_pct": 94.8359, "amount_user_rate_pct": 55.0841, "contract_user_rate_pct": 3.1759, "term_user_rate_pct": 20.056, "confirm_user_rate_pct": 60.2349, "plan_user_rate_pct": 60.1414, "purpose_user_rate_pct": 23.0851, "coupons_back_user_rate_pct": 0.0, "coupons_confirm_user_rate_pct": 0.0, "coupons_page_user_rate_pct": 0.0, "avg_active_status": 80.5914, "avg_newpage": 5.5574, "avg_amount_selection": 3.4389, "avg_term_selection": 0.7083, "avg_newconfirm": 0.7849, "avg_active_duration_sec": 357.9048, "avg_apply_duration_sec": 132.5563, "avg_non_apply_duration_sec": 225.3485, "median_active_duration_sec": 253.049, "median_apply_duration_sec": 83.232}, {"t0_month": "2026-08", "segment": "提额核心｜前3次且提额>=500", "event_n": 6989, "apply_n": 3997, "apply_rate_pct": 57.1899, "active_user_rate_pct": 97.6964, "newpage_user_rate_pct": 95.4214, "amount_user_rate_pct": 53.6557, "contract_user_rate_pct": 3.4197, "term_user_rate_pct": 25.812, "confirm_user_rate_pct": 58.0484, "plan_user_rate_pct": 60.3091, "purpose_user_rate_pct": 23.8232, "coupons_back_user_rate_pct": 0.0, "coupons_confirm_user_rate_pct": 0.0, "coupons_page_user_rate_pct": 0.0, "avg_active_status": 79.658, "avg_newpage": 5.9521, "avg_amount_selection": 3.3302, "avg_term_selection": 0.9362, "avg_newconfirm": 0.8071, "avg_active_duration_sec": 361.6288, "avg_apply_duration_sec": 135.8121, "avg_non_apply_duration_sec": 225.8166, "median_active_duration_sec": 241.181, "median_apply_duration_sec": 85.183}], "unit": [{"loan_count_bucket": "1次", "event_n": 37660, "user_n": 37063, "apply_n": 25756, "apply_rate_pct": 68.39086563993627, "avg_previous_remit_amt": 1483.67, "median_previous_remit_amt": 600.0, "avg_previous_credit_amt": 1482.12, "avg_current_credit_amt": 2767.55, "avg_credit_change_amt": 1285.43, "loan_order": 0}, {"loan_count_bucket": "2次", "event_n": 20244, "user_n": 19935, "apply_n": 14206, "apply_rate_pct": 70.17387868010275, "avg_previous_remit_amt": 1621.95, "median_previous_remit_amt": 900.0, "avg_previous_credit_amt": 1755.01, "avg_current_credit_amt": 3073.12, "avg_credit_change_amt": 1318.11, "loan_order": 1}, {"loan_count_bucket": "3次", "event_n": 12481, "user_n": 12280, "apply_n": 8976, "apply_rate_pct": 71.917314317763, "avg_previous_remit_amt": 2166.31, "median_previous_remit_amt": 1200.0, "avg_previous_credit_amt": 2462.91, "avg_current_credit_amt": 4491.69, "avg_credit_change_amt": 2028.78, "loan_order": 2}, {"loan_count_bucket": "4次", "event_n": 8348, "user_n": 8207, "apply_n": 6065, "apply_rate_pct": 72.65213224724485, "avg_previous_remit_amt": 2587.33, "median_previous_remit_amt": 1400.0, "avg_previous_credit_amt": 3008.12, "avg_current_credit_amt": 5166.35, "avg_credit_change_amt": 2158.23, "loan_order": 3}, {"loan_count_bucket": "5次", "event_n": 5930, "user_n": 5828, "apply_n": 4340, "apply_rate_pct": 73.18718381112984, "avg_previous_remit_amt": 3087.01, "median_previous_remit_amt": 1700.0, "avg_previous_credit_amt": 3641.73, "avg_current_credit_amt": 5992.76, "avg_credit_change_amt": 2351.03, "loan_order": 4}, {"loan_count_bucket": "6次及以上", "event_n": 14414, "user_n": 7978, "apply_n": 10513, "apply_rate_pct": 72.93603441098932, "avg_previous_remit_amt": 4915.85, "median_previous_remit_amt": 2970.0, "avg_previous_credit_amt": 6007.56, "avg_current_credit_amt": 9123.2, "avg_credit_change_amt": 3115.63, "loan_order": 5}], "targetMonthly": [{"t0_month": "2026-01", "target_stage": "1–2次", "event_n": 6912, "user_n": NaN, "apply_n": 5361, "apply_rate_pct": 77.56076388888889, "avg_previous_remit_amt": NaN, "median_previous_remit_amt": NaN}, {"t0_month": "2026-01", "target_stage": "3次", "event_n": 1645, "user_n": NaN, "apply_n": 1307, "apply_rate_pct": 79.45288753799392, "avg_previous_remit_amt": NaN, "median_previous_remit_amt": NaN}, {"t0_month": "2026-01", "target_stage": "4次及以上", "event_n": 3375, "user_n": NaN, "apply_n": 2627, "apply_rate_pct": 77.83703703703704, "avg_previous_remit_amt": NaN, "median_previous_remit_amt": NaN}, {"t0_month": "2026-02", "target_stage": "1–2次", "event_n": 7934, "user_n": NaN, "apply_n": 6006, "apply_rate_pct": 75.69952104865138, "avg_previous_remit_amt": NaN, "median_previous_remit_amt": NaN}, {"t0_month": "2026-02", "target_stage": "3次", "event_n": 1715, "user_n": NaN, "apply_n": 1365, "apply_rate_pct": 79.59183673469387, "avg_previous_remit_amt": NaN, "median_previous_remit_amt": NaN}, {"t0_month": "2026-02", "target_stage": "4次及以上", "event_n": 3257, "user_n": NaN, "apply_n": 2518, "apply_rate_pct": 77.31040835124348, "avg_previous_remit_amt": NaN, "median_previous_remit_amt": NaN}, {"t0_month": "2026-03", "target_stage": "1–2次", "event_n": 5739, "user_n": NaN, "apply_n": 4085, "apply_rate_pct": 71.17964802230354, "avg_previous_remit_amt": NaN, "median_previous_remit_amt": NaN}, {"t0_month": "2026-03", "target_stage": "3次", "event_n": 1659, "user_n": NaN, "apply_n": 1258, "apply_rate_pct": 75.8288125376733, "avg_previous_remit_amt": NaN, "median_previous_remit_amt": NaN}, {"t0_month": "2026-03", "target_stage": "4次及以上", "event_n": 3532, "user_n": NaN, "apply_n": 2630, "apply_rate_pct": 74.46206115515288, "avg_previous_remit_amt": NaN, "median_previous_remit_amt": NaN}, {"t0_month": "2026-04", "target_stage": "1–2次", "event_n": 5987, "user_n": NaN, "apply_n": 4349, "apply_rate_pct": 72.64072156338734, "avg_previous_remit_amt": NaN, "median_previous_remit_amt": NaN}, {"t0_month": "2026-04", "target_stage": "3次", "event_n": 1358, "user_n": NaN, "apply_n": 1003, "apply_rate_pct": 73.85861561119293, "avg_previous_remit_amt": NaN, "median_previous_remit_amt": NaN}, {"t0_month": "2026-04", "target_stage": "4次及以上", "event_n": 3797, "user_n": NaN, "apply_n": 2863, "apply_rate_pct": 75.40163286805372, "avg_previous_remit_amt": NaN, "median_previous_remit_amt": NaN}, {"t0_month": "2026-05", "target_stage": "1–2次", "event_n": 8074, "user_n": NaN, "apply_n": 5505, "apply_rate_pct": 68.18181818181819, "avg_previous_remit_amt": NaN, "median_previous_remit_amt": NaN}, {"t0_month": "2026-05", "target_stage": "3次", "event_n": 1384, "user_n": NaN, "apply_n": 913, "apply_rate_pct": 65.96820809248555, "avg_previous_remit_amt": NaN, "median_previous_remit_amt": NaN}, {"t0_month": "2026-05", "target_stage": "4次及以上", "event_n": 3827, "user_n": NaN, "apply_n": 2775, "apply_rate_pct": 72.51110530441599, "avg_previous_remit_amt": NaN, "median_previous_remit_amt": NaN}, {"t0_month": "2026-06", "target_stage": "1–2次", "event_n": 7170, "user_n": NaN, "apply_n": 4707, "apply_rate_pct": 65.64853556485356, "avg_previous_remit_amt": NaN, "median_previous_remit_amt": NaN}, {"t0_month": "2026-06", "target_stage": "3次", "event_n": 1482, "user_n": NaN, "apply_n": 999, "apply_rate_pct": 67.4089068825911, "avg_previous_remit_amt": NaN, "median_previous_remit_amt": NaN}, {"t0_month": "2026-06", "target_stage": "4次及以上", "event_n": 3659, "user_n": NaN, "apply_n": 2552, "apply_rate_pct": 69.74583219458869, "avg_previous_remit_amt": NaN, "median_previous_remit_amt": NaN}, {"t0_month": "2026-07", "target_stage": "1–2次", "event_n": 8119, "user_n": NaN, "apply_n": 5044, "apply_rate_pct": 62.12587757112945, "avg_previous_remit_amt": NaN, "median_previous_remit_amt": NaN}, {"t0_month": "2026-07", "target_stage": "3次", "event_n": 1720, "user_n": NaN, "apply_n": 1140, "apply_rate_pct": 66.27906976744185, "avg_previous_remit_amt": NaN, "median_previous_remit_amt": NaN}, {"t0_month": "2026-07", "target_stage": "4次及以上", "event_n": 3929, "user_n": NaN, "apply_n": 2699, "apply_rate_pct": 68.69432425553576, "avg_previous_remit_amt": NaN, "median_previous_remit_amt": NaN}, {"t0_month": "2026-08", "target_stage": "1–2次", "event_n": 7969, "user_n": NaN, "apply_n": 4905, "apply_rate_pct": 61.551010164387, "avg_previous_remit_amt": NaN, "median_previous_remit_amt": NaN}, {"t0_month": "2026-08", "target_stage": "3次", "event_n": 1518, "user_n": NaN, "apply_n": 991, "apply_rate_pct": 65.2832674571805, "avg_previous_remit_amt": NaN, "median_previous_remit_amt": NaN}, {"t0_month": "2026-08", "target_stage": "4次及以上", "event_n": 3316, "user_n": NaN, "apply_n": 2254, "apply_rate_pct": 67.97346200241255, "avg_previous_remit_amt": NaN, "median_previous_remit_amt": NaN}]};const C={cyan:'#4dd7ec',green:'#58d6a4',amber:'#ffbe62',pink:'#ff7f9f',violet:'#b19cff',grid:'rgba(157,184,201,.16)'};Chart.register(ChartDataLabels);Chart.defaults.color='#bdd1dd';Chart.defaults.borderColor=C.grid;Chart.defaults.font.family='-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei",sans-serif';const base={responsive:true,maintainAspectRatio:false,plugins:{legend:{labels:{usePointStyle:true,boxWidth:9}},datalabels:{color:'#e8f5fb',font:{weight:'700',size:10},textStrokeColor:'#07121e',textStrokeWidth:3}},scales:{x:{grid:{color:C.grid}},y:{grid:{color:C.grid}}}};
+const dirs=['额度增加','额度不变','额度降低'];new Chart(document.getElementById('directionTrend'),{type:'line',data:{labels:D.months,datasets:dirs.map((d,i)=>({label:d,data:D.months.map(m=>D.direction.find(x=>x.t0_month===m&&x.credit_change_type===d).d7_apply_rate_pct),borderColor:[C.cyan,C.violet,C.pink][i],backgroundColor:[C.cyan,C.violet,C.pink][i],pointRadius:3,tension:.25}))},options:{...base,plugins:{...base.plugins,datalabels:{display:ctx=>ctx.dataIndex===0||ctx.dataIndex===7,formatter:v=>v.toFixed(1)+'%',anchor:'center',align:ctx=>['bottom','top','bottom'][ctx.datasetIndex],offset:ctx=>[12,15,22][ctx.datasetIndex],color:ctx=>[C.cyan,C.violet,C.pink][ctx.datasetIndex],backgroundColor:'rgba(7,18,30,.88)',borderRadius:4,padding:{top:2,bottom:2,left:4,right:4},font:{weight:'800',size:11},textStrokeColor:'#07121e',textStrokeWidth:4,clamp:true}},layout:{padding:{top:26,bottom:20,left:8,right:8}},scales:{x:base.scales.x,y:{min:55,max:85,ticks:{callback:v=>v+'%'},grid:{color:C.grid}}}}});
+new Chart(document.getElementById('directionAttr'),{type:'bar',data:{labels:D.directionAttr.map(x=>x.credit_change_type),datasets:[{label:'同期下降统计贡献',data:D.directionAttr.map(x=>x.total_attribution_pp),backgroundColor:[C.pink,C.violet,C.cyan]}]},options:{...base,plugins:{...base.plugins,legend:{display:false},datalabels:{display:true,formatter:v=>v.toFixed(2)+'pp',anchor:'end',align:'bottom',offset:7,color:ctx=>[C.pink,C.violet,C.cyan][ctx.dataIndex],font:{weight:'800',size:12},textStrokeWidth:0,clip:false}},layout:{padding:{top:8,bottom:22}},scales:{x:{grid:{display:false}},y:{suggestedMin:-11,suggestedMax:.8,ticks:{callback:v=>v+'pp'},grid:{color:C.grid}}}}});
+new Chart(document.getElementById('loanAttr'),{data:{labels:D.loanAttr.map(x=>x.loan_count_bucket),datasets:[{type:'bar',label:'提单率变化',data:D.loanAttr.map(x=>x.rate_change_pp),backgroundColor:'#a95b78',yAxisID:'y',order:2},{type:'line',label:'整体归因',data:D.loanAttr.map(x=>x.total_attribution_pp),borderColor:'#ffd166',backgroundColor:'#ffd166',pointStyle:'rectRot',pointRadius:7,pointHoverRadius:9,showLine:false,yAxisID:'y2',order:0}]},options:{...base,plugins:{...base.plugins,datalabels:{formatter:(v,ctx)=>v.toFixed(ctx.datasetIndex===0?1:2)+'pp',anchor:ctx=>ctx.datasetIndex===0?'end':'center',align:ctx=>ctx.datasetIndex===0?'start':'top',offset:ctx=>ctx.datasetIndex===0?6:10,color:ctx=>ctx.datasetIndex===0?'#a95b78':'#ffd166',font:ctx=>({weight:'800',size:ctx.datasetIndex===0?11:12}),textStrokeWidth:0,clamp:true,clip:true}},layout:{padding:{top:18,bottom:18,left:8,right:8}},scales:{x:{grid:{display:false}},y:{position:'left',ticks:{callback:v=>v+'pp'},grid:{color:C.grid}},y2:{position:'right',max:0,ticks:{callback:v=>v+'pp'},grid:{drawOnChartArea:false}}}}});
+const stageOrder=['1–2次','3次','4次及以上'];new Chart(document.getElementById('eventShare'),{type:'bar',data:{labels:stageOrder,datasets:['2026-01','2026-08'].map((m,i)=>{const rows=D.targetMonthly.filter(x=>x.t0_month===m);const total=rows.reduce((s,x)=>s+x.event_n,0);return{label:m,data:stageOrder.map(s=>100*rows.find(x=>x.target_stage===s).event_n/total),backgroundColor:i?C.cyan:C.violet}})},options:{...base,plugins:{...base.plugins,datalabels:{formatter:v=>v.toFixed(1)+'%',anchor:'end',align:'top'}},scales:{x:{grid:{display:false}},y:{min:0,max:70,ticks:{callback:v=>v+'%'},grid:{color:C.grid}}}}});
+new Chart(document.getElementById('unitAmount'),{type:'bar',data:{labels:D.unit.map(x=>x.loan_count_bucket),datasets:[{label:'平均放款金额',data:D.unit.map(x=>x.avg_previous_remit_amt),backgroundColor:C.green},{label:'中位数放款金额',data:D.unit.map(x=>x.median_previous_remit_amt),backgroundColor:C.cyan}]},options:{...base,plugins:{...base.plugins,datalabels:{formatter:v=>Math.round(v).toLocaleString(),anchor:'end',align:'top',color:ctx=>ctx.dataset.backgroundColor,textStrokeWidth:0}},scales:{x:{grid:{display:false}},y:{beginAtZero:true,ticks:{callback:v=>'MX$'+Number(v).toLocaleString()},grid:{color:C.grid}}}}});
+const bk=[['7日提单率','apply_rate_pct'],['进提单页','newpage_user_rate_pct'],['切换金额','amount_user_rate_pct'],['看还款计划','plan_user_rate_pct'],['确认提单','confirm_user_rate_pct']];new Chart(document.getElementById('behaviorCompare'),{type:'bar',data:{labels:bk.map(x=>x[0]),datasets:['2026-01','2026-08'].map((m,i)=>{const r=D.core.find(x=>x.t0_month===m);return{label:m,data:bk.map(x=>r[x[1]]),backgroundColor:i?C.cyan:C.violet}})},options:{...base,plugins:{...base.plugins,datalabels:{formatter:v=>v.toFixed(1)+'%',anchor:'end',align:'top',color:ctx=>ctx.datasetIndex?C.cyan:C.violet,font:{weight:'800',size:11},textStrokeWidth:0}},scales:{x:{grid:{display:false}},y:{min:0,max:100,ticks:{callback:v=>v+'%'},grid:{color:C.grid}}}}});
+</script></body></html>
