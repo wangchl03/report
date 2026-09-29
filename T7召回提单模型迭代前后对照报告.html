@@ -42,77 +42,107 @@ pre.sql{overflow:auto;max-height:900px;font-size:11.5px;line-height:1.5;color:#d
 <header class="hero">
 <h1>提单意愿模型v2 提单效果评估</h1>
 <ul class="hero-points">
-<li>迭代前 提单意愿模型v1版，迭代后 提单意愿模型v2版</li>
-<li>core 前 1/3 = 该批流失用户按 score 从高到低取前 1/3用户</li>
-<li>主指标 = 前 1/3 里提单人数 / 该批全部提单人数。提单从触达日算到 2026-09-21。</li>
+<li>复验截止 2026-09-29。上次对照截止 2026-09-21（v2 当时只有 D0～D3）</li>
+<li>core 前 1/3 = 该批流失用户按 score 从高到低取前 1/3</li>
+<li>主指标 = 前 1/3 里提单人数 / 该批全部提单人数。提单从触达日算到 2026-09-29</li>
 </ul>
 </header>
 
 <section class="grid g4" style="margin-top:18px">
-<article class="card"><div class="label">v1 · 前1/3占全部提单</div><div class="num">65.51%</div><div class="sub">564 / 861 · 截至 9/21</div></article>
-<article class="card"><div class="label">v2 · 前1/3占全部提单</div><div class="num">73.85%</div><div class="sub">209 / 283 · 截至 9/21</div></article>
+<article class="card"><div class="label">对齐 12 日 · v1 前1/3占提单</div><div class="num">65.51%</div><div class="sub">564 / 861 · D0～D11</div></article>
+<article class="card"><div class="label">对齐 12 日 · v2 前1/3占提单</div><div class="num">68.09%</div><div class="sub">463 / 680 · D0～D11</div></article>
 <article class="card"><div class="label">对齐 4 日 · v1</div><div class="num">71.93%</div><div class="sub">246 / 342 · D0～D3</div></article>
 <article class="card"><div class="label">对齐 4 日 · v2</div><div class="num">73.85%</div><div class="sub">209 / 283 · D0～D3</div></article>
 </section>
 
+<section class="grid g4" style="margin-top:14px">
+<article class="card"><div class="label">v2 样本 AUC</div><div class="num">0.749</div><div class="sub">score 对是否提单 · 截至 2026-09-29</div></article>
+<article class="card"><div class="label">v1 样本 AUC</div><div class="num">0.708</div><div class="sub">同一标签定义，量纲不同只比排序</div></article>
+<article class="card"><div class="label">v2 全窗前1/3占提单</div><div class="num">68.09%</div><div class="sub">463 / 680 · 触达至 2026-09-29</div></article>
+<article class="card"><div class="label">v2 全体提单率</div><div class="num">7.84%</div><div class="sub">680 / 8,669</div></article>
+</section>
+
 <h2>结论</h2>
-<div class="callout green"><div class="ch">1. 排序更准：高分用户贡献了更多提单</div>
-同样在流失用户里取 score 最高三分之一，这些人占全部提单的比例，v1 <b>65.51%</b>（564/861），v2 <b>73.85%</b>（209/283），提高 <b>8.34pp</b>。高分档大约只占名单 33%，v2 贡献了约四分之三的提单。</div>
-<div class="callout gold"><div class="ch">2. 对齐触达后同样 4 天，提升还在</div>
-v1 观察到 12 天、v2 只有 4 天。后面几天会进来更多中低分提单，把前 1/3 占比拉低。两批都只看到 D0～D3：v1 <b>71.93%</b>，v2 <b>73.85%</b>，仍高 <b>1.92pp</b>。按触达后天数看累计占比，v2 曲线更高、更稳。</div>
-<div class="callout"><div class="ch">3. 经营含义</div>
-升级后的分更适合做触达排序和额度/券倾斜：同样覆盖前三分之一流失用户，能打到更大比例的实际提单人。</div>
+<div class="callout green"><div class="ch">1. 拉齐观察窗后，v2 排序仍优于 v1</div>
+触达后同样 12 天（D0～D11）：前 1/3 高分用户占全部提单，v1 <b>65.51%</b>（564/861），v2 <b>68.09%</b>（463/680），高 <b>2.58pp</b>。上次 v1 截至 9/21 也是 D11，当时 65.51%，这次同一窗口数字稳定。</div>
+<div class="callout gold"><div class="ch">2. 短窗结论没有被更长观察推翻</div>
+D0～D3：v1 <b>71.93%</b>，v2 <b>73.85%</b>（上次 v2 为 73.85%），仍高 <b>1.92pp</b>。v2 全窗前 1/3 占比 68.09%，随中低分后续提单进来会略低于短窗，但仍明显高于随机 33%。</div>
+<div class="callout"><div class="ch">3. 分数仍单调，AUC 支持「能排序」</div>
+v2 AUC <b>0.749</b>（v1 0.708）。S 档提单率 25.26%，约是全体 7.84% 的 3.2 倍。经营上仍适合按 v2 分做触达排序和额度/券倾斜。</div>
 
 <h2>v2 · score 分段提单率</h2>
-<p class="desc">名单 <code>t7recalllist_active0918</code>，流失 8669 人。提单窗口 2026-09-18～2026-09-22。S / A / B / C / D 按 score 从高到低取前 10% / 10–20% / 20–40% / 40–70% / 70–100%。提单率 = 组内提单人数 / 组内流失人数。</p>
+<p class="desc">名单 <code>t7recalllist_active0918</code>，流失 8,669 人。提单窗口 2026-09-18～2026-09-29。S / A / B / C / D 按 score 从高到低取前 10% / 10–20% / 20–40% / 40–70% / 70–100%。提单率 = 组内提单人数 / 组内流失人数。</p>
 <div class="chart score-bar">
 <h3>score 分段提单率</h3>
-<p>意愿分越高提单率越高，单调性清晰，验证模型排序能力。</p>
+<p>意愿分越高提单率越高，用来验证排序能力。</p>
 <div class="box"><canvas id="score_bar" aria-label="v2 score 五档提单率柱状图"></canvas></div>
 </div>
 <div class="table">
 <table>
 <thead><tr><th>组</th><th>分位</th><th>流失人数</th><th>提单人数</th><th>提单率</th><th>score 区间</th></tr></thead>
 <tbody>
-<tr><td>S</td><td>前 10%</td><td>867</td><td>109</td><td>12.57%</td><td>95.25～100</td></tr>
-<tr><td>A</td><td>10–20%</td><td>867</td><td>64</td><td>7.38%</td><td>90.32～95.25</td></tr>
-<tr><td>B</td><td>20–40%</td><td>1734</td><td>46</td><td>2.65%</td><td>79.61～90.32</td></tr>
-<tr><td>C</td><td>40–70%</td><td>2601</td><td>41</td><td>1.58%</td><td>60.77～79.61</td></tr>
-<tr><td>D</td><td>70–100%</td><td>2600</td><td>24</td><td>0.92%</td><td>20.22～60.77</td></tr>
-<tr><td>合计</td><td>全量</td><td>8669</td><td>284</td><td>3.28%</td><td>20.22～100</td></tr>
+<tr><td>S</td><td>前 10%</td><td>867</td><td>219</td><td>25.26%</td><td>95.25～100.00</td></tr><tr><td>A</td><td>10–20%</td><td>867</td><td>141</td><td>16.26%</td><td>90.32～95.25</td></tr><tr><td>B</td><td>20–40%</td><td>1,734</td><td>135</td><td>7.79%</td><td>79.61～90.32</td></tr><tr><td>C</td><td>40–70%</td><td>2,601</td><td>129</td><td>4.96%</td><td>60.77～79.61</td></tr><tr><td>D</td><td>70–100%</td><td>2,600</td><td>56</td><td>2.15%</td><td>20.22～60.77</td></tr><tr><td>合计</td><td>全量</td><td>8,669</td><td>680</td><td>7.84%</td><td>20.22～100.00</td></tr>
 </tbody>
 </table>
 </div>
-<div class="callout green"><div class="ch">4. v2 五档单调下降</div>
-S 档提单率 <b>12.57%</b>，是全体 <b>3.28%</b>（284/8669）的约 3.8 倍；D 档仅 <b>0.92%</b>。五档从高到低严格递减，说明 v2 的 score 对提单意愿排序有效。</div>
+<div class="callout green"><div class="ch">4. v2 五档仍单调下降</div>
+S 档提单率 <b>25.26%</b>，全体 <b>7.84%</b>（680/8,669）。五档从高到低递减，说明拉长窗口后 score 对提单意愿仍然有效。</div>
+
+<h2>三分位提单率</h2>
+<p class="desc">T1 为 score 最高 1/3。窗口均为触达日至 2026-09-29。</p>
+<div class="grid g2">
+<div class="table"><table>
+<thead><tr><th>v2 档</th><th>流失</th><th>提单</th><th>提单率</th></tr></thead>
+<tbody><tr><td>T1</td><td>2,890</td><td>463</td><td>16.02%</td></tr><tr><td>T2</td><td>2,890</td><td>152</td><td>5.26%</td></tr><tr><td>T3</td><td>2,889</td><td>65</td><td>2.25%</td></tr></tbody>
+</table></div>
+<div class="table"><table>
+<thead><tr><th>v1 档</th><th>流失</th><th>提单</th><th>提单率</th></tr></thead>
+<tbody><tr><td>T1</td><td>2,598</td><td>740</td><td>28.48%</td></tr><tr><td>T2</td><td>2,597</td><td>314</td><td>12.09%</td></tr><tr><td>T3</td><td>2,597</td><td>171</td><td>6.58%</td></tr></tbody>
+</table></div>
+</div>
 
 <details class="fold">
 <summary>按首次提单日</summary>
 <p class="desc">累计占比用首次提单去重，跨日多次提单的人只进第一次。点击标题展开明细。</p>
-<h3 style="font-size:16px;margin:18px 0 8px">提单意愿模型v1版</h3>
+<h3 style="font-size:16px;margin:18px 0 8px">提单意愿模型v1版（触达 9/10）</h3>
 <div class="table"><table>
 <thead><tr><th>日期</th><th>触达后</th><th>当日新增提单</th><th>其中前 1/3</th><th>当日占比</th><th>累计提单</th><th>累计前 1/3</th><th>累计占比</th></tr></thead>
-<tbody><tr><td>2026-09-10</td><td>D0</td><td>77</td><td>56</td><td>72.73%</td><td>77</td><td>56</td><td>72.73%</td></tr><tr><td>2026-09-11</td><td>D1</td><td>106</td><td>86</td><td>81.13%</td><td>183</td><td>142</td><td>77.60%</td></tr><tr><td>2026-09-12</td><td>D2</td><td>98</td><td>62</td><td>63.27%</td><td>281</td><td>204</td><td>72.60%</td></tr><tr><td>2026-09-13</td><td>D3</td><td>61</td><td>42</td><td>68.85%</td><td>342</td><td>246</td><td>71.93%</td></tr><tr><td>2026-09-14</td><td>D4</td><td>65</td><td>43</td><td>66.15%</td><td>407</td><td>289</td><td>71.01%</td></tr><tr><td>2026-09-15</td><td>D5</td><td>72</td><td>46</td><td>63.89%</td><td>479</td><td>335</td><td>69.94%</td></tr><tr><td>2026-09-16</td><td>D6</td><td>58</td><td>31</td><td>53.45%</td><td>537</td><td>366</td><td>68.16%</td></tr><tr><td>2026-09-17</td><td>D7</td><td>62</td><td>43</td><td>69.35%</td><td>599</td><td>409</td><td>68.28%</td></tr><tr><td>2026-09-18</td><td>D8</td><td>51</td><td>33</td><td>64.71%</td><td>650</td><td>442</td><td>68.00%</td></tr><tr><td>2026-09-19</td><td>D9</td><td>64</td><td>38</td><td>59.38%</td><td>714</td><td>480</td><td>67.23%</td></tr><tr><td>2026-09-20</td><td>D10</td><td>78</td><td>40</td><td>51.28%</td><td>792</td><td>520</td><td>65.66%</td></tr><tr><td>2026-09-21</td><td>D11</td><td>69</td><td>44</td><td>63.77%</td><td>861</td><td>564</td><td>65.51%</td></tr></tbody>
+<tbody><tr><td>2026-09-10</td><td>D0</td><td>77</td><td>56</td><td>72.73%</td><td>77</td><td>56</td><td>72.73%</td></tr><tr><td>2026-09-11</td><td>D1</td><td>106</td><td>86</td><td>81.13%</td><td>183</td><td>142</td><td>77.60%</td></tr><tr><td>2026-09-12</td><td>D2</td><td>98</td><td>62</td><td>63.27%</td><td>281</td><td>204</td><td>72.60%</td></tr><tr><td>2026-09-13</td><td>D3</td><td>61</td><td>42</td><td>68.85%</td><td>342</td><td>246</td><td>71.93%</td></tr><tr><td>2026-09-14</td><td>D4</td><td>65</td><td>43</td><td>66.15%</td><td>407</td><td>289</td><td>71.01%</td></tr><tr><td>2026-09-15</td><td>D5</td><td>72</td><td>46</td><td>63.89%</td><td>479</td><td>335</td><td>69.94%</td></tr><tr><td>2026-09-16</td><td>D6</td><td>58</td><td>31</td><td>53.45%</td><td>537</td><td>366</td><td>68.16%</td></tr><tr><td>2026-09-17</td><td>D7</td><td>62</td><td>43</td><td>69.35%</td><td>599</td><td>409</td><td>68.28%</td></tr><tr><td>2026-09-18</td><td>D8</td><td>51</td><td>33</td><td>64.71%</td><td>650</td><td>442</td><td>68.00%</td></tr><tr><td>2026-09-19</td><td>D9</td><td>64</td><td>38</td><td>59.38%</td><td>714</td><td>480</td><td>67.23%</td></tr><tr><td>2026-09-20</td><td>D10</td><td>78</td><td>40</td><td>51.28%</td><td>792</td><td>520</td><td>65.66%</td></tr><tr><td>2026-09-21</td><td>D11</td><td>69</td><td>44</td><td>63.77%</td><td>861</td><td>564</td><td>65.51%</td></tr><tr><td>2026-09-22</td><td>D12</td><td>54</td><td>26</td><td>48.15%</td><td>915</td><td>590</td><td>64.48%</td></tr><tr><td>2026-09-23</td><td>D13</td><td>59</td><td>24</td><td>40.68%</td><td>974</td><td>614</td><td>63.04%</td></tr><tr><td>2026-09-24</td><td>D14</td><td>58</td><td>28</td><td>48.28%</td><td>1,032</td><td>642</td><td>62.21%</td></tr><tr><td>2026-09-25</td><td>D15</td><td>42</td><td>22</td><td>52.38%</td><td>1,074</td><td>664</td><td>61.82%</td></tr><tr><td>2026-09-26</td><td>D16</td><td>44</td><td>20</td><td>45.45%</td><td>1,118</td><td>684</td><td>61.18%</td></tr><tr><td>2026-09-27</td><td>D17</td><td>53</td><td>31</td><td>58.49%</td><td>1,171</td><td>715</td><td>61.06%</td></tr><tr><td>2026-09-28</td><td>D18</td><td>52</td><td>24</td><td>46.15%</td><td>1,223</td><td>739</td><td>60.43%</td></tr><tr><td>2026-09-29</td><td>D19</td><td>2</td><td>1</td><td>50.00%</td><td>1,225</td><td>740</td><td>60.41%</td></tr></tbody>
 </table></div>
 <h3 style="font-size:16px;margin:18px 0 8px">提单意愿模型v2版（触达 9/18）</h3>
 <div class="table"><table>
 <thead><tr><th>日期</th><th>触达后</th><th>当日新增提单</th><th>其中前 1/3</th><th>当日占比</th><th>累计提单</th><th>累计前 1/3</th><th>累计占比</th></tr></thead>
-<tbody><tr><td>2026-09-18</td><td>D0</td><td>56</td><td>41</td><td>73.21%</td><td>56</td><td>41</td><td>73.21%</td></tr><tr><td>2026-09-19</td><td>D1</td><td>73</td><td>54</td><td>73.97%</td><td>129</td><td>95</td><td>73.64%</td></tr><tr><td>2026-09-20</td><td>D2</td><td>85</td><td>63</td><td>74.12%</td><td>214</td><td>158</td><td>73.83%</td></tr><tr><td>2026-09-21</td><td>D3</td><td>69</td><td>51</td><td>73.91%</td><td>283</td><td>209</td><td>73.85%</td></tr></tbody>
+<tbody><tr><td>2026-09-18</td><td>D0</td><td>56</td><td>41</td><td>73.21%</td><td>56</td><td>41</td><td>73.21%</td></tr><tr><td>2026-09-19</td><td>D1</td><td>73</td><td>54</td><td>73.97%</td><td>129</td><td>95</td><td>73.64%</td></tr><tr><td>2026-09-20</td><td>D2</td><td>85</td><td>63</td><td>74.12%</td><td>214</td><td>158</td><td>73.83%</td></tr><tr><td>2026-09-21</td><td>D3</td><td>69</td><td>51</td><td>73.91%</td><td>283</td><td>209</td><td>73.85%</td></tr><tr><td>2026-09-22</td><td>D4</td><td>57</td><td>33</td><td>57.89%</td><td>340</td><td>242</td><td>71.18%</td></tr><tr><td>2026-09-23</td><td>D5</td><td>56</td><td>34</td><td>60.71%</td><td>396</td><td>276</td><td>69.70%</td></tr><tr><td>2026-09-24</td><td>D6</td><td>64</td><td>41</td><td>64.06%</td><td>460</td><td>317</td><td>68.91%</td></tr><tr><td>2026-09-25</td><td>D7</td><td>42</td><td>29</td><td>69.05%</td><td>502</td><td>346</td><td>68.92%</td></tr><tr><td>2026-09-26</td><td>D8</td><td>59</td><td>39</td><td>66.10%</td><td>561</td><td>385</td><td>68.63%</td></tr><tr><td>2026-09-27</td><td>D9</td><td>56</td><td>39</td><td>69.64%</td><td>617</td><td>424</td><td>68.72%</td></tr><tr><td>2026-09-28</td><td>D10</td><td>62</td><td>38</td><td>61.29%</td><td>679</td><td>462</td><td>68.04%</td></tr><tr><td>2026-09-29</td><td>D11</td><td>1</td><td>1</td><td>100.00%</td><td>680</td><td>463</td><td>68.09%</td></tr></tbody>
 </table></div>
 </details>
 
 <details class="fold">
 <summary>附录：完整 PGSQL（可复现全部指标）</summary>
-<p class="desc">R1/R4 总览（含 D0～D3）；R2/R5 三分位人数；R3/R6 按首次提单日。R7 为 v2 score 五档提单率（9/18～9/22）。占比用对应列相除。</p>
+<p class="desc">R1/R4 总览（含 D0～D3、D0～D11）；R2/R5 三分位；R3/R6 按首次提单日；R7 v2 五档。AUC 用 R8/R9 用户级 score×是否提单计算。</p>
 <pre class="sql">-- =============================================================================
--- T7 召回 · 提单意愿模型：v1 t7recall_active0910 vs v2 t7recalllist_active0918
+-- T7 召回 · 提单意愿模型 V2 复验
 -- 库：kaby_dw · schema wangchuanliang
--- 主指标：core 前 1/3 流失用户中的提单人数 / 该批全部提单人数
--- 提单窗口：各批触达日（9/10、9/18）起至 2026-09-21（含）
--- 对齐窗口：触达日起连续 4 个日历日（D0～D3，v1 为 9/10～9/13，v2 为 9/18～9/21）
+-- 名单：v1 t7recall_active0910（触达 2026-09-10）
+--       v2 t7recalllist_active0918（触达 2026-09-18）
+-- 提单：order_loan_f_v2_copy，触达日起至 as_of（CURRENT_DATE）首次 apply_date
+-- 主指标：score 前 1/3 流失用户中的提单人数 / 该批全部提单人数
+-- 对齐窗：D0～D3；以及触达后同长 12 天（D0～D11）
+-- 五档：S 前10% / A 10–20% / B 20–40% / C 40–70% / D 70–100%
 -- =============================================================================
 
--- ---------- 迭代前：t7recall_active0910，触达 2026-09-10 ----------
+SET search_path TO wangchuanliang, public;
+SET statement_timeout = 0;
+
+DROP TABLE IF EXISTS tmp_p;
+CREATE TEMP TABLE tmp_p AS
+SELECT
+    DATE &#x27;2026-09-10&#x27; AS v1_start,
+    DATE &#x27;2026-09-18&#x27; AS v2_start,
+    CURRENT_DATE AS as_of;
+
+SELECT as_of FROM tmp_p;
+
+-- ---------- v1 ----------
 DROP TABLE IF EXISTS tmp_u_v1;
 CREATE TEMP TABLE tmp_u_v1 AS
 SELECT DISTINCT ON (churn_user_id)
@@ -132,41 +162,50 @@ CREATE TEMP TABLE tmp_a_v1 AS
 SELECT o.user_id, MIN(o.apply_date) AS first_apply
 FROM tmp_u_v1 u
 INNER JOIN wangchuanliang.order_loan_f_v2_copy o ON o.user_id = u.user_id
-WHERE o.apply_date &gt;= DATE &#x27;2026-09-10&#x27; AND o.apply_date &lt;= DATE &#x27;2026-09-21&#x27;
+CROSS JOIN tmp_p p
+WHERE o.apply_date &gt;= p.v1_start AND o.apply_date &lt;= p.as_of
 GROUP BY o.user_id;
 
--- R1 v1 总览（截至 9/21 + D0～D3）
+-- R1 v1 总览
 SELECT
     &#x27;v1_0910&#x27; AS batch,
+    (SELECT as_of::text FROM tmp_p) AS as_of,
     (SELECT COUNT(*) FROM tmp_r_v1) AS n_churn,
     (SELECT COUNT(*) FROM tmp_r_v1 WHERE tertile = 1) AS n_top,
     (SELECT MIN(score) FROM tmp_r_v1 WHERE tertile = 1) AS top_score_min,
     (SELECT MAX(score) FROM tmp_r_v1 WHERE tertile = 1) AS top_score_max,
     (SELECT COUNT(*) FROM tmp_a_v1) AS n_apply,
     (SELECT COUNT(*) FROM tmp_a_v1 a INNER JOIN tmp_r_v1 r ON r.user_id = a.user_id AND r.tertile = 1) AS n_apply_top,
-    (SELECT COUNT(*) FROM tmp_a_v1 WHERE first_apply &lt;= DATE &#x27;2026-09-10&#x27; + 3) AS n_apply_d3,
+    ROUND(100.0 * (SELECT COUNT(*) FROM tmp_a_v1 a INNER JOIN tmp_r_v1 r ON r.user_id = a.user_id AND r.tertile = 1)
+        / NULLIF((SELECT COUNT(*) FROM tmp_a_v1), 0), 2) AS share_t1,
+    (SELECT COUNT(*) FROM tmp_a_v1 CROSS JOIN tmp_p p WHERE first_apply &lt;= p.v1_start + 3) AS n_apply_d3,
     (SELECT COUNT(*) FROM tmp_a_v1 a INNER JOIN tmp_r_v1 r ON r.user_id = a.user_id AND r.tertile = 1
-      WHERE a.first_apply &lt;= DATE &#x27;2026-09-10&#x27; + 3) AS n_apply_top_d3;
+        CROSS JOIN tmp_p p WHERE a.first_apply &lt;= p.v1_start + 3) AS n_apply_top_d3,
+    (SELECT COUNT(*) FROM tmp_a_v1 CROSS JOIN tmp_p p WHERE first_apply &lt;= p.v1_start + 11) AS n_apply_d11,
+    (SELECT COUNT(*) FROM tmp_a_v1 a INNER JOIN tmp_r_v1 r ON r.user_id = a.user_id AND r.tertile = 1
+        CROSS JOIN tmp_p p WHERE a.first_apply &lt;= p.v1_start + 11) AS n_apply_top_d11;
 
--- R2 v1 三分位（截至 9/21）
+-- R2 v1 三分位
 SELECT r.tertile,
        COUNT(*) AS n_churn,
-       COUNT(a.user_id) AS n_apply
+       COUNT(a.user_id) AS n_apply,
+       ROUND(100.0 * COUNT(a.user_id) / NULLIF(COUNT(*), 0), 2) AS apply_rate_pct
 FROM tmp_r_v1 r
 LEFT JOIN tmp_a_v1 a ON a.user_id = r.user_id
 GROUP BY r.tertile
 ORDER BY r.tertile;
 
--- R3 迭代前按首次提单日
+-- R3 v1 按首次提单日
 SELECT a.first_apply::text AS d,
+       (a.first_apply - (SELECT v1_start FROM tmp_p)) AS day_idx,
        COUNT(*) AS n_apply,
        SUM(CASE WHEN r.tertile = 1 THEN 1 ELSE 0 END) AS n_apply_top
 FROM tmp_a_v1 a
 INNER JOIN tmp_r_v1 r ON r.user_id = a.user_id
-GROUP BY 1
+GROUP BY 1, 2
 ORDER BY 1;
 
--- ---------- 迭代后：t7recalllist_active0918，触达 2026-09-18 ----------
+-- ---------- v2 ----------
 DROP TABLE IF EXISTS tmp_u_v2;
 CREATE TEMP TABLE tmp_u_v2 AS
 SELECT DISTINCT ON (churn_user_id)
@@ -186,45 +225,50 @@ CREATE TEMP TABLE tmp_a_v2 AS
 SELECT o.user_id, MIN(o.apply_date) AS first_apply
 FROM tmp_u_v2 u
 INNER JOIN wangchuanliang.order_loan_f_v2_copy o ON o.user_id = u.user_id
-WHERE o.apply_date &gt;= DATE &#x27;2026-09-18&#x27; AND o.apply_date &lt;= DATE &#x27;2026-09-21&#x27;
+CROSS JOIN tmp_p p
+WHERE o.apply_date &gt;= p.v2_start AND o.apply_date &lt;= p.as_of
 GROUP BY o.user_id;
 
 -- R4 v2 总览
 SELECT
     &#x27;v2_0918&#x27; AS batch,
+    (SELECT as_of::text FROM tmp_p) AS as_of,
     (SELECT COUNT(*) FROM tmp_r_v2) AS n_churn,
     (SELECT COUNT(*) FROM tmp_r_v2 WHERE tertile = 1) AS n_top,
     (SELECT MIN(score) FROM tmp_r_v2 WHERE tertile = 1) AS top_score_min,
     (SELECT MAX(score) FROM tmp_r_v2 WHERE tertile = 1) AS top_score_max,
     (SELECT COUNT(*) FROM tmp_a_v2) AS n_apply,
     (SELECT COUNT(*) FROM tmp_a_v2 a INNER JOIN tmp_r_v2 r ON r.user_id = a.user_id AND r.tertile = 1) AS n_apply_top,
-    (SELECT COUNT(*) FROM tmp_a_v2 WHERE first_apply &lt;= DATE &#x27;2026-09-18&#x27; + 3) AS n_apply_d3,
+    ROUND(100.0 * (SELECT COUNT(*) FROM tmp_a_v2 a INNER JOIN tmp_r_v2 r ON r.user_id = a.user_id AND r.tertile = 1)
+        / NULLIF((SELECT COUNT(*) FROM tmp_a_v2), 0), 2) AS share_t1,
+    (SELECT COUNT(*) FROM tmp_a_v2 CROSS JOIN tmp_p p WHERE first_apply &lt;= p.v2_start + 3) AS n_apply_d3,
     (SELECT COUNT(*) FROM tmp_a_v2 a INNER JOIN tmp_r_v2 r ON r.user_id = a.user_id AND r.tertile = 1
-      WHERE a.first_apply &lt;= DATE &#x27;2026-09-18&#x27; + 3) AS n_apply_top_d3;
+        CROSS JOIN tmp_p p WHERE a.first_apply &lt;= p.v2_start + 3) AS n_apply_top_d3,
+    (SELECT COUNT(*) FROM tmp_a_v2 CROSS JOIN tmp_p p WHERE first_apply &lt;= p.v2_start + 11) AS n_apply_d11,
+    (SELECT COUNT(*) FROM tmp_a_v2 a INNER JOIN tmp_r_v2 r ON r.user_id = a.user_id AND r.tertile = 1
+        CROSS JOIN tmp_p p WHERE a.first_apply &lt;= p.v2_start + 11) AS n_apply_top_d11;
 
--- R5 v2 三分位（截至 9/21）
+-- R5 v2 三分位
 SELECT r.tertile,
        COUNT(*) AS n_churn,
-       COUNT(a.user_id) AS n_apply
+       COUNT(a.user_id) AS n_apply,
+       ROUND(100.0 * COUNT(a.user_id) / NULLIF(COUNT(*), 0), 2) AS apply_rate_pct
 FROM tmp_r_v2 r
 LEFT JOIN tmp_a_v2 a ON a.user_id = r.user_id
 GROUP BY r.tertile
 ORDER BY r.tertile;
 
--- R6 迭代后按首次提单日
+-- R6 v2 按首次提单日
 SELECT a.first_apply::text AS d,
+       (a.first_apply - (SELECT v2_start FROM tmp_p)) AS day_idx,
        COUNT(*) AS n_apply,
        SUM(CASE WHEN r.tertile = 1 THEN 1 ELSE 0 END) AS n_apply_top
 FROM tmp_a_v2 a
 INNER JOIN tmp_r_v2 r ON r.user_id = a.user_id
-GROUP BY 1
+GROUP BY 1, 2
 ORDER BY 1;
 
--- 占比：n_apply_top / n_apply ；对齐 4 日：n_apply_top_d3 / n_apply_d3
--- 两版 score 量纲不同，不要直接比绝对分，只比三分位排序后的提单贡献。
-
--- R7 v2 score 五档提单率（触达 9/18 至 2026-09-22）
--- S 前10% / A 10-20% / B 20-40% / C 40-70% / D 70-100%
+-- R7 v2 五档
 DROP TABLE IF EXISTS tmp_g_v2;
 CREATE TEMP TABLE tmp_g_v2 AS
 SELECT
@@ -246,14 +290,6 @@ FROM (
     FROM tmp_u_v2
 ) u;
 
-DROP TABLE IF EXISTS tmp_a_v2_d22;
-CREATE TEMP TABLE tmp_a_v2_d22 AS
-SELECT o.user_id, MIN(o.apply_date) AS first_apply
-FROM tmp_u_v2 u
-INNER JOIN wangchuanliang.order_loan_f_v2_copy o ON o.user_id = u.user_id
-WHERE o.apply_date &gt;= DATE &#x27;2026-09-18&#x27; AND o.apply_date &lt;= DATE &#x27;2026-09-22&#x27;
-GROUP BY o.user_id;
-
 SELECT
     g.grp,
     COUNT(*) AS n_churn,
@@ -262,12 +298,22 @@ SELECT
     MIN(g.score) AS score_min,
     MAX(g.score) AS score_max
 FROM tmp_g_v2 g
-LEFT JOIN tmp_a_v2_d22 a ON a.user_id = g.user_id
+LEFT JOIN tmp_a_v2 a ON a.user_id = g.user_id
 GROUP BY g.grp
 ORDER BY CASE g.grp WHEN &#x27;S&#x27; THEN 1 WHEN &#x27;A&#x27; THEN 2 WHEN &#x27;B&#x27; THEN 3 WHEN &#x27;C&#x27; THEN 4 WHEN &#x27;D&#x27; THEN 5 END;
+
+-- R8 用户级打分（算 AUC）v1
+SELECT r.user_id, r.score, r.tertile, CASE WHEN a.user_id IS NULL THEN 0 ELSE 1 END AS y
+FROM tmp_r_v1 r
+LEFT JOIN tmp_a_v1 a ON a.user_id = r.user_id;
+
+-- R9 用户级打分（算 AUC）v2
+SELECT r.user_id, r.score, r.tertile, CASE WHEN a.user_id IS NULL THEN 0 ELSE 1 END AS y
+FROM tmp_r_v2 r
+LEFT JOIN tmp_a_v2 a ON a.user_id = r.user_id;
 </pre>
 </details>
-<p class="foot">对照主指标截至 2026-09-21；v2 五档提单率截至 2026-09-22。源表：t7recall_active0910、t7recalllist_active0918、order_loan_f_v2_copy。</p>
+<p class="foot">复验截至 2026-09-29。源表：t7recall_active0910、t7recalllist_active0918、order_loan_f_v2_copy。两版 score 量纲不同，只比排序后的提单贡献，不比绝对分。</p>
 </main>
 <script>
 new Chart(document.getElementById('score_bar'), {
@@ -293,7 +339,7 @@ new Chart(document.getElementById('score_bar'), {
     labels: ['S(前10%)', 'A(10–20%)', 'B(20–40%)', 'C(40–70%)', 'D(70–100%)'],
     datasets: [{
       label: '提单率 %',
-      data: [12.57, 7.38, 2.65, 1.58, 0.92],
+      data: [25.26, 16.26, 7.79, 4.96, 2.15],
       backgroundColor: ['#7ee8c7', '#5ec8f0', '#f5b942', '#f68ab0', '#c4b5fd'],
       borderWidth: 0,
       maxBarThickness: 96
@@ -320,7 +366,7 @@ new Chart(document.getElementById('score_bar'), {
       },
       y: {
         min: 0,
-        max: 16,
+        max: 28,
         ticks: {
           color: '#9bb8cc',
           stepSize: 2,
