@@ -1,0 +1,409 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>首贷生命周期 Tableau 看板规划与具体实施报告</title>
+  <style>
+    :root{
+      --bg:#061824;--panel:#0a2739;--panel2:#0d3045;--line:#28546c;
+      --text:#eef7fb;--body:#c9dce7;--muted:#91adbd;--cyan:#46c9e8;
+      --green:#62dfae;--amber:#ffc56f;--pink:#f48db4;--red:#ff8585;
+      --navy:#091f2e;--code:#04131d;--shadow:0 18px 46px rgba(0,0,0,.22)
+    }
+    *{box-sizing:border-box}
+    html{scroll-behavior:smooth}
+    body{margin:0;background:linear-gradient(180deg,#061824 0%,#082235 45%,#061824 100%);color:var(--body);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif;line-height:1.72}
+    a{color:var(--cyan);text-decoration:none} a:hover{text-decoration:underline}
+    .hero{padding:58px 24px 44px;text-align:center;border-bottom:1px solid rgba(70,201,232,.25);background:radial-gradient(circle at 50% -25%,rgba(70,201,232,.22),transparent 48%)}
+    .hero h1{margin:0 auto 14px;max-width:1100px;font-size:clamp(28px,4vw,48px);line-height:1.22;color:var(--text);letter-spacing:.02em}
+    .hero p{margin:0 auto;max-width:940px;font-size:17px;color:#b9d0dc}
+    .meta{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-top:22px}
+    .pill{padding:6px 12px;border:1px solid rgba(70,201,232,.35);border-radius:999px;background:rgba(10,39,57,.8);font-size:13px;color:#d7e9f1}
+    .nav{position:sticky;top:0;z-index:20;display:flex;gap:18px;overflow:auto;padding:12px max(18px,calc((100vw - 1180px)/2));background:rgba(4,19,29,.94);backdrop-filter:blur(12px);border-bottom:1px solid var(--line);white-space:nowrap}
+    .nav a{color:#b8d0dc;font-size:13px}.nav a:hover{color:var(--cyan);text-decoration:none}
+    main{max-width:1180px;margin:auto;padding:30px 22px 70px}
+    section{scroll-margin-top:72px;margin:0 0 28px;padding:28px;border:1px solid var(--line);border-radius:18px;background:linear-gradient(155deg,rgba(13,48,69,.94),rgba(8,31,46,.96));box-shadow:var(--shadow)}
+    h2{margin:0 0 18px;color:var(--text);font-size:25px;border-left:5px solid var(--cyan);padding-left:13px}
+    h3{margin:24px 0 10px;color:var(--cyan);font-size:18px}
+    h4{margin:15px 0 8px;color:var(--amber);font-size:15px}
+    p{margin:8px 0} strong{color:var(--text)}
+    .lead{font-size:16px;color:#d8e8ef}
+    .grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px}
+    .card{padding:18px;border:1px solid rgba(91,156,187,.36);border-radius:14px;background:rgba(5,24,36,.55)}
+    .card .num{font-size:30px;font-weight:800;color:var(--green);line-height:1.15}.card .label{margin-top:8px;color:var(--text);font-weight:700}.card .desc{margin-top:5px;font-size:13px;color:var(--muted)}
+    .callout{margin:14px 0;padding:15px 17px;border-radius:12px;border-left:4px solid var(--green);background:rgba(98,223,174,.08)}
+    .warn{border-left-color:var(--amber);background:rgba(255,197,111,.08)}
+    .danger{border-left-color:var(--red);background:rgba(255,133,133,.08)}
+    .flow{display:grid;grid-template-columns:1fr 40px 1fr 40px 1fr 40px 1fr;align-items:center;gap:8px;margin:20px 0}
+    .flow .node{min-height:116px;padding:16px;border:1px solid rgba(70,201,232,.38);border-radius:14px;background:rgba(5,24,36,.65)}
+    .node b{display:block;margin-bottom:7px;color:var(--cyan)}.arrow{text-align:center;color:var(--green);font-size:25px;font-weight:800}
+    table{width:100%;border-collapse:separate;border-spacing:0;margin:14px 0;font-size:13px;overflow:hidden;border:1px solid var(--line);border-radius:12px}
+    th,td{padding:11px 12px;border-right:1px solid rgba(40,84,108,.7);border-bottom:1px solid rgba(40,84,108,.7);vertical-align:top;text-align:left}
+    th:last-child,td:last-child{border-right:0}tr:last-child td{border-bottom:0}
+    th{background:#0d344b;color:#eaf6fa;font-weight:700}td{background:rgba(5,24,36,.38)}
+    tr:nth-child(even) td{background:rgba(11,42,61,.45)}
+    .tag{display:inline-block;padding:2px 8px;border-radius:999px;font-size:12px;font-weight:700}.base{background:rgba(70,201,232,.14);color:var(--cyan)}.life{background:rgba(98,223,174,.14);color:var(--green)}
+    pre{margin:12px 0;padding:17px;overflow:auto;border:1px solid #23495e;border-radius:12px;background:var(--code);color:#d9eef7;font:12.5px/1.6 SFMono-Regular,Consolas,"Liberation Mono",monospace;white-space:pre}
+    code{font-family:SFMono-Regular,Consolas,"Liberation Mono",monospace;color:#d9eef7}
+    .inline{padding:2px 5px;border-radius:5px;background:#071b29;color:#aee9f6}
+    ol,ul{padding-left:22px}li{margin:6px 0}
+    .steps{counter-reset:step;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+    .step{position:relative;padding:17px 17px 17px 54px;border:1px solid rgba(40,84,108,.9);border-radius:13px;background:rgba(5,24,36,.48)}
+    .step:before{counter-increment:step;content:counter(step);position:absolute;left:15px;top:16px;width:26px;height:26px;border-radius:50%;display:grid;place-items:center;background:var(--cyan);color:#06202f;font-weight:900}
+    .step b{display:block;color:var(--text);margin-bottom:4px}
+    .mock{display:grid;grid-template-columns:310px 1fr;border:1px solid var(--line);border-radius:14px;overflow:hidden;background:#071f2e}
+    .mock .left,.mock .right{padding:16px}.mock .left{border-right:1px solid var(--line)}
+    .mock-title{color:var(--text);font-weight:800;margin-bottom:10px}.mock-row{display:grid;grid-template-columns:1.2fr repeat(4,1fr);gap:4px;margin:4px 0}.mock-row span{padding:7px;background:#0d344b;border-radius:5px;font-size:11px;text-align:center}.mock-row span:first-child{text-align:left;color:#cfe1e9}.right .mock-row{grid-template-columns:1.35fr repeat(6,1fr)}
+    details{margin:12px 0;border:1px solid var(--line);border-radius:12px;background:rgba(4,19,29,.55)}
+    summary{cursor:pointer;padding:14px 16px;color:var(--text);font-weight:750;list-style:none}summary::-webkit-details-marker{display:none}summary:after{content:"＋";float:right;color:var(--cyan)}details[open] summary:after{content:"－"}.detail-body{padding:0 16px 16px}
+    .status{display:inline-flex;align-items:center;gap:7px;color:var(--green);font-weight:700}.dot{width:9px;height:9px;border-radius:50%;background:var(--green);box-shadow:0 0 14px var(--green)}
+    .footer{text-align:center;color:var(--muted);font-size:12px;margin-top:26px}
+    @media(max-width:900px){.grid{grid-template-columns:repeat(2,1fr)}.flow{grid-template-columns:1fr}.arrow{transform:rotate(90deg)}.steps{grid-template-columns:1fr}.mock{grid-template-columns:1fr}.mock .left{border-right:0;border-bottom:1px solid var(--line)}}
+    @media(max-width:560px){section{padding:20px}.grid{grid-template-columns:1fr}.mock{display:none}}
+  </style>
+</head>
+<body>
+  <header class="hero">
+    <h1>首贷生命周期 Tableau 看板规划与具体实施报告</h1>
+    <p>把现有 Excel 透视表改造成每日自动更新的 Tableau Server 看板；统一首贷月份、渠道和累计观察窗口口径，同时解决成熟月份与最新基础指标不能共用全局筛选的问题。</p>
+    <div class="meta">
+      <span class="pill">数据截至 T-1</span><span class="pill">累计窗口 30—360 天</span><span class="pill">首贷月份 × 渠道 × 观察窗口</span><span class="pill">数据库原子指标 + Tableau 比率</span>
+    </div>
+  </header>
+
+  <nav class="nav">
+    <a href="#decision">结论</a><a href="#scope">口径</a><a href="#architecture">架构</a><a href="#maturity">成熟规则</a><a href="#metrics">指标</a><a href="#tableau">Tableau实现</a><a href="#refresh">刷新</a><a href="#qa">校验</a><a href="#roadmap">实施计划</a><a href="#appendix">SQL附录</a>
+  </nav>
+
+  <main>
+    <section id="decision">
+      <h2>一、方案结论</h2>
+      <div class="grid">
+        <div class="card"><div class="num">1</div><div class="label">一张长表</div><div class="desc">统一承载月份、渠道、窗口及所有可加总原子指标。</div></div>
+        <div class="card"><div class="num">12</div><div class="label">累计观察窗口</div><div class="desc">30—360天，每30天一档；360天表示0—360天累计。</div></div>
+        <div class="card"><div class="num">2</div><div class="label">两类指标</div><div class="desc">基础指标看最新数据；生命周期指标只看完全成熟月份。</div></div>
+        <div class="card"><div class="num">T-1</div><div class="label">统一数据日</div><div class="desc">每日跑数只使用昨天及以前已落库数据。</div></div>
+      </div>
+      <div class="callout">
+        <strong>推荐落地方式：</strong>数据库只保存人数、金额、订单数、逾期数等可加总原子指标；Tableau 计算件均、CPS、APPU、盈利率和逾期率。基础指标与生命周期指标放在同一个 Dashboard，但使用两个对齐的工作表，避免成熟期逻辑误伤本月和上月的基础指标。
+      </div>
+    </section>
+
+    <section id="scope">
+      <h2>二、分析对象与统一口径</h2>
+      <table>
+        <thead><tr><th>项目</th><th>统一定义</th><th>实现要点</th></tr></thead>
+        <tbody>
+          <tr><td>首贷 cohort</td><td>整笔首贷成功放款订单：<code>loan_type='firstloan' AND is_remit=1</code></td><td>首贷申请日从2025-07-01开始，截止到 <code>CURRENT_DATE-1</code>。</td></tr>
+          <tr><td>报表粒度</td><td>首贷申请月份 × 获客渠道 × 累计观察窗口</td><td>唯一键为 <code>apply_month + channel_catgy + window_day</code>。</td></tr>
+          <tr><td>累计窗口</td><td>从首贷申请时点起累计0—N天</td><td>240天不是211—240天；360天也不是331—360天。</td></tr>
+          <tr><td>窗口订单</td><td>窗口内提单、成功放款，且整笔到期日在窗口截止日以内</td><td>同一用户的首贷与后续续贷均进入对应 cohort 的生命周期。</td></tr>
+          <tr><td>利润</td><td>窗口内实际还款流水 − 窗口内整笔到期订单放款金额</td><td>还款按实际还款日汇率换美元，放款按放款日汇率换美元。</td></tr>
+          <tr><td>订单逾期</td><td>窗口截止日仍有任一期未结清，则整笔订单逾期</td><td><code>repaid_date_period &gt; window_end</code> 或为空/异常日期。</td></tr>
+          <tr><td>金额逾期</td><td>窗口截止日未结清的分期本金 / 整笔到期订单放款金额</td><td>分子为分期层本金，分母为整笔订单放款。</td></tr>
+          <tr><td>市场成本</td><td><code>dws.rpt_adjust_cost.cost_amt</code></td><td><strong>已是美元，禁止再次换汇。</strong></td></tr>
+        </tbody>
+      </table>
+
+      <h3>数据源对应关系</h3>
+      <table>
+        <thead><tr><th>数据源</th><th>用途</th></tr></thead>
+        <tbody>
+          <tr><td><code>wangchuanliang.order_loan_f_v2_copy</code></td><td>首贷 cohort、窗口内整笔订单、放款金额、息费、期限。</td></tr>
+          <tr><td><code>wangchuanliang.order_risk_label_copy</code></td><td>限定进入风控订单样本的首贷订单。</td></tr>
+          <tr><td><code>wangchuanliang.user_reg_i_copy</code></td><td>按 network_name 与 campaign_name 映射渠道。</td></tr>
+          <tr><td><code>wangchuanliang.repayment_plan_record_copy</code></td><td>实际还款流水。</td></tr>
+          <tr><td><code>wangchuanliang.repayment_plan_v2_copy</code></td><td>窗口截止日的分期结清状态与未结清本金。</td></tr>
+          <tr><td><code>wangchuanliang.exchange_rate_copy</code></td><td>MXN 业务金额按发生日换算为 USD。</td></tr>
+          <tr><td><code>dws.rpt_adjust_cost</code></td><td>美元市场成本。</td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section id="architecture">
+      <h2>三、看板数据架构</h2>
+      <div class="flow">
+        <div class="node"><b>业务明细层</b>订单、还款、分期、渠道、汇率、市场成本</div><div class="arrow">→</div>
+        <div class="node"><b>暂存报表表</b>每日全量重算，先写入 staging，不影响线上数据</div><div class="arrow">→</div>
+        <div class="node"><b>正式报表表</b>校验通过后事务内替换，保持稳定表名</div><div class="arrow">→</div>
+        <div class="node"><b>Tableau Server</b>每日 Extract 刷新，展示最新基础指标与成熟生命周期指标</div>
+      </div>
+      <div class="callout warn">
+        <strong>为什么不用一张宽表：</strong>如果预先创建“利润30、利润60……利润360”等大量字段，新增窗口和新增指标都要改SQL、改数据源、改工作表。长表只新增 <code>window_day</code> 取值，Tableau 用“指标 × 观察窗口”自然展开。
+      </div>
+      <h3>报表表字段分层</h3>
+      <table>
+        <thead><tr><th>字段层</th><th>关键字段</th><th>作用</th></tr></thead>
+        <tbody>
+          <tr><td>维度</td><td>data_date、apply_month、channel_catgy、window_day</td><td>控制数据日、月份、渠道和累计窗口。</td></tr>
+          <tr><td>显示控制</td><td>is_mature、is_base_row</td><td>生命周期成熟判断；基础指标只取一行避免12倍重复。</td></tr>
+          <tr><td>基础原子指标</td><td>首贷订单数、首贷人数、首贷放款、市场成本</td><td>计算首贷件均与CPS，覆盖到昨天。</td></tr>
+          <tr><td>生命周期原子指标</td><td>利润、还款、放款、续贷放款、到期单数、逾期单数、逾期本金、期限、息费</td><td>Tableau聚合后计算APPU、盈利率、逾期率等。</td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section id="maturity">
+      <h2>四、成熟月份与显示规则</h2>
+      <p class="lead">成熟判断以<strong>首贷月份最后一天</strong>为基准，而不是该渠道实际最后一笔订单日期。这样同一个首贷月份在所有渠道上使用完全一致的成熟边界。</p>
+      <pre><code>data_date = CURRENT_DATE - 1
+month_end = 首贷申请月最后一天
+
+is_mature =
+    month_end + window_day &lt;= data_date
+    AND apply_month &lt;= 当前月月初 - 2个月
+
+结果：当前月、上个月的生命周期指标始终不展示；
+      首贷人数、金额、件均、CPS仍展示到 data_date。</code></pre>
+
+      <h3>示例：运行日为6月15日，data_date为6月14日</h3>
+      <table>
+        <thead><tr><th>首贷月份</th><th>基础指标</th><th>30天生命周期</th><th>60天生命周期</th><th>原因</th></tr></thead>
+        <tbody>
+          <tr><td>6月</td><td>展示6月1—14日</td><td>空白</td><td>空白</td><td>当前月只展示基础指标。</td></tr>
+          <tr><td>5月</td><td>展示完整5月</td><td>空白</td><td>空白</td><td>业务规则明确排除上个月生命周期。</td></tr>
+          <tr><td>4月</td><td>展示</td><td>展示</td><td>空白</td><td>4月30日+30天已成熟；+60天尚未成熟。</td></tr>
+          <tr><td>3月及以前</td><td>展示</td><td>按成熟度展示</td><td>按成熟度展示</td><td>各窗口独立判断。</td></tr>
+        </tbody>
+      </table>
+      <div class="callout danger"><strong>禁止做法：</strong>不能把 <code>is_mature=1</code> 设置为整个 Dashboard 的全局筛选器，否则本月和上个月的首贷人数、首贷金额、件均、CPS也会一起消失。</div>
+    </section>
+
+    <section id="metrics">
+      <h2>五、指标计算逻辑</h2>
+      <table>
+        <thead><tr><th>类型</th><th>指标</th><th>计算公式</th><th>成熟限制</th></tr></thead>
+        <tbody>
+          <tr><td><span class="tag base">基础</span></td><td>首贷人数</td><td>首贷成功放款用户去重数</td><td>否</td></tr>
+          <tr><td><span class="tag base">基础</span></td><td>首贷放款金额</td><td>首贷成功放款金额（USD）</td><td>否</td></tr>
+          <tr><td><span class="tag base">基础</span></td><td>首贷件均</td><td>首贷放款金额 / 首贷人数</td><td>否</td></tr>
+          <tr><td><span class="tag base">基础</span></td><td>CPS</td><td>市场成本（USD）/ 首贷人数</td><td>否</td></tr>
+          <tr><td><span class="tag life">生命周期</span></td><td>利润</td><td>窗口内实际还款 − 窗口内整笔到期订单放款</td><td>是</td></tr>
+          <tr><td><span class="tag life">生命周期</span></td><td>APPU</td><td>生命周期利润 / 首贷人数</td><td>是</td></tr>
+          <tr><td><span class="tag life">生命周期</span></td><td>盈利率</td><td>生命周期利润 / 到期整笔订单放款金额</td><td>是</td></tr>
+          <tr><td><span class="tag life">生命周期</span></td><td>件均</td><td>到期整笔订单放款金额 / 到期整笔订单数</td><td>是</td></tr>
+          <tr><td><span class="tag life">生命周期</span></td><td>整笔订单逾期率</td><td>逾期整笔订单数 / 到期整笔订单数</td><td>是</td></tr>
+          <tr><td><span class="tag life">生命周期</span></td><td>分期金额逾期率</td><td>窗口截止日未结清分期本金 / 到期整笔订单放款金额</td><td>是</td></tr>
+          <tr><td><span class="tag life">生命周期</span></td><td>平均期限</td><td>到期整笔订单 loan_day 合计 / 到期整笔订单数</td><td>是</td></tr>
+          <tr><td><span class="tag life">生命周期</span></td><td>平均息费率</td><td>到期整笔订单息费合计 / 到期整笔订单放款金额</td><td>是</td></tr>
+        </tbody>
+      </table>
+      <div class="callout"><strong>分母为0时返回 NULL：</strong>空白代表当前组合没有可计算样本；不应显示0%，避免把“无样本”误读成“表现为零”。</div>
+
+      <h3>计算伪代码</h3>
+      <pre><code>FOR 每个首贷月份、渠道:
+    计算基础指标：首贷人数、首贷金额、市场成本
+
+    FOR window_day IN (30,60,...,360):
+        window_end = 首贷申请时点 + window_day
+        纳入窗口内提单、成功放款且整笔已到期的订单
+        还款 = 从订单提单日到 window_end 的实际到账流水
+        利润 = 还款 - 放款
+        逾期 = window_end 时任一期仍未结清
+        判断该首贷月份是否完全成熟
+
+        IF 未成熟:
+            生命周期原子字段 = NULL
+        ELSE:
+            写入各项分子、分母
+
+    基础指标只在 window_day=30 的行参与 Tableau 汇总</code></pre>
+    </section>
+
+    <section id="tableau">
+      <h2>六、Tableau 具体实现</h2>
+      <div class="steps">
+        <div class="step"><b>连接正式表</b>连接 <code>wangchuanliang.rpt_firstloan_channel_lifecycle</code>；不要直接连接暂存表。</div>
+        <div class="step"><b>创建 Extract</b>发布数据源时嵌入数据库凭据，设置每日完整刷新；报表表体量小，不需要明细级增量。</div>
+        <div class="step"><b>建立基础指标工作表</b>行放月份、渠道；列放首贷人数、金额、件均、CPS；字段内部限定 <code>is_base_row=1</code>。</div>
+        <div class="step"><b>建立生命周期工作表</b>行同左表；列先放 Measure Names，再放观察窗口；每个指标按30—360天横向展开。</div>
+        <div class="step"><b>拼接 Dashboard</b>两个工作表放入同一水平容器，隐藏右表重复行标题，统一行高、排序、汇总与筛选器。</div>
+        <div class="step"><b>发布与订阅</b>Tableau Server在数据库刷新完成后再刷新Extract；启用失败邮件通知。</div>
+      </div>
+
+      <h3>核心计算字段</h3>
+      <details open><summary>基础指标计算字段</summary><div class="detail-body"><pre><code>// 观察窗口
+STR([window_day]) + "天"
+
+// 首贷人数
+SUM(IF [is_base_row] = 1 THEN [first_loan_user_count] END)
+
+// 首贷放款金额
+SUM(IF [is_base_row] = 1 THEN [first_loan_amt_usd] END)
+
+// 首贷件均
+IF [首贷人数] = 0 THEN NULL
+ELSE [首贷放款金额] / [首贷人数]
+END
+
+// 市场成本
+SUM(IF [is_base_row] = 1 THEN [marketing_cost_usd] END)
+
+// CPS
+IF [首贷人数] = 0 THEN NULL
+ELSE [市场成本] / [首贷人数]
+END</code></pre></div></details>
+
+      <details open><summary>生命周期计算字段</summary><div class="detail-body"><pre><code>// 利润
+SUM(IF [is_mature] = 1 THEN [profit_amt_usd] END)
+
+// APPU
+IF SUM(IF [is_mature] = 1 THEN [first_loan_user_count] END) = 0 THEN NULL
+ELSE
+    SUM(IF [is_mature] = 1 THEN [profit_amt_usd] END)
+    /
+    SUM(IF [is_mature] = 1 THEN [first_loan_user_count] END)
+END
+
+// 盈利率
+IF SUM(IF [is_mature] = 1 THEN [due_whole_order_remit_amt_usd] END) = 0 THEN NULL
+ELSE
+    SUM(IF [is_mature] = 1 THEN [profit_amt_usd] END)
+    /
+    SUM(IF [is_mature] = 1 THEN [due_whole_order_remit_amt_usd] END)
+END
+
+// 生命周期件均
+IF SUM(IF [is_mature] = 1 THEN [due_whole_order_count] END) = 0 THEN NULL
+ELSE
+    SUM(IF [is_mature] = 1 THEN [due_whole_order_remit_amt_usd] END)
+    /
+    SUM(IF [is_mature] = 1 THEN [due_whole_order_count] END)
+END
+
+// 整笔订单逾期率
+IF SUM(IF [is_mature] = 1 THEN [due_whole_order_count] END) = 0 THEN NULL
+ELSE
+    SUM(IF [is_mature] = 1 THEN [overdue_whole_order_count] END)
+    /
+    SUM(IF [is_mature] = 1 THEN [due_whole_order_count] END)
+END
+
+// 分期金额逾期率
+IF SUM(IF [is_mature] = 1 THEN [due_whole_order_remit_amt_usd] END) = 0 THEN NULL
+ELSE
+    SUM(IF [is_mature] = 1 THEN [overdue_term_remit_amt_usd] END)
+    /
+    SUM(IF [is_mature] = 1 THEN [due_whole_order_remit_amt_usd] END)
+END
+
+// 平均期限
+IF SUM(IF [is_mature] = 1 THEN [due_whole_order_count] END) = 0 THEN NULL
+ELSE
+    SUM(IF [is_mature] = 1 THEN [whole_order_loan_days_sum] END)
+    /
+    SUM(IF [is_mature] = 1 THEN [due_whole_order_count] END)
+END
+
+// 平均息费率
+IF SUM(IF [is_mature] = 1 THEN [due_whole_order_remit_amt_usd] END) = 0 THEN NULL
+ELSE
+    SUM(IF [is_mature] = 1 THEN [whole_order_interest_amt_usd] END)
+    /
+    SUM(IF [is_mature] = 1 THEN [due_whole_order_remit_amt_usd] END)
+END</code></pre></div></details>
+
+      <h3>生命周期矩阵的字段摆放</h3>
+      <ol>
+        <li><strong>行：</strong><code>apply_month</code>、<code>channel_catgy</code>。</li>
+        <li><strong>列：</strong>先放“度量名称（Measure Names）”，再放离散字段“观察窗口”。顺序不能反。</li>
+        <li><strong>标记/文本：</strong>放“度量值（Measure Values）”，只保留利润、APPU、盈利率、件均、逾期率、平均期限、平均息费率。</li>
+        <li><strong>空白处理：</strong>不要过滤 NULL；打开“显示空行”，让未成熟窗口保持空白而不是消失或显示0。</li>
+        <li><strong>筛选同步：</strong>月份、渠道筛选器应用到两个工作表；<code>is_mature</code>不做全局筛选。</li>
+      </ol>
+
+      <h3>月度汇总与渠道小计</h3>
+      <p>SQL无需再生成一套“全渠道月度汇总行”。Tableau在月份层级开启小计或移除渠道维度，即可汇总全部渠道。金额、人数和订单数直接求和；件均、CPS、APPU、盈利率、逾期率必须用汇总后的分子除以汇总后的分母，<strong>不能对各渠道比率做AVG</strong>。</p>
+      <pre><code>// 示例：全渠道盈利率仍使用同一个计算字段
+SUM(IF [is_mature] = 1 THEN [profit_amt_usd] END)
+/
+SUM(IF [is_mature] = 1 THEN [due_whole_order_remit_amt_usd] END)
+
+// 不要使用：AVG([各渠道盈利率])</code></pre>
+
+      <h3>最终看板形态</h3>
+      <div class="mock">
+        <div class="left"><div class="mock-title">基础指标｜更新到T-1</div><div class="mock-row"><span>月份 / 渠道</span><span>人数</span><span>金额</span><span>件均</span><span>CPS</span></div><div class="mock-row"><span>2026-06 / 渠道A</span><span>●</span><span>●</span><span>●</span><span>●</span></div><div class="mock-row"><span>2026-05 / 渠道A</span><span>●</span><span>●</span><span>●</span><span>●</span></div><div class="mock-row"><span>2026-04 / 渠道A</span><span>●</span><span>●</span><span>●</span><span>●</span></div></div>
+        <div class="right"><div class="mock-title">生命周期指标｜仅展示成熟窗口</div><div class="mock-row"><span>指标</span><span>30天</span><span>60天</span><span>90天</span><span>…</span><span>330天</span><span>360天</span></div><div class="mock-row"><span>利润</span><span>●</span><span>●</span><span>●</span><span>●</span><span>●</span><span>●</span></div><div class="mock-row"><span>APPU</span><span>●</span><span>●</span><span>●</span><span>●</span><span>●</span><span>●</span></div><div class="mock-row"><span>盈利率 / 逾期率</span><span>●</span><span>●</span><span>●</span><span>●</span><span>●</span><span>●</span></div></div>
+      </div>
+      <p style="font-size:13px;color:var(--muted)">Tableau官方参考：<a href="https://help.tableau.com/current/pro/desktop/en-us/datafields_understanddatawindow_meavalues.htm" target="_blank">Measure Names / Measure Values</a>、<a href="https://help.tableau.com/current/pro/desktop/en-us/calculations_calculatedfields_aggregate_create.htm" target="_blank">聚合计算字段</a>。</p>
+    </section>
+
+    <section id="refresh">
+      <h2>七、每日刷新与发布流程</h2>
+      <div class="flow">
+        <div class="node"><b>01 数据库跑数</b>清空暂存表，按T-1全量重算</div><div class="arrow">→</div>
+        <div class="node"><b>02 自动校验</b>唯一键、窗口数、成熟空值、日期完整性</div><div class="arrow">→</div>
+        <div class="node"><b>03 事务换表</b>DELETE正式表 + INSERT暂存表；失败回滚</div><div class="arrow">→</div>
+        <div class="node"><b>04 Tableau刷新</b>数据库成功后再刷新Extract并发送失败告警</div>
+      </div>
+      <h3>调度伪代码</h3>
+      <pre><code>每天 06:00 运行数据库任务
+    执行 staging 刷新
+    IF 质量检查全部为0:
+        在一个事务中替换正式表
+        ANALYZE 正式表
+    ELSE:
+        保留昨日正式表
+        发送告警并停止后续任务
+
+每天 07:00 运行 Tableau Extract 刷新
+    仅在数据库任务成功后触发
+    刷新失败则通知看板负责人</code></pre>
+      <div class="callout"><strong>为什么保留暂存表：</strong>如果SQL、汇率或源表当天异常，失败发生在暂存表，不会先把正式表清空。正式看板继续显示上一日成功数据，并可通过 <code>refresh_time</code> 发现延迟。</div>
+      <p style="font-size:13px;color:var(--muted)">Tableau Server参考：<a href="https://help.tableau.com/current/server/en-us/schedule_add.htm" target="_blank">配置刷新计划</a>、<a href="https://help.tableau.com/current/server/en-us/schedule_enable.htm" target="_blank">失败通知</a>。</p>
+    </section>
+
+    <section id="qa">
+      <h2>八、数据质量与验收标准</h2>
+      <table>
+        <thead><tr><th>检查项</th><th>通过标准</th><th>失败影响</th></tr></thead>
+        <tbody>
+          <tr><td>唯一键</td><td>月份 × 渠道 × 窗口无重复</td><td>停止换表，防止指标重复汇总。</td></tr>
+          <tr><td>观察窗口</td><td>只有30—360共12档</td><td>停止换表。</td></tr>
+          <tr><td>成熟空值</td><td><code>is_mature=0</code>时生命周期字段均为NULL</td><td>停止换表。</td></tr>
+          <tr><td>基础指标</td><td>本月、上月有首贷人数/金额/成本数据</td><td>核查源表刷新和渠道映射。</td></tr>
+          <tr><td>生命周期指标</td><td>本月、上月为空；更早月份按窗口逐步成熟</td><td>核查成熟公式。</td></tr>
+          <tr><td>汇率</td><td>放款日、还款日无缺失MXN汇率</td><td>缺失日期不发布，补齐汇率后重跑。</td></tr>
+          <tr><td>财务恒等式</td><td>利润 = 还款 − 放款</td><td>核查流水重复与订单去重。</td></tr>
+          <tr><td>刷新时间</td><td>data_date=T-1，refresh_time为当日</td><td>展示“数据延迟”告警。</td></tr>
+        </tbody>
+      </table>
+      <div class="callout warn"><strong>上线前抽样：</strong>至少选择一个成熟月份、一个未成熟月份、两个渠道和30/90/240/360四个窗口，与原Excel逐项核对分子、分母及最终比率。差异应先定位到底层样本，再检查Tableau公式。</div>
+    </section>
+
+    <section id="roadmap">
+      <h2>九、实施计划</h2>
+      <table>
+        <thead><tr><th>阶段</th><th>工作内容</th><th>交付结果</th></tr></thead>
+        <tbody>
+          <tr><td>阶段1｜口径冻结</td><td>确认渠道映射、利润、逾期、汇率、成熟月份和12个累计窗口。</td><td>本报告作为统一口径文档。</td></tr>
+          <tr><td>阶段2｜数据库落表</td><td>部署正式表与暂存表，执行全量初始化，完成质量校验。</td><td>稳定的日报表表。</td></tr>
+          <tr><td>阶段3｜Tableau开发</td><td>创建数据源、两张工作表、计算字段、Dashboard和筛选器。</td><td>与Excel结构一致、可扩展到360天的看板。</td></tr>
+          <tr><td>阶段4｜并行核对</td><td>Excel与Tableau并行运行，抽样核对月份/渠道/窗口。</td><td>验收差异清单归零。</td></tr>
+          <tr><td>阶段5｜Server自动化</td><td>配置数据库任务、Extract刷新、依赖关系和失败通知。</td><td>每日自动更新，异常保留上一版数据。</td></tr>
+        </tbody>
+      </table>
+      <div class="callout"><strong>最终目标：</strong>用户在一张看板上既能看到最新获客规模与成本，也能按30—360天累计窗口比较各首贷月份、各渠道的生命周期利润、盈利和风险；不再手工更新Excel，也不因未成熟月份误读业务表现。</div>
+    </section>
+
+    <section id="appendix">
+      <h2>附录｜完整可执行 PGSQL</h2>
+      <p>SQL包含首次建表、每日暂存表刷新、质量检查、事务换表和发布后检查。首次运行执行全文件；日常调度从“第二部分：每日刷新”开始执行。</p>
+      <p><a id="sql-download" href="./首贷月份_渠道_累计观察窗口_Tableau报表_完整建表与刷新.sql" download>下载完整 SQL 文件</a></p>
+      <details><summary>点击展开完整 PGSQL（默认折叠）</summary><div class="detail-body"><div class="status"><span class="dot"></span><span id="sql-status">正在加载 SQL…</span></div><pre id="sql-code"><code>正在加载……</code></pre></div></details>
+    </section>
+
+    <div class="footer">首贷生命周期 Tableau 看板规划与具体实施报告 · 数据日期统一为 T-1</div>
+  </main>
+
+  <script>
+    const sqlPath = './首贷月份_渠道_累计观察窗口_Tableau报表_完整建表与刷新.sql';
+    fetch(sqlPath)
+      .then(r => { if(!r.ok) throw new Error('HTTP ' + r.status); return r.text(); })
+      .then(t => { document.querySelector('#sql-code code').textContent = t; document.querySelector('#sql-status').textContent = '完整 SQL 已加载'; })
+      .catch(e => { document.querySelector('#sql-status').textContent = '本地 file:// 预览可能阻止加载；网页版可正常展开，或点击上方下载链接。'; document.querySelector('#sql-code code').textContent = String(e); });
+  </script>
+</body>
+</html>
