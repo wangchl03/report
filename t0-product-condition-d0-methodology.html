@@ -1,0 +1,271 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>T0产品条件变化：完整统计口径与月度数据报告</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.2.0"></script>
+  <style>
+    :root{--bg:#061824;--panel:#0b2a40;--panel2:#0e344d;--line:#28546e;--text:#edf7fb;--body:#c8dce7;--muted:#91adbd;--cyan:#43c7e7;--green:#65deae;--amber:#ffc46d;--pink:#f68caf;--red:#ff8282;--code:#04131d;--shadow:0 18px 46px rgba(0,0,0,.22)}
+    *{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;background:linear-gradient(180deg,#061824,#082338 48%,#061824);color:var(--body);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif;line-height:1.7}a{color:var(--cyan);text-decoration:none}a:hover{text-decoration:underline}
+    .hero{padding:58px 22px 42px;text-align:center;border-bottom:1px solid rgba(67,199,231,.25);background:radial-gradient(circle at 50% -20%,rgba(67,199,231,.22),transparent 48%)}.hero h1{margin:0 auto 13px;max-width:1120px;color:var(--text);font-size:clamp(28px,4vw,46px);line-height:1.2}.hero p{margin:auto;max-width:940px;font-size:17px;color:#bad1dc}.pills{display:flex;gap:9px;justify-content:center;flex-wrap:wrap;margin-top:21px}.pill{padding:6px 12px;border:1px solid rgba(67,199,231,.34);border-radius:999px;background:rgba(7,31,46,.7);font-size:13px;color:#d7e8ef}
+    .nav{position:sticky;top:0;z-index:30;display:flex;gap:18px;overflow:auto;padding:12px max(18px,calc((100vw - 1240px)/2));background:rgba(4,19,29,.95);backdrop-filter:blur(12px);border-bottom:1px solid var(--line);white-space:nowrap}.nav a{font-size:13px;color:#b8d0dc}.nav a:hover{color:var(--cyan);text-decoration:none}
+    main{max-width:1240px;margin:auto;padding:30px 22px 70px}section{scroll-margin-top:72px;margin:0 0 28px;padding:28px;border:1px solid var(--line);border-radius:18px;background:linear-gradient(155deg,rgba(13,48,69,.95),rgba(8,31,46,.97));box-shadow:var(--shadow)}h2{margin:0 0 18px;padding-left:13px;border-left:5px solid var(--cyan);color:var(--text);font-size:25px}h3{margin:24px 0 10px;color:var(--cyan);font-size:18px}h4{margin:15px 0 8px;color:var(--amber)}p{margin:8px 0}strong{color:var(--text)}
+    .grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px}.card{padding:18px;border:1px solid rgba(90,157,188,.36);border-radius:14px;background:rgba(5,24,36,.56)}.card .num{font-size:30px;font-weight:850;color:var(--green);line-height:1.15}.card .label{margin-top:7px;color:var(--text);font-weight:750}.card .desc{margin-top:4px;color:var(--muted);font-size:13px}
+    .callout{margin:14px 0;padding:15px 17px;border-left:4px solid var(--green);border-radius:12px;background:rgba(101,222,174,.08)}.warn{border-left-color:var(--amber);background:rgba(255,196,109,.08)}.risk{border-left-color:var(--pink);background:rgba(246,140,175,.08)}
+    .flow{display:grid;grid-template-columns:1fr 34px 1fr 34px 1fr 34px 1fr;gap:8px;align-items:center;margin:18px 0}.node{min-height:116px;padding:15px;border:1px solid rgba(67,199,231,.36);border-radius:13px;background:rgba(4,20,31,.62)}.node b{display:block;margin-bottom:6px;color:var(--cyan)}.arrow{text-align:center;color:var(--green);font-size:24px;font-weight:800}
+    table{width:100%;border-collapse:separate;border-spacing:0;font-size:13px;border:1px solid var(--line);border-radius:11px;overflow:hidden}th,td{padding:10px 11px;border-right:1px solid rgba(40,84,110,.68);border-bottom:1px solid rgba(40,84,110,.68);vertical-align:top;text-align:left}th:last-child,td:last-child{border-right:0}tr:last-child td{border-bottom:0}th{background:#0d344b;color:#eaf6fa;font-weight:750}td{background:rgba(5,24,36,.38)}tr:nth-child(even) td{background:rgba(11,42,61,.48)}.table-wrap{max-width:100%;overflow:auto;border-radius:11px;margin:14px 0}.wide{min-width:1850px}.wide th:nth-child(1),.wide td:nth-child(1){position:sticky;left:0;z-index:4;min-width:122px}.wide th:nth-child(2),.wide td:nth-child(2){position:sticky;left:122px;z-index:4;min-width:150px}.wide th:nth-child(-n+2){z-index:6}.wide td:nth-child(-n+2){background:#09263a}.rate{color:#8ce4bf;font-variant-numeric:tabular-nums}.count{color:#d9ebf3;font-variant-numeric:tabular-nums}
+    pre{margin:12px 0;padding:17px;overflow:auto;border:1px solid #244c61;border-radius:12px;background:var(--code);color:#d9eef7;font:12.5px/1.6 SFMono-Regular,Consolas,"Liberation Mono",monospace;white-space:pre}code{font-family:SFMono-Regular,Consolas,"Liberation Mono",monospace;color:#d9eef7}.inline{padding:2px 5px;border-radius:5px;background:#071b29;color:#b5eaf6}
+    .chart-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}.chart-box{padding:16px;border:1px solid rgba(40,84,110,.9);border-radius:14px;background:rgba(4,20,31,.52)}.chart-box h3{margin:0 0 11px;font-size:16px}.chart-holder{height:330px}
+    .tabs{display:flex;gap:8px;flex-wrap:wrap;margin:12px 0}.tab-btn{border:1px solid var(--line);border-radius:999px;padding:8px 14px;background:#09263a;color:#cfe3ec;cursor:pointer}.tab-btn.active{background:var(--cyan);border-color:var(--cyan);color:#05202e;font-weight:800}.metric-panel{display:none}.metric-panel.active{display:block}
+    details{margin:12px 0;border:1px solid var(--line);border-radius:12px;background:rgba(4,19,29,.56)}summary{cursor:pointer;padding:14px 16px;color:var(--text);font-weight:750;list-style:none}summary::-webkit-details-marker{display:none}summary:after{content:"＋";float:right;color:var(--cyan)}details[open] summary:after{content:"－"}.detail-body{padding:0 16px 16px}.status{display:inline-flex;align-items:center;gap:7px;color:var(--green);font-weight:700}.dot{width:9px;height:9px;border-radius:50%;background:var(--green);box-shadow:0 0 14px var(--green)}
+    .footer{text-align:center;color:var(--muted);font-size:12px;margin-top:26px}.loading{padding:24px;text-align:center;color:var(--muted)}ol,ul{padding-left:22px}li{margin:6px 0}
+    @media(max-width:980px){.grid{grid-template-columns:repeat(2,1fr)}.chart-grid{grid-template-columns:1fr}.flow{grid-template-columns:1fr}.arrow{transform:rotate(90deg)}}@media(max-width:580px){section{padding:19px}.grid{grid-template-columns:1fr}}
+  </style>
+</head>
+<body>
+  <header class="hero">
+    <h1>T0产品条件变化：完整统计口径与月度数据报告</h1>
+    <p>详细说明日息、息费和借款天数如何从“上一笔结清放款订单”变化到“本次T0获额产品”，以及如何按月统计事件数和获额后当天提单率。</p>
+    <div class="pills"><span class="pill">用户 × T0获额事件</span><span class="pill">2026-01-01—2026-09-27</span><span class="pill">20秒获额批次</span><span class="pill">当天首次提单</span><span class="pill">完整PGSQL附录</span></div>
+  </header>
+  <nav class="nav"><a href="#summary">结果概览</a><a href="#scope">样本口径</a><a href="#event">事件构造</a><a href="#product">产品条件</a><a href="#classification">分档逻辑</a><a href="#overview">月度总览</a><a href="#detail">完整数据</a><a href="#quality">质量与边界</a><a href="#appendix">PGSQL</a></nav>
+
+  <main>
+    <section id="summary">
+      <h2>一、统计结果概览</h2>
+      <div class="grid">
+        <div class="card"><div class="num">200,757</div><div class="label">T0获额事件</div><div class="desc">同一用户可以贡献多次事件。</div></div>
+        <div class="card"><div class="num">89,384</div><div class="label">当天首次提单事件</div><div class="desc">提单归属提单前最近一次T0事件。</div></div>
+        <div class="card"><div class="num">44.52%</div><div class="label">全期当天提单率</div><div class="desc">事件级提单数 ÷ 事件数。</div></div>
+        <div class="card"><div class="num">100%</div><div class="label">产品完整匹配率</div><div class="desc">本次样本中risk_product均完整匹配产品信息表。</div></div>
+      </div>
+      <div class="callout"><strong>总体趋势：</strong>当天提单率从1月的51.75%降至8月的38.82%，下降12.93个百分点；9月1—27日为39.51%。9月为不完整月份，不能直接与完整月份作等量比较。</div>
+      <div class="callout warn"><strong>方向性结果：</strong>日息增加客群1月到8月下降16.49个百分点，息费增加客群下降15.44个百分点，均深于对应的减少和不变客群。该结果用于描述客群关联，不直接证明产品条件变化是唯一因果因素。</div>
+    </section>
+
+    <section id="scope">
+      <h2>二、统计对象与时间范围</h2>
+      <table><thead><tr><th>项目</th><th>口径</th></tr></thead><tbody>
+        <tr><td>统计单位</td><td><strong>用户 × T0获额通过事件</strong>。同一用户多次结清并再次获额，可产生多条事件，不按用户去重。</td></tr>
+        <tr><td>时间范围</td><td>2026年1月1日至2026年9月27日，包含首尾两日；1—8月完整，9月仅统计1—27日。</td></tr>
+        <tr><td>获额范围</td><td><code>is_pass1=1</code>、<code>loan_type_code=2</code>、<code>recycle_type=3</code>的循环贷获额通过记录。</td></tr>
+        <tr><td>T0前置状态</td><td>当天有实际放款订单结清，并且结清时不存在其他在贷订单，即结清后0在贷。</td></tr>
+        <tr><td>产品条件比较</td><td>本次获额产品条件与触发本次T0事件的刚结清放款订单进行比较。</td></tr>
+        <tr><td>核心指标</td><td>各月T0事件数、当天首次提单事件数、当天提单率。</td></tr>
+      </tbody></table>
+    </section>
+
+    <section id="event">
+      <h2>三、严格T0事件构造</h2>
+      <div class="flow">
+        <div class="node"><b>01 获额通过记录</b>筛选循环贷获额通过，保留订单最新版本。</div><div class="arrow">→</div>
+        <div class="node"><b>02 20秒批次去重</b>相邻获额不超过20秒合成一批，批内取最新时间及最大订单号。</div><div class="arrow">→</div>
+        <div class="node"><b>03 匹配当天结清</b>获额发生在同日结清之后；多笔候选取结清时间最近的一笔。</div><div class="arrow">→</div>
+        <div class="node"><b>04 判断当天提单</b>提单发生在获额后、次日0点前；归属最近T0事件并只保留首次提单。</div>
+      </div>
+
+      <h3>3.1 结清后0在贷</h3>
+      <p>触发订单必须已经实际放款，放款金额大于0，且已结清。以该订单结清时间为观察点，如果用户还有另一笔更早申请、但在该时点仍处于在贷状态的订单，则不能认定为T0结清事件。</p>
+
+      <h3>3.2 20秒获额批次</h3>
+      <p>同一用户可能因多产品或系统写入产生连续获额记录。按用户和获额时间排序，相邻两条时间差不超过20秒时归入同一批次；批次内按<strong>获额时间倒序、订单编号倒序</strong>取第一笔。</p>
+
+      <h3>3.3 当天提单归属</h3>
+      <p>提单必须满足 <code>apply_time ≥ vir_time</code> 且 <code>apply_time &lt; vir_date + 1</code>。如果同一用户当天有多次T0获额，一笔提单只归给提单前最近一次T0事件；同一T0事件存在多笔提单时，只保留最早一笔。</p>
+
+      <h3>事件构造伪代码</h3>
+      <pre><code>FOR 每个用户:
+    读取循环贷获额通过记录
+    按获额时间排序
+    将相邻时间差 ≤ 20秒的记录合并成一批
+    每批按获额时间倒序、订单编号倒序取第一笔
+
+FOR 每个获额事件:
+    查找同日、获额之前已经结清的实际放款订单
+    排除结清时仍有其他在贷订单的情况
+    多笔候选按结清时间倒序、订单编号倒序取第一笔
+
+FOR 每笔当天提单:
+    匹配提单前最近一次T0事件
+    一个提单订单只归属一个T0事件
+
+FOR 每个T0事件:
+    只保留最早一笔当天提单
+    has_d0_apply = 是否存在该提单</code></pre>
+    </section>
+
+    <section id="product">
+      <h2>四、本次产品与上一笔订单的指标</h2>
+      <h3>4.1 本次获额产品</h3>
+      <ol>
+        <li>读取本次获额订单的 <code>risk_product</code>。</li>
+        <li>按英文逗号拆分产品编号，并对同一事件的重复产品编号去重。</li>
+        <li>全部产品编号关联 <code>wangchuanliang.product_info</code>。</li>
+        <li>只有全部产品均匹配时，事件才进入对应指标统计。</li>
+      </ol>
+      <table><thead><tr><th>本次获额指标</th><th>多产品取值规则</th><th>说明</th></tr></thead><tbody>
+        <tr><td>当前日息</td><td><code>MIN(daily_interest)</code></td><td>选择全部获额产品中最低日息。</td></tr>
+        <tr><td>当前息费率</td><td><code>MIN(interest_fees)</code></td><td>选择全部获额产品中最低息费率。</td></tr>
+        <tr><td>当前天数</td><td><code>MAX(loan_day)</code></td><td>选择全部获额产品中最长借款天数。</td></tr>
+      </tbody></table>
+      <div class="callout risk"><strong>重要边界：</strong>最低日息、最低息费和最长天数是三个独立统计值，可能分别来自不同产品。这套指标描述用户在各维度能够获得的最优条件，不代表数据库中一定存在一个同时满足三个条件的产品。</div>
+
+      <h3>4.2 上一笔订单</h3>
+      <p>上一笔订单就是触发本次T0事件的刚结清实际放款订单，不使用 <code>product_info</code> 反推，而是直接使用订单表实际字段。</p>
+      <pre><code>上一笔息费率 = (pre_amt + post_amt) / remit_amt
+
+上一笔日息 = 上一笔息费率 / loan_day
+
+上一笔天数 = loan_day</code></pre>
+
+      <h3>4.3 三项变化值</h3>
+      <pre><code>日息变化 = 当前获额最低日息 - 上一笔订单日息
+
+息费变化 = 当前获额最低息费率 - 上一笔订单息费率
+
+天数变化 = 当前获额最长天数 - 上一笔订单loan_day</code></pre>
+    </section>
+
+    <section id="classification">
+      <h2>五、方向判断、容差与分档</h2>
+      <h3>5.1 方向判断</h3>
+      <table><thead><tr><th>指标</th><th>不变</th><th>增加</th><th>减少</th></tr></thead><tbody>
+        <tr><td>日息</td><td><code>|差值| &lt; 0.05个百分点</code></td><td><code>差值 ≥ 0.05个百分点</code></td><td><code>差值 ≤ -0.05个百分点</code></td></tr>
+        <tr><td>息费</td><td><code>|差值| &lt; 1个百分点</code></td><td><code>差值 ≥ 1个百分点</code></td><td><code>差值 ≤ -1个百分点</code></td></tr>
+        <tr><td>天数</td><td>差值等于0</td><td>差值大于0</td><td>差值小于0</td></tr>
+      </tbody></table>
+      <p><strong>边界值不归入不变：</strong>日息恰好±0.05个百分点、息费恰好±1个百分点，分别归入增加或减少。</p>
+
+      <h3>5.2 分档规则</h3>
+      <table><thead><tr><th>指标</th><th>增加/减少事件按变化绝对值分档</th><th>不变事件按当前值分档</th></tr></thead><tbody>
+        <tr><td>日息</td><td>&lt;0.2、0.2—0.4、0.4—0.5、0.5—0.6、0.6—1、≥1个百分点</td><td>&lt;2%、2—2.5%、2.5—3%、3—3.5%、3.5—4%、≥4%</td></tr>
+        <tr><td>息费</td><td>&lt;5、5—10、10—15、15—20、20—25、25—30、≥30个百分点</td><td>&lt;30%、30—40%、40—50%、50—60%、60—70%、≥70%</td></tr>
+        <tr><td>天数</td><td>7、14、21、28、&gt;28天、其他天数</td><td>当前天数为7、14、21、28、&gt;28天、其他天数</td></tr>
+      </tbody></table>
+
+      <h3>分类伪代码</h3>
+      <pre><code>IF 指标 = 日息:
+    IF 差值 ≥ 0.0005: 方向 = 增加
+    ELSE IF 差值 ≤ -0.0005: 方向 = 减少
+    ELSE: 方向 = 不变
+
+IF 指标 = 息费:
+    IF 差值 ≥ 0.01: 方向 = 增加
+    ELSE IF 差值 ≤ -0.01: 方向 = 减少
+    ELSE: 方向 = 不变
+
+IF 指标 = 天数:
+    按差值正、负、零判断增加、减少、不变
+
+IF 方向为增加或减少:
+    使用 ABS(差值) 进入变化幅度档
+ELSE:
+    使用本次获额产品的当前值进入水平档</code></pre>
+    </section>
+
+    <section id="overview">
+      <h2>六、Excel月度总览数据</h2>
+      <div class="chart-box" style="margin-bottom:16px"><h3>月度T0事件规模与当天提单率</h3><div class="chart-holder"><canvas id="overviewChart"></canvas></div></div>
+      <div class="table-wrap"><table id="overviewTable"><tbody><tr><td class="loading">正在加载月度数据……</td></tr></tbody></table></div>
+    </section>
+
+    <section>
+      <h2>七、三类产品条件的方向趋势</h2>
+      <div class="chart-grid">
+        <div class="chart-box"><h3>日息变化方向</h3><div class="chart-holder"><canvas id="dailyChart"></canvas></div></div>
+        <div class="chart-box"><h3>息费变化方向</h3><div class="chart-holder"><canvas id="feeChart"></canvas></div></div>
+        <div class="chart-box"><h3>天数变化方向</h3><div class="chart-holder"><canvas id="daysChart"></canvas></div></div>
+      </div>
+      <div class="callout warn"><strong>读图规则：</strong>每条线对应“增加总计、减少总计、不变总计”。图表比较的是分组后的当天提单率，不代表同一批用户发生了连续变化，也不能直接替代因果实验。</div>
+    </section>
+
+    <section id="detail">
+      <h2>八、Excel完整分档数据</h2>
+      <p>以下表格完整展示Excel三个主体工作表中的月度事件数和当天提单率。表格较宽，可横向滚动；前两列固定。</p>
+      <div class="tabs"><button class="tab-btn active" data-target="dailyPanel">日息变化</button><button class="tab-btn" data-target="feePanel">息费变化</button><button class="tab-btn" data-target="daysPanel">天数变化</button></div>
+      <div id="dailyPanel" class="metric-panel active"><div class="table-wrap"><table id="dailyTable" class="wide"><tbody><tr><td class="loading">正在加载日息数据……</td></tr></tbody></table></div></div>
+      <div id="feePanel" class="metric-panel"><div class="table-wrap"><table id="feeTable" class="wide"><tbody><tr><td class="loading">正在加载息费数据……</td></tr></tbody></table></div></div>
+      <div id="daysPanel" class="metric-panel"><div class="table-wrap"><table id="daysTable" class="wide"><tbody><tr><td class="loading">正在加载天数数据……</td></tr></tbody></table></div></div>
+    </section>
+
+    <section id="quality">
+      <h2>九、数据质量与解释边界</h2>
+      <div class="table-wrap"><table id="qualityTable"><tbody><tr><td class="loading">正在加载质量数据……</td></tr></tbody></table></div>
+      <h3>数据质量结论</h3>
+      <ul>
+        <li>本次Excel中，各月 <code>risk_product</code> 均不为空，产品完整匹配率为100%。</li>
+        <li>日息、息费、天数的有效样本数均等于对应月份T0事件数，因此三张表的月度汇总与总览一致。</li>
+        <li>若以后出现产品编号缺失或未匹配，必须先看有效样本数，不能直接拿分档事件数与总T0事件数比较。</li>
+      </ul>
+      <h3>解释边界</h3>
+      <ul>
+        <li>当天提单只观察获额当日，不包含次日及以后提单。</li>
+        <li>提单订单不要求最终放款；统计的是用户提交申请的行为。</li>
+        <li>上一笔订单指标来自实际订单，可能包含红包或实际产品条件；当前指标来自产品信息表，两者反映的字段来源不同。</li>
+        <li>多产品事件的日息、息费、天数分别取最优值，不能把三项合并理解为一个实际产品。</li>
+        <li>9月只覆盖1—27日，结构和提单率用于阶段观察，不是完整月结论。</li>
+      </ul>
+    </section>
+
+    <section id="appendix">
+      <h2>附录｜完整可执行PGSQL</h2>
+      <p>SQL使用临时表，不修改业务源表。必须在同一个DataGrip控制台中整段执行，依次返回月度总览、分档长表、质量表和未匹配产品清单。</p>
+      <p><a href="./T0产品条件变化_日息息费天数_完整复现.sql" download>下载完整PGSQL</a></p>
+      <details><summary>点击展开完整PGSQL（默认折叠）</summary><div class="detail-body"><div class="status"><span class="dot"></span><span id="sqlStatus">正在加载SQL……</span></div><pre id="sqlCode"><code>正在加载……</code></pre></div></details>
+    </section>
+    <div class="footer">T0产品条件变化完整统计口径与月度数据报告 · 数据截止2026-09-27</div>
+  </main>
+
+  <script>
+    Chart.register(ChartDataLabels);
+    const months=['2026-01','2026-02','2026-03','2026-04','2026-05','2026-06','2026-07','2026-08','2026-09'];
+    const monthLabels=['1月','2月','3月','4月','5月','6月','7月','8月','9月(1-27日)'];
+    const rowDefs={
+      '日息变化':[
+        ['汇总','汇总','汇总'],['日息增加总计','总计','日息增加总计'],['日息增加','0.2个百分点以下',''],['日息增加','0.2-0.4个百分点',''],['日息增加','0.4-0.5个百分点',''],['日息增加','0.5-0.6个百分点',''],['日息增加','0.6-1个百分点',''],['日息增加','1个百分点及以上',''],
+        ['日息减少总计','总计','日息减少总计'],['日息减少','0.2个百分点以下',''],['日息减少','0.2-0.4个百分点',''],['日息减少','0.4-0.5个百分点',''],['日息减少','0.5-0.6个百分点',''],['日息减少','0.6-1个百分点',''],['日息减少','1个百分点及以上',''],
+        ['日息不变总计','总计','日息不变总计'],['日息不变','2%以下',''],['日息不变','2%-2.5%',''],['日息不变','2.5%-3%',''],['日息不变','3%-3.5%',''],['日息不变','3.5%-4%',''],['日息不变','4%及以上','']
+      ],
+      '息费变化':[
+        ['汇总','汇总','汇总'],['息费增加总计','总计','息费增加总计'],['息费增加','5个百分点以下',''],['息费增加','5-10个百分点',''],['息费增加','10-15个百分点',''],['息费增加','15-20个百分点',''],['息费增加','20-25个百分点',''],['息费增加','25-30个百分点',''],['息费增加','30个百分点及以上',''],
+        ['息费减少总计','总计','息费减少总计'],['息费减少','5个百分点以下',''],['息费减少','5-10个百分点',''],['息费减少','10-15个百分点',''],['息费减少','15-20个百分点',''],['息费减少','20-25个百分点',''],['息费减少','25-30个百分点',''],['息费减少','30个百分点及以上',''],
+        ['息费不变总计','总计','息费不变总计'],['息费不变','30%以下',''],['息费不变','30%-40%',''],['息费不变','40%-50%',''],['息费不变','50%-60%',''],['息费不变','60%-70%',''],['息费不变','70%及以上','']
+      ],
+      '天数变化':[
+        ['汇总','汇总','汇总'],['天数增加总计','总计','天数增加总计'],['天数增加','7天',''],['天数增加','14天',''],['天数增加','21天',''],['天数增加','28天',''],['天数增加','28天以上',''],['天数增加','其他天数',''],
+        ['天数减少总计','总计','天数减少总计'],['天数减少','7天',''],['天数减少','14天',''],['天数减少','21天',''],['天数减少','28天',''],['天数减少','28天以上',''],['天数减少','其他天数',''],
+        ['天数不变总计','总计','天数不变总计'],['天数不变','7天',''],['天数不变','14天',''],['天数不变','21天',''],['天数不变','28天',''],['天数不变','28天以上',''],['天数不变','其他天数','']
+      ]
+    };
+    const fmtInt=v=>v==null?'—':Number(v).toLocaleString('zh-CN');
+    const fmtPct=v=>v==null?'—':(Number(v)*100).toFixed(2)+'%';
+    const monthKey=s=>String(s).slice(0,7);
+    const esc=s=>String(s??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
+
+    function renderOverview(q){
+      const rows=months.map(m=>q.find(x=>monthKey(x.t0_month)===m));
+      let h='<thead><tr><th>月份</th><th>T0事件数</th><th>当天提单数</th><th>当天提单率</th><th>单产品事件</th><th>双产品事件</th><th>3个及以上产品</th><th>产品完整匹配率</th><th>日息有效样本</th><th>息费有效样本</th><th>天数有效样本</th></tr></thead><tbody>';
+      rows.forEach((r,i)=>{h+=`<tr><td>${monthLabels[i]}</td><td>${fmtInt(r.strict_t0_event_n)}</td><td>${fmtInt(r.d0_apply_n)}</td><td class="rate">${fmtPct(r.overall_d0_apply_rate)}</td><td>${fmtInt(r.one_product_n)}</td><td>${fmtInt(r.two_product_n)}</td><td>${fmtInt(r.three_plus_product_n)}</td><td class="rate">${fmtPct(r.all_products_matched_n/r.strict_t0_event_n)}</td><td>${fmtInt(r.eligible_daily_n)}</td><td>${fmtInt(r.eligible_fee_n)}</td><td>${fmtInt(r.eligible_days_n)}</td></tr>`});
+      const sum=k=>rows.reduce((a,r)=>a+Number(r[k]||0),0), total=sum('strict_t0_event_n');
+      h+=`<tr><td><strong>合计</strong></td><td><strong>${fmtInt(total)}</strong></td><td><strong>${fmtInt(sum('d0_apply_n'))}</strong></td><td class="rate"><strong>${fmtPct(sum('d0_apply_n')/total)}</strong></td><td>${fmtInt(sum('one_product_n'))}</td><td>${fmtInt(sum('two_product_n'))}</td><td>${fmtInt(sum('three_plus_product_n'))}</td><td class="rate">${fmtPct(sum('all_products_matched_n')/total)}</td><td>${fmtInt(sum('eligible_daily_n'))}</td><td>${fmtInt(sum('eligible_fee_n'))}</td><td>${fmtInt(sum('eligible_days_n'))}</td></tr></tbody>`;
+      document.getElementById('overviewTable').innerHTML=h;
+      new Chart(document.getElementById('overviewChart'),{type:'bar',data:{labels:monthLabels,datasets:[{label:'T0事件数',data:rows.map(r=>r.strict_t0_event_n),backgroundColor:'rgba(67,199,231,.42)',borderColor:'#43c7e7',borderWidth:1,yAxisID:'y'},{label:'当天提单率',data:rows.map(r=>r.overall_d0_apply_rate*100),type:'line',borderColor:'#65deae',backgroundColor:'#65deae',pointBackgroundColor:'#65deae',pointRadius:4,tension:.25,yAxisID:'y1'}]},options:chartOptions(true)});
+    }
+
+    function metricLookup(metrics,metric){const map=new Map();metrics.filter(x=>x.metric===metric).forEach(x=>map.set([x.row_group,x.bucket,monthKey(x.t0_month)].join('|'),x));return map}
+    function renderMetricTable(metrics,metric,tableId){const map=metricLookup(metrics,metric);let h='<thead><tr><th>变化方向</th><th>变化幅度</th>'+monthLabels.map(m=>`<th>${m}单量</th><th>${m}当天提单率</th>`).join('')+'</tr></thead><tbody>';rowDefs[metric].forEach(([g,b,d])=>{const total=b==='总计'||g==='汇总';h+=`<tr><td>${esc(d)}</td><td>${esc(b)}</td>`;months.forEach(m=>{const r=map.get([g,b,m].join('|'));h+=`<td class="count">${fmtInt(r?.event_n)}</td><td class="rate">${fmtPct(r?.apply_rate)}</td>`});h+='</tr>'});h+='</tbody>';document.getElementById(tableId).innerHTML=h}
+    function renderDirectionChart(metrics,metric,canvasId){const groups={'日息变化':['日息增加总计','日息减少总计','日息不变总计'],'息费变化':['息费增加总计','息费减少总计','息费不变总计'],'天数变化':['天数增加总计','天数减少总计','天数不变总计']}[metric],colors=['#f68caf','#65deae','#43c7e7'],map=metricLookup(metrics,metric);const ds=groups.map((g,i)=>({label:g.replace('总计',''),data:months.map(m=>{const r=map.get([g,'总计',m].join('|'));return r?Number(r.apply_rate)*100:null}),borderColor:colors[i],backgroundColor:colors[i],pointBackgroundColor:colors[i],pointRadius:3,tension:.25}));new Chart(document.getElementById(canvasId),{type:'line',data:{labels:monthLabels,datasets:ds},options:chartOptions(false)})}
+    function chartOptions(mixed){return {responsive:true,maintainAspectRatio:false,interaction:{mode:'index',intersect:false},plugins:{legend:{labels:{color:'#cfe3ec',usePointStyle:true,pointStyle:'circle'}},datalabels:{display:ctx=>ctx.dataset.type==='line'||!mixed,align:'top',anchor:'end',offset:2,color:ctx=>ctx.dataset.borderColor||'#eaf6fa',font:{size:9,weight:'bold'},formatter:v=>v==null?'':Number(v).toFixed(1)+'%'}},scales:{x:{ticks:{color:'#9fb8c7'},grid:{color:'rgba(80,125,150,.12)'}},y:{beginAtZero:true,ticks:{color:'#9fb8c7'},grid:{color:'rgba(80,125,150,.16)'}},y1:{display:mixed,position:'right',min:30,max:60,ticks:{color:'#65deae',callback:v=>v+'%'},grid:{drawOnChartArea:false}}}}}
+
+    function renderQuality(q){let h='<thead><tr><th>月份</th><th>T0事件数</th><th>产品缺失</th><th>产品未完整匹配</th><th>日息有效样本</th><th>息费有效样本</th><th>天数有效样本</th><th>产品完整匹配率</th></tr></thead><tbody>';q.forEach((r,i)=>{h+=`<tr><td>${monthLabels[i]}</td><td>${fmtInt(r.strict_t0_event_n)}</td><td>${fmtInt(r.missing_risk_product_n)}</td><td>${fmtInt(r.incomplete_product_match_n)}</td><td>${fmtInt(r.eligible_daily_n)}</td><td>${fmtInt(r.eligible_fee_n)}</td><td>${fmtInt(r.eligible_days_n)}</td><td class="rate">${fmtPct(r.all_products_matched_n/r.strict_t0_event_n)}</td></tr>`});h+='</tbody>';document.getElementById('qualityTable').innerHTML=h}
+
+    fetch('./t0-product-change-d0-report-data.json').then(r=>{if(!r.ok)throw new Error('HTTP '+r.status);return r.json()}).then(d=>{renderOverview(d.quality);renderMetricTable(d.metrics,'日息变化','dailyTable');renderMetricTable(d.metrics,'息费变化','feeTable');renderMetricTable(d.metrics,'天数变化','daysTable');renderDirectionChart(d.metrics,'日息变化','dailyChart');renderDirectionChart(d.metrics,'息费变化','feeChart');renderDirectionChart(d.metrics,'天数变化','daysChart');renderQuality(d.quality)}).catch(e=>{document.querySelectorAll('.loading').forEach(x=>x.textContent='数据加载失败：'+e) });
+
+    document.querySelectorAll('.tab-btn').forEach(b=>b.addEventListener('click',()=>{document.querySelectorAll('.tab-btn').forEach(x=>x.classList.remove('active'));document.querySelectorAll('.metric-panel').forEach(x=>x.classList.remove('active'));b.classList.add('active');document.getElementById(b.dataset.target).classList.add('active')}));
+
+    fetch('./T0产品条件变化_日息息费天数_完整复现.sql').then(r=>{if(!r.ok)throw new Error('HTTP '+r.status);return r.text()}).then(t=>{document.querySelector('#sqlCode code').textContent=t;document.getElementById('sqlStatus').textContent='完整PGSQL已加载'}).catch(e=>{document.getElementById('sqlStatus').textContent='网页版可展开完整SQL；如当前为本地file预览，请使用下载链接。';document.querySelector('#sqlCode code').textContent=String(e)});
+  </script>
+</body>
+</html>
