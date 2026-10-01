@@ -1,18 +1,18 @@
 {
   "kpi": {
     "n_user": 2050,
-    "n_apply": 703,
-    "apply_rate": 34.29,
-    "n_apply_week": 79,
-    "n_first_week": 34,
-    "n_remit": 835,
-    "n_remit_week": 72,
-    "n_due": 87,
-    "n_due_od": 35,
-    "profit_pct": -1.11,
-    "overdue_pct": 40.23,
+    "n_apply": 704,
+    "apply_rate": 34.34,
+    "n_apply_week": 81,
+    "n_first_week": 35,
+    "n_remit": 837,
+    "n_remit_week": 74,
+    "n_due": 128,
+    "n_due_od": 47,
+    "profit_pct": -0.56,
+    "overdue_pct": 36.72,
     "week_start": "2026-09-28",
-    "as_of": "2026-09-29",
+    "as_of": "2026-09-30",
     "recall_date": "2026-09-10",
     "remit_day": "o.remit_date::date"
   },
@@ -136,6 +136,12 @@
       "n": 11,
       "cum": 703,
       "rate": 34.29
+    },
+    {
+      "d": "2026-09-30",
+      "n": 1,
+      "cum": 704,
+      "rate": 34.34
     }
   ],
   "apply_daily": [
@@ -238,6 +244,11 @@
       "d": "2026-09-29",
       "n_order": 34,
       "n_user": 34
+    },
+    {
+      "d": "2026-09-30",
+      "n_order": 2,
+      "n_user": 2
     }
   ],
   "remit_daily": [
@@ -340,6 +351,11 @@
       "d": "2026-09-29",
       "n": 30,
       "cum": 835
+    },
+    {
+      "d": "2026-09-30",
+      "n": 2,
+      "cum": 837
     }
   ],
   "due_daily": [
@@ -485,14 +501,25 @@
       "overdue_pct": 83.33,
       "cum_profit_pct": -1.11,
       "cum_overdue_pct": 40.23
+    },
+    {
+      "d": "2026-09-30",
+      "n_due": 41,
+      "n_od": 12,
+      "repaid": 77488.0,
+      "remit": 77070.0,
+      "profit_pct": 0.54,
+      "overdue_pct": 29.27,
+      "cum_profit_pct": -0.56,
+      "cum_overdue_pct": 36.72
     }
   ],
   "strat": [
     {
       "strat": "10d+10r",
       "n_user": 841,
-      "n_apply": 269,
-      "pct": 31.99
+      "n_apply": 270,
+      "pct": 32.1
     },
     {
       "strat": "20d+10r",
@@ -529,8 +556,8 @@
     {
       "bin": "7-15d",
       "n_user": 2034,
-      "n_apply": 696,
-      "pct": 34.22
+      "n_apply": 697,
+      "pct": 34.27
     },
     {
       "bin": "16-30d",
