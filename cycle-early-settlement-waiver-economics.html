@@ -1,0 +1,796 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>循环贷提前结清减免政策：用户回流与经营收益测算报告</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.2.0"></script>
+<style>
+:root{--bg:#071c2d;--panel:#0b2a40;--panel2:#0f344c;--line:#28536e;--text:#eaf4f8;--body:#c9dae4;--muted:#9db5c7;--cyan:#43c7e7;--green:#64dcae;--amber:#ffc26b;--pink:#f68ab0;--violet:#b49aff;--red:#ff7f86}
+*{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;background:linear-gradient(180deg,#071c2d,#082238 48%,#061724);color:var(--body);font:15px/1.7 -apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei",sans-serif}
+.wrap{max-width:1280px;margin:auto;padding:26px 28px 72px}.hero{padding:46px 22px 36px;text-align:center;border-bottom:1px solid var(--line)}.eyebrow{color:var(--cyan);font-size:14px;font-weight:800;letter-spacing:1.2px}h1{margin:12px 0;color:var(--text);font-size:35px;line-height:1.3}.hero p{margin:3px 0;color:var(--muted)}
+.nav{position:sticky;top:0;z-index:20;display:flex;flex-wrap:wrap;justify-content:center;gap:8px;margin:0 -28px;padding:11px 22px;background:rgba(7,28,45,.96);border-bottom:1px solid var(--line)}.nav a{color:#cce6f3;text-decoration:none;border:1px solid var(--line);border-radius:18px;padding:3px 10px;font-size:13px;font-weight:650}.nav a:hover{color:var(--cyan);border-color:var(--cyan)}
+section>h2{display:flex;align-items:center;gap:14px;margin:42px 0 18px;padding:11px 0 11px 14px;color:var(--text);font-size:24px;border-left:4px solid var(--cyan);border-bottom:1px solid rgba(67,199,231,.32);scroll-margin-top:78px}section>h2:after{content:"";height:2px;flex:1;background:linear-gradient(90deg,rgba(67,199,231,.55),transparent)}h3{margin:0 0 10px;color:var(--cyan);font-size:18px}p{margin:7px 0}b,strong{color:var(--text)}.small,.muted{color:var(--muted);font-size:13px}
+.grid2{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}.grid3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px}.grid4{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px}.card,.chart-card,.callout,.kpi{background:rgba(11,42,64,.93);border:1px solid var(--line);border-radius:12px}.card{padding:18px}.chart-card{padding:17px;min-height:435px}.chart-card h3{color:var(--text)}.chart-card p{color:var(--muted);font-size:13px}.chart-box{position:relative;height:355px}.chart-box.tall{height:430px}
+.kpi{padding:17px}.kpi .label{color:var(--muted);font-size:13px;font-weight:650}.kpi .value{margin-top:4px;color:var(--text);font-size:27px;font-weight:800;line-height:1.35}.kpi .context{color:var(--cyan);font-size:12px;font-weight:650}.finding{--accent:var(--cyan);border-top:3px solid var(--accent)}.finding h3{color:var(--accent)}.finding.pink{--accent:var(--pink)}.finding.green{--accent:var(--green)}.finding.amber{--accent:var(--amber)}
+.callout{margin:18px 0;padding:16px 20px;border-left:4px solid var(--amber)}.callout strong{color:var(--amber);font-size:16px}.callout.good{border-left-color:var(--green)}.callout.good strong{color:var(--green)}.callout.warn{border-left-color:var(--pink)}.callout.warn strong{color:var(--pink)}.decision{padding:16px 19px;border:1px solid rgba(100,220,174,.45);border-radius:10px;background:linear-gradient(90deg,rgba(100,220,174,.14),rgba(11,42,64,.92))}.decision b{color:var(--green);font-size:16px}
+.flow{display:grid;grid-template-columns:1fr auto 1fr auto 1fr;align-items:stretch;gap:10px;margin:18px 0}.flow .node{padding:17px;background:#0b2a40;border:1px solid var(--line);border-radius:11px}.flow .node b{display:block;margin-bottom:5px;color:var(--cyan);font-size:17px}.flow .arrow{align-self:center;color:var(--amber);font-size:26px}.formula{padding:12px 14px;background:#103852;border:1px solid #30637f;border-radius:8px;color:#cce6f3;font:13px/1.65 ui-monospace,SFMono-Regular,Menlo,monospace;overflow:auto}
+.table-wrap{max-height:620px;overflow:auto;margin-top:12px;border:1px solid var(--line);border-radius:10px}table{width:100%;min-width:920px;border-collapse:collapse}th,td{padding:9px 11px;border-bottom:1px solid rgba(40,83,110,.7);text-align:right;white-space:nowrap}th:first-child,td:first-child{text-align:left}th{position:sticky;top:0;z-index:2;background:#10344c;color:#bfe6f5;font-size:13px}td{font-variant-numeric:tabular-nums}details{margin:12px 0;border:1px solid var(--line);border-radius:10px;background:rgba(11,42,64,.74)}summary{cursor:pointer;padding:13px 16px;color:var(--cyan);font-size:15px;font-weight:750}details>.table-wrap,details>pre{margin:0;border:0;border-top:1px solid var(--line);border-radius:0 0 10px 10px}pre{max-height:800px;overflow:auto;margin:0;padding:18px;background:#061725;color:#cce6f3;font:12px/1.58 ui-monospace,SFMono-Regular,Menlo,monospace;white-space:pre}
+.pill{display:inline-block;padding:2px 8px;border-radius:12px;font-size:12px;font-weight:750}.pill.ok{color:var(--green);background:rgba(100,220,174,.13)}.pill.warn{color:var(--amber);background:rgba(255,194,107,.13)}ul,ol{padding-left:22px}li{margin:6px 0}li::marker{color:var(--cyan)}.footer{margin-top:46px;text-align:center;color:#7896aa;font-size:13px}
+@media(max-width:900px){.grid2,.grid3,.grid4,.flow{grid-template-columns:1fr}.flow .arrow{transform:rotate(90deg);justify-self:center}.wrap{padding:18px}.nav{margin:0 -18px}h1{font-size:28px}}
+</style>
+</head>
+<body><main class="wrap">
+<header class="hero"><div class="eyebrow">REVOLVING LOAN · EARLY SETTLEMENT ECONOMICS</div><h1>循环贷提前结清减免政策<br>用户回流与经营收益测算报告</h1><p>事件期：2026-01-01—2026-09-30｜金额单位：墨西哥比索（MXN）</p><p class="small">主经营结论使用1—6月完全成熟、实际发生减免的事件；观察截止固定为2026-10-03</p></header>
+<nav class="nav"><a href="#summary">核心结论</a><a href="#scope">口径</a><a href="#monthly">月度</a><a href="#early">提前天数</a><a href="#return">回流速度</a><a href="#control">因果边界</a><a href="#break">盈亏平衡</a><a href="#action">策略</a><a href="#detail">明细</a><a href="#sql">PGSQL</a></nav>
+
+<section id="summary"><h2>一、核心结论</h2>
+<div class="grid4">
+<div class="kpi"><div class="label">成熟有减免事件</div><div class="value">25,886</div><div class="context">涉及13,661名用户</div></div>
+<div class="kpi"><div class="label">减免成本</div><div class="value" style="color:var(--amber)">686.28万</div><div class="context">1—6月完全成熟样本</div></div>
+<div class="kpi"><div class="label">后续首笔订单D7利润</div><div class="value" style="color:var(--green)">1,065.98万</div><div class="context">D30内首笔放款订单</div></div>
+<div class="kpi"><div class="label">减免后账面净回收</div><div class="value" style="color:var(--green)">+379.70万</div><div class="context">账面归因ROI 55.33%</div></div>
+<div class="kpi"><div class="label">D30提单率</div><div class="value">79.41%</div><div class="context">成熟有减免事件</div></div>
+<div class="kpi"><div class="label">D30放款率</div><div class="value">75.84%</div><div class="context">成熟有减免事件</div></div>
+<div class="kpi"><div class="label">标准化对照差值</div><div class="value" style="color:var(--pink)">-0.25pp</div><div class="context">有减免 − 标准化无减免</div></div>
+<div class="kpi"><div class="label">明确亏损段</div><div class="value" style="color:var(--pink)">提前≥15天</div><div class="context">账面ROI -26.72%</div></div>
+</div>
+<div class="grid3" style="margin-top:16px">
+<div class="card finding green"><h3>账面覆盖</h3><p>后续首笔订单D7利润为减免成本的<b>155.33%</b>，减免后账面净回收<b>+MXN 3,797,036.30</b>。</p></div>
+<div class="card finding pink"><h3>因果证据不足</h3><p>有减免组D30放款率<b>75.30%</b>，标准化无减免组<b>75.55%</b>；描述性差值<b>-0.25pp</b>，未观察到正向增量。</p></div>
+<div class="card finding amber"><h3>需要优先处理</h3><p>提前15天及以上事件占<b>33.50%</b>，承接主样本减免成本的<b>46.76%</b>，账面净回收<b>MXN -857,308.65</b>。</p></div>
+</div>
+<div class="decision"><b>总判断：</b>减免后的后续利润在账面归因口径下能够覆盖成本，但不能据此认定“减免促成了这些回流”。现有数据最明确的经营动作，是优先收紧或实验验证提前15天及以上的高成本减免段。</div>
+</section>
+
+<section id="scope"><h2>二、测算口径</h2>
+<div class="grid3">
+<div class="card"><h3>样本与事件</h3><p>循环贷、成功放款、已结清且 <b>overdue_days&lt;0</b>。统计单位为“用户×提前结清时刻”；同一用户同一时刻结清多笔订单合并为一次事件。</p></div>
+<div class="card"><h3>成本与现金</h3><p>减免成本采用订单表 <b>discount_amount</b> 合计；真实到账采用还款流水表 <b>amount</b>，不把应还账面金额误当作实际现金。</p></div>
+<div class="card"><h3>后续订单归属</h3><p>后续订单只归给申请前最近一次提前结清事件，并要求发生在下一次提前结清事件之前，避免同一订单被多个事件重复认领。</p></div>
+</div>
+<div class="flow"><div class="node"><b>政策成本</b>提前结清减免金额</div><div class="arrow">→</div><div class="node"><b>用户回流</b>D0 / D7 / D15 / D30提单与放款</div><div class="arrow">→</div><div class="node"><b>后续收益</b>D30内首笔放款订单D7实际现金利润</div></div>
+<div class="formula">账面净回收 = 后续首笔订单D7实际现金利润 − 提前结清减免成本<br>增量净利润 = 实验组相对对照组的增量放款 × 单均利润 − 减免成本 − 增量资金成本 − 增量风险损失</div>
+<div class="callout warn"><strong>结论边界：</strong>账面净回收把用户本来可能发生的回流利润也计入提前结清事件之后，因此不是政策的因果增量利润。资金释放收益和风险收益没有进入主结论。</div>
+</section>
+
+<section id="monthly"><h2>三、月度规模、回流与账面经济性</h2>
+<div class="grid2"><div class="chart-card"><h3>月度事件规模与提单率</h3><p>1—8月完整展示；D0、D7、D15、D30均按自然日左闭右开计算。</p><div class="chart-box tall"><canvas id="monthlyTrend"></canvas></div></div>
+<div class="chart-card"><h3>1—6月减免成本、后续利润与净回收</h3><p>仅展示完全成熟的有减免样本；柱状图单位为万MXN，折线为账面归因ROI。</p><div class="chart-box tall"><canvas id="monthlyEcon"></canvas></div></div></div>
+<div class="callout good"><strong>月度结果：</strong>1—6月各月账面归因ROI均为正，但在<b>27.26%—90.87%</b>之间明显波动。7—9月存在不同程度右删失，特别是9月经济成熟率仅2.95%，不用于政策ROI判断。</div>
+<details><summary>查看1—9月月度明细</summary><div class="table-wrap "><table><thead><tr><th>月份</th><th>提前结清事件</th><th>用户数</th><th>D0提单率</th><th>D7提单率</th><th>D15提单率</th><th>D30提单率</th><th>减免成本</th><th>经济成熟状态</th></tr></thead><tbody><tr><td>2026-01</td><td>5,871</td><td>3,668</td><td>49.96%</td><td>73.04%</td><td>77.40%</td><td>79.68%</td><td>MXN 1,088,588.78</td><td><span class="pill ok">完全成熟</span></td></tr><tr><td>2026-02</td><td>6,521</td><td>4,107</td><td>47.72%</td><td>70.86%</td><td>76.03%</td><td>78.47%</td><td>MXN 1,146,743.35</td><td><span class="pill ok">完全成熟</span></td></tr><tr><td>2026-03</td><td>6,369</td><td>3,958</td><td>46.87%</td><td>71.36%</td><td>76.67%</td><td>79.32%</td><td>MXN 1,106,457.77</td><td><span class="pill ok">完全成熟</span></td></tr><tr><td>2026-04</td><td>6,394</td><td>4,079</td><td>46.90%</td><td>71.58%</td><td>77.10%</td><td>79.42%</td><td>MXN 1,185,194.76</td><td><span class="pill ok">完全成熟</span></td></tr><tr><td>2026-05</td><td>7,680</td><td>4,836</td><td>46.09%</td><td>70.01%</td><td>75.94%</td><td>78.98%</td><td>MXN 1,153,080.25</td><td><span class="pill ok">完全成熟</span></td></tr><tr><td>2026-06</td><td>7,963</td><td>4,875</td><td>47.09%</td><td>71.68%</td><td>76.97%</td><td>79.53%</td><td>MXN 1,182,736.36</td><td><span class="pill ok">完全成熟</span></td></tr><tr><td>2026-07</td><td>9,253</td><td>5,729</td><td>45.52%</td><td>68.16%</td><td>74.18%</td><td>77.07%</td><td>MXN 1,424,896.03</td><td><span class="pill warn">成熟率99.7%</span></td></tr><tr><td>2026-08</td><td>9,443</td><td>5,764</td><td>42.89%</td><td>67.78%</td><td>73.42%</td><td>76.30%</td><td>MXN 1,515,663.62</td><td><span class="pill warn">成熟率89.6%</span></td></tr><tr><td>2026-09</td><td>11,405</td><td>6,309</td><td>40.90%</td><td>64.66%</td><td>68.64%</td><td>75.90%</td><td>MXN 1,841,745.19</td><td><span class="pill warn">成熟率3.0%</span></td></tr></tbody></table></div></details>
+</section>
+
+<section id="early"><h2>四、提前天数：15天及以上是明确亏损段</h2>
+<div class="chart-card"><h3>提前天数分层：成本、利润、净回收与账面ROI</h3><p>主样本：1—6月完全成熟且实际发生减免。金额单位为万MXN。</p><div class="chart-box tall"><canvas id="earlyDays"></canvas></div></div>
+<div class="grid2" style="margin-top:16px"><div class="card finding green"><h3>1—14天仍为账面正回收</h3><p>1—3天、4—7天、8—14天的账面净回收分别为<b>+129.75万、+196.91万、+138.77万MXN</b>。</p></div><div class="card finding pink"><h3>15天及以上成本过高</h3><p>该段D30放款率反而最高（<b>78.37%</b>），但单次平均减免升至<b>MXN 370.02</b>，最终净回收<b>MXN -857,308.65</b>。问题不是回流差，而是成本过高。</p></div></div>
+<details><summary>查看提前天数分层完整数据</summary><div class="table-wrap "><table><thead><tr><th>提前天数</th><th>事件数</th><th>事件占比</th><th>单次平均减免</th><th>D30放款率</th><th>后续D7利润</th><th>账面净回收</th><th>账面ROI</th></tr></thead><tbody><tr><td>1-3天</td><td>2,103</td><td>8.12%</td><td>MXN 59.81</td><td>75.61%</td><td>MXN 1,423,294.88</td><td>MXN 1,297,524.41</td><td>1031.66%</td></tr><tr><td>4-7天</td><td>5,839</td><td>22.56%</td><td>MXN 162.04</td><td>74.00%</td><td>MXN 2,915,204.21</td><td>MXN 1,969,075.25</td><td>208.12%</td></tr><tr><td>8-14天</td><td>9,272</td><td>35.82%</td><td>MXN 278.48</td><td>74.70%</td><td>MXN 3,969,791.24</td><td>MXN 1,387,745.29</td><td>53.75%</td></tr><tr><td>15天及以上</td><td>8,672</td><td>33.50%</td><td>MXN 370.02</td><td>78.37%</td><td>MXN 2,351,547.24</td><td>MXN -857,308.65</td><td>-26.72%</td></tr></tbody></table></div></details>
+</section>
+
+<section id="return"><h2>五、回流速度：快速回流承担主要收益</h2>
+<div class="chart-card"><h3>按首次提单时间分层的账面净回收</h3><p>正值为后续D7利润覆盖减免后的余额；负值表示D30窗口内尚未形成对应收益。</p><div class="chart-box tall"><canvas id="returnSpeed"></canvas></div></div>
+<div class="grid2" style="margin-top:16px"><div class="card finding green"><h3>D0—D6是收益主体</h3><p>快速回流事件占<b>71.82%</b>，合计贡献账面净回收<b>+MXN 3,727,168.25</b>。</p></div><div class="card finding pink"><h3>D30外及未回流形成成本池</h3><p>两类事件合计占<b>20.59%</b>，承接减免成本<b>MXN 1,362,912.70</b>；仅表示D30窗口内未形成收益，不能等同于永久流失。</p></div></div>
+<details><summary>查看回流速度分层完整数据</summary><div class="table-wrap "><table><thead><tr><th>回流分层</th><th>事件数</th><th>事件占比</th><th>减免成本</th><th>后续D7利润</th><th>账面净回收</th></tr></thead><tbody><tr><td>D0提单</td><td>12,405</td><td>47.92%</td><td>MXN 3,507,157.31</td><td>MXN 4,900,240.59</td><td>MXN 1,393,083.28</td></tr><tr><td>D1-D6提单</td><td>6,187</td><td>23.90%</td><td>MXN 1,504,471.03</td><td>MXN 3,838,556.00</td><td>MXN 2,334,084.97</td></tr><tr><td>D7-D14提单</td><td>1,318</td><td>5.09%</td><td>MXN 324,699.56</td><td>MXN 1,236,300.07</td><td>MXN 911,600.51</td></tr><tr><td>D15-D29提单</td><td>646</td><td>2.50%</td><td>MXN 163,560.67</td><td>MXN 684,740.91</td><td>MXN 521,180.24</td></tr><tr><td>D30后提单</td><td>797</td><td>3.08%</td><td>MXN 258,215.71</td><td>MXN 0.00</td><td>MXN -258,215.71</td></tr><tr><td>截至数据日未回流</td><td>4,533</td><td>17.51%</td><td>MXN 1,104,696.99</td><td>MXN 0.00</td><td>MXN -1,104,696.99</td></tr></tbody></table></div></details>
+</section>
+
+<section id="control"><h2>六、标准化对照：尚未发现减免带来增量回流</h2>
+<div class="grid2"><div class="chart-card"><h3>有减免组 vs 标准化无减免组</h3><p>按月份×提前天数×历史成功放款次数×上一笔金额千元档×同刻结清订单数精确分层。</p><div class="chart-box"><canvas id="controlChart"></canvas></div></div>
+<div class="card"><h3>共同支持范围</h3><div class="grid2"><div class="kpi"><div class="label">有减免事件</div><div class="value">37,193</div></div><div class="kpi"><div class="label">匹配事件</div><div class="value">27,185</div><div class="context">覆盖率73.09%</div></div><div class="kpi"><div class="label">共同支持小格</div><div class="value">4,255</div></div><div class="kpi"><div class="label">描述性差值</div><div class="value" style="color:var(--pink)">-0.25pp</div></div></div><div class="callout warn"><strong>不能替代随机实验：</strong>标准化控制了已观测结构，但无法控制未记录的风险偏好、还款动机、资金需求等差异。它只能说明当前数据没有显示正向增量证据。</div></div></div>
+<div class="grid2" style="margin-top:16px"><div class="card finding pink"><h3>原始对照也没有优势</h3><p>有减免组D30放款率<b>75.84%</b>，无减免组<b>76.01%</b>；后续D7利润/事件分别为<b>MXN 411.80</b>与<b>MXN 516.18</b>。</p></div><div class="card finding amber"><h3>现金口径审计通过</h3><p>1—9月实际到账合计<b>MXN 403,424,389.04</b>，与账面净现金差异<b>MXN 256,293.53</b>，差异占实际到账的<b>0.064%</b>；主收益仍以真实还款流水为准。</p></div></div>
+</section>
+
+<section id="break"><h2>七、因果盈亏平衡：账面覆盖不等于政策划算</h2>
+<div class="grid2"><div class="chart-card"><h3>观察性差值 vs 盈亏平衡要求</h3><p>同样采用1—6月成熟有减免主样本；要求值按首笔D7放款单均利润计算。</p><div class="chart-box"><canvas id="breakEven"></canvas></div></div>
+<div class="card"><h3>计算过程</h3><div class="formula">后续放款单均D7利润 = MXN 542.96<br>需要新增放款 = MXN 6,862,801.27 ÷ MXN 542.96 ≈ 12,640笔<br>所需增量放款率 = 12,640 ÷ 25,886 ≈ 48.83pp</div><p>有减免组当前D30放款率已为<b>75.84%</b>，剩余理论提升空间只有<b>24.16pp</b>；仅依靠把未放款事件转成一笔同等利润订单，无法覆盖全量减免成本。</p><p class="small">这不否定账面已回收，而是说明现有回流利润中绝大部分不可能全部由减免政策新增促成。</p></div></div>
+<div class="callout warn"><strong>政策决策应看增量：</strong>账面归因ROI为+55.33%，但标准化放款率差值为-0.25pp；要证明政策划算，必须通过随机保留组测得D30增量放款与增量净利润。</div>
+</section>
+
+<section id="action"><h2>八、策略建议与验证方案</h2>
+<div class="grid2"><div class="card finding pink"><h3>1｜先处理15天及以上段</h3><ul><li>设置减免金额上限或降低减免比例。</li><li>设置低减免组和无减免保留组。</li><li>单独监控D30增量放款率与增量净利润。</li></ul></div><div class="card finding green"><h3>2｜1—14天暂不盲目扩张</h3><ul><li>账面回收为正，但未证明因果增量。</li><li>可维持现状，并同步纳入分层随机实验。</li><li>避免只根据账面ROI扩大优惠。</li></ul></div><div class="card finding amber"><h3>3｜实验设计</h3><ul><li>按月份、提前天数、历史放款次数、上一笔金额分层随机。</li><li>设置当前减免、低减免、5%—10%无减免保留组三档。</li><li>对照组与实验组保持同一观察成熟标准。</li></ul></div><div class="card finding"><h3>4｜决策指标</h3><ul><li><b>主指标：</b>D30增量放款率、D30增量净利润。</li><li><b>辅助：</b>D0/D7提单与放款、后续订单D7/到期利润、逾期率。</li><li><b>停止规则：</b>若增量利润持续不能覆盖减免，收紧对应分层。</li></ul></div></div>
+</section>
+
+<section id="detail"><h2>九、数据范围与复现说明</h2>
+<div class="grid3"><div class="card"><h3>完整样本</h3><p>1—9月共<b>70,899</b>次提前结清事件、<b>70,960</b>笔结清订单；显式减免合计<b>MXN 11,645,106.11</b>。</p></div><div class="card"><h3>减免覆盖</h3><p><b>43,863</b>次事件发生正减免，占全部事件<b>61.87%</b>。</p></div><div class="card"><h3>成熟性</h3><p>1—6月用于主结论；7—8月可用于回流率趋势但经济结果部分成熟；9月不用于ROI结论。</p></div></div>
+<details><summary>指标定义</summary><div class="card" style="border:0;border-top:1px solid var(--line);border-radius:0"><ul><li><b>D0：</b>提前结清自然日当天。</li><li><b>D7：</b>结清当天至D+6，共7个自然日。</li><li><b>D15：</b>结清当天至D+14，共15个自然日。</li><li><b>D30：</b>结清当天至D+29，共30个自然日。</li><li><b>后续首笔订单D7利润：</b>到期日后7日内实际到账还款 − 放款本金。</li><li><b>账面归因ROI：</b>（后续首笔订单D7利润 − 减免成本）÷ 减免成本。</li><li><b>经济成熟：</b>D30回流窗口已结束，且后续首笔订单D7现金利润已经可观测；未放款事件也视为收益0且可观测。</li></ul></div></details>
+</section>
+
+<section id="sql"><h2>十、附录：完整可复现PGSQL</h2><div class="callout"><strong>执行说明：</strong>SQL固定观察截止日为2026-10-03，完整生成事件母表、月度指标、回流分层、提前天数、现金审计、标准化对照和因果盈亏平衡。资金释放收益代理仅为附加情景，不进入本报告主结论。</div><details><summary>展开完整PGSQL（默认折叠）</summary><pre>-- =============================================================================
+-- 循环贷提前结清是否划算：事件级账面经济性审计
+--
+-- 分析单位：用户 × 提前结清时刻。同一用户同一时刻结清多笔循环贷合并为一次事件。
+-- 分析期：2026-01-01 至 2026-09-30；为复现本报告，数据观察截止固定为2026-10-03 00:00:00。
+-- 后续订单归属：一笔后续订单只归属于其申请时间之前最近的一次提前结清事件。
+-- 回流窗口：D0、D7、D15、D30 均按自然日左闭右开计算。
+--
+-- 官方可直接取数的成本：order_loan_f_v2_copy.discount_amount。
+-- 抽样和全量审计显示，绝大多数提前结清订单满足：
+--   订单累计应还(repaid_amt) - 还款流水到账合计 ≈ discount_amount，
+-- 因此 discount_amount 可作为提前结清减免成本；差异额另外保留审计。
+--
+-- 资金释放收益没有直接字段，使用透明的情景估算：
+--   剩余本金代理 = 原放款本金 × 提前天数 / 原贷款天数
+--   资金收益代理 = 剩余本金代理 × 提前天数 × 15% / 365
+-- 15%仅为情景参数，不代表公司的实际资金成本，可在 params 中替换。
+--
+-- “账面净收益”不是因果增量收益：
+--   账面净收益 = 后续首笔放款订单利润 + 资金释放收益代理 - 减免成本。
+-- 后续订单即使没有减免也可能自然发生；真正政策ROI仍需无减免对照/随机实验。
+-- 风险收益没有直接、可靠字段，本SQL不把风险收益计入净收益。
+-- =============================================================================
+
+SET search_path TO wangchuanliang, public;
+SET statement_timeout = 0;
+SET query_dop = 1;
+
+DROP TABLE IF EXISTS tmp_early_econ_params;
+CREATE TEMP TABLE tmp_early_econ_params AS
+SELECT DATE &#x27;2026-01-01&#x27; AS start_date,
+       DATE &#x27;2026-10-01&#x27; AS end_date,
+       DATE &#x27;2026-10-03&#x27; AS as_of_date,
+       TIMESTAMP &#x27;2026-10-03 00:00:00&#x27; AS cutoff_ts,
+       0.15::numeric AS annual_funding_cost_rate;
+
+-- 只接受类型唯一且为2的循环贷订单，避免标签重复或冲突放大样本。
+DROP TABLE IF EXISTS tmp_early_cycle_ids;
+CREATE TEMP TABLE tmp_early_cycle_ids AS
+SELECT serial_id
+FROM wangchuanliang.side_recycle_type_copy
+GROUP BY serial_id
+HAVING COUNT(DISTINCT recycle_type) = 1
+   AND MIN(recycle_type) = 2;
+
+-- 一笔提前结清订单一行。
+DROP TABLE IF EXISTS tmp_early_order;
+CREATE TEMP TABLE tmp_early_order AS
+SELECT o.user_id,
+       o.serial_id,
+       o.repaid_time,
+       o.repaid_date::date AS repaid_date,
+       o.due_date::date AS due_date,
+       (-o.overdue_days)::integer AS early_days,
+       COALESCE(o.remit_amt, 0)::numeric AS prior_remit_amt,
+       COALESCE(o.discount_amount, 0)::numeric AS waiver_cost,
+       COALESCE(o.repaid_amt, 0)::numeric AS booked_repaid_amt,
+       COALESCE(o.loan_day, 0)::integer AS loan_day,
+       COALESCE(o.total_term, 0)::integer AS total_term,
+       COALESCE(o.remit_succ_rnb, 0)::integer AS prior_loan_count,
+       o.product_no,
+       -- 等额本金近似：剩余本金随剩余期限线性下降；该字段仅用于资金收益情景。
+       CASE
+           WHEN COALESCE(o.loan_day, 0) &gt; 0 THEN
+               COALESCE(o.remit_amt, 0)
+               * LEAST(1.0, GREATEST(0.0, (-o.overdue_days)::numeric/o.loan_day))
+           ELSE COALESCE(o.remit_amt, 0)
+       END::numeric AS remaining_principal_proxy
+FROM wangchuanliang.order_loan_f_v2_copy AS o
+INNER JOIN tmp_early_cycle_ids AS c
+        ON c.serial_id = o.serial_id
+CROSS JOIN tmp_early_econ_params AS p
+WHERE o.is_remit = 1
+  AND o.loan_type = &#x27;reloan&#x27;
+  AND o.is_repaid = 1
+  AND o.overdue_days &lt; 0
+  AND o.repaid_time &gt; TIMESTAMP &#x27;2000-01-01 00:00:00&#x27;
+  AND o.repaid_date &gt;= p.start_date
+  AND o.repaid_date &lt;  p.end_date;
+
+-- 流水到账审计：验证减免字段与“账面应还-实际到账”是否一致。
+DROP TABLE IF EXISTS tmp_early_cash;
+CREATE TEMP TABLE tmp_early_cash AS
+SELECT e.serial_id,
+       COALESCE(SUM(r.amount), 0)::numeric AS actual_cash_repaid
+FROM tmp_early_order AS e
+LEFT JOIN wangchuanliang.repayment_record_copy AS r
+       ON r.serial_id = e.serial_id
+GROUP BY e.serial_id;
+
+-- 同一用户同一还款时刻的多笔提前结清合并成一次行为事件。
+DROP TABLE IF EXISTS tmp_early_event;
+CREATE TEMP TABLE tmp_early_event AS
+SELECT x.*,
+       ROW_NUMBER() OVER (
+           PARTITION BY x.user_id
+           ORDER BY x.event_time, x.event_serial_id
+       ) AS event_no
+FROM (
+    SELECT e.user_id,
+           e.repaid_time AS event_time,
+           e.repaid_date AS event_date,
+           MAX(e.serial_id) AS event_serial_id,
+           COUNT(*)::bigint AS settled_order_n,
+           SUM(e.prior_remit_amt)::numeric AS prior_remit_amt,
+           SUM(e.waiver_cost)::numeric AS waiver_cost,
+           SUM(e.remaining_principal_proxy)::numeric AS remaining_principal_proxy,
+           SUM(e.remaining_principal_proxy * e.early_days
+               * p.annual_funding_cost_rate / 365.0)::numeric
+               AS capital_benefit_proxy,
+           SUM(e.booked_repaid_amt - c.actual_cash_repaid)::numeric
+               AS booked_cash_gap,
+           MAX(e.early_days)::integer AS max_early_days,
+           SUM(e.early_days*e.prior_remit_amt)
+               / NULLIF(SUM(e.prior_remit_amt), 0) AS weighted_early_days,
+           MAX(e.prior_loan_count)::integer AS prior_loan_count
+    FROM tmp_early_order AS e
+    INNER JOIN tmp_early_cash AS c
+            ON c.serial_id = e.serial_id
+    CROSS JOIN tmp_early_econ_params AS p
+    GROUP BY e.user_id, e.repaid_time, e.repaid_date
+) AS x;
+
+-- 有关用户的后续申请订单，一笔订单只保留一行。
+DROP TABLE IF EXISTS tmp_post_order;
+CREATE TEMP TABLE tmp_post_order AS
+SELECT user_id,
+       serial_id,
+       apply_time,
+       apply_date::date AS apply_date,
+       remit_time,
+       remit_date::date AS remit_date,
+       COALESCE(remit_amt, 0)::numeric AS remit_amt,
+       due_date::date AS due_date,
+       repaid_date::date AS repaid_date,
+       is_remit,
+       is_repaid,
+       loan_status_code,
+       remit_succ_rnb,
+       product_no
+FROM (
+    SELECT o.*,
+           ROW_NUMBER() OVER (
+               PARTITION BY o.serial_id
+               ORDER BY o.apply_time, o.remit_time DESC NULLS LAST
+           ) AS rn
+    FROM wangchuanliang.order_loan_f_v2_copy AS o
+    INNER JOIN (SELECT DISTINCT user_id FROM tmp_early_event) AS u
+            ON u.user_id = o.user_id
+    CROSS JOIN tmp_early_econ_params AS p
+    WHERE o.apply_time &gt;= p.start_date::timestamp
+      AND o.apply_time &lt;  p.cutoff_ts
+) AS x
+WHERE rn = 1;
+
+-- 时间线归属：订单申请落到它之前最近的一次提前结清事件。
+DROP TABLE IF EXISTS tmp_post_assigned;
+CREATE TEMP TABLE tmp_post_assigned AS
+SELECT user_id,
+       order_serial_id,
+       apply_time,
+       assigned_event_no
+FROM (
+    SELECT user_id,
+           order_serial_id,
+           apply_time,
+           MAX(event_no) OVER (
+               PARTITION BY user_id
+               ORDER BY ts, sort_key, tie_id
+               ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW
+           ) AS assigned_event_no
+    FROM (
+        SELECT e.user_id,
+               e.event_time AS ts,
+               0 AS sort_key,
+               e.event_serial_id AS tie_id,
+               e.event_no,
+               NULL::bigint AS order_serial_id,
+               NULL::timestamp AS apply_time
+        FROM tmp_early_event AS e
+
+        UNION ALL
+
+        SELECT o.user_id,
+               o.apply_time AS ts,
+               1 AS sort_key,
+               o.serial_id AS tie_id,
+               NULL::bigint AS event_no,
+               o.serial_id AS order_serial_id,
+               o.apply_time
+        FROM tmp_post_order AS o
+    ) AS timeline
+) AS assigned
+WHERE order_serial_id IS NOT NULL
+  AND assigned_event_no IS NOT NULL;
+
+-- 每次提前结清事件之后的第一笔申请。
+DROP TABLE IF EXISTS tmp_first_apply;
+CREATE TEMP TABLE tmp_first_apply AS
+SELECT user_id,
+       assigned_event_no AS event_no,
+       serial_id AS first_apply_serial_id,
+       apply_time AS first_apply_time
+FROM (
+    SELECT a.user_id,
+           a.assigned_event_no,
+           o.serial_id,
+           o.apply_time,
+           ROW_NUMBER() OVER (
+               PARTITION BY a.user_id, a.assigned_event_no
+               ORDER BY o.apply_time, o.serial_id
+           ) AS rn
+    FROM tmp_post_assigned AS a
+    INNER JOIN tmp_post_order AS o
+            ON o.user_id = a.user_id
+           AND o.serial_id = a.order_serial_id
+) AS x
+WHERE rn = 1;
+
+-- 每次提前结清事件之后的第一笔成功放款（按申请时间归属、按放款时间取首笔）。
+DROP TABLE IF EXISTS tmp_first_fund;
+CREATE TEMP TABLE tmp_first_fund AS
+SELECT user_id,
+       assigned_event_no AS event_no,
+       serial_id AS first_fund_serial_id,
+       apply_time AS first_fund_apply_time,
+       remit_time AS first_fund_time,
+       remit_date AS first_fund_date,
+       remit_amt AS first_fund_amt,
+       due_date AS first_fund_due_date,
+       repaid_date AS first_fund_repaid_date
+FROM (
+    SELECT a.user_id,
+           a.assigned_event_no,
+           o.serial_id,
+           o.apply_time,
+           o.remit_time,
+           o.remit_date,
+           o.remit_amt,
+           o.due_date,
+           o.repaid_date,
+           ROW_NUMBER() OVER (
+               PARTITION BY a.user_id, a.assigned_event_no
+               ORDER BY o.remit_time, o.apply_time, o.serial_id
+           ) AS rn
+    FROM tmp_post_assigned AS a
+    INNER JOIN tmp_post_order AS o
+            ON o.user_id = a.user_id
+           AND o.serial_id = a.order_serial_id
+    WHERE o.is_remit = 1
+      AND o.remit_time IS NOT NULL
+) AS x
+WHERE rn = 1;
+
+-- 后续首笔成功放款的到期/D7现金利润。
+DROP TABLE IF EXISTS tmp_first_fund_profit;
+CREATE TEMP TABLE tmp_first_fund_profit AS
+SELECT f.user_id,
+       f.event_no,
+       f.first_fund_serial_id,
+       f.first_fund_amt,
+       f.first_fund_due_date,
+       COALESCE(SUM(CASE
+           WHEN r.payin_date &lt;= f.first_fund_due_date THEN r.amount ELSE 0
+       END), 0)::numeric AS paid_by_due_amt,
+       COALESCE(SUM(CASE
+           WHEN r.payin_date &lt;= f.first_fund_due_date + 7 THEN r.amount ELSE 0
+       END), 0)::numeric AS paid_by_d7_amt
+FROM tmp_first_fund AS f
+LEFT JOIN wangchuanliang.repayment_record_copy AS r
+       ON r.serial_id = f.first_fund_serial_id
+GROUP BY f.user_id,
+         f.event_no,
+         f.first_fund_serial_id,
+         f.first_fund_amt,
+         f.first_fund_due_date;
+
+-- 事件级最终底表。
+DROP TABLE IF EXISTS tmp_early_event_econ;
+CREATE TEMP TABLE tmp_early_event_econ AS
+SELECT e.*,
+       DATE_TRUNC(&#x27;month&#x27;, e.event_date)::date AS event_month,
+       p.as_of_date,
+       a.first_apply_serial_id,
+       a.first_apply_time,
+       f.first_fund_serial_id,
+       f.first_fund_apply_time,
+       f.first_fund_time,
+       f.first_fund_amt,
+       f.first_fund_due_date,
+       fp.paid_by_due_amt,
+       fp.paid_by_d7_amt,
+       CASE WHEN a.first_apply_time &gt;= e.event_time
+                  AND a.first_apply_time &lt; e.event_date + 1 THEN 1 ELSE 0 END AS is_d0_apply,
+       CASE WHEN a.first_apply_time &gt;= e.event_time
+                  AND a.first_apply_time &lt; e.event_date + 7 THEN 1 ELSE 0 END AS is_d7_apply,
+       CASE WHEN a.first_apply_time &gt;= e.event_time
+                  AND a.first_apply_time &lt; e.event_date + 15 THEN 1 ELSE 0 END AS is_d15_apply,
+       CASE WHEN a.first_apply_time &gt;= e.event_time
+                  AND a.first_apply_time &lt; e.event_date + 30 THEN 1 ELSE 0 END AS is_d30_apply,
+       CASE WHEN f.first_fund_apply_time &gt;= e.event_time
+                  AND f.first_fund_apply_time &lt; e.event_date + 7 THEN 1 ELSE 0 END AS is_d7_fund,
+       CASE WHEN f.first_fund_apply_time &gt;= e.event_time
+                  AND f.first_fund_apply_time &lt; e.event_date + 15 THEN 1 ELSE 0 END AS is_d15_fund,
+       CASE WHEN f.first_fund_apply_time &gt;= e.event_time
+                  AND f.first_fund_apply_time &lt; e.event_date + 30 THEN 1 ELSE 0 END AS is_d30_fund,
+       CASE WHEN f.first_fund_apply_time &gt;= e.event_time
+                  AND f.first_fund_apply_time &lt; e.event_date + 30
+                  AND f.first_fund_due_date &lt; p.as_of_date
+            THEN fp.paid_by_due_amt - f.first_fund_amt END AS followup_due_profit,
+       CASE WHEN f.first_fund_apply_time &gt;= e.event_time
+                  AND f.first_fund_apply_time &lt; e.event_date + 30
+                  AND f.first_fund_due_date + 7 &lt; p.as_of_date
+            THEN fp.paid_by_d7_amt - f.first_fund_amt END AS followup_d7_profit,
+       CASE WHEN e.event_date + 30 &lt;= p.as_of_date THEN 1 ELSE 0 END AS is_d30_event_mature,
+       CASE
+           WHEN e.event_date + 30 &lt;= p.as_of_date
+            AND (
+                f.first_fund_serial_id IS NULL
+                OR f.first_fund_apply_time &gt;= e.event_date + 30
+                OR f.first_fund_due_date &lt; p.as_of_date
+            )
+           THEN 1 ELSE 0
+       END AS is_due_econ_observable,
+       CASE
+           WHEN e.event_date + 30 &lt;= p.as_of_date
+            AND (
+                f.first_fund_serial_id IS NULL
+                OR f.first_fund_apply_time &gt;= e.event_date + 30
+                OR f.first_fund_due_date + 7 &lt; p.as_of_date
+            )
+           THEN 1 ELSE 0
+       END AS is_d7_econ_observable
+FROM tmp_early_event AS e
+CROSS JOIN tmp_early_econ_params AS p
+LEFT JOIN tmp_first_apply AS a
+       ON a.user_id = e.user_id
+      AND a.event_no = e.event_no
+LEFT JOIN tmp_first_fund AS f
+       ON f.user_id = e.user_id
+      AND f.event_no = e.event_no
+LEFT JOIN tmp_first_fund_profit AS fp
+       ON fp.user_id = e.user_id
+      AND fp.event_no = e.event_no;
+
+-- =============================================================================
+-- 结果0A：主结论（严格成熟、实际有减免、2026年1—6月）。
+-- 主结论只用可观测数据，不计15%资金收益代理：
+--   账面净回收 = 后续首笔放款D7实际现金利润 - 显式减免成本。
+-- 1—6月各月的D30与后续订单D7观察均已完全成熟，避免右删失。
+-- =============================================================================
+SELECT COUNT(*) AS policy_mature_event_n,
+       COUNT(DISTINCT user_id) AS user_n,
+       ROUND(SUM(waiver_cost), 2) AS waiver_cost,
+       ROUND(100.0*SUM(is_d30_apply)/NULLIF(COUNT(*), 0), 2) AS d30_apply_rate_pct,
+       ROUND(100.0*SUM(is_d30_fund)/NULLIF(COUNT(*), 0), 2) AS d30_fund_rate_pct,
+       ROUND(SUM(COALESCE(followup_d7_profit, 0)), 2) AS followup_d7_profit,
+       ROUND(SUM(COALESCE(followup_d7_profit, 0)-waiver_cost), 2)
+           AS gross_net_after_waiver,
+       ROUND(100.0*SUM(COALESCE(followup_d7_profit, 0))
+             /NULLIF(SUM(waiver_cost), 0), 2) AS profit_to_waiver_pct,
+       ROUND(100.0*SUM(COALESCE(followup_d7_profit, 0)-waiver_cost)
+             /NULLIF(SUM(waiver_cost), 0), 2) AS gross_roi_pct
+FROM tmp_early_event_econ
+WHERE event_month &lt; DATE &#x27;2026-07-01&#x27;
+  AND waiver_cost &gt; 0
+  AND is_d7_econ_observable = 1;
+
+-- =============================================================================
+-- 结果0B：观察性盈亏平衡门槛（2026年1—8月）。
+-- 不计资金收益代理；回答“减免至少要额外增加多少后续放款，才覆盖减免成本”。
+-- 这是经营门槛，不是已经实现的增量结果。
+-- =============================================================================
+WITH break_even_base AS (
+    SELECT COUNT(*) AS event_n,
+           SUM(CASE WHEN is_d7_econ_observable=1 THEN 1 ELSE 0 END) AS observable_n,
+           SUM(CASE WHEN is_d7_econ_observable=1 THEN is_d30_fund ELSE 0 END)
+               AS observed_funded_n,
+           SUM(waiver_cost) AS waiver_cost,
+           SUM(CASE WHEN is_d7_econ_observable=1
+                    THEN COALESCE(followup_d7_profit, 0) ELSE 0 END) AS followup_d7_profit
+    FROM tmp_early_event_econ
+    WHERE event_month &lt; DATE &#x27;2026-09-01&#x27;
+), break_even_calc AS (
+    SELECT b.*,
+           followup_d7_profit/NULLIF(observed_funded_n, 0) AS profit_per_funded_order
+    FROM break_even_base AS b
+)
+SELECT event_n,
+       observable_n,
+       observed_funded_n,
+       ROUND(waiver_cost, 2) AS waiver_cost,
+       ROUND(followup_d7_profit, 2) AS followup_d7_profit,
+       ROUND(profit_per_funded_order, 2) AS profit_per_funded_order,
+       ROUND(waiver_cost/NULLIF(profit_per_funded_order, 0), 2)
+           AS break_even_extra_funded_orders,
+       ROUND(100.0*(waiver_cost/NULLIF(profit_per_funded_order, 0))
+             /NULLIF(event_n, 0), 2) AS break_even_extra_fund_rate_pp
+FROM break_even_calc;
+
+-- =============================================================================
+-- 结果0C：与主结论完全同口径的因果盈亏平衡门槛（1—6月成熟有减免样本）。
+-- 解释：若把全部减免成本视为政策投入，政策需要真正额外促成多少D30放款，
+-- 才能用这些新增订单的首笔D7利润覆盖投入。该门槛不是已实现的增量结果。
+-- =============================================================================
+WITH mature_policy AS (
+    SELECT COUNT(*) AS event_n,
+           SUM(is_d30_fund) AS observed_funded_n,
+           SUM(waiver_cost) AS waiver_cost,
+           SUM(COALESCE(followup_d7_profit, 0)) AS followup_d7_profit
+    FROM tmp_early_event_econ
+    WHERE event_month &lt; DATE &#x27;2026-07-01&#x27;
+      AND waiver_cost &gt; 0
+      AND is_d7_econ_observable = 1
+), calc AS (
+    SELECT m.*,
+           followup_d7_profit/NULLIF(observed_funded_n, 0)
+               AS d7_profit_per_funded_order
+    FROM mature_policy AS m
+)
+SELECT event_n,
+       observed_funded_n,
+       ROUND(waiver_cost, 2) AS waiver_cost,
+       ROUND(followup_d7_profit, 2) AS followup_d7_profit,
+       ROUND(d7_profit_per_funded_order, 2) AS d7_profit_per_funded_order,
+       ROUND(waiver_cost/NULLIF(d7_profit_per_funded_order, 0), 2)
+           AS break_even_incremental_funded_order_n,
+       ROUND(100.0*waiver_cost/NULLIF(d7_profit_per_funded_order, 0)
+             /NULLIF(event_n, 0), 2) AS break_even_incremental_fund_rate_pp
+FROM calc;
+
+-- =============================================================================
+-- 结果1：月度回流、减免成本与账面经济性。
+-- 账面经济性只在“D30窗口已成熟且后续订单利润已成熟/无后续放款”的事件上计算。
+-- =============================================================================
+SELECT TO_CHAR(event_month, &#x27;YYYY-MM&#x27;) AS month,
+       COUNT(*) AS early_event_n,
+       SUM(settled_order_n) AS early_order_n,
+       COUNT(DISTINCT user_id) AS user_n,
+       ROUND(SUM(waiver_cost), 2) AS waiver_cost,
+       ROUND(SUM(waiver_cost)/NULLIF(COUNT(*), 0), 2) AS waiver_per_event,
+       ROUND(100.0*SUM(CASE WHEN waiver_cost &gt; 0 THEN 1 ELSE 0 END)
+             /NULLIF(COUNT(*), 0), 2) AS waiver_event_share_pct,
+       ROUND(SUM(capital_benefit_proxy), 2) AS capital_benefit_proxy_15pct,
+       ROUND(100.0*SUM(is_d0_apply)/NULLIF(COUNT(*), 0), 2) AS d0_apply_rate_pct,
+       ROUND(100.0*SUM(is_d7_apply)/NULLIF(COUNT(*), 0), 2) AS d7_apply_rate_pct,
+       ROUND(100.0*SUM(is_d15_apply)/NULLIF(COUNT(*), 0), 2) AS d15_apply_rate_pct,
+       ROUND(100.0*SUM(CASE WHEN is_d30_event_mature=1 THEN is_d30_apply ELSE 0 END)
+             /NULLIF(SUM(is_d30_event_mature), 0), 2) AS d30_apply_rate_pct,
+       ROUND(100.0*SUM(CASE WHEN is_d30_event_mature=1 THEN is_d30_fund ELSE 0 END)
+             /NULLIF(SUM(is_d30_event_mature), 0), 2) AS d30_fund_rate_pct,
+
+       SUM(is_due_econ_observable) AS due_econ_event_n,
+       ROUND(SUM(CASE WHEN is_due_econ_observable=1 THEN waiver_cost ELSE 0 END), 2)
+           AS due_econ_waiver_cost,
+       ROUND(SUM(CASE WHEN is_due_econ_observable=1 THEN capital_benefit_proxy ELSE 0 END), 2)
+           AS due_econ_capital_benefit,
+       ROUND(SUM(CASE WHEN is_due_econ_observable=1
+                      THEN COALESCE(followup_due_profit, 0) ELSE 0 END), 2)
+           AS followup_due_profit,
+       ROUND(SUM(CASE WHEN is_due_econ_observable=1
+                      THEN COALESCE(followup_due_profit, 0)
+                           + capital_benefit_proxy - waiver_cost ELSE 0 END), 2)
+           AS gross_due_net_benefit,
+       ROUND(SUM(CASE WHEN is_due_econ_observable=1
+                      THEN COALESCE(followup_due_profit, 0)
+                           + capital_benefit_proxy - waiver_cost ELSE 0 END)
+             /NULLIF(SUM(CASE WHEN is_due_econ_observable=1 THEN waiver_cost ELSE 0 END), 0), 4)
+           AS gross_due_net_roi,
+
+       SUM(is_d7_econ_observable) AS d7_econ_event_n,
+       ROUND(SUM(CASE WHEN is_d7_econ_observable=1 THEN waiver_cost ELSE 0 END), 2)
+           AS d7_econ_waiver_cost,
+       ROUND(SUM(CASE WHEN is_d7_econ_observable=1 THEN capital_benefit_proxy ELSE 0 END), 2)
+           AS d7_econ_capital_benefit,
+       ROUND(SUM(CASE WHEN is_d7_econ_observable=1
+                      THEN COALESCE(followup_d7_profit, 0) ELSE 0 END), 2)
+           AS followup_d7_profit,
+       ROUND(SUM(CASE WHEN is_d7_econ_observable=1
+                      THEN COALESCE(followup_d7_profit, 0)
+                           + capital_benefit_proxy - waiver_cost ELSE 0 END), 2)
+           AS gross_d7_net_benefit,
+       ROUND(SUM(CASE WHEN is_d7_econ_observable=1
+                      THEN COALESCE(followup_d7_profit, 0)
+                           + capital_benefit_proxy - waiver_cost ELSE 0 END)
+             /NULLIF(SUM(CASE WHEN is_d7_econ_observable=1 THEN waiver_cost ELSE 0 END), 0), 4)
+           AS gross_d7_net_roi
+FROM tmp_early_event_econ
+GROUP BY event_month
+ORDER BY event_month;
+
+-- 结果1B：1—8月成熟样本的盈亏平衡要求。
+-- 必要增量放款率 =（减免成本－资金释放收益代理）/ 后续首笔D7平均利润 / 事件数。
+-- 该指标回答：政策至少要额外带来多少放款，才能覆盖政策成本。
+SELECT COUNT(*) AS early_event_n,
+       SUM(is_d7_econ_observable) AS d7_econ_event_n,
+       SUM(CASE WHEN is_d7_econ_observable=1 AND is_d30_fund=1
+                THEN 1 ELSE 0 END) AS d30_funded_event_n,
+       ROUND(SUM(CASE WHEN is_d7_econ_observable=1
+                      THEN waiver_cost ELSE 0 END), 2) AS waiver_cost,
+       ROUND(SUM(CASE WHEN is_d7_econ_observable=1
+                      THEN capital_benefit_proxy ELSE 0 END), 2)
+           AS capital_benefit_proxy_15pct,
+       ROUND(SUM(CASE WHEN is_d7_econ_observable=1
+                      THEN COALESCE(followup_d7_profit,0) ELSE 0 END), 2)
+           AS followup_d7_profit,
+       ROUND(AVG(CASE WHEN is_d7_econ_observable=1 AND is_d30_fund=1
+                      THEN followup_d7_profit END), 2)
+           AS d7_profit_per_funded_order,
+       ROUND(
+           (SUM(CASE WHEN is_d7_econ_observable=1
+                     THEN waiver_cost-capital_benefit_proxy ELSE 0 END)
+            /NULLIF(AVG(CASE WHEN is_d7_econ_observable=1 AND is_d30_fund=1
+                             THEN followup_d7_profit END), 0)),
+           2
+       ) AS break_even_incremental_funded_order_n,
+       ROUND(
+           100.0
+           *(SUM(CASE WHEN is_d7_econ_observable=1
+                      THEN waiver_cost-capital_benefit_proxy ELSE 0 END)
+             /NULLIF(AVG(CASE WHEN is_d7_econ_observable=1 AND is_d30_fund=1
+                              THEN followup_d7_profit END), 0))
+           /NULLIF(SUM(is_d7_econ_observable), 0),
+           4
+       ) AS break_even_incremental_fund_rate_pp
+FROM tmp_early_event_econ
+WHERE event_month &lt; DATE &#x27;2026-09-01&#x27;;
+
+-- =============================================================================
+-- 结果2：按回流速度分层。用于判断“快速回流是否覆盖减免，长期不回流是否亏损”。
+-- =============================================================================
+SELECT CASE
+           WHEN first_fund_apply_time &gt;= event_time
+            AND first_fund_apply_time &lt; event_date + 7 THEN &#x27;D0-D6放款&#x27;
+           WHEN first_fund_apply_time &gt;= event_date + 7
+            AND first_fund_apply_time &lt; event_date + 15 THEN &#x27;D7-D14放款&#x27;
+           WHEN first_fund_apply_time &gt;= event_date + 15
+            AND first_fund_apply_time &lt; event_date + 30 THEN &#x27;D15-D29放款&#x27;
+           WHEN is_d30_event_mature=1 THEN &#x27;D30内未放款&#x27;
+           ELSE &#x27;D30观察未成熟&#x27;
+       END AS return_bucket,
+       COUNT(*) AS event_n,
+       ROUND(100.0*COUNT(*)/SUM(COUNT(*)) OVER (), 2) AS event_share_pct,
+       ROUND(SUM(waiver_cost), 2) AS waiver_cost,
+       ROUND(SUM(waiver_cost)/NULLIF(COUNT(*), 0), 2) AS waiver_per_event,
+       ROUND(SUM(capital_benefit_proxy), 2) AS capital_benefit_proxy_15pct,
+       SUM(is_d7_econ_observable) AS d7_econ_event_n,
+       ROUND(SUM(CASE WHEN is_d7_econ_observable=1
+                      THEN COALESCE(followup_d7_profit, 0) ELSE 0 END), 2)
+           AS followup_d7_profit,
+       ROUND(SUM(CASE WHEN is_d7_econ_observable=1
+                      THEN COALESCE(followup_d7_profit, 0)
+                           + capital_benefit_proxy - waiver_cost ELSE 0 END), 2)
+           AS gross_d7_net_benefit
+FROM tmp_early_event_econ
+GROUP BY CASE
+             WHEN first_fund_apply_time &gt;= event_time
+              AND first_fund_apply_time &lt; event_date + 7 THEN &#x27;D0-D6放款&#x27;
+             WHEN first_fund_apply_time &gt;= event_date + 7
+              AND first_fund_apply_time &lt; event_date + 15 THEN &#x27;D7-D14放款&#x27;
+             WHEN first_fund_apply_time &gt;= event_date + 15
+              AND first_fund_apply_time &lt; event_date + 30 THEN &#x27;D15-D29放款&#x27;
+             WHEN is_d30_event_mature=1 THEN &#x27;D30内未放款&#x27;
+             ELSE &#x27;D30观察未成熟&#x27;
+         END
+ORDER BY return_bucket;
+
+-- =============================================================================
+-- 结果3：按提前天数分层。提前越多，通常减免越大；用于找亏损拐点。
+-- 只使用1—8月成熟度较高的样本。
+-- =============================================================================
+SELECT CASE
+           WHEN max_early_days=1 THEN &#x27;1天&#x27;
+           WHEN max_early_days&lt;=3 THEN &#x27;2-3天&#x27;
+           WHEN max_early_days&lt;=7 THEN &#x27;4-7天&#x27;
+           WHEN max_early_days&lt;=14 THEN &#x27;8-14天&#x27;
+           ELSE &#x27;15天以上&#x27;
+       END AS early_day_bucket,
+       COUNT(*) AS event_n,
+       ROUND(AVG(waiver_cost), 2) AS waiver_per_event,
+       ROUND(100.0*SUM(CASE WHEN is_d30_event_mature=1 THEN is_d30_fund ELSE 0 END)
+             /NULLIF(SUM(is_d30_event_mature), 0), 2) AS d30_fund_rate_pct,
+       SUM(is_d7_econ_observable) AS d7_econ_event_n,
+       ROUND(
+           SUM(CASE WHEN is_d7_econ_observable=1
+                    THEN COALESCE(followup_d7_profit,0)
+                         + capital_benefit_proxy-waiver_cost ELSE 0 END)
+           /NULLIF(SUM(is_d7_econ_observable), 0),
+           2
+       ) AS gross_d7_net_benefit_per_event
+FROM tmp_early_event_econ
+WHERE event_month &lt; DATE &#x27;2026-09-01&#x27;
+GROUP BY CASE
+             WHEN max_early_days=1 THEN &#x27;1天&#x27;
+             WHEN max_early_days&lt;=3 THEN &#x27;2-3天&#x27;
+             WHEN max_early_days&lt;=7 THEN &#x27;4-7天&#x27;
+             WHEN max_early_days&lt;=14 THEN &#x27;8-14天&#x27;
+             ELSE &#x27;15天以上&#x27;
+         END
+ORDER BY MIN(max_early_days);
+
+-- =============================================================================
+-- 结果4：减免成本字段审计。
+-- =============================================================================
+SELECT COUNT(*) AS early_order_n,
+       SUM(CASE WHEN ABS(waiver_cost-(booked_repaid_amt-actual_cash_repaid)) &lt; 0.01
+                THEN 1 ELSE 0 END) AS exact_match_n,
+       ROUND(100.0*SUM(CASE WHEN ABS(waiver_cost-(booked_repaid_amt-actual_cash_repaid)) &lt; 0.01
+                            THEN 1 ELSE 0 END)/NULLIF(COUNT(*), 0), 2) AS exact_match_pct,
+       ROUND(SUM(waiver_cost), 2) AS official_waiver_cost,
+       ROUND(SUM(booked_repaid_amt-actual_cash_repaid), 2) AS booked_cash_gap,
+       ROUND(SUM(booked_repaid_amt-actual_cash_repaid)-SUM(waiver_cost), 2)
+           AS difference_amt
+FROM tmp_early_order AS e
+INNER JOIN tmp_early_cash AS c
+        ON c.serial_id = e.serial_id;
+
+-- =============================================================================
+-- 结果5：观察性对照（不是因果实验）。
+-- 仅用1—8月成熟事件；按月份、提前天数、历史放款次数、上一笔放款金额千元档、
+-- 同刻结清订单数精确分层。用有减免组结构加权无减免组D30放款率。
+-- “有减免－标准化无减免”仅作证据强弱判断，不可替代随机实验。
+-- =============================================================================
+WITH matched_base AS (
+    SELECT event_month,
+           max_early_days,
+           CASE WHEN prior_loan_count &gt;= 6 THEN 6 ELSE prior_loan_count END
+               AS loan_count_bucket,
+           FLOOR(prior_remit_amt/1000) AS amount_band,
+           settled_order_n,
+           CASE WHEN waiver_cost &gt; 0 THEN 1 ELSE 0 END AS is_waiver,
+           is_d30_fund
+    FROM tmp_early_event_econ
+    WHERE event_month &lt; DATE &#x27;2026-09-01&#x27;
+      AND is_d30_event_mature = 1
+), stratum AS (
+    SELECT event_month,
+           max_early_days,
+           loan_count_bucket,
+           amount_band,
+           settled_order_n,
+           SUM(CASE WHEN is_waiver=1 THEN 1 ELSE 0 END) AS waiver_n,
+           SUM(CASE WHEN is_waiver=1 THEN is_d30_fund ELSE 0 END) AS waiver_fund_n,
+           SUM(CASE WHEN is_waiver=0 THEN 1 ELSE 0 END) AS no_waiver_n,
+           SUM(CASE WHEN is_waiver=0 THEN is_d30_fund ELSE 0 END) AS no_waiver_fund_n
+    FROM matched_base
+    GROUP BY event_month,
+             max_early_days,
+             loan_count_bucket,
+             amount_band,
+             settled_order_n
+), common_support AS (
+    SELECT *
+    FROM stratum
+    WHERE waiver_n &gt; 0
+      AND no_waiver_n &gt; 0
+)
+SELECT SUM(waiver_n) AS matched_waiver_event_n,
+       (SELECT SUM(CASE WHEN is_waiver=1 THEN 1 ELSE 0 END)
+        FROM matched_base) AS all_waiver_event_n,
+       ROUND(100.0*SUM(waiver_n)
+             /NULLIF((SELECT SUM(CASE WHEN is_waiver=1 THEN 1 ELSE 0 END)
+                      FROM matched_base), 0), 4) AS coverage_pct,
+       ROUND(100.0*SUM(waiver_fund_n)/NULLIF(SUM(waiver_n), 0), 4)
+           AS waiver_group_d30_fund_rate_pct,
+       ROUND(100.0*SUM(waiver_n*(no_waiver_fund_n::numeric/no_waiver_n))
+             /NULLIF(SUM(waiver_n), 0), 4)
+           AS standardized_no_waiver_d30_fund_rate_pct,
+       ROUND(
+           100.0*SUM(waiver_fund_n)/NULLIF(SUM(waiver_n), 0)
+           - 100.0*SUM(waiver_n*(no_waiver_fund_n::numeric/no_waiver_n))
+             /NULLIF(SUM(waiver_n), 0),
+           4
+       ) AS descriptive_delta_pp,
+       COUNT(*) AS support_strata_n
+FROM common_support;
+
+-- =============================================================================
+-- 结果6：事件级明细。可导出后做更细的风险、借款次数、减免金额分层。
+-- =============================================================================
+SELECT *
+FROM tmp_early_event_econ
+ORDER BY event_time, user_id, event_no;
+</pre></details></section>
+
+<div class="footer">生成日期：2026-10-03｜循环贷提前结清减免政策经营分析</div>
+</main>
+<script>
+Chart.register(ChartDataLabels);
+Chart.defaults.color='#c9dae4';Chart.defaults.borderColor='rgba(40,83,110,.55)';Chart.defaults.font.family='-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei",sans-serif';
+const colors={cyan:'#43c7e7',green:'#64dcae',amber:'#ffc26b',pink:'#f68ab0',violet:'#b49aff',red:'#ff7f86',grid:'rgba(40,83,110,.55)'};
+const pctTick=v=>v+'%'; const moneyTick=v=>v+'万';
+new Chart(document.getElementById('monthlyTrend'),{type:'bar',data:{labels:["01月", "02月", "03月", "04月", "05月", "06月", "07月", "08月"],datasets:[{type:'bar',label:'提前结清事件',data:[5871, 6521, 6369, 6394, 7680, 7963, 9253, 9443],yAxisID:'y1',backgroundColor:'rgba(67,199,231,.28)',borderColor:colors.cyan,borderWidth:1,order:4,datalabels:{display:false}},{type:'line',label:'D0提单率',data:[49.96, 47.72, 46.87, 46.9, 46.09, 47.09, 45.52, 42.89],borderColor:colors.pink,backgroundColor:colors.pink,tension:.28,pointRadius:4,pointBackgroundColor:colors.pink,order:1,datalabels:{display:false}},{type:'line',label:'D7提单率',data:[73.04, 70.86, 71.36, 71.58, 70.01, 71.68, 68.16, 67.78],borderColor:colors.amber,backgroundColor:colors.amber,tension:.28,pointRadius:4,pointBackgroundColor:colors.amber,order:1,datalabels:{display:false}},{type:'line',label:'D15提单率',data:[77.4, 76.03, 76.67, 77.1, 75.94, 76.97, 74.18, 73.42],borderColor:colors.violet,backgroundColor:colors.violet,tension:.28,pointRadius:4,pointBackgroundColor:colors.violet,order:1,datalabels:{display:false}},{type:'line',label:'D30提单率',data:[79.68, 78.47, 79.32, 79.42, 78.98, 79.53, 77.07, 76.3],borderColor:colors.green,backgroundColor:colors.green,tension:.28,pointRadius:5,pointBackgroundColor:colors.green,order:0,datalabels:{display:true,formatter:v=>v.toFixed(1)+'%',color:colors.green,anchor:'end',align:'top',offset:5,font:{weight:'700',size:11}}}]},options:{maintainAspectRatio:false,layout:{padding:{top:20}},interaction:{mode:'index',intersect:false},plugins:{legend:{position:'bottom',labels:{usePointStyle:true,pointStyle:'circle'}}},scales:{y:{min:35,max:85,ticks:{callback:pctTick}},y1:{position:'right',grid:{drawOnChartArea:false},ticks:{callback:v=>(v/1000).toFixed(0)+'k'}}}}});
+new Chart(document.getElementById('monthlyEcon'),{data:{labels:["01月", "02月", "03月", "04月", "05月", "06月"],datasets:[{type:'bar',label:'减免成本',data:[108.86, 114.67, 110.65, 118.52, 115.31, 118.27],backgroundColor:'rgba(255,194,107,.42)',borderColor:colors.amber,borderWidth:1,yAxisID:'y',order:3},{type:'bar',label:'后续D7利润',data:[145.38, 184.22, 149.15, 226.22, 210.51, 150.52],backgroundColor:'rgba(100,220,174,.38)',borderColor:colors.green,borderWidth:1,yAxisID:'y',order:3},{type:'bar',label:'账面净回收',data:[36.52, 69.54, 38.5, 107.7, 95.2, 32.24],backgroundColor:'rgba(67,199,231,.5)',borderColor:colors.cyan,borderWidth:1,yAxisID:'y',order:2},{type:'line',label:'账面ROI',data:[33.55, 60.64, 34.8, 90.87, 82.56, 27.26],borderColor:colors.pink,backgroundColor:colors.pink,pointRadius:5,pointBackgroundColor:colors.pink,tension:.25,yAxisID:'y1',order:0,datalabels:{formatter:v=>v.toFixed(1)+'%',color:colors.pink,anchor:'end',align:'top',offset:5,font:{weight:'700'}}}]},options:{maintainAspectRatio:false,layout:{padding:{top:20}},interaction:{mode:'index',intersect:false},plugins:{legend:{position:'bottom',labels:{usePointStyle:true}},datalabels:{display:ctx=>ctx.dataset.type==='line'}},scales:{y:{beginAtZero:true,ticks:{callback:moneyTick}},y1:{position:'right',beginAtZero:true,grid:{drawOnChartArea:false},ticks:{callback:pctTick}}}}});
+new Chart(document.getElementById('earlyDays'),{data:{labels:["1-3天", "4-7天", "8-14天", "15天及以上"],datasets:[{type:'bar',label:'减免成本',data:[12.58, 94.61, 258.2, 320.89],backgroundColor:'rgba(255,194,107,.36)',borderColor:colors.amber,borderWidth:1,yAxisID:'y',order:3},{type:'bar',label:'后续D7利润',data:[142.33, 291.52, 396.98, 235.15],backgroundColor:'rgba(100,220,174,.34)',borderColor:colors.green,borderWidth:1,yAxisID:'y',order:3},{type:'bar',label:'账面净回收',data:[129.75, 196.91, 138.77, -85.73],backgroundColor:["rgba(67,199,231,.50)", "rgba(67,199,231,.50)", "rgba(67,199,231,.50)", "rgba(246,138,176,.58)"],borderColor:["#43c7e7", "#43c7e7", "#43c7e7", "#f68ab0"],borderWidth:1,yAxisID:'y',order:2},{type:'line',label:'账面ROI',data:[1031.66, 208.12, 53.75, -26.72],borderColor:colors.violet,backgroundColor:colors.violet,pointRadius:5,pointBackgroundColor:colors.violet,yAxisID:'y1',order:0,datalabels:{formatter:v=>v.toFixed(1)+'%',color:colors.violet,anchor:'end',align:ctx=>ctx.dataIndex===0?'right':'top',offset:6,font:{weight:'700'}}}]},options:{maintainAspectRatio:false,layout:{padding:{top:24,right:22}},interaction:{mode:'index',intersect:false},plugins:{legend:{position:'bottom',labels:{usePointStyle:true}},datalabels:{display:ctx=>ctx.dataset.type==='line'}},scales:{y:{ticks:{callback:moneyTick}},y1:{position:'right',grid:{drawOnChartArea:false},ticks:{callback:pctTick}}}}});
+new Chart(document.getElementById('returnSpeed'),{type:'bar',data:{labels:["D0提单", "D1-D6提单", "D7-D14提单", "D15-D29提单", "D30后提单", "截至数据日未回流"],datasets:[{label:'账面净回收（万MXN）',data:[139.31, 233.41, 91.16, 52.12, -25.82, -110.47],backgroundColor:ctx=>ctx.raw>=0?'rgba(100,220,174,.55)':'rgba(246,138,176,.60)',borderColor:ctx=>ctx.raw>=0?colors.green:colors.pink,borderWidth:1,datalabels:{formatter:v=>(v>=0?'+':'')+v.toFixed(1)+'万',color:ctx=>ctx.raw>=0?colors.green:colors.pink,anchor:'end',align:ctx=>ctx.raw>=0?'end':'start',offset:5,font:{weight:'800'}}}]},options:{indexAxis:'y',maintainAspectRatio:false,layout:{padding:{left:35,right:55}},plugins:{legend:{display:false}},scales:{x:{ticks:{callback:moneyTick}}}}});
+new Chart(document.getElementById('controlChart'),{type:'bar',data:{labels:['有减免组','标准化无减免组'],datasets:[{label:'D30放款率',data:[75.2989,75.5499],backgroundColor:['rgba(246,138,176,.55)','rgba(100,220,174,.55)'],borderColor:[colors.pink,colors.green],borderWidth:1,datalabels:{formatter:v=>v.toFixed(2)+'%',color:ctx=>ctx.dataIndex===0?colors.pink:colors.green,anchor:'end',align:'top',offset:6,font:{weight:'800',size:13}}}]},options:{maintainAspectRatio:false,layout:{padding:{top:24}},plugins:{legend:{display:false}},scales:{y:{min:72,max:78,ticks:{callback:pctTick}}}}});
+new Chart(document.getElementById('breakEven'),{type:'bar',data:{labels:['观察性标准化差值','盈亏平衡所需增量'],datasets:[{label:'D30放款率变化',data:[-0.2510,48.8280],backgroundColor:['rgba(246,138,176,.6)','rgba(255,194,107,.6)'],borderColor:[colors.pink,colors.amber],borderWidth:1,datalabels:{formatter:v=>(v>0?'+':'')+v.toFixed(2)+'pp',color:ctx=>ctx.dataIndex===0?colors.pink:colors.amber,anchor:'end',align:ctx=>ctx.raw>=0?'top':'bottom',offset:6,font:{weight:'800',size:13}}}]},options:{maintainAspectRatio:false,layout:{padding:{top:28,bottom:18}},plugins:{legend:{display:false}},scales:{y:{min:-5,max:55,ticks:{callback:v=>v+'pp'}}}}});
+</script></body></html>
