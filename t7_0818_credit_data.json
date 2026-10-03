@@ -3,20 +3,20 @@
     "n_user": 11585,
     "n_vir": 3888,
     "n_pass": 3749,
-    "n_apply": 2790,
-    "n_apply_order": 5102,
+    "n_apply": 2791,
+    "n_apply_order": 5106,
     "pass_rate": 96.42,
-    "apply_rate": 74.42,
-    "n_apply_week": 433,
-    "n_first_week": 132,
-    "n_remit": 4983,
-    "n_remit_week": 438,
-    "n_due": 2408,
-    "n_due_od": 841,
-    "profit_pct": 11.71,
-    "overdue_pct": 34.93,
+    "apply_rate": 74.45,
+    "n_apply_week": 436,
+    "n_first_week": 133,
+    "n_remit": 4986,
+    "n_remit_week": 441,
+    "n_due": 2539,
+    "n_due_od": 884,
+    "profit_pct": 11.24,
+    "overdue_pct": 34.82,
     "week_start": "2026-09-28",
-    "as_of": "2026-10-01",
+    "as_of": "2026-10-02",
     "recall_date": "2026-08-18",
     "remit_day": "o.remit_date::date"
   },
@@ -380,6 +380,14 @@
       "cum": 2790,
       "cum_pass": 3749,
       "rate": 74.42
+    },
+    {
+      "d": "2026-10-02",
+      "n": 1,
+      "n_pass": 0,
+      "cum": 2791,
+      "cum_pass": 3749,
+      "rate": 74.45
     }
   ],
   "apply_daily": [
@@ -607,6 +615,11 @@
       "d": "2026-10-01",
       "n_order": 98,
       "n_user": 94
+    },
+    {
+      "d": "2026-10-02",
+      "n_order": 4,
+      "n_user": 4
     }
   ],
   "remit_daily": [
@@ -834,6 +847,11 @@
       "d": "2026-10-01",
       "n": 98,
       "cum": 4983
+    },
+    {
+      "d": "2026-10-02",
+      "n": 3,
+      "cum": 4986
     }
   ],
   "due_daily": [
@@ -1265,14 +1283,25 @@
       "overdue_pct": 43.52,
       "cum_profit_pct": 11.71,
       "cum_overdue_pct": 34.93
+    },
+    {
+      "d": "2026-10-02",
+      "n_due": 131,
+      "n_od": 43,
+      "repaid": 466170.99,
+      "remit": 453039.0,
+      "profit_pct": 2.9,
+      "overdue_pct": 32.82,
+      "cum_profit_pct": 11.24,
+      "cum_overdue_pct": 34.82
     }
   ],
   "strat": [
     {
       "strat": "20d+10r",
       "n_user": 1869,
-      "n_apply": 1444,
-      "pct": 77.26
+      "n_apply": 1445,
+      "pct": 77.31
     },
     {
       "strat": "30d",
@@ -1327,8 +1356,8 @@
     {
       "bin": "31-60d",
       "n_user": 997,
-      "n_apply": 745,
-      "pct": 74.72
+      "n_apply": 746,
+      "pct": 74.82
     },
     {
       "bin": "61-90d",
