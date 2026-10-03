@@ -1,0 +1,360 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>T0用户历史分析：指标定义、分析逻辑与课题地图</title>
+  <style>
+    :root{
+      --bg:#061923;--panel:#0a293b;--panel2:#0d3348;--line:#28566f;
+      --text:#edf7fb;--body:#c7dce6;--muted:#8faebb;--cyan:#46c9e8;
+      --green:#68ddb0;--amber:#ffc66e;--pink:#f58dae;--red:#ff8181;
+      --purple:#a993ff;--code:#04131d;--shadow:0 18px 46px rgba(0,0,0,.22)
+    }
+    *{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;background:linear-gradient(180deg,#061923,#08243a 48%,#061923);color:var(--body);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif;line-height:1.72}a{color:var(--cyan);text-decoration:none}a:hover{text-decoration:underline}
+    .hero{padding:58px 22px 42px;text-align:center;border-bottom:1px solid rgba(70,201,232,.24);background:radial-gradient(circle at 50% -20%,rgba(70,201,232,.23),transparent 48%)}
+    .hero h1{margin:0 auto 14px;max-width:1160px;color:var(--text);font-size:clamp(29px,4vw,47px);line-height:1.18}.hero p{margin:auto;max-width:980px;font-size:17px;color:#bad2dd}.pills{display:flex;gap:9px;justify-content:center;flex-wrap:wrap;margin-top:21px}.pill{padding:6px 12px;border:1px solid rgba(70,201,232,.34);border-radius:999px;background:rgba(7,31,46,.72);font-size:13px;color:#d9eaf1}
+    .nav{position:sticky;top:0;z-index:30;display:flex;gap:18px;overflow:auto;padding:12px max(18px,calc((100vw - 1260px)/2));background:rgba(4,19,29,.96);backdrop-filter:blur(12px);border-bottom:1px solid var(--line);white-space:nowrap}.nav a{font-size:13px;color:#b8d0dc}.nav a:hover{color:var(--cyan);text-decoration:none}
+    main{max-width:1260px;margin:auto;padding:30px 22px 72px}section{scroll-margin-top:72px;margin:0 0 28px;padding:28px;border:1px solid var(--line);border-radius:18px;background:linear-gradient(155deg,rgba(13,48,69,.96),rgba(8,31,46,.98));box-shadow:var(--shadow)}
+    h2{margin:0 0 18px;padding-left:13px;border-left:5px solid var(--cyan);color:var(--text);font-size:25px}h3{margin:25px 0 10px;color:var(--cyan);font-size:18px}h4{margin:17px 0 8px;color:var(--amber);font-size:15px}p{margin:8px 0}strong{color:var(--text)}
+    .grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px}.card{padding:18px;border:1px solid rgba(90,157,188,.36);border-radius:14px;background:rgba(5,24,36,.56)}.card .num{font-size:30px;font-weight:850;color:var(--green);line-height:1.15}.card .label{margin-top:7px;color:var(--text);font-weight:750}.card .desc{margin-top:4px;color:var(--muted);font-size:13px}
+    .callout{margin:14px 0;padding:15px 17px;border-left:4px solid var(--green);border-radius:12px;background:rgba(104,221,176,.08)}.warn{border-left-color:var(--amber);background:rgba(255,198,110,.08)}.risk{border-left-color:var(--pink);background:rgba(245,141,174,.08)}.info{border-left-color:var(--cyan);background:rgba(70,201,232,.08)}
+    .flow{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:10px;margin:18px 0}.node{position:relative;min-height:130px;padding:16px;border:1px solid rgba(70,201,232,.35);border-radius:13px;background:rgba(4,20,31,.62)}.node:not(:last-child):after{content:"→";position:absolute;right:-16px;top:47%;z-index:2;color:var(--green);font-size:22px;font-weight:850}.node b{display:block;margin-bottom:6px;color:var(--cyan)}
+    table{width:100%;border-collapse:separate;border-spacing:0;font-size:13px;border:1px solid var(--line);border-radius:11px;overflow:hidden}th,td{padding:10px 11px;border-right:1px solid rgba(40,86,111,.68);border-bottom:1px solid rgba(40,86,111,.68);vertical-align:top;text-align:left}th:last-child,td:last-child{border-right:0}tr:last-child td{border-bottom:0}th{background:#0d354b;color:#eaf6fa;font-weight:750}td{background:rgba(5,24,36,.38)}tr:nth-child(even) td{background:rgba(11,42,61,.48)}.table-wrap{max-width:100%;overflow:auto;border-radius:11px;margin:14px 0}.wide{min-width:1050px}.yes{color:var(--green);font-weight:750}.no{color:var(--pink);font-weight:750}.note{color:var(--amber);font-weight:750}
+    pre{margin:12px 0;padding:17px;overflow:auto;border:1px solid #244c61;border-radius:12px;background:var(--code);color:#d9eef7;font:12.5px/1.65 SFMono-Regular,Consolas,"Liberation Mono",monospace;white-space:pre}code{font-family:SFMono-Regular,Consolas,"Liberation Mono",monospace;color:#d9eef7}.inline{padding:2px 5px;border-radius:5px;background:#071b29;color:#b5eaf6}
+    .topic-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}.topic{padding:18px;border:1px solid rgba(90,157,188,.37);border-radius:15px;background:rgba(5,24,36,.5)}.topic h3{margin:0 0 8px}.topic .question{color:var(--text);font-weight:750}.topic ul{margin:8px 0 0;padding-left:20px}.tag{display:inline-block;margin:3px 4px 3px 0;padding:3px 8px;border-radius:999px;background:rgba(70,201,232,.1);border:1px solid rgba(70,201,232,.25);color:#c9edf6;font-size:12px}
+    details{margin:12px 0;border:1px solid var(--line);border-radius:12px;background:rgba(4,19,29,.56)}summary{cursor:pointer;padding:14px 16px;color:var(--text);font-weight:750;list-style:none}summary::-webkit-details-marker{display:none}summary:after{content:"＋";float:right;color:var(--cyan)}details[open] summary:after{content:"－"}.detail-body{padding:0 16px 16px}
+    .formula{display:grid;grid-template-columns:190px 1fr;gap:12px;padding:11px 0;border-bottom:1px dashed rgba(143,174,187,.23)}.formula:last-child{border-bottom:0}.formula .name{color:var(--amber);font-weight:750}.formula .expr{color:#d7e9f0}
+    .legend{display:flex;gap:14px;flex-wrap:wrap;margin:12px 0}.legend span{font-size:12px}.dot{display:inline-block;width:9px;height:9px;border-radius:50%;margin-right:6px}.g{background:var(--green)}.c{background:var(--cyan)}.a{background:var(--amber)}.p{background:var(--pink)}
+    .footer{text-align:center;color:var(--muted);font-size:12px;margin-top:27px}ol,ul{padding-left:22px}li{margin:6px 0}
+    @media(max-width:980px){.grid{grid-template-columns:repeat(2,1fr)}.flow{grid-template-columns:1fr}.node:not(:last-child):after{content:"↓";right:50%;top:auto;bottom:-23px}.topic-grid{grid-template-columns:1fr}}@media(max-width:580px){section{padding:19px}.grid{grid-template-columns:1fr}.formula{grid-template-columns:1fr}}
+  </style>
+</head>
+<body>
+  <header class="hero">
+    <h1>T0用户历史分析：指标定义、分析逻辑与课题地图</h1>
+    <p>把此前分散在获额时效、额度变化、生命周期、页面行为、资质分层、产品条件、逾期盈利和运营实验中的口径统一到同一套分析框架中。</p>
+    <div class="pills">
+      <span class="pill">统一母样本</span><span class="pill">用户 × T0事件</span><span class="pill">4类观察窗口</span><span class="pill">10类分析课题</span><span class="pill">分子分母可追溯</span>
+    </div>
+  </header>
+  <nav class="nav">
+    <a href="#overview">总览</a><a href="#base">母样本</a><a href="#windows">时间窗</a><a href="#dictionary">基础指标</a><a href="#topics">课题地图</a><a href="#credit">额度变化</a><a href="#behavior">行为</a><a href="#risk">资质</a><a href="#quality">质量结果</a><a href="#attribution">归因</a><a href="#product">产品条件</a><a href="#rules">统一规范</a><a href="#sources">报告索引</a>
+  </nav>
+
+  <main>
+    <section id="overview">
+      <h2>一、统一分析框架</h2>
+      <div class="grid">
+        <div class="card"><div class="num">1</div><div class="label">一个严格母样本</div><div class="desc">以“用户 × T0获额通过事件”为主键，先固定事件，再派生专题指标。</div></div>
+        <div class="card"><div class="num">4</div><div class="label">四类转化窗口</div><div class="desc">当天、滚动24小时、T0—D+7、D+1—D+5，不能混称“提单率”。</div></div>
+        <div class="card"><div class="num">3</div><div class="label">三层分析逻辑</div><div class="desc">规律层定位问题，机制层解释路径，策略层形成可执行名单和实验。</div></div>
+        <div class="card"><div class="num">2</div><div class="label">两类结果指标</div><div class="desc">行为转化指标看“是否行动”，逾期盈利指标看“行动后的业务价值”。</div></div>
+      </div>
+      <div class="callout"><strong>总原则：</strong>所有专题先回答“谁在什么时点形成一条T0事件”，再回答“观察多长时间、分子是什么、分母是什么、按哪个月份归属”。没有明确这四项的指标，不进入跨报告比较。</div>
+      <div class="flow">
+        <div class="node"><b>01 母事件</b>当天结清、0在贷、结清后重新获额通过。</div>
+        <div class="node"><b>02 观察窗口</b>D0、24h、D7或D+1—D+5。</div>
+        <div class="node"><b>03 切分维度</b>额度、借款次数、使用率、模型分、产品条件。</div>
+        <div class="node"><b>04 机制指标</b>进页、切额、看计划、确认等页面行为。</div>
+        <div class="node"><b>05 结果与动作</b>提单、放款、逾期、盈利、圈人和实验。</div>
+      </div>
+      <h3>三层课题主线</h3>
+      <table><thead><tr><th>层级</th><th>解决的问题</th><th>常用指标</th><th>输出</th></tr></thead><tbody>
+        <tr><td><strong>规律层</strong></td><td>提单率下降集中在哪类事件、额度档位或生命周期阶段？</td><td>事件数、结构占比、D0/D7提单率、变化幅度、准确迁移路径、归因贡献</td><td>问题面和优先客群</td></tr>
+        <tr><td><strong>机制层</strong></td><td>用户是没有进入页面，还是进入后没有确认？</td><td>进页率、行为触达率、行为次数、停留时长、进页后转化</td><td>影响传导路径</td></tr>
+        <tr><td><strong>策略层</strong></td><td>哪些用户值得触达，给什么策略，如何验证？</td><td>历史行为、风险分、盈利率、预测分、实验组转化与增量收益</td><td>可执行名单、优惠策略和实验方案</td></tr>
+      </tbody></table>
+    </section>
+
+    <section id="base">
+      <h2>二、统一母样本：严格T0获额事件</h2>
+      <table><thead><tr><th>步骤</th><th>统一口径</th><th>为什么需要</th></tr></thead><tbody>
+        <tr><td>获额记录</td><td><code>is_pass1=1</code>、<code>loan_type_code=2</code>、<code>recycle_type=3</code>，取循环贷获额通过记录。</td><td>限定为T0续贷场景。</td></tr>
+        <tr><td>20秒批次</td><td>同一用户相邻获额记录不超过20秒时合并为一批；批内按<strong>获额时间倒序、订单编号倒序</strong>取第一笔。</td><td>消除多产品或系统重复写入。</td></tr>
+        <tr><td>匹配结清单</td><td>在同日、获额之前匹配实际放款且已结清订单；多笔候选取最近结清的一笔。</td><td>明确本次T0由哪笔订单结清触发。</td></tr>
+        <tr><td>结清0在贷</td><td>以该订单结清时点判断，用户不存在其他仍在贷订单。</td><td>确保是真正的T0状态。</td></tr>
+        <tr><td>事件主键</td><td><strong>用户 × T0获额通过事件</strong>；同一用户可在不同时间产生多条事件。</td><td>保留真实重复借款生命周期，不按用户月度去重。</td></tr>
+        <tr><td>提单归属</td><td>一笔提单只归属其发生前最近一次T0事件；同一事件多笔提单只保留最早一笔。</td><td>避免一个提单重复记到多次获额事件。</td></tr>
+      </tbody></table>
+      <h3>母事件伪代码</h3>
+      <pre><code>credit_events = 循环贷获额通过记录
+credit_batches = 同一用户按时间排序，将相邻≤20秒记录合并
+current_credit = 每批按 vir_time DESC, serial_id DESC 取第一笔
+
+FOR each current_credit:
+    candidates = 同用户、同日、在 vir_time 之前已结清的实际放款订单
+    settled_order = candidates 按 repaid_time DESC, serial_id DESC 取第一笔
+    REQUIRE 该时点不存在其他在贷订单
+    OUTPUT user_id, vir_time, credit_serial_id, settled_serial_id</code></pre>
+      <div class="callout warn"><strong>“上一笔订单”的固定定义：</strong>不是随便找一笔历史订单，而是触发当前T0事件的那笔“刚结清、实际放款”的订单。额度、使用率、息费、天数和借款次数都应以这个时点为基准。</div>
+    </section>
+
+    <section id="windows">
+      <h2>三、提单与行为观察窗口</h2>
+      <div class="table-wrap"><table class="wide"><thead><tr><th>指标</th><th>窗口</th><th>分子</th><th>分母</th><th>适用课题</th><th>关键区别</th></tr></thead><tbody>
+        <tr><td><strong>当天提单率（D0）</strong></td><td><code>apply_time ≥ vir_time</code><br><code>apply_time &lt; vir_date+1天</code></td><td>当天存在首次提单的T0事件数</td><td>全部合格T0事件数</td><td>额度变化、产品条件、行为机制</td><td>按自然日截止，不是滚动24小时。</td></tr>
+        <tr><td><strong>获额后24小时首次提单率</strong></td><td><code>apply_time ≥ vir_time</code><br><code>apply_time &lt; vir_time+24小时</code></td><td>滚动24小时内首次提单事件数</td><td>全部合格T0事件数</td><td>提单时效、小时段转化</td><td>可能跨到次日，与D0不同。</td></tr>
+        <tr><td><strong>T0—D+7提单率</strong></td><td><code>apply_time ≥ vir_time</code><br><code>apply_time &lt; vir_date+8天</code></td><td>当日到D+7内首次提单事件数</td><td>全部合格T0事件数</td><td>7日归因、7日行为、让利策略</td><td>含当天共8个自然日。</td></tr>
+        <tr><td><strong>D+1—D+5提单/放款率</strong></td><td>先排除当天提单；提单日期为D+1至D+5</td><td>窗口内最早提单或最早成功放款事件数</td><td>排除D0提单后的T0事件数</td><td>延迟转化、下一笔订单盈利验证</td><td>是延迟转化样本，不可与D0/D7直接比较。</td></tr>
+      </tbody></table></div>
+      <h3>24小时首次提单时效分段</h3>
+      <div class="formula"><div class="name">0—1小时</div><div class="expr"><code>floor((apply_time-vir_time)/3600)=0</code></div></div>
+      <div class="formula"><div class="name">1—3小时</div><div class="expr">小时桶为1或2</div></div>
+      <div class="formula"><div class="name">3—6小时</div><div class="expr">小时桶为3、4或5</div></div>
+      <div class="formula"><div class="name">6—24小时</div><div class="expr">小时桶为6—23</div></div>
+      <div class="callout risk"><strong>命名要求：</strong>报告中不得只写“提单率”。必须写“当天提单率”“获额后24小时首次提单率”或“T0—D+7提单率”。</div>
+    </section>
+
+    <section id="dictionary">
+      <h2>四、基础指标字典</h2>
+      <div class="formula"><div class="name">T0事件数</div><div class="expr"><code>COUNT(*)</code>，单位为用户 × T0事件。</div></div>
+      <div class="formula"><div class="name">T0用户数</div><div class="expr"><code>COUNT(DISTINCT user_id)</code>。仅在明确需要人数时使用，不与事件数混称。</div></div>
+      <div class="formula"><div class="name">提单事件数</div><div class="expr">指定观察窗口内存在首次提单的T0事件数。</div></div>
+      <div class="formula"><div class="name">提单率</div><div class="expr"><code>提单事件数 / 合格T0事件数</code>，必须带时间窗后缀。</div></div>
+      <div class="formula"><div class="name">放款事件数</div><div class="expr">指定窗口内首次提单对应订单最终成功放款的T0事件数。</div></div>
+      <div class="formula"><div class="name">放款率</div><div class="expr"><code>成功放款事件数 / 合格T0事件数</code>；若分母改为提单事件数，必须改名为“提单后放款率”。</div></div>
+      <div class="formula"><div class="name">事件占比</div><div class="expr"><code>分组T0事件数 / 同月全部T0事件数</code>。</div></div>
+      <div class="formula"><div class="name">用户占比</div><div class="expr"><code>分组去重用户数 / 同月去重用户数</code>。不能用事件占比代替。</div></div>
+      <div class="formula"><div class="name">平均提单时长</div><div class="expr">只在已提单事件中计算 <code>AVG(apply_time-vir_time)</code>。</div></div>
+      <div class="formula"><div class="name">月度归属</div><div class="expr">默认按T0获额通过日期 <code>vir_date</code> 归月；按到期日或放款月分析时必须另行标注。</div></div>
+    </section>
+
+    <section id="topics">
+      <h2>五、不同分析课题及核心指标</h2>
+      <div class="topic-grid">
+        <div class="topic"><h3>1. 获额后提单时效</h3><div class="question">用户获额后多久提单，变化发生在哪个时段？</div><div><span class="tag">24小时提单率</span><span class="tag">小时桶</span><span class="tag">平均时长</span><span class="tag">月度趋势</span></div><ul><li>观察滚动24小时，不等于当天。</li><li>可按模型资质层比较时效和结构。</li></ul></div>
+        <div class="topic"><h3>2. 额度变化规律</h3><div class="question">提额、降额、额度不变的提单率如何变化？</div><div><span class="tag">额度差</span><span class="tag">方向</span><span class="tag">幅度档</span><span class="tag">准确迁移</span></div><ul><li>当前额度减上一笔获额额度。</li><li>宽档锁定问题面，准确路径验证集中度。</li></ul></div>
+        <div class="topic"><h3>3. 生命周期与借款次数</h3><div class="question">下降是否集中在前1—3次借款？</div><div><span class="tag">成功借款次数</span><span class="tag">生命周期</span><span class="tag">变额幅度</span></div><ul><li>借款次数是T0结清时已成功放款次数。</li><li>不是用户最终生命周期总次数。</li></ul></div>
+        <div class="topic"><h3>4. 额度使用率</h3><div class="question">用户是否因为可借额度与需求不匹配而不提单？</div><div><span class="tag">上一笔使用率</span><span class="tag">下一笔使用率</span><span class="tag">使用率档</span></div><ul><li>筛选用上一笔已发生的使用率。</li><li>下一笔使用率仅用于事后验证。</li></ul></div>
+        <div class="topic"><h3>5. 页面行为机制</h3><div class="question">用户没有进入页面，还是进入后仍未提交？</div><div><span class="tag">进页率</span><span class="tag">切额</span><span class="tag">看计划</span><span class="tag">确认</span></div><ul><li>D0报告只看当天行为，D7报告看8个自然日累计行为。</li><li>行为次数和行为触达率必须分开。</li></ul></div>
+        <div class="topic"><h3>6. 实时资质分层</h3><div class="question">不同模型资质层的提单、结构和订单质量是否不同？</div><div><span class="tag">363分</span><span class="tag">405分</span><span class="tag">外层三档</span><span class="tag">内部三档</span></div><ul><li>阈值在全样本固定计算，不按月重新切。</li><li>缺失和-9999999不进入模型分分析。</li></ul></div>
+        <div class="topic"><h3>7. 到期逾期与盈利</h3><div class="question">完成放款后，整笔订单到期时的风险与收益如何？</div><div><span class="tag">成熟订单</span><span class="tag">逾期率</span><span class="tag">到期盈利率</span></div><ul><li>按整笔订单到期日判断成熟。</li><li>到期后还款不进入到期盈利分子。</li></ul></div>
+        <div class="topic"><h3>8. 产品条件变化</h3><div class="question">日息、息费和借款天数变化是否伴随提单率变化？</div><div><span class="tag">当前产品</span><span class="tag">上一笔实际订单</span><span class="tag">容差</span></div><ul><li>多产品分别取最低日息、最低息费、最长天数。</li><li>上一笔条件直接按实际订单字段计算。</li></ul></div>
+        <div class="topic"><h3>9. 归因与结构拆解</h3><div class="question">整体提单率下降由哪些客群的结构和档内变化组成？</div><div><span class="tag">档内效应</span><span class="tag">结构效应</span><span class="tag">交互效应</span></div><ul><li>三项相加等于总归因。</li><li>是统计分解，不是因果证明。</li></ul></div>
+        <div class="topic"><h3>10. 圈人、预测与运营实验</h3><div class="question">哪些用户值得让利或提供更多产品选择？</div><div><span class="tag">预测分</span><span class="tag">历史特征</span><span class="tag">实验转化</span><span class="tag">增量利润</span></div><ul><li>只能使用决策时已经发生的信息。</li><li>下一笔占用、盈利只做标签或事后验证。</li></ul></div>
+      </div>
+    </section>
+
+    <section id="credit">
+      <h2>六、额度变化、使用率与生命周期</h2>
+      <h3>6.1 额度变化</h3>
+      <div class="formula"><div class="name">上一笔获额</div><div class="expr">触发T0的结清放款订单所对应的获额额度。</div></div>
+      <div class="formula"><div class="name">本次获额</div><div class="expr">20秒批次去重后当前T0获额通过订单的额度。</div></div>
+      <div class="formula"><div class="name">额度变化额</div><div class="expr"><code>本次获额额度 − 上一笔获额额度</code>。</div></div>
+      <div class="formula"><div class="name">额度变化率</div><div class="expr"><code>本次获额额度 / 上一笔获额额度 − 1</code>。</div></div>
+      <div class="formula"><div class="name">变化方向</div><div class="expr">差值&gt;0为提额，=0为不变，&lt;0为降额。</div></div>
+      <div class="formula"><div class="name">准确迁移路径</div><div class="expr"><code>上一笔准确额度 → 本次准确额度</code>，例如400→1320。</div></div>
+      <div class="formula"><div class="name">千元区间迁移</div><div class="expr">分别将两端额度映射到0—1000、1000—2000等区间，再形成区间路径。</div></div>
+      <div class="callout warn"><strong>分档版本管理：</strong>固定500/1000元档、千元区间档和结果驱动档是不同分析版本。不同报告采用不同分档时，只能比较原始方向与总体指标，不能直接比较单档结果。</div>
+
+      <h3>6.2 上一笔与下一笔额度使用率</h3>
+      <div class="formula"><div class="name">上一笔使用率</div><div class="expr"><code>上一笔结清订单 remit_amt / 上一笔获额额度</code>。用于圈人与解释，因为决策时已知。</div></div>
+      <div class="formula"><div class="name">下一笔使用率</div><div class="expr"><code>下一笔放款金额 / 本次获额额度</code>。仅用于事后验证，不能作为筛选条件。</div></div>
+      <div class="formula"><div class="name">汇总使用率</div><div class="expr"><code>SUM(放款金额) / SUM(获额额度)</code>，是金额加权比率，不是逐事件使用率的简单平均。</div></div>
+      <table><thead><tr><th>使用率档</th><th>规则</th></tr></thead><tbody>
+        <tr><td>&lt;80%</td><td><code>util &lt; 0.8</code></td></tr><tr><td>80%—100%</td><td><code>0.8 ≤ util &lt; 0.999</code></td></tr><tr><td>接近100%</td><td><code>0.999 ≤ util ≤ 1.001</code></td></tr><tr><td>&gt;100%</td><td><code>util &gt; 1.001</code></td></tr>
+      </tbody></table>
+
+      <h3>6.3 借款次数</h3>
+      <p><strong>成功借款次数：</strong>在本次T0结清时点之前，成功放款且放款时间不晚于该结清时点的去重订单数。常用分档为1次、2次、3次、4次、5次、6次及以上。</p>
+      <div class="callout"><strong>生命周期含义：</strong>“借款2次用户”表示用户在本次T0事件发生时累计成功放款2次，不表示该用户最终一生只借2次。</div>
+    </section>
+
+    <section id="behavior">
+      <h2>七、页面行为指标与传导逻辑</h2>
+      <h3>7.1 行为观察窗</h3>
+      <table><thead><tr><th>版本</th><th>观察区间</th><th>截断规则</th></tr></thead><tbody>
+        <tr><td>D0行为</td><td><code>[vir_time, vir_date+1天)</code></td><td>若用户次日0点前又发生下一次T0事件，则在下一次T0事件前截断。</td></tr>
+        <tr><td>D7累计行为</td><td><code>[vir_time, vir_date+8天)</code></td><td>若窗口内发生下一次T0事件，则在下一次T0事件前截断。</td></tr>
+      </tbody></table>
+      <p>统一使用 <code>e.create_time ≥ t.vir_time</code>，确保只统计结清获额之后发生的行为。</p>
+
+      <h3>7.2 行为字段</h3>
+      <div class="table-wrap"><table class="wide"><thead><tr><th>中文指标</th><th>字段</th><th>事件口径</th><th>业务含义</th></tr></thead><tbody>
+        <tr><td>活跃事件数</td><td><code>active_status</code></td><td>窗口内全部埋点条数</td><td>总体活跃度，不等于活跃人数。</td></tr>
+        <tr><td>进入提单页次数</td><td><code>newpage</code></td><td><code>page_view_in</code>且props_id为Loan_newpage相关</td><td>是否到达提单页面。</td></tr>
+        <tr><td>切换借款金额次数</td><td><code>amount_selection</code></td><td>amount_modification及金额选择相关事件</td><td>对额度/方案进行比较。</td></tr>
+        <tr><td>查看借款合同次数</td><td><code>contract_newdetails</code></td><td>Loan_contract_newdetails相关事件</td><td>查看合同条款。</td></tr>
+        <tr><td>切换借款期次次数</td><td><code>term_selection</code></td><td>loan_form_term_selection相关事件</td><td>比较还款周期。</td></tr>
+        <tr><td>确认提单次数</td><td><code>newconfirm</code></td><td>Loan_newconfirm相关事件</td><td>触达确认动作，不等于最终提单成功。</td></tr>
+        <tr><td>查看还款计划次数</td><td><code>plan_newdetails</code></td><td>Loan_plan_newdetails相关事件</td><td>了解每期还款和息费。</td></tr>
+        <tr><td>选择借款原因次数</td><td><code>purpose_newdetails</code></td><td>Loan_purpose_newdetails相关事件</td><td>完成表单步骤。</td></tr>
+        <tr><td>优惠券拦截关闭</td><td><code>coupons_back</code></td><td>Order_coupons_back相关事件</td><td>关闭挽留/优惠页。</td></tr>
+        <tr><td>优惠券拦截点击</td><td><code>coupons_confirm</code></td><td>Order_coupons_confirm相关事件</td><td>接受或点击优惠方案。</td></tr>
+        <tr><td>进入优惠券挽留页</td><td><code>coupons_page</code></td><td>Order_coupons_page相关事件</td><td>进入优惠触达页面。</td></tr>
+        <tr><td>活跃时长</td><td><code>active_duration</code></td><td>有效event_end_time−event_start_time求和</td><td>窗口内总活跃秒数。</td></tr>
+        <tr><td>提单页停留时长</td><td><code>apply_duration</code></td><td>提单页退出事件的有效时长求和</td><td>在提单页比较/操作的时间。</td></tr>
+        <tr><td>非提单页时长</td><td><code>non_apply_duration</code></td><td>active_duration−apply_duration</td><td>其他页面停留时间。</td></tr>
+      </tbody></table></div>
+
+      <h3>7.3 行为指标公式</h3>
+      <div class="formula"><div class="name">进页率</div><div class="expr"><code>newpage&gt;0 的T0事件数 / 全部T0事件数</code>。</div></div>
+      <div class="formula"><div class="name">行为触达率</div><div class="expr"><code>某行为次数&gt;0 的T0事件数 / 全部T0事件数</code>。</div></div>
+      <div class="formula"><div class="name">平均行为次数</div><div class="expr"><code>AVG(事件级行为次数)</code>，分母包括没有该行为的事件时需明确。</div></div>
+      <div class="formula"><div class="name">有行为提单率</div><div class="expr"><code>某行为&gt;0组中的提单事件数 / 该组T0事件数</code>。</div></div>
+      <div class="formula"><div class="name">无行为提单率</div><div class="expr"><code>某行为=0组中的提单事件数 / 该组T0事件数</code>。</div></div>
+      <div class="formula"><div class="name">进页后转化</div><div class="expr">默认应写明为 <code>已提单且进页事件数 / 进页事件数</code>；若使用确认动作，则必须命名“进页后确认触达率”。</div></div>
+      <div class="callout risk"><strong>解释边界：</strong>“确认触达率”只说明触发了确认埋点，不能替代订单表中的真实提单率；“有行为提单率更高”也可能是用户原始意愿更强，不能直接解释为该行为造成转化。</div>
+    </section>
+
+    <section id="risk">
+      <h2>八、实时资质分层与模型指标</h2>
+      <table><thead><tr><th>项目</th><th>口径</th></tr></thead><tbody>
+        <tr><td>363模型分</td><td><code>KabyBXGBoost363Dpd7Cre</code></td></tr>
+        <tr><td>405模型分</td><td><code>KabyBXgboost405Apd7CreCyc</code></td></tr>
+        <tr><td>关联键</td><td><code>model_result_copy.serial_id = 当前T0获额订单号</code></td></tr>
+        <tr><td>无效值</td><td>模型分缺失或等于<code>-9999999</code>时，不进入模型分和资质层统计。</td></tr>
+        <tr><td>分数方向</td><td>分数越高，用户资质越好。</td></tr>
+      </tbody></table>
+      <h3>8.1 外层三档</h3>
+      <p>在全分析样本上一次性计算P30和P60，并固定用于各月：<strong>≤P30为资质较差，P30—P60为资质一般，&gt;P60为资质较好</strong>。不能每月重新计算阈值，否则月度结构无法比较。</p>
+      <h3>8.2 资质较好内部三档</h3>
+      <p>只在外层“资质较好”样本内计算P33和P67，再分为内部资质较差、内部资质一般、内部资质更好。该内部标签只描述“好客群内部的相对位置”，不能与外层资质较差混为一谈。</p>
+      <h3>8.3 常用指标</h3>
+      <div class="formula"><div class="name">平均模型分</div><div class="expr">按月、资质档对事件级有效模型分求平均。</div></div>
+      <div class="formula"><div class="name">获额事件占比</div><div class="expr"><code>该资质档T0事件数 / 当月全部有效分T0事件数</code>。</div></div>
+      <div class="formula"><div class="name">提单事件占比</div><div class="expr"><code>该资质档窗口内提单事件数 / 当月全部窗口内提单事件数</code>。</div></div>
+      <div class="formula"><div class="name">资质档提单率</div><div class="expr"><code>该资质档窗口内提单事件数 / 该资质档T0事件数</code>。</div></div>
+      <div class="callout warn"><strong>数据完整性标记：</strong>模型覆盖不完整的月份，应在所有与模型分、资质层相关的数字后统一加“*”，并在报告中说明参考意义与缺失范围。</div>
+    </section>
+
+    <section id="quality">
+      <h2>九、放款、逾期与到期盈利指标</h2>
+      <h3>9.1 成熟订单样本</h3>
+      <ul>
+        <li>已放款：<code>is_remit=1</code>且<code>remit_amt&gt;0</code>。</li>
+        <li>整笔订单已到期：<code>due_date &lt; CURRENT_DATE-1</code>；统计日当天到期订单不进入。</li>
+        <li>按整笔订单到期日观察，不按分期到期日观察。</li>
+      </ul>
+      <h3>9.2 逾期率</h3>
+      <div class="formula"><div class="name">未逾期订单</div><div class="expr"><code>repaid_date &gt; 2000-01-01</code>且<code>repaid_date ≤ due_date</code>；到期日当天结清算未逾期。</div></div>
+      <div class="formula"><div class="name">逾期订单</div><div class="expr">结清日为空/无效，或<code>repaid_date &gt; due_date</code>。到期后结清仍算逾期。</div></div>
+      <div class="formula"><div class="name">订单逾期率</div><div class="expr"><code>逾期成熟订单数 / 成熟放款订单数</code>。不使用<code>loan_status_code=8</code>判断。</div></div>
+      <h3>9.3 到期盈利率</h3>
+      <div class="formula"><div class="name">到期前回款</div><div class="expr">同订单还款流水中<code>payin_date ≤ due_date</code>的<code>amount</code>之和；到期后回款不计入。</div></div>
+      <div class="formula"><div class="name">到期利润</div><div class="expr"><code>到期前回款 − remit_amt</code>。</div></div>
+      <div class="formula"><div class="name">到期盈利率</div><div class="expr"><code>SUM(到期前回款) / SUM(remit_amt) − 1</code>，按金额加权。</div></div>
+      <div class="formula"><div class="name">成熟覆盖率</div><div class="expr"><code>成熟放款订单数 / 全部放款订单数</code>，用于判断近期月份结果是否稳定。</div></div>
+      <div class="callout info"><strong>月份字段必须写清：</strong>可以按T0获额月看“获额队列后续质量”，也可以按到期月看“每天/每月到期订单质量”；两者回答的问题不同，不能共用同一个“月度盈利率”名称。</div>
+    </section>
+
+    <section id="attribution">
+      <h2>十、提单率变化归因</h2>
+      <p>设某客群1月、8月的结构占比分别为 <code>w0</code>、<code>w1</code>，提单率分别为 <code>r0</code>、<code>r1</code>，1月整体提单率为 <code>R0</code>。</p>
+      <div class="formula"><div class="name">基准档内效应</div><div class="expr"><code>w0 × (r1-r0)</code>：保持1月结构不变，只看客群提单率变化。</div></div>
+      <div class="formula"><div class="name">纯结构效应</div><div class="expr"><code>(w1-w0) × (r0-R0)</code>：客群占比变化相对1月整体水平造成的影响。</div></div>
+      <div class="formula"><div class="name">交互效应</div><div class="expr"><code>(w1-w0) × (r1-r0)</code>：结构和客群提单率同时变化产生的共同项。</div></div>
+      <div class="formula"><div class="name">结果档内效应</div><div class="expr"><code>w1 × (r1-r0)</code>，等于基准档内效应＋交互效应。</div></div>
+      <div class="formula"><div class="name">总归因贡献</div><div class="expr"><code>结果档内效应＋纯结构效应</code>。各互斥客群贡献求和等于整体提单率变化。</div></div>
+      <div class="callout"><strong>如何读：</strong>负值表示该客群在统计分解中拉低整体提单率，正值表示抵消部分下降。贡献大需要同时具备足够规模、明显的档内变化或显著的结构变化。</div>
+      <div class="callout risk"><strong>不能推导：</strong>归因贡献不是策略因果效应。提额客群贡献了多数下降，只能说明“提额客群的提单率下降值得重点解释和提升”，不能证明“提额导致提单率下降”。</div>
+    </section>
+
+    <section id="product">
+      <h2>十一、产品条件变化指标</h2>
+      <h3>11.1 当前获额产品条件</h3>
+      <p>拆分当前获额订单的<code>risk_product</code>并关联<code>wangchuanliang.product_info</code>。一个事件有多个产品时：</p>
+      <table><thead><tr><th>当前指标</th><th>多产品规则</th><th>含义</th></tr></thead><tbody>
+        <tr><td>当前日息</td><td><code>MIN(daily_interest)</code></td><td>用户可获得的最低日息。</td></tr>
+        <tr><td>当前息费率</td><td><code>MIN(interest_fees)</code></td><td>用户可获得的最低息费率。</td></tr>
+        <tr><td>当前天数</td><td><code>MAX(loan_day)</code></td><td>用户可获得的最长借款天数。</td></tr>
+      </tbody></table>
+      <p class="note">三项可能来自不同产品，代表各维度的最优可选条件，不代表一定存在一个同时满足三项的实际产品。</p>
+      <h3>11.2 上一笔实际订单条件</h3>
+      <pre><code>上一笔息费率 = (pre_amt + post_amt) / remit_amt
+上一笔日息   = 上一笔息费率 / loan_day
+上一笔天数   = loan_day</code></pre>
+      <h3>11.3 变化与不变容差</h3>
+      <table><thead><tr><th>指标</th><th>不变</th><th>增加</th><th>减少</th></tr></thead><tbody>
+        <tr><td>日息</td><td><code>|差值| &lt; 0.05个百分点</code></td><td><code>差值 ≥ 0.05个百分点</code></td><td><code>差值 ≤ -0.05个百分点</code></td></tr>
+        <tr><td>息费</td><td><code>|差值| &lt; 1个百分点</code></td><td><code>差值 ≥ 1个百分点</code></td><td><code>差值 ≤ -1个百分点</code></td></tr>
+        <tr><td>天数</td><td>差值=0</td><td>差值&gt;0</td><td>差值&lt;0</td></tr>
+      </tbody></table>
+      <div class="callout warn"><strong>边界值：</strong>0.05个百分点和1个百分点均不取等号进入“不变”；恰好等于阈值时归入增加或减少。</div>
+    </section>
+
+    <section id="strategy">
+      <h2>十二、圈人、预测模型与实验指标</h2>
+      <h3>12.1 特征时间原则</h3>
+      <table><thead><tr><th>信息</th><th>是否可用于筛选/模型特征</th><th>说明</th></tr></thead><tbody>
+        <tr><td>上一笔结清订单额度、使用率、息费、还款表现</td><td class="yes">可以</td><td>决策时已经发生。</td></tr>
+        <tr><td>当前获额额度、模型分、可选产品</td><td class="yes">可以</td><td>获额通过时已经可见。</td></tr>
+        <tr><td>最近2—3次获额、提单、额度使用历史</td><td class="yes">可以</td><td>比简单历史均值更能反映近期状态。</td></tr>
+        <tr><td>获额后页面行为</td><td class="note">视触达时点</td><td>只能用于行为发生之后的实时触达，不能用于获额时点模型。</td></tr>
+        <tr><td>下一笔使用率、下一笔逾期和盈利</td><td class="no">不可以</td><td>未来结果，只能作标签或事后验证。</td></tr>
+      </tbody></table>
+      <h3>12.2 运营实验</h3>
+      <div class="formula"><div class="name">目标客群</div><div class="expr">风险可控、历史盈利较好、额度/产品条件存在不满足、当前尚未提单的用户。</div></div>
+      <div class="formula"><div class="name">短期可执行动作</div><div class="expr">提供较低息费的优惠；产品多选需要产品部门配合，适合作为中期方案。</div></div>
+      <div class="formula"><div class="name">实验转化率</div><div class="expr"><code>实验组观察窗内提单人数或事件数 / 实验组触达数</code>，与随机对照组同口径比较。</div></div>
+      <div class="formula"><div class="name">增量提单率</div><div class="expr"><code>实验组提单率 − 对照组提单率</code>。</div></div>
+      <div class="formula"><div class="name">增量利润</div><div class="expr">增量放款带来的到期利润减去优惠成本、坏账增量和触达成本。</div></div>
+    </section>
+
+    <section id="rules">
+      <h2>十三、跨报告比较与统一命名规范</h2>
+      <div class="table-wrap"><table class="wide"><thead><tr><th>容易混淆的项目</th><th>统一要求</th><th>不能混用的原因</th></tr></thead><tbody>
+        <tr><td>用户数 vs 事件数</td><td>标题、表头必须标“用户”或“T0事件”。</td><td>一个用户可多次进入T0，事件数通常更大。</td></tr>
+        <tr><td>D0 vs 24h vs D7</td><td>提单率名称必须带时间窗。</td><td>自然日、滚动小时和8个自然日的覆盖范围不同。</td></tr>
+        <tr><td>事件占比 vs 用户占比</td><td>分子、分母都按同一粒度。</td><td>高频复借用户会放大事件占比。</td></tr>
+        <tr><td>上一笔使用率 vs 下一笔使用率</td><td>前者用于筛选，后者只做验证。</td><td>下一笔属于未来信息。</td></tr>
+        <tr><td>平均事件比率 vs 金额加权比率</td><td>额度使用率、盈利率默认用金额加权，若用简单平均需另行标注。</td><td>大额订单与小额订单权重不同。</td></tr>
+        <tr><td>获额月 vs 放款月 vs 到期月</td><td>月度图标题中明确队列月份字段。</td><td>同一订单在三个口径下可能属于不同月份。</td></tr>
+        <tr><td>确认埋点 vs 真实提单</td><td>前者叫确认触达率，后者以订单表为准。</td><td>点击确认不一定生成有效订单。</td></tr>
+        <tr><td>归因贡献 vs 因果效果</td><td>归因只作统计分解；策略效果需随机实验或严谨因果方法。</td><td>结构和用户选择偏差可能同时存在。</td></tr>
+        <tr><td>外层资质档 vs 好客群内部三档</td><td>内部标签必须带“外层好客群内部”。</td><td>内部“较差”仍属于外层资质较好。</td></tr>
+        <tr><td>完整月 vs 截止日</td><td>部分月份在标题和数据标签加截止日或“*”。</td><td>规模、成熟度和行为覆盖不完整。</td></tr>
+      </tbody></table></div>
+      <h3>推荐字段命名</h3>
+      <pre><code>t0_event_cnt                 -- T0事件数
+t0_user_cnt                  -- T0去重用户数
+apply_d0_event_cnt           -- 当天提单事件数
+apply_d0_rate                -- 当天提单率
+apply_24h_event_cnt          -- 滚动24小时首次提单事件数
+apply_24h_rate               -- 获额后24小时首次提单率
+apply_d7_event_cnt           -- T0至D+7首次提单事件数
+apply_d7_rate                -- T0至D+7提单率
+credit_change_amt            -- 额度变化额
+credit_change_pct            -- 额度变化率
+prev_utilization             -- 上一笔使用率
+next_utilization             -- 下一笔使用率（事后）
+successful_loan_n            -- T0时点累计成功借款次数
+overdue_rate_matured         -- 成熟订单逾期率
+profit_rate_by_due           -- 到期盈利率</code></pre>
+      <div class="callout"><strong>推荐建模方式：</strong>建立一张稳定的T0事件宽表，以事件主键存放所有“当时已知”的基础特征；D0、D7行为和后续订单质量分别做派生事实表。这样既能复用同一母样本，又能防止未来信息泄漏。</div>
+    </section>
+
+    <section id="sources">
+      <h2>十四、既有分析课题索引</h2>
+      <p>以下本地报告是本指标字典的主要来源，可继续查看完整数据、图表和附录SQL。</p>
+      <div class="table-wrap"><table class="wide"><thead><tr><th>课题</th><th>主要内容</th><th>代表性报告</th></tr></thead><tbody>
+        <tr><td>24小时提单时效与资质</td><td>363/405模型分层、小时桶、整笔订单到期质量</td><td><a href="T0获额后24小时首次提单时效_405实时资质分层分析报告.html">405实时资质分层分析</a></td></tr>
+        <tr><td>额度变化与当天提单率</td><td>方向、幅度、准确迁移、结构归因</td><td><a href="t0-credit-change-d0-apply-attribution.html">准确额度迁移逐档分析</a></td></tr>
+        <tr><td>额度变化与7日提单率</td><td>将提单和行为窗口统一为T0—D+7</td><td><a href="t0-credit-change-d7-apply-attribution.html">7日规律与归因分析</a></td></tr>
+        <tr><td>借款次数与变额幅度</td><td>前1—3次借款、变额幅度和下降集中度</td><td><a href="t0-credit-change-loan-count-d7-apply-attribution.html">借款次数与变额幅度分析</a></td></tr>
+        <tr><td>行为传导机制</td><td>进页、方案比较、确认和提单结果</td><td><a href="t0-credit-change-d7-behavior-mechanism.html">7日行为传导机制</a></td></tr>
+        <tr><td>额度使用率与到期盈利</td><td>上一笔使用率、借款次数、D1—D5转化和下一笔质量</td><td><a href="t0-down-credit-util-loan-count-profit.html">降额用户盈利与客群分析</a></td></tr>
+        <tr><td>产品条件变化</td><td>日息、息费、天数变化与当天提单率</td><td><a href="t0-product-condition-d0-methodology.html">产品条件完整统计口径</a></td></tr>
+        <tr><td>提额后未提单策略</td><td>前1—3次借款、用户识别、息费让利和产品选择</td><td><a href="t0-up-credit-d7-no-apply-discount-strategy.html">7日未提单用户策略</a></td></tr>
+      </tbody></table></div>
+      <details><summary>后续新增专题时的口径登记模板</summary><div class="detail-body"><pre><code>课题名称：
+统计单位：用户 / 用户×事件 / 订单
+母样本条件：
+观察起点：
+观察终点：
+月份归属字段：
+分母：
+分子：
+排除项：
+分组维度与阈值：
+金额比率是加权比率还是事件均值：
+可用于决策的已知特征：
+仅用于事后验证的结果字段：
+数据不完整月份及标记：
+对应复现SQL：</code></pre></div></details>
+    </section>
+    <div class="footer">T0用户历史分析指标定义与课题地图 · 统一整理于2026-10-02</div>
+  </main>
+</body>
+</html>
