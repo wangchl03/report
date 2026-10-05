@@ -2,10 +2,10 @@
 # -*- coding: utf-8 -*-
 """
 T7+ 召回看板 · 获额通过口径
-默认跑 0818 / 0902 / 0910 / 0917。
+默认跑 0818 / 0902 / 0910 / 0917 / 0930。
 
   python3 appendix_t7_credit_pass_dashboard.py
-  python3 appendix_t7_credit_pass_dashboard.py 0902 0910 0917
+  python3 appendix_t7_credit_pass_dashboard.py 0902 0910 0917 0930
 
 提单率分母 = 截至该日累计获额通过人数（不是统计截止日的全部通过人数）。
 统计截止：CURRENT_DATE - 1；到期订单：due_date < CURRENT_DATE。
@@ -44,6 +44,12 @@ BATCHES = [
         "slug": "0917",
         "table": "wangchuanliang.t7recalllist_0917",
         "recall_date": "2026-09-17",
+        "filter_recall_date": False,
+    },
+    {
+        "slug": "0930",
+        "table": "wangchuanliang.t7recalllist_0930",
+        "recall_date": "2026-09-30",
         "filter_recall_date": False,
     },
 ]
@@ -1109,6 +1115,7 @@ TAB_LABEL = {
     "0902": "9月2日批次",
     "0910": "9月10日批次",
     "0917": "9月17日批次",
+    "0930": "9月30日批次",
 }
 
 

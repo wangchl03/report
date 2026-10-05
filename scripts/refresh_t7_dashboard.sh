@@ -17,12 +17,12 @@ if [[ -z "${PGPASSWORD:-}" ]]; then
 fi
 python3 appendix_t7_0818_dashboard.py
 python3 appendix_t7_credit_pass_dashboard.py
-git add t7.html t7-0818.html t7-0902.html t7-0910.html t7-0917.html \
-  t7_0818_dashboard_data.json t7_0902_dashboard_data.json t7_0910_dashboard_data.json t7_0917_dashboard_data.json \
-  appendix_t7_0818_dashboard.sql appendix_t7_0902_dashboard.sql appendix_t7_0910_dashboard.sql appendix_t7_0917_dashboard.sql \
-  t7-credit.html t7-0818-credit.html t7-0902-credit.html t7-0910-credit.html t7-0917-credit.html \
-  t7_0818_credit_data.json t7_0902_credit_data.json t7_0910_credit_data.json t7_0917_credit_data.json \
-  appendix_t7_0818_credit.sql appendix_t7_0902_credit.sql appendix_t7_0910_credit.sql appendix_t7_0917_credit.sql
+git add t7.html t7-0818.html t7-0902.html t7-0910.html t7-0917.html t7-0930.html \
+  t7_0818_dashboard_data.json t7_0902_dashboard_data.json t7_0910_dashboard_data.json t7_0917_dashboard_data.json t7_0930_dashboard_data.json \
+  appendix_t7_0818_dashboard.sql appendix_t7_0902_dashboard.sql appendix_t7_0910_dashboard.sql appendix_t7_0917_dashboard.sql appendix_t7_0930_dashboard.sql \
+  t7-credit.html t7-0818-credit.html t7-0902-credit.html t7-0910-credit.html t7-0917-credit.html t7-0930-credit.html \
+  t7_0818_credit_data.json t7_0902_credit_data.json t7_0910_credit_data.json t7_0917_credit_data.json t7_0930_credit_data.json \
+  appendix_t7_0818_credit.sql appendix_t7_0902_credit.sql appendix_t7_0910_credit.sql appendix_t7_0917_credit.sql appendix_t7_0930_credit.sql
 if git diff --cached --quiet; then
   echo "no changes in wangchl03/report"
   exit 0
