@@ -1,0 +1,333 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>T0用户D0/D3/D7/D15提单概率预测模型构建方案</title>
+  <style>
+    :root{
+      --bg:#071c2d;--panel:#0b2a40;--panel2:#0e344e;--line:#28536e;
+      --text:#e7f1f7;--muted:#9db5c7;--cyan:#43c7e7;--green:#64dcae;
+      --amber:#ffc26b;--pink:#f68ab0;--violet:#b49aff;--red:#ff7b82;
+    }
+    *{box-sizing:border-box}
+    html{scroll-behavior:smooth}
+    body{margin:0;background:linear-gradient(180deg,#071c2d,#082238 45%,#061724);color:var(--text);font:15px/1.76 -apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei",sans-serif}
+    .wrap{max-width:1200px;margin:auto;padding:26px 28px 64px}
+    .hero{padding:45px 28px 34px;text-align:center;border-bottom:1px solid var(--line)}
+    .eyebrow{color:var(--cyan);font-weight:800;letter-spacing:1.2px}
+    .hero h1{max-width:980px;margin:12px auto;font-size:35px;line-height:1.3;color:#fff}
+    .hero p{margin:5px auto;color:var(--muted);max-width:940px}
+    .nav{position:sticky;top:0;z-index:30;display:flex;flex-wrap:wrap;justify-content:center;gap:9px;margin:0 -28px;padding:13px 22px;background:rgba(7,28,45,.95);border-bottom:1px solid rgba(40,83,110,.92);backdrop-filter:blur(12px);box-shadow:0 7px 18px rgba(0,0,0,.18)}
+    .nav a{color:#cce6f3;text-decoration:none;border:1px solid var(--line);border-radius:18px;padding:3px 11px;font-size:13px;transition:.18s ease}
+    .nav a:hover{border-color:var(--cyan);color:var(--cyan);background:#103852}
+    section{margin-top:34px;scroll-margin-top:76px}
+    h2{font-size:24px;margin:0 0 15px;color:#fff;border-left:4px solid var(--cyan);padding-left:12px}
+    h3{font-size:17px;margin:0 0 8px;color:#fff}
+    h4{font-size:14px;margin:0 0 5px;color:var(--cyan)}
+    p{margin:8px 0}.lead{font-size:16px;color:#c9dce7}.muted,.small{color:var(--muted)}.small{font-size:13px}
+    .card,.callout,.table-wrap,.formula,.flow,.timeline,.codebox{background:rgba(11,42,64,.92);border:1px solid var(--line);border-radius:12px}
+    .card{padding:19px}.grid{display:grid;gap:16px}.g2{grid-template-columns:repeat(2,minmax(0,1fr))}.g3{grid-template-columns:repeat(3,minmax(0,1fr))}.g4{grid-template-columns:repeat(4,minmax(0,1fr))}
+    .kpis{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px}.kpi{padding:17px 16px;border-radius:12px;background:linear-gradient(145deg,rgba(16,56,82,.96),rgba(9,40,61,.96));border:1px solid var(--line)}
+    .kpi .v{font-size:25px;font-weight:850;line-height:1.2;color:var(--cyan)}.kpi .l{margin-top:7px;color:#c2d7e4;font-weight:700}.kpi .s{margin-top:5px;font-size:12px;color:var(--muted)}
+    .cyan{color:var(--cyan)!important}.green{color:var(--green)!important}.amber{color:var(--amber)!important}.pink{color:var(--pink)!important}.violet{color:var(--violet)!important}
+    .callout{padding:17px 19px;border-left:4px solid var(--amber)}.callout.green{border-left-color:var(--green)}.callout.pink{border-left-color:var(--pink)}.callout.cyan{border-left-color:var(--cyan)}
+    .callout h3{color:var(--amber)}.callout.green h3{color:var(--green)}.callout.pink h3{color:var(--pink)}.callout.cyan h3{color:var(--cyan)}
+    .table-wrap{overflow:auto}.table{width:100%;border-collapse:collapse;min-width:780px}.table th,.table td{padding:10px 12px;border-bottom:1px solid rgba(40,83,110,.78);vertical-align:top;text-align:left}.table th{color:#bfe6f5;background:#10344c;font-size:13px;white-space:nowrap}.table tr:last-child td{border-bottom:0}.table td:first-child{font-weight:700}
+    code{font-family:"SFMono-Regular",Consolas,monospace;color:#c9f1ff;background:#08263a;border-radius:4px;padding:1px 4px}.nowrap{white-space:nowrap}
+    ul,ol{margin:7px 0 0;padding-left:22px}li{margin:5px 0}
+    .flow{padding:20px;display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:8px;align-items:center}.node{min-height:82px;padding:12px 8px;border-radius:9px;background:#103852;border:1px solid #30637f;text-align:center;display:flex;flex-direction:column;justify-content:center;font-weight:750}.node small{display:block;color:var(--muted);font-weight:500;line-height:1.4;margin-top:4px}.arrow{text-align:center;color:var(--cyan);font-size:21px}.flow .node:nth-of-type(3){border-color:var(--violet)}.flow .node:nth-of-type(5){border-color:var(--green)}.flow .node:nth-of-type(7){border-color:var(--amber)}
+    .timeline{padding:22px}.bands{display:grid;grid-template-columns:1.1fr 1.45fr 1.65fr 2.1fr;gap:7px}.band{border-radius:9px;padding:15px 10px;text-align:center;font-weight:800;color:#062338}.band:nth-child(1){background:var(--cyan)}.band:nth-child(2){background:var(--violet)}.band:nth-child(3){background:var(--green)}.band:nth-child(4){background:var(--amber)}.band span{display:block;font-size:12px;font-weight:600;margin-top:4px;opacity:.8}
+    .formula{display:grid;grid-template-columns:235px 1fr;margin-top:9px;overflow:hidden}.formula .name{padding:12px 14px;background:#10344c;color:#bfe6f5;font-weight:800}.formula .expr{padding:12px 14px}
+    .tag{display:inline-block;margin:2px 5px 2px 0;border-radius:12px;padding:2px 9px;font-size:12px;font-weight:750;background:#153d58;color:var(--cyan)}.tag.green{color:var(--green)}.tag.amber{color:var(--amber)}.tag.pink{color:var(--pink)}.tag.violet{color:var(--violet)}
+    .phase{position:relative;padding:17px 18px 17px 62px;border-left:2px solid var(--cyan);margin-left:18px}.phase:before{content:attr(data-no);position:absolute;left:-18px;top:17px;width:34px;height:34px;border-radius:50%;display:grid;place-items:center;background:var(--cyan);color:#082238;font-weight:850}.phase h3{margin:0}
+    .codebox{padding:16px 18px;overflow:auto}.codebox pre{margin:0;white-space:pre-wrap;font:13px/1.65 "SFMono-Regular",Consolas,monospace;color:#c7e8f5}
+    details{margin-top:13px;border:1px solid var(--line);border-radius:11px;background:rgba(9,38,58,.9);overflow:hidden}summary{cursor:pointer;padding:13px 16px;font-weight:800;color:#c8e8f4;background:#10344c}details>div{padding:15px 17px}
+    .footer{text-align:center;color:#7896aa;font-size:13px;margin-top:45px}
+    @media(max-width:850px){.wrap{padding:16px}.hero{padding:34px 14px}.hero h1{font-size:27px}.nav{margin:0 -16px;padding:10px}.g2,.g3,.g4,.kpis{grid-template-columns:1fr}.flow{grid-template-columns:1fr}.arrow{transform:rotate(90deg)}.formula{grid-template-columns:1fr}.bands{grid-template-columns:1fr}}
+  </style>
+</head>
+<body><main class="wrap">
+  <header class="hero">
+    <div class="eyebrow">T0 APPLICATION TIMING MODEL · DEVELOPMENT BLUEPRINT</div>
+    <h1>T0用户 D0 / D3 / D7 / D15<br>提单概率预测模型构建方案</h1>
+    <p>在用户完成结清、0在贷并重新获额通过的时点，预测其当天、3日内、7日内和15日内首次提单概率，为触达时机、息费让利和产品推荐提供统一排序依据。</p>
+    <p class="small">方案版本：V1.0　｜　生成日期：2026年10月7日　｜　主口径：口径1｜用户后续提单率</p>
+  </header>
+
+  <nav class="nav">
+    <a href="#summary">结论</a><a href="#scope">目标与边界</a><a href="#sample">样本与标签</a><a href="#architecture">模型架构</a><a href="#features">特征体系</a><a href="#training">训练验证</a><a href="#output">评分输出</a><a href="#iteration">自动迭代</a><a href="#roadmap">实施计划</a><a href="#appendix">附录</a>
+  </nav>
+
+  <section id="summary">
+    <h2>一、方案结论</h2>
+    <div class="kpis">
+      <div class="kpi"><div class="v">1个主模型</div><div class="l">统一时点模型</div><div class="s">避免四个模型概率互相冲突</div></div>
+      <div class="kpi"><div class="v violet">4个累计概率</div><div class="l">D0 / D3 / D7 / D15</div><div class="s">天然满足单调递增</div></div>
+      <div class="kpi"><div class="v green">2个风控分</div><div class="l">405分 + 363分</div><div class="s">独立保留，不平均、不替代</div></div>
+      <div class="kpi"><div class="v amber">T0时点快照</div><div class="l">严格阻断未来信息</div><div class="s">获额后的行为不能进入首版模型</div></div>
+    </div>
+    <div class="callout green" style="margin-top:16px">
+      <h3>首版推荐</h3>
+      <p>采用<strong>离散时间生存模型</strong>：将每个T0事件展开为四个观察区间，在用户尚未提单的前提下，依次估计D0、D1—D3、D4—D7、D8—D15发生首次提单的条件概率，再转换为四个累计概率。</p>
+      <p><strong>业务结果：</strong>不仅知道“会不会提单”，还知道“更可能在哪个时间段提单”，从而区分立即触达、等待自然转化、延迟触达和重点让利客群。</p>
+    </div>
+  </section>
+
+  <section id="scope">
+    <h2>二、模型目标与使用边界</h2>
+    <div class="grid g2">
+      <article class="card">
+        <span class="tag">核心问题</span>
+        <h3 style="margin-top:9px">用户多久会首次提单？</h3>
+        <ul>
+          <li>在T0获额通过时点输出四个累计概率。</li>
+          <li>主目标使用<strong>口径1｜用户后续提单率</strong>。</li>
+          <li>不要求后续提单与本次获额订单具有相同<code>serial_id</code>。</li>
+          <li>同一用户后续首次提单只归属于提单前最近一次T0事件。</li>
+        </ul>
+      </article>
+      <article class="card">
+        <span class="tag amber">不回答的问题</span>
+        <h3 style="margin-top:9px">模型不是因果结论</h3>
+        <ul>
+          <li>低提单概率不等于“给券一定有效”。</li>
+          <li>风控分用于描述与排序，不证明风险导致不提单。</li>
+          <li>让利效果必须通过随机对照实验或uplift模型验证。</li>
+          <li>口径2的原获额订单使用率可作为旁路监控，不与主标签混用。</li>
+        </ul>
+      </article>
+    </div>
+    <div class="callout cyan" style="margin-top:16px">
+      <h3>评分时点</h3>
+      <p><strong>as_of_time = 20秒批次去重后保留的T0获额通过时间 vir_time。</strong>所有模型特征必须在该时点已经发生并可被业务系统取得。</p>
+    </div>
+  </section>
+
+  <section id="sample">
+    <h2>三、样本与标签：先固定T0母表，再生成四个窗口</h2>
+    <h3>3.1 严格T0母表</h3>
+    <div class="flow">
+      <div class="node">上一笔成功放款<small>事件日整笔结清</small></div><div class="arrow">→</div>
+      <div class="node">结清时0在贷<small>无其他在途订单</small></div><div class="arrow">→</div>
+      <div class="node">结清后同日获额<small>is_pass1=1，续贷</small></div><div class="arrow">→</div>
+      <div class="node">20秒批次去重<small>最晚时间、最大订单号</small></div>
+    </div>
+    <div class="table-wrap" style="margin-top:15px"><table class="table"><thead><tr><th>项目</th><th>统一口径</th><th>禁止做法</th></tr></thead><tbody>
+      <tr><td>统计单位</td><td>用户 × T0获额通过事件；同一用户可以有多次事件</td><td>按月只保留一个用户</td></tr>
+      <tr><td>订单类型</td><td><code>recycle_type=3</code>的结清续贷，且<code>is_pass1=1</code></td><td>混入<code>recycle_type=2</code>循环贷</td></tr>
+      <tr><td>时间关系</td><td><code>vir_date=repaid_date</code>且<code>vir_time≥repaid_time</code></td><td>使用获额前的结清或跨日错误匹配</td></tr>
+      <tr><td>20秒去重</td><td>同用户相邻获额间隔≤20秒链式合批；批内按<code>vir_time DESC, serial_id DESC</code>留一笔</td><td>固定20秒桶、先关联再去重</td></tr>
+      <tr><td>同日多笔结清</td><td>关联获额前距离最近的结清订单；时间相同取上一笔订单号最大者</td><td>一笔获额关联多笔上一单</td></tr>
+    </tbody></table></div>
+
+    <h3 style="margin-top:20px">3.2 标签窗口</h3>
+    <div class="timeline">
+      <div class="bands">
+        <div class="band">D0<span>T0当天</span></div>
+        <div class="band">D1—D3<span>后续1—3日</span></div>
+        <div class="band">D4—D7<span>后续4—7日</span></div>
+        <div class="band">D8—D15<span>后续8—15日</span></div>
+      </div>
+      <p class="small" style="margin-top:12px">D3表示T0至D+3，含当天共4个自然日；D7含当天共8个自然日；D15含当天共16个自然日。</p>
+    </div>
+    <div class="table-wrap" style="margin-top:14px"><table class="table"><thead><tr><th>累计标签</th><th>左闭右开条件</th><th>成熟条件</th></tr></thead><tbody>
+      <tr><td>D0提单</td><td><code>apply_time ≥ vir_time AND apply_time &lt; vir_date + 1 day</code></td><td><code>vir_date + 1 day ≤ data_cutoff_ts</code></td></tr>
+      <tr><td>D3内提单</td><td><code>apply_time ≥ vir_time AND apply_time &lt; vir_date + 4 days</code></td><td><code>vir_date + 4 days ≤ data_cutoff_ts</code></td></tr>
+      <tr><td>D7内提单</td><td><code>apply_time ≥ vir_time AND apply_time &lt; vir_date + 8 days</code></td><td><code>vir_date + 8 days ≤ data_cutoff_ts</code></td></tr>
+      <tr><td>D15内提单</td><td><code>apply_time ≥ vir_time AND apply_time &lt; vir_date + 16 days</code></td><td><code>vir_date + 16 days ≤ data_cutoff_ts</code></td></tr>
+    </tbody></table></div>
+    <div class="callout pink" style="margin-top:15px">
+      <h3>重复事件与右删失</h3>
+      <p>如果用户在首次提单前又产生新的T0事件，后续提单归给最近一次事件；上一事件在新事件发生时停止观察。停止后的区间按<strong>右删失</strong>处理，不能错误标记为“未提单负样本”。</p>
+    </div>
+  </section>
+
+  <section id="architecture">
+    <h2>四、模型架构：统一离散时间生存模型</h2>
+    <div class="grid g2">
+      <article class="card">
+        <span class="tag violet">训练数据形态</span>
+        <h3 style="margin-top:9px">事件展开为“事件 × 区间”</h3>
+        <p>每个T0事件最多展开四行。只有在前一区间尚未提单且仍在观察中的事件，才进入下一区间。</p>
+        <ul>
+          <li><code>interval_id=0</code>：预测D0发生提单。</li>
+          <li><code>interval_id=1</code>：条件于D0未提单，预测D1—D3。</li>
+          <li><code>interval_id=2</code>：条件于D3未提单，预测D4—D7。</li>
+          <li><code>interval_id=3</code>：条件于D7未提单，预测D8—D15。</li>
+        </ul>
+      </article>
+      <article class="card">
+        <span class="tag green">推荐算法</span>
+        <h3 style="margin-top:9px">逻辑回归基线 + LightGBM主模型</h3>
+        <p>在同一张长表上训练条件风险概率。逻辑回归用于验证方向与可解释性，LightGBM用于学习额度变化、借款次数、风控分和近期行为之间的非线性交互。</p>
+        <ul>
+          <li>类别特征采用稳定编码，避免全历史目标编码泄漏。</li>
+          <li>样本权重可纠正不同区间和月份的分布差异。</li>
+          <li>最终累计概率必须进行时间外校准。</li>
+        </ul>
+      </article>
+    </div>
+    <div class="formula"><div class="name">条件概率</div><div class="expr"><code>h0=P(D0提单)</code>；<code>h1=P(D1—D3提单 | D0未提)</code>；依此类推。</div></div>
+    <div class="formula"><div class="name">P(D0)</div><div class="expr"><code>p_d0 = h0</code></div></div>
+    <div class="formula"><div class="name">P(D3)</div><div class="expr"><code>p_d3 = 1 − (1−h0)(1−h1)</code></div></div>
+    <div class="formula"><div class="name">P(D7)</div><div class="expr"><code>p_d7 = 1 − (1−h0)(1−h1)(1−h2)</code></div></div>
+    <div class="formula"><div class="name">P(D15)</div><div class="expr"><code>p_d15 = 1 − (1−h0)(1−h1)(1−h2)(1−h3)</code></div></div>
+    <div class="callout green" style="margin-top:15px"><h3>结构优势</h3><p>由同一组条件概率推导累计概率，可保证每个用户都满足<code>p_d0 ≤ p_d3 ≤ p_d7 ≤ p_d15</code>，避免四套独立二分类模型出现“3日概率高于7日概率”的业务冲突。</p></div>
+  </section>
+
+  <section id="features">
+    <h2>五、特征体系：只使用T0获额时已经发生的信息</h2>
+    <div class="table-wrap"><table class="table"><thead><tr><th>特征组</th><th>核心字段与构造</th><th>时间口径</th><th>业务解释</th></tr></thead><tbody>
+      <tr><td>当前T0事件</td><td>当前获额、上一笔获额、额度变化额/率/方向、可用产品、息费、期次、获额时段</td><td>当前<code>vir_time</code>可见</td><td>当前方案是否符合用户资金需求</td></tr>
+      <tr><td>两项实时风控分</td><td><code>KabyBXgboost405Apd7CreCyc</code>、<code>KabyBXGBoost363Dpd7Cre</code>及各自缺失标记</td><td>同一保留<code>serial_id</code>在获额时可得的最终结果</td><td>分别描述当前风险资质；两列独立保留</td></tr>
+      <tr><td>最近获额轨迹</td><td>累计获额次数、获额通过次数、最近1/2/3次获额、额度变化、获额间隔</td><td>严格早于或不晚于当前<code>vir_time</code></td><td>用户近期额度供给与变化趋势</td></tr>
+      <tr><td>最近提单轨迹</td><td>最近1/2/3次提单金额、距获额天数、额度使用率、产品/期次选择</td><td>只取当前T0前已发生订单</td><td>刻画近期需求强度，避免只做简单均值</td></tr>
+      <tr><td>借款生命周期</td><td>成功放款次数、累计放款金额、最近1/2/3笔放款金额、件均、中位数、复借间隔</td><td>截至上一笔结清时点</td><td>生命周期阶段与历史资金需求</td></tr>
+      <tr><td>还款表现</td><td>提前/按期/逾期次数、最大逾期天数、最近还款状态、结清速度、历史利润</td><td>当前获额前已成熟结果</td><td>还款能力、风险与经营价值</td></tr>
+      <tr><td>历史页面行为</td><td>获额前近1/3/7/14/30天活跃、进页、切金额、看计划、切期次、确认等</td><td>行为窗口右边界为<code>vir_time</code></td><td>预测前已有意愿和价格比较信号</td></tr>
+      <tr><td>时间与环境</td><td>月份、星期、小时、节假日、发薪日前后、版本、平台</td><td>T0时点</td><td>控制季节性与产品环境变化</td></tr>
+    </tbody></table></div>
+
+    <h3 style="margin-top:20px">5.1 两个风控模型分的固定处理规则</h3>
+    <div class="grid g2">
+      <div class="card"><h3 class="cyan">405模型分</h3><p><code>KabyBXgboost405Apd7CreCyc</code></p><ul><li>以当前T0保留订单<code>serial_id</code>关联。</li><li>原始分数单独入模。</li><li>缺失或无效值<code>-9999999</code>转为空值并增加缺失标记。</li></ul></div>
+      <div class="card"><h3 class="violet">363模型分</h3><p><code>KabyBXGBoost363Dpd7Cre</code></p><ul><li>以当前T0保留订单<code>serial_id</code>关联。</li><li>原始分数单独入模。</li><li>缺失或无效值<code>-9999999</code>转为空值并增加缺失标记。</li></ul></div>
+    </div>
+    <div class="callout cyan" style="margin-top:14px"><h3>不合并两个分数</h3><p>不取平均、不择一替代。可在验证尺度一致后增加分位数差、共同缺失标记和交互项，但两个原始模型分必须保留，以便模型分别学习其增量信息。</p></div>
+
+    <h3 style="margin-top:20px">5.2 额度使用率</h3>
+    <div class="formula"><div class="name">历史订单使用率</div><div class="expr"><code>上一笔/历史提单金额 ÷ 对应获额额度</code>。分子不是放款金额。</div></div>
+    <div class="formula"><div class="name">0%处理</div><div class="expr">使用率为0不视为正常订单，设为缺失，并增加<code>utilization_missing_flag=1</code>。</div></div>
+    <div class="formula"><div class="name">超过100%</div><div class="expr">属于可能使用提额红包的有效业务现象，保留原值，并增加<code>utilization_over_100_flag=1</code>。</div></div>
+    <div class="formula"><div class="name">当前T0订单</div><div class="expr">用户尚未提单，当前订单使用率未知，不能用0填充，也不能进入T0时点评分。</div></div>
+
+    <div class="callout pink" style="margin-top:15px"><h3>明确禁止的泄漏字段</h3><p>当前T0事件获额后的页面行为、下一笔提单金额、下一笔额度使用率、下一笔放款状态、未来还款/逾期/盈利，以及获额后更新的风控结果，均不能进入首版T0时点模型。</p></div>
+  </section>
+
+  <section id="training">
+    <h2>六、训练、验证与概率校准</h2>
+    <div class="grid g3">
+      <article class="card"><span class="tag">训练集</span><h3 style="margin-top:8px">较早月份</h3><p>使用已完整走完D15窗口的历史事件训练；按时间顺序构造，不随机打乱未来月份。</p></article>
+      <article class="card"><span class="tag violet">验证集</span><h3 style="margin-top:8px">后续月份</h3><p>选择模型、特征和参数；验证完成后冻结方案，避免反复查看测试集调参。</p></article>
+      <article class="card"><span class="tag green">测试集</span><h3 style="margin-top:8px">最新成熟月份</h3><p>仅用于最终时间外评估，模拟模型上线后面对新月份的真实表现。</p></article>
+    </div>
+    <div class="table-wrap" style="margin-top:15px"><table class="table"><thead><tr><th>评估维度</th><th>指标</th><th>验收重点</th></tr></thead><tbody>
+      <tr><td>排序能力</td><td>AUC、PR-AUC、KS、Top 10%/20% Lift、Top-K提单覆盖率</td><td>每个累计窗口分别评估，不能只看总AUC</td></tr>
+      <tr><td>概率准确度</td><td>Log Loss、Brier Score、校准曲线、ECE</td><td>预测70%的客群，实际提单率应接近70%</td></tr>
+      <tr><td>跨窗口一致性</td><td><code>p_d0≤p_d3≤p_d7≤p_d15</code>违规率</td><td>生产输出必须为0%</td></tr>
+      <tr><td>时间稳定性</td><td>逐月AUC/Lift、PSI、特征缺失率、分数漂移</td><td>不能只在单月有效</td></tr>
+      <tr><td>客群公平性</td><td>按借款次数、额度变化、风险档、平台、产品分层</td><td>重点识别局部失效和样本不足</td></tr>
+      <tr><td>业务价值</td><td>自然转化覆盖、触达名单压缩、增量提单、增量利润</td><td>增量指标必须来自随机实验</td></tr>
+    </tbody></table></div>
+    <div class="callout green" style="margin-top:15px"><h3>概率校准</h3><p>在时间外验证集上比较Isotonic与Platt校准，按D0、D3、D7、D15累计概率分别检查校准度。校准器只能用验证期拟合，不能读取测试期结果。</p></div>
+  </section>
+
+  <section id="output">
+    <h2>七、生产评分输出与策略使用</h2>
+    <div class="table-wrap"><table class="table"><thead><tr><th>输出字段</th><th>含义</th><th>用途</th></tr></thead><tbody>
+      <tr><td><code>event_id / user_id / serial_id / as_of_time</code></td><td>本次T0事件唯一标识与评分时点</td><td>名单追踪、结果回写和审计</td></tr>
+      <tr><td><code>p_apply_d0</code></td><td>当天内首次提单累计概率</td><td>识别自然即时转化用户</td></tr>
+      <tr><td><code>p_apply_d3</code></td><td>T0至D+3内累计提单概率</td><td>决定是否短期等待或轻触达</td></tr>
+      <tr><td><code>p_apply_d7</code></td><td>T0至D+7内累计提单概率</td><td>7日运营排序和实验分层</td></tr>
+      <tr><td><code>p_apply_d15</code></td><td>T0至D+15内累计提单概率</td><td>识别长期低意愿候选干预客群</td></tr>
+      <tr><td><code>p_d1_3 / p_d4_7 / p_d8_15 / p_no_apply_d15</code></td><td>各互斥时段的边际概率</td><td>选择更合适的触达时机</td></tr>
+      <tr><td><code>expected_apply_bucket</code></td><td>概率最大的提单时段</td><td>形成业务可读分层</td></tr>
+      <tr><td><code>model_version / feature_version</code></td><td>模型和特征版本</td><td>回溯、复现和回滚</td></tr>
+    </tbody></table></div>
+    <div class="grid g4" style="margin-top:15px">
+      <div class="card"><h3 class="cyan">高D0</h3><p>优先等待自然提单，减少无效让利。</p></div>
+      <div class="card"><h3 class="violet">低D0、高D3/D7</h3><p>更适合延迟提醒，不急于当天发券。</p></div>
+      <div class="card"><h3 class="green">低D7、仍有D15机会</h3><p>适合在D7前后测试触达时机和方案。</p></div>
+      <div class="card"><h3 class="amber">低D15</h3><p>需结合风险、利润与实验增量决定是否让利。</p></div>
+    </div>
+    <p class="small">上述策略是应用框架，不预设固定概率阈值。阈值需根据容量、优惠成本、风险和A/B实验结果确定。</p>
+  </section>
+
+  <section id="iteration">
+    <h2>八、自动训练与特征迭代机制</h2>
+    <div class="phase" data-no="1"><h3>固定数据与评估协议</h3><p>冻结T0母表、标签窗口、成熟度、训练/验证/测试月份和核心指标。任何模型版本都必须在同一时间外测试集比较。</p></div>
+    <div class="phase" data-no="2"><h3>建立特征注册表</h3><p>每个特征记录业务含义、来源表、SQL、窗口、空值规则、上线可用性和版本；自动阻止使用<code>as_of_time</code>之后的数据。</p></div>
+    <div class="phase" data-no="3"><h3>候选特征分组实验</h3><p>按“基础画像→两项风控分→最近1/2/3次获额→最近1/2/3次提单→历史行为→还款价值”逐组增加，记录每组对时间外Lift与校准的边际提升。</p></div>
+    <div class="phase" data-no="4"><h3>Champion–Challenger</h3><p>当前线上模型为Champion，新模型为Challenger。只有在排序、校准、稳定性和核心客群表现均通过阈值后才替换，不能因为单次AUC更高自动上线。</p></div>
+    <div class="phase" data-no="5"><h3>周期重训与漂移触发</h3><p>按月重训；若风控策略、产品息费或获额规则改变，提前触发重训。自动生成特征缺失、PSI、校准和分层Lift报告。</p></div>
+    <div class="callout pink"><h3>自动化边界</h3><p>可以自动生成特征、训练、调参和评估，但不能不断使用同一测试集反复优化。测试集一旦用于模型选择，就失去独立性；需要滚动到新的成熟月份重新做时间外验证。</p></div>
+  </section>
+
+  <section id="roadmap">
+    <h2>九、实施计划与交付物</h2>
+    <div class="table-wrap"><table class="table"><thead><tr><th>阶段</th><th>主要任务</th><th>交付物</th><th>通过条件</th></tr></thead><tbody>
+      <tr><td>1. 口径固化</td><td>建立严格T0母表、D0/D3/D7/D15标签、成熟度与删失规则</td><td>样本SQL、口径字典、阶段行数审计</td><td>母表分母稳定，累计标签单调</td></tr>
+      <tr><td>2. 特征快照</td><td>提取两项风控分、额度、最近行为、借款次数、还款与价值特征</td><td>事件级特征宽表、缺失率与时点检查</td><td>所有字段在<code>as_of_time</code>可用</td></tr>
+      <tr><td>3. 基线模型</td><td>训练逻辑回归和LightGBM离散时间模型</td><td>模型报告、特征重要性、校准图</td><td>时间外Lift与校准优于规则基线</td></tr>
+      <tr><td>4. 压力测试</td><td>按月、借款次数、变额方向、风险档、缺失状态验证</td><td>稳定性报告、失效客群清单</td><td>无重大局部分层失效</td></tr>
+      <tr><td>5. 影子评分</td><td>每日生成评分但不干预用户，对照真实提单时点</td><td>评分表、线上离线一致性报告</td><td>字段、概率、时点均可复现</td></tr>
+      <tr><td>6. 小流量实验</td><td>按分数层随机设置对照组与不同触达/让利组</td><td>增量提单、成本、风险、利润评估</td><td>确认可持续的增量利润后再扩大</td></tr>
+    </tbody></table></div>
+  </section>
+
+  <section id="appendix">
+    <h2>十、附录：数据与训练伪代码</h2>
+    <details open><summary>标签生成伪代码</summary><div class="codebox"><pre>for each strict_t0_event e:
+    start = e.vir_time
+    stop  = min(e.next_t0_time, data_cutoff_ts, e.vir_date + 16 days)
+
+    applications = same_user_applications where apply_time >= start and apply_time < stop
+    first_apply  = earliest(applications)
+
+    if first_apply is null:
+        outcome_bucket = "NO_APPLY_BY_D15"  # 仅在D15窗口成熟时作为完整负样本
+    else if first_apply < e.vir_date + 1 day:
+        outcome_bucket = "D0"
+    else if first_apply < e.vir_date + 4 days:
+        outcome_bucket = "D1_D3"
+    else if first_apply < e.vir_date + 8 days:
+        outcome_bucket = "D4_D7"
+    else:
+        outcome_bucket = "D8_D15"
+
+    # 若next_t0_time提前终止且尚未提单，后续区间为右删失，不标记为负样本</pre></div></details>
+
+    <details><summary>长表展开伪代码</summary><div class="codebox"><pre>intervals = [D0, D1_D3, D4_D7, D8_D15]
+
+for each event e:
+    for interval in intervals:
+        if e is still under observation at interval start:
+            emit row(
+                event_id       = e.event_id,
+                interval_id    = interval,
+                event_flag     = 1 if first_apply falls in interval else 0,
+                exposure_days  = interval length,
+                features       = snapshot strictly available at e.vir_time
+            )
+        if e applied or was censored:
+            break</pre></div></details>
+
+    <details><summary>评分概率转换伪代码</summary><div class="codebox"><pre>h0, h1, h2, h3 = model.predict_hazard(features, interval_id=[0,1,2,3])
+
+p_d0  = h0
+p_d3  = 1 - (1-h0)*(1-h1)
+p_d7  = 1 - (1-h0)*(1-h1)*(1-h2)
+p_d15 = 1 - (1-h0)*(1-h1)*(1-h2)*(1-h3)
+
+p_d1_3  = p_d3  - p_d0
+p_d4_7  = p_d7  - p_d3
+p_d8_15 = p_d15 - p_d7
+p_no_apply_d15 = 1 - p_d15</pre></div></details>
+
+    <details><summary>上线前强制校验</summary><div>
+      <ul>
+        <li>母表只包含<code>is_pass1=1</code>、<code>recycle_type=3</code>的结清续贷事件。</li>
+        <li>20秒链式去重顺序固定，批内保留最晚获额、同时间最大订单号。</li>
+        <li>同一提单只归属最近一次T0事件。</li>
+        <li>D0、D3、D7、D15分别使用对应成熟样本。</li>
+        <li>两项风控分均保留原始值和独立缺失标记。</li>
+        <li>使用率0记为缺失，超过100%保留并标记。</li>
+        <li>生产概率单调违规率为0，模型版本与特征版本完整回写。</li>
+      </ul>
+    </div></details>
+  </section>
+
+  <div class="footer">T0用户提单时点预测模型构建方案 · 统计与建模口径文档 · 2026-10-07</div>
+</main></body>
+</html>
