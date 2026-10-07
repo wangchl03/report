@@ -59,11 +59,47 @@ tr.good td{background:rgba(100,220,174,.08)}tr.bad td{background:rgba(246,138,17
 .rule .k{display:block;font-size:12px;font-weight:800;letter-spacing:.06em;margin-bottom:4px}
 .rule .v{display:block;font-size:13.5px;color:#c5d8e6;font-weight:400;line-height:1.55}
 .rule.go .k{color:var(--gr)}.rule.warn .k{color:var(--am)}.rule.stop .k{color:var(--pk)}
-details.code{margin:10px 0;background:rgba(10,41,68,.95);border:1px solid var(--line);border-radius:12px;padding:10px 14px}
-details.code summary{cursor:pointer;color:var(--cy);font-weight:700}
+details.code,details.fold{margin:10px 0;background:rgba(10,41,68,.95);border:1px solid var(--line);border-radius:12px;padding:10px 14px}
+details.code summary,details.fold summary{cursor:pointer;color:var(--cy);font-weight:700}
 pre.sql{overflow:auto;max-height:720px;font-size:11.5px;line-height:1.5;color:#d7ecf8;white-space:pre}
+.find-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:14px}
+.find{background:rgba(10,41,68,.95);border:1px solid var(--line);border-radius:14px;padding:14px 16px 16px}
+.find .k{display:block;font-size:11px;font-weight:800;letter-spacing:.1em;margin-bottom:6px}
+.find.c .k{color:var(--cy)}.find.r .k{color:var(--pk)}.find.a .k{color:var(--am)}.find.g .k{color:var(--gr)}
+.find h3{margin:0 0 8px;font-size:16px;line-height:1.4;color:#fff}
+.find p{margin:8px 0 0;color:var(--muted);font-size:13.5px;line-height:1.6}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chip{font-size:12px;border:1px solid #306484;border-radius:99px;padding:1px 8px;color:#d7ecf8}
+.seg-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:12px 0}
+.seg{background:rgba(10,41,68,.95);border:1px solid var(--line);border-radius:14px;padding:14px 16px}
+.seg.r{border-left:4px solid var(--pk)}.seg.a{border-left:4px solid var(--am)}.seg.g{border-left:4px solid var(--gr)}
+.seg .badge{font-size:11px;font-weight:800;letter-spacing:.08em}
+.seg.r .badge{color:var(--pk)}.seg.a .badge{color:var(--am)}.seg.g .badge{color:var(--gr)}
+.seg h3{margin:4px 0 8px;font-size:16px}
+.seg-metrics{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:8px}
+.seg-metrics div{background:rgba(6,25,43,.45);border-radius:8px;padding:8px 8px 6px}
+.seg-metrics b{display:block;font-size:18px;color:#fff;line-height:1.2}
+.seg-metrics span{font-size:11px;color:#9fbcd4}
+.seg ul{margin:0 0 8px;padding-left:1.1em;color:#c5d8e6;font-size:13px;line-height:1.55}
+.seg .act{margin:0;font-size:13px;font-weight:700}
+.hm-wrap{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin:8px 0 14px}
+.hm-panel{background:rgba(10,41,68,.95);border:1px solid var(--line);border-radius:14px;padding:12px}
+.hm-panel h3{margin:0 0 2px;font-size:15px}
+.hm-panel .sub{font-size:12px;color:var(--muted);margin:0 0 8px}
+.hm{display:grid;grid-template-columns:76px repeat(3,minmax(0,1fr));gap:6px}
+.hm .hd,.hm .rl{font-size:11px;color:var(--muted);display:flex;align-items:center;justify-content:center;text-align:center;line-height:1.25}
+.cell{border-radius:8px;min-height:64px;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:6px 4px}
+.cell .r{font-size:15px;font-weight:800;line-height:1.15}
+.cell .n{font-size:11px;opacity:.92}
+.cell.thin{outline:1px dashed rgba(239,248,255,.7);outline-offset:-4px}
+.legend{display:flex;gap:8px;align-items:center;flex-wrap:wrap;font-size:12px;color:var(--muted);margin:4px 0 10px}
+.sw{width:28px;height:10px;border-radius:2px;display:inline-block}
+.take{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin:8px 0 12px}
+.take article{background:rgba(10,41,68,.78);border:1px solid var(--line);border-radius:12px;padding:12px 14px}
+.take h3{margin:0 0 6px;font-size:14px}
+.take p{margin:0;color:var(--muted);font-size:13px;line-height:1.55}
 .foot{color:#7fa6c2;font-size:12.5px;margin-top:40px;border-top:1px solid var(--line);padding-top:16px;line-height:1.9}
-@media(max-width:900px){.g2,.f4,.rule-grid,.hero-facts{grid-template-columns:1fr}.wrap{padding:18px 16px 56px}.nav{margin:0 -16px;padding-left:16px}.hero h1{font-size:22px}.concl{grid-template-columns:1fr}}
+@media(max-width:900px){.g2,.f4,.rule-grid,.hero-facts,.find-grid,.seg-grid,.hm-wrap,.take{grid-template-columns:1fr}.wrap{padding:18px 16px 56px}.nav{margin:0 -16px;padding-left:16px}.hero h1{font-size:22px}.concl{grid-template-columns:1fr}}
 </style>
 </head>
 <body>
@@ -78,6 +114,7 @@ pre.sql{overflow:auto;max-height:720px;font-size:11.5px;line-height:1.5;color:#d
   </div>
 </header>
 <nav class="nav">
+  <a href="#findings">结论</a>
   <a href="#gap">和普通用户比</a>
   <a href="#class">四类用户</a>
   <a href="#churn">流失天数</a>
@@ -87,6 +124,36 @@ pre.sql{overflow:auto;max-height:720px;font-size:11.5px;line-height:1.5;color:#d
   <a href="#ops">怎么运营</a>
   <a href="#sql">口径与 SQL</a>
 </nav>
+
+<section id="findings">
+  <h2>结论</h2>
+  <div class="find-grid">
+    <article class="find c">
+      <span class="k">01 对照</span>
+      <h3>7 日提单比普通用户低 20.85 个百分点</h3>
+      <div class="chips"><span class="chip">1,254 人 42.66%</span><span class="chip">普通用户 63.51%</span><span class="chip">当天差 18.63</span><span class="chip">3日差 20.40</span></div>
+      <p>从当天到第 7 天，差距停在 21 个百分点附近。多等几天会多一些自己提单的人，追不上同期普通用户。</p>
+    </article>
+    <article class="find a">
+      <span class="k">02 三条线</span>
+      <h3>流失、使用率、提前还款各自拉开提单</h3>
+      <div class="chips"><span class="chip">流失 8–15天 50.00%</span><span class="chip">180天以上 28.95%</span><span class="chip">使用率接近100% 52.15%</span><span class="chip">提前4–7天 51.93%</span></div>
+      <p>30–90 天的人额度用得最足，7 日提单仍只有 38.75%。提前还掉账期的 28%–50% 时提单最高，再提前到七成以上会回落。</p>
+    </article>
+    <article class="find r">
+      <span class="k">03 交叉</span>
+      <h3>优先池是长流失、低使用、又没提前还</h3>
+      <div class="chips"><span class="chip">15–30天 × 低使用 × 未提前还 24.71%</span><span class="chip">30–90天 × 低使用 × 提前1–7天 28.57%</span><span class="chip">最近一格 58.11%</span></div>
+      <p>短流失六个格子都在 46%–56%。人数不少于 30 的格子里，最高仍比普通用户低 5.40 个百分点。</p>
+    </article>
+    <article class="find g">
+      <span class="k">04 动作</span>
+      <h3>第 7 天再触达，先打 241 人</h3>
+      <div class="chips"><span class="chip">优先未提 162+79</span><span class="chip">短流失轻触达 145</span><span class="chip">未提合计 719</span></div>
+      <p>获额当天到第 7 天不打断。第 7 天仍未提的人里，只把低使用且意愿弱的放进优先池，不把 719 人整包再打一遍。</p>
+    </article>
+  </div>
+</section>
 
 <section id="gap">
   <h2>和同期普通用户比</h2>
@@ -126,35 +193,38 @@ pre.sql{overflow:auto;max-height:720px;font-size:11.5px;line-height:1.5;color:#d
 
 <section id="class">
   <h2>四类用户：特征和下一步</h2>
-  <p class="desc">四类互斥，加总 1,254 人。判定顺序：先看流失是不是短于 15 天；再看流失已满 15 天、使用率低于 80%、并且没有提前还；再看流失已满 30 天、使用率低于 80%、只提前了 1–7 天；剩下的归入其余。</p>
-  <div class="concl r">
-    <div class="idx">1</div>
-    <div>
-      <h3>优先召回 · 低使用且未提前还 · 221 人，7 日提单 26.70%</h3>
-      <p>召回前流失已经满 15 天，刚结清那笔额度使用率低于 80%，还款发生在到期当天或逾期之后。当天只有 10.86%，3 日内 21.27%，7 日内 26.70%，比普通用户低 36.81 个百分点。第 7 天仍未提单 162 人。这是再触达的第一池。</p>
-    </div>
+  <p class="desc">四类互斥，加总 1,254 人。顺序：流失短于 15 天 → 流失已满 15 天且使用率低于 80% 且未提前还 → 流失已满 30 天且使用率低于 80% 且只提前 1–7 天 → 其余。</p>
+  <div class="seg-grid">
+    <article class="seg r">
+      <span class="badge">优先召回</span>
+      <h3>低使用且未提前还</h3>
+      <div class="seg-metrics"><div><b>221</b><span>人</span></div><div><b>26.70%</b><span>7日提单</span></div><div><b>162</b><span>第7天未提</span></div></div>
+      <ul><li>流失 ≥15 天</li><li>使用率 &lt;80%</li><li>到期当天还，或逾期后才还</li><li>低于普通用户 36.81 个百分点</li></ul>
+      <p class="act">第 7 天仍未提，进优先池</p>
+    </article>
+    <article class="seg r">
+      <span class="badge">优先召回</span>
+      <h3>长流失、低使用、只提前几天</h3>
+      <div class="seg-metrics"><div><b>112</b><span>人</span></div><div><b>29.46%</b><span>7日提单</span></div><div><b>79</b><span>第7天未提</span></div></div>
+      <ul><li>流失 ≥30 天</li><li>使用率 &lt;80%</li><li>只提前 1–7 天，拉不动提单</li><li>低于普通用户 34.05 个百分点</li></ul>
+      <p class="act">与上一类同一力度</p>
+    </article>
+    <article class="seg a">
+      <span class="badge">轻触达</span>
+      <h3>短流失</h3>
+      <div class="seg-metrics"><div><b>290</b><span>人</span></div><div><b>50.00%</b><span>7日提单</span></div><div><b>145</b><span>第7天未提</span></div></div>
+      <ul><li>流失 8–15 天</li><li>六个交叉格都在 46%–56%</li><li>使用率低也有 50.72%</li><li>低于普通用户 13.51 个百分点</li></ul>
+      <p class="act">第 7 天仍未提，力度低于优先池</p>
+    </article>
+    <article class="seg g">
+      <span class="badge">少打扰</span>
+      <h3>其余</h3>
+      <div class="seg-metrics"><div><b>631</b><span>人</span></div><div><b>47.23%</b><span>7日提单</span></div><div><b>333</b><span>第7天未提</span></div></div>
+      <ul><li>15–30 天且提前还过，或使用率 ≥80%</li><li>最接近普通用户的一格 58.11%（74 人）</li><li>用得足并且提前 4–14 天的人留在观察</li></ul>
+      <p class="act">只对其中流失 ≥30 天、又没提前还的再跟进</p>
+    </article>
   </div>
-  <div class="concl r">
-    <div class="idx">2</div>
-    <div>
-      <h3>优先召回 · 长流失、低使用、只提前几天 · 112 人，7 日提单 29.46%</h3>
-      <p>流失满 30 天，使用率仍低于 80%，提前还款只有 1–7 天。7 日提单 29.46%，和上一类贴在一起，比普通用户低 34.05 个百分点。提前这几天在这一类里拉不动提单。第 7 天仍未提单 79 人，并进第一池。</p>
-    </div>
-  </div>
-  <div class="concl a">
-    <div class="idx">3</div>
-    <div>
-      <h3>先观察 · 短流失 · 290 人，7 日提单 50.00%</h3>
-      <p>召回前只流失了 8–15 天。当天 25.52%，3 日内 39.66%，7 日内 50.00%，比普通用户低 13.51 个百分点。使用率高低、有没有提前还，在这一类里都拉不开，各交叉格的 7 日提单都在 46%–56%。第 7 天仍未提单 145 人，用轻触达，力度低于前两池。</p>
-    </div>
-  </div>
-  <div class="concl g">
-    <div class="idx">4</div>
-    <div>
-      <h3>少打扰 · 其余 · 631 人，7 日提单 47.23%</h3>
-      <p>主要是两类人叠在一起：流失 15–30 天而且提前还过，以及使用率已经到 80% 及以上。当天 23.14%，3 日内 36.77%，7 日内 47.23%。其中使用率 80% 及以上、并且提前 1–7 天的人，7 日提单能到 53%–58%，是这 1,254 人里最接近普通用户的一截。第 7 天仍未提单的 333 人，只对其中流失满 30 天、又没有提前还的再触达。</p>
-    </div>
-  </div>
+  <details class="fold"><summary>展开明细：四类用户的当天、3日、7日提单</summary>
   <div class="table">
     <table>
       <thead><tr><th>分类</th><th>人数</th><th>当天</th><th>3日内</th><th>7日内</th><th>7日低于普通用户</th><th>第7天仍未提</th><th>第7天的动作</th></tr></thead>
@@ -167,11 +237,14 @@ pre.sql{overflow:auto;max-height:720px;font-size:11.5px;line-height:1.5;color:#d
       </tbody>
     </table>
   </div>
+  </details>
 </section>
 
 <section id="churn">
   <h2>召回前流失天数</h2>
-  <p class="desc">流失天数用名单上的 churn_days：召回日 2026-08-18 减去该用户上一次还款日，再减 1，结清当天和召回当天都不算进流失。8–15 天是 [8, 15)。各档提前还的人比例都在 58%–63%，加权使用率最高的是 30–90 天。流失越长、7 日提单越低，这条线独立于使用率和提前还款。</p>
+  <p class="desc">流失天数 = 召回日减去上一次还款日，再减 1。各档提前还的人都在 58%–63%。流失越长，7 日提单越低。</p>
+  <article class="chart"><h3>按召回前流失天数的 7 日提单率</h3><p>折线是普通用户 63.51%。单位：%</p><div class="box"><canvas id="c3"></canvas></div></article>
+  <details class="fold"><summary>展开明细：流失天数分组</summary>
   <div class="table">
     <table>
       <thead><tr><th>召回前流失</th><th>人数</th><th>加权使用率</th><th>提前还占比</th><th>当天</th><th>3日内</th><th>7日内</th><th>7日低于普通用户</th></tr></thead>
@@ -185,15 +258,19 @@ pre.sql{overflow:auto;max-height:720px;font-size:11.5px;line-height:1.5;color:#d
       </tbody>
     </table>
   </div>
-  <div class="callout gold">
-    <span class="ch">30–90 天的人用得最足，7 日提单仍只有 38.75%</span>
-    <div class="bd"><p>这一档加权使用率 76.74%，高于 8–15 天的 72.66%，提前还占比也略高（62.14% 对 59.31%）。7 日提单却低 11.25 个百分点。运营上，流失长度要单独看，不能用“刚结清那笔用得很满”代替。</p></div>
+  </details>
+  <div class="take">
+    <article><h3>8–15 天</h3><p>290 人，7 日 50.00%。加权使用率 72.66%。</p></article>
+    <article><h3>30–90 天用得最足</h3><p>449 人，加权使用率 76.74%，7 日提单只有 38.75%。</p></article>
+    <article><h3>180 天以上</h3><p>38 人，7 日 28.95%，低于普通用户 34.56 个百分点。</p></article>
   </div>
 </section>
 
 <section id="util">
   <h2>刚结清那笔的额度使用率</h2>
-  <p class="desc">使用率 = 召回后第一笔已结清放款的放款额 / 该笔获额。加权使用率 = 放款合计 / 获额合计。四档：80% 以下；80%–100% 为 [0.8, 0.999)；接近 100% 为 [0.999, 1.001]；100% 以上为 &gt;1.001。这是结清时已经发生的占用，再次获额时可以用来分类。</p>
+  <p class="desc">使用率 = 刚结清那笔放款额 / 该笔获额。80% 以下、80%–100%、接近 100%、100% 以上。</p>
+  <article class="chart"><h3>按额度使用率的 7 日提单率</h3><p>折线是普通用户 63.51%。单位：%</p><div class="box"><canvas id="c4"></canvas></div></article>
+  <details class="fold"><summary>展开明细：额度使用率四档</summary>
   <div class="table">
     <table>
       <thead><tr><th>使用率</th><th>人数</th><th>加权使用率</th><th>当天</th><th>3日内</th><th>7日内</th><th>7日低于普通用户</th></tr></thead>
@@ -206,12 +283,19 @@ pre.sql{overflow:auto;max-height:720px;font-size:11.5px;line-height:1.5;color:#d
       </tbody>
     </table>
   </div>
-  <p class="desc">接近 100% 的 7 日提单最高，52.15%，仍低于普通用户 11.36 个百分点。100% 以上是 48.63%，略低于接近 100%。80%–100% 只有 63 人。使用率这条线的主要分界在 80%。</p>
+  </details>
+  <div class="take">
+    <article><h3>80% 以下</h3><p>641 人，7 日 36.82%，低于普通用户 26.69 个百分点。</p></article>
+    <article><h3>接近 100% 最高</h3><p>186 人，7 日 52.15%，仍低 11.36 个百分点。</p></article>
+    <article><h3>分界在 80%</h3><p>80%–100% 只有 63 人。100% 以上是 48.63%，略低于接近 100%。</p></article>
+  </div>
 </section>
 
 <section id="early">
   <h2>提前还款天数、账期和占比</h2>
-  <p class="desc">提前还款天数 = 刚结清那笔整单的到期日 − 实际还款日。正数是提前还，0 是到期当天，负数是逾期后才还清。账期天数是该笔订单的 loan_day。提前天数占比 = 每人的提前还款天数 / 该笔账期，再在组内取平均。账期以 21 天（517 人，7 日提单 45.45%）和 28 天（483 人，37.27%）为主，其次 7 天 128 人（45.31%）、14 天 122 人（50.82%）。</p>
+  <p class="desc">提前还款天数 = 到期日 − 实际还款日。占比 = 提前天数 / 账期 loan_day。账期以 21 天（517 人）和 28 天（483 人）为主。</p>
+  <article class="chart"><h3>提前还款天数：7 日提单率与占账期比例</h3><p>柱是 7 日提单率，线是提前天数占账期的比例。单位：%</p><div class="box"><canvas id="c5"></canvas></div></article>
+  <details class="fold"><summary>展开明细：提前还款天数、账期和占比</summary>
   <div class="table">
     <table>
       <thead><tr><th>提前还款天数</th><th>人数</th><th>平均提前天数</th><th>平均账期</th><th>提前天数占比</th><th>当天</th><th>3日内</th><th>7日内</th><th>7日低于普通用户</th></tr></thead>
@@ -226,15 +310,37 @@ pre.sql{overflow:auto;max-height:720px;font-size:11.5px;line-height:1.5;color:#d
       </tbody>
     </table>
   </div>
-  <div class="callout">
-    <span class="ch">占账期 28%–50% 的时候，7 日提单最高；再提前，提单回落</span>
-    <div class="bd"><p>提前 4–7 天的人平均还掉账期的 28.5%，7 日提单 51.93%。提前 8–14 天还掉 50.1%，7 日提单 50.97%。提前 15 天以上还掉 71.7%，7 日提单回到 45.26%，而且这档平均账期 26.5 天，短账期进不了这一档。运营上把“提前很多天”和“意愿高”分开：提前 4–14 天是积极信号，提前超过账期七成、或逾期后才还清，都要降一档。</p></div>
+  </details>
+  <div class="take">
+    <article><h3>提前 4–7 天</h3><p>181 人，占账期 28.5%，7 日提单 51.93%，是这条线上的高点。</p></article>
+    <article><h3>提前 8–14 天</h3><p>206 人，占账期 50.1%，7 日提单 50.97%，和上一档贴在一起。</p></article>
+    <article><h3>提前 15 天以上回落</h3><p>137 人，占账期 71.7%，平均账期 26.5 天，7 日提单回到 45.26%。</p></article>
   </div>
 </section>
 
 <section id="cross">
   <h2>三列交叉</h2>
-  <p class="desc">使用率收成 80% 以下 / 80% 及以上，提前还款收成未提前还（逾期后还 + 到期当天）/ 提前 1–7 天 / 提前 8 天以上。普通用户的 7 日提单是 63.51%。人数不少于 30 的格子里，最高是 58.11%。</p>
+  <p class="desc">每一块是一个流失档。块内横轴是提前还款，纵轴是使用率。颜色是 7 日提单率，越接近普通用户 63.51% 越偏绿。格子里上面是提单率，下面是人数。虚线框表示人数不足 15，只看人数。</p>
+  <div class="legend" id="hmLegend"></div>
+  <div class="hm-wrap" id="hm"></div>
+  <div class="grid g2">
+    <article class="chart">
+      <h3>低使用率：提前几天能不能拉回来</h3>
+      <p>纵轴 7 日提单率 %。折线是普通用户 63.51%。</p>
+      <div class="box"><canvas id="c6"></canvas></div>
+    </article>
+    <article class="chart">
+      <h3>使用率 80% 及以上：提前还款后的 7 日提单</h3>
+      <p>同一流失档里，和左图对照。单位：%</p>
+      <div class="box"><canvas id="c7"></canvas></div>
+    </article>
+  </div>
+  <div class="take">
+    <article><h3>短流失，六格都高</h3><p>8–15 天不论使用率和提前天数，7 日提单都在 46%–56%。低使用且未提前还仍有 50.72%（69 人）。这一档先观察。</p></article>
+    <article><h3>15–30 天，提前还能拉回</h3><p>低使用且未提前还掉到 24.71%（85 人）。同一档提前 1–7 天回到 51.56%（64 人）。高使用且提前 1–7 天是全表最高的大格，58.11%（74 人）。</p></article>
+    <article><h3>30 天以上，提前几天不够</h3><p>30–90 天、低使用：未提前还 30.43%（92 人），提前 1–7 天 28.57%（84 人）。要使用率到 80% 以上，7 日提单才回到 49%–51%。</p></article>
+  </div>
+  <details class="fold"><summary>展开明细：三列交叉全表</summary>
   <div class="table">
     <table>
       <thead><tr><th>召回前流失</th><th>使用率</th><th>提前还款</th><th>人数</th><th>当天</th><th>3日内</th><th>7日内</th><th>7日低于普通用户</th></tr></thead>
@@ -272,24 +378,16 @@ pre.sql{overflow:auto;max-height:720px;font-size:11.5px;line-height:1.5;color:#d
       </tbody>
     </table>
   </div>
-  <div class="callout red">
-    <span class="ch">三条线叠在一起之后，优先池就是表里标红的格子</span>
-    <div class="bd">
-      <p>短流失 8–15 天的六个格子都在 46%–56%。使用率低、也没提前还，7 日提单仍有 50.72%（69 人）。这一档先观察。</p>
-      <p>流失到 15–30 天，使用率 80% 以下且未提前还，掉到 24.71%（85 人）。同一档如果提前了 1–7 天，回到 51.56%（64 人）。中等流失可以被提前还拉回来，所以这 64 人进「其余」，不进优先池。</p>
-      <p>流失到 30–90 天且使用率 80% 以下，未提前还是 30.43%（92 人），提前 1–7 天是 28.57%（84 人），两格一样低。提前 8 天以上才到 38.00%（50 人）。使用率到 80% 及以上之后，这一档落在 38.46%–51.28%。</p>
-      <p>人数不少于 30 的格子里，最接近普通用户的是流失 15–30 天、使用率 80% 及以上、提前 1–7 天：74 人，7 日提单 58.11%，仍低 5.40 个百分点。180 天以上每格不超过 12 人，其中使用率 80% 以下、未提前还的 12 人，7 日内提单为 0。</p>
-    </div>
-  </div>
+  </details>
 </section>
 
 <section id="ops">
   <h2>按分类运营，抬高再次提单率</h2>
   <p class="desc">再次获额的当天，三列都已经知道。获额之后的提单还没发生，所以分类可以用，第 7 天的提单只用来决定要不要真的再触达。</p>
-  <div class="step"><div class="numc">1</div><div><span class="ttl">获额当天到第 7 天，四类都不打断</span><span class="bd">短流失从当天 25.52% 走到 7 日 50.00%，中间有 72 人是第 2–7 天才提的。优先池里的「低使用且未提前还」也从 10.86% 走到 26.70%。第 0 天或第 3 天就再召回，会打到一批本来会自己提的人。</span></div></div>
-  <div class="step"><div class="numc">2</div><div><span class="ttl">第 7 天仍未提单，先打 241 人的优先池</span><span class="bd">低使用且未提前还的未提 162 人，加上长流失、低使用、只提前几天的未提 79 人。这两类 7 日提单只有 26.70% 和 29.46%，比普通用户低 34–37 个百分点。沿用之前对高意向薄切片有效的召回，按流失更长、使用率更低优先。不要把 719 个未提单的人整包再打一遍。</span></div></div>
-  <div class="step"><div class="numc">3</div><div><span class="ttl">短流失的 145 个未提，单独轻触达</span><span class="bd">他们所在的类 7 日提单已经有 50%，和优先池差了 20 个百分点以上。触达可以做，力度、券深度都低于优先池。8–15 天里使用率低且没提前还的人，7 日提单仍有 50.72%，不要因为使用率低就把他们提前放进优先池。</span></div></div>
-  <div class="step"><div class="numc">4</div><div><span class="ttl">其余 631 人里，用得足并且提前还过的少打扰</span><span class="bd">流失 15–30 天、使用率 80% 及以上、提前 1–7 天的 74 人，7 日提单 58.11%，是全表最接近普通用户的一格。提前 4–14 天、占账期大约 28%–50% 的人，整体 7 日提单在 51% 上下。这些人第 7 天如果还没提，再单独看；已经用足额度、又提前还过一截的，不进优先池。其余里流失满 30 天、使用率高但没提前还的（30–90 天这一格 78 人，7 日 38.46%），第 7 天仍未提的可以跟在优先池后面，力度低于 241 人。</span></div></div>
+  <div class="step"><div class="numc">1</div><div><span class="ttl">获额当天到第 7 天，四类都不打断</span><span class="bd">短流失从 25.52% 走到 50.00%，低使用且未提前还从 10.86% 走到 26.70%。这两截都有人自己提。</span></div></div>
+  <div class="step"><div class="numc">2</div><div><span class="ttl">第 7 天仍未提，先打优先池 241 人</span><span class="bd">162 人是低使用且未提前还，79 人是长流失、低使用、只提前几天。沿用高意向薄切片召回，按流失更长、使用率更低排前面。</span></div></div>
+  <div class="step"><div class="numc">3</div><div><span class="ttl">短流失未提的 145 人，轻触达</span><span class="bd">这一类 7 日提单已经 50%。使用率低的格子也有 50.72%，留在轻触达，不进优先池。</span></div></div>
+  <div class="step"><div class="numc">4</div><div><span class="ttl">用得足并且提前还过的，少打扰</span><span class="bd">15–30 天、使用率 80% 及以上、提前 1–7 天的 74 人，7 日提单 58.11%。其余里流失满 30 天又没提前还的，跟在优先池后面，力度更低。</span></div></div>
   <div class="rule-grid">
     <div class="rule go"><span class="k">进优先池</span><span class="v">流失 ≥15 天，使用率 &lt;80%，未提前还。或者流失 ≥30 天，使用率 &lt;80%，只提前 1–7 天。并且第 7 天仍未提单。</span></div>
     <div class="rule warn"><span class="k">轻触达</span><span class="v">流失 8–15 天，第 7 天仍未提单。不论使用率和提前天数。</span></div>
@@ -709,13 +807,74 @@ FROM tmp_t0_ord;
 const C={cy:'#43c7e7',gr:'#64dcae',am:'#ffc26b',pk:'#f68ab0',mu:'#aac5da'};
 const axis={ticks:{color:'#aac5da'},grid:{color:'rgba(42,92,126,.25)'}};
 const legend={labels:{color:'#d7ecf8'}};
+const BENCH=63.51;
+function mix(rate){
+  const t=Math.max(0,Math.min(1,rate/BENCH));
+  const pk=[246,138,176], am=[255,194,107], gr=[100,220,174];
+  const u=t<0.5?t/0.5:(t-0.5)/0.5;
+  const a=t<0.5?pk:am, b=t<0.5?am:gr;
+  const rgb=a.map((v,i)=>Math.round(v+(b[i]-v)*u));
+  return {bg:`rgb(${rgb.join(',')})`, fg:t>0.42?'#06192b':'#fff'};
+}
+function benchLine(n){return {label:'普通用户 63.51%',data:Array(n).fill(BENCH),type:'line',borderColor:C.cy,borderDash:[5,4],pointRadius:0,borderWidth:1.5,order:0};}
+function barOpts(title){return {responsive:true,maintainAspectRatio:false,plugins:{legend},scales:{x:axis,y:{...axis,max:80,title:{display:true,text:title,color:'#aac5da'}}}};}
 new Chart(document.getElementById('c1'),{type:'bar',data:{labels:['当天','3日内','7日内'],datasets:[
  {label:'1,254 人',data:[20.89,33.33,42.66],backgroundColor:C.pk},
  {label:'普通用户',data:[39.52,53.73,63.51],backgroundColor:C.cy}
-]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend},scales:{x:axis,y:{...axis,max:80,title:{display:true,text:'提单率 %',color:'#aac5da'}}}}});
+]},options:barOpts('提单率 %')});
 new Chart(document.getElementById('c2'),{type:'bar',data:{labels:['低使用且未提前还','长流失只提前几天','短流失','其余','普通用户'],datasets:[
  {label:'7日提单率',data:[26.70,29.46,50.00,47.23,63.51],backgroundColor:[C.pk,C.pk,C.am,C.gr,C.cy]}
 ]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:axis,y:{...axis,max:80,title:{display:true,text:'7日提单率 %',color:'#aac5da'}}}}});
+const churnLabs=['8–15天','15–30天','30–90天','90–180天','180天以上'];
+new Chart(document.getElementById('c3'),{type:'bar',data:{labels:churnLabs,datasets:[
+ {label:'7日提单率',data:[50.00,44.44,38.75,38.46,28.95],backgroundColor:C.am},
+ benchLine(5)
+]},options:barOpts('7日提单率 %')});
+new Chart(document.getElementById('c4'),{type:'bar',data:{labels:['80%以下','80%–100%','接近100%','100%以上'],datasets:[
+ {label:'7日提单率',data:[36.82,39.68,52.15,48.63],backgroundColor:C.am},
+ benchLine(4)
+]},options:barOpts('7日提单率 %')});
+new Chart(document.getElementById('c5'),{type:'bar',data:{labels:['逾期后还','到期当天','提前1–3天','提前4–7天','提前8–14天','提前15天以上'],datasets:[
+ {type:'bar',label:'7日提单率',data:[30.97,36.80,41.74,51.93,50.97,45.26],backgroundColor:C.am,yAxisID:'y'},
+ {type:'line',label:'提前天数占账期',data:[-15.0,0,9.1,28.5,50.1,71.7],borderColor:C.cy,backgroundColor:C.cy,yAxisID:'y2',tension:0.2}
+]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend},scales:{x:axis,y:{...axis,position:'left',title:{display:true,text:'7日提单率 %',color:'#aac5da'}},y2:{...axis,position:'right',grid:{drawOnChartArea:false},title:{display:true,text:'占账期 %',color:'#aac5da'}}}}});
+const earlyLabs=['未提前还','提前1–7天','提前8天以上'];
+const low=[[50.72,46.51,50.00],[24.71,51.56,44.74],[30.43,28.57,38.00],[31.25,30.43,20.00],[0,40.00,40.00]];
+const high=[[46.94,55.56,50.00],[38.00,58.11,55.10],[38.46,49.25,51.28],[35.29,50.00,54.17],[25.00,0,60.00]];
+function crossChart(id, rows, title){
+  new Chart(document.getElementById(id),{type:'bar',data:{labels:churnLabs,datasets:[
+    {label:'未提前还',data:rows.map(r=>r[0]),backgroundColor:C.pk},
+    {label:'提前1–7天',data:rows.map(r=>r[1]),backgroundColor:C.am},
+    {label:'提前8天以上',data:rows.map(r=>r[2]),backgroundColor:C.gr},
+    benchLine(5)
+  ]},options:{...barOpts('7日提单率 %'),plugins:{legend,title:{display:true,text:title,color:'#fff',font:{size:13}}}}});
+}
+crossChart('c6', low, '使用率 80% 以下');
+crossChart('c7', high, '使用率 80% 及以上');
+const panels=[
+ ['8–15天','290 人',[[69,50.72],[43,46.51],[34,50.00]],[[49,46.94],[45,55.56],[50,50.00]]],
+ ['15–30天','360 人',[[85,24.71],[64,51.56],[38,44.74]],[[50,38.00],[74,58.11],[49,55.10]]],
+ ['30–90天','449 人',[[92,30.43],[84,28.57],[50,38.00]],[[78,38.46],[67,49.25],[78,51.28]]],
+ ['90–180天','117 人',[[32,31.25],[23,30.43],[5,20.00]],[[17,35.29],[16,50.00],[24,54.17]]],
+ ['180天以上','38 人',[[12,0],[5,40.00],[5,40.00]],[[4,25.00],[2,0],[10,60.00]]]
+];
+const cols=['未提前还','提前1–7天','提前8天以上'];
+const rows=['80%以下','80%及以上'];
+document.getElementById('hm').innerHTML=panels.map(([name,sub,a,b])=>{
+  const body=[a,b].map((line,ri)=>'<div class="rl">'+rows[ri]+'</div>'+line.map(([n,rate])=>{
+    const c=mix(rate);
+    const thin=n<15?' thin':'';
+    return `<div class="cell${thin}" style="background:${c.bg};color:${c.fg}"><span class="r">${rate.toFixed(2)}%</span><span class="n">${n} 人</span></div>`;
+  }).join('')).join('');
+  return `<article class="hm-panel"><h3>${name}</h3><p class="sub">${sub}</p><div class="hm"><div></div>${cols.map(x=>'<div class="hd">'+x+'</div>').join('')}${body}</div></article>`;
+}).join('');
+const legendHost=document.getElementById('hmLegend');
+[0,20,35,50,63.51].forEach(v=>{
+  const c=mix(v);
+  const lab=document.createElement('span');
+  lab.innerHTML=`<i class="sw" style="background:${c.bg}"></i> ${v===63.51?'普通用户 63.51%':v+'%'}`;
+  legendHost.appendChild(lab);
+});
 </script>
 </body>
 </html>
