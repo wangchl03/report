@@ -1,0 +1,721 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>8月18日召回结清后再获额：1,254人的提单分类与运营</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+<style>
+:root{--bg:#06192b;--p:#0c2944;--line:#2a5c7e;--text:#eff8ff;--muted:#aac5da;--cy:#43c7e7;--gr:#64dcae;--am:#ffc26b;--pk:#f68ab0;--vio:#b49aff;--rd:#ff7b72}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font:16px/1.75 -apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei",sans-serif}
+.wrap{max-width:1480px;margin:auto;padding:28px 36px 80px}
+.hero{text-align:center;padding:28px 12px 22px;border-bottom:1px solid var(--line)}
+.kicker{color:var(--cy);font-size:13px;letter-spacing:.14em;font-weight:700}
+.hero h1{font-size:30px;line-height:1.35;margin:10px 0 8px}
+.hero-facts{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin-top:16px;text-align:left}
+.hero-facts .f{background:rgba(10,41,68,.75);border:1px solid var(--line);border-radius:10px;padding:10px 12px}
+.hero-facts .k{display:block;font-size:11px;font-weight:800;letter-spacing:.1em;color:var(--cy);margin-bottom:4px}
+.hero-facts .v{display:block;font-size:13px;color:#c5d8e6;font-weight:400;line-height:1.55}
+.nav{position:sticky;top:0;z-index:5;background:rgba(6,25,43,.94);backdrop-filter:blur(10px);border-bottom:1px solid var(--line);display:flex;gap:18px;overflow:auto;padding:12px 0;margin:0 -36px;padding-left:36px}
+.nav a{white-space:nowrap;color:#c6dae7;font-size:14px;text-decoration:none}
+.nav a:hover{color:var(--cy)}
+h2{font-size:22px;font-weight:800;color:#fff;letter-spacing:.01em;margin:44px 0 4px;padding:0 0 8px;border-bottom:1px solid var(--line);scroll-margin-top:58px;line-height:1.3}
+h3{font-size:16px;font-weight:750;color:#f3fbff;margin:16px 0 8px;line-height:1.35}
+.desc{color:var(--muted);margin:0 0 12px;font-size:13px;font-weight:400;line-height:1.6}
+.facts{display:grid;gap:10px;margin:0 0 16px}
+.f4{grid-template-columns:repeat(4,minmax(0,1fr))}
+.fact{background:rgba(10,41,68,.78);border:1px solid var(--line);border-radius:10px;padding:11px 13px}
+.fact .lab{display:block;font-size:11px;font-weight:800;letter-spacing:.08em;color:#8fb0c6;margin:0 0 5px}
+.fact .n{display:block;font-size:20px;font-weight:800;color:var(--cy);line-height:1.2}
+.fact .s{display:block;font-size:12.5px;color:#9fbcd4;margin-top:4px;line-height:1.5;font-weight:400}
+.fact.g{border-left:3px solid var(--gr)}.fact.g .n{color:var(--gr)}
+.fact.a{border-left:3px solid var(--am)}.fact.a .n{color:var(--am)}
+.fact.r{border-left:3px solid var(--pk)}.fact.r .n{color:var(--pk)}
+.grid{display:grid;gap:14px}.g2{grid-template-columns:repeat(2,minmax(0,1fr))}
+.card,.chart{background:rgba(10,41,68,.95);border:1px solid var(--line);border-radius:14px;padding:16px}
+.chart h3{margin:0 0 2px;font-size:16px;font-weight:750;color:#fff}.chart p{font-size:12.5px;color:var(--muted);font-weight:400;margin:0 0 10px}
+.box{height:300px;position:relative}
+.callout{background:#0a2a45;border:1px solid #2a5c7e;border-left:4px solid #43c7e7;border-radius:10px;padding:14px 18px 16px;margin:14px 0}
+.callout.gold{border-left-color:#ffc26b}.callout.red{border-left-color:#f68ab0}.callout.green{border-left-color:#64dcae}
+.callout .ch{display:block;font-size:16px;font-weight:800;color:#fff;line-height:1.35;margin:0 0 8px}
+.callout .bd{color:var(--muted);font-size:14px;font-weight:400;line-height:1.7}
+.callout .bd p{margin:0 0 8px}.callout .bd p:last-child{margin:0}
+.concl{display:grid;grid-template-columns:48px 1fr;gap:14px;align-items:start;background:rgba(10,41,68,.95);border:1px solid var(--line);border-radius:14px;padding:18px 20px 16px;margin:0 0 14px}
+.concl.c{border-left:4px solid var(--cy)}.concl.a{border-left:4px solid var(--am)}.concl.r{border-left:4px solid var(--pk)}.concl.g{border-left:4px solid var(--gr)}
+.concl .idx{width:40px;height:40px;border-radius:10px;display:grid;place-items:center;font-weight:800;font-size:18px;color:#06192b;background:var(--cy)}
+.concl.a .idx{background:var(--am)}.concl.r .idx{background:var(--pk)}.concl.g .idx{background:var(--gr)}
+.concl h3{margin:2px 0 8px;font-size:18px;font-weight:800;color:#fff;line-height:1.35}
+.concl p{margin:0;color:var(--muted);font-size:14px;line-height:1.7}
+.table{overflow-x:auto;margin:12px 0}table{width:100%;border-collapse:collapse;font-size:13px}
+th,td{padding:8px 10px;border-bottom:1px solid rgba(42,92,126,.45);text-align:right;white-space:nowrap}
+th{color:var(--muted);background:rgba(12,48,78,.65)}th:first-child,td:first-child{text-align:left}
+tr.good td{background:rgba(100,220,174,.08)}tr.bad td{background:rgba(246,138,176,.08)}tr.mid td{background:rgba(255,194,107,.07)}tr.base td{background:rgba(67,199,231,.08);font-weight:700}
+.step{display:grid;grid-template-columns:38px 1fr;gap:12px;margin:16px 0;align-items:start}
+.numc{width:30px;height:30px;border-radius:50%;display:grid;place-items:center;background:#164969;color:var(--gr);font-weight:750;margin-top:2px}
+.step .ttl{display:block;font-size:16px;font-weight:800;color:#fff;margin:0 0 6px;line-height:1.35}
+.step .bd{color:var(--muted);font-size:14px;font-weight:400;line-height:1.7}
+.rule-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin-top:10px}
+.rule{background:rgba(6,25,43,.55);border:1px solid rgba(42,92,126,.55);border-radius:10px;padding:10px 12px}
+.rule .k{display:block;font-size:12px;font-weight:800;letter-spacing:.06em;margin-bottom:4px}
+.rule .v{display:block;font-size:13.5px;color:#c5d8e6;font-weight:400;line-height:1.55}
+.rule.go .k{color:var(--gr)}.rule.warn .k{color:var(--am)}.rule.stop .k{color:var(--pk)}
+details.code{margin:10px 0;background:rgba(10,41,68,.95);border:1px solid var(--line);border-radius:12px;padding:10px 14px}
+details.code summary{cursor:pointer;color:var(--cy);font-weight:700}
+pre.sql{overflow:auto;max-height:720px;font-size:11.5px;line-height:1.5;color:#d7ecf8;white-space:pre}
+.foot{color:#7fa6c2;font-size:12.5px;margin-top:40px;border-top:1px solid var(--line);padding-top:16px;line-height:1.9}
+@media(max-width:900px){.g2,.f4,.rule-grid,.hero-facts{grid-template-columns:1fr}.wrap{padding:18px 16px 56px}.nav{margin:0 -16px;padding-left:16px}.hero h1{font-size:22px}.concl{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<main class="wrap">
+<header class="hero">
+  <div class="kicker">8月18日召回 · 结清后再获额 · 满7天</div>
+  <h1>1,254 人的提单率低于同期普通用户，按三类特征分成四种运营</h1>
+  <div class="hero-facts">
+    <div class="f"><span class="k">这 1,254 人</span><span class="v">8月18日召回名单里，召回后第一笔放款已结清、结清后又获额通过，获额日在 2026-08-20 至 2026-09-30，7 日窗口已走完。</span></div>
+    <div class="f"><span class="k">普通用户</span><span class="v">同期 T0 获额通过 28,699 人，已去掉 8月18日召回名单。当天 39.52%，3 日内 53.73%，7 日内 63.51%。</span></div>
+    <div class="f"><span class="k">分类时点</span><span class="v">再次获额时已经知道：召回前流失天数、刚结清那笔的额度使用率、提前还款天数和账期。用这三列决定第 7 天还要不要再触达。</span></div>
+  </div>
+</header>
+<nav class="nav">
+  <a href="#gap">和普通用户比</a>
+  <a href="#class">四类用户</a>
+  <a href="#churn">流失天数</a>
+  <a href="#util">额度使用率</a>
+  <a href="#early">提前还款</a>
+  <a href="#cross">三列交叉</a>
+  <a href="#ops">怎么运营</a>
+  <a href="#sql">口径与 SQL</a>
+</nav>
+
+<section id="gap">
+  <h2>和同期普通用户比</h2>
+  <p class="desc">提单都从获额日算起。当天 = 获额当天；3 日内 = 获额日起 3 天（含当天）；7 日内 = 获额日起 7 天（含当天）。分子是该笔获额 serial_id 在订单表里有对应提单。</p>
+  <div class="facts f4">
+    <article class="fact"><span class="lab">1,254 人 · 当天</span><span class="n">20.89%</span><span class="s">262 人。普通用户 39.52%，低 18.63 个百分点</span></article>
+    <article class="fact a"><span class="lab">1,254 人 · 3日内</span><span class="n">33.33%</span><span class="s">418 人。普通用户 53.73%，低 20.40 个百分点</span></article>
+    <article class="fact r"><span class="lab">1,254 人 · 7日内</span><span class="n">42.66%</span><span class="s">535 人。普通用户 63.51%，低 20.85 个百分点</span></article>
+    <article class="fact"><span class="lab">第 7 天仍未提单</span><span class="n">719</span><span class="s">1,254 − 535。再运营的入口在这一天，不在获额当天</span></article>
+  </div>
+  <div class="grid g2">
+    <article class="chart">
+      <h3>提单率：1,254 人 vs 普通用户</h3>
+      <p>获额日 2026-08-20 至 2026-09-30。单位：%</p>
+      <div class="box"><canvas id="c1"></canvas></div>
+    </article>
+    <article class="chart">
+      <h3>四类用户的 7 日提单率</h3>
+      <p>最右侧一柱是普通用户 63.51%。单位：%</p>
+      <div class="box"><canvas id="c2"></canvas></div>
+    </article>
+  </div>
+  <div class="table">
+    <table>
+      <thead><tr><th>人群</th><th>人数</th><th>当天</th><th>3日内</th><th>7日内</th><th>7日低于普通用户</th></tr></thead>
+      <tbody>
+        <tr class="base"><td>普通用户</td><td>28,699</td><td>39.52%</td><td>53.73%</td><td>63.51%</td><td>—</td></tr>
+        <tr><td>召回后结清再获额</td><td>1,254</td><td>20.89%</td><td>33.33%</td><td>42.66%</td><td>20.85 个百分点</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="callout">
+    <span class="ch">从当天到第 7 天，差距停在 21 个百分点左右</span>
+    <div class="bd"><p>当天低 18.63 个百分点，3 日内低 20.40 个百分点，7 日内低 20.85 个百分点。多等几天，这 1,254 人会继续有人自己提单，但追不上同期普通用户。后面的分类是在这个缺口里，找出第 7 天值得再触达的人，以及可以少打扰的人。</p></div>
+  </div>
+</section>
+
+<section id="class">
+  <h2>四类用户：特征和下一步</h2>
+  <p class="desc">四类互斥，加总 1,254 人。判定顺序：先看流失是不是短于 15 天；再看流失已满 15 天、使用率低于 80%、并且没有提前还；再看流失已满 30 天、使用率低于 80%、只提前了 1–7 天；剩下的归入其余。</p>
+  <div class="concl r">
+    <div class="idx">1</div>
+    <div>
+      <h3>优先召回 · 低使用且未提前还 · 221 人，7 日提单 26.70%</h3>
+      <p>召回前流失已经满 15 天，刚结清那笔额度使用率低于 80%，还款发生在到期当天或逾期之后。当天只有 10.86%，3 日内 21.27%，7 日内 26.70%，比普通用户低 36.81 个百分点。第 7 天仍未提单 162 人。这是再触达的第一池。</p>
+    </div>
+  </div>
+  <div class="concl r">
+    <div class="idx">2</div>
+    <div>
+      <h3>优先召回 · 长流失、低使用、只提前几天 · 112 人，7 日提单 29.46%</h3>
+      <p>流失满 30 天，使用率仍低于 80%，提前还款只有 1–7 天。7 日提单 29.46%，和上一类贴在一起，比普通用户低 34.05 个百分点。提前这几天在这一类里拉不动提单。第 7 天仍未提单 79 人，并进第一池。</p>
+    </div>
+  </div>
+  <div class="concl a">
+    <div class="idx">3</div>
+    <div>
+      <h3>先观察 · 短流失 · 290 人，7 日提单 50.00%</h3>
+      <p>召回前只流失了 8–15 天。当天 25.52%，3 日内 39.66%，7 日内 50.00%，比普通用户低 13.51 个百分点。使用率高低、有没有提前还，在这一类里都拉不开，各交叉格的 7 日提单都在 46%–56%。第 7 天仍未提单 145 人，用轻触达，力度低于前两池。</p>
+    </div>
+  </div>
+  <div class="concl g">
+    <div class="idx">4</div>
+    <div>
+      <h3>少打扰 · 其余 · 631 人，7 日提单 47.23%</h3>
+      <p>主要是两类人叠在一起：流失 15–30 天而且提前还过，以及使用率已经到 80% 及以上。当天 23.14%，3 日内 36.77%，7 日内 47.23%。其中使用率 80% 及以上、并且提前 1–7 天的人，7 日提单能到 53%–58%，是这 1,254 人里最接近普通用户的一截。第 7 天仍未提单的 333 人，只对其中流失满 30 天、又没有提前还的再触达。</p>
+    </div>
+  </div>
+  <div class="table">
+    <table>
+      <thead><tr><th>分类</th><th>人数</th><th>当天</th><th>3日内</th><th>7日内</th><th>7日低于普通用户</th><th>第7天仍未提</th><th>第7天的动作</th></tr></thead>
+      <tbody>
+        <tr class="base"><td>普通用户</td><td>28,699</td><td>39.52%</td><td>53.73%</td><td>63.51%</td><td>—</td><td>—</td><td>—</td></tr>
+        <tr class="bad"><td>低使用且未提前还</td><td>221</td><td>10.86%</td><td>21.27%</td><td>26.70%</td><td>36.81 个百分点</td><td>162</td><td>优先，沿用高意向薄切片召回</td></tr>
+        <tr class="bad"><td>长流失低使用只提前几天</td><td>112</td><td>16.07%</td><td>21.43%</td><td>29.46%</td><td>34.05 个百分点</td><td>79</td><td>优先，与上一类同一力度</td></tr>
+        <tr class="mid"><td>短流失</td><td>290</td><td>25.52%</td><td>39.66%</td><td>50.00%</td><td>13.51 个百分点</td><td>145</td><td>轻触达</td></tr>
+        <tr class="good"><td>其余</td><td>631</td><td>23.14%</td><td>36.77%</td><td>47.23%</td><td>16.28 个百分点</td><td>333</td><td>用得足且提前还过的少打扰</td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<section id="churn">
+  <h2>召回前流失天数</h2>
+  <p class="desc">流失天数用名单上的 churn_days：召回日 2026-08-18 减去该用户上一次还款日，再减 1，结清当天和召回当天都不算进流失。8–15 天是 [8, 15)。各档提前还的人比例都在 58%–63%，加权使用率最高的是 30–90 天。流失越长、7 日提单越低，这条线独立于使用率和提前还款。</p>
+  <div class="table">
+    <table>
+      <thead><tr><th>召回前流失</th><th>人数</th><th>加权使用率</th><th>提前还占比</th><th>当天</th><th>3日内</th><th>7日内</th><th>7日低于普通用户</th></tr></thead>
+      <tbody>
+        <tr><td>8–15天</td><td>290</td><td>72.66%</td><td>59.31%</td><td>25.52%</td><td>39.66%</td><td>50.00%</td><td>13.51 个百分点</td></tr>
+        <tr><td>15–30天</td><td>360</td><td>73.56%</td><td>62.50%</td><td>21.94%</td><td>35.28%</td><td>44.44%</td><td>19.07 个百分点</td></tr>
+        <tr><td>30–90天</td><td>449</td><td>76.74%</td><td>62.14%</td><td>18.49%</td><td>29.84%</td><td>38.75%</td><td>24.76 个百分点</td></tr>
+        <tr><td>90–180天</td><td>117</td><td>67.29%</td><td>58.12%</td><td>17.95%</td><td>29.06%</td><td>38.46%</td><td>25.05 个百分点</td></tr>
+        <tr class="bad"><td>180天以上</td><td>38</td><td>57.95%</td><td>57.89%</td><td>13.16%</td><td>21.05%</td><td>28.95%</td><td>34.56 个百分点</td></tr>
+        <tr class="base"><td>普通用户</td><td>28,699</td><td>—</td><td>—</td><td>39.52%</td><td>53.73%</td><td>63.51%</td><td>—</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="callout gold">
+    <span class="ch">30–90 天的人用得最足，7 日提单仍只有 38.75%</span>
+    <div class="bd"><p>这一档加权使用率 76.74%，高于 8–15 天的 72.66%，提前还占比也略高（62.14% 对 59.31%）。7 日提单却低 11.25 个百分点。运营上，流失长度要单独看，不能用“刚结清那笔用得很满”代替。</p></div>
+  </div>
+</section>
+
+<section id="util">
+  <h2>刚结清那笔的额度使用率</h2>
+  <p class="desc">使用率 = 召回后第一笔已结清放款的放款额 / 该笔获额。加权使用率 = 放款合计 / 获额合计。四档：80% 以下；80%–100% 为 [0.8, 0.999)；接近 100% 为 [0.999, 1.001]；100% 以上为 &gt;1.001。这是结清时已经发生的占用，再次获额时可以用来分类。</p>
+  <div class="table">
+    <table>
+      <thead><tr><th>使用率</th><th>人数</th><th>加权使用率</th><th>当天</th><th>3日内</th><th>7日内</th><th>7日低于普通用户</th></tr></thead>
+      <tbody>
+        <tr class="bad"><td>80%以下</td><td>641</td><td>55.31%</td><td>16.85%</td><td>28.24%</td><td>36.82%</td><td>26.69 个百分点</td></tr>
+        <tr><td>80%–100%</td><td>63</td><td>85.07%</td><td>19.05%</td><td>33.33%</td><td>39.68%</td><td>23.83 个百分点</td></tr>
+        <tr class="good"><td>接近100%</td><td>186</td><td>100.00%</td><td>27.42%</td><td>41.40%</td><td>52.15%</td><td>11.36 个百分点</td></tr>
+        <tr><td>100%以上</td><td>364</td><td>108.02%</td><td>25.00%</td><td>38.19%</td><td>48.63%</td><td>14.88 个百分点</td></tr>
+        <tr class="base"><td>普通用户</td><td>28,699</td><td>—</td><td>39.52%</td><td>53.73%</td><td>63.51%</td><td>—</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p class="desc">接近 100% 的 7 日提单最高，52.15%，仍低于普通用户 11.36 个百分点。100% 以上是 48.63%，略低于接近 100%。80%–100% 只有 63 人。使用率这条线的主要分界在 80%。</p>
+</section>
+
+<section id="early">
+  <h2>提前还款天数、账期和占比</h2>
+  <p class="desc">提前还款天数 = 刚结清那笔整单的到期日 − 实际还款日。正数是提前还，0 是到期当天，负数是逾期后才还清。账期天数是该笔订单的 loan_day。提前天数占比 = 每人的提前还款天数 / 该笔账期，再在组内取平均。账期以 21 天（517 人，7 日提单 45.45%）和 28 天（483 人，37.27%）为主，其次 7 天 128 人（45.31%）、14 天 122 人（50.82%）。</p>
+  <div class="table">
+    <table>
+      <thead><tr><th>提前还款天数</th><th>人数</th><th>平均提前天数</th><th>平均账期</th><th>提前天数占比</th><th>当天</th><th>3日内</th><th>7日内</th><th>7日低于普通用户</th></tr></thead>
+      <tbody>
+        <tr class="bad"><td>逾期后还</td><td>113</td><td>-2.2</td><td>18.5</td><td>-15.0%</td><td>14.16%</td><td>25.66%</td><td>30.97%</td><td>32.54 个百分点</td></tr>
+        <tr><td>到期当天</td><td>375</td><td>0</td><td>20.6</td><td>0%</td><td>14.40%</td><td>26.93%</td><td>36.80%</td><td>26.71 个百分点</td></tr>
+        <tr><td>提前1–3天</td><td>242</td><td>1.5</td><td>20.8</td><td>9.1%</td><td>20.25%</td><td>33.06%</td><td>41.74%</td><td>21.77 个百分点</td></tr>
+        <tr class="good"><td>提前4–7天</td><td>181</td><td>5.6</td><td>22.1</td><td>28.5%</td><td>29.28%</td><td>40.88%</td><td>51.93%</td><td>11.58 个百分点</td></tr>
+        <tr class="good"><td>提前8–14天</td><td>206</td><td>11.2</td><td>23.1</td><td>50.1%</td><td>27.67%</td><td>42.72%</td><td>50.97%</td><td>12.54 个百分点</td></tr>
+        <tr><td>提前15天以上</td><td>137</td><td>18.8</td><td>26.5</td><td>71.7%</td><td>24.09%</td><td>33.58%</td><td>45.26%</td><td>18.25 个百分点</td></tr>
+        <tr class="base"><td>普通用户</td><td>28,699</td><td>—</td><td>—</td><td>—</td><td>39.52%</td><td>53.73%</td><td>63.51%</td><td>—</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="callout">
+    <span class="ch">占账期 28%–50% 的时候，7 日提单最高；再提前，提单回落</span>
+    <div class="bd"><p>提前 4–7 天的人平均还掉账期的 28.5%，7 日提单 51.93%。提前 8–14 天还掉 50.1%，7 日提单 50.97%。提前 15 天以上还掉 71.7%，7 日提单回到 45.26%，而且这档平均账期 26.5 天，短账期进不了这一档。运营上把“提前很多天”和“意愿高”分开：提前 4–14 天是积极信号，提前超过账期七成、或逾期后才还清，都要降一档。</p></div>
+  </div>
+</section>
+
+<section id="cross">
+  <h2>三列交叉</h2>
+  <p class="desc">使用率收成 80% 以下 / 80% 及以上，提前还款收成未提前还（逾期后还 + 到期当天）/ 提前 1–7 天 / 提前 8 天以上。普通用户的 7 日提单是 63.51%。人数不少于 30 的格子里，最高是 58.11%。</p>
+  <div class="table">
+    <table>
+      <thead><tr><th>召回前流失</th><th>使用率</th><th>提前还款</th><th>人数</th><th>当天</th><th>3日内</th><th>7日内</th><th>7日低于普通用户</th></tr></thead>
+      <tbody>
+        <tr><td>8–15天</td><td>80%以下</td><td>未提前还</td><td>69</td><td>24.64%</td><td>40.58%</td><td>50.72%</td><td>12.79</td></tr>
+        <tr><td>8–15天</td><td>80%以下</td><td>提前1–7天</td><td>43</td><td>16.28%</td><td>39.53%</td><td>46.51%</td><td>17.00</td></tr>
+        <tr><td>8–15天</td><td>80%以下</td><td>提前8天以上</td><td>34</td><td>26.47%</td><td>32.35%</td><td>50.00%</td><td>13.51</td></tr>
+        <tr><td>8–15天</td><td>80%及以上</td><td>未提前还</td><td>49</td><td>14.29%</td><td>28.57%</td><td>46.94%</td><td>16.57</td></tr>
+        <tr class="good"><td>8–15天</td><td>80%及以上</td><td>提前1–7天</td><td>45</td><td>37.78%</td><td>51.11%</td><td>55.56%</td><td>7.95</td></tr>
+        <tr><td>8–15天</td><td>80%及以上</td><td>提前8天以上</td><td>50</td><td>34.00%</td><td>44.00%</td><td>50.00%</td><td>13.51</td></tr>
+        <tr class="bad"><td>15–30天</td><td>80%以下</td><td>未提前还</td><td>85</td><td>10.59%</td><td>21.18%</td><td>24.71%</td><td>38.80</td></tr>
+        <tr class="good"><td>15–30天</td><td>80%以下</td><td>提前1–7天</td><td>64</td><td>21.88%</td><td>35.94%</td><td>51.56%</td><td>11.95</td></tr>
+        <tr><td>15–30天</td><td>80%以下</td><td>提前8天以上</td><td>38</td><td>21.05%</td><td>36.84%</td><td>44.74%</td><td>18.77</td></tr>
+        <tr><td>15–30天</td><td>80%及以上</td><td>未提前还</td><td>50</td><td>14.00%</td><td>26.00%</td><td>38.00%</td><td>25.51</td></tr>
+        <tr class="good"><td>15–30天</td><td>80%及以上</td><td>提前1–7天</td><td>74</td><td>29.73%</td><td>44.59%</td><td>58.11%</td><td>5.40</td></tr>
+        <tr><td>15–30天</td><td>80%及以上</td><td>提前8天以上</td><td>49</td><td>38.78%</td><td>53.06%</td><td>55.10%</td><td>8.41</td></tr>
+        <tr class="bad"><td>30–90天</td><td>80%以下</td><td>未提前还</td><td>92</td><td>13.04%</td><td>22.83%</td><td>30.43%</td><td>33.08</td></tr>
+        <tr class="bad"><td>30–90天</td><td>80%以下</td><td>提前1–7天</td><td>84</td><td>15.48%</td><td>21.43%</td><td>28.57%</td><td>34.94</td></tr>
+        <tr><td>30–90天</td><td>80%以下</td><td>提前8天以上</td><td>50</td><td>18.00%</td><td>28.00%</td><td>38.00%</td><td>25.51</td></tr>
+        <tr><td>30–90天</td><td>80%及以上</td><td>未提前还</td><td>78</td><td>17.95%</td><td>30.77%</td><td>38.46%</td><td>25.05</td></tr>
+        <tr><td>30–90天</td><td>80%及以上</td><td>提前1–7天</td><td>67</td><td>29.85%</td><td>40.30%</td><td>49.25%</td><td>14.26</td></tr>
+        <tr><td>30–90天</td><td>80%及以上</td><td>提前8天以上</td><td>78</td><td>19.23%</td><td>38.46%</td><td>51.28%</td><td>12.23</td></tr>
+        <tr class="bad"><td>90–180天</td><td>80%以下</td><td>未提前还</td><td>32</td><td>9.38%</td><td>25.00%</td><td>31.25%</td><td>32.26</td></tr>
+        <tr class="bad"><td>90–180天</td><td>80%以下</td><td>提前1–7天</td><td>23</td><td>17.39%</td><td>21.74%</td><td>30.43%</td><td>33.08</td></tr>
+        <tr><td>90–180天</td><td>80%以下</td><td>提前8天以上</td><td>5</td><td>20.00%</td><td>20.00%</td><td>20.00%</td><td>43.51</td></tr>
+        <tr><td>90–180天</td><td>80%及以上</td><td>未提前还</td><td>17</td><td>5.88%</td><td>17.65%</td><td>35.29%</td><td>28.22</td></tr>
+        <tr><td>90–180天</td><td>80%及以上</td><td>提前1–7天</td><td>16</td><td>25.00%</td><td>43.75%</td><td>50.00%</td><td>13.51</td></tr>
+        <tr class="good"><td>90–180天</td><td>80%及以上</td><td>提前8天以上</td><td>24</td><td>33.33%</td><td>41.67%</td><td>54.17%</td><td>9.34</td></tr>
+        <tr class="bad"><td>180天以上</td><td>80%以下</td><td>未提前还</td><td>12</td><td>0.00%</td><td>0.00%</td><td>0.00%</td><td>63.51</td></tr>
+        <tr><td>180天以上</td><td>80%以下</td><td>提前1–7天</td><td>5</td><td>20.00%</td><td>20.00%</td><td>40.00%</td><td>23.51</td></tr>
+        <tr><td>180天以上</td><td>80%以下</td><td>提前8天以上</td><td>5</td><td>20.00%</td><td>40.00%</td><td>40.00%</td><td>23.51</td></tr>
+        <tr><td>180天以上</td><td>80%及以上</td><td>未提前还</td><td>4</td><td>0.00%</td><td>25.00%</td><td>25.00%</td><td>38.51</td></tr>
+        <tr><td>180天以上</td><td>80%及以上</td><td>提前1–7天</td><td>2</td><td>0.00%</td><td>0.00%</td><td>0.00%</td><td>63.51</td></tr>
+        <tr><td>180天以上</td><td>80%及以上</td><td>提前8天以上</td><td>10</td><td>30.00%</td><td>40.00%</td><td>60.00%</td><td>3.51</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="callout red">
+    <span class="ch">三条线叠在一起之后，优先池就是表里标红的格子</span>
+    <div class="bd">
+      <p>短流失 8–15 天的六个格子都在 46%–56%。使用率低、也没提前还，7 日提单仍有 50.72%（69 人）。这一档先观察。</p>
+      <p>流失到 15–30 天，使用率 80% 以下且未提前还，掉到 24.71%（85 人）。同一档如果提前了 1–7 天，回到 51.56%（64 人）。中等流失可以被提前还拉回来，所以这 64 人进「其余」，不进优先池。</p>
+      <p>流失到 30–90 天且使用率 80% 以下，未提前还是 30.43%（92 人），提前 1–7 天是 28.57%（84 人），两格一样低。提前 8 天以上才到 38.00%（50 人）。使用率到 80% 及以上之后，这一档落在 38.46%–51.28%。</p>
+      <p>人数不少于 30 的格子里，最接近普通用户的是流失 15–30 天、使用率 80% 及以上、提前 1–7 天：74 人，7 日提单 58.11%，仍低 5.40 个百分点。180 天以上每格不超过 12 人，其中使用率 80% 以下、未提前还的 12 人，7 日内提单为 0。</p>
+    </div>
+  </div>
+</section>
+
+<section id="ops">
+  <h2>按分类运营，抬高再次提单率</h2>
+  <p class="desc">再次获额的当天，三列都已经知道。获额之后的提单还没发生，所以分类可以用，第 7 天的提单只用来决定要不要真的再触达。</p>
+  <div class="step"><div class="numc">1</div><div><span class="ttl">获额当天到第 7 天，四类都不打断</span><span class="bd">短流失从当天 25.52% 走到 7 日 50.00%，中间有 72 人是第 2–7 天才提的。优先池里的「低使用且未提前还」也从 10.86% 走到 26.70%。第 0 天或第 3 天就再召回，会打到一批本来会自己提的人。</span></div></div>
+  <div class="step"><div class="numc">2</div><div><span class="ttl">第 7 天仍未提单，先打 241 人的优先池</span><span class="bd">低使用且未提前还的未提 162 人，加上长流失、低使用、只提前几天的未提 79 人。这两类 7 日提单只有 26.70% 和 29.46%，比普通用户低 34–37 个百分点。沿用之前对高意向薄切片有效的召回，按流失更长、使用率更低优先。不要把 719 个未提单的人整包再打一遍。</span></div></div>
+  <div class="step"><div class="numc">3</div><div><span class="ttl">短流失的 145 个未提，单独轻触达</span><span class="bd">他们所在的类 7 日提单已经有 50%，和优先池差了 20 个百分点以上。触达可以做，力度、券深度都低于优先池。8–15 天里使用率低且没提前还的人，7 日提单仍有 50.72%，不要因为使用率低就把他们提前放进优先池。</span></div></div>
+  <div class="step"><div class="numc">4</div><div><span class="ttl">其余 631 人里，用得足并且提前还过的少打扰</span><span class="bd">流失 15–30 天、使用率 80% 及以上、提前 1–7 天的 74 人，7 日提单 58.11%，是全表最接近普通用户的一格。提前 4–14 天、占账期大约 28%–50% 的人，整体 7 日提单在 51% 上下。这些人第 7 天如果还没提，再单独看；已经用足额度、又提前还过一截的，不进优先池。其余里流失满 30 天、使用率高但没提前还的（30–90 天这一格 78 人，7 日 38.46%），第 7 天仍未提的可以跟在优先池后面，力度低于 241 人。</span></div></div>
+  <div class="rule-grid">
+    <div class="rule go"><span class="k">进优先池</span><span class="v">流失 ≥15 天，使用率 &lt;80%，未提前还。或者流失 ≥30 天，使用率 &lt;80%，只提前 1–7 天。并且第 7 天仍未提单。</span></div>
+    <div class="rule warn"><span class="k">轻触达</span><span class="v">流失 8–15 天，第 7 天仍未提单。不论使用率和提前天数。</span></div>
+    <div class="rule go"><span class="k">积极信号，少打扰</span><span class="v">提前 4–14 天（大约还掉账期的 28%–50%），或使用率 ≥80% 且提前还过。尤其是流失只有 15–30 天的人。</span></div>
+    <div class="rule stop"><span class="k">整包再打一遍</span><span class="v">1,254 人里第 7 天未提的共 719 人，意愿差一倍以上。整包触达会把 50%–58% 那几格和 27% 的优先池打成同一个力度。</span></div>
+  </div>
+</section>
+
+<section id="sql">
+  <h2>口径与 SQL</h2>
+  <h3>1,254 人</h3>
+  <p class="desc">名单 <code>t7recalllist_0818_0819</code>，<code>recall_date = 2026-08-18</code>，11,585 人。召回后第一笔成功放款（提单日 ≥ 2026-08-18，<code>is_remit = 1</code>，放款额 &gt; 0，按放款时间取最早一笔）且已结清：<code>is_repaid = 1</code> 或 <code>loan_status_code = 7</code>，还款时间、还款日有效。这一步 1,490 人。结清之后 <code>is_pass1 = 1</code>，获额时间不早于结清时间；同一用户 20 秒内多笔合成一批，批内留 <code>serial_id</code> 最大；每人留最早一批。这一步 1,416 人。获额日 ≤ 2026-09-30 的是 1,254 人，最早获额日是 2026-08-20。</p>
+  <h3>三列和四类</h3>
+  <p class="desc">流失天数是名单字段 <code>churn_days</code>。使用率是刚结清那笔 <code>remit_amt / max_credit_apply_amt</code>，获额取该 serial 最晚一条 <code>vir_unix</code>。提前还款天数 = <code>due_date − repaid_date</code>。账期 = <code>loan_day</code>。四类按上文顺序互斥。提单用获额 <code>serial_id</code> 对订单表，同一 serial 取最早一笔提单。</p>
+  <h3>普通用户</h3>
+  <p class="desc">获额日 2026-08-20 至 2026-09-30 的 T0 获额通过：<code>loan_type_code = 2</code>，<code>is_pass1 = 1</code>，<code>recycle_type = 3</code>，20 秒内多笔只留一批内最晚一笔，获额当天干净结清，同一用户同一天留最早一笔。去掉 8月18日召回名单后 28,699 人。提单窗口与 1,254 人相同。观察日 2026-10-07，这批获额的 7 日窗口都已走完。</p>
+  <details class="code">
+    <summary>附录 · 完整 PGSQL（按顺序执行可复现上文全部数字）</summary>
+    <pre class="sql">-- =============================================================================
+-- 8/18 召回结清后再获额：满 7 天的 1,254 人
+-- 对照：同期普通 T0 获额通过（去掉 8/18 召回名单）的当天 / 3日 / 7日提单率
+-- 观察日冻结在 2026-10-07：获额日 2026-08-20～2026-09-30，7 日窗口已走完
+-- 本文件不计算点确认
+--
+-- 1,254 人：
+--   名单 t7recalllist_0818_0819，recall_date = 2026-08-18
+--   召回后第一笔成功放款已结清（is_repaid=1 或 loan_status_code=7，还款时间有效）
+--   结清之后 is_pass1=1；20 秒内多笔留 serial_id 最大；每人留最早一批
+--   获额日 &lt;= 2026-09-30
+-- 提单：获额 serial_id = 订单 serial_id
+--   当天 apply_date = vir_date
+--   3日 apply_date - vir_date ∈ [0,2]
+--   7日 apply_date - vir_date ∈ [0,6]
+-- 流失天数：名单字段 churn_days。8-15=[8,15)，15-30=[15,30)，30-90=[30,90)，90-180=[90,180)，180+=≥180
+-- 使用率：刚结清那笔 remit_amt / 该笔 max_credit_apply_amt
+--   80%以下 &lt;0.8；80%-100% [0.8,0.999)；接近100% [0.999,1.001]；100%以上 &gt;1.001
+-- 提前还款天数：整笔 due_date - repaid_date。正数提前，0 到期当天，负数逾期后还
+-- 账期天数：该笔 loan_day
+-- 提前天数占比：每人 early_days / loan_day，组内再平均
+-- 四类（互斥，按顺序）：
+--   短流失：churn_days &lt; 15
+--   低使用且未提前还：churn_days≥15 且使用率&lt;80% 且提前还款天数≤0
+--   长流失低使用只提前几天：churn_days≥30 且使用率&lt;80% 且提前 1～7 天
+--   其余
+-- 普通用户：T0 origin（loan_type_code=2，is_pass1=1，recycle_type=3，20 秒去重，
+--   获额当天干净结清，同一用户同一天留最早一笔），获额日 2026-08-20～09-30，
+--   且不在 8/18 召回名单。提单口径与上面相同。
+-- =============================================================================
+SET statement_timeout = 0;
+
+DROP TABLE IF EXISTS tmp_u;
+CREATE TEMP TABLE tmp_u AS
+SELECT DISTINCT churn_user_id::bigint AS user_id
+FROM wangchuanliang.t7recalllist_0818_0819
+WHERE recall_date = DATE &#x27;2026-08-18&#x27;;
+
+DROP TABLE IF EXISTS tmp_first_loan;
+CREATE TEMP TABLE tmp_first_loan AS
+SELECT user_id, serial_id, apply_date, remit_date, repaid_time, repaid_date, due_date
+FROM (
+    SELECT
+        u.user_id,
+        o.serial_id,
+        o.apply_date::date AS apply_date,
+        o.remit_date::date AS remit_date,
+        o.repaid_time,
+        o.repaid_date::date AS repaid_date,
+        o.due_date::date AS due_date,
+        o.is_repaid,
+        o.loan_status_code,
+        ROW_NUMBER() OVER (PARTITION BY u.user_id ORDER BY o.remit_time, o.serial_id) AS rn
+    FROM tmp_u u
+    INNER JOIN wangchuanliang.order_loan_f_v2_copy o ON o.user_id = u.user_id
+    WHERE o.apply_date &gt;= DATE &#x27;2026-08-18&#x27;
+      AND o.is_remit = 1
+      AND COALESCE(o.remit_amt, 0) &gt; 0
+) z
+WHERE rn = 1
+  AND (is_repaid = 1 OR loan_status_code = 7)
+  AND repaid_time &gt; TIMESTAMP &#x27;2000-01-01 00:00:00&#x27;
+  AND repaid_date &gt; DATE &#x27;2000-01-01&#x27;;
+
+DROP TABLE IF EXISTS tmp_credit_raw;
+CREATE TEMP TABLE tmp_credit_raw AS
+SELECT DISTINCT ON (v.user_id, v.serial_id)
+    f.user_id,
+    f.serial_id AS settle_serial_id,
+    f.repaid_time,
+    f.repaid_date,
+    v.serial_id,
+    v.vir_date::date AS vir_date,
+    TO_TIMESTAMP(v.vir_unix) AS vir_time,
+    r.recycle_type
+FROM tmp_first_loan f
+INNER JOIN wangchuanliang.order_vir_f_copy v
+    ON v.user_id = f.user_id
+   AND v.is_pass1 = 1
+   AND TO_TIMESTAMP(v.vir_unix) &gt;= f.repaid_time
+LEFT JOIN wangchuanliang.side_recycle_type_copy r ON r.serial_id = v.serial_id
+ORDER BY v.user_id, v.serial_id, v.vir_unix DESC;
+
+DROP TABLE IF EXISTS tmp_credit;
+CREATE TEMP TABLE tmp_credit AS
+WITH lagged AS (
+    SELECT c.*,
+           LAG(c.vir_time) OVER (PARTITION BY c.user_id ORDER BY c.vir_time, c.serial_id) AS prev_vir_time
+    FROM tmp_credit_raw c
+), batched AS (
+    SELECT l.*,
+           SUM(CASE WHEN l.prev_vir_time IS NULL OR l.vir_time - l.prev_vir_time &gt; INTERVAL &#x27;20 seconds&#x27; THEN 1 ELSE 0 END)
+             OVER (PARTITION BY l.user_id ORDER BY l.vir_time, l.serial_id ROWS UNBOUNDED PRECEDING) AS batch_id
+    FROM lagged l
+), one_batch AS (
+    SELECT user_id, settle_serial_id, repaid_time, repaid_date, serial_id, vir_date, vir_time, recycle_type, batch_id
+    FROM (
+        SELECT b.*,
+               ROW_NUMBER() OVER (PARTITION BY b.user_id, b.batch_id ORDER BY b.serial_id DESC) AS batch_rn
+        FROM batched b
+    ) x
+    WHERE batch_rn = 1
+)
+SELECT user_id, settle_serial_id, repaid_date, serial_id, vir_date, vir_time, recycle_type
+FROM (
+    SELECT o.*,
+           ROW_NUMBER() OVER (PARTITION BY o.user_id ORDER BY o.vir_time, o.serial_id DESC) AS user_rn
+    FROM one_batch o
+) z
+WHERE user_rn = 1;
+
+DROP TABLE IF EXISTS tmp_apply;
+CREATE TEMP TABLE tmp_apply AS
+SELECT serial_id, apply_date
+FROM (
+    SELECT a.serial_id, a.apply_date::date AS apply_date,
+           ROW_NUMBER() OVER (PARTITION BY a.serial_id ORDER BY a.apply_time, a.serial_id) AS rn
+    FROM wangchuanliang.order_loan_f_v2_copy a
+    INNER JOIN tmp_credit c ON c.serial_id = a.serial_id
+) z
+WHERE rn = 1;
+
+-- P1 漏斗
+SELECT
+    (SELECT COUNT(*) FROM tmp_u) AS n_list,
+    (SELECT COUNT(*) FROM tmp_first_loan) AS n_settled_first,
+    (SELECT COUNT(*) FROM tmp_credit) AS n_credit,
+    (SELECT COUNT(*) FROM tmp_credit WHERE vir_date &lt;= DATE &#x27;2026-09-30&#x27;) AS n_d7
+;
+
+DROP TABLE IF EXISTS tmp_x;
+CREATE TEMP TABLE tmp_x AS
+SELECT
+    c.user_id,
+    c.vir_date,
+    d.churn_days,
+    CASE
+        WHEN d.churn_days &gt;= 8 AND d.churn_days &lt; 15 THEN 1
+        WHEN d.churn_days &gt;= 15 AND d.churn_days &lt; 30 THEN 2
+        WHEN d.churn_days &gt;= 30 AND d.churn_days &lt; 90 THEN 3
+        WHEN d.churn_days &gt;= 90 AND d.churn_days &lt; 180 THEN 4
+        ELSE 5
+    END AS churn_ord,
+    CASE
+        WHEN d.churn_days &gt;= 8 AND d.churn_days &lt; 15 THEN &#x27;8-15天&#x27;
+        WHEN d.churn_days &gt;= 15 AND d.churn_days &lt; 30 THEN &#x27;15-30天&#x27;
+        WHEN d.churn_days &gt;= 30 AND d.churn_days &lt; 90 THEN &#x27;30-90天&#x27;
+        WHEN d.churn_days &gt;= 90 AND d.churn_days &lt; 180 THEN &#x27;90-180天&#x27;
+        ELSE &#x27;180天以上&#x27;
+    END AS churn_grp,
+    o.loan_day,
+    o.remit_amt,
+    v.max_credit_apply_amt AS credit_amt,
+    o.remit_amt / v.max_credit_apply_amt AS util,
+    CASE
+        WHEN o.remit_amt / v.max_credit_apply_amt &lt; 0.8 THEN 1
+        WHEN o.remit_amt / v.max_credit_apply_amt &lt; 0.999 THEN 2
+        WHEN o.remit_amt / v.max_credit_apply_amt &lt;= 1.001 THEN 3
+        ELSE 4
+    END AS util_ord,
+    CASE
+        WHEN o.remit_amt / v.max_credit_apply_amt &lt; 0.8 THEN &#x27;80%以下&#x27;
+        WHEN o.remit_amt / v.max_credit_apply_amt &lt; 0.999 THEN &#x27;80%-100%&#x27;
+        WHEN o.remit_amt / v.max_credit_apply_amt &lt;= 1.001 THEN &#x27;接近100%&#x27;
+        ELSE &#x27;100%以上&#x27;
+    END AS util_grp,
+    CASE WHEN o.remit_amt / v.max_credit_apply_amt &lt; 0.8 THEN 1 ELSE 2 END AS util2_ord,
+    CASE WHEN o.remit_amt / v.max_credit_apply_amt &lt; 0.8 THEN &#x27;80%以下&#x27; ELSE &#x27;80%及以上&#x27; END AS util2_grp,
+    (f.due_date - f.repaid_date) AS early_days,
+    CASE
+        WHEN (f.due_date - f.repaid_date) &lt; 0 THEN 0
+        WHEN (f.due_date - f.repaid_date) = 0 THEN 1
+        WHEN (f.due_date - f.repaid_date) BETWEEN 1 AND 3 THEN 2
+        WHEN (f.due_date - f.repaid_date) BETWEEN 4 AND 7 THEN 3
+        WHEN (f.due_date - f.repaid_date) BETWEEN 8 AND 14 THEN 4
+        ELSE 5
+    END AS early_ord,
+    CASE
+        WHEN (f.due_date - f.repaid_date) &lt; 0 THEN &#x27;逾期后还&#x27;
+        WHEN (f.due_date - f.repaid_date) = 0 THEN &#x27;到期当天&#x27;
+        WHEN (f.due_date - f.repaid_date) BETWEEN 1 AND 3 THEN &#x27;提前1-3天&#x27;
+        WHEN (f.due_date - f.repaid_date) BETWEEN 4 AND 7 THEN &#x27;提前4-7天&#x27;
+        WHEN (f.due_date - f.repaid_date) BETWEEN 8 AND 14 THEN &#x27;提前8-14天&#x27;
+        ELSE &#x27;提前15天以上&#x27;
+    END AS early_grp,
+    CASE
+        WHEN (f.due_date - f.repaid_date) &lt;= 0 THEN 1
+        WHEN (f.due_date - f.repaid_date) BETWEEN 1 AND 7 THEN 2
+        ELSE 3
+    END AS early3_ord,
+    CASE
+        WHEN (f.due_date - f.repaid_date) &lt;= 0 THEN &#x27;未提前还&#x27;
+        WHEN (f.due_date - f.repaid_date) BETWEEN 1 AND 7 THEN &#x27;提前1-7天&#x27;
+        ELSE &#x27;提前8天以上&#x27;
+    END AS early3_grp,
+    CASE
+        WHEN d.churn_days &lt; 15 THEN 1
+        WHEN d.churn_days &gt;= 15 AND o.remit_amt / v.max_credit_apply_amt &lt; 0.8 AND (f.due_date - f.repaid_date) &lt;= 0 THEN 2
+        WHEN d.churn_days &gt;= 30 AND o.remit_amt / v.max_credit_apply_amt &lt; 0.8 AND (f.due_date - f.repaid_date) BETWEEN 1 AND 7 THEN 3
+        ELSE 4
+    END AS seg_ord,
+    CASE
+        WHEN d.churn_days &lt; 15 THEN &#x27;短流失&#x27;
+        WHEN d.churn_days &gt;= 15 AND o.remit_amt / v.max_credit_apply_amt &lt; 0.8 AND (f.due_date - f.repaid_date) &lt;= 0 THEN &#x27;低使用且未提前还&#x27;
+        WHEN d.churn_days &gt;= 30 AND o.remit_amt / v.max_credit_apply_amt &lt; 0.8 AND (f.due_date - f.repaid_date) BETWEEN 1 AND 7 THEN &#x27;长流失低使用只提前几天&#x27;
+        ELSE &#x27;其余&#x27;
+    END AS seg_grp,
+    CASE WHEN a.apply_date = c.vir_date THEN 1 ELSE 0 END AS d0,
+    CASE WHEN a.apply_date &gt;= c.vir_date AND a.apply_date &lt;= c.vir_date + 2 THEN 1 ELSE 0 END AS d3,
+    CASE WHEN a.apply_date &gt;= c.vir_date AND a.apply_date &lt;= c.vir_date + 6 THEN 1 ELSE 0 END AS d7
+FROM tmp_credit c
+INNER JOIN (
+    SELECT churn_user_id::bigint AS user_id, churn_days
+    FROM wangchuanliang.t7recalllist_0818_0819
+    WHERE recall_date = DATE &#x27;2026-08-18&#x27;
+) d ON d.user_id = c.user_id
+INNER JOIN tmp_first_loan f ON f.user_id = c.user_id
+INNER JOIN wangchuanliang.order_loan_f_v2_copy o ON o.serial_id = f.serial_id
+INNER JOIN (
+    SELECT DISTINCT ON (serial_id) serial_id, max_credit_apply_amt
+    FROM wangchuanliang.order_vir_f_copy
+    WHERE serial_id IN (SELECT serial_id FROM tmp_first_loan)
+    ORDER BY serial_id, vir_unix DESC
+) v ON v.serial_id = f.serial_id AND COALESCE(v.max_credit_apply_amt, 0) &gt; 0
+LEFT JOIN tmp_apply a ON a.serial_id = c.serial_id
+WHERE c.vir_date &gt;= DATE &#x27;2026-08-20&#x27;
+  AND c.vir_date &lt;= DATE &#x27;2026-09-30&#x27;;
+
+-- P2 全体
+SELECT COUNT(*) AS n,
+       MIN(vir_date) AS min_vir, MAX(vir_date) AS max_vir,
+       ROUND(100.0 * SUM(remit_amt) / SUM(credit_amt), 2) AS util_w,
+       ROUND(AVG(early_days)::numeric, 1) AS avg_early,
+       ROUND(AVG(loan_day)::numeric, 1) AS avg_loan_day,
+       ROUND(100.0 * AVG(early_days::numeric / NULLIF(loan_day, 0)), 1) AS early_pct_of_term,
+       SUM(d0) AS n0, ROUND(100.0 * SUM(d0) / COUNT(*), 2) AS d0,
+       SUM(d3) AS n3, ROUND(100.0 * SUM(d3) / COUNT(*), 2) AS d3,
+       SUM(d7) AS n7, ROUND(100.0 * SUM(d7) / COUNT(*), 2) AS d7
+FROM tmp_x;
+
+-- P3 召回前流失天数
+SELECT churn_grp, COUNT(*) AS n,
+       ROUND(100.0 * SUM(remit_amt) / SUM(credit_amt), 2) AS util_w,
+       ROUND(100.0 * SUM(CASE WHEN early_days &gt; 0 THEN 1 ELSE 0 END) / COUNT(*), 2) AS early_pct,
+       SUM(d0) AS n0, ROUND(100.0 * SUM(d0) / COUNT(*), 2) AS d0,
+       SUM(d3) AS n3, ROUND(100.0 * SUM(d3) / COUNT(*), 2) AS d3,
+       SUM(d7) AS n7, ROUND(100.0 * SUM(d7) / COUNT(*), 2) AS d7
+FROM tmp_x
+GROUP BY churn_grp, churn_ord
+ORDER BY churn_ord;
+
+-- P4 额度使用率
+SELECT util_grp, COUNT(*) AS n,
+       ROUND(100.0 * SUM(remit_amt) / SUM(credit_amt), 2) AS util_w,
+       SUM(d0) AS n0, ROUND(100.0 * SUM(d0) / COUNT(*), 2) AS d0,
+       SUM(d3) AS n3, ROUND(100.0 * SUM(d3) / COUNT(*), 2) AS d3,
+       SUM(d7) AS n7, ROUND(100.0 * SUM(d7) / COUNT(*), 2) AS d7
+FROM tmp_x
+GROUP BY util_grp, util_ord
+ORDER BY util_ord;
+
+-- P5 提前还款天数、账期、占比
+SELECT early_grp, COUNT(*) AS n,
+       ROUND(AVG(early_days)::numeric, 1) AS avg_early,
+       ROUND(AVG(loan_day)::numeric, 1) AS avg_loan_day,
+       ROUND(100.0 * AVG(early_days::numeric / NULLIF(loan_day, 0)), 1) AS early_pct_of_term,
+       SUM(d0) AS n0, ROUND(100.0 * SUM(d0) / COUNT(*), 2) AS d0,
+       SUM(d3) AS n3, ROUND(100.0 * SUM(d3) / COUNT(*), 2) AS d3,
+       SUM(d7) AS n7, ROUND(100.0 * SUM(d7) / COUNT(*), 2) AS d7
+FROM tmp_x
+GROUP BY early_grp, early_ord
+ORDER BY early_ord;
+
+-- P6 账期分布
+SELECT loan_day, COUNT(*) AS n,
+       ROUND(100.0 * SUM(d7) / COUNT(*), 2) AS d7
+FROM tmp_x
+GROUP BY loan_day
+ORDER BY n DESC;
+
+-- P7 三列交叉（使用率两档 × 提前还款三档）
+SELECT churn_grp, util2_grp, early3_grp, COUNT(*) AS n,
+       ROUND(100.0 * SUM(d0) / COUNT(*), 2) AS d0,
+       ROUND(100.0 * SUM(d3) / COUNT(*), 2) AS d3,
+       ROUND(100.0 * SUM(d7) / COUNT(*), 2) AS d7
+FROM tmp_x
+GROUP BY churn_grp, churn_ord, util2_grp, util2_ord, early3_grp, early3_ord
+ORDER BY churn_ord, util2_ord, early3_ord;
+
+-- P8 四类用户
+SELECT seg_grp, COUNT(*) AS n,
+       SUM(d0) AS n0, ROUND(100.0 * SUM(d0) / COUNT(*), 2) AS d0,
+       SUM(d3) AS n3, ROUND(100.0 * SUM(d3) / COUNT(*), 2) AS d3,
+       SUM(d7) AS n7, ROUND(100.0 * SUM(d7) / COUNT(*), 2) AS d7,
+       COUNT(*) - SUM(d7) AS n_silent_d7
+FROM tmp_x
+GROUP BY seg_grp, seg_ord
+ORDER BY seg_ord;
+
+-- ===== 普通 T0 =====
+-- 获额日与 1,254 人的再次获额日对齐：2026-08-20～2026-09-30
+DROP TABLE IF EXISTS tmp_m_origin;
+CREATE TEMP TABLE tmp_m_origin AS
+WITH params AS (
+    SELECT DATE &#x27;2026-08-20&#x27; AS start_date, DATE &#x27;2026-10-01&#x27; AS end_date
+), raw_offer AS (
+    SELECT DISTINCT ON (v.user_id, v.serial_id)
+        v.user_id, v.serial_id, v.vir_date::date AS vir_date, TO_TIMESTAMP(v.vir_unix) AS vir_time
+    FROM wangchuanliang.order_vir_f_copy v
+    INNER JOIN wangchuanliang.side_recycle_type_copy r ON r.serial_id = v.serial_id
+    CROSS JOIN params p
+    WHERE v.is_pass1 = 1 AND v.loan_type_code = 2 AND r.recycle_type = 3
+      AND v.vir_date &gt;= p.start_date - 1 AND v.vir_date &lt; p.end_date
+    ORDER BY v.user_id, v.serial_id, v.vir_unix DESC
+), lagged AS (
+    SELECT r.*, LAG(r.vir_time) OVER (PARTITION BY r.user_id ORDER BY r.vir_time, r.serial_id) AS prev_vir_time
+    FROM raw_offer r
+), batched AS (
+    SELECT l.*, SUM(CASE WHEN l.prev_vir_time IS NULL OR l.vir_time - l.prev_vir_time &gt; INTERVAL &#x27;20 seconds&#x27; THEN 1 ELSE 0 END)
+      OVER (PARTITION BY l.user_id ORDER BY l.vir_time, l.serial_id ROWS UNBOUNDED PRECEDING) AS batch_id
+    FROM lagged l
+), dedup_offer AS (
+    SELECT user_id, serial_id, vir_date, vir_time
+    FROM (
+        SELECT b.*, ROW_NUMBER() OVER (PARTITION BY b.user_id, b.batch_id ORDER BY b.vir_time DESC, b.serial_id DESC) AS batch_rn
+        FROM batched b
+    ) x
+    CROSS JOIN params p
+    WHERE batch_rn = 1 AND vir_date &gt;= p.start_date AND vir_date &lt; p.end_date
+), candidate_users AS (SELECT DISTINCT user_id FROM dedup_offer),
+all_orders AS (
+    SELECT o.user_id, o.serial_id, o.apply_time, o.repaid_time, o.repaid_date::date AS repaid_date,
+           o.loan_status_code, o.is_remit, o.is_repaid
+    FROM wangchuanliang.order_loan_f_v2_copy o
+    INNER JOIN candidate_users u ON u.user_id = o.user_id
+), clean_settlement AS (
+    SELECT o.user_id, o.serial_id, o.repaid_time, o.repaid_date
+    FROM all_orders o
+    WHERE o.is_remit = 1 AND (o.is_repaid = 1 OR o.loan_status_code = 7)
+      AND o.repaid_time &gt; TIMESTAMP &#x27;2000-01-01 00:00:00&#x27;
+      AND NOT EXISTS (
+          SELECT 1 FROM all_orders x
+          WHERE x.user_id = o.user_id AND x.serial_id &lt;&gt; o.serial_id AND x.apply_time &lt; o.repaid_time
+            AND (x.loan_status_code IN (5, 8) OR (x.loan_status_code = 7 AND x.repaid_time &gt; o.repaid_time))
+      )
+), paired AS (
+    SELECT e.user_id, e.serial_id AS credit_serial_id, e.vir_date, e.vir_time,
+           ROW_NUMBER() OVER (PARTITION BY e.user_id, e.vir_date ORDER BY e.vir_time ASC, e.serial_id DESC) AS day_rn
+    FROM dedup_offer e
+    INNER JOIN clean_settlement s
+        ON s.user_id = e.user_id AND s.repaid_date = e.vir_date AND e.vir_time &gt;= s.repaid_time
+)
+SELECT user_id, credit_serial_id, vir_date, vir_time FROM paired WHERE day_rn = 1;
+
+DROP TABLE IF EXISTS tmp_recall;
+CREATE TEMP TABLE tmp_recall AS
+SELECT DISTINCT churn_user_id::bigint AS user_id
+FROM wangchuanliang.t7recalllist_0818_0819
+WHERE recall_date = DATE &#x27;2026-08-18&#x27;;
+
+DROP TABLE IF EXISTS tmp_t0_ord;
+CREATE TEMP TABLE tmp_t0_ord AS
+SELECT
+    t.user_id,
+    t.vir_date,
+    CASE WHEN o.apply_date IS NOT NULL AND (o.apply_date - t.vir_date) = 0 THEN 1 ELSE 0 END AS is_d0,
+    CASE WHEN o.apply_date IS NOT NULL AND (o.apply_date - t.vir_date) BETWEEN 0 AND 2 THEN 1 ELSE 0 END AS is_d3,
+    CASE WHEN o.apply_date IS NOT NULL AND (o.apply_date - t.vir_date) BETWEEN 0 AND 6 THEN 1 ELSE 0 END AS is_d7
+FROM tmp_m_origin t
+LEFT JOIN tmp_recall r ON r.user_id = t.user_id
+LEFT JOIN (
+    SELECT serial_id, apply_date
+    FROM (
+        SELECT a.serial_id, a.apply_date::date AS apply_date,
+               ROW_NUMBER() OVER (PARTITION BY a.serial_id ORDER BY a.apply_time) AS rn
+        FROM wangchuanliang.order_loan_f_v2_copy a
+        INNER JOIN tmp_m_origin t ON t.credit_serial_id = a.serial_id
+    ) z WHERE rn = 1
+) o ON o.serial_id = t.credit_serial_id
+WHERE r.user_id IS NULL;
+
+-- P9 普通用户
+SELECT COUNT(*) AS n,
+       SUM(is_d0) AS n_d0,
+       ROUND(100.0 * SUM(is_d0) / COUNT(*), 2) AS d0_pct,
+       SUM(is_d3) AS n_d3,
+       ROUND(100.0 * SUM(is_d3) / COUNT(*), 2) AS d3_pct,
+       SUM(is_d7) AS n_d7,
+       ROUND(100.0 * SUM(is_d7) / COUNT(*), 2) AS d7_pct
+FROM tmp_t0_ord;
+</pre>
+  </details>
+</section>
+<div class="foot">
+观察日 2026-10-07。1,254 人的获额日冻结在 2026-08-20 至 2026-09-30，7 日窗口截止 2026-10-06，已经走完。库 kaby_dw，schema wangchuanliang。附录 SQL：<code>appendix_t7_0818_d7_segment.sql</code>。
+</div>
+</main>
+<script>
+const C={cy:'#43c7e7',gr:'#64dcae',am:'#ffc26b',pk:'#f68ab0',mu:'#aac5da'};
+const axis={ticks:{color:'#aac5da'},grid:{color:'rgba(42,92,126,.25)'}};
+const legend={labels:{color:'#d7ecf8'}};
+new Chart(document.getElementById('c1'),{type:'bar',data:{labels:['当天','3日内','7日内'],datasets:[
+ {label:'1,254 人',data:[20.89,33.33,42.66],backgroundColor:C.pk},
+ {label:'普通用户',data:[39.52,53.73,63.51],backgroundColor:C.cy}
+]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend},scales:{x:axis,y:{...axis,max:80,title:{display:true,text:'提单率 %',color:'#aac5da'}}}}});
+new Chart(document.getElementById('c2'),{type:'bar',data:{labels:['低使用且未提前还','长流失只提前几天','短流失','其余','普通用户'],datasets:[
+ {label:'7日提单率',data:[26.70,29.46,50.00,47.23,63.51],backgroundColor:[C.pk,C.pk,C.am,C.gr,C.cy]}
+]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:axis,y:{...axis,max:80,title:{display:true,text:'7日提单率 %',color:'#aac5da'}}}}});
+</script>
+</body>
+</html>
