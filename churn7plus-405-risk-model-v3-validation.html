@@ -1,0 +1,463 @@
+<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>流失7天以上用户：405风险模型V3特征消融与时间验证</title><style>
+:root{--bg:#061b2a;--panel:#0b2a40;--line:#21465a;--ink:#d9e7ef;--muted:#9bb5c7;--cyan:#43c7e7;--green:#64dcae;--amber:#ffc26b}
+*{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.8 -apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei",sans-serif}.wrap{max-width:1280px;margin:auto;padding:48px 32px 70px}.hero{text-align:center;border-bottom:1px solid var(--line);padding-bottom:28px}.eyebrow{color:var(--green);font-weight:750;letter-spacing:2px}h1{font-size:36px;line-height:1.45;color:#fff;margin:16px 0}h2{font-size:25px;color:var(--cyan);border-left:5px solid var(--cyan);padding-left:15px;margin:0 0 18px}h3{font-size:19px;color:var(--amber);margin:20px 0 8px}p{margin:8px 0 14px}.small{color:var(--muted);font-size:14px}a{color:var(--cyan);text-decoration:none}a:hover{text-decoration:underline}nav{display:flex;gap:10px;flex-wrap:wrap;margin:22px 0}nav a{padding:7px 13px;border:1px solid var(--line);border-radius:7px;background:var(--panel)}section{min-width:0;margin:30px 0;padding:26px;background:#082235;border:1px solid var(--line);border-radius:14px;scroll-margin-top:20px}.cards{display:grid;grid-template-columns:repeat(2,1fr);gap:16px;margin:16px 0}.cards article,.note,.hint{min-width:0;background:var(--panel);padding:18px 20px;border-radius:10px;border-left:3px solid var(--green)}.cards h3{margin:0 0 8px}.cards p{margin-bottom:0}.note{border-left-color:var(--cyan);margin:18px 0}.note.warn,.hint{border-left-color:var(--amber)}strong{color:var(--green)}.kpis,.flow{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px;margin:20px 0}.kpi,.flow div{min-width:0;background:var(--panel);padding:18px;border-radius:9px;border-top:2px solid var(--line)}.kpi b,.flow strong{display:block;font-size:clamp(22px,2.2vw,31px);color:var(--green)}.kpi span{font-size:14px;color:var(--muted)}.table,.scroll{overflow-x:auto;margin:14px 0}table{border-collapse:collapse;width:100%;font-size:14px}th{background:#123b51;color:var(--cyan);text-align:left;white-space:nowrap}td,th{padding:11px 13px;border-bottom:1px solid var(--line);vertical-align:top}td:first-child{color:var(--green);font-weight:650}td{min-width:100px;font-variant-numeric:tabular-nums}tr:last-child td{border-bottom:0}code{font:13px ui-monospace,SFMono-Regular,Menlo,monospace;overflow-wrap:anywhere;color:#b3e4f5}pre{padding:18px;background:#041725;border:1px solid var(--line);border-radius:9px;overflow:auto;line-height:1.65;font-size:13px}pre code{white-space:pre;overflow-wrap:normal}details{margin:16px 0;border:1px solid var(--line);border-radius:8px;padding:12px 16px}summary{cursor:pointer;color:var(--cyan);font-weight:700}.steps{display:grid;gap:12px}.step{padding:15px 18px;background:var(--panel);border-left:3px solid var(--cyan)}.step strong{display:block;color:var(--amber)}svg{display:block;margin:18px 0}.footer{text-align:center;color:var(--muted);font-size:13px;margin-top:28px}ul{margin:8px 0;padding-left:22px}li{margin:7px 0}.features td{min-width:160px;overflow-wrap:anywhere}.features td:first-child{min-width:250px}input{font:inherit;font-size:14px;background:var(--panel);color:var(--ink);border:1px solid #3e6a82;padding:10px 12px;border-radius:7px;width:100%;max-width:650px}.controls{margin:16px 0}.status{display:inline-block;border:1px solid var(--line);border-radius:5px;padding:2px 7px;font-size:12px;color:var(--green)}.status.out{color:var(--amber)}
+@media(max-width:800px){.wrap{padding:25px 14px}section{padding:20px 16px}h1{font-size:27px}h2{font-size:22px}.cards{grid-template-columns:1fr}.kpis,.flow{grid-template-columns:repeat(2,minmax(0,1fr))}.table table{min-width:650px}.features{min-width:1100px}}
+@media print{nav,.controls{display:none}body{background:white;color:#111}section,.note,.cards article,.flow div,.kpi{background:white;break-inside:avoid}h1,h2,h3,strong,th,td:first-child{color:#163c58}table{font-size:10px}pre{white-space:pre-wrap;background:#eee;color:#111}}
+
+.hero h1,.hero p{text-align:center} h2{color:#73d1ee} h3{color:#ffd08b} .cards{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px} .metric{font-size:29px;color:#78d8e9;font-weight:750} td,th{white-space:nowrap} .chart{background:#102a3b;border:1px solid #21465a;border-radius:12px;padding:16px;margin:18px 0} svg{display:block;width:100%;height:auto} .hint{color:#b1c6d6;font-size:14px} .verdict{border-left:4px solid #ffbd74;padding:14px 18px;background:#1d3040} details{margin:14px 0} .good{color:#73d2b4}.warn{color:#ffbd74}@media(max-width:760px){.cards{grid-template-columns:1fr}}</style></head><body><main class="wrap"><header class="hero"><div class="eyebrow">405基础评分 · 固定参数消融 · 多月验证 · 风险概率校准</div><h1>流失7天以上用户：405风险模型V3特征消融与时间验证</h1><p>生成日期：2026年10月9日<br>沿用冻结样本，完整数据截至2026年10月7日；业务时区America/Belize。</p></header><nav><a href="churn7plus-405-risk-model-v3-plan.html">V3实验方案</a><a href="churn7plus-405-risk-model-v3-validation.html">V3结果报告</a><a href="churn7plus-405-risk-model-v2-validation.html?v=6ceefb3">V2对照</a><a href="churn7plus-405-risk-model-v1-validation.html?v=bf1d307">V1对照</a></nav><section><h2>一、结论：已完成三项检验，暂不替换V1</h2><div class="cards"><article><div class="metric">108</div><p>固定参数特征组训练对照</p></article><article><div class="metric">22,248</div><p>1—6月滚动验证记录</p></article><article><div class="metric">92</div><p>最终候选特征数</p></article><article><div class="metric">0.5788</div><p>8—9月V3测试AUC</p></article></div><div class="verdict"><h3>本轮找到较稳定的特征组，但尚未形成最终测试增益</h3><ul><li>最近1—5笔借还细分：6个月中5个月正增益，平均ΔAUC +0.0025；保留57个原有字段，再加35个该组字段，共92项。</li><li>评分×流失交互、实际App与非还款日App未达到预先规定的跨月稳定增益标准。</li><li>分层概率校准经过独立向前验证，但未优于整体校准；不能为了提高某组预测值而直接把它调到测试实际逾期率。</li></ul></div><p>同一批6,581条测试记录：V1 AUC 0.5798，V3 0.5788，变化-0.0010；用户聚类95%区间-0.0058至+0.0035。区间包含0，不能确认排序提升。</p><p>概率误差也未改善：V1 Brier 0.21986，V3 0.22044（越低越好）。V3仍为实验版，旧模型不变。</p><p class="hint">8—9月样本此前已被用于V1/V2验证与问题发现，本轮不是新盲测；9月也不是完整成熟月份。</p></section><section><h2>二、第一项：固定样本和参数，逐组检验增益</h2><p>每个时间段的样本完全相同；树模型固定为V1的15叶节点、180轮、学习率0.05、L2=10、叶节点最少100条、同一随机种子。只改变特征。新增常量和完全重复字段只在该段训练集上识别并剔除，原有57字段保留。</p><div class="chart"><svg viewBox="0 0 1100 575" role="img"><title>单组特征对六个月平均AUC的增量</title><line x1="650" x2="650" y1="35" y2="535" stroke="#7796ad"/><text x="8" y="65" font-size="18" fill="#dceaf3">实际App行为</text><rect x="650.0" y="40" width="70.5" height="35" rx="3" fill="#79dbc2"/><text x="970" y="64" text-anchor="end" fill="#79dbc2" font-size="19" font-weight="700">+0.0010</text><text x="990" y="64" fill="#b1c6d6" font-size="15">3/6月</text><text x="8" y="125" font-size="18" fill="#dceaf3">历史还款整体细分</text><rect x="590.4" y="100" width="59.6" height="35" rx="3" fill="#ff9ba8"/><text x="970" y="124" text-anchor="end" fill="#ff9ba8" font-size="19" font-weight="700">-0.0008</text><text x="990" y="124" fill="#b1c6d6" font-size="15">3/6月</text><text x="8" y="185" font-size="18" fill="#dceaf3">非还款日App行为</text><rect x="650.0" y="160" width="72.0" height="35" rx="3" fill="#79dbc2"/><text x="970" y="184" text-anchor="end" fill="#79dbc2" font-size="19" font-weight="700">+0.0010</text><text x="990" y="184" fill="#b1c6d6" font-size="15">3/6月</text><text x="8" y="245" font-size="18" fill="#dceaf3">历史比例细分</text><rect x="650.0" y="220" width="51.6" height="35" rx="3" fill="#79dbc2"/><text x="970" y="244" text-anchor="end" fill="#79dbc2" font-size="19" font-weight="700">+0.0007</text><text x="990" y="244" fill="#b1c6d6" font-size="15">4/6月</text><text x="8" y="305" font-size="18" fill="#dceaf3">最近1—5笔借还细分</text><rect x="650.0" y="280" width="178.6" height="35" rx="3" fill="#79dbc2"/><text x="970" y="304" text-anchor="end" fill="#79dbc2" font-size="19" font-weight="700">+0.0025</text><text x="990" y="304" fill="#b1c6d6" font-size="15">5/6月</text><text x="8" y="365" font-size="18" fill="#dceaf3">405与流失交互</text><rect x="496.6" y="340" width="153.4" height="35" rx="3" fill="#ff9ba8"/><text x="970" y="364" text-anchor="end" fill="#ff9ba8" font-size="19" font-weight="700">-0.0022</text><text x="990" y="364" fill="#b1c6d6" font-size="15">1/6月</text><text x="8" y="425" font-size="18" fill="#dceaf3">生命周期趋势</text><rect x="647.3" y="400" width="2.7" height="35" rx="3" fill="#ff9ba8"/><text x="970" y="424" text-anchor="end" fill="#ff9ba8" font-size="19" font-weight="700">-0.0000</text><text x="990" y="424" fill="#b1c6d6" font-size="15">4/6月</text><text x="8" y="485" font-size="18" fill="#dceaf3">最近多笔与历史窗口计数</text><rect x="650.0" y="460" width="128.8" height="35" rx="3" fill="#79dbc2"/><text x="970" y="484" text-anchor="end" fill="#79dbc2" font-size="19" font-weight="700">+0.0018</text><text x="990" y="484" fill="#b1c6d6" font-size="15">4/6月</text></svg><p class="hint">数字标签在独立右侧区域，不覆盖柱形。绿色为正增量，粉色为负增量。只描述该实验的预测增益，不代表因果效应。</p></div><div class="scroll"><table><thead><tr><th>单独增加的特征组</th><th>候选字段数</th><th>平均ΔAUC</th><th>正增益月份</th><th>最差月ΔAUC</th><th>通过稳定标准</th></tr></thead><tbody><tr><td>实际App行为</td><td>64</td><td>+0.0010</td><td>3/6</td><td>-0.0027</td><td>否</td></tr><tr><td>历史还款整体细分</td><td>14</td><td>-0.0008</td><td>3/6</td><td>-0.0081</td><td>否</td></tr><tr><td>非还款日App行为</td><td>67</td><td>+0.0010</td><td>3/6</td><td>-0.0068</td><td>否</td></tr><tr><td>历史比例细分</td><td>17</td><td>+0.0007</td><td>4/6</td><td>-0.0032</td><td>否</td></tr><tr><td>最近1—5笔借还细分</td><td>35</td><td>+0.0025</td><td>5/6</td><td>-0.0011</td><td>是</td></tr><tr><td>405与流失交互</td><td>26</td><td>-0.0022</td><td>1/6</td><td>-0.0083</td><td>否</td></tr><tr><td>生命周期趋势</td><td>13</td><td>-0.0000</td><td>4/6</td><td>-0.0111</td><td>否</td></tr><tr><td>最近多笔与历史窗口计数</td><td>30</td><td>+0.0018</td><td>4/6</td><td>-0.0017</td><td>否</td></tr></tbody></table></div><h3>筛选规则在测试前固定</h3><p>平均ΔAUC≥0.002，至少4/6个月为正，最差月ΔAUC≥−0.02。该规则是候选筛选标准，不是统计显著性证明。组合复核只包含已通过的组；本轮只有“最近1—5笔借还细分”通过。</p><h3>为什么没有把全部特征塞回模型</h3><p>全部生命周期组的平均ΔAUC为−0.0010。评分×流失交互仅1/6个月为正，平均ΔAUC为−0.0022。App候选的平均增益较小且只有3/6个月为正。未进入候选模型不等于这些行为没有业务意义，只说明在本次风险预测任务中增益不稳定。</p><details><summary>展开全部增加、删除和组合对照</summary><div class="scroll"><table><thead><tr><th>配置</th><th>6月平均AUC</th><th>相对基线Δ</th><th>正增益月份</th><th>最差月Δ</th></tr></thead><tbody><tr><td>基线 + 实际App行为</td><td>0.5888</td><td>+0.0010</td><td>3/6</td><td>-0.0027</td></tr><tr><td>基线 + 历史还款整体细分</td><td>0.5870</td><td>-0.0008</td><td>3/6</td><td>-0.0081</td></tr><tr><td>基线 + 非还款日App行为</td><td>0.5889</td><td>+0.0010</td><td>3/6</td><td>-0.0068</td></tr><tr><td>基线 + 历史比例细分</td><td>0.5886</td><td>+0.0007</td><td>4/6</td><td>-0.0032</td></tr><tr><td>基线 + 最近1—5笔借还细分</td><td>0.5904</td><td>+0.0025</td><td>5/6</td><td>-0.0011</td></tr><tr><td>基线 + 405与流失交互</td><td>0.5856</td><td>-0.0022</td><td>1/6</td><td>-0.0083</td></tr><tr><td>基线 + 生命周期趋势</td><td>0.5878</td><td>-0.0000</td><td>4/6</td><td>-0.0111</td></tr><tr><td>基线 + 最近多笔与历史窗口计数</td><td>0.5897</td><td>+0.0018</td><td>4/6</td><td>-0.0017</td></tr><tr><td>稳定特征组组合</td><td>0.5904</td><td>+0.0025</td><td>5/6</td><td>-0.0011</td></tr><tr><td>57字段基线</td><td>0.5878</td><td>+0.0000</td><td>0/6</td><td>+0.0000</td></tr><tr><td>全生命周期 − 历史还款整体细分</td><td>0.5871</td><td>-0.0007</td><td>3/6</td><td>-0.0072</td></tr><tr><td>全生命周期 − 历史比例细分</td><td>0.5870</td><td>-0.0009</td><td>3/6</td><td>-0.0085</td></tr><tr><td>全生命周期 − 最近1—5笔借还细分</td><td>0.5860</td><td>-0.0018</td><td>2/6</td><td>-0.0093</td></tr><tr><td>全生命周期 − 405与流失交互</td><td>0.5884</td><td>+0.0005</td><td>4/6</td><td>-0.0066</td></tr><tr><td>全生命周期 − 生命周期趋势</td><td>0.5875</td><td>-0.0003</td><td>3/6</td><td>-0.0091</td></tr><tr><td>全生命周期 − 最近多笔与历史窗口计数</td><td>0.5871</td><td>-0.0007</td><td>3/6</td><td>-0.0055</td></tr><tr><td>生命周期 + 两类App</td><td>0.5900</td><td>+0.0022</td><td>3/6</td><td>-0.0027</td></tr><tr><td>全部生命周期</td><td>0.5869</td><td>-0.0010</td><td>3/6</td><td>-0.0071</td></tr></tbody></table></div></details></section><section><h2>三、第二项：多个月份的向前验证</h2><p>按2026年1—6月逐月训练。预测某月时，训练订单提单时间必须早于该月1日，且训练标签到期D7必须已在该月1日前成熟。不随机混排，不用后续月份的标签训练前面的模型。</p><p>验证月份的结果在8月1日统一验收；只保留该日前已经成熟的标签，所以5、6月仍有部分未成熟订单未进入验证。训练开始时间仍为2025年7月1日。</p><div class="chart"><svg viewBox="0 0 1130 415" role="img"><title>月度趋势，末端标签置于独立右侧区域</title><line x1="85" x2="785" y1="345.0" y2="345.0" stroke="#274b60"/><text x="12" y="350.0" fill="#a9c0d2" font-size="15">0.554</text><line x1="85" x2="785" y1="275.0" y2="275.0" stroke="#274b60"/><text x="12" y="280.0" fill="#a9c0d2" font-size="15">0.569</text><line x1="85" x2="785" y1="205.0" y2="205.0" stroke="#274b60"/><text x="12" y="210.0" fill="#a9c0d2" font-size="15">0.584</text><line x1="85" x2="785" y1="135.0" y2="135.0" stroke="#274b60"/><text x="12" y="140.0" fill="#a9c0d2" font-size="15">0.599</text><line x1="85" x2="785" y1="65.0" y2="65.0" stroke="#274b60"/><text x="12" y="70.0" fill="#a9c0d2" font-size="15">0.615</text><polyline points="85.0,199.3 225.0,171.2 365.0,276.0 505.0,136.3 645.0,135.8 785.0,210.3" fill="none" stroke="#a8bdd0" stroke-width="3"/><circle cx="85.0" cy="199.3" r="4" fill="#a8bdd0"/><circle cx="225.0" cy="171.2" r="4" fill="#a8bdd0"/><circle cx="365.0" cy="276.0" r="4" fill="#a8bdd0"/><circle cx="505.0" cy="136.3" r="4" fill="#a8bdd0"/><circle cx="645.0" cy="135.8" r="4" fill="#a8bdd0"/><circle cx="785.0" cy="210.3" r="4" fill="#a8bdd0"/><circle cx="100" cy="23" r="5" fill="#a8bdd0"/><text x="113" y="28" fill="#dceaf3" font-size="15">57字段基线</text><polyline points="85.0,182.2 225.0,147.8 365.0,246.6 505.0,134.0 645.0,140.4 785.0,207.5" fill="none" stroke="#78d8ed" stroke-width="3"/><circle cx="85.0" cy="182.2" r="4" fill="#78d8ed"/><circle cx="225.0" cy="147.8" r="4" fill="#78d8ed"/><circle cx="365.0" cy="246.6" r="4" fill="#78d8ed"/><circle cx="505.0" cy="134.0" r="4" fill="#78d8ed"/><circle cx="645.0" cy="140.4" r="4" fill="#78d8ed"/><circle cx="785.0" cy="207.5" r="4" fill="#78d8ed"/><circle cx="410" cy="23" r="5" fill="#78d8ed"/><text x="423" y="28" fill="#dceaf3" font-size="15">增加最近借还细分</text><path d="M 792.0 207.5 L 840 207.5 L 850 207.5" stroke="#78d8ed" fill="none"/><text x="860" y="212.5" fill="#78d8ed" font-size="16" font-weight="650">增加最近借还细分 0.5836</text><path d="M 792.0 210.3 L 840 238.5 L 850 238.5" stroke="#a8bdd0" fill="none"/><text x="860" y="243.5" fill="#a8bdd0" font-size="16" font-weight="650">57字段基线 0.5830</text><text x="85.0" y="385" fill="#dceaf3" font-size="16" text-anchor="middle">01</text><text x="225.0" y="385" fill="#dceaf3" font-size="16" text-anchor="middle">02</text><text x="365.0" y="385" fill="#dceaf3" font-size="16" text-anchor="middle">03</text><text x="505.0" y="385" fill="#dceaf3" font-size="16" text-anchor="middle">04</text><text x="645.0" y="385" fill="#dceaf3" font-size="16" text-anchor="middle">05</text><text x="785.0" y="385" fill="#dceaf3" font-size="16" text-anchor="middle">06</text></svg><p class="hint">纵轴缩放展示变化；完整数值见下表。折线末端标签放在右侧独立区域，避开折线和坐标轴。</p></div><div class="scroll"><table><thead><tr><th>验证月</th><th>当时可训练记录</th><th>成熟验证记录</th><th>D7逾期数</th><th>实际D7率</th><th>基线AUC</th><th>候选AUC</th><th>ΔAUC</th><th>重点客群记录</th></tr></thead><tbody><tr><td>2026-01</td><td>11575</td><td>2846</td><td>712</td><td>25.02%</td><td>0.5854</td><td>0.5891</td><td>+0.0037</td><td>205</td></tr><tr><td>2026-02</td><td>14047</td><td>3010</td><td>699</td><td>23.22%</td><td>0.5915</td><td>0.5966</td><td>+0.0051</td><td>164</td></tr><tr><td>2026-03</td><td>16776</td><td>3859</td><td>949</td><td>24.59%</td><td>0.5687</td><td>0.5751</td><td>+0.0064</td><td>181</td></tr><tr><td>2026-04</td><td>20381</td><td>3874</td><td>983</td><td>25.37%</td><td>0.5991</td><td>0.5996</td><td>+0.0005</td><td>186</td></tr><tr><td>2026-05</td><td>24035</td><td>4063</td><td>1080</td><td>26.58%</td><td>0.5992</td><td>0.5982</td><td>-0.0011</td><td>178</td></tr><tr><td>2026-06</td><td>28052</td><td>4596</td><td>1396</td><td>30.37%</td><td>0.5830</td><td>0.5836</td><td>+0.0006</td><td>211</td></tr></tbody></table></div><p class="hint">同一用户可有多条历史事件；ID不作特征。允许真实业务中的历史用户再次出现，不将“同用户出现”误当成目标订单信息泄漏。特征分档阈值只从该段训练用户计算。重点客群对照仍使用冻结V1档位472≤405&lt;487，属于事后统一业务分组。</p></section><section><h2>四、第三项：长期流失优质客群的概率校准</h2><h3>检验方法</h3><ul><li>独立使用历史向前预测，不使用模型在自身训练样本上的预测。</li><li>比较整体校准与“405四档×流失是否≥30天”的8个分层校准；小客群的调整幅度向整体曲线收缩。</li><li>3—6月每个月只用该月之前、当时已成熟的校准记录；使用180天窗口、90天半衰期。</li><li>优先比较整体Brier + 0.25×重点客群Brier，并设整体排序与概率误差保护条件；全部规则在8—9月验收前锁定。</li></ul><div class="scroll"><table><thead><tr><th>校准方法</th><th>前向验证记录</th><th>重点客群记录</th><th>整体Brier</th><th>重点客群Brier</th><th>重点客群实际风险</th><th>重点客群平均预测</th><th>是否选中</th></tr></thead><tbody><tr><td>整体校准</td><td>16392</td><td>756</td><td>0.192741</td><td>0.170618</td><td>22.35%</td><td>23.69%</td><td>是</td></tr><tr><td>分层校准λ=10</td><td>16392</td><td>756</td><td>0.192836</td><td>0.170975</td><td>22.35%</td><td>21.64%</td><td>否</td></tr><tr><td>分层校准λ=30</td><td>16392</td><td>756</td><td>0.192768</td><td>0.170900</td><td>22.35%</td><td>22.19%</td><td>否</td></tr><tr><td>分层校准λ=100</td><td>16392</td><td>756</td><td>0.192729</td><td>0.170781</td><td>22.35%</td><td>22.90%</td><td>否</td></tr></tbody></table></div><p>分层λ=30将历史重点客群平均预测调到22.19%，更接近历史实际22.35%；但其逐笔概率误差未优于整体校准。因此最终保留整体校准，分层方案记录为未通过，不强行采用。</p><h3>最终验收：风险低估仍然存在</h3><div class="chart"><svg viewBox="0 0 1100 330" role="img"><title>优质且长期流失客群的实际风险和平均预测</title><text x="10" y="61" font-size="18" fill="#dceaf3">实际D7逾期率</text><rect x="245" y="35" width="431.5" height="39" fill="#ff9ba8" rx="4"/><text x="990" y="62" text-anchor="end" fill="#ff9ba8" font-size="21" font-weight="700">35.96%</text><text x="10" y="127" font-size="18" fill="#dceaf3">V1平均预测</text><rect x="245" y="101" width="321.3" height="39" fill="#a8bdd0" rx="4"/><text x="990" y="128" text-anchor="end" fill="#a8bdd0" font-size="21" font-weight="700">26.77%</text><text x="10" y="193" font-size="18" fill="#dceaf3">V2平均预测</text><rect x="245" y="167" width="322.3" height="39" fill="#ffc074" rx="4"/><text x="990" y="194" text-anchor="end" fill="#ffc074" font-size="21" font-weight="700">26.86%</text><text x="10" y="259" font-size="18" fill="#dceaf3">V3平均预测</text><rect x="245" y="233" width="313.4" height="39" fill="#78d8ed" rx="4"/><text x="990" y="260" text-anchor="end" fill="#78d8ed" font-size="21" font-weight="700">26.12%</text></svg></div><div class="scroll"><table><thead><tr><th>模型</th><th>重点客群订单</th><th>实际D7率</th><th>平均预测风险</th><th>预测−实际（pp）</th><th>组内AUC</th><th>Brier</th></tr></thead><tbody><tr><td>V1</td><td>317</td><td>35.96%</td><td>26.77%</td><td>-9.19</td><td>0.6104</td><td>0.23329</td></tr><tr><td>V2</td><td>317</td><td>35.96%</td><td>26.86%</td><td>-9.11</td><td>0.6172</td><td>0.23282</td></tr><tr><td>V3固定窗（主候选）</td><td>317</td><td>35.96%</td><td>26.12%</td><td>-9.84</td><td>0.6123</td><td>0.23516</td></tr><tr><td>V3扩样（仅对照）</td><td>317</td><td>35.96%</td><td>26.21%</td><td>-9.75</td><td>0.6014</td><td>0.23535</td></tr></tbody></table></div><div class="verdict"><h3>本轮没有解决长期流失优质客群的风险低估</h3><p>实际35.96%，V3平均预测26.12%，仍低估9.84个百分点；V1低估9.19个百分点。组内AUC增益95%区间-0.0242至+0.0244，尚不能确认组内排序提升。</p></div></section><section><h2>五、新发现：重点客群风险关系随时间变化</h2><p>3—6月前向校准验证的长期流失优质客群有756条记录，实际D7逾期率22.35%；8—9月测试同一分组317条记录，实际为35.96%。两段都是按相同405档位和流失条件划分，但不是同一批用户。</p><h3>这意味着什么</h3><ul><li>用较早的风险关系做校准，无法自动纠正后续月份明显升高的实际风险。</li><li>更多历史还款细分可以帮助部分月份排序，却不等于捕捉到了用户当前风险变化。</li><li>该差异提示需要检查客群组成、产品/账期和审批选择的时间变化；不能直接解释为同一个用户因流失而恶化。</li></ul><p>这仍是相关性诊断。只对回流且成功放款订单有风险标签；未回流、未放款用户不能直接套用同等风险解释。</p></section><section><h2>六、整体测试与扩样独立对照</h2><div class="scroll"><table><thead><tr><th>版本</th><th>测试记录</th><th>实际D7率</th><th>AUC</th><th>KS</th><th>Brier（低好）</th><th>平均预测</th><th>前20%风险捕获率</th></tr></thead><tbody><tr><td>V1</td><td>6581</td><td>33.46%</td><td>0.5798</td><td>0.1267</td><td>0.21986</td><td>30.36%</td><td>23.80%</td></tr><tr><td>V2</td><td>6581</td><td>33.46%</td><td>0.5718</td><td>0.1002</td><td>0.22023</td><td>30.39%</td><td>24.39%</td></tr><tr><td>V3固定窗（主候选）</td><td>6581</td><td>33.46%</td><td>0.5788</td><td>0.1211</td><td>0.22044</td><td>29.52%</td><td>24.48%</td></tr><tr><td>V3扩样（仅对照）</td><td>6581</td><td>33.46%</td><td>0.5804</td><td>0.1191</td><td>0.22014</td><td>29.61%</td><td>24.75%</td></tr></tbody></table></div><p>主候选固定V1的28,052条训练记录；31,960条扩样训练仅作独立对照，不因测试AUC略高就反选为正式模型。V3扩样AUC为0.5804，仍只是相对V1 +0.0006的点估计，不足以改变结论。</p><div class="scroll"><table><thead><tr><th>月份</th><th>成熟记录</th><th>实际D7率</th><th>V1 AUC</th><th>V2 AUC</th><th>V3 AUC</th><th>V1预测</th><th>V3预测</th></tr></thead><tbody><tr><td>2026-08</td><td>5210</td><td>32.84%</td><td>0.5775</td><td>0.5683</td><td>0.5759</td><td>30.17%</td><td>29.34%</td></tr><tr><td>2026-09</td><td>1371</td><td>35.81%</td><td>0.5854</td><td>0.5817</td><td>0.5873</td><td>31.10%</td><td>30.24%</td></tr></tbody></table></div><details><summary>展开405档位×流失时长对照</summary><div class="scroll"><table><thead><tr><th>分组</th><th>记录数</th><th>实际D7率</th><th>V1预测</th><th>V3预测</th><th>V1 AUC</th><th>V3 AUC</th></tr></thead><tbody><tr><td>优质 / 15–29天</td><td>314</td><td>24.84%</td><td>24.42%</td><td>24.08%</td><td>0.5665</td><td>0.5432</td></tr><tr><td>优质 / 30–59天</td><td>206</td><td>35.44%</td><td>26.22%</td><td>25.61%</td><td>0.6236</td><td>0.6333</td></tr><tr><td>优质 / 60–89天</td><td>60</td><td>40.00%</td><td>26.89%</td><td>26.23%</td><td>0.6875</td><td>0.6794</td></tr><tr><td>优质 / 7–14天</td><td>469</td><td>25.80%</td><td>24.42%</td><td>23.99%</td><td>0.6157</td><td>0.6221</td></tr><tr><td>优质 / 90天以上</td><td>51</td><td>33.33%</td><td>28.85%</td><td>28.04%</td><td>0.4862</td><td>0.4827</td></tr><tr><td>普通 / 15–29天</td><td>554</td><td>31.95%</td><td>27.32%</td><td>26.69%</td><td>0.5309</td><td>0.5409</td></tr><tr><td>普通 / 30–59天</td><td>408</td><td>34.80%</td><td>28.35%</td><td>27.53%</td><td>0.5322</td><td>0.5197</td></tr><tr><td>普通 / 60–89天</td><td>145</td><td>31.03%</td><td>29.19%</td><td>28.27%</td><td>0.5504</td><td>0.5464</td></tr><tr><td>普通 / 7–14天</td><td>728</td><td>30.77%</td><td>27.41%</td><td>26.64%</td><td>0.5683</td><td>0.5626</td></tr><tr><td>普通 / 90天以上</td><td>149</td><td>32.21%</td><td>30.64%</td><td>29.91%</td><td>0.5592</td><td>0.5058</td></tr><tr><td>风险 / 15–29天</td><td>744</td><td>38.44%</td><td>32.82%</td><td>31.79%</td><td>0.5411</td><td>0.5607</td></tr><tr><td>风险 / 30–59天</td><td>455</td><td>38.24%</td><td>35.23%</td><td>34.10%</td><td>0.5251</td><td>0.5241</td></tr><tr><td>风险 / 60–89天</td><td>265</td><td>41.51%</td><td>36.03%</td><td>35.01%</td><td>0.5789</td><td>0.5768</td></tr><tr><td>风险 / 7–14天</td><td>998</td><td>32.06%</td><td>32.98%</td><td>31.96%</td><td>0.5073</td><td>0.5160</td></tr><tr><td>风险 / 90天以上</td><td>629</td><td>43.40%</td><td>39.46%</td><td>38.18%</td><td>0.5332</td><td>0.5287</td></tr><tr><td>高优 / 15–29天</td><td>105</td><td>21.90%</td><td>21.99%</td><td>21.82%</td><td>0.5663</td><td>0.5785</td></tr><tr><td>高优 / 30–59天</td><td>108</td><td>23.15%</td><td>23.83%</td><td>22.95%</td><td>0.5253</td><td>0.5152</td></tr><tr><td>高优 / 60–89天</td><td>8</td><td>12.50%</td><td>23.25%</td><td>21.14%</td><td>0.2857</td><td>0.0000</td></tr><tr><td>高优 / 7–14天</td><td>175</td><td>22.29%</td><td>21.15%</td><td>21.15%</td><td>0.6203</td><td>0.5931</td></tr><tr><td>高优 / 90天以上</td><td>10</td><td>20.00%</td><td>24.22%</td><td>23.66%</td><td>0.5625</td><td>0.5625</td></tr></tbody></table></div></details></section><section><h2>七、校验与本地交付</h2><div class="scroll"><table><thead><tr><th>校验项目</th><th>结果</th></tr></thead><tbody><tr><td>V1/V2/V3测试事件与标签相同</td><td>通过</td></tr><tr><td>固定V1参数</td><td>通过</td></tr><tr><td>每段训练标签在预测月前成熟</td><td>通过</td></tr><tr><td>选特征、选校准不使用8—9月标签</td><td>通过</td></tr><tr><td>旧输入、V1/V2模型文件未改变</td><td>通过</td></tr><tr><td>模型导出重放最大误差</td><td>0.0</td></tr><tr><td>最新405参与，363与ID、目标结果不作特征</td><td>通过</td></tr></tbody></table></div><p>本地保存两套训练矩阵、全部滚动对照预测、逐月训练模型、校准训练数据、6,581条测试预测、25,816条冻结名单影子评分、特征字典与汇总Excel。名单冻结于10月8日零点，不是10月9日重新查询的实时名单；获额过期仍需重新获额。</p><p>原有数据为现有源表回溯快照，可能受后续修订影响；没有新增不可变评分产生时间，也没有获取新的外部收入或负债数据。</p></section><section><h2>八、模型决策</h2><h3>保留V1，不替换正式模型</h3><ul><li>本轮三项检验已完成，不能宣称V3提高了最终预测准确度。</li><li>保留“最近1—5笔借还细分”作为后续候选，其余特征组不凭数量加入。</li><li>下一步若继续，需要用新成熟月份作前瞻验收，并检查长期流失客群的产品、账期和风险关系变化。不得用当前测试实际逾期率反向校准测试预测。</li></ul></section><section><h2>附录：复现流程与参考</h2><pre>冻结V2样本与观测前特征
+固定V1参数与随机种子
+每月m：训练obs_date&lt;m，且due_date+8≤m
+验证：m月记录，标签在2026-08-01前成熟
+训练集识别新增常量与完全重复字段
+逐组增加、删除与组合对照 → 多月稳定规则选候选
+历史OOF向前验证整体/分层校准 → 固定校准方法
+固定训练窗主候选 + 扩样独立对照
+8—9月只做验收，不反选配置
+按用户聚类bootstrap → 保存结果，不自动部署</pre><p>实验代码、输入哈希、逐段样本边界与参数均在本地保存。模型训练指标由Python复现，不是将AUC写成数据库聚合字段。</p><p>方法参考：<a href="https://scikit-learn.org/stable/modules/cross_validation.html">scikit-learn交叉验证</a>、<a href="https://scikit-learn.org/stable/modules/calibration.html">概率校准</a>。</p><details><summary>完整实验与校准代码</summary><pre>&quot;&quot;&quot;V3: fixed-parameter group ablation, temporal validation, subgroup calibration.
+
+All feature decisions and calibration settings are frozen before Aug–Sep audit.
+The audit sample was already viewed in V1/V2. This is not a fresh blind test.
+&quot;&quot;&quot;
+from pathlib import Path
+import hashlib, json, sys, time
+import joblib
+import numpy as np
+import pandas as pd
+from sklearn.ensemble import HistGradientBoostingClassifier
+from sklearn.metrics import roc_auc_score, roc_curve, average_precision_score, brier_score_loss, log_loss
+from calibration import fit_calibration, apply_calibration, refresh_score_features, predict_bundle
+
+ROOT = Path(__file__).resolve().parent
+V2 = ROOT.parent/&#x27;流失7天以上用户_405风险再评级模型_V2&#x27;
+V1 = ROOT.parent/&#x27;流失7天以上用户_405风险再评级模型_V1&#x27;
+for name in (&#x27;data&#x27;,&#x27;models&#x27;,&#x27;analysis&#x27;,&#x27;previews&#x27;):
+    (ROOT/name).mkdir(exist_ok=True)
+SEED=20261009
+PARAMS=dict(max_leaf_nodes=15,max_iter=180,learning_rate=.05,l2_regularization=10,
+            min_samples_leaf=100,early_stopping=False,random_state=SEED)
+LOCK_DATE=pd.Timestamp(&#x27;2026-08-01&#x27;)
+DATA_CUTOFF=pd.Timestamp(&#x27;2026-10-08&#x27;)
+GROUP_LABELS={&#x27;score&#x27;:&#x27;405与流失交互&#x27;,&#x27;recent&#x27;:&#x27;最近1—5笔借还细分&#x27;,&#x27;history&#x27;:&#x27;历史还款整体细分&#x27;,
+              &#x27;windows&#x27;:&#x27;最近多笔与历史窗口计数&#x27;,&#x27;rates&#x27;:&#x27;历史比例细分&#x27;,&#x27;trends&#x27;:&#x27;生命周期趋势&#x27;,
+              &#x27;app&#x27;:&#x27;实际App行为&#x27;,&#x27;nonpay&#x27;:&#x27;非还款日App行为&#x27;}
+
+
+def save(name, value):
+    (ROOT/name).write_text(json.dumps(value,ensure_ascii=False,indent=2,default=str,allow_nan=False),encoding=&#x27;utf-8&#x27;)
+
+
+def digest(path):
+    h=hashlib.sha256()
+    with Path(path).open(&#x27;rb&#x27;) as f:
+        for block in iter(lambda:f.read(1048576),b&#x27;&#x27;):h.update(block)
+    return h.hexdigest()
+
+
+def metrics(frame, probability):
+    y=frame.target_d7.to_numpy(int);p=np.clip(np.asarray(probability,float),1e-6,1-1e-6)
+    n=len(y)
+    if not n:return {&#x27;n&#x27;:0,&#x27;bad&#x27;:0,&#x27;actual&#x27;:None,&#x27;prediction&#x27;:None,&#x27;auc&#x27;:None,&#x27;brier&#x27;:None}
+    r={&#x27;n&#x27;:n,&#x27;users&#x27;:int(frame.user_id.nunique()),&#x27;bad&#x27;:int(y.sum()),&#x27;actual&#x27;:float(y.mean()),
+       &#x27;prediction&#x27;:float(p.mean()),&#x27;bias_pp&#x27;:float((p.mean()-y.mean())*100),
+       &#x27;brier&#x27;:float(brier_score_loss(y,p)),&#x27;log_loss&#x27;:float(log_loss(y,p,labels=[0,1]))}
+    if len(np.unique(y))==2:
+        f,t,_=roc_curve(y,p);top=np.argsort(-p,kind=&#x27;stable&#x27;)[:max(1,int(np.ceil(n*.2)))]
+        r.update(auc=float(roc_auc_score(y,p)),ks=float(max(t-f)),ap=float(average_precision_score(y,p)),
+                 top20_bad_rate=float(y[top].mean()),top20_bad_recall=float(y[top].sum()/y.sum()))
+    else:r[&#x27;auc&#x27;]=None
+    return r
+
+
+def focus(frame):
+    return (frame.risk_score_405&gt;=472)&amp;(frame.risk_score_405&lt;487)&amp;(frame.churn_days&gt;=30)
+
+
+def training_cuts(frame):
+    ref=frame.sort_values(&#x27;obs_time&#x27;).drop_duplicates(&#x27;user_id&#x27;,keep=&#x27;last&#x27;)
+    return np.quantile(ref.risk_score_405,[.9,.7,.4]).tolist()
+
+
+def trim_new_fields(frame, requested, base):
+    &quot;&quot;&quot;Never alter the 57 original baseline fields. Fit trimming on training only.&quot;&quot;&quot;
+    keep=list(base);removed=[]
+    arrays={f:frame[f].to_numpy(float) for f in keep}
+    fingerprints={}
+    for f in keep:
+        fp=hashlib.sha256(np.nan_to_num(arrays[f],nan=-1e300).tobytes()).hexdigest()
+        fingerprints.setdefault(fp,[]).append(f)
+    for f in requested:
+        if f in keep:continue
+        a=frame[f].to_numpy(float)
+        if frame[f].nunique(dropna=False)&lt;=1:
+            removed.append({&#x27;field&#x27;:f,&#x27;reason&#x27;:&#x27;训练期常量&#x27;,&#x27;duplicate_of&#x27;:None});continue
+        fp=hashlib.sha256(np.nan_to_num(a,nan=-1e300).tobytes()).hexdigest()
+        match=next((g for g in fingerprints.get(fp,[]) if np.array_equal(a,arrays[g],equal_nan=True)),None)
+        if match is not None:
+            removed.append({&#x27;field&#x27;:f,&#x27;reason&#x27;:&#x27;训练期完全重复&#x27;,&#x27;duplicate_of&#x27;:match});continue
+        keep.append(f);arrays[f]=a;fingerprints.setdefault(fp,[]).append(f)
+    return keep,removed
+
+
+def groups(allcols,base):
+    out={k:[] for k in GROUP_LABELS}
+    for f in allcols:
+        if f in base:continue
+        if f.startswith(&#x27;score405&#x27;):g=&#x27;score&#x27;
+        elif f.startswith((&#x27;app_&#x27;,&#x27;days_since_app&#x27;)):g=&#x27;app&#x27;
+        elif f.startswith(&#x27;nonpay_&#x27;):g=&#x27;nonpay&#x27;
+        elif f.startswith((&#x27;last1_&#x27;,&#x27;last2_&#x27;,&#x27;last3_&#x27;,&#x27;last4_&#x27;,&#x27;last5_&#x27;)) and not any(s in f for s in (&#x27;minus&#x27;,&#x27;_count&#x27;,&#x27;_rate&#x27;)):g=&#x27;recent&#x27;
+        elif f.startswith(&#x27;last&#x27;) and f.endswith(&#x27;_count&#x27;):g=&#x27;windows&#x27;
+        elif f.startswith(&#x27;detail_&#x27;) and any(f.endswith(&#x27;_&#x27;+str(w)+&#x27;d&#x27;) for w in (90,180,365)) and &#x27;_rate_&#x27; not in f:g=&#x27;windows&#x27;
+        elif &#x27;_rate&#x27; in f or f==&#x27;detail_cycle_funded_share&#x27;:g=&#x27;rates&#x27;
+        elif f.startswith(&#x27;detail_&#x27;):g=&#x27;history&#x27;
+        else:g=&#x27;trends&#x27;
+        out[g].append(f)
+    assert set(sum(out.values(),[]))==set(allcols)-set(base)
+    assert len(sum(out.values(),[]))==len(set(allcols)-set(base))
+    return out
+
+
+def specs(base, g):
+    nonapp=[k for k in g if k not in (&#x27;app&#x27;,&#x27;nonpay&#x27;)]
+    out={&#x27;base&#x27;:base}
+    out.update({&#x27;add_&#x27;+k:base+v for k,v in g.items()})
+    out[&#x27;full_lifecycle&#x27;]=base+sum((g[k] for k in nonapp),[])
+    out[&#x27;full_app&#x27;]=base+sum(g.values(),[])
+    for k in nonapp:out[&#x27;drop_&#x27;+k]=base+sum((g[j] for j in nonapp if j!=k),[])
+    return out
+
+
+def fit_fold(tag, cols, base, train, validation, start, cuts):
+    file=ROOT/&#x27;models&#x27;/f&#x27;fold_{start.strftime(&quot;%Y%m&quot;)}_{tag}.joblib&#x27;
+    kept,removed=trim_new_fields(train,cols,base)
+    if file.exists():
+        bundle=joblib.load(file)
+        assert bundle[&#x27;features&#x27;]==kept and bundle[&#x27;train_ids_sha&#x27;]==digest_ids(train)
+    else:
+        model=HistGradientBoostingClassifier(**PARAMS)
+        model.fit(train[kept],train.target_d7)
+        bundle={&#x27;model&#x27;:model,&#x27;features&#x27;:kept,&#x27;removed&#x27;:removed,&#x27;params&#x27;:PARAMS,
+                &#x27;train_ids_sha&#x27;:digest_ids(train),&#x27;score_feature_cuts&#x27;:cuts}
+        joblib.dump(bundle,file)
+    p=bundle[&#x27;model&#x27;].predict_proba(validation[kept])[:,1]
+    detail=validation[[&#x27;event_id&#x27;,&#x27;user_id&#x27;,&#x27;obs_date&#x27;,&#x27;target_due_date&#x27;,&#x27;target_d7&#x27;,&#x27;risk_score_405&#x27;,&#x27;churn_days&#x27;]].copy()
+    detail[&#x27;fold&#x27;]=start.strftime(&#x27;%Y-%m&#x27;);detail[&#x27;raw_probability&#x27;]=p
+    detail.to_csv(ROOT/&#x27;data&#x27;/f&#x27;oof_{start.strftime(&quot;%Y%m&quot;)}_{tag}.csv.gz&#x27;,index=False,compression=&#x27;gzip&#x27;)
+    stat={&#x27;tag&#x27;:tag,&#x27;fold&#x27;:start.strftime(&#x27;%Y-%m&#x27;),&#x27;train_n&#x27;:len(train),&#x27;train_bad&#x27;:int(train.target_d7.sum()),
+          &#x27;train_label_cutoff&#x27;:str(start.date()),&#x27;validation_label_cutoff&#x27;:str(LOCK_DATE.date()),
+          &#x27;features&#x27;:len(kept),&#x27;requested_features&#x27;:len(cols),&#x27;removed&#x27;:removed,
+          &#x27;overall&#x27;:metrics(validation,p),&#x27;focus&#x27;:metrics(validation.loc[focus(validation)],p[focus(validation)]),
+          &#x27;long_churn&#x27;:metrics(validation.loc[validation.churn_days&gt;=30],p[validation.churn_days&gt;=30])}
+    return stat
+
+
+def digest_ids(frame):
+    return hashlib.sha256(&#x27;\n&#x27;.join(frame.event_id.astype(str)).encode()).hexdigest()
+
+
+def summarize(rows):
+    base={x[&#x27;fold&#x27;]:x for x in rows if x[&#x27;tag&#x27;]==&#x27;base&#x27;}
+    out=[]
+    for tag in sorted({x[&#x27;tag&#x27;] for x in rows}):
+        rr=[x for x in rows if x[&#x27;tag&#x27;]==tag]
+        delta=np.array([x[&#x27;overall&#x27;][&#x27;auc&#x27;]-base[x[&#x27;fold&#x27;]][&#x27;overall&#x27;][&#x27;auc&#x27;] for x in rr])
+        out.append({&#x27;tag&#x27;:tag,&#x27;mean_auc&#x27;:float(np.mean([x[&#x27;overall&#x27;][&#x27;auc&#x27;] for x in rr])),
+                    &#x27;mean_delta_auc&#x27;:float(delta.mean()),&#x27;positive_months&#x27;:int((delta&gt;0).sum()),
+                    &#x27;worst_delta_auc&#x27;:float(delta.min()),&#x27;best_delta_auc&#x27;:float(delta.max()),
+                    &#x27;mean_focus_auc&#x27;:float(np.mean([x[&#x27;focus&#x27;][&#x27;auc&#x27;] for x in rr if x[&#x27;focus&#x27;][&#x27;auc&#x27;] is not None])),
+                    &#x27;stable_gain&#x27;:bool(delta.mean()&gt;=.002 and (delta&gt;0).sum()&gt;=4 and delta.min()&gt;=-.02)})
+    return out
+
+
+def load_oof(tag):
+    frames=[]
+    for p in sorted((ROOT/&#x27;data&#x27;).glob(&#x27;oof_2026*_&#x27;+tag+&#x27;.csv.gz&#x27;)):
+        frames.append(pd.read_csv(p,dtype={&#x27;event_id&#x27;:str},parse_dates=[&#x27;obs_date&#x27;,&#x27;target_due_date&#x27;],float_precision=&#x27;round_trip&#x27;))
+    out=pd.concat(frames,ignore_index=True)
+    assert out.event_id.is_unique
+    return out
+
+
+def bootstrap(frame, a, b, repeats=1000):
+    rng=np.random.default_rng(SEED)
+    users,inv=np.unique(frame.user_id,return_inverse=True);y=frame.target_d7.to_numpy(int)
+    pa=frame[a].to_numpy();pb=frame[b].to_numpy();values=[];brier=[]
+    ea=(pa-y)**2;eb=(pb-y)**2
+    for _ in range(repeats):
+        c=np.bincount(rng.integers(0,len(users),len(users)),minlength=len(users));w=c[inv]
+        values.append(roc_auc_score(y,pa,sample_weight=w)-roc_auc_score(y,pb,sample_weight=w))
+        brier.append(np.average(ea-eb,weights=w))
+    return {&#x27;repeats&#x27;:repeats,&#x27;unit&#x27;:&#x27;user_id&#x27;,&#x27;auc_delta_low95&#x27;:float(np.quantile(values,.025)),
+            &#x27;auc_delta_high95&#x27;:float(np.quantile(values,.975)),
+            &#x27;brier_delta_low95&#x27;:float(np.quantile(brier,.025)),&#x27;brier_delta_high95&#x27;:float(np.quantile(brier,.975))}
+
+
+def main():
+    began=time.time()
+    source=V2/&#x27;data/feature_snapshots.pkl.gz&#x27;
+    fingerprints={str(p):digest(p) for p in [source,V1/&#x27;models/churn405_v1.joblib&#x27;,V2/&#x27;models/churn405_v2.joblib&#x27;]}
+    b=pd.read_pickle(source);h=b[b.sample_kind==&#x27;historical&#x27;].copy()
+    old=joblib.load(V1/&#x27;models/churn405_v1.joblib&#x27;);base=old[&#x27;features&#x27;]
+    allcols=json.loads((V2/&#x27;analysis/features.json&#x27;).read_text())[&#x27;features&#x27;]
+    g=groups(allcols,base);ss=specs(base,g)
+    protocol={&#x27;version&#x27;:&#x27;V3&#x27;,&#x27;report_date&#x27;:&#x27;2026-10-09&#x27;,&#x27;data_date&#x27;:&#x27;2026-10-07&#x27;,&#x27;source_hashes&#x27;:fingerprints,
+              &#x27;target&#x27;:&#x27;回流成功放款整笔订单，到期D+7结束仍未结清&#x27;,&#x27;score&#x27;:&#x27;观测前最近405，不混用363&#x27;,
+              &#x27;fixed_parameters&#x27;:PARAMS,&#x27;feature_groups&#x27;:g,&#x27;experiment_tags&#x27;:list(ss),
+              &#x27;rolling_validation_months&#x27;:[&#x27;2026-01&#x27;,&#x27;2026-02&#x27;,&#x27;2026-03&#x27;,&#x27;2026-04&#x27;,&#x27;2026-05&#x27;,&#x27;2026-06&#x27;],
+              &#x27;training_rule&#x27;:&#x27;obs_date&lt;month_start AND due_date+8&lt;=month_start&#x27;,
+              &#x27;validation_rule&#x27;:&#x27;obs_date in calendar month AND due_date+8&lt;=2026-08-01&#x27;,
+              &#x27;feature_selection&#x27;:&#x27;单组平均ΔAUC≥0.002、至少4/6月正增益、最差月Δ≥−0.02；组合复核，不满足则退回稳定单组或基线&#x27;,
+              &#x27;calibration_candidates&#x27;:[&#x27;global&#x27;,&#x27;group_10&#x27;,&#x27;group_30&#x27;,&#x27;group_100&#x27;],
+              &#x27;calibration_rule&#x27;:&#x27;Mar–Jun forward audit; prior OOF labels mature at each month start; 180-day window, 90-day half-life&#x27;,
+              &#x27;calibration_objective&#x27;:&#x27;overall Brier + 0.25*focus Brier; grouped method allowed only if macro AUC falls ≤0.005 and overall Brier worsens ≤0.001 vs global&#x27;,
+              &#x27;final_training_primary&#x27;:&#x27;V1固定训练样本28052条；不依据8—9月反选扩样版&#x27;,
+              &#x27;final_training_secondary&#x27;:&#x27;V2扩样31960条，仅独立对照&#x27;,
+              &#x27;final_calibration&#x27;:&#x27;所选OOF 1—6月及7月固定训练窗模型预测，标签在8月1日前成熟&#x27;,
+              &#x27;test&#x27;:&#x27;同V1/V2的6581条8—9月成熟记录；已被查看，不是新盲测&#x27;,
+              &#x27;promotion&#x27;:&#x27;本轮仅实验，不自动替换V1、不调整授信或审批&#x27;}
+    save(&#x27;analysis/protocol.json&#x27;,protocol)
+    print(&#x27;PROTOCOL_LOCKED&#x27;,len(ss),&#x27;feature sets&#x27;, {k:len(v) for k,v in g.items()},flush=True)
+    assert b.event_id.is_unique and b.risk_score_405.notna().all()
+    assert (b.score_offer_time&lt;=b.obs_time).all() and (b.churn_days&gt;=7).all()
+    rows=[]
+    for start in pd.date_range(&#x27;2026-01-01&#x27;,&#x27;2026-06-01&#x27;,freq=&#x27;MS&#x27;):
+        end=start+pd.offsets.MonthBegin(1)
+        train=h[(h.obs_date&lt;start)&amp;(h.target_due_date+pd.Timedelta(days=8)&lt;=start)].copy()
+        val=h[(h.obs_date&gt;=start)&amp;(h.obs_date&lt;end)&amp;(h.target_due_date+pd.Timedelta(days=8)&lt;=LOCK_DATE)].copy()
+        assert set(train.event_id).isdisjoint(val.event_id)
+        cuts=training_cuts(train);train=refresh_score_features(train,cuts);val=refresh_score_features(val,cuts)
+        save(f&#x27;analysis/fold_{start.strftime(&quot;%Y%m&quot;)}_contract.json&#x27;,{&#x27;train_n&#x27;:len(train),&#x27;validation_n&#x27;:len(val),
+            &#x27;train_ids_sha&#x27;:digest_ids(train),&#x27;validation_ids_sha&#x27;:digest_ids(val),&#x27;score_cuts_training_only&#x27;:cuts,
+            &#x27;max_train_label_available&#x27;:str((train.target_due_date+pd.Timedelta(days=8)).max().date()),
+            &#x27;train_max_obs&#x27;:str(train.obs_date.max().date())})
+        for tag,cols in ss.items():
+            row=fit_fold(tag,cols,base,train,val,start,cuts);rows.append(row)
+            save(&#x27;analysis/rolling_ablation.json&#x27;,rows)
+            print(&#x27;FOLD&#x27;,start.strftime(&#x27;%Y-%m&#x27;),tag,&#x27;n&#x27;,len(val),&#x27;fields&#x27;,row[&#x27;features&#x27;],&#x27;AUC&#x27;,round(row[&#x27;overall&#x27;][&#x27;auc&#x27;],4),flush=True)
+    summary=summarize(rows);save(&#x27;analysis/ablation_summary.json&#x27;,summary)
+    selected_groups=[x[&#x27;tag&#x27;][4:] for x in summary if x[&#x27;tag&#x27;].startswith(&#x27;add_&#x27;) and x[&#x27;stable_gain&#x27;]]
+    assembled=base+sum((g[k] for k in selected_groups),[])
+    if selected_groups:
+        for start in pd.date_range(&#x27;2026-01-01&#x27;,&#x27;2026-06-01&#x27;,freq=&#x27;MS&#x27;):
+            end=start+pd.offsets.MonthBegin(1)
+            tr=h[(h.obs_date&lt;start)&amp;(h.target_due_date+pd.Timedelta(days=8)&lt;=start)].copy()
+            va=h[(h.obs_date&gt;=start)&amp;(h.obs_date&lt;end)&amp;(h.target_due_date+pd.Timedelta(days=8)&lt;=LOCK_DATE)].copy()
+            cuts=training_cuts(tr)
+            row=fit_fold(&#x27;assembled&#x27;,assembled,base,refresh_score_features(tr,cuts),refresh_score_features(va,cuts),start,cuts)
+            rows.append(row);print(&#x27;ASSEMBLED&#x27;,row[&#x27;fold&#x27;],row[&#x27;overall&#x27;][&#x27;auc&#x27;],flush=True)
+        summary=summarize(rows)
+    stable=[x for x in summary if (x[&#x27;tag&#x27;].startswith(&#x27;add_&#x27;) or x[&#x27;tag&#x27;]==&#x27;assembled&#x27;) and x[&#x27;stable_gain&#x27;]]
+    choice=max(stable,key=lambda x:x[&#x27;mean_delta_auc&#x27;])[&#x27;tag&#x27;] if stable else &#x27;base&#x27;
+    chosen_cols=assembled if choice==&#x27;assembled&#x27; else ss[choice]
+    save(&#x27;analysis/rolling_ablation.json&#x27;,rows);save(&#x27;analysis/ablation_summary.json&#x27;,summary)
+    save(&#x27;analysis/feature_selection.json&#x27;,{&#x27;selected_tag&#x27;:choice,&#x27;selected_groups&#x27;:selected_groups if choice==&#x27;assembled&#x27; else [choice[4:]] if choice.startswith(&#x27;add_&#x27;) else [],
+        &#x27;requested_features&#x27;:chosen_cols,&#x27;rule&#x27;:protocol[&#x27;feature_selection&#x27;],&#x27;locked_before_test&#x27;:True})
+    print(&#x27;FEATURES_LOCKED&#x27;,choice,len(chosen_cols),flush=True)
+    oof=load_oof(choice)
+    methods={&#x27;global&#x27;:None,&#x27;group_10&#x27;:10.,&#x27;group_30&#x27;:30.,&#x27;group_100&#x27;:100.}
+    cvcal=[];cvpred=[]
+    for month in (&#x27;2026-03&#x27;,&#x27;2026-04&#x27;,&#x27;2026-05&#x27;,&#x27;2026-06&#x27;):
+        start=pd.Timestamp(month+&#x27;-01&#x27;)
+        ct=oof[(oof.obs_date&lt;start)&amp;(oof.target_due_date+pd.Timedelta(days=8)&lt;=start)].copy()
+        ev=oof[oof.fold==month].copy()
+        assert set(ct.event_id).isdisjoint(ev.event_id)
+        for name,penalty in methods.items():
+            cal=fit_calibration(ct.raw_probability,ct,start,penalty)
+            p=apply_calibration(ev.raw_probability,ev,cal)
+            cvcal.append({&#x27;month&#x27;:month,&#x27;method&#x27;:name,&#x27;fit_n&#x27;:cal[&#x27;rows&#x27;],&#x27;fit_cells&#x27;:cal[&#x27;cell_counts&#x27;],
+                          &#x27;overall&#x27;:metrics(ev,p),&#x27;focus&#x27;:metrics(ev.loc[focus(ev)],p[focus(ev)])})
+            q=ev.copy();q[&#x27;method&#x27;]=name;q[&#x27;prediction&#x27;]=p;cvpred.append(q)
+    cp=pd.concat(cvpred,ignore_index=True);cp.to_csv(ROOT/&#x27;data/calibration_forward_predictions.csv.gz&#x27;,index=False,compression=&#x27;gzip&#x27;)
+    candidates=[]
+    for name in methods:
+        f=cp[cp.method==name];rr=[x for x in cvcal if x[&#x27;method&#x27;]==name]
+        overall=metrics(f,f.prediction);fc=metrics(f.loc[focus(f)],f.loc[focus(f),&#x27;prediction&#x27;])
+        candidates.append({&#x27;method&#x27;:name,&#x27;penalty&#x27;:methods[name],&#x27;overall&#x27;:overall,&#x27;focus&#x27;:fc,
+                           &#x27;macro_auc&#x27;:float(np.mean([x[&#x27;overall&#x27;][&#x27;auc&#x27;] for x in rr])),
+                           &#x27;objective&#x27;:overall[&#x27;brier&#x27;]+.25*fc[&#x27;brier&#x27;]})
+    ref=next(x for x in candidates if x[&#x27;method&#x27;]==&#x27;global&#x27;)
+    for c in candidates:
+        c[&#x27;passes_guard&#x27;]=bool(c[&#x27;macro_auc&#x27;]&gt;=ref[&#x27;macro_auc&#x27;]-.005 and c[&#x27;overall&#x27;][&#x27;brier&#x27;]&lt;=ref[&#x27;overall&#x27;][&#x27;brier&#x27;]+.001)
+    calchoice=min([c for c in candidates if c[&#x27;passes_guard&#x27;]],key=lambda x:x[&#x27;objective&#x27;])[&#x27;method&#x27;]
+    save(&#x27;analysis/calibration_forward.json&#x27;,cvcal);save(&#x27;analysis/calibration_summary.json&#x27;,candidates)
+    save(&#x27;analysis/calibration_selection.json&#x27;,{&#x27;method&#x27;:calchoice,&#x27;penalty&#x27;:methods[calchoice],&#x27;locked_before_test&#x27;:True,
+                                               &#x27;rule&#x27;:protocol[&#x27;calibration_objective&#x27;]})
+    print(&#x27;CALIBRATION_LOCKED&#x27;,calchoice,flush=True)
+    fixed=h[(h.obs_date&lt;&#x27;2026-06-01&#x27;)&amp;(h.target_due_date+pd.Timedelta(days=8)&lt;=pd.Timestamp(&#x27;2026-06-01&#x27;))].copy()
+    expanded=h[(h.obs_date&lt;&#x27;2026-07-01&#x27;)&amp;(h.target_due_date+pd.Timedelta(days=8)&lt;=pd.Timestamp(&#x27;2026-07-01&#x27;))].copy()
+    july=h[(h.obs_date&gt;=&#x27;2026-07-01&#x27;)&amp;(h.obs_date&lt;&#x27;2026-08-01&#x27;)&amp;(h.target_due_date+pd.Timedelta(days=8)&lt;=LOCK_DATE)].copy()
+    test=h[(h.obs_date&gt;=&#x27;2026-08-01&#x27;)&amp;(h.target_due_date+pd.Timedelta(days=8)&lt;=DATA_CUTOFF)].copy()
+    assert len(fixed)==28052 and len(expanded)==31960 and len(july)==850 and len(test)==6581
+    bundles={}
+    for label,tr in [(&#x27;fixed&#x27;,fixed),(&#x27;expanded&#x27;,expanded)]:
+        cuts=training_cuts(tr);tr=refresh_score_features(tr,cuts)
+        kept,removed=trim_new_fields(tr,chosen_cols,base)
+        m=HistGradientBoostingClassifier(**PARAMS);m.fit(tr[kept],tr.target_d7)
+        jj=refresh_score_features(july,cuts);jp=m.predict_proba(jj[kept])[:,1]
+        q=july[oof.columns.drop([&#x27;fold&#x27;,&#x27;raw_probability&#x27;])].copy();q[&#x27;fold&#x27;]=&#x27;2026-07&#x27;;q[&#x27;raw_probability&#x27;]=jp
+        caldata=pd.concat([oof,q],ignore_index=True)
+        assert caldata.event_id.is_unique and set(caldata.event_id).isdisjoint(test.event_id)
+        globalcal=fit_calibration(caldata.raw_probability,caldata,LOCK_DATE,None)
+        selectedcal=fit_calibration(caldata.raw_probability,caldata,LOCK_DATE,methods[calchoice])
+        bundle={&#x27;model&#x27;:m,&#x27;features&#x27;:kept,&#x27;removed&#x27;:removed,&#x27;score_feature_cuts&#x27;:cuts,
+                &#x27;global_calibrator&#x27;:globalcal,&#x27;selected_calibrator&#x27;:selectedcal,
+                &#x27;status&#x27;:&#x27;experimental_not_promoted&#x27;,&#x27;training_policy&#x27;:label,&#x27;params&#x27;:PARAMS,
+                &#x27;contract&#x27;:protocol[&#x27;target&#x27;],&#x27;calibration_method&#x27;:calchoice,&#x27;data_date&#x27;:&#x27;2026-10-07&#x27;}
+        bundles[label]=bundle;joblib.dump(bundle,ROOT/&#x27;models&#x27;/f&#x27;churn405_v3_{label}.joblib&#x27;)
+        tr[[&#x27;event_id&#x27;,&#x27;user_id&#x27;,&#x27;obs_time&#x27;,&#x27;obs_date&#x27;,&#x27;target_serial&#x27;,&#x27;target_due_date&#x27;,&#x27;target_d7&#x27;]+kept].to_csv(ROOT/&#x27;data&#x27;/f&#x27;{label}_train_features_labels.csv.gz&#x27;,index=False,compression=&#x27;gzip&#x27;)
+        caldata.to_csv(ROOT/&#x27;data&#x27;/f&#x27;{label}_calibration_oof.csv.gz&#x27;,index=False,compression=&#x27;gzip&#x27;)
+        save(f&#x27;analysis/{label}_model_contract.json&#x27;,{&#x27;features&#x27;:kept,&#x27;removed&#x27;:removed,&#x27;train_n&#x27;:len(tr),&#x27;cuts&#x27;:cuts,
+                                                   &#x27;global_calibrator&#x27;:globalcal,&#x27;selected_calibrator&#x27;:selectedcal})
+    # The primary policy was fixed before this line. Test does not select policies/features/calibration.
+    oldpred=pd.read_csv(V2/&#x27;data/test_predictions.csv.gz&#x27;,dtype={&#x27;event_id&#x27;:str},float_precision=&#x27;round_trip&#x27;)
+    assert set(test.event_id)==set(oldpred.event_id)
+    test=test.merge(oldpred[[&#x27;event_id&#x27;,&#x27;target_d7&#x27;,&#x27;p_v1&#x27;,&#x27;p_v2&#x27;]],on=&#x27;event_id&#x27;,suffixes=(&#x27;&#x27;,&#x27;_old&#x27;),validate=&#x27;one_to_one&#x27;)
+    assert (test.target_d7==test.target_d7_old).all()
+    test[&#x27;p_v3_global&#x27;]=predict_bundle(bundles[&#x27;fixed&#x27;],test,&#x27;global&#x27;)
+    test[&#x27;p_v3&#x27;]=predict_bundle(bundles[&#x27;fixed&#x27;],test)
+    test[&#x27;p_v3_expanded&#x27;]=predict_bundle(bundles[&#x27;expanded&#x27;],test)
+    test[&#x27;risk_score_v3&#x27;]=1000*(1-test.p_v3)
+    test[&#x27;month&#x27;]=test.obs_date.dt.strftime(&#x27;%Y-%m&#x27;)
+    test[&#x27;grade_405&#x27;]=np.select([test.risk_score_405&gt;=487,test.risk_score_405&gt;=472,test.risk_score_405&gt;=456],[&#x27;高优&#x27;,&#x27;优质&#x27;,&#x27;普通&#x27;],default=&#x27;风险&#x27;)
+    test[&#x27;churn_group&#x27;]=pd.cut(test.churn_days,[6,14,29,59,89,np.inf],labels=[&#x27;7–14天&#x27;,&#x27;15–29天&#x27;,&#x27;30–59天&#x27;,&#x27;60–89天&#x27;,&#x27;90天以上&#x27;]).astype(str)
+    names={&#x27;V1&#x27;:&#x27;p_v1&#x27;,&#x27;V2&#x27;:&#x27;p_v2&#x27;,&#x27;V3_global&#x27;:&#x27;p_v3_global&#x27;,&#x27;V3&#x27;:&#x27;p_v3&#x27;,&#x27;V3_expanded_control&#x27;:&#x27;p_v3_expanded&#x27;}
+    result={&#x27;models&#x27;:{k:metrics(test,test[v]) for k,v in names.items()},
+            &#x27;focus&#x27;:{k:metrics(test.loc[focus(test)],test.loc[focus(test),v]) for k,v in names.items()},
+            &#x27;long_churn&#x27;:{k:metrics(test.loc[test.churn_days&gt;=30],test.loc[test.churn_days&gt;=30,v]) for k,v in names.items()},
+            &#x27;selected_features&#x27;:len(bundles[&#x27;fixed&#x27;][&#x27;features&#x27;]),&#x27;feature_tag&#x27;:choice,&#x27;calibration_method&#x27;:calchoice,
+            &#x27;test_is_new_blind&#x27;:False,&#x27;primary_training_policy&#x27;:&#x27;fixed&#x27;,&#x27;model_status&#x27;:&#x27;experimental_not_promoted&#x27;}
+    result[&#x27;v3_vs_v1_ci&#x27;]=bootstrap(test,&#x27;p_v3&#x27;,&#x27;p_v1&#x27;)
+    result[&#x27;global_vs_v1_ci&#x27;]=bootstrap(test,&#x27;p_v3_global&#x27;,&#x27;p_v1&#x27;)
+    result[&#x27;focus_v3_vs_v1_ci&#x27;]=bootstrap(test.loc[focus(test)],&#x27;p_v3&#x27;,&#x27;p_v1&#x27;,500)
+    gr=[]
+    for fields in ([&#x27;month&#x27;],[&#x27;grade_405&#x27;],[&#x27;churn_group&#x27;],[&#x27;grade_405&#x27;,&#x27;churn_group&#x27;]):
+        for key,d in test.groupby(fields,observed=True):
+            key=key if isinstance(key,tuple) else (key,)
+            gr.append({&#x27;group_type&#x27;:&#x27; × &#x27;.join(fields),&#x27;group&#x27;:&#x27; / &#x27;.join(map(str,key)),
+                       &#x27;models&#x27;:{k:metrics(d,d[v]) for k,v in names.items()}})
+    dec=[]
+    for tag,col in names.items():
+        bins=pd.qcut(test[col].rank(method=&#x27;first&#x27;),10,labels=False)
+        for band in range(10):
+            d=test[bins==band]
+            dec.append({&#x27;model&#x27;:tag,&#x27;risk_decile&#x27;:band+1,**metrics(d,d[col])})
+    save(&#x27;analysis/test_groups.json&#x27;,gr);save(&#x27;analysis/calibration_deciles.json&#x27;,dec)
+    test.to_csv(ROOT/&#x27;data/test_predictions.csv.gz&#x27;,index=False,compression=&#x27;gzip&#x27;)
+    display=[&#x27;event_id&#x27;,&#x27;user_id&#x27;,&#x27;target_serial&#x27;,&#x27;obs_time&#x27;,&#x27;churn_days&#x27;,&#x27;risk_score_405&#x27;,&#x27;grade_405&#x27;,&#x27;target_d7&#x27;]+list(names.values())+[&#x27;risk_score_v3&#x27;]
+    test[display].to_csv(ROOT/&#x27;V3测试逐笔预测与V1_V2对照.csv&#x27;,index=False)
+    live=b[b.sample_kind==&#x27;live&#x27;].copy();live[&#x27;p_v3&#x27;]=predict_bundle(bundles[&#x27;fixed&#x27;],live)
+    live[&#x27;risk_score_v3&#x27;]=1000*(1-live.p_v3);live[&#x27;requires_recredit&#x27;]=live.score_age_days&gt;=15
+    live[&#x27;model_status&#x27;]=&#x27;experimental_not_promoted&#x27;;live[&#x27;scope&#x27;]=&#x27;冻结于2026-10-08零点；未回流未放款仅影子排序&#x27;
+    live[[&#x27;event_id&#x27;,&#x27;user_id&#x27;,&#x27;obs_time&#x27;,&#x27;anchor_date&#x27;,&#x27;churn_days&#x27;,&#x27;score_serial&#x27;,&#x27;score_offer_time&#x27;,&#x27;risk_score_405&#x27;,&#x27;p_v3&#x27;,&#x27;risk_score_v3&#x27;,&#x27;requires_recredit&#x27;,&#x27;model_status&#x27;,&#x27;scope&#x27;]].to_csv(ROOT/&#x27;V3流失用户影子评分.csv&#x27;,index=False)
+    result[&#x27;live_rows&#x27;]=len(live);result[&#x27;live_requires_recredit&#x27;]=int(live.requires_recredit.sum());result[&#x27;seconds&#x27;]=round(time.time()-began,1)
+    save(&#x27;analysis/results.json&#x27;,result)
+    final_features=bundles[&#x27;fixed&#x27;][&#x27;features&#x27;]
+    features=[{&#x27;field&#x27;:f,&#x27;group&#x27;:&#x27;V1原有&#x27; if f in base else next(GROUP_LABELS[k] for k,v in g.items() if f in v),
+               &#x27;in_final_model&#x27;:f in final_features,&#x27;train_missing_rate&#x27;:float(fixed[f].isna().mean())} for f in allcols]
+    save(&#x27;analysis/feature_dictionary.json&#x27;,features)
+    replay=pd.read_csv(ROOT/&#x27;data/test_predictions.csv.gz&#x27;,float_precision=&#x27;round_trip&#x27;)
+    error=float(np.max(np.abs(predict_bundle(joblib.load(ROOT/&#x27;models/churn405_v3_fixed.joblib&#x27;),replay)-replay.p_v3)))
+    assert error&lt;1e-12 and np.isfinite(live.p_v3).all()
+    assert all(digest(Path(p))==sha for p,sha in fingerprints.items())
+    audit={&#x27;source_files_unchanged&#x27;:True,&#x27;same_test_event_ids&#x27;:True,&#x27;same_test_labels&#x27;:True,
+           &#x27;test_not_used_for_selection&#x27;:True,&#x27;train_parameters_fixed&#x27;:PARAMS,&#x27;all_features_pre_observation&#x27;:True,
+           &#x27;prior_v2_asof_audit&#x27;:json.loads((V2/&#x27;analysis/history_asof_audit.json&#x27;).read_text()),
+           &#x27;probability_replay_max_error&#x27;:error,&#x27;raw_405_in_final&#x27;:&#x27;risk_score_405&#x27; in final_features,
+           &#x27;no_363_or_target_or_ids&#x27;:not any(&#x27;363&#x27; in f or &#x27;target&#x27; in f or &#x27;serial&#x27; in f or f==&#x27;user_id&#x27; for f in final_features),
+           &#x27;test_rows&#x27;:len(test),&#x27;live_rows&#x27;:len(live),&#x27;historical_test_reused&#x27;:True,
+           &#x27;feature_selection_file_sha&#x27;:digest(ROOT/&#x27;analysis/feature_selection.json&#x27;),
+           &#x27;calibration_selection_file_sha&#x27;:digest(ROOT/&#x27;analysis/calibration_selection.json&#x27;)}
+    save(&#x27;analysis/final_audit.json&#x27;,audit)
+    print(&#x27;COMPLETE&#x27;,json.dumps(result,ensure_ascii=False),flush=True)
+
+
+if __name__==&#x27;__main__&#x27;:main()
+</pre><pre>&quot;&quot;&quot;Portable, regularized probability calibration; no post-observation inputs.&quot;&quot;&quot;
+import numpy as np
+from scipy.optimize import minimize
+from scipy.special import expit, logit
+
+
+def risk_cells(frame, cuts=(487., 472., 456.)):
+    score = frame.risk_score_405.to_numpy(float)
+    grade = np.select([score &gt;= cuts[0], score &gt;= cuts[1], score &gt;= cuts[2]], [0, 1, 2], default=3)
+    return grade * 2 + frame.churn_days.ge(30).to_numpy(int)
+
+
+def fit_calibration(probability, frame, asof, penalty=None):
+    &quot;&quot;&quot;Positive slope. Cell offsets shrink toward the global calibration curve.
+
+    Training data must be out-of-sample predictions with labels mature by asof.
+    The last 180 days are used; 90-day half-life is fixed before test evaluation.
+    &quot;&quot;&quot;
+    import pandas as pd
+    asof = pd.Timestamp(asof)
+    age = (asof - frame.obs_date).dt.days.to_numpy(float)
+    assert (age &gt;= 0).all()
+    keep = age &lt;= 180
+    f = frame.loc[keep].copy()
+    p = np.clip(np.asarray(probability)[keep], 1e-6, 1-1e-6)
+    y = f.target_d7.to_numpy(float)
+    assert len(y) &gt;= 200 and len(np.unique(y)) == 2
+    weight = np.power(.5, age[keep] / 90.)
+    z = logit(p)
+    cell = risk_cells(f)
+    nparam = 2 if penalty is None else 10
+    def loss(theta):
+        eta = theta[0]*z + theta[1]
+        if penalty is not None:
+            eta = eta + theta[2:][cell]
+        q = expit(eta)
+        value = np.sum(weight*(np.logaddexp(0, eta)-y*eta))
+        gradient = np.zeros(nparam)
+        residual = weight*(q-y)
+        gradient[0] = np.dot(residual, z)
+        gradient[1] = residual.sum()
+        # Modest slope regularization, shared by global and grouped variants.
+        value += .5*(theta[0]-1)**2
+        gradient[0] += theta[0]-1
+        if penalty is not None:
+            value += .5*penalty*np.dot(theta[2:], theta[2:])
+            gradient[2:] = np.bincount(cell, weights=residual, minlength=8)+penalty*theta[2:]
+        return float(value), gradient
+    initial = np.zeros(nparam); initial[0] = 1.
+    result = minimize(loss, initial, jac=True, method=&#x27;L-BFGS-B&#x27;,
+                      bounds=[(.05, 5.), (None, None)]+[(None, None)]*(nparam-2),
+                      options={&#x27;maxiter&#x27;: 2000, &#x27;ftol&#x27;: 1e-12, &#x27;gtol&#x27;: 1e-7})
+    assert result.success, result.message
+    return {&#x27;theta&#x27;:result.x, &#x27;penalty&#x27;:penalty, &#x27;asof&#x27;:str(asof.date()),
+            &#x27;rows&#x27;:len(f), &#x27;users&#x27;:int(f.user_id.nunique()), &#x27;bad&#x27;:int(y.sum()),
+            &#x27;cell_counts&#x27;:np.bincount(cell, minlength=8).tolist(),
+            &#x27;positive_slope&#x27;:float(result.x[0]), &#x27;window_days&#x27;:180, &#x27;half_life_days&#x27;:90,
+            &#x27;optimizer_converged&#x27;:bool(result.success)}
+
+
+def apply_calibration(probability, frame, calibrator):
+    z = logit(np.clip(np.asarray(probability), 1e-6, 1-1e-6))
+    theta = calibrator[&#x27;theta&#x27;]
+    eta = theta[0]*z + theta[1]
+    if calibrator[&#x27;penalty&#x27;] is not None:
+        eta = eta + theta[2:][risk_cells(frame)]
+    return np.clip(expit(eta), 1e-6, 1-1e-6)
+
+
+def refresh_score_features(frame, cuts):
+    frame = frame.copy()
+    score = frame.risk_score_405
+    grade = np.select([score&gt;=cuts[0], score&gt;=cuts[1], score&gt;=cuts[2]], [0,1,2], default=3)
+    frame[&#x27;score405_times_churn_log&#x27;] = (score-cuts[1])/25*frame.churn_log1p
+    frame[&#x27;score405_times_early_rate&#x27;] = (score-cuts[1])/25*frame.hist_early_rate
+    for g in range(4):
+        frame[f&#x27;score405_band_{g}&#x27;] = (grade==g).astype(float)
+        frame[f&#x27;score405_band_{g}_churn_log&#x27;] = (grade==g)*frame.churn_log1p
+        for days in (15,30,60,90):
+            frame[f&#x27;score405_band_{g}_churn_ge{days}&#x27;] = ((grade==g)&amp;(frame.churn_days&gt;=days)).astype(float)
+    return frame
+
+
+def predict_bundle(bundle, frame, mode=&#x27;selected&#x27;):
+    f = refresh_score_features(frame, bundle[&#x27;score_feature_cuts&#x27;])
+    raw = bundle[&#x27;model&#x27;].predict_proba(f[bundle[&#x27;features&#x27;]])[:,1]
+    key = &#x27;global_calibrator&#x27; if mode==&#x27;global&#x27; else &#x27;selected_calibrator&#x27;
+    return apply_calibration(raw, f, bundle[key])
+</pre></details></section><footer class="footer">网页仅汇总结果。用户级特征、训练、测试、评分明细和模型仅保存在本地。未自动变更授信、审批或放款策略。</footer></main></body></html>
