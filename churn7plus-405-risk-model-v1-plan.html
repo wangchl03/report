@@ -1,16 +1,803 @@
-<!doctype html><html lang="zh-CN"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>流失7天以上用户｜405风险再评级模型 V1 开发方案</title><style>body{margin:0;background:#f3f5f9;color:#26344a;font:16px/1.7 system-ui,-apple-system,"PingFang SC",sans-serif}main{max-width:1160px;margin:auto;padding:36px 22px 70px}header{text-align:center;padding:25px 0}h1{font-size:30px;color:#142948}h2{font-size:23px;color:#174c81;margin:0 0 18px}h3{font-size:18px;color:#245779}section{background:white;border:1px solid #dee5ee;border-radius:14px;margin:22px 0;padding:26px}p{margin:8px 0}li{margin:7px 0}table{border-collapse:collapse;width:100%;font-size:14px}td,th{padding:11px;border-bottom:1px solid #e4eaf2;text-align:left}th{background:#eaf0f8;color:#1d4368}.hint{background:#fff4df;border-left:4px solid #cf9324;padding:15px}.flow{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}.flow div{background:#edf4fb;border-top:3px solid #2d73ae;padding:16px}.small{font-size:14px;color:#607187}pre{background:#17263a;color:#e2eaf5;padding:20px;overflow:auto;font-size:13px;line-height:1.6}a{color:#1762a3}strong{color:#174c81}@media(max-width:700px){.flow{grid-template-columns:1fr}main{padding:15px}section{padding:18px}h1{font-size:24px}table{display:block;overflow:auto}}</style><main><header><h1>流失7天以上用户｜405风险再评级模型 V1 开发方案</h1><p class="small">报告生成：2026年10月9日 · 业务日期：America/Belize · 用户级数据仅本地保存</p></header>
-<section><h2>一、目标与交付</h2><p><strong>目标：</strong>在405实时评分基础上，识别流失≥7天用户再次借款时被原评分低估的风险；不替换原模型，不混入363评分。</p><div class="flow"><div>1. 还原流失周期<br>结清后通过获额为起点</div><div>2. 取得实时评分<br>观测前最近获额405分</div><div>3. 增加生命周期信息<br>流失、贷后、App行为</div><div>4. 验证再评级效果<br>时间外测试与分群对照</div></div><p>输出开发方案、特征字典、可复跑取数SQL、训练模型、测试结果、预测明细。仅方案和汇总验证报告发布到网页。</p></section>
-<section><h2>二、三个时间点必须分开</h2><table><tr><th>时间点</th><th>定义</th><th>用途</th></tr><tr><td>流失起点 t_anchor</td><td>整笔结清后当天，获额通过is_pass1=1、续贷、recycle_type=3，且结清时无其他在贷。通过记录先按订单保留最新，再做20秒链式去重。</td><td>累计流失天数；重新获额不重置。</td></tr><tr><td>观测时刻 t_obs</td><td>历史样本：该流失周期第一次再次提单的时刻，使用提单前可得信息；实时预测：数据完整截止日之后的00:00快照。</td><td>所有特征的时间上限。</td></tr><tr><td>评分获额 t_score</td><td>t_obs之前最近一次获额记录（同时间按serial_id较大取）；用其serial_id匹配405分。最新获额缺分不回退旧分。</td><td>当前资质、评分年龄、是否重新获额。</td></tr></table><p class="hint">15天内可能沿用原评分；超过有效期再次提单通常重新获额。要解决的是“最新评分对长期流失风险仍可能低估”，不是简单把起点旧评分加上流失天数。</p><pre>anchor = 结清后通过的type=3获额事件
-next_apply = anchor之后、下一anchor之前的首次用户提单（不限serial）
-obs = next_apply.time  # 训练的提单前风险快照
+<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>流失7天以上用户｜405风险再评级模型 V1 构建与实施方案</title><style>
+:root{--bg:#061b2a;--panel:#0b2a40;--line:#21465a;--ink:#d9e7ef;--muted:#9bb5c7;--cyan:#43c7e7;--green:#64dcae;--amber:#ffc26b}
+*{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.8 -apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei",sans-serif}.wrap{max-width:1280px;margin:auto;padding:48px 32px 70px}.hero{text-align:center;border-bottom:1px solid var(--line);padding-bottom:28px}.eyebrow{color:var(--green);font-weight:750;letter-spacing:2px}h1{font-size:36px;line-height:1.45;color:#fff;margin:16px 0}h2{font-size:25px;color:var(--cyan);border-left:5px solid var(--cyan);padding-left:15px;margin:0 0 18px}h3{font-size:19px;color:var(--amber);margin:20px 0 8px}p{margin:8px 0 14px}.small{color:var(--muted);font-size:14px}a{color:var(--cyan);text-decoration:none}a:hover{text-decoration:underline}nav{display:flex;gap:10px;flex-wrap:wrap;margin:22px 0}nav a{padding:7px 13px;border:1px solid var(--line);border-radius:7px;background:var(--panel)}section{min-width:0;margin:30px 0;padding:26px;background:#082235;border:1px solid var(--line);border-radius:14px;scroll-margin-top:20px}.cards{display:grid;grid-template-columns:repeat(2,1fr);gap:16px;margin:16px 0}.cards article,.note,.hint{min-width:0;background:var(--panel);padding:18px 20px;border-radius:10px;border-left:3px solid var(--green)}.cards h3{margin:0 0 8px}.cards p{margin-bottom:0}.note{border-left-color:var(--cyan);margin:18px 0}.note.warn,.hint{border-left-color:var(--amber)}strong{color:var(--green)}.kpis,.flow{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px;margin:20px 0}.kpi,.flow div{min-width:0;background:var(--panel);padding:18px;border-radius:9px;border-top:2px solid var(--line)}.kpi b,.flow strong{display:block;font-size:clamp(22px,2.2vw,31px);color:var(--green)}.kpi span{font-size:14px;color:var(--muted)}.table,.scroll{overflow-x:auto;margin:14px 0}table{border-collapse:collapse;width:100%;font-size:14px}th{background:#123b51;color:var(--cyan);text-align:left;white-space:nowrap}td,th{padding:11px 13px;border-bottom:1px solid var(--line);vertical-align:top}td:first-child{color:var(--green);font-weight:650}td{min-width:100px;font-variant-numeric:tabular-nums}tr:last-child td{border-bottom:0}code{font:13px ui-monospace,SFMono-Regular,Menlo,monospace;overflow-wrap:anywhere;color:#b3e4f5}pre{padding:18px;background:#041725;border:1px solid var(--line);border-radius:9px;overflow:auto;line-height:1.65;font-size:13px}pre code{white-space:pre;overflow-wrap:normal}details{margin:16px 0;border:1px solid var(--line);border-radius:8px;padding:12px 16px}summary{cursor:pointer;color:var(--cyan);font-weight:700}.steps{display:grid;gap:12px}.step{padding:15px 18px;background:var(--panel);border-left:3px solid var(--cyan)}.step strong{display:block;color:var(--amber)}svg{display:block;margin:18px 0}.footer{text-align:center;color:var(--muted);font-size:13px;margin-top:28px}ul{margin:8px 0;padding-left:22px}li{margin:7px 0}.features td{min-width:160px;overflow-wrap:anywhere}.features td:first-child{min-width:250px}input{font:inherit;font-size:14px;background:var(--panel);color:var(--ink);border:1px solid #3e6a82;padding:10px 12px;border-radius:7px;width:100%;max-width:650px}.controls{margin:16px 0}.status{display:inline-block;border:1px solid var(--line);border-radius:5px;padding:2px 7px;font-size:12px;color:var(--green)}.status.out{color:var(--amber)}
+@media(max-width:800px){.wrap{padding:25px 14px}section{padding:20px 16px}h1{font-size:27px}h2{font-size:22px}.cards{grid-template-columns:1fr}.kpis,.flow{grid-template-columns:repeat(2,minmax(0,1fr))}.table table{min-width:650px}.features{min-width:1100px}}
+@media print{nav,.controls{display:none}body{background:white;color:#111}section,.note,.cards article,.flow div,.kpi{background:white;break-inside:avoid}h1,h2,h3,strong,th,td:first-child{color:#163c58}table{font-size:10px}pre{white-space:pre-wrap;background:#eee;color:#111}}
+</style></head><body><main class="wrap"><header class="hero"><div class="eyebrow">405 · 实时评分 / 流失周期 / 生命周期 / 时间外验证</div><h1>流失7天以上用户<br>405风险再评级模型 V1 构建与实施方案</h1><p>生成日期：2026年10月9日　｜　模型版本：churn405_v1_20261009<br>训练起始2025-07-01；完整数据截至2026-10-07；业务时区America/Belize；仅离线/影子使用。</p></header><nav><a href="churn7plus-405-risk-model-v1-plan.html">构建与实施方案 →</a><a href="churn7plus-405-risk-model-v1-plan.html#features">生命周期特征 →</a><a href="churn7plus-405-risk-model-v1-validation.html">训练与测试结果 →</a><a href="churn7plus-405-risk-model-v1-plan.html#appendix">完整复现代码 →</a></nav><section id="goal"><h2>一、模型目标与交付</h2><div class="kpis"><div class="kpi"><b>28,052</b><span>成熟训练订单</span></div><div class="kpi"><b>6,581</b><span>时间外测试订单</span></div><div class="kpi"><b>151</b><span>生命周期候选特征</span></div><div class="kpi"><b>57</b><span>最终入模特征</span></div></div><div class="cards"><article><h3>业务目标｜识别长期流失风险</h3><p>在405评分基础上，检查长期流失用户的实际风险是否被低估；用流失周期、历史借还、额度和App行为辅助再评级。</p></article><article><h3>评分原则｜最新分，不取历史高分</h3><p>仅用观测前最近获额对应的405分；不混入363，不求平均或最高。最新缺分排除，不回退旧分。</p></article><article><h3>建模对象｜回流时的贷后风险</h3><p>历史观测为首次再次提单时刻，用提单前信息预测整笔到期D7未结清；不是预测用户会不会提单。</p></article><article><h3>交付｜已完成离线训练</h3><p>构建方案、特征定义、完整代码与测试报告；模型、训练/测试/预测逐笔明细仅本地，网页仅汇总。</p></article></div><div class="note">参考<a href="https://wangchl03.github.io/report/t0-application-timing-prediction-model-v4-plan.html?v=7e39939">T0模型V4构建与实施方案</a>的章节结构、生命周期表达与技术附录。<strong>仅借鉴文档组织，不照搬V4的提单标签、双评分输入或训练配置。</strong></div></section><section id="definition"><h2>二、统一口径与观测时点</h2><div class="table"><table class=""><thead><tr><th>对象</th><th>本模型统一定义</th></tr></thead><tbody><tr><td>流失起点</td><td>整笔结清、0在贷后同日通过获额；is_pass1=1、loan_type_code=2、recycle_type=3；获额≥结清。</td></tr><tr><td>20秒去重</td><td>类型筛选→同用户+serial保留最新→相邻获额差≤20秒链式成批→批内按vir_time DESC、serial_id DESC留一笔→匹配最近同日结清。</td></tr><tr><td>流失结束</td><td>起点之后、下一严格T0之前的首次用户提单，允许不同serial_id。首次提单未放款也结束流失周期，不跳过失败单寻找后续成功单。</td></tr><tr><td>流失天数</td><td>DATE(观测)-DATE(起点)≥7个自然日；重新获额不重置起点。不是严格168小时门槛。</td></tr><tr><td>历史观测</td><td>首次再次提单apply_time；只用之前已知信息。目标订单最终金额、放款/还款和贷后结果不作特征。</td></tr><tr><td>实时观测</td><td>2026-10-08 00:00快照；来源数据完整到10月7日。未再次提单用户风险尚未知。</td></tr><tr><td>最近评分</td><td>获额时间≤观测的最近记录，同时间按serial_id较大取；再按serial_id+user_id匹配405。不能先排除缺分记录再找旧分。</td></tr><tr><td>最新资格</td><td>最近获额is_pass1=1且recycle_type=3；最新失败、非结清续贷或405缺分排除。</td></tr><tr><td>15天有效期</td><td>评分获额年龄按秒数/86400计算；≥15天标记需要重新获额；它与流失自然日数分别保留。</td></tr></tbody></table></div><h3>三个时点｜流失起点不变，最新评分可以更新</h3><div class="flow"><div><b>t_anchor</b><br>结清后通过获额<br>流失开始</div><div><b>t_score</b><br>观测前最近获额<br>取对应405分</div><div><b>t_obs</b><br>首次再次提单/快照<br>截断输入</div><div><b>due+D7</b><br>整笔贷后标签<br>只作结果</div></div><pre><code>anchor = strict_T0_after_whole_settlement_and_zero_inflight()
+first_return = first_user_application_after(anchor, before_next_anchor)
+obs = first_return.apply_time  # 未回流：完整数据右开边界快照
 churn_days = DATE(obs) - DATE(anchor.time)
-latest_offer = 最近一条 offer.time &lt;= obs，按时间/订单号倒序
-score405 = model_result[latest_offer.serial_id].405
-如果最新评分缺失：剔除；如果churn_days &lt; 7：不进入主模型
-如果next_apply未成功放款或标签未成熟：不进入监督训练</pre></section>
-<section><h2>三、样本与风险标签</h2><ul><li>训练起始：再次提单日期≥2025-07-01；历史记录不限于此日期以后，以还原生命周期。</li><li>一条样本为一个流失周期的首次再次提单；一笔订单最多一条样本。成功放款is_remit=1、remit_amt&gt;0才有可验证的贷后标签。</li><li><strong>主标签：整笔订单到期后D7仍未结清。</strong>repaid_date有效且≤due_date+7为0，否则为1；必须due_date+7已完整观察。不是“今天是否loan_status_code=8”，也不是405原始训练标签的宣称复现。</li><li>辅助风险口径：整笔订单是否晚于due_date结清，用来展示风险差异，不与主标签混称。</li><li>历史未提单者、拒绝放款者及未成熟订单的风险未知，不能作为正常用户训练。实时流失名单能输出风险排序，但预测值只对与历史已放款群体相近的人群有经验支持。</li></ul></section>
-<section><h2>四、405分数区间与用户等级</h2><p>只用训练段每个用户最近一次有效评分，一人一次，从高分到低分划分；相同分数不强行拆组，实际人数占比可能偏离目标。区间固定用于后续月份。</p><table><tr><th>等级</th><th>排名分位</th><th>目标人数占比</th><th>验证内容</th></tr><tr><td>高优</td><td>前0–10%</td><td>10%</td><td rowspan="4">各等级×流失7–14/15–29/30–59/60–89/90+天：人数、已放款成熟订单数、D7逾期率、置信区间。等级仅为相对分层，不保证绝对风险。</td></tr><tr><td>优质</td><td>10–30%</td><td>20%</td></tr><tr><td>普通</td><td>30–60%</td><td>30%</td></tr><tr><td>风险</td><td>60–100%</td><td>40%</td></tr></table></section>
-<section><h2>五、特征开发：按生命周期，而非堆数量</h2><table><tr><th>特征组</th><th>细分</th><th>时点约束</th></tr><tr><td>当前405与流失</td><td>405分、流失天数/分段、评分年龄、重获额次数、评分时效、当前额度及对上一笔变化</td><td>最近获额≤观测；缺最新分排除，不用平均/最高分替代。</td></tr><tr><td>历史借还</td><td>成功放款次数、结清次数、还款速度、提前结清次数/比例、历史已成熟D7风险、件均、账期、息费、额度使用率</td><td>放款和结清必须已发生；未走完D7不进入历史风险分母。</td></tr><tr><td>近期变化</td><td>最近30/90天申请与借还、距上次行为天数、重获额、上一笔与历史均值差异</td><td>不使用当前待预测订单的金额、利息、结清或最终状态。</td></tr><tr><td>App实际行为</td><td>过去7/30/90天活跃日、事件、进提单页、金额/期次切换、还款计划、确认、活跃/提单页停留</td><td>日聚合数据只使用观测日前的完整日期，不混入当天结果。</td></tr><tr><td>非还款日App</td><td>与实际行为完全平行保留，另含非还款活跃占比、强度和趋势</td><td>实际还款日由还款流水确认；不是到期日，也不是仅结清日。</td></tr></table><p>0额度使用率标缺失，超过100%保留；没有历史行为记0，有数据源不覆盖时标记为缺失，不把未知当0。基准405不使用363或其他模型分。</p></section>
-<section><h2>六、训练、校准与测试</h2><table><tr><th>阶段</th><th>计划时间</th><th>规则</th></tr><tr><td>训练</td><td>2025-07至2026-05</td><td>标签截至2026-06-01前成熟，避免训练看到验证期的未来还款。</td></tr><tr><td>调参验证</td><td>2026-06</td><td>标签截至2026-07-01前成熟；有限网格调参，按AUC选择。</td></tr><tr><td>独立概率校准</td><td>2026-07</td><td>标签截至2026-08-01前成熟；不用于挑参数。</td></tr><tr><td>时间外测试</td><td>2026-08至最新完整数据</td><td>只纳入已经D7成熟的订单；最近月份为成熟子样本，展示覆盖。</td></tr></table><p>同一用户可跨月份，符合存量用户的实际部署；另报告测试新用户表现，并用用户聚类自助法评估增益区间，不把事件当作独立用户。</p><ul><li>对照1：原始405排序（高分低风险，风险排序用负405）；对照2：405单变量概率模型。</li><li>消融：405+流失变量 → 405+生命周期 → 405+生命周期+实际及非还款日App。</li><li>指标：AUC、KS、AP、Log loss、Brier、校准分组、风险最高20%的坏账捕获率/坏账率；另看高优/优质长流失用户是否被识别。</li><li>模型候选：逻辑回归、直方图梯度提升树。选择与校准仅用验证/校准段，测试不参与反复调参。</li></ul></section>
-<section><h2>七、验收与使用边界</h2><ul><li>检查起点类型、20秒去重、首次提单归属、评分是否来自最近获额、特征是否早于观测、标签是否成熟以及重复订单。</li><li>model_result_copy没有评分生成/更新时间字段；能验证获额时点，但无法独立证明该行从未被后来更新。历史回放结果属于有此数据限制的离线验证，上线前应落盘不可变评分快照。</li><li>按现有已放款样本训练，存在放款选择偏差；不能证明被拒绝/未提单者的真实逾期风险，也不直接自动拒贷或提额。</li><li>如果时间外增益有限或不稳定，保留405基线并如实报告，不把增加特征视为必然提升。</li><li>先影子运行、检查月度校准与风险，再由风控设定策略阈值。模型风险等级不等同于审批权限。</li></ul><p class="small">技术依据：<a href="https://scikit-learn.org/stable/modules/cross_validation.html">时间顺序验证</a> · <a href="https://scikit-learn.org/stable/modules/calibration.html">概率校准</a>。实际样本量、排除数、分数边界与验证结果在训练报告公布。</p></section>
-<section><h2>八、复现与交付目录</h2><p>数据仅本地：取数SQL、事件特征CSV/Parquet、训练/验证/测试分段、测试逐笔预测、实时预测、模型文件、参数和文件哈希。训练报告公开汇总，不提供明细下载。</p><p><a href="churn7plus-405-risk-model-v1-validation.html">训练与时间外验证报告（完成后发布）</a></p></section></main></html>
+latest = last_offer(user_id, offer_time &lt;= obs,
+                    order_by=(offer_time DESC, serial_id DESC))
+score405 = model_result[latest.serial_id, user_id].405
+if churn_days &lt; 7: exclude()
+if latest.is_pass1 != 1 or latest.recycle_type != 3: exclude()
+if score405 is missing: exclude()  # 不回退、不混入363
+features = information_available_before(obs)
+# 之后发生的放款、还款、逾期，只用于样本或标签</code></pre></section><section id="label"><h2>三、样本、风险标签与数据来源</h2><div class="cards"><article><h3>监督样本｜成熟已放款回流订单</h3><p>首次再次提单日期≥2025-07-01；流失≥7；is_remit=1、remit_amt&gt;0；有效due_date且D7完整成熟。未提单、未放款或未成熟不当作正常样本。</p></article><article><h3>主标签｜整笔到期D7未结清</h3><p>有效repaid_date≤due_date+7为0，其余为1。due_date+8≤数据右开边界才成熟；不是今天loan_status_code=8，也不声称复现405原始训练目标。</p></article></div><pre><code>valid_settlement = repaid_date &gt; DATE &quot;2000-01-01&quot;
+is_mature = due_date + 8 days &lt;= cutoff_exclusive
+y_D7 = 0 if valid_settlement and repaid_date &lt;= due_date + 7 days else 1
+# 9月20日到期：标签截至9月27日结束，9月28日00:00才完整成熟。
+y_D0 = 0 if valid_settlement and repaid_date &lt;= due_date else 1  # 辅助口径</code></pre><div class="table"><table class=""><thead><tr><th>来源</th><th>用途</th><th>关联与时间边界</th></tr></thead><tbody><tr><td>order_vir_f_copy</td><td>起点、最近获额、额度与获额次数</td><td>user_id、serial_id、vir_unix；获额≤观测</td></tr><tr><td>side_recycle_type_copy</td><td>结清续贷/循环贷类型</td><td>按serial_id聚合；冲突不当作type3</td></tr><tr><td>model_result_copy</td><td>唯一公司评分405</td><td>serial_id+user_id；缺分及无效占位值排除</td></tr><tr><td>order_loan_f_v2_copy</td><td>结清、回流、历史借还及整笔D7标签</td><td>历史事件已发生；目标订单贷后字段仅标签</td></tr><tr><td>event_track</td><td>实际App完整日行为</td><td>7/30/90天；仅观测日前完整日期</td></tr><tr><td>repayment_record_copy</td><td>实际还款日</td><td>amount&gt;0的payin_date按用户日去重</td></tr></tbody></table></div></section><section id="features"><h2>四、生命周期特征：从历史到当前</h2><div class="cards"><article><h3>评分与流失｜当前状态</h3><p>405分、流失天数及15/30/60/90天分段、评分年龄、重新获额标记，分别表达资质与评分时效。</p></article><article><h3>借还与贷后｜频次、速度和风险</h3><p>历史及近30/90/365天提单、成功放款、结清；提前结清比例、借还速度、历史成熟D7风险、最近相对历史变化。</p></article><article><h3>额度与使用率｜需求代理</h3><p>当前/上一笔额度、变额幅度和比例、与上一笔放款的比值及缺口、上一笔使用率、超过100%和缺失标记。</p></article><article><h3>App两套并行｜实际与非还款日</h3><p>两套均拆7/30/90天活跃日、事件、提单页、金额/期次切换、计划、确认、合同、优惠券页面和停留秒数；派生强度、占比和趋势。</p></article></div><div class="table"><table class=""><thead><tr><th>问题</th><th>本版实际处理</th></tr></thead><tbody><tr><td>使用率0%/无分母</td><td>remit_amt/上一笔获额额度；0%设NaN并标记，超过100%保留。</td></tr><tr><td>历史率无分母</td><td>保留NaN，不补为0%正常风险。</td></tr><tr><td>观测当天/还款日</td><td>不使用观测当天日聚合；非还款日额外排除实际正还款流水日期。</td></tr><tr><td>App无记录</td><td>日累计无记录为0；无法独立区分无行为与采集缺失，覆盖标识仍需补齐。</td></tr><tr><td>历史平均息费</td><td>hist_avg_fee不入模，因不可变历史金额快照不足；已结清上一笔息费保留。</td></tr><tr><td>产品表达</td><td>实际使用产品数量；本版未照搬V4的产品日息/息费画像。</td></tr><tr><td>候选与入模</td><td>151项已开发保存；独立验证选中57项生命周期模型，完整App候选未赢得验证。</td></tr></tbody></table></div><details><summary>展开151项完整特征定义、计算规则与入模状态</summary><div class="controls"><label for="featureSearch">筛选字段或中文定义：</label><br><input id="featureSearch" placeholder="例如：使用率、App、7d、risk_score"><p class="small">当前显示 <span id="featureCount">151</span> 项</p></div><div class="table"><table class="features" id="featureTable"><thead><tr><th>字段</th><th>中文定义</th><th>计算规则</th><th>时点边界</th><th>最终模型</th></tr></thead><tbody><tr><td>current_credit</td><td>当前获额额度</td><td>最近获额max_credit_apply_amt</td><td>获额≤观测；历史事件&lt;观测；贷后结果须已可知</td><td><span class="status">已入模</span></td></tr><tr><td>risk_score_405</td><td>最近获额405分</td><td>最近获额serial_id+user_id匹配；不平均不取最高；缺分排除</td><td>获额≤观测；历史事件&lt;观测；贷后结果须已可知</td><td><span class="status">已入模</span></td></tr><tr><td>churn_days</td><td>流失自然日数</td><td>DATE(观测)-DATE(流失起点)；重新获额不重置</td><td>获额≤观测；历史事件&lt;观测；贷后结果须已可知</td><td><span class="status">已入模</span></td></tr><tr><td>score_age_days</td><td>评分对应获额年龄</td><td>(观测-最近获额)/86400秒</td><td>获额≤观测；历史事件&lt;观测；贷后结果须已可知</td><td><span class="status">已入模</span></td></tr><tr><td>is_rescored</td><td>已重新获额</td><td>最近获额serial_id≠流失起点serial_id；不等同于分值变化</td><td>获额≤观测；历史事件&lt;观测；贷后结果须已可知</td><td><span class="status">已入模</span></td></tr><tr><td>previous_loan_count</td><td>上一笔成功放款次数</td><td>触发起点已结清订单remit_succ_rnb</td><td>获额≤观测；历史事件&lt;观测；贷后结果须已可知</td><td><span class="status">已入模</span></td></tr><tr><td>prev_remit_amt</td><td>上一笔放款金额</td><td>触发起点已结清订单remit_amt</td><td>获额≤观测；历史事件&lt;观测；贷后结果须已可知</td><td><span class="status">已入模</span></td></tr><tr><td>prev_apply_amt</td><td>上一笔提单金额</td><td>触发起点已结清订单apply_amt</td><td>获额≤观测；历史事件&lt;观测；贷后结果须已可知</td><td><span class="status">已入模</span></td></tr><tr><td>prev_loan_day</td><td>上一笔账期</td><td>触发起点已结清订单loan_day</td><td>获额≤观测；历史事件&lt;观测；贷后结果须已可知</td><td><span class="status">已入模</span></td></tr><tr><td>prev_total_term</td><td>上一笔期次</td><td>触发起点已结清订单total_term</td><td>获额≤观测；历史事件&lt;观测；贷后结果须已可知</td><td><span class="status">已入模</span></td></tr><tr><td>prev_fee_rate</td><td>上一笔息费率</td><td>(pre_amt+post_amt)/remit_amt；已结清合同</td><td>获额≤观测；历史事件&lt;观测；贷后结果须已可知</td><td><span class="status">已入模</span></td></tr><tr><td>prev_early_days</td><td>上一笔提前结清天数</td><td>due_date-repaid_date；负值=晚结清</td><td>获额≤观测；历史事件&lt;观测；贷后结果须已可知</td><td><span class="status">已入模</span></td></tr><tr><td>prev_repay_days</td><td>上一笔借还天数</td><td>(repaid_time-remit_time)/86400秒</td><td>获额≤观测；历史事件&lt;观测；贷后结果须已可知</td><td><span class="status">已入模</span></td></tr><tr><td>prev_is_cycle</td><td>上一笔是否循环贷</td><td>上一笔serial_id存在recycle_type=2</td><td>获额≤观测；历史事件&lt;观测；贷后结果须已可知</td><td><span class="status">已入模</span></td></tr><tr><td>hist_apply_count</td><td>历史提单次数</td><td>apply_time&lt;观测且非目标订单的订单数</td><td>获额≤观测；历史事件&lt;观测；贷后结果须已可知</td><td><span class="status">已入模</span></td></tr><tr><td>hist_funded_count</td><td>历史成功放款次数</td><td>历史已放款、remit_amt&gt;0且remit_time&lt;观测</td><td>获额≤观测；历史事件&lt;观测；贷后结果须已可知</td><td><span class="status">已入模</span></td></tr><tr><td>hist_settled_count</td><td>历史结清次数</td><td>有效repaid_time&lt;观测的历史订单数</td><td>获额≤观测；历史事件&lt;观测；贷后结果须已可知</td><td><span class="status">已入模</span></td></tr><tr><td>hist_early_count</td><td>历史提前结清次数</td><td>历史已结清且repaid_date&lt;due_date</td><td>获额≤观测；历史事件&lt;观测；贷后结果须已可知</td><td><span class="status">已入模</span></td></tr><tr><td>hist_avg_remit</td><td>历史平均放款金额</td><td>观测前已放款订单remit_amt均值</td><td>获额≤观测；历史事件&lt;观测；贷后结果须已可知</td><td><span class="status">已入模</span></td></tr><tr><td>hist_avg_loan_day</td><td>历史平均账期</td><td>观测前已放款订单loan_day均值</td><td>获额≤观测；历史事件&lt;观测；贷后结果须已可知</td><td><span class="status">已入模</span></td></tr><tr><td>hist_avg_repay_days</td><td>历史平均借还天数</td><td>观测前已结清订单借还时间均值</td><td>获额≤观测；历史事件&lt;观测；贷后结果须已可知</td><td><span class="status">已入模</span></td></tr><tr><td>hist_avg_early_days</td><td>历史平均提前结清天数</td><td>观测前已结清订单due_date-repaid_date均值</td><td>获额≤观测；历史事件&lt;观测；贷后结果须已可知</td><td><span class="status">已入模</span></td></tr><tr><td>hist_d7_mature_count</td><td>历史D7成熟订单数</td><td>历史已放款且due_date+8≤观测日</td><td>获额≤观测；历史事件&lt;观测；贷后结果须已可知</td><td><span class="status">已入模</span></td></tr><tr><td>hist_d7_bad_count</td><td>历史D7逾期订单数</td><td>历史成熟订单在due_date+7结束仍未结清</td><td>获额≤观测；历史事件&lt;观测；贷后结果须已可知</td><td><span class="status">已入模</span></td></tr><tr><td>days_since_apply</td><td>距上次历史提单天数</td><td>观测减历史最大apply_time；候选列未入最终模型</td><td>观测日前完整日期；非还款日排除正流水日期</td><td><span class="status out">候选/未入选</span></td></tr><tr><td>user_tenure_days</td><td>首次提单至观测天数</td><td>观测减历史最小apply_time；不是注册天数</td><td>获额≤观测；历史事件&lt;观测；贷后结果须已可知</td><td><span class="status">已入模</span></td></tr><tr><td>hist_apply_30d</td><td>近30天提单次数</td><td>相应事件时间∈[观测-30天,观测)，结果须已发生</td><td>获额≤观测；历史事件&lt;观测；贷后结果须已可知</td><td><span class="status">已入模</span></td></tr><tr><td>hist_funded_30d</td><td>近30天成功放款次数</td><td>相应事件时间∈[观测-30天,观测)，结果须已发生</td><td>获额≤观测；历史事件&lt;观测；贷后结果须已可知</td><td><span class="status">已入模</span></td></tr><tr><td>hist_settled_30d</td><td>近30天结清次数</td><td>相应事件时间∈[观测-30天,观测)，结果须已发生</td><td>获额≤观测；历史事件&lt;观测；贷后结果须已可知</td><td><span class="status">已入模</span></td></tr><tr><td>hist_apply_90d</td><td>近90天提单次数</td><td>相应事件时间∈[观测-90天,观测)，结果须已发生</td><td>获额≤观测；历史事件&lt;观测；贷后结果须已可知</td><td><span class="status">已入模</span></td></tr><tr><td>hist_funded_90d</td><td>近90天成功放款次数</td><td>相应事件时间∈[观测-90天,观测)，结果须已发生</td><td>获额≤观测；历史事件&lt;观测；贷后结果须已可知</td><td><span class="status">已入模</span></td></tr><tr><td>hist_settled_90d</td><td>近90天结清次数</td><td>相应事件时间∈[观测-90天,观测)，结果须已发生</td><td>获额≤观测；历史事件&lt;观测；贷后结果须已可知</td><td><span class="status">已入模</span></td></tr><tr><td>hist_apply_365d</td><td>近365天提单次数</td><td>相应事件时间∈[观测-365天,观测)，结果须已发生</td><td>获额≤观测；历史事件&lt;观测；贷后结果须已可知</td><td><span class="status">已入模</span></td></tr><tr><td>hist_funded_365d</td><td>近365天成功放款次数</td><td>相应事件时间∈[观测-365天,观测)，结果须已发生</td><td>获额≤观测；历史事件&lt;观测；贷后结果须已可知</td><td><span class="status">已入模</span></td></tr><tr><td>hist_settled_365d</td><td>近365天结清次数</td><td>相应事件时间∈[观测-365天,观测)，结果须已发生</td><td>获额≤观测；历史事件&lt;观测；贷后结果须已可知</td><td><span class="status">已入模</span></td></tr><tr><td>prev_credit</td><td>上一笔获额额度</td><td>上一笔serial_id提单前最近获额额度</td><td>获额≤观测；历史事件&lt;观测；贷后结果须已可知</td><td><span class="status">已入模</span></td></tr><tr><td>prev_utilization</td><td>上一笔额度使用率</td><td>上一笔remit_amt/上一笔获额额度；&gt;100%保留；0%缺失</td><td>获额≤观测；历史事件&lt;观测；贷后结果须已可知</td><td><span class="status">已入模</span></td></tr><tr><td>offer_count_since_anchor</td><td>流失期间获额订单数</td><td>起点至观测内COUNT(DISTINCT serial_id)</td><td>获额≤观测；历史事件&lt;观测；贷后结果须已可知</td><td><span class="status">已入模</span></td></tr><tr><td>pass_offer_rows_since_anchor</td><td>期间通过获额记录数</td><td>起点至观测内is_pass1=1记录条数；不是20秒去重事件数</td><td>获额≤观测；历史事件&lt;观测；贷后结果须已可知</td><td><span class="status">已入模</span></td></tr><tr><td>app_active_days_7d</td><td>实际App近7天活跃天数</td><td>按用户日累计；活跃天数计active_status&gt;0日期数</td><td>观测日前完整日期；非还款日排除正流水日期</td><td><span class="status out">候选/未入选</span></td></tr><tr><td>app_active_status_7d</td><td>实际App近7天活跃事件次数</td><td>按用户日累计；活跃天数计active_status&gt;0日期数</td><td>观测日前完整日期；非还款日排除正流水日期</td><td><span class="status out">候选/未入选</span></td></tr><tr><td>app_newpage_7d</td><td>实际App近7天进入提单页次数</td><td>按用户日累计；活跃天数计active_status&gt;0日期数</td><td>观测日前完整日期；非还款日排除正流水日期</td><td><span class="status out">候选/未入选</span></td></tr><tr><td>app_amount_selection_7d</td><td>实际App近7天切换金额次数</td><td>按用户日累计；活跃天数计active_status&gt;0日期数</td><td>观测日前完整日期；非还款日排除正流水日期</td><td><span class="status out">候选/未入选</span></td></tr><tr><td>app_term_selection_7d</td><td>实际App近7天切换期次次数</td><td>按用户日累计；活跃天数计active_status&gt;0日期数</td><td>观测日前完整日期；非还款日排除正流水日期</td><td><span class="status out">候选/未入选</span></td></tr><tr><td>app_plan_newdetails_7d</td><td>实际App近7天查看还款计划次数</td><td>按用户日累计；活跃天数计active_status&gt;0日期数</td><td>观测日前完整日期；非还款日排除正流水日期</td><td><span class="status out">候选/未入选</span></td></tr><tr><td>app_newconfirm_7d</td><td>实际App近7天确认提单次数</td><td>按用户日累计；活跃天数计active_status&gt;0日期数</td><td>观测日前完整日期；非还款日排除正流水日期</td><td><span class="status out">候选/未入选</span></td></tr><tr><td>app_contract_newdetails_7d</td><td>实际App近7天查看合同次数</td><td>按用户日累计；活跃天数计active_status&gt;0日期数</td><td>观测日前完整日期；非还款日排除正流水日期</td><td><span class="status out">候选/未入选</span></td></tr><tr><td>app_coupons_page_7d</td><td>实际App近7天优惠券挽留页次数</td><td>按用户日累计；活跃天数计active_status&gt;0日期数</td><td>观测日前完整日期；非还款日排除正流水日期</td><td><span class="status out">候选/未入选</span></td></tr><tr><td>app_active_duration_7d</td><td>实际App近7天活跃秒数</td><td>按用户日累计；活跃天数计active_status&gt;0日期数</td><td>观测日前完整日期；非还款日排除正流水日期</td><td><span class="status out">候选/未入选</span></td></tr><tr><td>app_apply_duration_7d</td><td>实际App近7天提单页停留秒数</td><td>按用户日累计；活跃天数计active_status&gt;0日期数</td><td>观测日前完整日期；非还款日排除正流水日期</td><td><span class="status out">候选/未入选</span></td></tr><tr><td>nonpay_active_days_7d</td><td>非还款日App近7天活跃天数</td><td>按用户日累计；活跃天数计active_status&gt;0日期数</td><td>观测日前完整日期；非还款日排除正流水日期</td><td><span class="status out">候选/未入选</span></td></tr><tr><td>nonpay_active_status_7d</td><td>非还款日App近7天活跃事件次数</td><td>按用户日累计；活跃天数计active_status&gt;0日期数</td><td>观测日前完整日期；非还款日排除正流水日期</td><td><span class="status out">候选/未入选</span></td></tr><tr><td>nonpay_newpage_7d</td><td>非还款日App近7天进入提单页次数</td><td>按用户日累计；活跃天数计active_status&gt;0日期数</td><td>观测日前完整日期；非还款日排除正流水日期</td><td><span class="status out">候选/未入选</span></td></tr><tr><td>nonpay_amount_selection_7d</td><td>非还款日App近7天切换金额次数</td><td>按用户日累计；活跃天数计active_status&gt;0日期数</td><td>观测日前完整日期；非还款日排除正流水日期</td><td><span class="status out">候选/未入选</span></td></tr><tr><td>nonpay_term_selection_7d</td><td>非还款日App近7天切换期次次数</td><td>按用户日累计；活跃天数计active_status&gt;0日期数</td><td>观测日前完整日期；非还款日排除正流水日期</td><td><span class="status out">候选/未入选</span></td></tr><tr><td>nonpay_plan_newdetails_7d</td><td>非还款日App近7天查看还款计划次数</td><td>按用户日累计；活跃天数计active_status&gt;0日期数</td><td>观测日前完整日期；非还款日排除正流水日期</td><td><span class="status out">候选/未入选</span></td></tr><tr><td>nonpay_newconfirm_7d</td><td>非还款日App近7天确认提单次数</td><td>按用户日累计；活跃天数计active_status&gt;0日期数</td><td>观测日前完整日期；非还款日排除正流水日期</td><td><span class="status out">候选/未入选</span></td></tr><tr><td>nonpay_contract_newdetails_7d</td><td>非还款日App近7天查看合同次数</td><td>按用户日累计；活跃天数计active_status&gt;0日期数</td><td>观测日前完整日期；非还款日排除正流水日期</td><td><span class="status out">候选/未入选</span></td></tr><tr><td>nonpay_coupons_page_7d</td><td>非还款日App近7天优惠券挽留页次数</td><td>按用户日累计；活跃天数计active_status&gt;0日期数</td><td>观测日前完整日期；非还款日排除正流水日期</td><td><span class="status out">候选/未入选</span></td></tr><tr><td>nonpay_active_duration_7d</td><td>非还款日App近7天活跃秒数</td><td>按用户日累计；活跃天数计active_status&gt;0日期数</td><td>观测日前完整日期；非还款日排除正流水日期</td><td><span class="status out">候选/未入选</span></td></tr><tr><td>nonpay_apply_duration_7d</td><td>非还款日App近7天提单页停留秒数</td><td>按用户日累计；活跃天数计active_status&gt;0日期数</td><td>观测日前完整日期；非还款日排除正流水日期</td><td><span class="status out">候选/未入选</span></td></tr><tr><td>app_active_days_30d</td><td>实际App近30天活跃天数</td><td>按用户日累计；活跃天数计active_status&gt;0日期数</td><td>观测日前完整日期；非还款日排除正流水日期</td><td><span class="status out">候选/未入选</span></td></tr><tr><td>app_active_status_30d</td><td>实际App近30天活跃事件次数</td><td>按用户日累计；活跃天数计active_status&gt;0日期数</td><td>观测日前完整日期；非还款日排除正流水日期</td><td><span class="status out">候选/未入选</span></td></tr><tr><td>app_newpage_30d</td><td>实际App近30天进入提单页次数</td><td>按用户日累计；活跃天数计active_status&gt;0日期数</td><td>观测日前完整日期；非还款日排除正流水日期</td><td><span class="status out">候选/未入选</span></td></tr><tr><td>app_amount_selection_30d</td><td>实际App近30天切换金额次数</td><td>按用户日累计；活跃天数计active_status&gt;0日期数</td><td>观测日前完整日期；非还款日排除正流水日期</td><td><span class="status out">候选/未入选</span></td></tr><tr><td>app_term_selection_30d</td><td>实际App近30天切换期次次数</td><td>按用户日累计；活跃天数计active_status&gt;0日期数</td><td>观测日前完整日期；非还款日排除正流水日期</td><td><span class="status out">候选/未入选</span></td></tr><tr><td>app_plan_newdetails_30d</td><td>实际App近30天查看还款计划次数</td><td>按用户日累计；活跃天数计active_status&gt;0日期数</td><td>观测日前完整日期；非还款日排除正流水日期</td><td><span class="status out">候选/未入选</span></td></tr><tr><td>app_newconfirm_30d</td><td>实际App近30天确认提单次数</td><td>按用户日累计；活跃天数计active_status&gt;0日期数</td><td>观测日前完整日期；非还款日排除正流水日期</td><td><span class="status out">候选/未入选</span></td></tr><tr><td>app_contract_newdetails_30d</td><td>实际App近30天查看合同次数</td><td>按用户日累计；活跃天数计active_status&gt;0日期数</td><td>观测日前完整日期；非还款日排除正流水日期</td><td><span class="status out">候选/未入选</span></td></tr><tr><td>app_coupons_page_30d</td><td>实际App近30天优惠券挽留页次数</td><td>按用户日累计；活跃天数计active_status&gt;0日期数</td><td>观测日前完整日期；非还款日排除正流水日期</td><td><span class="status out">候选/未入选</span></td></tr><tr><td>app_active_duration_30d</td><td>实际App近30天活跃秒数</td><td>按用户日累计；活跃天数计active_status&gt;0日期数</td><td>观测日前完整日期；非还款日排除正流水日期</td><td><span class="status out">候选/未入选</span></td></tr><tr><td>app_apply_duration_30d</td><td>实际App近30天提单页停留秒数</td><td>按用户日累计；活跃天数计active_status&gt;0日期数</td><td>观测日前完整日期；非还款日排除正流水日期</td><td><span class="status out">候选/未入选</span></td></tr><tr><td>nonpay_active_days_30d</td><td>非还款日App近30天活跃天数</td><td>按用户日累计；活跃天数计active_status&gt;0日期数</td><td>观测日前完整日期；非还款日排除正流水日期</td><td><span class="status out">候选/未入选</span></td></tr><tr><td>nonpay_active_status_30d</td><td>非还款日App近30天活跃事件次数</td><td>按用户日累计；活跃天数计active_status&gt;0日期数</td><td>观测日前完整日期；非还款日排除正流水日期</td><td><span class="status out">候选/未入选</span></td></tr><tr><td>nonpay_newpage_30d</td><td>非还款日App近30天进入提单页次数</td><td>按用户日累计；活跃天数计active_status&gt;0日期数</td><td>观测日前完整日期；非还款日排除正流水日期</td><td><span class="status out">候选/未入选</span></td></tr><tr><td>nonpay_amount_selection_30d</td><td>非还款日App近30天切换金额次数</td><td>按用户日累计；活跃天数计active_status&gt;0日期数</td><td>观测日前完整日期；非还款日排除正流水日期</td><td><span class="status out">候选/未入选</span></td></tr><tr><td>nonpay_term_selection_30d</td><td>非还款日App近30天切换期次次数</td><td>按用户日累计；活跃天数计active_status&gt;0日期数</td><td>观测日前完整日期；非还款日排除正流水日期</td><td><span class="status out">候选/未入选</span></td></tr><tr><td>nonpay_plan_newdetails_30d</td><td>非还款日App近30天查看还款计划次数</td><td>按用户日累计；活跃天数计active_status&gt;0日期数</td><td>观测日前完整日期；非还款日排除正流水日期</td><td><span class="status out">候选/未入选</span></td></tr><tr><td>nonpay_newconfirm_30d</td><td>非还款日App近30天确认提单次数</td><td>按用户日累计；活跃天数计active_status&gt;0日期数</td><td>观测日前完整日期；非还款日排除正流水日期</td><td><span class="status out">候选/未入选</span></td></tr><tr><td>nonpay_contract_newdetails_30d</td><td>非还款日App近30天查看合同次数</td><td>按用户日累计；活跃天数计active_status&gt;0日期数</td><td>观测日前完整日期；非还款日排除正流水日期</td><td><span class="status out">候选/未入选</span></td></tr><tr><td>nonpay_coupons_page_30d</td><td>非还款日App近30天优惠券挽留页次数</td><td>按用户日累计；活跃天数计active_status&gt;0日期数</td><td>观测日前完整日期；非还款日排除正流水日期</td><td><span class="status out">候选/未入选</span></td></tr><tr><td>nonpay_active_duration_30d</td><td>非还款日App近30天活跃秒数</td><td>按用户日累计；活跃天数计active_status&gt;0日期数</td><td>观测日前完整日期；非还款日排除正流水日期</td><td><span class="status out">候选/未入选</span></td></tr><tr><td>nonpay_apply_duration_30d</td><td>非还款日App近30天提单页停留秒数</td><td>按用户日累计；活跃天数计active_status&gt;0日期数</td><td>观测日前完整日期；非还款日排除正流水日期</td><td><span class="status out">候选/未入选</span></td></tr><tr><td>app_active_days_90d</td><td>实际App近90天活跃天数</td><td>按用户日累计；活跃天数计active_status&gt;0日期数</td><td>观测日前完整日期；非还款日排除正流水日期</td><td><span class="status out">候选/未入选</span></td></tr><tr><td>app_active_status_90d</td><td>实际App近90天活跃事件次数</td><td>按用户日累计；活跃天数计active_status&gt;0日期数</td><td>观测日前完整日期；非还款日排除正流水日期</td><td><span class="status out">候选/未入选</span></td></tr><tr><td>app_newpage_90d</td><td>实际App近90天进入提单页次数</td><td>按用户日累计；活跃天数计active_status&gt;0日期数</td><td>观测日前完整日期；非还款日排除正流水日期</td><td><span class="status out">候选/未入选</span></td></tr><tr><td>app_amount_selection_90d</td><td>实际App近90天切换金额次数</td><td>按用户日累计；活跃天数计active_status&gt;0日期数</td><td>观测日前完整日期；非还款日排除正流水日期</td><td><span class="status out">候选/未入选</span></td></tr><tr><td>app_term_selection_90d</td><td>实际App近90天切换期次次数</td><td>按用户日累计；活跃天数计active_status&gt;0日期数</td><td>观测日前完整日期；非还款日排除正流水日期</td><td><span class="status out">候选/未入选</span></td></tr><tr><td>app_plan_newdetails_90d</td><td>实际App近90天查看还款计划次数</td><td>按用户日累计；活跃天数计active_status&gt;0日期数</td><td>观测日前完整日期；非还款日排除正流水日期</td><td><span class="status out">候选/未入选</span></td></tr><tr><td>app_newconfirm_90d</td><td>实际App近90天确认提单次数</td><td>按用户日累计；活跃天数计active_status&gt;0日期数</td><td>观测日前完整日期；非还款日排除正流水日期</td><td><span class="status out">候选/未入选</span></td></tr><tr><td>app_contract_newdetails_90d</td><td>实际App近90天查看合同次数</td><td>按用户日累计；活跃天数计active_status&gt;0日期数</td><td>观测日前完整日期；非还款日排除正流水日期</td><td><span class="status out">候选/未入选</span></td></tr><tr><td>app_coupons_page_90d</td><td>实际App近90天优惠券挽留页次数</td><td>按用户日累计；活跃天数计active_status&gt;0日期数</td><td>观测日前完整日期；非还款日排除正流水日期</td><td><span class="status out">候选/未入选</span></td></tr><tr><td>app_active_duration_90d</td><td>实际App近90天活跃秒数</td><td>按用户日累计；活跃天数计active_status&gt;0日期数</td><td>观测日前完整日期；非还款日排除正流水日期</td><td><span class="status out">候选/未入选</span></td></tr><tr><td>app_apply_duration_90d</td><td>实际App近90天提单页停留秒数</td><td>按用户日累计；活跃天数计active_status&gt;0日期数</td><td>观测日前完整日期；非还款日排除正流水日期</td><td><span class="status out">候选/未入选</span></td></tr><tr><td>nonpay_active_days_90d</td><td>非还款日App近90天活跃天数</td><td>按用户日累计；活跃天数计active_status&gt;0日期数</td><td>观测日前完整日期；非还款日排除正流水日期</td><td><span class="status out">候选/未入选</span></td></tr><tr><td>nonpay_active_status_90d</td><td>非还款日App近90天活跃事件次数</td><td>按用户日累计；活跃天数计active_status&gt;0日期数</td><td>观测日前完整日期；非还款日排除正流水日期</td><td><span class="status out">候选/未入选</span></td></tr><tr><td>nonpay_newpage_90d</td><td>非还款日App近90天进入提单页次数</td><td>按用户日累计；活跃天数计active_status&gt;0日期数</td><td>观测日前完整日期；非还款日排除正流水日期</td><td><span class="status out">候选/未入选</span></td></tr><tr><td>nonpay_amount_selection_90d</td><td>非还款日App近90天切换金额次数</td><td>按用户日累计；活跃天数计active_status&gt;0日期数</td><td>观测日前完整日期；非还款日排除正流水日期</td><td><span class="status out">候选/未入选</span></td></tr><tr><td>nonpay_term_selection_90d</td><td>非还款日App近90天切换期次次数</td><td>按用户日累计；活跃天数计active_status&gt;0日期数</td><td>观测日前完整日期；非还款日排除正流水日期</td><td><span class="status out">候选/未入选</span></td></tr><tr><td>nonpay_plan_newdetails_90d</td><td>非还款日App近90天查看还款计划次数</td><td>按用户日累计；活跃天数计active_status&gt;0日期数</td><td>观测日前完整日期；非还款日排除正流水日期</td><td><span class="status out">候选/未入选</span></td></tr><tr><td>nonpay_newconfirm_90d</td><td>非还款日App近90天确认提单次数</td><td>按用户日累计；活跃天数计active_status&gt;0日期数</td><td>观测日前完整日期；非还款日排除正流水日期</td><td><span class="status out">候选/未入选</span></td></tr><tr><td>nonpay_contract_newdetails_90d</td><td>非还款日App近90天查看合同次数</td><td>按用户日累计；活跃天数计active_status&gt;0日期数</td><td>观测日前完整日期；非还款日排除正流水日期</td><td><span class="status out">候选/未入选</span></td></tr><tr><td>nonpay_coupons_page_90d</td><td>非还款日App近90天优惠券挽留页次数</td><td>按用户日累计；活跃天数计active_status&gt;0日期数</td><td>观测日前完整日期；非还款日排除正流水日期</td><td><span class="status out">候选/未入选</span></td></tr><tr><td>nonpay_active_duration_90d</td><td>非还款日App近90天活跃秒数</td><td>按用户日累计；活跃天数计active_status&gt;0日期数</td><td>观测日前完整日期；非还款日排除正流水日期</td><td><span class="status out">候选/未入选</span></td></tr><tr><td>nonpay_apply_duration_90d</td><td>非还款日App近90天提单页停留秒数</td><td>按用户日累计；活跃天数计active_status&gt;0日期数</td><td>观测日前完整日期；非还款日排除正流水日期</td><td><span class="status out">候选/未入选</span></td></tr><tr><td>days_since_app_90d</td><td>距近90天最近活跃日</td><td>观测日减最近active_status&gt;0日期；无记录为NaN</td><td>观测日前完整日期；非还款日排除正流水日期</td><td><span class="status out">候选/未入选</span></td></tr><tr><td>churn_log1p</td><td>流失天数对数</td><td>log(1+churn_days)</td><td>获额≤观测；历史事件&lt;观测；贷后结果须已可知</td><td><span class="status">已入模</span></td></tr><tr><td>churn_ge_15d</td><td>流失≥15天</td><td>churn_days≥15</td><td>获额≤观测；历史事件&lt;观测；贷后结果须已可知</td><td><span class="status">已入模</span></td></tr><tr><td>churn_ge_30d</td><td>流失≥30天</td><td>churn_days≥30</td><td>获额≤观测；历史事件&lt;观测；贷后结果须已可知</td><td><span class="status">已入模</span></td></tr><tr><td>churn_ge_60d</td><td>流失≥60天</td><td>churn_days≥60</td><td>获额≤观测；历史事件&lt;观测；贷后结果须已可知</td><td><span class="status">已入模</span></td></tr><tr><td>churn_ge_90d</td><td>流失≥90天</td><td>churn_days≥90</td><td>获额≤观测；历史事件&lt;观测；贷后结果须已可知</td><td><span class="status">已入模</span></td></tr><tr><td>score_expired_15d</td><td>最近获额已满15天</td><td>score_age_days≥15；需重新获额</td><td>获额≤观测；历史事件&lt;观测；贷后结果须已可知</td><td><span class="status">已入模</span></td></tr><tr><td>offered_product_count</td><td>当前提供产品数</td><td>risk_product逗号拆分去空格去重；原字段缺失为NaN</td><td>获额≤观测；历史事件&lt;观测；贷后结果须已可知</td><td><span class="status">已入模</span></td></tr><tr><td>credit_change</td><td>额度变动额</td><td>current_credit-prev_credit</td><td>获额≤观测；历史事件&lt;观测；贷后结果须已可知</td><td><span class="status">已入模</span></td></tr><tr><td>credit_change_ratio</td><td>额度变动比例</td><td>credit_change/prev_credit</td><td>获额≤观测；历史事件&lt;观测；贷后结果须已可知</td><td><span class="status">已入模</span></td></tr><tr><td>credit_vs_prev_remit</td><td>当前额度/上一笔放款</td><td>current_credit/prev_remit_amt</td><td>获额≤观测；历史事件&lt;观测；贷后结果须已可知</td><td><span class="status">已入模</span></td></tr><tr><td>credit_shortfall_vs_prev_remit</td><td>相对上一笔放款的额度缺口</td><td>max(prev_remit_amt-current_credit,0)</td><td>获额≤观测；历史事件&lt;观测；贷后结果须已可知</td><td><span class="status">已入模</span></td></tr><tr><td>prev_utilization_missing</td><td>使用率缺失标记</td><td>无有效分子或分母时标1</td><td>获额≤观测；历史事件&lt;观测；贷后结果须已可知</td><td><span class="status">已入模</span></td></tr><tr><td>prev_utilization_above100</td><td>使用率超过100%</td><td>prev_utilization&gt;1</td><td>获额≤观测；历史事件&lt;观测；贷后结果须已可知</td><td><span class="status">已入模</span></td></tr><tr><td>hist_early_rate</td><td>历史提前结清比例</td><td>hist_early_count/hist_settled_count</td><td>获额≤观测；历史事件&lt;观测；贷后结果须已可知</td><td><span class="status">已入模</span></td></tr><tr><td>hist_d7_bad_rate</td><td>历史成熟D7逾期率</td><td>hist_d7_bad_count/hist_d7_mature_count</td><td>获额≤观测；历史事件&lt;观测；贷后结果须已可知</td><td><span class="status">已入模</span></td></tr><tr><td>hist_fund_rate</td><td>历史提单放款率</td><td>hist_funded_count/hist_apply_count</td><td>获额≤观测；历史事件&lt;观测；贷后结果须已可知</td><td><span class="status">已入模</span></td></tr><tr><td>prev_vs_hist_remit</td><td>上一笔/历史平均放款</td><td>prev_remit_amt/hist_avg_remit</td><td>获额≤观测；历史事件&lt;观测；贷后结果须已可知</td><td><span class="status">已入模</span></td></tr><tr><td>prev_vs_hist_repay_days</td><td>最近借还速度变化</td><td>prev_repay_days-hist_avg_repay_days</td><td>获额≤观测；历史事件&lt;观测；贷后结果须已可知</td><td><span class="status">已入模</span></td></tr><tr><td>prev_vs_hist_early_days</td><td>最近提前结清变化</td><td>prev_early_days-hist_avg_early_days</td><td>获额≤观测；历史事件&lt;观测；贷后结果须已可知</td><td><span class="status">已入模</span></td></tr><tr><td>nonpay_active_share_7d</td><td>近7天非还款行为占比</td><td>非还款日活跃天数或事件数/实际App相应总量；无分母为NaN</td><td>观测日前完整日期；非还款日排除正流水日期</td><td><span class="status out">候选/未入选</span></td></tr><tr><td>nonpay_events_share_7d</td><td>近7天非还款行为占比</td><td>非还款日活跃天数或事件数/实际App相应总量；无分母为NaN</td><td>观测日前完整日期；非还款日排除正流水日期</td><td><span class="status out">候选/未入选</span></td></tr><tr><td>app_events_per_active_day_7d</td><td>实际App近7天日均行为</td><td>相应事件次数/活跃天数；无分母为NaN</td><td>观测日前完整日期；非还款日排除正流水日期</td><td><span class="status out">候选/未入选</span></td></tr><tr><td>app_newpage_per_active_day_7d</td><td>实际App近7天日均行为</td><td>相应事件次数/活跃天数；无分母为NaN</td><td>观测日前完整日期；非还款日排除正流水日期</td><td><span class="status out">候选/未入选</span></td></tr><tr><td>nonpay_events_per_active_day_7d</td><td>非还款日App近7天日均行为</td><td>相应事件次数/活跃天数；无分母为NaN</td><td>观测日前完整日期；非还款日排除正流水日期</td><td><span class="status out">候选/未入选</span></td></tr><tr><td>nonpay_newpage_per_active_day_7d</td><td>非还款日App近7天日均行为</td><td>相应事件次数/活跃天数；无分母为NaN</td><td>观测日前完整日期；非还款日排除正流水日期</td><td><span class="status out">候选/未入选</span></td></tr><tr><td>nonpay_active_share_30d</td><td>近30天非还款行为占比</td><td>非还款日活跃天数或事件数/实际App相应总量；无分母为NaN</td><td>观测日前完整日期；非还款日排除正流水日期</td><td><span class="status out">候选/未入选</span></td></tr><tr><td>nonpay_events_share_30d</td><td>近30天非还款行为占比</td><td>非还款日活跃天数或事件数/实际App相应总量；无分母为NaN</td><td>观测日前完整日期；非还款日排除正流水日期</td><td><span class="status out">候选/未入选</span></td></tr><tr><td>app_events_per_active_day_30d</td><td>实际App近30天日均行为</td><td>相应事件次数/活跃天数；无分母为NaN</td><td>观测日前完整日期；非还款日排除正流水日期</td><td><span class="status out">候选/未入选</span></td></tr><tr><td>app_newpage_per_active_day_30d</td><td>实际App近30天日均行为</td><td>相应事件次数/活跃天数；无分母为NaN</td><td>观测日前完整日期；非还款日排除正流水日期</td><td><span class="status out">候选/未入选</span></td></tr><tr><td>nonpay_events_per_active_day_30d</td><td>非还款日App近30天日均行为</td><td>相应事件次数/活跃天数；无分母为NaN</td><td>观测日前完整日期；非还款日排除正流水日期</td><td><span class="status out">候选/未入选</span></td></tr><tr><td>nonpay_newpage_per_active_day_30d</td><td>非还款日App近30天日均行为</td><td>相应事件次数/活跃天数；无分母为NaN</td><td>观测日前完整日期；非还款日排除正流水日期</td><td><span class="status out">候选/未入选</span></td></tr><tr><td>nonpay_active_share_90d</td><td>近90天非还款行为占比</td><td>非还款日活跃天数或事件数/实际App相应总量；无分母为NaN</td><td>观测日前完整日期；非还款日排除正流水日期</td><td><span class="status out">候选/未入选</span></td></tr><tr><td>nonpay_events_share_90d</td><td>近90天非还款行为占比</td><td>非还款日活跃天数或事件数/实际App相应总量；无分母为NaN</td><td>观测日前完整日期；非还款日排除正流水日期</td><td><span class="status out">候选/未入选</span></td></tr><tr><td>app_events_per_active_day_90d</td><td>实际App近90天日均行为</td><td>相应事件次数/活跃天数；无分母为NaN</td><td>观测日前完整日期；非还款日排除正流水日期</td><td><span class="status out">候选/未入选</span></td></tr><tr><td>app_newpage_per_active_day_90d</td><td>实际App近90天日均行为</td><td>相应事件次数/活跃天数；无分母为NaN</td><td>观测日前完整日期；非还款日排除正流水日期</td><td><span class="status out">候选/未入选</span></td></tr><tr><td>nonpay_events_per_active_day_90d</td><td>非还款日App近90天日均行为</td><td>相应事件次数/活跃天数；无分母为NaN</td><td>观测日前完整日期；非还款日排除正流水日期</td><td><span class="status out">候选/未入选</span></td></tr><tr><td>nonpay_newpage_per_active_day_90d</td><td>非还款日App近90天日均行为</td><td>相应事件次数/活跃天数；无分母为NaN</td><td>观测日前完整日期；非还款日排除正流水日期</td><td><span class="status out">候选/未入选</span></td></tr><tr><td>app_active_status_recent_trend</td><td>实际App近期活跃事件次数趋势</td><td>近7天累计/7−近30天累计/30</td><td>观测日前完整日期；非还款日排除正流水日期</td><td><span class="status out">候选/未入选</span></td></tr><tr><td>app_newpage_recent_trend</td><td>实际App近期进入提单页次数趋势</td><td>近7天累计/7−近30天累计/30</td><td>观测日前完整日期；非还款日排除正流水日期</td><td><span class="status out">候选/未入选</span></td></tr><tr><td>app_amount_selection_recent_trend</td><td>实际App近期切换金额次数趋势</td><td>近7天累计/7−近30天累计/30</td><td>观测日前完整日期；非还款日排除正流水日期</td><td><span class="status out">候选/未入选</span></td></tr><tr><td>app_plan_newdetails_recent_trend</td><td>实际App近期查看还款计划次数趋势</td><td>近7天累计/7−近30天累计/30</td><td>观测日前完整日期；非还款日排除正流水日期</td><td><span class="status out">候选/未入选</span></td></tr><tr><td>nonpay_active_status_recent_trend</td><td>非还款日App近期活跃事件次数趋势</td><td>近7天累计/7−近30天累计/30</td><td>观测日前完整日期；非还款日排除正流水日期</td><td><span class="status out">候选/未入选</span></td></tr><tr><td>nonpay_newpage_recent_trend</td><td>非还款日App近期进入提单页次数趋势</td><td>近7天累计/7−近30天累计/30</td><td>观测日前完整日期；非还款日排除正流水日期</td><td><span class="status out">候选/未入选</span></td></tr><tr><td>nonpay_amount_selection_recent_trend</td><td>非还款日App近期切换金额次数趋势</td><td>近7天累计/7−近30天累计/30</td><td>观测日前完整日期；非还款日排除正流水日期</td><td><span class="status out">候选/未入选</span></td></tr><tr><td>nonpay_plan_newdetails_recent_trend</td><td>非还款日App近期查看还款计划次数趋势</td><td>近7天累计/7−近30天累计/30</td><td>观测日前完整日期；非还款日排除正流水日期</td><td><span class="status out">候选/未入选</span></td></tr></tbody></table></div></details></section><section id="grading"><h2>五、405区间与再评级设计</h2><p>训练参考21,544位用户，每人取训练段最近一次405，按前10%、10–30%、30–60%、后40%分层。同分不拆，实际占比略有偏离；后续月份冻结区间。</p><div class="table"><table class=""><thead><tr><th>原405等级</th><th>固定分数区间</th><th>参考用户数</th><th>实际占比</th></tr></thead><tbody><tr><td>高优</td><td>≥487</td><td>2,295</td><td>10.65%</td></tr><tr><td>优质</td><td>472≤分数&lt;487</td><td>4,415</td><td>20.49%</td></tr><tr><td>普通</td><td>456≤分数&lt;472</td><td>6,446</td><td>29.92%</td></tr><tr><td>风险</td><td>&lt;456</td><td>8,388</td><td>38.93%</td></tr></tbody></table></div><div class="cards"><article><h3>原评分验证｜等级×流失</h3><p>按四个等级×7–14/15–29/30–59/60–89/90+天，比较成熟订单量、实际D7率和区间，检验高评分长流失客群是否被低估。</p></article><article><h3>新模型再评级｜固定概率区间</h3><p>只用7月校准用户的预测分位冻结四档相对风险，测试不调分界。分层不是审批阈值；实际表现见测试报告。</p></article></div></section><section id="training"><h2>六、训练、调参与时间外验证</h2><div class="cards"><article><h3>模型结构｜405上增加风险信息</h3><p>405单变量概率模型为基线，直方图梯度提升树为增强候选。输出整笔D7逾期风险，使用独立7月样本做sigmoid概率校准。</p></article><article><h3>选择原则｜验证后冻结</h3><p>8个有限实验：405基线、405+流失、生命周期、4组完整特征参数、仅新鲜获额训练对照。按6月验证AUC选择，测试不参与调参。</p></article></div><div class="table"><table class=""><thead><tr><th>阶段</th><th>申请日期范围</th><th>标签完整截止</th><th>实际成熟订单</th></tr></thead><tbody><tr><td>训练</td><td>2025-07-01～2026-05-31</td><td>due_date+8≤2026-06-01</td><td>28,052</td></tr><tr><td>调参验证</td><td>2026-06-01～2026-06-30</td><td>due_date+8≤2026-07-01</td><td>723</td></tr><tr><td>独立校准</td><td>2026-07-01～2026-07-31</td><td>due_date+8≤2026-08-01</td><td>850</td></tr><tr><td>时间外测试</td><td>2026-08-01～2026-10-07</td><td>due_date+8≤2026-10-08</td><td>6,581</td></tr></tbody></table></div><div class="table"><table class=""><thead><tr><th>验证维度</th><th>指标与用途</th></tr></thead><tbody><tr><td>排序</td><td>AUC、KS、AP；对照原405排序与405单变量模型。</td></tr><tr><td>概率</td><td>Brier、Log loss、风险十分位预测/实际率和区间。</td></tr><tr><td>识别能力</td><td>最高风险20%内实际D7率和逾期捕获比例；不只看AUC。</td></tr><tr><td>稳定性</td><td>月份、流失分组、405等级、新用户、新鲜评分子样本；月度同步展示成熟覆盖。</td></tr><tr><td>统计区间</td><td>按user_id聚类200次自助法，不把重复用户当独立用户。</td></tr></tbody></table></div><div class="note warn">本次是<strong>回顾性时间外验证</strong>，不是未来前瞻试验。用户可跨时间出现，另报告训练未见用户表现；未成熟近期订单不冒充完整月。</div><pre><code>train = applications[2025-07-01 &lt;= apply_date &lt; 2026-06-01
+                     &amp; due_date + 8 &lt;= 2026-06-01]
+validation = June_applications[label_known_before(2026-07-01)]
+calibration = July_applications[label_known_before(2026-08-01)]
+model = select_by_validation_auc(predefined_candidates)
+calibrator = fit_sigmoid(model, calibration)
+freeze(model, features, calibrator, grade_thresholds)
+test_once(mature_applications_from_August)
+score_live_snapshot(); flag_score_age_ge_15d()</code></pre></section><section id="acceptance"><h2>七、实施流程、验收与使用边界</h2><div class="steps"><div class="step"><strong>01｜只读取数与样本核验</strong>临时表构建严格起点、首次回流、最近评分与历史特征；审计唯一性、类型冲突和评分用户匹配。</div><div class="step"><strong>02｜时点截断与数据留档</strong>订单/获额按观测截断，App只用完整历史日；保存151项快照、四段数据和文件哈希。</div><div class="step"><strong>03｜有限实验、校准与测试</strong>先选模型，再独立校准，最后测试；不因测试结果重选参数。</div><div class="step"><strong>04｜逐笔预测与复现核验</strong>保存测试和实时预测、相对风险等级；模型重放导出测试预测误差小于1e-12。</div><div class="step"><strong>05｜影子运行与新批次复核</strong>补不可变评分快照与行为覆盖，再用新成熟订单验证；不自动拒贷或提额。</div></div><div class="cards"><article><h3>技术验收｜通过</h3><p>评分获额晚于观测0条、重复事件0条、历史评分订单与目标订单不一致0条；导出预测有限，保存模型逐笔重放一致。</p></article><article><h3>数据边界｜尚需补齐</h3><p>评分表无生成/更新时间，不能证明历史评分未被更新；5,147笔旧历史满15天后同serial提单与当前规则不完全一致，保留标记。</p></article><article><h3>效果边界｜改善有限</h3><p>AUC 0.5536→0.5798；仍是弱区分模型，只建议影子使用。完整App候选未赢得验证。</p></article><article><h3>实时边界｜不是当前审批资格</h3><p>25,816条预测中22,686条最近获额已满15天，需要重获额与刷新特征。已放款选择偏差尚在，未提单风险为外推。</p></article></div><p>技术依据：<a href="https://scikit-learn.org/stable/modules/cross_validation.html">时间顺序验证</a> · <a href="https://scikit-learn.org/stable/modules/calibration.html">概率校准</a>。<a href="churn7plus-405-risk-model-v1-validation.html">查看实际训练与测试结果 →</a></p></section><section id="appendix"><h2>附录｜完整来源SQL、特征生成、训练、预测与验收代码</h2><p>以下为本次实际实现，不是V4代码替换标题。SQL只创建TEMP表；Python衍生特征、切分、实验、校准与预测。在本项目相同环境运行，依赖既有只读db.py与CSV导出适配器；不公开连接配置、异常订单号清单、用户明细或模型参数文件。</p><pre><code>zsh run_pipeline.sh
+# 仅对同口径且经时点核验的快照单独预测：
+python3 predict.py 输入特征快照.csv 输出预测.csv
+# CSV使用float_precision="round_trip"；数据与模型仅本地。</code></pre><details><summary>完整PGSQL：母表、最新405、历史、额度与App</summary><pre><code>-- 流失&gt;=7天405风险再评级：只创建本会话TEMP表，不改动源表。
+-- 数据完整截止：2026-10-07，右开边界2026-10-08。
+SET TIME ZONE &#x27;America/Belize&#x27;;
+SET query_dop = 1;
+-- STEP orders
+CREATE TEMP TABLE tmp_c405_orders AS
+SELECT serial_id,user_id,apply_time,apply_date,remit_time,remit_date,
+       remit_amt,apply_amt,pre_amt,post_amt,loan_day,total_term,
+       is_remit,repaid_time,repaid_date,is_repaid,due_date,
+       loan_status_code,overdue_days,loan_type,remit_succ_rnb
+FROM wangchuanliang.order_loan_f_v2_copy
+WHERE apply_time &gt;= TIMESTAMP &#x27;2000-01-01&#x27;
+  AND apply_time &lt; TIMESTAMP &#x27;2026-10-08 00:00:00&#x27;;
+-- STEP types
+CREATE TEMP TABLE tmp_c405_types AS
+SELECT serial_id,
+       max(CASE WHEN recycle_type=3 THEN 1 ELSE 0 END) has_type3,
+       max(CASE WHEN recycle_type=2 THEN 1 ELSE 0 END) has_type2
+FROM wangchuanliang.side_recycle_type_copy GROUP BY serial_id;
+-- STEP offers
+CREATE TEMP TABLE tmp_c405_offers AS
+SELECT v.user_id,v.serial_id,v.vir_unix,
+       to_timestamp(v.vir_unix)::timestamp AS vir_time,v.vir_date,
+       v.is_pass1,v.loan_type_code,v.max_credit_apply_amt,v.risk_product,
+       CASE WHEN s.has_type3=1 AND s.has_type2=0 THEN 3
+            WHEN s.has_type2=1 AND s.has_type3=0 THEN 2 ELSE 1 END AS recycle_type
+FROM wangchuanliang.order_vir_f_copy v
+LEFT JOIN tmp_c405_types s ON s.serial_id=v.serial_id
+WHERE v.vir_unix&gt;0 AND v.vir_date &lt; DATE &#x27;2026-10-08&#x27;;
+-- STEP dedup
+CREATE TEMP TABLE tmp_c405_anchor_candidates AS
+WITH serial_latest AS (
+ SELECT *,row_number() over(partition by user_id,serial_id
+                           order by vir_time desc,serial_id desc) rn
+ FROM tmp_c405_offers
+ WHERE is_pass1=1 AND loan_type_code=2 AND recycle_type=3
+), gaps AS (
+ SELECT *,CASE WHEN vir_time-lag(vir_time) over(partition by user_id order by vir_time,serial_id)
+                         &lt;=interval &#x27;20 seconds&#x27; THEN 0 ELSE 1 END new_batch
+ FROM serial_latest WHERE rn=1
+), batches AS (
+ SELECT *,sum(new_batch) over(partition by user_id order by vir_time,serial_id rows unbounded preceding) batch
+ FROM gaps
+), selected AS (
+ SELECT *,row_number() over(partition by user_id,batch order by vir_time desc,serial_id desc) batch_rn
+ FROM batches
+)
+SELECT user_id,serial_id,vir_time,vir_date FROM selected WHERE batch_rn=1;
+-- STEP anchors
+CREATE TEMP TABLE tmp_c405_anchors AS
+SELECT user_id,anchor_serial,anchor_time,anchor_date,prev_serial
+FROM (
+ SELECT v.user_id,v.serial_id anchor_serial,v.vir_time anchor_time,v.vir_date anchor_date,
+        o.serial_id prev_serial,
+        row_number() over(partition by v.user_id,v.serial_id order by o.repaid_time desc,o.serial_id desc) rn
+ FROM tmp_c405_anchor_candidates v
+ JOIN tmp_c405_orders o ON o.user_id=v.user_id AND o.repaid_date=v.vir_date
+      AND o.is_remit=1 AND o.remit_amt&gt;0 AND (o.is_repaid=1 OR o.loan_status_code=7)
+      AND o.repaid_time &gt;= TIMESTAMP &#x27;2000-01-01&#x27; AND o.repaid_time&lt;=v.vir_time
+ WHERE NOT EXISTS (
+  SELECT 1 FROM tmp_c405_orders x
+  WHERE x.user_id=o.user_id AND x.serial_id&lt;&gt;o.serial_id
+    AND x.is_remit=1 AND x.remit_amt&gt;0 AND x.remit_time&lt;=o.repaid_time
+    AND (x.repaid_time IS NULL OR x.repaid_time&lt;TIMESTAMP &#x27;2000-01-01&#x27; OR x.repaid_time&gt;o.repaid_time)
+ )
+) z WHERE rn=1;
+-- STEP spells
+CREATE TEMP TABLE tmp_c405_spells AS
+WITH windows AS (
+ SELECT *,lead(anchor_time) over(partition by user_id order by anchor_time,anchor_serial) next_anchor_time
+ FROM tmp_c405_anchors
+), matched AS (
+ SELECT a.*,o.serial_id target_serial,o.apply_time obs_time,
+        o.apply_date obs_date,o.is_remit target_is_remit,o.remit_amt target_remit_amt,
+        o.due_date target_due_date,o.repaid_date target_repaid_date,
+        row_number() over(partition by a.user_id,a.anchor_serial order by o.apply_time,o.serial_id) rn
+ FROM windows a LEFT JOIN tmp_c405_orders o
+ ON o.user_id=a.user_id AND o.apply_time&gt;=a.anchor_time
+ AND (a.next_anchor_time IS NULL OR o.apply_time&lt;a.next_anchor_time)
+)
+SELECT * FROM matched WHERE rn=1;
+-- STEP observations
+CREATE TEMP TABLE tmp_c405_observations AS
+SELECT &#x27;H&#x27;||target_serial::text event_id,user_id,anchor_serial,anchor_time,anchor_date,prev_serial,
+       target_serial,obs_time,obs_date,target_due_date,target_repaid_date,
+       CASE WHEN target_repaid_date&gt;DATE &#x27;2000-01-01&#x27; AND target_repaid_date&lt;=target_due_date+7 THEN 0 ELSE 1 END target_d7,
+       CASE WHEN target_repaid_date&gt;DATE &#x27;2000-01-01&#x27; AND target_repaid_date&lt;=target_due_date THEN 0 ELSE 1 END target_d0,
+       &#x27;historical&#x27;::text sample_kind
+FROM tmp_c405_spells
+WHERE target_serial IS NOT NULL AND obs_date&gt;=DATE &#x27;2025-07-01&#x27;
+  AND obs_date-anchor_date&gt;=7 AND target_is_remit=1 AND target_remit_amt&gt;0
+  AND target_due_date&gt;DATE &#x27;2000-01-01&#x27; AND target_due_date+8&lt;=DATE &#x27;2026-10-08&#x27;
+UNION ALL
+SELECT &#x27;L&#x27;||anchor_serial::text,user_id,anchor_serial,anchor_time,anchor_date,prev_serial,
+       NULL::bigint,TIMESTAMP &#x27;2026-10-08&#x27;,DATE &#x27;2026-10-08&#x27;,NULL::date,NULL::date,
+       NULL::integer,NULL::integer,&#x27;live&#x27;::text
+FROM tmp_c405_spells
+WHERE target_serial IS NULL AND next_anchor_time IS NULL AND DATE &#x27;2026-10-08&#x27;-anchor_date&gt;=7;
+-- STEP latest
+CREATE TEMP TABLE tmp_c405_latest AS
+SELECT * FROM (
+ SELECT e.*,v.serial_id score_serial,v.vir_time score_offer_time,v.is_pass1 current_pass1,
+        v.recycle_type current_recycle_type,v.max_credit_apply_amt current_credit,
+        v.risk_product,
+        row_number() over(partition by e.event_id order by v.vir_time desc,v.serial_id desc) rn
+ FROM tmp_c405_observations e
+ JOIN tmp_c405_offers v ON v.user_id=e.user_id AND v.vir_time&lt;=e.obs_time
+) q WHERE rn=1;
+-- STEP base
+CREATE TEMP TABLE tmp_c405_base AS
+SELECT e.*,m.kabybxgboost405apd7crecyc risk_score_405,
+       (e.obs_date-e.anchor_date)::float8 churn_days,
+       extract(epoch from(e.obs_time-e.score_offer_time))/86400.0 score_age_days,
+       CASE WHEN e.score_serial&lt;&gt;e.anchor_serial THEN 1 ELSE 0 END is_rescored,
+       p.remit_succ_rnb::float8 previous_loan_count,
+       p.remit_amt::float8 prev_remit_amt,p.apply_amt::float8 prev_apply_amt,
+       p.loan_day::float8 prev_loan_day,p.total_term::float8 prev_total_term,
+       ((p.pre_amt+p.post_amt)/nullif(p.remit_amt,0))::float8 prev_fee_rate,
+       (p.due_date-p.repaid_date)::float8 prev_early_days,
+       extract(epoch from(p.repaid_time-p.remit_time))/86400.0 prev_repay_days,
+       coalesce(s.has_type2,0) prev_is_cycle
+FROM tmp_c405_latest e
+JOIN wangchuanliang.model_result_copy m ON m.serial_id=e.score_serial AND m.user_id=e.user_id
+JOIN tmp_c405_orders p ON p.serial_id=e.prev_serial AND p.user_id=e.user_id
+LEFT JOIN tmp_c405_types s ON s.serial_id=p.serial_id
+WHERE m.kabybxgboost405apd7crecyc IS NOT NULL AND m.kabybxgboost405apd7crecyc&lt;&gt;-9999999
+  AND e.current_pass1=1 AND e.current_recycle_type=3;
+
+
+CREATE TEMP TABLE tmp_c405_history AS
+SELECT e.event_id,
+count(o.serial_id)::float8 hist_apply_count,
+sum(case when o.is_remit=1 and o.remit_amt&gt;0 and o.remit_time&lt;e.obs_time then 1 else 0 end)::float8 hist_funded_count,
+sum(case when o.repaid_time&gt;timestamp &#x27;2000-01-01&#x27; and o.repaid_time&lt;e.obs_time then 1 else 0 end)::float8 hist_settled_count,
+sum(case when o.repaid_time&gt;timestamp &#x27;2000-01-01&#x27; and o.repaid_time&lt;e.obs_time and o.repaid_date&lt;o.due_date then 1 else 0 end)::float8 hist_early_count,
+avg(case when o.is_remit=1 and o.remit_time&lt;e.obs_time then o.remit_amt end)::float8 hist_avg_remit,
+avg(case when o.is_remit=1 and o.remit_time&lt;e.obs_time then (o.pre_amt+o.post_amt)/nullif(o.remit_amt,0) end)::float8 hist_avg_fee,
+avg(case when o.is_remit=1 and o.remit_time&lt;e.obs_time then o.loan_day end)::float8 hist_avg_loan_day,
+avg(case when o.repaid_time&gt;timestamp &#x27;2000-01-01&#x27; and o.repaid_time&lt;e.obs_time then extract(epoch from(o.repaid_time-o.remit_time))/86400.0 end)::float8 hist_avg_repay_days,
+avg(case when o.repaid_time&gt;timestamp &#x27;2000-01-01&#x27; and o.repaid_time&lt;e.obs_time then o.due_date-o.repaid_date end)::float8 hist_avg_early_days,
+sum(case when o.is_remit=1 and o.remit_time&lt;e.obs_time and o.due_date&gt;date &#x27;2000-01-01&#x27; and o.due_date+8&lt;=e.obs_date then 1 else 0 end)::float8 hist_d7_mature_count,
+sum(case when o.is_remit=1 and o.remit_time&lt;e.obs_time and o.due_date&gt;date &#x27;2000-01-01&#x27; and o.due_date+8&lt;=e.obs_date and (o.repaid_date is null or o.repaid_date&lt;=date &#x27;2000-01-01&#x27; or o.repaid_date&gt;o.due_date+7) then 1 else 0 end)::float8 hist_d7_bad_count,
+extract(epoch from(e.obs_time-max(o.apply_time)))/86400.0 days_since_apply,
+extract(epoch from(e.obs_time-min(o.apply_time)))/86400.0 user_tenure_days,
+sum(case when o.apply_time&gt;=e.obs_time-interval &#x27;30 days&#x27; then 1 else 0 end)::float8 hist_apply_30d,
+sum(case when o.is_remit=1 and o.remit_time&lt;e.obs_time and o.remit_time&gt;=e.obs_time-interval &#x27;30 days&#x27; then 1 else 0 end)::float8 hist_funded_30d,
+sum(case when o.repaid_time&lt;e.obs_time and o.repaid_time&gt;=e.obs_time-interval &#x27;30 days&#x27; then 1 else 0 end)::float8 hist_settled_30d,
+sum(case when o.apply_time&gt;=e.obs_time-interval &#x27;90 days&#x27; then 1 else 0 end)::float8 hist_apply_90d,
+sum(case when o.is_remit=1 and o.remit_time&lt;e.obs_time and o.remit_time&gt;=e.obs_time-interval &#x27;90 days&#x27; then 1 else 0 end)::float8 hist_funded_90d,
+sum(case when o.repaid_time&lt;e.obs_time and o.repaid_time&gt;=e.obs_time-interval &#x27;90 days&#x27; then 1 else 0 end)::float8 hist_settled_90d,
+sum(case when o.apply_time&gt;=e.obs_time-interval &#x27;365 days&#x27; then 1 else 0 end)::float8 hist_apply_365d,
+sum(case when o.is_remit=1 and o.remit_time&lt;e.obs_time and o.remit_time&gt;=e.obs_time-interval &#x27;365 days&#x27; then 1 else 0 end)::float8 hist_funded_365d,
+sum(case when o.repaid_time&lt;e.obs_time and o.repaid_time&gt;=e.obs_time-interval &#x27;365 days&#x27; then 1 else 0 end)::float8 hist_settled_365d
+FROM tmp_c405_base e LEFT JOIN tmp_c405_orders o ON o.user_id=e.user_id AND o.apply_time&lt;e.obs_time AND o.serial_id IS DISTINCT FROM e.target_serial GROUP BY e.event_id,e.obs_time,e.obs_date;
+
+CREATE TEMP TABLE tmp_c405_credit AS
+WITH prev_credit AS (
+      SELECT e.event_id,v.max_credit_apply_amt,
+        row_number() over(partition by e.event_id order by v.vir_time desc,v.serial_id desc) rn
+      FROM tmp_c405_base e JOIN tmp_c405_orders p ON p.serial_id=e.prev_serial
+      LEFT JOIN tmp_c405_offers v ON v.serial_id=p.serial_id AND v.user_id=p.user_id AND v.vir_time&lt;=p.apply_time
+    ), offer_counts AS (
+      SELECT e.event_id,count(distinct v.serial_id)::float8 offer_count_since_anchor,
+        sum(case when v.is_pass1=1 then 1 else 0 end)::float8 pass_offer_rows_since_anchor
+      FROM tmp_c405_base e LEFT JOIN tmp_c405_offers v ON v.user_id=e.user_id
+        AND v.vir_time&gt;=e.anchor_time AND v.vir_time&lt;=e.obs_time
+      GROUP BY e.event_id
+    ) SELECT e.event_id,p.max_credit_apply_amt::float8 prev_credit,
+        CASE WHEN e.prev_remit_amt&gt;0 AND p.max_credit_apply_amt&gt;0 THEN e.prev_remit_amt/p.max_credit_apply_amt END::float8 prev_utilization,
+        c.offer_count_since_anchor,c.pass_offer_rows_since_anchor
+      FROM tmp_c405_base e LEFT JOIN prev_credit p ON p.event_id=e.event_id AND p.rn=1
+      LEFT JOIN offer_counts c ON c.event_id=e.event_id;
+
+CREATE TEMP TABLE tmp_c405_behavior AS
+WITH pay_dates AS (
+       SELECT DISTINCT r.user_id::bigint user_id,r.payin_date
+       FROM wangchuanliang.repayment_record_copy r
+       WHERE r.amount&gt;0 AND r.payin_date&gt;=DATE &#x27;2025-04-01&#x27; AND r.payin_date&lt;DATE &#x27;2026-10-08&#x27;
+    ), daily AS (
+       SELECT user_id,active_date,sum(active_status) active_status,sum(newpage) newpage,sum(amount_selection) amount_selection,sum(term_selection) term_selection,sum(plan_newdetails) plan_newdetails,sum(newconfirm) newconfirm,sum(contract_newdetails) contract_newdetails,sum(coupons_page) coupons_page,sum(active_duration) active_duration,sum(apply_duration) apply_duration
+       FROM wangchuanliang.event_track
+       WHERE active_date&gt;=DATE &#x27;2025-04-01&#x27; AND active_date&lt;DATE &#x27;2026-10-08&#x27;
+       GROUP BY user_id,active_date
+    ) SELECT e.event_id,
+sum(case when a.active_date&gt;=e.obs_date-7 AND a.active_status&gt;0 then 1 else 0 end)::float8 app_active_days_7d,
+sum(case when a.active_date&gt;=e.obs_date-7 then coalesce(a.active_status,0) else 0 end)::float8 app_active_status_7d,
+sum(case when a.active_date&gt;=e.obs_date-7 then coalesce(a.newpage,0) else 0 end)::float8 app_newpage_7d,
+sum(case when a.active_date&gt;=e.obs_date-7 then coalesce(a.amount_selection,0) else 0 end)::float8 app_amount_selection_7d,
+sum(case when a.active_date&gt;=e.obs_date-7 then coalesce(a.term_selection,0) else 0 end)::float8 app_term_selection_7d,
+sum(case when a.active_date&gt;=e.obs_date-7 then coalesce(a.plan_newdetails,0) else 0 end)::float8 app_plan_newdetails_7d,
+sum(case when a.active_date&gt;=e.obs_date-7 then coalesce(a.newconfirm,0) else 0 end)::float8 app_newconfirm_7d,
+sum(case when a.active_date&gt;=e.obs_date-7 then coalesce(a.contract_newdetails,0) else 0 end)::float8 app_contract_newdetails_7d,
+sum(case when a.active_date&gt;=e.obs_date-7 then coalesce(a.coupons_page,0) else 0 end)::float8 app_coupons_page_7d,
+sum(case when a.active_date&gt;=e.obs_date-7 then coalesce(a.active_duration,0) else 0 end)::float8 app_active_duration_7d,
+sum(case when a.active_date&gt;=e.obs_date-7 then coalesce(a.apply_duration,0) else 0 end)::float8 app_apply_duration_7d,
+sum(case when a.active_date&gt;=e.obs_date-7 AND pd.user_id IS NULL AND a.active_status&gt;0 then 1 else 0 end)::float8 nonpay_active_days_7d,
+sum(case when a.active_date&gt;=e.obs_date-7 AND pd.user_id IS NULL then coalesce(a.active_status,0) else 0 end)::float8 nonpay_active_status_7d,
+sum(case when a.active_date&gt;=e.obs_date-7 AND pd.user_id IS NULL then coalesce(a.newpage,0) else 0 end)::float8 nonpay_newpage_7d,
+sum(case when a.active_date&gt;=e.obs_date-7 AND pd.user_id IS NULL then coalesce(a.amount_selection,0) else 0 end)::float8 nonpay_amount_selection_7d,
+sum(case when a.active_date&gt;=e.obs_date-7 AND pd.user_id IS NULL then coalesce(a.term_selection,0) else 0 end)::float8 nonpay_term_selection_7d,
+sum(case when a.active_date&gt;=e.obs_date-7 AND pd.user_id IS NULL then coalesce(a.plan_newdetails,0) else 0 end)::float8 nonpay_plan_newdetails_7d,
+sum(case when a.active_date&gt;=e.obs_date-7 AND pd.user_id IS NULL then coalesce(a.newconfirm,0) else 0 end)::float8 nonpay_newconfirm_7d,
+sum(case when a.active_date&gt;=e.obs_date-7 AND pd.user_id IS NULL then coalesce(a.contract_newdetails,0) else 0 end)::float8 nonpay_contract_newdetails_7d,
+sum(case when a.active_date&gt;=e.obs_date-7 AND pd.user_id IS NULL then coalesce(a.coupons_page,0) else 0 end)::float8 nonpay_coupons_page_7d,
+sum(case when a.active_date&gt;=e.obs_date-7 AND pd.user_id IS NULL then coalesce(a.active_duration,0) else 0 end)::float8 nonpay_active_duration_7d,
+sum(case when a.active_date&gt;=e.obs_date-7 AND pd.user_id IS NULL then coalesce(a.apply_duration,0) else 0 end)::float8 nonpay_apply_duration_7d,
+sum(case when a.active_date&gt;=e.obs_date-30 AND a.active_status&gt;0 then 1 else 0 end)::float8 app_active_days_30d,
+sum(case when a.active_date&gt;=e.obs_date-30 then coalesce(a.active_status,0) else 0 end)::float8 app_active_status_30d,
+sum(case when a.active_date&gt;=e.obs_date-30 then coalesce(a.newpage,0) else 0 end)::float8 app_newpage_30d,
+sum(case when a.active_date&gt;=e.obs_date-30 then coalesce(a.amount_selection,0) else 0 end)::float8 app_amount_selection_30d,
+sum(case when a.active_date&gt;=e.obs_date-30 then coalesce(a.term_selection,0) else 0 end)::float8 app_term_selection_30d,
+sum(case when a.active_date&gt;=e.obs_date-30 then coalesce(a.plan_newdetails,0) else 0 end)::float8 app_plan_newdetails_30d,
+sum(case when a.active_date&gt;=e.obs_date-30 then coalesce(a.newconfirm,0) else 0 end)::float8 app_newconfirm_30d,
+sum(case when a.active_date&gt;=e.obs_date-30 then coalesce(a.contract_newdetails,0) else 0 end)::float8 app_contract_newdetails_30d,
+sum(case when a.active_date&gt;=e.obs_date-30 then coalesce(a.coupons_page,0) else 0 end)::float8 app_coupons_page_30d,
+sum(case when a.active_date&gt;=e.obs_date-30 then coalesce(a.active_duration,0) else 0 end)::float8 app_active_duration_30d,
+sum(case when a.active_date&gt;=e.obs_date-30 then coalesce(a.apply_duration,0) else 0 end)::float8 app_apply_duration_30d,
+sum(case when a.active_date&gt;=e.obs_date-30 AND pd.user_id IS NULL AND a.active_status&gt;0 then 1 else 0 end)::float8 nonpay_active_days_30d,
+sum(case when a.active_date&gt;=e.obs_date-30 AND pd.user_id IS NULL then coalesce(a.active_status,0) else 0 end)::float8 nonpay_active_status_30d,
+sum(case when a.active_date&gt;=e.obs_date-30 AND pd.user_id IS NULL then coalesce(a.newpage,0) else 0 end)::float8 nonpay_newpage_30d,
+sum(case when a.active_date&gt;=e.obs_date-30 AND pd.user_id IS NULL then coalesce(a.amount_selection,0) else 0 end)::float8 nonpay_amount_selection_30d,
+sum(case when a.active_date&gt;=e.obs_date-30 AND pd.user_id IS NULL then coalesce(a.term_selection,0) else 0 end)::float8 nonpay_term_selection_30d,
+sum(case when a.active_date&gt;=e.obs_date-30 AND pd.user_id IS NULL then coalesce(a.plan_newdetails,0) else 0 end)::float8 nonpay_plan_newdetails_30d,
+sum(case when a.active_date&gt;=e.obs_date-30 AND pd.user_id IS NULL then coalesce(a.newconfirm,0) else 0 end)::float8 nonpay_newconfirm_30d,
+sum(case when a.active_date&gt;=e.obs_date-30 AND pd.user_id IS NULL then coalesce(a.contract_newdetails,0) else 0 end)::float8 nonpay_contract_newdetails_30d,
+sum(case when a.active_date&gt;=e.obs_date-30 AND pd.user_id IS NULL then coalesce(a.coupons_page,0) else 0 end)::float8 nonpay_coupons_page_30d,
+sum(case when a.active_date&gt;=e.obs_date-30 AND pd.user_id IS NULL then coalesce(a.active_duration,0) else 0 end)::float8 nonpay_active_duration_30d,
+sum(case when a.active_date&gt;=e.obs_date-30 AND pd.user_id IS NULL then coalesce(a.apply_duration,0) else 0 end)::float8 nonpay_apply_duration_30d,
+sum(case when a.active_date&gt;=e.obs_date-90 AND a.active_status&gt;0 then 1 else 0 end)::float8 app_active_days_90d,
+sum(case when a.active_date&gt;=e.obs_date-90 then coalesce(a.active_status,0) else 0 end)::float8 app_active_status_90d,
+sum(case when a.active_date&gt;=e.obs_date-90 then coalesce(a.newpage,0) else 0 end)::float8 app_newpage_90d,
+sum(case when a.active_date&gt;=e.obs_date-90 then coalesce(a.amount_selection,0) else 0 end)::float8 app_amount_selection_90d,
+sum(case when a.active_date&gt;=e.obs_date-90 then coalesce(a.term_selection,0) else 0 end)::float8 app_term_selection_90d,
+sum(case when a.active_date&gt;=e.obs_date-90 then coalesce(a.plan_newdetails,0) else 0 end)::float8 app_plan_newdetails_90d,
+sum(case when a.active_date&gt;=e.obs_date-90 then coalesce(a.newconfirm,0) else 0 end)::float8 app_newconfirm_90d,
+sum(case when a.active_date&gt;=e.obs_date-90 then coalesce(a.contract_newdetails,0) else 0 end)::float8 app_contract_newdetails_90d,
+sum(case when a.active_date&gt;=e.obs_date-90 then coalesce(a.coupons_page,0) else 0 end)::float8 app_coupons_page_90d,
+sum(case when a.active_date&gt;=e.obs_date-90 then coalesce(a.active_duration,0) else 0 end)::float8 app_active_duration_90d,
+sum(case when a.active_date&gt;=e.obs_date-90 then coalesce(a.apply_duration,0) else 0 end)::float8 app_apply_duration_90d,
+sum(case when a.active_date&gt;=e.obs_date-90 AND pd.user_id IS NULL AND a.active_status&gt;0 then 1 else 0 end)::float8 nonpay_active_days_90d,
+sum(case when a.active_date&gt;=e.obs_date-90 AND pd.user_id IS NULL then coalesce(a.active_status,0) else 0 end)::float8 nonpay_active_status_90d,
+sum(case when a.active_date&gt;=e.obs_date-90 AND pd.user_id IS NULL then coalesce(a.newpage,0) else 0 end)::float8 nonpay_newpage_90d,
+sum(case when a.active_date&gt;=e.obs_date-90 AND pd.user_id IS NULL then coalesce(a.amount_selection,0) else 0 end)::float8 nonpay_amount_selection_90d,
+sum(case when a.active_date&gt;=e.obs_date-90 AND pd.user_id IS NULL then coalesce(a.term_selection,0) else 0 end)::float8 nonpay_term_selection_90d,
+sum(case when a.active_date&gt;=e.obs_date-90 AND pd.user_id IS NULL then coalesce(a.plan_newdetails,0) else 0 end)::float8 nonpay_plan_newdetails_90d,
+sum(case when a.active_date&gt;=e.obs_date-90 AND pd.user_id IS NULL then coalesce(a.newconfirm,0) else 0 end)::float8 nonpay_newconfirm_90d,
+sum(case when a.active_date&gt;=e.obs_date-90 AND pd.user_id IS NULL then coalesce(a.contract_newdetails,0) else 0 end)::float8 nonpay_contract_newdetails_90d,
+sum(case when a.active_date&gt;=e.obs_date-90 AND pd.user_id IS NULL then coalesce(a.coupons_page,0) else 0 end)::float8 nonpay_coupons_page_90d,
+sum(case when a.active_date&gt;=e.obs_date-90 AND pd.user_id IS NULL then coalesce(a.active_duration,0) else 0 end)::float8 nonpay_active_duration_90d,
+sum(case when a.active_date&gt;=e.obs_date-90 AND pd.user_id IS NULL then coalesce(a.apply_duration,0) else 0 end)::float8 nonpay_apply_duration_90d,
+(e.obs_date-max(case when a.active_status&gt;0 then a.active_date end))::float8 days_since_app_90d
+       FROM tmp_c405_base e LEFT JOIN daily a ON a.user_id=e.user_id
+       AND a.active_date&gt;=e.obs_date-90 AND a.active_date&lt;e.obs_date
+       LEFT JOIN pay_dates pd ON pd.user_id=a.user_id AND pd.payin_date=a.active_date
+       GROUP BY e.event_id,e.obs_date;
+
+SELECT e.*,
+h.hist_apply_count,
+h.hist_funded_count,
+h.hist_settled_count,
+h.hist_early_count,
+h.hist_avg_remit,
+h.hist_avg_fee,
+h.hist_avg_loan_day,
+h.hist_avg_repay_days,
+h.hist_avg_early_days,
+h.hist_d7_mature_count,
+h.hist_d7_bad_count,
+h.days_since_apply,
+h.user_tenure_days,
+h.hist_apply_30d,
+h.hist_funded_30d,
+h.hist_settled_30d,
+h.hist_apply_90d,
+h.hist_funded_90d,
+h.hist_settled_90d,
+h.hist_apply_365d,
+h.hist_funded_365d,
+h.hist_settled_365d,
+c.prev_credit,
+c.prev_utilization,
+c.offer_count_since_anchor,
+c.pass_offer_rows_since_anchor,
+b.app_active_days_7d,
+b.app_active_status_7d,
+b.app_newpage_7d,
+b.app_amount_selection_7d,
+b.app_term_selection_7d,
+b.app_plan_newdetails_7d,
+b.app_newconfirm_7d,
+b.app_contract_newdetails_7d,
+b.app_coupons_page_7d,
+b.app_active_duration_7d,
+b.app_apply_duration_7d,
+b.nonpay_active_days_7d,
+b.nonpay_active_status_7d,
+b.nonpay_newpage_7d,
+b.nonpay_amount_selection_7d,
+b.nonpay_term_selection_7d,
+b.nonpay_plan_newdetails_7d,
+b.nonpay_newconfirm_7d,
+b.nonpay_contract_newdetails_7d,
+b.nonpay_coupons_page_7d,
+b.nonpay_active_duration_7d,
+b.nonpay_apply_duration_7d,
+b.app_active_days_30d,
+b.app_active_status_30d,
+b.app_newpage_30d,
+b.app_amount_selection_30d,
+b.app_term_selection_30d,
+b.app_plan_newdetails_30d,
+b.app_newconfirm_30d,
+b.app_contract_newdetails_30d,
+b.app_coupons_page_30d,
+b.app_active_duration_30d,
+b.app_apply_duration_30d,
+b.nonpay_active_days_30d,
+b.nonpay_active_status_30d,
+b.nonpay_newpage_30d,
+b.nonpay_amount_selection_30d,
+b.nonpay_term_selection_30d,
+b.nonpay_plan_newdetails_30d,
+b.nonpay_newconfirm_30d,
+b.nonpay_contract_newdetails_30d,
+b.nonpay_coupons_page_30d,
+b.nonpay_active_duration_30d,
+b.nonpay_apply_duration_30d,
+b.app_active_days_90d,
+b.app_active_status_90d,
+b.app_newpage_90d,
+b.app_amount_selection_90d,
+b.app_term_selection_90d,
+b.app_plan_newdetails_90d,
+b.app_newconfirm_90d,
+b.app_contract_newdetails_90d,
+b.app_coupons_page_90d,
+b.app_active_duration_90d,
+b.app_apply_duration_90d,
+b.nonpay_active_days_90d,
+b.nonpay_active_status_90d,
+b.nonpay_newpage_90d,
+b.nonpay_amount_selection_90d,
+b.nonpay_term_selection_90d,
+b.nonpay_plan_newdetails_90d,
+b.nonpay_newconfirm_90d,
+b.nonpay_contract_newdetails_90d,
+b.nonpay_coupons_page_90d,
+b.nonpay_active_duration_90d,
+b.nonpay_apply_duration_90d,
+b.days_since_app_90d
+FROM tmp_c405_base e
+LEFT JOIN tmp_c405_history h ON h.event_id=e.event_id
+LEFT JOIN tmp_c405_credit c ON c.event_id=e.event_id
+LEFT JOIN tmp_c405_behavior b ON b.event_id=e.event_id;
+</code></pre></details><details><summary>目录与哈希：common.py</summary><pre><code>from pathlib import Path
+import sys, json, hashlib
+ROOT = Path(__file__).resolve().parent
+V1 = ROOT.parent / &#x27;T0提单时点预测模型_V1&#x27;
+sys.path[:0] = [str(V1), str(V1 / &#x27;runtime&#x27;)]
+REPO = Path(&#x27;/Users/wangchuanliang/Documents/trae_projects/github_pages_repo&#x27;)
+for n in [&#x27;data&#x27;,&#x27;models&#x27;,&#x27;analysis&#x27;]:
+    (ROOT/n).mkdir(exist_ok=True)
+def save(name, obj):
+    (ROOT/name).write_text(json.dumps(obj, ensure_ascii=False, indent=2, default=str))
+def digest(p):
+    h=hashlib.sha256()
+    with Path(p).open(&#x27;rb&#x27;) as f:
+        for b in iter(lambda:f.read(1048576),b&#x27;&#x27;): h.update(b)
+    return h.hexdigest()
+</code></pre></details><details><summary>只读取数与行为拆分：extract.py</summary><pre><code>from common import *
+import re,time,gzip,csv
+from db import connect
+from importlib.util import spec_from_file_location,module_from_spec
+# Import explicitly: this file is also called extract.py, so avoid self-import.
+s=spec_from_file_location(&#x27;t0_transport&#x27;,V1/&#x27;extract.py&#x27;); transport=module_from_spec(s);s.loader.exec_module(transport)
+dump_query=transport.dump_query
+
+def main():
+    con=connect();cur=con.cursor();audit={&#x27;cutoff_exclusive&#x27;:&#x27;2026-10-08&#x27;,&#x27;data_date&#x27;:&#x27;2026-10-07&#x27;,&#x27;timezone&#x27;:&#x27;America/Belize&#x27;,&#x27;stages&#x27;:{}}
+    sql=(ROOT/&#x27;extract.sql&#x27;).read_text()
+    try:
+        for piece in re.split(r&#x27;-- STEP &#x27;,sql)[1:]:
+            name,body=piece.split(&#x27;\n&#x27;,1); start=time.time()
+            print(&#x27;BEGIN&#x27;,name,flush=True);cur.execute(body)
+            table={&#x27;orders&#x27;:&#x27;orders&#x27;,&#x27;types&#x27;:&#x27;types&#x27;,&#x27;offers&#x27;:&#x27;offers&#x27;,&#x27;dedup&#x27;:&#x27;anchor_candidates&#x27;,&#x27;anchors&#x27;:&#x27;anchors&#x27;,&#x27;spells&#x27;:&#x27;spells&#x27;,&#x27;observations&#x27;:&#x27;observations&#x27;,&#x27;latest&#x27;:&#x27;latest&#x27;,&#x27;base&#x27;:&#x27;base&#x27;}[name]
+            cur.execute(&#x27;SELECT count(*) FROM tmp_c405_&#x27;+table)
+            audit[&#x27;stages&#x27;][name]={&#x27;rows&#x27;:cur.fetchone()[0],&#x27;seconds&#x27;:round(time.time()-start,1)}
+            save(&#x27;analysis/extraction_audit.json&#x27;,audit);print(&#x27;DONE&#x27;,name,audit[&#x27;stages&#x27;][name],flush=True)
+        cur.execute(&quot;SELECT sample_kind,count(*),count(distinct event_id),count(distinct user_id),min(obs_date),max(obs_date) FROM tmp_c405_base GROUP BY 1&quot;)
+        audit[&#x27;base_counts&#x27;]=cur.fetchall()
+        cur.execute(&#x27;SELECT count(*) FROM tmp_c405_types WHERE has_type3=1 AND has_type2=1&#x27;)
+        audit[&#x27;conflicting_recycle_serial_excluded&#x27;]=cur.fetchone()[0]
+        cur.execute(&#x27;SELECT count(*)-count(distinct serial_id) FROM tmp_c405_orders&#x27;)
+        audit[&#x27;duplicate_order_serial&#x27;]=cur.fetchone()[0]
+        if audit[&#x27;duplicate_order_serial&#x27;]!=0:raise AssertionError(&#x27;Order serial_id not unique&#x27;)
+        cur.execute(&#x27;SELECT min(risk_score_405),max(risk_score_405),sum(case when score_age_days&gt;=15 then 1 else 0 end) FROM tmp_c405_base&#x27;)
+        audit[&#x27;score_range_and_expired&#x27;]=cur.fetchall()
+        cur.execute(&quot;SELECT to_char(obs_date,&#x27;YYYY-MM&#x27;),count(*) FROM tmp_c405_observations WHERE sample_kind=&#x27;historical&#x27; GROUP BY 1 ORDER BY 1&quot;)
+        audit[&#x27;mature_before_score&#x27;]=cur.fetchall()
+        cur.execute(&quot;SELECT sample_kind,count(*),sum(case when current_pass1=1 and current_recycle_type=3 then 1 else 0 end),sum(case when m.kabybxgboost405apd7crecyc is not null and m.kabybxgboost405apd7crecyc&lt;&gt;-9999999 then 1 else 0 end) FROM tmp_c405_latest e LEFT JOIN wangchuanliang.model_result_copy m ON m.serial_id=e.score_serial GROUP BY 1&quot;)
+        audit[&#x27;latest_coverage&#x27;]=cur.fetchall()
+        cur.execute(&quot;SELECT to_char(obs_date,&#x27;YYYY-MM&#x27;),count(*) FROM tmp_c405_spells WHERE target_serial is not null and obs_date&gt;=DATE &#x27;2025-07-01&#x27; and obs_date-anchor_date&gt;=7 and target_is_remit=1 and target_remit_amt&gt;0 GROUP BY 1 ORDER BY 1&quot;)
+        audit[&#x27;funded_before_maturity&#x27;]=cur.fetchall()
+        dump_query(cur,&#x27;SELECT * FROM tmp_c405_base&#x27;,ROOT/&#x27;data/base.csv.gz&#x27;)
+        build_history(cur,audit)
+        build_credit(cur,audit)
+        build_behavior(cur,audit)
+        save(&#x27;analysis/extraction_audit.json&#x27;,audit)
+    finally:
+        cur.close();con.close()
+
+def step_export(cur,name,sql,audit):
+    start=time.time();print(&#x27;BEGIN&#x27;,name,flush=True)
+    (ROOT/&#x27;analysis&#x27;/f&#x27;{name}.sql&#x27;).write_text(sql)
+    cur.execute(&#x27;CREATE TEMP TABLE tmp_c405_&#x27;+name+&#x27; AS &#x27;+sql)
+    audit[&#x27;stages&#x27;][name]={&#x27;rows&#x27;:dump_query(cur,&#x27;SELECT * FROM tmp_c405_&#x27;+name,ROOT/&#x27;data&#x27;/f&#x27;{name}.csv.gz&#x27;),&#x27;seconds&#x27;:round(time.time()-start,1)}
+    save(&#x27;analysis/extraction_audit.json&#x27;,audit);print(&#x27;DONE&#x27;,name,audit[&#x27;stages&#x27;][name],flush=True)
+
+def build_history(cur,audit):
+    cols=[&quot;count(o.serial_id)::float8 hist_apply_count&quot;,
+          &quot;sum(case when o.is_remit=1 and o.remit_amt&gt;0 and o.remit_time&lt;e.obs_time then 1 else 0 end)::float8 hist_funded_count&quot;,
+          &quot;sum(case when o.repaid_time&gt;timestamp &#x27;2000-01-01&#x27; and o.repaid_time&lt;e.obs_time then 1 else 0 end)::float8 hist_settled_count&quot;,
+          &quot;sum(case when o.repaid_time&gt;timestamp &#x27;2000-01-01&#x27; and o.repaid_time&lt;e.obs_time and o.repaid_date&lt;o.due_date then 1 else 0 end)::float8 hist_early_count&quot;,
+          &quot;avg(case when o.is_remit=1 and o.remit_time&lt;e.obs_time then o.remit_amt end)::float8 hist_avg_remit&quot;,
+          &quot;avg(case when o.is_remit=1 and o.repaid_time&gt;timestamp &#x27;2000-01-01&#x27; and o.repaid_time&lt;e.obs_time then (o.pre_amt+o.post_amt)/nullif(o.remit_amt,0) end)::float8 hist_avg_fee&quot;,
+          &quot;avg(case when o.is_remit=1 and o.remit_time&lt;e.obs_time then o.loan_day end)::float8 hist_avg_loan_day&quot;,
+          &quot;avg(case when o.repaid_time&gt;timestamp &#x27;2000-01-01&#x27; and o.repaid_time&lt;e.obs_time then extract(epoch from(o.repaid_time-o.remit_time))/86400.0 end)::float8 hist_avg_repay_days&quot;,
+          &quot;avg(case when o.repaid_time&gt;timestamp &#x27;2000-01-01&#x27; and o.repaid_time&lt;e.obs_time then o.due_date-o.repaid_date end)::float8 hist_avg_early_days&quot;,
+          &quot;sum(case when o.is_remit=1 and o.remit_time&lt;e.obs_time and o.due_date&gt;date &#x27;2000-01-01&#x27; and o.due_date+8&lt;=e.obs_date then 1 else 0 end)::float8 hist_d7_mature_count&quot;,
+          &quot;sum(case when o.is_remit=1 and o.remit_time&lt;e.obs_time and o.due_date&gt;date &#x27;2000-01-01&#x27; and o.due_date+8&lt;=e.obs_date and (o.repaid_date is null or o.repaid_date&lt;=date &#x27;2000-01-01&#x27; or o.repaid_date&gt;o.due_date+7) then 1 else 0 end)::float8 hist_d7_bad_count&quot;,
+          &quot;extract(epoch from(e.obs_time-max(o.apply_time)))/86400.0 days_since_apply&quot;,
+          &quot;extract(epoch from(e.obs_time-min(o.apply_time)))/86400.0 user_tenure_days&quot;]
+    for w in (30,90,365):
+        cols += [f&quot;sum(case when o.apply_time&gt;=e.obs_time-interval &#x27;{w} days&#x27; then 1 else 0 end)::float8 hist_apply_{w}d&quot;,
+                 f&quot;sum(case when o.is_remit=1 and o.remit_time&lt;e.obs_time and o.remit_time&gt;=e.obs_time-interval &#x27;{w} days&#x27; then 1 else 0 end)::float8 hist_funded_{w}d&quot;,
+                 f&quot;sum(case when o.repaid_time&lt;e.obs_time and o.repaid_time&gt;=e.obs_time-interval &#x27;{w} days&#x27; then 1 else 0 end)::float8 hist_settled_{w}d&quot;]
+    sql=&#x27;SELECT e.event_id,\n&#x27;+&#x27;,\n&#x27;.join(cols)+&quot;\nFROM tmp_c405_base e LEFT JOIN tmp_c405_orders o ON o.user_id=e.user_id AND o.apply_time&lt;e.obs_time AND o.serial_id IS DISTINCT FROM e.target_serial GROUP BY e.event_id,e.obs_time,e.obs_date&quot;
+    step_export(cur,&#x27;history&#x27;,sql,audit)
+
+def build_credit(cur,audit):
+    # Previous credit is the last offer for that previous loan no later than its application.
+    sql=&quot;&quot;&quot;WITH prev_credit AS (
+      SELECT e.event_id,v.max_credit_apply_amt,
+        row_number() over(partition by e.event_id order by v.vir_time desc,v.serial_id desc) rn
+      FROM tmp_c405_base e JOIN tmp_c405_orders p ON p.serial_id=e.prev_serial
+      LEFT JOIN tmp_c405_offers v ON v.serial_id=p.serial_id AND v.user_id=p.user_id AND v.vir_time&lt;=p.apply_time
+    ), offer_counts AS (
+      SELECT e.event_id,count(distinct v.serial_id)::float8 offer_count_since_anchor,
+        sum(case when v.is_pass1=1 then 1 else 0 end)::float8 pass_offer_rows_since_anchor
+      FROM tmp_c405_base e LEFT JOIN tmp_c405_offers v ON v.user_id=e.user_id
+        AND v.vir_time&gt;=e.anchor_time AND v.vir_time&lt;=e.obs_time
+      GROUP BY e.event_id
+    ) SELECT e.event_id,p.max_credit_apply_amt::float8 prev_credit,
+        CASE WHEN e.prev_remit_amt&gt;0 AND p.max_credit_apply_amt&gt;0 THEN e.prev_remit_amt/p.max_credit_apply_amt END::float8 prev_utilization,
+        c.offer_count_since_anchor,c.pass_offer_rows_since_anchor
+      FROM tmp_c405_base e LEFT JOIN prev_credit p ON p.event_id=e.event_id AND p.rn=1
+      LEFT JOIN offer_counts c ON c.event_id=e.event_id&quot;&quot;&quot;
+    step_export(cur,&#x27;credit&#x27;,sql,audit)
+
+def build_behavior(cur,audit):
+    # All daily App data is bounded by obs_date, not obs_time, to avoid partial-day leakage.
+    cols=[]
+    metrics=[&#x27;active_status&#x27;,&#x27;newpage&#x27;,&#x27;amount_selection&#x27;,&#x27;term_selection&#x27;,&#x27;plan_newdetails&#x27;,&#x27;newconfirm&#x27;,&#x27;contract_newdetails&#x27;,&#x27;coupons_page&#x27;,&#x27;active_duration&#x27;,&#x27;apply_duration&#x27;]
+    for w in (7,30,90):
+        for family in (&#x27;app&#x27;,&#x27;nonpay&#x27;):
+            cond=f&quot;a.active_date&gt;=e.obs_date-{w}&quot;+(&#x27; AND pd.user_id IS NULL&#x27; if family==&#x27;nonpay&#x27; else &#x27;&#x27;)
+            cols.append(f&quot;sum(case when {cond} AND a.active_status&gt;0 then 1 else 0 end)::float8 {family}_active_days_{w}d&quot;)
+            for m in metrics:
+                cols.append(f&quot;sum(case when {cond} then coalesce(a.{m},0) else 0 end)::float8 {family}_{m}_{w}d&quot;)
+    cols.append(&quot;(e.obs_date-max(case when a.active_status&gt;0 then a.active_date end))::float8 days_since_app_90d&quot;)
+    # Pay dates deduplicate actual positive cashflows, avoiding join expansion.
+    sql=&quot;&quot;&quot;WITH pay_dates AS (
+       SELECT DISTINCT r.user_id::bigint user_id,r.payin_date
+       FROM wangchuanliang.repayment_record_copy r
+       WHERE r.amount&gt;0 AND r.payin_date&gt;=DATE &#x27;2025-04-01&#x27; AND r.payin_date&lt;DATE &#x27;2026-10-08&#x27;
+    ), daily AS (
+       SELECT user_id,active_date,&quot;&quot;&quot;+&#x27;,&#x27;.join(&#x27;sum(&#x27;+m+&#x27;) &#x27;+m for m in metrics)+&quot;&quot;&quot;
+       FROM wangchuanliang.event_track
+       WHERE active_date&gt;=DATE &#x27;2025-04-01&#x27; AND active_date&lt;DATE &#x27;2026-10-08&#x27;
+       GROUP BY user_id,active_date
+    ) SELECT e.event_id,\n&quot;&quot;&quot;+&#x27;,\n&#x27;.join(cols)+&quot;&quot;&quot;
+       FROM tmp_c405_base e LEFT JOIN daily a ON a.user_id=e.user_id
+       AND a.active_date&gt;=e.obs_date-90 AND a.active_date&lt;e.obs_date
+       LEFT JOIN pay_dates pd ON pd.user_id=a.user_id AND pd.payin_date=a.active_date
+       GROUP BY e.event_id,e.obs_date&quot;&quot;&quot;
+    step_export(cur,&#x27;behavior&#x27;,sql,audit)
+
+if __name__==&#x27;__main__&#x27;:main()
+</code></pre></details><details><summary>特征工程、切分、训练与测试：train.py</summary><pre><code>from common import *
+import numpy as np,pandas as pd,joblib,time,platform
+from sklearn.ensemble import HistGradientBoostingClassifier
+from sklearn.linear_model import LogisticRegression
+from sklearn.impute import SimpleImputer
+from sklearn.preprocessing import StandardScaler,SplineTransformer
+from sklearn.pipeline import make_pipeline
+from sklearn.metrics import roc_auc_score,average_precision_score,log_loss,brier_score_loss,roc_curve
+
+SEED=20261009
+def metrics(y,p):
+    y=np.asarray(y,dtype=int);p=np.clip(np.asarray(p),1e-6,1-1e-6)
+    if len(y)==0 or len(np.unique(y))&lt;2:return dict(n=len(y),bad=int(y.sum()),bad_rate=float(y.mean()) if len(y) else None,auc=None)
+    f,t,_=roc_curve(y,p);top=np.argsort(-p,kind=&#x27;stable&#x27;)[:max(1,int(np.ceil(len(y)*.2)))]
+    return dict(n=len(y),bad=int(y.sum()),bad_rate=float(y.mean()),auc=float(roc_auc_score(y,p)),ks=float(max(t-f)),ap=float(average_precision_score(y,p)),log_loss=float(log_loss(y,p)),brier=float(brier_score_loss(y,p)),top20_bad_rate=float(y[top].mean()),top20_bad_recall=float(y[top].sum()/y.sum()))
+def calibrate(p,y):
+    p=np.clip(p,1e-6,1-1e-6)
+    c=LogisticRegression(C=1000,random_state=SEED,max_iter=2000)
+    c.fit(np.log(p/(1-p)).reshape(-1,1),y)
+    if c.coef_[0,0]&lt;=0:raise AssertionError(&#x27;Calibration must preserve risk ordering&#x27;)
+    return c
+def calibrated(model,c,x):
+    p=np.clip(model.predict_proba(x)[:,1],1e-6,1-1e-6)
+    return c.predict_proba(np.log(p/(1-p)).reshape(-1,1))[:,1]
+def load_features():
+    b=pd.read_csv(ROOT/&#x27;data/base.csv.gz&#x27;,dtype={&#x27;event_id&#x27;:str,&#x27;risk_product&#x27;:str})
+    invalid=json.loads((ROOT/&#x27;data/invalid_score_owner_serials.json&#x27;).read_text())
+    invalid_mask=b.score_serial.isin(invalid)
+    save(&#x27;analysis/score_owner_scope_exclusions.json&#x27;,{&#x27;excluded_rows&#x27;:int(invalid_mask.sum())})
+    b=b.loc[~invalid_mask].copy()
+    assert b.event_id.is_unique,&#x27;Duplicate event IDs: extraction must be fixed, not silently deduplicated&#x27;
+    for n in (&#x27;history&#x27;,&#x27;credit&#x27;,&#x27;behavior&#x27;):
+        q=pd.read_csv(ROOT/&#x27;data&#x27;/f&#x27;{n}.csv.gz&#x27;,dtype={&#x27;event_id&#x27;:str});assert q.event_id.is_unique
+        b=b.merge(q,on=&#x27;event_id&#x27;,how=&#x27;left&#x27;,validate=&#x27;one_to_one&#x27;)
+    for col in (&#x27;obs_time&#x27;,&#x27;obs_date&#x27;,&#x27;anchor_time&#x27;,&#x27;anchor_date&#x27;,&#x27;score_offer_time&#x27;,&#x27;target_due_date&#x27;,&#x27;target_repaid_date&#x27;):
+        b[col]=pd.to_datetime(b[col])
+    assert (b.score_offer_time&lt;=b.obs_time).all()
+    assert (b.anchor_time&lt;=b.obs_time).all() and (b.churn_days&gt;=7).all()
+    assert b.risk_score_405.notna().all() and (b.risk_score_405!=-9999999).all()
+    hist=b.sample_kind==&#x27;historical&#x27;
+    save(&#x27;analysis/temporal_audit.json&#x27;,{&#x27;historical_rows&#x27;:int(hist.sum()),&#x27;historical_score_target_serial_mismatch&#x27;:int((hist&amp;(b.score_serial!=b.target_serial)).sum()),&#x27;historical_score_age_ge15&#x27;:int((hist&amp;(b.score_age_days&gt;=15)).sum()),&#x27;latest_offer_after_observation&#x27;:int((b.score_offer_time&gt;b.obs_time).sum()),&#x27;event_id_duplicates&#x27;:int(b.event_id.duplicated().sum()),&#x27;historical_score_age_ge15_by_month&#x27;:b.loc[hist].assign(month=b.loc[hist,&#x27;obs_date&#x27;].dt.strftime(&#x27;%Y-%m&#x27;),expired=b.loc[hist,&#x27;score_age_days&#x27;]&gt;=15).groupby(&#x27;month&#x27;).expired.sum().to_dict()})
+    b[&#x27;churn_log1p&#x27;]=np.log1p(b.churn_days)
+    for d in (15,30,60,90):b[f&#x27;churn_ge_{d}d&#x27;]=(b.churn_days&gt;=d).astype(float)
+    b[&#x27;score_expired_15d&#x27;]=(b.score_age_days&gt;=15).astype(float)
+    b[&#x27;offered_product_count&#x27;]=b.risk_product.fillna(&#x27;&#x27;).map(lambda s:len({x.strip() for x in s.split(&#x27;,&#x27;) if x.strip()})).astype(float)
+    b.loc[b.risk_product.isna(),&#x27;offered_product_count&#x27;]=np.nan
+    b[&#x27;credit_change&#x27;]=b.current_credit-b.prev_credit
+    b[&#x27;credit_change_ratio&#x27;]=b.credit_change/b.prev_credit.where(b.prev_credit&gt;0)
+    b[&#x27;credit_vs_prev_remit&#x27;]=b.current_credit/b.prev_remit_amt.where(b.prev_remit_amt&gt;0)
+    b[&#x27;credit_shortfall_vs_prev_remit&#x27;]=((b.prev_remit_amt-b.current_credit).clip(lower=0))
+    b[&#x27;prev_utilization_missing&#x27;]=b.prev_utilization.isna().astype(float)
+    b.loc[b.prev_utilization&lt;=0,&#x27;prev_utilization&#x27;]=np.nan
+    b[&#x27;prev_utilization_above100&#x27;]=(b.prev_utilization&gt;1).astype(float)
+    b[&#x27;hist_early_rate&#x27;]=b.hist_early_count/b.hist_settled_count.where(b.hist_settled_count&gt;0)
+    b[&#x27;hist_d7_bad_rate&#x27;]=b.hist_d7_bad_count/b.hist_d7_mature_count.where(b.hist_d7_mature_count&gt;0)
+    b[&#x27;hist_fund_rate&#x27;]=b.hist_funded_count/b.hist_apply_count.where(b.hist_apply_count&gt;0)
+    b[&#x27;prev_vs_hist_remit&#x27;]=b.prev_remit_amt/b.hist_avg_remit.where(b.hist_avg_remit&gt;0)
+    b[&#x27;prev_vs_hist_repay_days&#x27;]=b.prev_repay_days-b.hist_avg_repay_days
+    b[&#x27;prev_vs_hist_early_days&#x27;]=b.prev_early_days-b.hist_avg_early_days
+    for w in (7,30,90):
+        b[f&#x27;nonpay_active_share_{w}d&#x27;]=b[f&#x27;nonpay_active_days_{w}d&#x27;]/b[f&#x27;app_active_days_{w}d&#x27;].where(b[f&#x27;app_active_days_{w}d&#x27;]&gt;0)
+        b[f&#x27;nonpay_events_share_{w}d&#x27;]=b[f&#x27;nonpay_active_status_{w}d&#x27;]/b[f&#x27;app_active_status_{w}d&#x27;].where(b[f&#x27;app_active_status_{w}d&#x27;]&gt;0)
+        for f in (&#x27;app&#x27;,&#x27;nonpay&#x27;):
+            b[f&#x27;{f}_events_per_active_day_{w}d&#x27;]=b[f&#x27;{f}_active_status_{w}d&#x27;]/b[f&#x27;{f}_active_days_{w}d&#x27;].where(b[f&#x27;{f}_active_days_{w}d&#x27;]&gt;0)
+            b[f&#x27;{f}_newpage_per_active_day_{w}d&#x27;]=b[f&#x27;{f}_newpage_{w}d&#x27;]/b[f&#x27;{f}_active_days_{w}d&#x27;].where(b[f&#x27;{f}_active_days_{w}d&#x27;]&gt;0)
+    for f in (&#x27;app&#x27;,&#x27;nonpay&#x27;):
+        for m in (&#x27;active_status&#x27;,&#x27;newpage&#x27;,&#x27;amount_selection&#x27;,&#x27;plan_newdetails&#x27;):
+            b[f&#x27;{f}_{m}_recent_trend&#x27;]=b[f&#x27;{f}_{m}_7d&#x27;]/7-b[f&#x27;{f}_{m}_30d&#x27;]/30
+    exclude={&#x27;event_id&#x27;,&#x27;user_id&#x27;,&#x27;anchor_serial&#x27;,&#x27;prev_serial&#x27;,&#x27;target_serial&#x27;,&#x27;score_serial&#x27;,&#x27;rn&#x27;,&#x27;sample_kind&#x27;,&#x27;risk_product&#x27;,&#x27;current_pass1&#x27;,&#x27;current_recycle_type&#x27;,&#x27;target_d7&#x27;,&#x27;target_d0&#x27;,&#x27;hist_avg_fee&#x27;}
+    names=[c for c in b.columns if c not in exclude and pd.api.types.is_numeric_dtype(b[c])]
+    # IDs and outcome fields never appear in model inputs.
+    assert not any(&#x27;target&#x27; in c or &#x27;serial&#x27; in c or c==&#x27;user_id&#x27; for c in names)
+    for c in names:b[c]=pd.to_numeric(b[c],errors=&#x27;coerce&#x27;).replace([np.inf,-np.inf],np.nan)
+    assert (b.nonpay_active_days_30d&lt;=b.app_active_days_30d).all()
+    save(&#x27;analysis/feature_names.json&#x27;,names)
+    b.to_csv(ROOT/&#x27;data/all_feature_snapshots.csv.gz&#x27;,index=False,compression=&#x27;gzip&#x27;)
+    b.to_pickle(ROOT/&#x27;data/all_feature_snapshots.pkl.gz&#x27;,compression=&#x27;gzip&#x27;)
+    save(&#x27;analysis/feature_exclusions.json&#x27;,{&#x27;hist_avg_fee&#x27;:&#x27;Historical multi-order fee amounts lack an immutable as-of snapshot; excluded. Previous fully settled loan fee remains available.&#x27;})
+    return b,names
+
+def train():
+    start=time.time();b,names=load_features();h=b[b.sample_kind==&#x27;historical&#x27;].copy()
+    # Label availability is before the next stage starts (D+7 fully completed).
+    masks={
+      &#x27;train&#x27;:(h.obs_date&gt;=&#x27;2025-07-01&#x27;)&amp;(h.obs_date&lt;&#x27;2026-06-01&#x27;)&amp;(h.target_due_date+pd.Timedelta(days=8)&lt;=pd.Timestamp(&#x27;2026-06-01&#x27;)),
+      &#x27;tune&#x27;:(h.obs_date&gt;=&#x27;2026-06-01&#x27;)&amp;(h.obs_date&lt;&#x27;2026-07-01&#x27;)&amp;(h.target_due_date+pd.Timedelta(days=8)&lt;=pd.Timestamp(&#x27;2026-07-01&#x27;)),
+      &#x27;calibration&#x27;:(h.obs_date&gt;=&#x27;2026-07-01&#x27;)&amp;(h.obs_date&lt;&#x27;2026-08-01&#x27;)&amp;(h.target_due_date+pd.Timedelta(days=8)&lt;=pd.Timestamp(&#x27;2026-08-01&#x27;)),
+      &#x27;test&#x27;:(h.obs_date&gt;=&#x27;2026-08-01&#x27;)&amp;(h.obs_date&lt;&#x27;2026-10-08&#x27;)&amp;(h.target_due_date+pd.Timedelta(days=8)&lt;=pd.Timestamp(&#x27;2026-10-08&#x27;))}
+    sets={k:h.loc[v].copy() for k,v in masks.items()}
+    for k,d in sets.items():
+        print(&#x27;SPLIT&#x27;,k,len(d),&#x27;bad&#x27;,int(d.target_d7.sum()),flush=True)
+        assert len(d)&gt;100 and d.target_d7.nunique()==2,&#x27;Insufficient mature labels in &#x27;+k
+        d.to_csv(ROOT/&#x27;data&#x27;/f&#x27;{k}_features_labels.csv.gz&#x27;,index=False,compression=&#x27;gzip&#x27;)
+    assert len(set.intersection(*(set(d.event_id) for d in sets.values())))==0
+    for a in sets:
+        for bb in sets:
+            if a!=bb:assert set(sets[a].event_id).isdisjoint(sets[bb].event_id)
+    tr,va,ca,te=[sets[k] for k in (&#x27;train&#x27;,&#x27;tune&#x27;,&#x27;calibration&#x27;,&#x27;test&#x27;)]
+    reference=tr.sort_values(&#x27;obs_time&#x27;).drop_duplicates(&#x27;user_id&#x27;,keep=&#x27;last&#x27;)
+    thresholds=np.quantile(reference.risk_score_405,[.9,.7,.4]).tolist()
+    def grade(s):return np.select([s&gt;=thresholds[0],s&gt;=thresholds[1],s&gt;=thresholds[2]],[&#x27;高优&#x27;,&#x27;优质&#x27;,&#x27;普通&#x27;],default=&#x27;风险&#x27;)
+    b[&#x27;grade_405&#x27;]=grade(b.risk_score_405);te[&#x27;grade_405&#x27;]=grade(te.risk_score_405)
+    mapping=[{&#x27;grade&#x27;:g,&#x27;users&#x27;:int((grade(reference.risk_score_405)==g).sum()),&#x27;share&#x27;:float((grade(reference.risk_score_405)==g).mean())} for g in (&#x27;高优&#x27;,&#x27;优质&#x27;,&#x27;普通&#x27;,&#x27;风险&#x27;)]
+    save(&#x27;analysis/405_grade_mapping.json&#x27;,{&#x27;thresholds_high_to_low&#x27;:thresholds,&#x27;reference_users&#x27;:len(reference),&#x27;mapping&#x27;:mapping})
+    behavior=[c for c in names if c.startswith((&#x27;app_&#x27;,&#x27;nonpay_&#x27;,&#x27;days_since_app&#x27;))]
+    lifecycle=[c for c in names if c not in behavior]
+    minimal=[&#x27;risk_score_405&#x27;,&#x27;churn_days&#x27;,&#x27;score_age_days&#x27;,&#x27;is_rescored&#x27;,&#x27;churn_log1p&#x27;,&#x27;score_expired_15d&#x27;]
+    experiments=[];candidates={}
+    base=make_pipeline(SimpleImputer(strategy=&#x27;median&#x27;),SplineTransformer(n_knots=5,degree=2),StandardScaler(),LogisticRegression(C=1,max_iter=2000,random_state=SEED))
+    base.fit(tr[[&#x27;risk_score_405&#x27;]],tr.target_d7)
+    experiments.append({&#x27;tag&#x27;:&#x27;405_only&#x27;,&#x27;features&#x27;:1,&#x27;validation&#x27;:metrics(va.target_d7,base.predict_proba(va[[&#x27;risk_score_405&#x27;]])[:,1])})
+    candidates[&#x27;405_only&#x27;]=(base,[&#x27;risk_score_405&#x27;])
+    configs=[dict(max_leaf_nodes=15,max_iter=180,learning_rate=.05,l2_regularization=10,min_samples_leaf=100),dict(max_leaf_nodes=31,max_iter=220,learning_rate=.04,l2_regularization=20,min_samples_leaf=150),dict(max_leaf_nodes=15,max_iter=280,learning_rate=.035,l2_regularization=30,min_samples_leaf=200),dict(max_leaf_nodes=31,max_iter=180,learning_rate=.05,l2_regularization=40,min_samples_leaf=300)]
+    run_specs=[(&#x27;405_churn&#x27;,minimal,configs[0]),(&#x27;lifecycle&#x27;,lifecycle,configs[0])]+[(f&#x27;full_{j}&#x27;,names,c) for j,c in enumerate(configs)]+[(&#x27;full_fresh_offer_train&#x27;,names,configs[0])]
+    for tag,cols,params in run_specs:
+        print(&#x27;FIT&#x27;,tag,len(cols),flush=True);at=time.time()
+        m=HistGradientBoostingClassifier(random_state=SEED,early_stopping=False,**params)
+        fit_rows=tr.loc[tr.score_age_days&lt;15] if tag==&#x27;full_fresh_offer_train&#x27; else tr
+        m.fit(fit_rows[cols],fit_rows.target_d7)
+        met=metrics(va.target_d7,m.predict_proba(va[cols])[:,1]);candidates[tag]=(m,cols)
+        experiments.append({&#x27;tag&#x27;:tag,&#x27;features&#x27;:len(cols),&#x27;train_rows&#x27;:len(fit_rows),&#x27;params&#x27;:params,&#x27;seconds&#x27;:round(time.time()-at,1),&#x27;validation&#x27;:met})
+        save(&#x27;analysis/tuning.json&#x27;,experiments);print(&#x27;VALIDATION&#x27;,tag,met,flush=True)
+    # Lock selection before using held-out labels. Include score-only as safe fallback.
+    chosen=max(experiments,key=lambda e:e[&#x27;validation&#x27;][&#x27;auc&#x27;])[&#x27;tag&#x27;]
+    model,cols=candidates[chosen];save(&#x27;analysis/locked_selection.json&#x27;,{&#x27;tag&#x27;:chosen,&#x27;features&#x27;:cols,&#x27;rule&#x27;:&#x27;highest June mature AUC; test never used for selection&#x27;})
+    cp=model.predict_proba(ca[cols])[:,1];cal=calibrate(cp,ca.target_d7)
+    basecal=calibrate(base.predict_proba(ca[[&#x27;risk_score_405&#x27;]])[:,1],ca.target_d7)
+    joblib.dump({&#x27;model&#x27;:model,&#x27;calibrator&#x27;:cal,&#x27;features&#x27;:cols,&#x27;score_thresholds&#x27;:thresholds,&#x27;contract&#x27;:&#x27;pre-application, churn&gt;=7, latest405; whole-order D7&#x27;},ROOT/&#x27;models/churn405_v1.joblib&#x27;)
+    for tag,(m,fs) in candidates.items():joblib.dump({&#x27;model&#x27;:m,&#x27;features&#x27;:fs},ROOT/&#x27;models&#x27;/f&#x27;{tag}.joblib&#x27;)
+    te[&#x27;prob_d7_risk_405_only&#x27;]=calibrated(base,basecal,te[[&#x27;risk_score_405&#x27;]])
+    te[&#x27;prob_d7_risk_enhanced&#x27;]=calibrated(model,cal,te[cols])
+    te[&#x27;risk_rank_405&#x27;]=-te.risk_score_405
+    te[&#x27;new_user_to_training&#x27;]=~te.user_id.isin(tr.user_id)
+    te[&#x27;churn_group&#x27;]=pd.cut(te.churn_days,bins=[6,14,29,59,89,np.inf],labels=[&#x27;7–14天&#x27;,&#x27;15–29天&#x27;,&#x27;30–59天&#x27;,&#x27;60–89天&#x27;,&#x27;90天以上&#x27;]).astype(str)
+    te.to_csv(ROOT/&#x27;data/test_predictions.csv.gz&#x27;,index=False,compression=&#x27;gzip&#x27;)
+    rawauc=roc_auc_score(te.target_d7,-te.risk_score_405)
+    results={&#x27;selected&#x27;:chosen,&#x27;feature_count&#x27;:len(cols),&#x27;all_features&#x27;:len(names),&#x27;original_405_rank_auc&#x27;:float(rawauc),&#x27;baseline&#x27;:metrics(te.target_d7,te.prob_d7_risk_405_only),&#x27;enhanced&#x27;:metrics(te.target_d7,te.prob_d7_risk_enhanced),&#x27;splits&#x27;:{k:{&#x27;rows&#x27;:len(d),&#x27;users&#x27;:d.user_id.nunique(),&#x27;bad&#x27;:int(d.target_d7.sum()),&#x27;min&#x27;:str(d.obs_date.min().date()),&#x27;max&#x27;:str(d.obs_date.max().date())} for k,d in sets.items()},&#x27;mature_excluded_between_stages&#x27;:int(len(h)-sum(len(d) for d in sets.values()))}
+    results[&#x27;user_cluster_auc_delta_ci&#x27;]=bootstrap(te)
+    results[&#x27;new_user_test&#x27;]=metrics(te.loc[te.new_user_to_training,&#x27;target_d7&#x27;],te.loc[te.new_user_to_training,&#x27;prob_d7_risk_enhanced&#x27;])
+    results[&#x27;fresh_offer_test&#x27;]=metrics(te.loc[te.score_age_days&lt;15,&#x27;target_d7&#x27;],te.loc[te.score_age_days&lt;15,&#x27;prob_d7_risk_enhanced&#x27;])
+    group_rows=[]
+    for groupby in ([&#x27;obs_date_month&#x27;],[&#x27;grade_405&#x27;],[&#x27;churn_group&#x27;],[&#x27;grade_405&#x27;,&#x27;churn_group&#x27;]):
+        te[&#x27;obs_date_month&#x27;]=te.obs_date.dt.strftime(&#x27;%Y-%m&#x27;)
+        for key,d in te.groupby(groupby,observed=True):
+            key=key if isinstance(key,tuple) else (key,)
+            n=len(d);p=float(d.target_d7.mean());z=1.96;center=(p+z*z/(2*n))/(1+z*z/n);half=z*np.sqrt(p*(1-p)/n+z*z/(4*n*n))/(1+z*z/n)
+            group_rows.append({&#x27;group_type&#x27;:&#x27; × &#x27;.join(groupby),&#x27;group&#x27;:&#x27; / &#x27;.join(map(str,key)),**metrics(d.target_d7,d.prob_d7_risk_enhanced),&#x27;405_auc&#x27;:float(roc_auc_score(d.target_d7,-d.risk_score_405)) if d.target_d7.nunique()&gt;1 else None,&#x27;prob_mean&#x27;:float(d.prob_d7_risk_enhanced.mean()),&#x27;baseline_prob_mean&#x27;:float(d.prob_d7_risk_405_only.mean()),&#x27;actual_d7_ci_low&#x27;:float(center-half),&#x27;actual_d7_ci_high&#x27;:float(center+half),&#x27;any_late_rate&#x27;:float(d.target_d0.mean())})
+    save(&#x27;analysis/test_groups.json&#x27;,group_rows)
+    deciles=[]
+    te[&#x27;risk_decile&#x27;]=pd.qcut(te.prob_d7_risk_enhanced.rank(method=&#x27;first&#x27;),10,labels=False)+1
+    for dec,d in te.groupby(&#x27;risk_decile&#x27;):
+        n=len(d);p=d.target_d7.mean();z=1.96;center=(p+z*z/(2*n))/(1+z*z/n);half=z*np.sqrt(p*(1-p)/n+z*z/(4*n*n))/(1+z*z/n)
+        deciles.append({&#x27;decile&#x27;:int(dec),&#x27;rows&#x27;:n,&#x27;mean_prediction&#x27;:float(d.prob_d7_risk_enhanced.mean()),&#x27;actual_d7&#x27;:float(p),&#x27;ci_low&#x27;:float(center-half),&#x27;ci_high&#x27;:float(center+half)})
+    save(&#x27;analysis/calibration_deciles.json&#x27;,deciles)
+    # Feature group permutation uses only validation rows, never the final test.
+    importance=[];rng=np.random.default_rng(SEED);reference_auc=roc_auc_score(va.target_d7,model.predict_proba(va[cols])[:,1])
+    groups={&#x27;405评分&#x27;:[&#x27;risk_score_405&#x27;],&#x27;流失与评分时效&#x27;:[c for c in cols if c.startswith((&#x27;churn&#x27;,&#x27;score_&#x27;,&#x27;is_rescored&#x27;,&#x27;offer_&#x27;,&#x27;pass_offer&#x27;))],&#x27;历史借还/额度&#x27;:[c for c in cols if c.startswith((&#x27;hist_&#x27;,&#x27;prev_&#x27;,&#x27;previous_&#x27;,&#x27;credit_&#x27;,&#x27;current_credit&#x27;,&#x27;days_since_apply&#x27;,&#x27;user_tenure&#x27;))],&#x27;实际App&#x27;:[c for c in cols if c.startswith(&#x27;app_&#x27;) or c.startswith(&#x27;days_since_app&#x27;)],&#x27;非还款日App&#x27;:[c for c in cols if c.startswith(&#x27;nonpay_&#x27;)]}
+    for name,fs in groups.items():
+        fs=[c for c in fs if c in cols]
+        if not fs:continue
+        perm=va[cols].copy();ix=rng.permutation(len(perm));perm.loc[:,fs]=perm[fs].iloc[ix].to_numpy()
+        importance.append({&#x27;group&#x27;:name,&#x27;features&#x27;:len(fs),&#x27;validation_auc_drop&#x27;:float(reference_auc-roc_auc_score(va.target_d7,model.predict_proba(perm)[:,1]))})
+    save(&#x27;analysis/group_importance.json&#x27;,importance)
+    live=b[b.sample_kind==&#x27;live&#x27;].copy();live[&#x27;prob_d7_risk_enhanced&#x27;]=calibrated(model,cal,live[cols]) if len(live) else []
+    live[&#x27;prob_d7_risk_405_only&#x27;]=calibrated(base,basecal,live[[&#x27;risk_score_405&#x27;]]) if len(live) else []
+    live[&#x27;prediction_scope&#x27;]=&#x27;未提单流失用户：仅用于影子排序；实际放款风险未观测&#x27;
+    live[&#x27;requires_recredit&#x27;]=live.score_age_days&gt;=15
+    live.sort_values(&#x27;prob_d7_risk_enhanced&#x27;,ascending=False).to_csv(ROOT/&#x27;data/live_predictions.csv.gz&#x27;,index=False,compression=&#x27;gzip&#x27;)
+    results[&#x27;live_rows&#x27;]=len(live);results[&#x27;live_expired_score_rows&#x27;]=int(live.requires_recredit.sum())
+    results[&#x27;historical_score_age_ge15&#x27;]=int((h.score_age_days&gt;=15).sum())
+    results[&#x27;runtime_seconds&#x27;]=round(time.time()-start,1)
+    save(&#x27;analysis/results.json&#x27;,results)
+    save(&#x27;analysis/environment.json&#x27;,{&#x27;python&#x27;:sys.version,&#x27;sklearn&#x27;:__import__(&#x27;sklearn&#x27;).__version__,&#x27;numpy&#x27;:np.__version__,&#x27;pandas&#x27;:pd.__version__,&#x27;seed&#x27;:SEED})
+    save(&#x27;analysis/input_fingerprints.json&#x27;,{p.name:digest(p) for p in (ROOT/&#x27;data&#x27;).glob(&#x27;*.csv.gz&#x27;)})
+    # XLSX detail payload, full feature matrices stay in local compressed files.
+    display=[&#x27;event_id&#x27;,&#x27;user_id&#x27;,&#x27;target_serial&#x27;,&#x27;obs_time&#x27;,&#x27;anchor_date&#x27;,&#x27;score_serial&#x27;,&#x27;score_offer_time&#x27;,&#x27;churn_days&#x27;,&#x27;risk_score_405&#x27;,&#x27;grade_405&#x27;,&#x27;target_d7&#x27;,&#x27;prob_d7_risk_405_only&#x27;,&#x27;prob_d7_risk_enhanced&#x27;]
+    def records(df,fields):
+        out=df[fields].copy()
+        for f in fields:
+            if &#x27;serial&#x27; in f or f==&#x27;user_id&#x27;:out[f]=out[f].map(lambda x:str(int(x)) if pd.notna(x) else &#x27;&#x27;)
+            elif pd.api.types.is_datetime64_any_dtype(out[f]):out[f]=out[f].dt.strftime(&#x27;%Y-%m-%d %H:%M:%S&#x27;)
+        return json.loads(out.to_json(orient=&#x27;values&#x27;,force_ascii=False))
+    save(&#x27;analysis/workbook_payload.json&#x27;,{&#x27;test_headers&#x27;:display,&#x27;test_rows&#x27;:records(te,display),&#x27;live_headers&#x27;:[f for f in display if f not in (&#x27;target_serial&#x27;,&#x27;target_d7&#x27;)]+[&#x27;requires_recredit&#x27;],&#x27;live_rows&#x27;:records(live,[f for f in display if f not in (&#x27;target_serial&#x27;,&#x27;target_d7&#x27;)]+[&#x27;requires_recredit&#x27;]),&#x27;results&#x27;:results,&#x27;groups&#x27;:group_rows,&#x27;mapping&#x27;:mapping})
+    print(&#x27;COMPLETE&#x27;,json.dumps(results,ensure_ascii=False),flush=True)
+
+def bootstrap(te):
+    rng=np.random.default_rng(SEED);uids,inv=np.unique(te.user_id,return_inverse=True);delta=[]
+    y=te.target_d7.to_numpy(int);p=te.prob_d7_risk_enhanced.to_numpy();baseline=-te.risk_score_405.to_numpy()
+    for _ in range(200):
+        counts=np.bincount(rng.integers(0,len(uids),len(uids)),minlength=len(uids));w=counts[inv]
+        delta.append(roc_auc_score(y,p,sample_weight=w)-roc_auc_score(y,baseline,sample_weight=w))
+    return {&#x27;iterations&#x27;:200,&#x27;unit&#x27;:&#x27;user_id&#x27;,&#x27;mean&#x27;:float(np.mean(delta)),&#x27;low95&#x27;:float(np.quantile(delta,.025)),&#x27;high95&#x27;:float(np.quantile(delta,.975))}
+if __name__==&#x27;__main__&#x27;:train()
+</code></pre></details><details><summary>相对等级与模型重放核验：finalize.py</summary><pre><code>&quot;&quot;&quot;Freeze probability-to-relative-grade thresholds using calibration users only.
+
+No model or hyperparameter is refit here. The final test is only evaluated.
+&quot;&quot;&quot;
+from common import *
+from importlib.util import spec_from_file_location,module_from_spec
+spec=spec_from_file_location(&#x27;churn405_training&#x27;,ROOT/&#x27;train.py&#x27;)
+training=module_from_spec(spec);spec.loader.exec_module(training)
+calibrated,metrics=training.calibrated,training.metrics
+import numpy as np,pandas as pd,joblib
+def main():
+    bundle=joblib.load(ROOT/&#x27;models/churn405_v1.joblib&#x27;)
+    # Restore exact archived feature values before export. Default CSV parsing can
+    # round a value across a tree split despite a difference below 1e-14.
+    snapshots=pd.read_pickle(ROOT/&#x27;data/all_feature_snapshots.pkl.gz&#x27;).set_index(&#x27;event_id&#x27;)
+    def read_exact(name):
+        d=pd.read_csv(ROOT/&#x27;data&#x27;/name,low_memory=False,float_precision=&#x27;round_trip&#x27;)
+        d.loc[:,bundle[&#x27;features&#x27;]]=snapshots.loc[d.event_id,bundle[&#x27;features&#x27;]].to_numpy()
+        return d
+    ca=read_exact(&#x27;calibration_features_labels.csv.gz&#x27;)
+    ca[&#x27;p&#x27;]=calibrated(bundle[&#x27;model&#x27;],bundle[&#x27;calibrator&#x27;],ca[bundle[&#x27;features&#x27;]])
+    ref=ca.sort_values(&#x27;obs_time&#x27;).drop_duplicates(&#x27;user_id&#x27;,keep=&#x27;last&#x27;)
+    cuts=np.quantile(ref.p,[.1,.3,.6]).tolist()
+    def grade(p):return np.select([p&lt;=cuts[0],p&lt;=cuts[1],p&lt;=cuts[2]],[&#x27;较低风险&#x27;,&#x27;偏低风险&#x27;,&#x27;中等风险&#x27;],default=&#x27;较高风险&#x27;)
+    bundle[&#x27;relative_risk_grade_thresholds&#x27;]=cuts
+    joblib.dump(bundle,ROOT/&#x27;models/churn405_v1.joblib&#x27;)
+    save(&#x27;analysis/new_risk_grade_mapping.json&#x27;,{&#x27;reference&#x27;:&#x27;July calibration users, latest observation, one per user; frozen without test labels&#x27;,&#x27;reference_users&#x27;:len(ref),&#x27;cuts_low_to_high&#x27;:cuts,&#x27;target_shares&#x27;:[.1,.2,.3,.4],&#x27;names&#x27;:[&#x27;较低风险&#x27;,&#x27;偏低风险&#x27;,&#x27;中等风险&#x27;,&#x27;较高风险&#x27;]})
+    te=read_exact(&#x27;test_predictions.csv.gz&#x27;)
+    replay=calibrated(bundle[&#x27;model&#x27;],bundle[&#x27;calibrator&#x27;],te[bundle[&#x27;features&#x27;]])
+    assert np.max(np.abs(replay-te.prob_d7_risk_enhanced))&lt;1e-12,&#x27;Archived model does not reproduce original test predictions&#x27;
+    te[&#x27;model_relative_risk_grade&#x27;]=grade(te.prob_d7_risk_enhanced)
+    groups=[]
+    for g,d in te.groupby(&#x27;model_relative_risk_grade&#x27;):
+        groups.append({&#x27;grade&#x27;:g,**metrics(d.target_d7,d.prob_d7_risk_enhanced),&#x27;mean_prediction&#x27;:float(d.prob_d7_risk_enhanced.mean())})
+    save(&#x27;analysis/new_risk_grade_test.json&#x27;,groups)
+    te.to_csv(ROOT/&#x27;data/test_predictions.csv.gz&#x27;,index=False,compression=&#x27;gzip&#x27;)
+    te.to_csv(ROOT/&#x27;测试逐笔预测结果.csv&#x27;,index=False)
+    live=read_exact(&#x27;live_predictions.csv.gz&#x27;)
+    assert np.max(np.abs(calibrated(bundle[&#x27;model&#x27;],bundle[&#x27;calibrator&#x27;],live[bundle[&#x27;features&#x27;]])-live.prob_d7_risk_enhanced))&lt;1e-12
+    live[&#x27;model_relative_risk_grade&#x27;]=grade(live.prob_d7_risk_enhanced)
+    live[&#x27;missing_feature_count&#x27;]=live[bundle[&#x27;features&#x27;]].isna().sum(axis=1)
+    live.to_csv(ROOT/&#x27;data/live_predictions.csv.gz&#x27;,index=False,compression=&#x27;gzip&#x27;)
+    live.to_csv(ROOT/&#x27;当前流失用户预测结果.csv&#x27;,index=False)
+    payload=json.loads((ROOT/&#x27;analysis/workbook_payload.json&#x27;).read_text())
+    already=&#x27;model_relative_risk_grade&#x27; in payload[&#x27;test_headers&#x27;]
+    if not already:payload[&#x27;test_headers&#x27;].append(&#x27;model_relative_risk_grade&#x27;)
+    for row,g in zip(payload[&#x27;test_rows&#x27;],te.model_relative_risk_grade):
+        if already:row[-1]=g
+        else:row.append(g)
+    save(&#x27;analysis/workbook_payload.json&#x27;,payload)
+    save(&#x27;analysis/input_fingerprints.json&#x27;,{p.name:digest(p) for p in (ROOT/&#x27;data&#x27;).glob(&#x27;*.csv.gz&#x27;)})
+    exported=pd.read_csv(ROOT/&#x27;data/test_predictions.csv.gz&#x27;,low_memory=False,float_precision=&#x27;round_trip&#x27;)
+    error=float(np.max(np.abs(calibrated(bundle[&#x27;model&#x27;],bundle[&#x27;calibrator&#x27;],exported[bundle[&#x27;features&#x27;]])-exported.prob_d7_risk_enhanced)))
+    assert error&lt;1e-12,&#x27;CSV export cannot reproduce model predictions&#x27;
+    save(&#x27;analysis/roundtrip_verification.json&#x27;,{&#x27;test_rows&#x27;:len(te),&#x27;live_rows&#x27;:len(live),&#x27;test_prediction_max_error&#x27;:error,&#x27;test_prediction_nonfinite&#x27;:int((~np.isfinite(te.prob_d7_risk_enhanced)).sum()),&#x27;live_prediction_nonfinite&#x27;:int((~np.isfinite(live.prob_d7_risk_enhanced)).sum()),&#x27;csv_reader&#x27;:&#x27;pandas float_precision=round_trip; exact archived feature values restored before export&#x27;})
+    print(&#x27;FINALIZED&#x27;,len(te),len(live),&#x27;grade thresholds&#x27;,cuts,flush=True)
+if __name__==&#x27;__main__&#x27;:main()
+</code></pre></details><details><summary>逐笔评分：predict.py</summary><pre><code>&quot;&quot;&quot;Score already time-correct snapshots; this script never refreshes source data.&quot;&quot;&quot;
+from common import *
+import argparse,numpy as np,pandas as pd,joblib
+def main():
+    a=argparse.ArgumentParser();a.add_argument(&#x27;input_csv&#x27;);a.add_argument(&#x27;output_csv&#x27;);args=a.parse_args()
+    b=pd.read_csv(args.input_csv,low_memory=False,float_precision=&#x27;round_trip&#x27;);bundle=joblib.load(ROOT/&#x27;models/churn405_v1.joblib&#x27;)
+    assert set(bundle[&#x27;features&#x27;]).issubset(b.columns),&#x27;Run the documented feature pipeline first&#x27;
+    keep=b.risk_score_405.notna()&amp;(b.risk_score_405!=-9999999)&amp;(b.churn_days&gt;=7)
+    b=b.loc[keep].copy();missing=b[bundle[&#x27;features&#x27;]].isna().sum(axis=1)
+    if {&#x27;score_offer_time&#x27;,&#x27;obs_time&#x27;}.issubset(b.columns):
+        assert (pd.to_datetime(b.score_offer_time)&lt;=pd.to_datetime(b.obs_time)).all()
+    x=b[bundle[&#x27;features&#x27;]].replace([np.inf,-np.inf],np.nan)
+    p=np.clip(bundle[&#x27;model&#x27;].predict_proba(x)[:,1],1e-6,1-1e-6)
+    b[&#x27;prob_d7_risk&#x27;]=bundle[&#x27;calibrator&#x27;].predict_proba(np.log(p/(1-p)).reshape(-1,1))[:,1]
+    cuts=bundle.get(&#x27;relative_risk_grade_thresholds&#x27;)
+    if cuts:b[&#x27;model_relative_risk_grade&#x27;]=np.select([b.prob_d7_risk&lt;=cuts[0],b.prob_d7_risk&lt;=cuts[1],b.prob_d7_risk&lt;=cuts[2]],[&#x27;较低风险&#x27;,&#x27;偏低风险&#x27;,&#x27;中等风险&#x27;],default=&#x27;较高风险&#x27;)
+    b[&#x27;missing_feature_count&#x27;]=missing;b[&#x27;requires_recredit&#x27;]=b.score_age_days&gt;=15
+    b.to_csv(args.output_csv,index=False)
+    print(json.dumps({&#x27;scored&#x27;:len(b),&#x27;excluded_missing405_or_churn_lt7&#x27;:int((~keep).sum())},ensure_ascii=False))
+if __name__==&#x27;__main__&#x27;:main()
+</code></pre></details><details><summary>全流程入口：run_pipeline.sh</summary><pre><code>#!/bin/zsh
+set -euo pipefail
+TASK_DIR=&quot;${0:A:h}&quot;
+TASK_PY=&quot;/Users/wangchuanliang/.cache/codex-runtimes/codex-primary-runtime/dependencies/python/bin/python3&quot;
+TASK_NODE=&quot;/Users/wangchuanliang/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/bin/node&quot;
+# The scored source integrity exclusion list is archived in data/.
+# Source extraction uses session-local tables only; no source mutation.
+&quot;$TASK_PY&quot; &quot;$TASK_DIR/extract.py&quot;
+OMP_NUM_THREADS=4 OPENBLAS_NUM_THREADS=4 python3 &quot;$TASK_DIR/train.py&quot;
+OMP_NUM_THREADS=4 OPENBLAS_NUM_THREADS=4 python3 &quot;$TASK_DIR/finalize.py&quot;
+python3 &quot;$TASK_DIR/build_results.py&quot;
+&quot;$TASK_NODE&quot; &quot;$TASK_DIR/build_workbook.mjs&quot;
+# Publishing is intentionally not automated by this replay script.
+</code></pre></details></section><footer class="footer">用户级特征、训练数据、模型及预测明细仅本地保存；网页仅展示汇总与开发代码。</footer></main><script>const q=document.getElementById("featureSearch");if(q){q.addEventListener("input",()=>{let n=0;document.querySelectorAll("#featureTable tbody tr").forEach(r=>{const ok=r.textContent.toLowerCase().includes(q.value.toLowerCase().trim());r.hidden=!ok;if(ok)n++;});document.getElementById("featureCount").textContent=n;});}</script></body></html>
