@@ -1,0 +1,868 @@
+<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>流失7天以上用户｜405风险再评级模型 V2 开发方案</title><style>
+:root{--bg:#061b2a;--panel:#0b2a40;--line:#21465a;--ink:#d9e7ef;--muted:#9bb5c7;--cyan:#43c7e7;--green:#64dcae;--amber:#ffc26b}
+*{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.8 -apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei",sans-serif}.wrap{max-width:1280px;margin:auto;padding:48px 32px 70px}.hero{text-align:center;border-bottom:1px solid var(--line);padding-bottom:28px}.eyebrow{color:var(--green);font-weight:750;letter-spacing:2px}h1{font-size:36px;line-height:1.45;color:#fff;margin:16px 0}h2{font-size:25px;color:var(--cyan);border-left:5px solid var(--cyan);padding-left:15px;margin:0 0 18px}h3{font-size:19px;color:var(--amber);margin:20px 0 8px}p{margin:8px 0 14px}.small{color:var(--muted);font-size:14px}a{color:var(--cyan);text-decoration:none}a:hover{text-decoration:underline}nav{display:flex;gap:10px;flex-wrap:wrap;margin:22px 0}nav a{padding:7px 13px;border:1px solid var(--line);border-radius:7px;background:var(--panel)}section{min-width:0;margin:30px 0;padding:26px;background:#082235;border:1px solid var(--line);border-radius:14px;scroll-margin-top:20px}.cards{display:grid;grid-template-columns:repeat(2,1fr);gap:16px;margin:16px 0}.cards article,.note,.hint{min-width:0;background:var(--panel);padding:18px 20px;border-radius:10px;border-left:3px solid var(--green)}.cards h3{margin:0 0 8px}.cards p{margin-bottom:0}.note{border-left-color:var(--cyan);margin:18px 0}.note.warn,.hint{border-left-color:var(--amber)}strong{color:var(--green)}.kpis,.flow{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px;margin:20px 0}.kpi,.flow div{min-width:0;background:var(--panel);padding:18px;border-radius:9px;border-top:2px solid var(--line)}.kpi b,.flow strong{display:block;font-size:clamp(22px,2.2vw,31px);color:var(--green)}.kpi span{font-size:14px;color:var(--muted)}.table,.scroll{overflow-x:auto;margin:14px 0}table{border-collapse:collapse;width:100%;font-size:14px}th{background:#123b51;color:var(--cyan);text-align:left;white-space:nowrap}td,th{padding:11px 13px;border-bottom:1px solid var(--line);vertical-align:top}td:first-child{color:var(--green);font-weight:650}td{min-width:100px;font-variant-numeric:tabular-nums}tr:last-child td{border-bottom:0}code{font:13px ui-monospace,SFMono-Regular,Menlo,monospace;overflow-wrap:anywhere;color:#b3e4f5}pre{padding:18px;background:#041725;border:1px solid var(--line);border-radius:9px;overflow:auto;line-height:1.65;font-size:13px}pre code{white-space:pre;overflow-wrap:normal}details{margin:16px 0;border:1px solid var(--line);border-radius:8px;padding:12px 16px}summary{cursor:pointer;color:var(--cyan);font-weight:700}.steps{display:grid;gap:12px}.step{padding:15px 18px;background:var(--panel);border-left:3px solid var(--cyan)}.step strong{display:block;color:var(--amber)}svg{display:block;margin:18px 0}.footer{text-align:center;color:var(--muted);font-size:13px;margin-top:28px}ul{margin:8px 0;padding-left:22px}li{margin:7px 0}.features td{min-width:160px;overflow-wrap:anywhere}.features td:first-child{min-width:250px}input{font:inherit;font-size:14px;background:var(--panel);color:var(--ink);border:1px solid #3e6a82;padding:10px 12px;border-radius:7px;width:100%;max-width:650px}.controls{margin:16px 0}.status{display:inline-block;border:1px solid var(--line);border-radius:5px;padding:2px 7px;font-size:12px;color:var(--green)}.status.out{color:var(--amber)}
+@media(max-width:800px){.wrap{padding:25px 14px}section{padding:20px 16px}h1{font-size:27px}h2{font-size:22px}.cards{grid-template-columns:1fr}.kpis,.flow{grid-template-columns:repeat(2,minmax(0,1fr))}.table table{min-width:650px}.features{min-width:1100px}}
+@media print{nav,.controls{display:none}body{background:white;color:#111}section,.note,.cards article,.flow div,.kpi{background:white;break-inside:avoid}h1,h2,h3,strong,th,td:first-child{color:#163c58}table{font-size:10px}pre{white-space:pre-wrap;background:#eee;color:#111}}
+</style></head><body><main class="wrap"><header class="hero"><div class="eyebrow">405基础评分 · 流失风险修正 · 历史还款 · 同样本对照</div><h1>流失7天以上用户<br>405风险再评级模型 V2 开发方案</h1><p>生成日期：2026年10月9日<br>训练起始2025-07-01；完整数据截至2026-10-07；业务时区America/Belize。</p></header><nav><a href="churn7plus-405-risk-model-v2-plan.html">V2构建方案</a><a href="churn7plus-405-risk-model-v2-validation.html">V2训练与测试</a><a href="churn7plus-405-risk-model-v1-validation.html?v=bf1d307">V1对照报告</a></nav><section id="goal"><h2>一、目标：保留405，修正长期流失风险识别</h2><div class="cards"><article><h3>保留评分基础</h3><p>使用观测时刻前最近一次获额对应的405分；不求平均，不取最高，不混入363。</p></article><article><h3>增加风险修正信息</h3><p>重点加入评分×流失天数、历史多笔逾期与还款趋势，不人工指定“优质长期流失=高风险”。</p></article></div></section><section><h2>二、样本、时间和标签</h2><div class="scroll"><table><thead><tr><th>项目</th><th>实际规则</th></tr></thead><tbody><tr><td>流失起点</td><td>整笔结清且无其他在贷，结清后当天通过获额，recycle_type=3；20秒链式去重</td></tr><tr><td>流失结束</td><td>起点后首次用户提单，重新获额不重置流失天数</td></tr><tr><td>观测时刻</td><td>历史：首次回流提单时；实时：2026-10-08 00:00</td></tr><tr><td>样本</td><td>流失≥7天，最新405有效且最新获额通过为type3；与V1同一冻结样本</td></tr><tr><td>目标</td><td>再次提单成功放款订单，due_date+D7结束仍未整笔结清=1，否则=0</td></tr><tr><td>成熟</td><td>due_date+8≤下一阶段开始；未成熟、未放款和未提单不补正常标签</td></tr><tr><td>缺失</td><td>最新405缺失的获额不纳入；其余特征缺失保留样本，树模型处理NaN</td></tr><tr><td>限制</td><td>已放款样本有审批选择偏差；本次对照复用已被查看过的V1测试集，不是全新未见测试</td></tr></tbody></table></div></section><section><h2>三、特征开发与防泄漏</h2><div class="scroll"><table><thead><tr><th>特征组</th><th>细分方向</th></tr></thead><tbody><tr><td>405与流失交互</td><td>连续评分×log(1+流失天数)、训练期评分档位×15/30/60/90天标记</td></tr><tr><td>历史逾期</td><td>最近1—5笔D0/D7结果；最近3/5/10笔逾期比例；90/180/365天成熟逾期比例</td></tr><tr><td>还款趋势</td><td>最近1—5笔借还天数、提前结清天数；最近两笔/三笔差异；早还与借还天数波动</td></tr><tr><td>生命周期</td><td>历史借款频率、循环贷占比、流失天数相对账期和历史借还速度</td></tr><tr><td>行为</td><td>实际App与非还款日App均保留候选；7天、8—30天、31—90天不重叠窗口与活动强度</td></tr><tr><td>已有特征</td><td>额度使用率、提降额、历史提单放款率、上一笔金额/账期/息费等沿用V1</td></tr></tbody></table></div><p>实际候选323项，新增172项。目标订单逾期、目标订单当前状态、用户ID与serial_id不作特征。历史到期结果只在观测前已经成熟时使用。</p><pre>观测时刻 t = 用户首次回流提单时刻
+最新405 = 最新获额时间 ≤ t 对应的评分
+流失天数 = DATE(t) - DATE(严格T0起点)
+历史订单 = apply_time &lt; t 且 remit_time &lt; t，排除目标serial_id
+历史D7可用 = 历史due_date + 8 ≤ DATE(t)
+App可用 = active_date &lt; DATE(t)
+目标y = 目标订单到期D+7结束是否仍未结清
+模型输出p = P(y=1 | 最新405, 流失, 历史借还, 行为)
+重新评分 = 1000 × (1-p)，高分对应相对低风险</pre></section><section><h2>四、训练、调参与重新评分流程</h2><div class="scroll"><table><thead><tr><th>阶段</th><th>规则</th></tr></thead><tbody><tr><td>训练</td><td>2025-07起至2026-05；标签必须在6月1日前成熟</td></tr><tr><td>调参</td><td>6月已成熟订单；按整体AUC选配置，长期流失分组仅诊断</td></tr><tr><td>最终重训</td><td>所选配置使用7月1日前已成熟、且7月前提单的全部训练样本</td></tr><tr><td>概率校准</td><td>7月提单且8月1日前成熟样本，独立于最终重训</td></tr><tr><td>测试</td><td>8月起至10月7日已成熟订单；与V1逐笔事件和标签完全一致</td></tr><tr><td>消融对照</td><td>同时保存不更新训练窗口的V2，区分特征/调参与新增成熟样本的效果</td></tr><tr><td>分级</td><td>仅用7月校准用户预测值固定10%/20%/30%/40%相对等级阈值</td></tr><tr><td>稳定性</td><td>按用户聚类配对bootstrap，整体1000次、长期流失500次</td></tr></tbody></table></div></section><section id="features"><h2>五、实际候选特征清单</h2><details><summary>展开字段、特征组、入选状态及时间边界</summary><div class="scroll"><table><thead><tr><th>字段</th><th>特征组</th><th>最终模型</th><th>时间边界</th></tr></thead><tbody><tr><td>current_credit</td><td>V1已有实际生命周期</td><td>入选</td><td>截至观测已可知；历史逾期标签必须已成熟；排除目标订单</td></tr><tr><td>risk_score_405</td><td>V1已有实际生命周期</td><td>入选</td><td>截至观测已可知；历史逾期标签必须已成熟；排除目标订单</td></tr><tr><td>churn_days</td><td>V1已有实际生命周期</td><td>入选</td><td>截至观测已可知；历史逾期标签必须已成熟；排除目标订单</td></tr><tr><td>score_age_days</td><td>V1已有实际生命周期</td><td>入选</td><td>截至观测已可知；历史逾期标签必须已成熟；排除目标订单</td></tr><tr><td>is_rescored</td><td>V1已有实际生命周期</td><td>入选</td><td>截至观测已可知；历史逾期标签必须已成熟；排除目标订单</td></tr><tr><td>previous_loan_count</td><td>V1已有实际生命周期</td><td>入选</td><td>截至观测已可知；历史逾期标签必须已成熟；排除目标订单</td></tr><tr><td>prev_remit_amt</td><td>V1已有实际生命周期</td><td>入选</td><td>截至观测已可知；历史逾期标签必须已成熟；排除目标订单</td></tr><tr><td>prev_apply_amt</td><td>V1已有实际生命周期</td><td>入选</td><td>截至观测已可知；历史逾期标签必须已成熟；排除目标订单</td></tr><tr><td>prev_loan_day</td><td>V1已有实际生命周期</td><td>入选</td><td>截至观测已可知；历史逾期标签必须已成熟；排除目标订单</td></tr><tr><td>prev_total_term</td><td>V1已有实际生命周期</td><td>入选</td><td>截至观测已可知；历史逾期标签必须已成熟；排除目标订单</td></tr><tr><td>prev_fee_rate</td><td>V1已有实际生命周期</td><td>入选</td><td>截至观测已可知；历史逾期标签必须已成熟；排除目标订单</td></tr><tr><td>prev_early_days</td><td>V1已有实际生命周期</td><td>入选</td><td>截至观测已可知；历史逾期标签必须已成熟；排除目标订单</td></tr><tr><td>prev_repay_days</td><td>V1已有实际生命周期</td><td>入选</td><td>截至观测已可知；历史逾期标签必须已成熟；排除目标订单</td></tr><tr><td>prev_is_cycle</td><td>V1已有实际生命周期</td><td>入选</td><td>截至观测已可知；历史逾期标签必须已成熟；排除目标订单</td></tr><tr><td>hist_apply_count</td><td>V1已有实际生命周期</td><td>入选</td><td>截至观测已可知；历史逾期标签必须已成熟；排除目标订单</td></tr><tr><td>hist_funded_count</td><td>V1已有实际生命周期</td><td>入选</td><td>截至观测已可知；历史逾期标签必须已成熟；排除目标订单</td></tr><tr><td>hist_settled_count</td><td>V1已有实际生命周期</td><td>入选</td><td>截至观测已可知；历史逾期标签必须已成熟；排除目标订单</td></tr><tr><td>hist_early_count</td><td>V1已有实际生命周期</td><td>入选</td><td>截至观测已可知；历史逾期标签必须已成熟；排除目标订单</td></tr><tr><td>hist_avg_remit</td><td>V1已有实际生命周期</td><td>入选</td><td>截至观测已可知；历史逾期标签必须已成熟；排除目标订单</td></tr><tr><td>hist_avg_loan_day</td><td>V1已有实际生命周期</td><td>入选</td><td>截至观测已可知；历史逾期标签必须已成熟；排除目标订单</td></tr><tr><td>hist_avg_repay_days</td><td>V1已有实际生命周期</td><td>入选</td><td>截至观测已可知；历史逾期标签必须已成熟；排除目标订单</td></tr><tr><td>hist_avg_early_days</td><td>V1已有实际生命周期</td><td>入选</td><td>截至观测已可知；历史逾期标签必须已成熟；排除目标订单</td></tr><tr><td>hist_d7_mature_count</td><td>V1已有实际生命周期</td><td>入选</td><td>截至观测已可知；历史逾期标签必须已成熟；排除目标订单</td></tr><tr><td>hist_d7_bad_count</td><td>V1已有实际生命周期</td><td>入选</td><td>截至观测已可知；历史逾期标签必须已成熟；排除目标订单</td></tr><tr><td>days_since_apply</td><td>V1已有实际生命周期</td><td>候选</td><td>观测日前完整日期；非还款日按真实还款流水日期排除</td></tr><tr><td>user_tenure_days</td><td>V1已有实际生命周期</td><td>入选</td><td>截至观测已可知；历史逾期标签必须已成熟；排除目标订单</td></tr><tr><td>hist_apply_30d</td><td>V1已有实际生命周期</td><td>入选</td><td>截至观测已可知；历史逾期标签必须已成熟；排除目标订单</td></tr><tr><td>hist_funded_30d</td><td>V1已有实际生命周期</td><td>入选</td><td>截至观测已可知；历史逾期标签必须已成熟；排除目标订单</td></tr><tr><td>hist_settled_30d</td><td>V1已有实际生命周期</td><td>入选</td><td>截至观测已可知；历史逾期标签必须已成熟；排除目标订单</td></tr><tr><td>hist_apply_90d</td><td>V1已有实际生命周期</td><td>入选</td><td>截至观测已可知；历史逾期标签必须已成熟；排除目标订单</td></tr><tr><td>hist_funded_90d</td><td>V1已有实际生命周期</td><td>入选</td><td>截至观测已可知；历史逾期标签必须已成熟；排除目标订单</td></tr><tr><td>hist_settled_90d</td><td>V1已有实际生命周期</td><td>入选</td><td>截至观测已可知；历史逾期标签必须已成熟；排除目标订单</td></tr><tr><td>hist_apply_365d</td><td>V1已有实际生命周期</td><td>入选</td><td>截至观测已可知；历史逾期标签必须已成熟；排除目标订单</td></tr><tr><td>hist_funded_365d</td><td>V1已有实际生命周期</td><td>入选</td><td>截至观测已可知；历史逾期标签必须已成熟；排除目标订单</td></tr><tr><td>hist_settled_365d</td><td>V1已有实际生命周期</td><td>入选</td><td>截至观测已可知；历史逾期标签必须已成熟；排除目标订单</td></tr><tr><td>prev_credit</td><td>V1已有实际生命周期</td><td>入选</td><td>截至观测已可知；历史逾期标签必须已成熟；排除目标订单</td></tr><tr><td>prev_utilization</td><td>V1已有实际生命周期</td><td>入选</td><td>截至观测已可知；历史逾期标签必须已成熟；排除目标订单</td></tr><tr><td>offer_count_since_anchor</td><td>V1已有实际生命周期</td><td>入选</td><td>截至观测已可知；历史逾期标签必须已成熟；排除目标订单</td></tr><tr><td>pass_offer_rows_since_anchor</td><td>V1已有实际生命周期</td><td>入选</td><td>截至观测已可知；历史逾期标签必须已成熟；排除目标订单</td></tr><tr><td>app_active_days_7d</td><td>V1已有实际生命周期</td><td>候选</td><td>观测日前完整日期；非还款日按真实还款流水日期排除</td></tr><tr><td>app_active_status_7d</td><td>V1已有实际生命周期</td><td>候选</td><td>观测日前完整日期；非还款日按真实还款流水日期排除</td></tr><tr><td>app_newpage_7d</td><td>V1已有实际生命周期</td><td>候选</td><td>观测日前完整日期；非还款日按真实还款流水日期排除</td></tr><tr><td>app_amount_selection_7d</td><td>V1已有实际生命周期</td><td>候选</td><td>观测日前完整日期；非还款日按真实还款流水日期排除</td></tr><tr><td>app_term_selection_7d</td><td>V1已有实际生命周期</td><td>候选</td><td>观测日前完整日期；非还款日按真实还款流水日期排除</td></tr><tr><td>app_plan_newdetails_7d</td><td>V1已有实际生命周期</td><td>候选</td><td>观测日前完整日期；非还款日按真实还款流水日期排除</td></tr><tr><td>app_newconfirm_7d</td><td>V1已有实际生命周期</td><td>候选</td><td>观测日前完整日期；非还款日按真实还款流水日期排除</td></tr><tr><td>app_contract_newdetails_7d</td><td>V1已有实际生命周期</td><td>候选</td><td>观测日前完整日期；非还款日按真实还款流水日期排除</td></tr><tr><td>app_coupons_page_7d</td><td>V1已有实际生命周期</td><td>候选</td><td>观测日前完整日期；非还款日按真实还款流水日期排除</td></tr><tr><td>app_active_duration_7d</td><td>V1已有实际生命周期</td><td>候选</td><td>观测日前完整日期；非还款日按真实还款流水日期排除</td></tr><tr><td>app_apply_duration_7d</td><td>V1已有实际生命周期</td><td>候选</td><td>观测日前完整日期；非还款日按真实还款流水日期排除</td></tr><tr><td>nonpay_active_days_7d</td><td>V1已有实际生命周期</td><td>候选</td><td>观测日前完整日期；非还款日按真实还款流水日期排除</td></tr><tr><td>nonpay_active_status_7d</td><td>V1已有实际生命周期</td><td>候选</td><td>观测日前完整日期；非还款日按真实还款流水日期排除</td></tr><tr><td>nonpay_newpage_7d</td><td>V1已有实际生命周期</td><td>候选</td><td>观测日前完整日期；非还款日按真实还款流水日期排除</td></tr><tr><td>nonpay_amount_selection_7d</td><td>V1已有实际生命周期</td><td>候选</td><td>观测日前完整日期；非还款日按真实还款流水日期排除</td></tr><tr><td>nonpay_term_selection_7d</td><td>V1已有实际生命周期</td><td>候选</td><td>观测日前完整日期；非还款日按真实还款流水日期排除</td></tr><tr><td>nonpay_plan_newdetails_7d</td><td>V1已有实际生命周期</td><td>候选</td><td>观测日前完整日期；非还款日按真实还款流水日期排除</td></tr><tr><td>nonpay_newconfirm_7d</td><td>V1已有实际生命周期</td><td>候选</td><td>观测日前完整日期；非还款日按真实还款流水日期排除</td></tr><tr><td>nonpay_contract_newdetails_7d</td><td>V1已有实际生命周期</td><td>候选</td><td>观测日前完整日期；非还款日按真实还款流水日期排除</td></tr><tr><td>nonpay_coupons_page_7d</td><td>V1已有实际生命周期</td><td>候选</td><td>观测日前完整日期；非还款日按真实还款流水日期排除</td></tr><tr><td>nonpay_active_duration_7d</td><td>V1已有实际生命周期</td><td>候选</td><td>观测日前完整日期；非还款日按真实还款流水日期排除</td></tr><tr><td>nonpay_apply_duration_7d</td><td>V1已有实际生命周期</td><td>候选</td><td>观测日前完整日期；非还款日按真实还款流水日期排除</td></tr><tr><td>app_active_days_30d</td><td>V1已有实际生命周期</td><td>候选</td><td>观测日前完整日期；非还款日按真实还款流水日期排除</td></tr><tr><td>app_active_status_30d</td><td>V1已有实际生命周期</td><td>候选</td><td>观测日前完整日期；非还款日按真实还款流水日期排除</td></tr><tr><td>app_newpage_30d</td><td>V1已有实际生命周期</td><td>候选</td><td>观测日前完整日期；非还款日按真实还款流水日期排除</td></tr><tr><td>app_amount_selection_30d</td><td>V1已有实际生命周期</td><td>候选</td><td>观测日前完整日期；非还款日按真实还款流水日期排除</td></tr><tr><td>app_term_selection_30d</td><td>V1已有实际生命周期</td><td>候选</td><td>观测日前完整日期；非还款日按真实还款流水日期排除</td></tr><tr><td>app_plan_newdetails_30d</td><td>V1已有实际生命周期</td><td>候选</td><td>观测日前完整日期；非还款日按真实还款流水日期排除</td></tr><tr><td>app_newconfirm_30d</td><td>V1已有实际生命周期</td><td>候选</td><td>观测日前完整日期；非还款日按真实还款流水日期排除</td></tr><tr><td>app_contract_newdetails_30d</td><td>V1已有实际生命周期</td><td>候选</td><td>观测日前完整日期；非还款日按真实还款流水日期排除</td></tr><tr><td>app_coupons_page_30d</td><td>V1已有实际生命周期</td><td>候选</td><td>观测日前完整日期；非还款日按真实还款流水日期排除</td></tr><tr><td>app_active_duration_30d</td><td>V1已有实际生命周期</td><td>候选</td><td>观测日前完整日期；非还款日按真实还款流水日期排除</td></tr><tr><td>app_apply_duration_30d</td><td>V1已有实际生命周期</td><td>候选</td><td>观测日前完整日期；非还款日按真实还款流水日期排除</td></tr><tr><td>nonpay_active_days_30d</td><td>V1已有实际生命周期</td><td>候选</td><td>观测日前完整日期；非还款日按真实还款流水日期排除</td></tr><tr><td>nonpay_active_status_30d</td><td>V1已有实际生命周期</td><td>候选</td><td>观测日前完整日期；非还款日按真实还款流水日期排除</td></tr><tr><td>nonpay_newpage_30d</td><td>V1已有实际生命周期</td><td>候选</td><td>观测日前完整日期；非还款日按真实还款流水日期排除</td></tr><tr><td>nonpay_amount_selection_30d</td><td>V1已有实际生命周期</td><td>候选</td><td>观测日前完整日期；非还款日按真实还款流水日期排除</td></tr><tr><td>nonpay_term_selection_30d</td><td>V1已有实际生命周期</td><td>候选</td><td>观测日前完整日期；非还款日按真实还款流水日期排除</td></tr><tr><td>nonpay_plan_newdetails_30d</td><td>V1已有实际生命周期</td><td>候选</td><td>观测日前完整日期；非还款日按真实还款流水日期排除</td></tr><tr><td>nonpay_newconfirm_30d</td><td>V1已有实际生命周期</td><td>候选</td><td>观测日前完整日期；非还款日按真实还款流水日期排除</td></tr><tr><td>nonpay_contract_newdetails_30d</td><td>V1已有实际生命周期</td><td>候选</td><td>观测日前完整日期；非还款日按真实还款流水日期排除</td></tr><tr><td>nonpay_coupons_page_30d</td><td>V1已有实际生命周期</td><td>候选</td><td>观测日前完整日期；非还款日按真实还款流水日期排除</td></tr><tr><td>nonpay_active_duration_30d</td><td>V1已有实际生命周期</td><td>候选</td><td>观测日前完整日期；非还款日按真实还款流水日期排除</td></tr><tr><td>nonpay_apply_duration_30d</td><td>V1已有实际生命周期</td><td>候选</td><td>观测日前完整日期；非还款日按真实还款流水日期排除</td></tr><tr><td>app_active_days_90d</td><td>V1已有实际生命周期</td><td>候选</td><td>观测日前完整日期；非还款日按真实还款流水日期排除</td></tr><tr><td>app_active_status_90d</td><td>V1已有实际生命周期</td><td>候选</td><td>观测日前完整日期；非还款日按真实还款流水日期排除</td></tr><tr><td>app_newpage_90d</td><td>V1已有实际生命周期</td><td>候选</td><td>观测日前完整日期；非还款日按真实还款流水日期排除</td></tr><tr><td>app_amount_selection_90d</td><td>V1已有实际生命周期</td><td>候选</td><td>观测日前完整日期；非还款日按真实还款流水日期排除</td></tr><tr><td>app_term_selection_90d</td><td>V1已有实际生命周期</td><td>候选</td><td>观测日前完整日期；非还款日按真实还款流水日期排除</td></tr><tr><td>app_plan_newdetails_90d</td><td>V1已有实际生命周期</td><td>候选</td><td>观测日前完整日期；非还款日按真实还款流水日期排除</td></tr><tr><td>app_newconfirm_90d</td><td>V1已有实际生命周期</td><td>候选</td><td>观测日前完整日期；非还款日按真实还款流水日期排除</td></tr><tr><td>app_contract_newdetails_90d</td><td>V1已有实际生命周期</td><td>候选</td><td>观测日前完整日期；非还款日按真实还款流水日期排除</td></tr><tr><td>app_coupons_page_90d</td><td>V1已有实际生命周期</td><td>候选</td><td>观测日前完整日期；非还款日按真实还款流水日期排除</td></tr><tr><td>app_active_duration_90d</td><td>V1已有实际生命周期</td><td>候选</td><td>观测日前完整日期；非还款日按真实还款流水日期排除</td></tr><tr><td>app_apply_duration_90d</td><td>V1已有实际生命周期</td><td>候选</td><td>观测日前完整日期；非还款日按真实还款流水日期排除</td></tr><tr><td>nonpay_active_days_90d</td><td>V1已有实际生命周期</td><td>候选</td><td>观测日前完整日期；非还款日按真实还款流水日期排除</td></tr><tr><td>nonpay_active_status_90d</td><td>V1已有实际生命周期</td><td>候选</td><td>观测日前完整日期；非还款日按真实还款流水日期排除</td></tr><tr><td>nonpay_newpage_90d</td><td>V1已有实际生命周期</td><td>候选</td><td>观测日前完整日期；非还款日按真实还款流水日期排除</td></tr><tr><td>nonpay_amount_selection_90d</td><td>V1已有实际生命周期</td><td>候选</td><td>观测日前完整日期；非还款日按真实还款流水日期排除</td></tr><tr><td>nonpay_term_selection_90d</td><td>V1已有实际生命周期</td><td>候选</td><td>观测日前完整日期；非还款日按真实还款流水日期排除</td></tr><tr><td>nonpay_plan_newdetails_90d</td><td>V1已有实际生命周期</td><td>候选</td><td>观测日前完整日期；非还款日按真实还款流水日期排除</td></tr><tr><td>nonpay_newconfirm_90d</td><td>V1已有实际生命周期</td><td>候选</td><td>观测日前完整日期；非还款日按真实还款流水日期排除</td></tr><tr><td>nonpay_contract_newdetails_90d</td><td>V1已有实际生命周期</td><td>候选</td><td>观测日前完整日期；非还款日按真实还款流水日期排除</td></tr><tr><td>nonpay_coupons_page_90d</td><td>V1已有实际生命周期</td><td>候选</td><td>观测日前完整日期；非还款日按真实还款流水日期排除</td></tr><tr><td>nonpay_active_duration_90d</td><td>V1已有实际生命周期</td><td>候选</td><td>观测日前完整日期；非还款日按真实还款流水日期排除</td></tr><tr><td>nonpay_apply_duration_90d</td><td>V1已有实际生命周期</td><td>候选</td><td>观测日前完整日期；非还款日按真实还款流水日期排除</td></tr><tr><td>days_since_app_90d</td><td>V1已有实际生命周期</td><td>候选</td><td>观测日前完整日期；非还款日按真实还款流水日期排除</td></tr><tr><td>churn_log1p</td><td>V1已有实际生命周期</td><td>入选</td><td>截至观测已可知；历史逾期标签必须已成熟；排除目标订单</td></tr><tr><td>churn_ge_15d</td><td>V1已有实际生命周期</td><td>入选</td><td>截至观测已可知；历史逾期标签必须已成熟；排除目标订单</td></tr><tr><td>churn_ge_30d</td><td>V1已有实际生命周期</td><td>入选</td><td>截至观测已可知；历史逾期标签必须已成熟；排除目标订单</td></tr><tr><td>churn_ge_60d</td><td>V1已有实际生命周期</td><td>入选</td><td>截至观测已可知；历史逾期标签必须已成熟；排除目标订单</td></tr><tr><td>churn_ge_90d</td><td>V1已有实际生命周期</td><td>入选</td><td>截至观测已可知；历史逾期标签必须已成熟；排除目标订单</td></tr><tr><td>score_expired_15d</td><td>V1已有实际生命周期</td><td>入选</td><td>截至观测已可知；历史逾期标签必须已成熟；排除目标订单</td></tr><tr><td>offered_product_count</td><td>V1已有实际生命周期</td><td>入选</td><td>截至观测已可知；历史逾期标签必须已成熟；排除目标订单</td></tr><tr><td>credit_change</td><td>V1已有实际生命周期</td><td>入选</td><td>截至观测已可知；历史逾期标签必须已成熟；排除目标订单</td></tr><tr><td>credit_change_ratio</td><td>V1已有实际生命周期</td><td>入选</td><td>截至观测已可知；历史逾期标签必须已成熟；排除目标订单</td></tr><tr><td>credit_vs_prev_remit</td><td>V1已有实际生命周期</td><td>入选</td><td>截至观测已可知；历史逾期标签必须已成熟；排除目标订单</td></tr><tr><td>credit_shortfall_vs_prev_remit</td><td>V1已有实际生命周期</td><td>入选</td><td>截至观测已可知；历史逾期标签必须已成熟；排除目标订单</td></tr><tr><td>prev_utilization_missing</td><td>V1已有实际生命周期</td><td>入选</td><td>截至观测已可知；历史逾期标签必须已成熟；排除目标订单</td></tr><tr><td>prev_utilization_above100</td><td>V1已有实际生命周期</td><td>入选</td><td>截至观测已可知；历史逾期标签必须已成熟；排除目标订单</td></tr><tr><td>hist_early_rate</td><td>V1已有实际生命周期</td><td>入选</td><td>截至观测已可知；历史逾期标签必须已成熟；排除目标订单</td></tr><tr><td>hist_d7_bad_rate</td><td>V1已有实际生命周期</td><td>入选</td><td>截至观测已可知；历史逾期标签必须已成熟；排除目标订单</td></tr><tr><td>hist_fund_rate</td><td>V1已有实际生命周期</td><td>入选</td><td>截至观测已可知；历史逾期标签必须已成熟；排除目标订单</td></tr><tr><td>prev_vs_hist_remit</td><td>V1已有实际生命周期</td><td>入选</td><td>截至观测已可知；历史逾期标签必须已成熟；排除目标订单</td></tr><tr><td>prev_vs_hist_repay_days</td><td>V1已有实际生命周期</td><td>入选</td><td>截至观测已可知；历史逾期标签必须已成熟；排除目标订单</td></tr><tr><td>prev_vs_hist_early_days</td><td>V1已有实际生命周期</td><td>入选</td><td>截至观测已可知；历史逾期标签必须已成熟；排除目标订单</td></tr><tr><td>nonpay_active_share_7d</td><td>V1已有实际生命周期</td><td>候选</td><td>观测日前完整日期；非还款日按真实还款流水日期排除</td></tr><tr><td>nonpay_events_share_7d</td><td>V1已有实际生命周期</td><td>候选</td><td>观测日前完整日期；非还款日按真实还款流水日期排除</td></tr><tr><td>app_events_per_active_day_7d</td><td>V1已有实际生命周期</td><td>候选</td><td>观测日前完整日期；非还款日按真实还款流水日期排除</td></tr><tr><td>app_newpage_per_active_day_7d</td><td>V1已有实际生命周期</td><td>候选</td><td>观测日前完整日期；非还款日按真实还款流水日期排除</td></tr><tr><td>nonpay_events_per_active_day_7d</td><td>V1已有实际生命周期</td><td>候选</td><td>观测日前完整日期；非还款日按真实还款流水日期排除</td></tr><tr><td>nonpay_newpage_per_active_day_7d</td><td>V1已有实际生命周期</td><td>候选</td><td>观测日前完整日期；非还款日按真实还款流水日期排除</td></tr><tr><td>nonpay_active_share_30d</td><td>V1已有实际生命周期</td><td>候选</td><td>观测日前完整日期；非还款日按真实还款流水日期排除</td></tr><tr><td>nonpay_events_share_30d</td><td>V1已有实际生命周期</td><td>候选</td><td>观测日前完整日期；非还款日按真实还款流水日期排除</td></tr><tr><td>app_events_per_active_day_30d</td><td>V1已有实际生命周期</td><td>候选</td><td>观测日前完整日期；非还款日按真实还款流水日期排除</td></tr><tr><td>app_newpage_per_active_day_30d</td><td>V1已有实际生命周期</td><td>候选</td><td>观测日前完整日期；非还款日按真实还款流水日期排除</td></tr><tr><td>nonpay_events_per_active_day_30d</td><td>V1已有实际生命周期</td><td>候选</td><td>观测日前完整日期；非还款日按真实还款流水日期排除</td></tr><tr><td>nonpay_newpage_per_active_day_30d</td><td>V1已有实际生命周期</td><td>候选</td><td>观测日前完整日期；非还款日按真实还款流水日期排除</td></tr><tr><td>nonpay_active_share_90d</td><td>V1已有实际生命周期</td><td>候选</td><td>观测日前完整日期；非还款日按真实还款流水日期排除</td></tr><tr><td>nonpay_events_share_90d</td><td>V1已有实际生命周期</td><td>候选</td><td>观测日前完整日期；非还款日按真实还款流水日期排除</td></tr><tr><td>app_events_per_active_day_90d</td><td>V1已有实际生命周期</td><td>候选</td><td>观测日前完整日期；非还款日按真实还款流水日期排除</td></tr><tr><td>app_newpage_per_active_day_90d</td><td>V1已有实际生命周期</td><td>候选</td><td>观测日前完整日期；非还款日按真实还款流水日期排除</td></tr><tr><td>nonpay_events_per_active_day_90d</td><td>V1已有实际生命周期</td><td>候选</td><td>观测日前完整日期；非还款日按真实还款流水日期排除</td></tr><tr><td>nonpay_newpage_per_active_day_90d</td><td>V1已有实际生命周期</td><td>候选</td><td>观测日前完整日期；非还款日按真实还款流水日期排除</td></tr><tr><td>app_active_status_recent_trend</td><td>V1已有实际生命周期</td><td>候选</td><td>观测日前完整日期；非还款日按真实还款流水日期排除</td></tr><tr><td>app_newpage_recent_trend</td><td>V1已有实际生命周期</td><td>候选</td><td>观测日前完整日期；非还款日按真实还款流水日期排除</td></tr><tr><td>app_amount_selection_recent_trend</td><td>V1已有实际生命周期</td><td>候选</td><td>观测日前完整日期；非还款日按真实还款流水日期排除</td></tr><tr><td>app_plan_newdetails_recent_trend</td><td>V1已有实际生命周期</td><td>候选</td><td>观测日前完整日期；非还款日按真实还款流水日期排除</td></tr><tr><td>nonpay_active_status_recent_trend</td><td>V1已有实际生命周期</td><td>候选</td><td>观测日前完整日期；非还款日按真实还款流水日期排除</td></tr><tr><td>nonpay_newpage_recent_trend</td><td>V1已有实际生命周期</td><td>候选</td><td>观测日前完整日期；非还款日按真实还款流水日期排除</td></tr><tr><td>nonpay_amount_selection_recent_trend</td><td>V1已有实际生命周期</td><td>候选</td><td>观测日前完整日期；非还款日按真实还款流水日期排除</td></tr><tr><td>nonpay_plan_newdetails_recent_trend</td><td>V1已有实际生命周期</td><td>候选</td><td>观测日前完整日期；非还款日按真实还款流水日期排除</td></tr><tr><td>detail_funded_count</td><td>新增历史还款细分</td><td>入选</td><td>截至观测已可知；历史逾期标签必须已成熟；排除目标订单</td></tr><tr><td>detail_settled_count</td><td>新增历史还款细分</td><td>入选</td><td>截至观测已可知；历史逾期标签必须已成熟；排除目标订单</td></tr><tr><td>detail_d0_mature_count</td><td>新增历史还款细分</td><td>入选</td><td>截至观测已可知；历史逾期标签必须已成熟；排除目标订单</td></tr><tr><td>detail_d0_bad_count</td><td>新增历史还款细分</td><td>入选</td><td>截至观测已可知；历史逾期标签必须已成熟；排除目标订单</td></tr><tr><td>detail_d7_mature_count</td><td>新增历史还款细分</td><td>入选</td><td>截至观测已可知；历史逾期标签必须已成熟；排除目标订单</td></tr><tr><td>detail_d7_bad_count</td><td>新增历史还款细分</td><td>入选</td><td>截至观测已可知；历史逾期标签必须已成熟；排除目标订单</td></tr><tr><td>detail_early_count</td><td>新增历史还款细分</td><td>入选</td><td>截至观测已可知；历史逾期标签必须已成熟；排除目标订单</td></tr><tr><td>detail_early_days_mean</td><td>新增历史还款细分</td><td>入选</td><td>截至观测已可知；历史逾期标签必须已成熟；排除目标订单</td></tr><tr><td>detail_early_days_std</td><td>新增历史还款细分</td><td>入选</td><td>截至观测已可知；历史逾期标签必须已成熟；排除目标订单</td></tr><tr><td>detail_repay_days_mean</td><td>新增历史还款细分</td><td>入选</td><td>截至观测已可知；历史逾期标签必须已成熟；排除目标订单</td></tr><tr><td>detail_repay_days_std</td><td>新增历史还款细分</td><td>入选</td><td>截至观测已可知；历史逾期标签必须已成熟；排除目标订单</td></tr><tr><td>detail_early_days_min</td><td>新增历史还款细分</td><td>入选</td><td>截至观测已可知；历史逾期标签必须已成熟；排除目标订单</td></tr><tr><td>detail_cycle_funded_count</td><td>新增历史还款细分</td><td>入选</td><td>截至观测已可知；历史逾期标签必须已成熟；排除目标订单</td></tr><tr><td>detail_unsettled_due_asof_count</td><td>新增历史还款细分</td><td>入选</td><td>截至观测已可知；历史逾期标签必须已成熟；排除目标订单</td></tr><tr><td>last1_remit_amt</td><td>新增历史还款细分</td><td>入选</td><td>截至观测已可知；历史逾期标签必须已成熟；排除目标订单</td></tr><tr><td>last1_loan_day</td><td>新增历史还款细分</td><td>入选</td><td>截至观测已可知；历史逾期标签必须已成熟；排除目标订单</td></tr><tr><td>last1_early_days</td><td>新增历史还款细分</td><td>入选</td><td>截至观测已可知；历史逾期标签必须已成熟；排除目标订单</td></tr><tr><td>last1_repay_days</td><td>新增历史还款细分</td><td>入选</td><td>截至观测已可知；历史逾期标签必须已成熟；排除目标订单</td></tr><tr><td>last1_bad_d0</td><td>新增历史还款细分</td><td>入选</td><td>截至观测已可知；历史逾期标签必须已成熟；排除目标订单</td></tr><tr><td>last1_bad_d7</td><td>新增历史还款细分</td><td>入选</td><td>截至观测已可知；历史逾期标签必须已成熟；排除目标订单</td></tr><tr><td>last1_is_cycle</td><td>新增历史还款细分</td><td>入选</td><td>截至观测已可知；历史逾期标签必须已成熟；排除目标订单</td></tr><tr><td>last2_remit_amt</td><td>新增历史还款细分</td><td>入选</td><td>截至观测已可知；历史逾期标签必须已成熟；排除目标订单</td></tr><tr><td>last2_loan_day</td><td>新增历史还款细分</td><td>入选</td><td>截至观测已可知；历史逾期标签必须已成熟；排除目标订单</td></tr><tr><td>last2_early_days</td><td>新增历史还款细分</td><td>入选</td><td>截至观测已可知；历史逾期标签必须已成熟；排除目标订单</td></tr><tr><td>last2_repay_days</td><td>新增历史还款细分</td><td>入选</td><td>截至观测已可知；历史逾期标签必须已成熟；排除目标订单</td></tr><tr><td>last2_bad_d0</td><td>新增历史还款细分</td><td>入选</td><td>截至观测已可知；历史逾期标签必须已成熟；排除目标订单</td></tr><tr><td>last2_bad_d7</td><td>新增历史还款细分</td><td>入选</td><td>截至观测已可知；历史逾期标签必须已成熟；排除目标订单</td></tr><tr><td>last2_is_cycle</td><td>新增历史还款细分</td><td>入选</td><td>截至观测已可知；历史逾期标签必须已成熟；排除目标订单</td></tr><tr><td>last3_remit_amt</td><td>新增历史还款细分</td><td>入选</td><td>截至观测已可知；历史逾期标签必须已成熟；排除目标订单</td></tr><tr><td>last3_loan_day</td><td>新增历史还款细分</td><td>入选</td><td>截至观测已可知；历史逾期标签必须已成熟；排除目标订单</td></tr><tr><td>last3_early_days</td><td>新增历史还款细分</td><td>入选</td><td>截至观测已可知；历史逾期标签必须已成熟；排除目标订单</td></tr><tr><td>last3_repay_days</td><td>新增历史还款细分</td><td>入选</td><td>截至观测已可知；历史逾期标签必须已成熟；排除目标订单</td></tr><tr><td>last3_bad_d0</td><td>新增历史还款细分</td><td>入选</td><td>截至观测已可知；历史逾期标签必须已成熟；排除目标订单</td></tr><tr><td>last3_bad_d7</td><td>新增历史还款细分</td><td>入选</td><td>截至观测已可知；历史逾期标签必须已成熟；排除目标订单</td></tr><tr><td>last3_is_cycle</td><td>新增历史还款细分</td><td>入选</td><td>截至观测已可知；历史逾期标签必须已成熟；排除目标订单</td></tr><tr><td>last4_remit_amt</td><td>新增历史还款细分</td><td>入选</td><td>截至观测已可知；历史逾期标签必须已成熟；排除目标订单</td></tr><tr><td>last4_loan_day</td><td>新增历史还款细分</td><td>入选</td><td>截至观测已可知；历史逾期标签必须已成熟；排除目标订单</td></tr><tr><td>last4_early_days</td><td>新增历史还款细分</td><td>入选</td><td>截至观测已可知；历史逾期标签必须已成熟；排除目标订单</td></tr><tr><td>last4_repay_days</td><td>新增历史还款细分</td><td>入选</td><td>截至观测已可知；历史逾期标签必须已成熟；排除目标订单</td></tr><tr><td>last4_bad_d0</td><td>新增历史还款细分</td><td>入选</td><td>截至观测已可知；历史逾期标签必须已成熟；排除目标订单</td></tr><tr><td>last4_bad_d7</td><td>新增历史还款细分</td><td>入选</td><td>截至观测已可知；历史逾期标签必须已成熟；排除目标订单</td></tr><tr><td>last4_is_cycle</td><td>新增历史还款细分</td><td>入选</td><td>截至观测已可知；历史逾期标签必须已成熟；排除目标订单</td></tr><tr><td>last5_remit_amt</td><td>新增历史还款细分</td><td>入选</td><td>截至观测已可知；历史逾期标签必须已成熟；排除目标订单</td></tr><tr><td>last5_loan_day</td><td>新增历史还款细分</td><td>入选</td><td>截至观测已可知；历史逾期标签必须已成熟；排除目标订单</td></tr><tr><td>last5_early_days</td><td>新增历史还款细分</td><td>入选</td><td>截至观测已可知；历史逾期标签必须已成熟；排除目标订单</td></tr><tr><td>last5_repay_days</td><td>新增历史还款细分</td><td>入选</td><td>截至观测已可知；历史逾期标签必须已成熟；排除目标订单</td></tr><tr><td>last5_bad_d0</td><td>新增历史还款细分</td><td>入选</td><td>截至观测已可知；历史逾期标签必须已成熟；排除目标订单</td></tr><tr><td>last5_bad_d7</td><td>新增历史还款细分</td><td>入选</td><td>截至观测已可知；历史逾期标签必须已成熟；排除目标订单</td></tr><tr><td>last5_is_cycle</td><td>新增历史还款细分</td><td>入选</td><td>截至观测已可知；历史逾期标签必须已成熟；排除目标订单</td></tr><tr><td>last3_d0_mature_count</td><td>新增历史还款细分</td><td>入选</td><td>截至观测已可知；历史逾期标签必须已成熟；排除目标订单</td></tr><tr><td>last3_d0_bad_count</td><td>新增历史还款细分</td><td>入选</td><td>截至观测已可知；历史逾期标签必须已成熟；排除目标订单</td></tr><tr><td>last3_d7_mature_count</td><td>新增历史还款细分</td><td>入选</td><td>截至观测已可知；历史逾期标签必须已成熟；排除目标订单</td></tr><tr><td>last3_d7_bad_count</td><td>新增历史还款细分</td><td>入选</td><td>截至观测已可知；历史逾期标签必须已成熟；排除目标订单</td></tr><tr><td>last3_settled_count</td><td>新增历史还款细分</td><td>入选</td><td>截至观测已可知；历史逾期标签必须已成熟；排除目标订单</td></tr><tr><td>last3_early_count</td><td>新增历史还款细分</td><td>入选</td><td>截至观测已可知；历史逾期标签必须已成熟；排除目标订单</td></tr><tr><td>last5_d0_mature_count</td><td>新增历史还款细分</td><td>入选</td><td>截至观测已可知；历史逾期标签必须已成熟；排除目标订单</td></tr><tr><td>last5_d0_bad_count</td><td>新增历史还款细分</td><td>入选</td><td>截至观测已可知；历史逾期标签必须已成熟；排除目标订单</td></tr><tr><td>last5_d7_mature_count</td><td>新增历史还款细分</td><td>入选</td><td>截至观测已可知；历史逾期标签必须已成熟；排除目标订单</td></tr><tr><td>last5_d7_bad_count</td><td>新增历史还款细分</td><td>入选</td><td>截至观测已可知；历史逾期标签必须已成熟；排除目标订单</td></tr><tr><td>last5_settled_count</td><td>新增历史还款细分</td><td>入选</td><td>截至观测已可知；历史逾期标签必须已成熟；排除目标订单</td></tr><tr><td>last5_early_count</td><td>新增历史还款细分</td><td>入选</td><td>截至观测已可知；历史逾期标签必须已成熟；排除目标订单</td></tr><tr><td>last10_d0_mature_count</td><td>新增历史还款细分</td><td>入选</td><td>截至观测已可知；历史逾期标签必须已成熟；排除目标订单</td></tr><tr><td>last10_d0_bad_count</td><td>新增历史还款细分</td><td>入选</td><td>截至观测已可知；历史逾期标签必须已成熟；排除目标订单</td></tr><tr><td>last10_d7_mature_count</td><td>新增历史还款细分</td><td>入选</td><td>截至观测已可知；历史逾期标签必须已成熟；排除目标订单</td></tr><tr><td>last10_d7_bad_count</td><td>新增历史还款细分</td><td>入选</td><td>截至观测已可知；历史逾期标签必须已成熟；排除目标订单</td></tr><tr><td>last10_settled_count</td><td>新增历史还款细分</td><td>入选</td><td>截至观测已可知；历史逾期标签必须已成熟；排除目标订单</td></tr><tr><td>last10_early_count</td><td>新增历史还款细分</td><td>入选</td><td>截至观测已可知；历史逾期标签必须已成熟；排除目标订单</td></tr><tr><td>detail_d7_mature_90d</td><td>新增历史还款细分</td><td>入选</td><td>截至观测已可知；历史逾期标签必须已成熟；排除目标订单</td></tr><tr><td>detail_d7_bad_90d</td><td>新增历史还款细分</td><td>入选</td><td>截至观测已可知；历史逾期标签必须已成熟；排除目标订单</td></tr><tr><td>detail_settled_90d</td><td>新增历史还款细分</td><td>入选</td><td>截至观测已可知；历史逾期标签必须已成熟；排除目标订单</td></tr><tr><td>detail_early_90d</td><td>新增历史还款细分</td><td>入选</td><td>截至观测已可知；历史逾期标签必须已成熟；排除目标订单</td></tr><tr><td>detail_d7_mature_180d</td><td>新增历史还款细分</td><td>入选</td><td>截至观测已可知；历史逾期标签必须已成熟；排除目标订单</td></tr><tr><td>detail_d7_bad_180d</td><td>新增历史还款细分</td><td>入选</td><td>截至观测已可知；历史逾期标签必须已成熟；排除目标订单</td></tr><tr><td>detail_settled_180d</td><td>新增历史还款细分</td><td>入选</td><td>截至观测已可知；历史逾期标签必须已成熟；排除目标订单</td></tr><tr><td>detail_early_180d</td><td>新增历史还款细分</td><td>入选</td><td>截至观测已可知；历史逾期标签必须已成熟；排除目标订单</td></tr><tr><td>detail_d7_mature_365d</td><td>新增历史还款细分</td><td>入选</td><td>截至观测已可知；历史逾期标签必须已成熟；排除目标订单</td></tr><tr><td>detail_d7_bad_365d</td><td>新增历史还款细分</td><td>入选</td><td>截至观测已可知；历史逾期标签必须已成熟；排除目标订单</td></tr><tr><td>detail_settled_365d</td><td>新增历史还款细分</td><td>入选</td><td>截至观测已可知；历史逾期标签必须已成熟；排除目标订单</td></tr><tr><td>detail_early_365d</td><td>新增历史还款细分</td><td>入选</td><td>截至观测已可知；历史逾期标签必须已成熟；排除目标订单</td></tr><tr><td>last3_d0_bad_rate</td><td>最近多笔逾期比例</td><td>入选</td><td>截至观测已可知；历史逾期标签必须已成熟；排除目标订单</td></tr><tr><td>last3_d7_bad_rate</td><td>最近多笔逾期比例</td><td>入选</td><td>截至观测已可知；历史逾期标签必须已成熟；排除目标订单</td></tr><tr><td>last3_early_rate</td><td>最近多笔提前结清</td><td>入选</td><td>截至观测已可知；历史逾期标签必须已成熟；排除目标订单</td></tr><tr><td>last5_d0_bad_rate</td><td>最近多笔逾期比例</td><td>入选</td><td>截至观测已可知；历史逾期标签必须已成熟；排除目标订单</td></tr><tr><td>last5_d7_bad_rate</td><td>最近多笔逾期比例</td><td>入选</td><td>截至观测已可知；历史逾期标签必须已成熟；排除目标订单</td></tr><tr><td>last5_early_rate</td><td>最近多笔提前结清</td><td>入选</td><td>截至观测已可知；历史逾期标签必须已成熟；排除目标订单</td></tr><tr><td>last10_d0_bad_rate</td><td>最近多笔逾期比例</td><td>入选</td><td>截至观测已可知；历史逾期标签必须已成熟；排除目标订单</td></tr><tr><td>last10_d7_bad_rate</td><td>最近多笔逾期比例</td><td>入选</td><td>截至观测已可知；历史逾期标签必须已成熟；排除目标订单</td></tr><tr><td>last10_early_rate</td><td>最近多笔提前结清</td><td>入选</td><td>截至观测已可知；历史逾期标签必须已成熟；排除目标订单</td></tr><tr><td>detail_d7_bad_rate_90d</td><td>历史窗口逾期</td><td>入选</td><td>截至观测已可知；历史逾期标签必须已成熟；排除目标订单</td></tr><tr><td>detail_early_rate_90d</td><td>历史窗口提前结清</td><td>入选</td><td>截至观测已可知；历史逾期标签必须已成熟；排除目标订单</td></tr><tr><td>detail_d7_bad_rate_180d</td><td>历史窗口逾期</td><td>入选</td><td>截至观测已可知；历史逾期标签必须已成熟；排除目标订单</td></tr><tr><td>detail_early_rate_180d</td><td>历史窗口提前结清</td><td>入选</td><td>截至观测已可知；历史逾期标签必须已成熟；排除目标订单</td></tr><tr><td>detail_d7_bad_rate_365d</td><td>历史窗口逾期</td><td>入选</td><td>截至观测已可知；历史逾期标签必须已成熟；排除目标订单</td></tr><tr><td>detail_early_rate_365d</td><td>历史窗口提前结清</td><td>入选</td><td>截至观测已可知；历史逾期标签必须已成熟；排除目标订单</td></tr><tr><td>detail_d0_bad_rate</td><td>历史到期逾期</td><td>入选</td><td>截至观测已可知；历史逾期标签必须已成熟；排除目标订单</td></tr><tr><td>detail_cycle_funded_share</td><td>历史循环贷使用</td><td>入选</td><td>截至观测已可知；历史逾期标签必须已成熟；排除目标订单</td></tr><tr><td>last1_minus_last2_remit_amt</td><td>最近两笔变化</td><td>入选</td><td>截至观测已可知；历史逾期标签必须已成熟；排除目标订单</td></tr><tr><td>last1_minus_last3_remit_amt</td><td>最近三笔变化</td><td>入选</td><td>截至观测已可知；历史逾期标签必须已成熟；排除目标订单</td></tr><tr><td>last1_minus_last2_repay_days</td><td>最近两笔变化</td><td>入选</td><td>截至观测已可知；历史逾期标签必须已成熟；排除目标订单</td></tr><tr><td>last1_minus_last3_repay_days</td><td>最近三笔变化</td><td>入选</td><td>截至观测已可知；历史逾期标签必须已成熟；排除目标订单</td></tr><tr><td>last1_minus_last2_early_days</td><td>最近两笔变化</td><td>入选</td><td>截至观测已可知；历史逾期标签必须已成熟；排除目标订单</td></tr><tr><td>last1_minus_last3_early_days</td><td>最近三笔变化</td><td>入选</td><td>截至观测已可知；历史逾期标签必须已成熟；排除目标订单</td></tr><tr><td>last1_minus_last2_loan_day</td><td>最近两笔变化</td><td>入选</td><td>截至观测已可知；历史逾期标签必须已成熟；排除目标订单</td></tr><tr><td>last1_minus_last3_loan_day</td><td>最近三笔变化</td><td>入选</td><td>截至观测已可知；历史逾期标签必须已成熟；排除目标订单</td></tr><tr><td>recent3_vs_history_d7</td><td>逾期变化趋势</td><td>入选</td><td>截至观测已可知；历史逾期标签必须已成熟；排除目标订单</td></tr><tr><td>recent3_vs_history_early</td><td>提前结清趋势</td><td>入选</td><td>截至观测已可知；历史逾期标签必须已成熟；排除目标订单</td></tr><tr><td>churn_over_prev_term</td><td>流失相对账期</td><td>入选</td><td>截至观测已可知；历史逾期标签必须已成熟；排除目标订单</td></tr><tr><td>churn_over_hist_repay_speed</td><td>流失相对还款速度</td><td>入选</td><td>截至观测已可知；历史逾期标签必须已成熟；排除目标订单</td></tr><tr><td>lifecycle_funded_per_90d</td><td>历史借款频次</td><td>入选</td><td>截至观测已可知；历史逾期标签必须已成熟；排除目标订单</td></tr><tr><td>app_active_status_8to30d</td><td>App不重叠窗口</td><td>候选</td><td>观测日前完整日期；非还款日按真实还款流水日期排除</td></tr><tr><td>app_active_status_31to90d</td><td>App不重叠窗口</td><td>候选</td><td>观测日前完整日期；非还款日按真实还款流水日期排除</td></tr><tr><td>app_newpage_8to30d</td><td>App不重叠窗口</td><td>候选</td><td>观测日前完整日期；非还款日按真实还款流水日期排除</td></tr><tr><td>app_newpage_31to90d</td><td>App不重叠窗口</td><td>候选</td><td>观测日前完整日期；非还款日按真实还款流水日期排除</td></tr><tr><td>app_amount_selection_8to30d</td><td>App不重叠窗口</td><td>候选</td><td>观测日前完整日期；非还款日按真实还款流水日期排除</td></tr><tr><td>app_amount_selection_31to90d</td><td>App不重叠窗口</td><td>候选</td><td>观测日前完整日期；非还款日按真实还款流水日期排除</td></tr><tr><td>app_plan_newdetails_8to30d</td><td>App不重叠窗口</td><td>候选</td><td>观测日前完整日期；非还款日按真实还款流水日期排除</td></tr><tr><td>app_plan_newdetails_31to90d</td><td>App不重叠窗口</td><td>候选</td><td>观测日前完整日期；非还款日按真实还款流水日期排除</td></tr><tr><td>app_active_duration_8to30d</td><td>App不重叠窗口</td><td>候选</td><td>观测日前完整日期；非还款日按真实还款流水日期排除</td></tr><tr><td>app_active_duration_31to90d</td><td>App不重叠窗口</td><td>候选</td><td>观测日前完整日期；非还款日按真实还款流水日期排除</td></tr><tr><td>app_apply_duration_8to30d</td><td>App不重叠窗口</td><td>候选</td><td>观测日前完整日期；非还款日按真实还款流水日期排除</td></tr><tr><td>app_apply_duration_31to90d</td><td>App不重叠窗口</td><td>候选</td><td>观测日前完整日期；非还款日按真实还款流水日期排除</td></tr><tr><td>app_has_activity_7d</td><td>App活动标记</td><td>候选</td><td>观测日前完整日期；非还款日按真实还款流水日期排除</td></tr><tr><td>app_plan_per_page_7d</td><td>App方案比较强度</td><td>候选</td><td>观测日前完整日期；非还款日按真实还款流水日期排除</td></tr><tr><td>app_has_activity_30d</td><td>App活动标记</td><td>候选</td><td>观测日前完整日期；非还款日按真实还款流水日期排除</td></tr><tr><td>app_plan_per_page_30d</td><td>App方案比较强度</td><td>候选</td><td>观测日前完整日期；非还款日按真实还款流水日期排除</td></tr><tr><td>app_has_activity_90d</td><td>App活动标记</td><td>候选</td><td>观测日前完整日期；非还款日按真实还款流水日期排除</td></tr><tr><td>app_plan_per_page_90d</td><td>App方案比较强度</td><td>候选</td><td>观测日前完整日期；非还款日按真实还款流水日期排除</td></tr><tr><td>nonpay_active_status_8to30d</td><td>App不重叠窗口</td><td>候选</td><td>观测日前完整日期；非还款日按真实还款流水日期排除</td></tr><tr><td>nonpay_active_status_31to90d</td><td>App不重叠窗口</td><td>候选</td><td>观测日前完整日期；非还款日按真实还款流水日期排除</td></tr><tr><td>nonpay_newpage_8to30d</td><td>App不重叠窗口</td><td>候选</td><td>观测日前完整日期；非还款日按真实还款流水日期排除</td></tr><tr><td>nonpay_newpage_31to90d</td><td>App不重叠窗口</td><td>候选</td><td>观测日前完整日期；非还款日按真实还款流水日期排除</td></tr><tr><td>nonpay_amount_selection_8to30d</td><td>App不重叠窗口</td><td>候选</td><td>观测日前完整日期；非还款日按真实还款流水日期排除</td></tr><tr><td>nonpay_amount_selection_31to90d</td><td>App不重叠窗口</td><td>候选</td><td>观测日前完整日期；非还款日按真实还款流水日期排除</td></tr><tr><td>nonpay_plan_newdetails_8to30d</td><td>App不重叠窗口</td><td>候选</td><td>观测日前完整日期；非还款日按真实还款流水日期排除</td></tr><tr><td>nonpay_plan_newdetails_31to90d</td><td>App不重叠窗口</td><td>候选</td><td>观测日前完整日期；非还款日按真实还款流水日期排除</td></tr><tr><td>nonpay_active_duration_8to30d</td><td>App不重叠窗口</td><td>候选</td><td>观测日前完整日期；非还款日按真实还款流水日期排除</td></tr><tr><td>nonpay_active_duration_31to90d</td><td>App不重叠窗口</td><td>候选</td><td>观测日前完整日期；非还款日按真实还款流水日期排除</td></tr><tr><td>nonpay_apply_duration_8to30d</td><td>App不重叠窗口</td><td>候选</td><td>观测日前完整日期；非还款日按真实还款流水日期排除</td></tr><tr><td>nonpay_apply_duration_31to90d</td><td>App不重叠窗口</td><td>候选</td><td>观测日前完整日期；非还款日按真实还款流水日期排除</td></tr><tr><td>nonpay_has_activity_7d</td><td>App活动标记</td><td>候选</td><td>观测日前完整日期；非还款日按真实还款流水日期排除</td></tr><tr><td>nonpay_plan_per_page_7d</td><td>App方案比较强度</td><td>候选</td><td>观测日前完整日期；非还款日按真实还款流水日期排除</td></tr><tr><td>nonpay_has_activity_30d</td><td>App活动标记</td><td>候选</td><td>观测日前完整日期；非还款日按真实还款流水日期排除</td></tr><tr><td>nonpay_plan_per_page_30d</td><td>App方案比较强度</td><td>候选</td><td>观测日前完整日期；非还款日按真实还款流水日期排除</td></tr><tr><td>nonpay_has_activity_90d</td><td>App活动标记</td><td>候选</td><td>观测日前完整日期；非还款日按真实还款流水日期排除</td></tr><tr><td>nonpay_plan_per_page_90d</td><td>App方案比较强度</td><td>候选</td><td>观测日前完整日期；非还款日按真实还款流水日期排除</td></tr><tr><td>app_snapshot_empty_90d</td><td>App零记录标记，不能区分缺采</td><td>候选</td><td>观测日前完整日期；非还款日按真实还款流水日期排除</td></tr><tr><td>score405_times_churn_log</td><td>405与流失交互</td><td>入选</td><td>截至观测已可知；历史逾期标签必须已成熟；排除目标订单</td></tr><tr><td>score405_times_early_rate</td><td>405与历史还款交互</td><td>入选</td><td>截至观测已可知；历史逾期标签必须已成熟；排除目标订单</td></tr><tr><td>score405_band_0</td><td>405训练期分档</td><td>入选</td><td>截至观测已可知；历史逾期标签必须已成熟；排除目标订单</td></tr><tr><td>score405_band_0_churn_log</td><td>405与流失交互</td><td>入选</td><td>截至观测已可知；历史逾期标签必须已成熟；排除目标订单</td></tr><tr><td>score405_band_0_churn_ge15</td><td>405与流失交互</td><td>入选</td><td>截至观测已可知；历史逾期标签必须已成熟；排除目标订单</td></tr><tr><td>score405_band_0_churn_ge30</td><td>405与流失交互</td><td>入选</td><td>截至观测已可知；历史逾期标签必须已成熟；排除目标订单</td></tr><tr><td>score405_band_0_churn_ge60</td><td>405与流失交互</td><td>入选</td><td>截至观测已可知；历史逾期标签必须已成熟；排除目标订单</td></tr><tr><td>score405_band_0_churn_ge90</td><td>405与流失交互</td><td>入选</td><td>截至观测已可知；历史逾期标签必须已成熟；排除目标订单</td></tr><tr><td>score405_band_1</td><td>405训练期分档</td><td>入选</td><td>截至观测已可知；历史逾期标签必须已成熟；排除目标订单</td></tr><tr><td>score405_band_1_churn_log</td><td>405与流失交互</td><td>入选</td><td>截至观测已可知；历史逾期标签必须已成熟；排除目标订单</td></tr><tr><td>score405_band_1_churn_ge15</td><td>405与流失交互</td><td>入选</td><td>截至观测已可知；历史逾期标签必须已成熟；排除目标订单</td></tr><tr><td>score405_band_1_churn_ge30</td><td>405与流失交互</td><td>入选</td><td>截至观测已可知；历史逾期标签必须已成熟；排除目标订单</td></tr><tr><td>score405_band_1_churn_ge60</td><td>405与流失交互</td><td>入选</td><td>截至观测已可知；历史逾期标签必须已成熟；排除目标订单</td></tr><tr><td>score405_band_1_churn_ge90</td><td>405与流失交互</td><td>入选</td><td>截至观测已可知；历史逾期标签必须已成熟；排除目标订单</td></tr><tr><td>score405_band_2</td><td>405训练期分档</td><td>入选</td><td>截至观测已可知；历史逾期标签必须已成熟；排除目标订单</td></tr><tr><td>score405_band_2_churn_log</td><td>405与流失交互</td><td>入选</td><td>截至观测已可知；历史逾期标签必须已成熟；排除目标订单</td></tr><tr><td>score405_band_2_churn_ge15</td><td>405与流失交互</td><td>入选</td><td>截至观测已可知；历史逾期标签必须已成熟；排除目标订单</td></tr><tr><td>score405_band_2_churn_ge30</td><td>405与流失交互</td><td>入选</td><td>截至观测已可知；历史逾期标签必须已成熟；排除目标订单</td></tr><tr><td>score405_band_2_churn_ge60</td><td>405与流失交互</td><td>入选</td><td>截至观测已可知；历史逾期标签必须已成熟；排除目标订单</td></tr><tr><td>score405_band_2_churn_ge90</td><td>405与流失交互</td><td>入选</td><td>截至观测已可知；历史逾期标签必须已成熟；排除目标订单</td></tr><tr><td>score405_band_3</td><td>405训练期分档</td><td>入选</td><td>截至观测已可知；历史逾期标签必须已成熟；排除目标订单</td></tr><tr><td>score405_band_3_churn_log</td><td>405与流失交互</td><td>入选</td><td>截至观测已可知；历史逾期标签必须已成熟；排除目标订单</td></tr><tr><td>score405_band_3_churn_ge15</td><td>405与流失交互</td><td>入选</td><td>截至观测已可知；历史逾期标签必须已成熟；排除目标订单</td></tr><tr><td>score405_band_3_churn_ge30</td><td>405与流失交互</td><td>入选</td><td>截至观测已可知；历史逾期标签必须已成熟；排除目标订单</td></tr><tr><td>score405_band_3_churn_ge60</td><td>405与流失交互</td><td>入选</td><td>截至观测已可知；历史逾期标签必须已成熟；排除目标订单</td></tr><tr><td>score405_band_3_churn_ge90</td><td>405与流失交互</td><td>入选</td><td>截至观测已可知；历史逾期标签必须已成熟；排除目标订单</td></tr></tbody></table></div></details></section><section><h2>六、部署边界</h2><p>当前未提单用户重新评分属于已放款风险模型的外推，只用于影子排序。获额满15天的名单保留重新获额标记；实际提单时重新获取最新405并更新特征。模型未自动修改额度、审批或拒贷规则。</p><p>评分表缺少不可变的历史评分生成时间，App无记录不能完全区分未活跃与缺采；这些限制沿用V1。本轮补取历史订单仍为现有订单表回溯，未来须使用不可变观测快照核验。</p></section><section id="appendix"><h2>附录：复现SQL及实际训练代码</h2><p>本次公平对照使用V1冻结快照，保留文件哈希；SQL提供相同母表和新增历史特征的重建逻辑。实际补取采用按用户抽取历史订单、在本地按观测时刻聚合。若源表后续更新，重跑SQL不保证恢复冻结时的逐笔值。模型变换与训练由保存的Python代码执行。</p><details><summary>完整母表及新增历史特征SQL</summary><pre>-- 流失&gt;=7天405风险再评级：只创建本会话TEMP表，不改动源表。
+-- 数据完整截止：2026-10-07，右开边界2026-10-08。
+SET TIME ZONE &#x27;America/Belize&#x27;;
+SET query_dop = 1;
+-- STEP orders
+CREATE TEMP TABLE tmp_c405_orders AS
+SELECT serial_id,user_id,apply_time,apply_date,remit_time,remit_date,
+       remit_amt,apply_amt,pre_amt,post_amt,loan_day,total_term,
+       is_remit,repaid_time,repaid_date,is_repaid,due_date,
+       loan_status_code,overdue_days,loan_type,remit_succ_rnb
+FROM wangchuanliang.order_loan_f_v2_copy
+WHERE apply_time &gt;= TIMESTAMP &#x27;2000-01-01&#x27;
+  AND apply_time &lt; TIMESTAMP &#x27;2026-10-08 00:00:00&#x27;;
+-- STEP types
+CREATE TEMP TABLE tmp_c405_types AS
+SELECT serial_id,
+       max(CASE WHEN recycle_type=3 THEN 1 ELSE 0 END) has_type3,
+       max(CASE WHEN recycle_type=2 THEN 1 ELSE 0 END) has_type2
+FROM wangchuanliang.side_recycle_type_copy GROUP BY serial_id;
+-- STEP offers
+CREATE TEMP TABLE tmp_c405_offers AS
+SELECT v.user_id,v.serial_id,v.vir_unix,
+       to_timestamp(v.vir_unix)::timestamp AS vir_time,v.vir_date,
+       v.is_pass1,v.loan_type_code,v.max_credit_apply_amt,v.risk_product,
+       CASE WHEN s.has_type3=1 AND s.has_type2=0 THEN 3
+            WHEN s.has_type2=1 AND s.has_type3=0 THEN 2 ELSE 1 END AS recycle_type
+FROM wangchuanliang.order_vir_f_copy v
+LEFT JOIN tmp_c405_types s ON s.serial_id=v.serial_id
+WHERE v.vir_unix&gt;0 AND v.vir_date &lt; DATE &#x27;2026-10-08&#x27;;
+-- STEP dedup
+CREATE TEMP TABLE tmp_c405_anchor_candidates AS
+WITH serial_latest AS (
+ SELECT *,row_number() over(partition by user_id,serial_id
+                           order by vir_time desc,serial_id desc) rn
+ FROM tmp_c405_offers
+ WHERE is_pass1=1 AND loan_type_code=2 AND recycle_type=3
+), gaps AS (
+ SELECT *,CASE WHEN vir_time-lag(vir_time) over(partition by user_id order by vir_time,serial_id)
+                         &lt;=interval &#x27;20 seconds&#x27; THEN 0 ELSE 1 END new_batch
+ FROM serial_latest WHERE rn=1
+), batches AS (
+ SELECT *,sum(new_batch) over(partition by user_id order by vir_time,serial_id rows unbounded preceding) batch
+ FROM gaps
+), selected AS (
+ SELECT *,row_number() over(partition by user_id,batch order by vir_time desc,serial_id desc) batch_rn
+ FROM batches
+)
+SELECT user_id,serial_id,vir_time,vir_date FROM selected WHERE batch_rn=1;
+-- STEP anchors
+CREATE TEMP TABLE tmp_c405_anchors AS
+SELECT user_id,anchor_serial,anchor_time,anchor_date,prev_serial
+FROM (
+ SELECT v.user_id,v.serial_id anchor_serial,v.vir_time anchor_time,v.vir_date anchor_date,
+        o.serial_id prev_serial,
+        row_number() over(partition by v.user_id,v.serial_id order by o.repaid_time desc,o.serial_id desc) rn
+ FROM tmp_c405_anchor_candidates v
+ JOIN tmp_c405_orders o ON o.user_id=v.user_id AND o.repaid_date=v.vir_date
+      AND o.is_remit=1 AND o.remit_amt&gt;0 AND (o.is_repaid=1 OR o.loan_status_code=7)
+      AND o.repaid_time &gt;= TIMESTAMP &#x27;2000-01-01&#x27; AND o.repaid_time&lt;=v.vir_time
+ WHERE NOT EXISTS (
+  SELECT 1 FROM tmp_c405_orders x
+  WHERE x.user_id=o.user_id AND x.serial_id&lt;&gt;o.serial_id
+    AND x.is_remit=1 AND x.remit_amt&gt;0 AND x.remit_time&lt;=o.repaid_time
+    AND (x.repaid_time IS NULL OR x.repaid_time&lt;TIMESTAMP &#x27;2000-01-01&#x27; OR x.repaid_time&gt;o.repaid_time)
+ )
+) z WHERE rn=1;
+-- STEP spells
+CREATE TEMP TABLE tmp_c405_spells AS
+WITH windows AS (
+ SELECT *,lead(anchor_time) over(partition by user_id order by anchor_time,anchor_serial) next_anchor_time
+ FROM tmp_c405_anchors
+), matched AS (
+ SELECT a.*,o.serial_id target_serial,o.apply_time obs_time,
+        o.apply_date obs_date,o.is_remit target_is_remit,o.remit_amt target_remit_amt,
+        o.due_date target_due_date,o.repaid_date target_repaid_date,
+        row_number() over(partition by a.user_id,a.anchor_serial order by o.apply_time,o.serial_id) rn
+ FROM windows a LEFT JOIN tmp_c405_orders o
+ ON o.user_id=a.user_id AND o.apply_time&gt;=a.anchor_time
+ AND (a.next_anchor_time IS NULL OR o.apply_time&lt;a.next_anchor_time)
+)
+SELECT * FROM matched WHERE rn=1;
+-- STEP observations
+CREATE TEMP TABLE tmp_c405_observations AS
+SELECT &#x27;H&#x27;||target_serial::text event_id,user_id,anchor_serial,anchor_time,anchor_date,prev_serial,
+       target_serial,obs_time,obs_date,target_due_date,target_repaid_date,
+       CASE WHEN target_repaid_date&gt;DATE &#x27;2000-01-01&#x27; AND target_repaid_date&lt;=target_due_date+7 THEN 0 ELSE 1 END target_d7,
+       CASE WHEN target_repaid_date&gt;DATE &#x27;2000-01-01&#x27; AND target_repaid_date&lt;=target_due_date THEN 0 ELSE 1 END target_d0,
+       &#x27;historical&#x27;::text sample_kind
+FROM tmp_c405_spells
+WHERE target_serial IS NOT NULL AND obs_date&gt;=DATE &#x27;2025-07-01&#x27;
+  AND obs_date-anchor_date&gt;=7 AND target_is_remit=1 AND target_remit_amt&gt;0
+  AND target_due_date&gt;DATE &#x27;2000-01-01&#x27; AND target_due_date+8&lt;=DATE &#x27;2026-10-08&#x27;
+UNION ALL
+SELECT &#x27;L&#x27;||anchor_serial::text,user_id,anchor_serial,anchor_time,anchor_date,prev_serial,
+       NULL::bigint,TIMESTAMP &#x27;2026-10-08&#x27;,DATE &#x27;2026-10-08&#x27;,NULL::date,NULL::date,
+       NULL::integer,NULL::integer,&#x27;live&#x27;::text
+FROM tmp_c405_spells
+WHERE target_serial IS NULL AND next_anchor_time IS NULL AND DATE &#x27;2026-10-08&#x27;-anchor_date&gt;=7;
+-- STEP latest
+CREATE TEMP TABLE tmp_c405_latest AS
+SELECT * FROM (
+ SELECT e.*,v.serial_id score_serial,v.vir_time score_offer_time,v.is_pass1 current_pass1,
+        v.recycle_type current_recycle_type,v.max_credit_apply_amt current_credit,
+        v.risk_product,
+        row_number() over(partition by e.event_id order by v.vir_time desc,v.serial_id desc) rn
+ FROM tmp_c405_observations e
+ JOIN tmp_c405_offers v ON v.user_id=e.user_id AND v.vir_time&lt;=e.obs_time
+) q WHERE rn=1;
+-- STEP base
+CREATE TEMP TABLE tmp_c405_base AS
+SELECT e.*,m.kabybxgboost405apd7crecyc risk_score_405,
+       (e.obs_date-e.anchor_date)::float8 churn_days,
+       extract(epoch from(e.obs_time-e.score_offer_time))/86400.0 score_age_days,
+       CASE WHEN e.score_serial&lt;&gt;e.anchor_serial THEN 1 ELSE 0 END is_rescored,
+       p.remit_succ_rnb::float8 previous_loan_count,
+       p.remit_amt::float8 prev_remit_amt,p.apply_amt::float8 prev_apply_amt,
+       p.loan_day::float8 prev_loan_day,p.total_term::float8 prev_total_term,
+       ((p.pre_amt+p.post_amt)/nullif(p.remit_amt,0))::float8 prev_fee_rate,
+       (p.due_date-p.repaid_date)::float8 prev_early_days,
+       extract(epoch from(p.repaid_time-p.remit_time))/86400.0 prev_repay_days,
+       coalesce(s.has_type2,0) prev_is_cycle
+FROM tmp_c405_latest e
+JOIN wangchuanliang.model_result_copy m ON m.serial_id=e.score_serial AND m.user_id=e.user_id
+JOIN tmp_c405_orders p ON p.serial_id=e.prev_serial AND p.user_id=e.user_id
+LEFT JOIN tmp_c405_types s ON s.serial_id=p.serial_id
+WHERE m.kabybxgboost405apd7crecyc IS NOT NULL AND m.kabybxgboost405apd7crecyc&lt;&gt;-9999999
+  AND e.current_pass1=1 AND e.current_recycle_type=3;
+
+
+CREATE TEMP TABLE tmp_c405_history AS
+SELECT e.event_id,
+count(o.serial_id)::float8 hist_apply_count,
+sum(case when o.is_remit=1 and o.remit_amt&gt;0 and o.remit_time&lt;e.obs_time then 1 else 0 end)::float8 hist_funded_count,
+sum(case when o.repaid_time&gt;timestamp &#x27;2000-01-01&#x27; and o.repaid_time&lt;e.obs_time then 1 else 0 end)::float8 hist_settled_count,
+sum(case when o.repaid_time&gt;timestamp &#x27;2000-01-01&#x27; and o.repaid_time&lt;e.obs_time and o.repaid_date&lt;o.due_date then 1 else 0 end)::float8 hist_early_count,
+avg(case when o.is_remit=1 and o.remit_time&lt;e.obs_time then o.remit_amt end)::float8 hist_avg_remit,
+avg(case when o.is_remit=1 and o.remit_time&lt;e.obs_time then (o.pre_amt+o.post_amt)/nullif(o.remit_amt,0) end)::float8 hist_avg_fee,
+avg(case when o.is_remit=1 and o.remit_time&lt;e.obs_time then o.loan_day end)::float8 hist_avg_loan_day,
+avg(case when o.repaid_time&gt;timestamp &#x27;2000-01-01&#x27; and o.repaid_time&lt;e.obs_time then extract(epoch from(o.repaid_time-o.remit_time))/86400.0 end)::float8 hist_avg_repay_days,
+avg(case when o.repaid_time&gt;timestamp &#x27;2000-01-01&#x27; and o.repaid_time&lt;e.obs_time then o.due_date-o.repaid_date end)::float8 hist_avg_early_days,
+sum(case when o.is_remit=1 and o.remit_time&lt;e.obs_time and o.due_date&gt;date &#x27;2000-01-01&#x27; and o.due_date+8&lt;=e.obs_date then 1 else 0 end)::float8 hist_d7_mature_count,
+sum(case when o.is_remit=1 and o.remit_time&lt;e.obs_time and o.due_date&gt;date &#x27;2000-01-01&#x27; and o.due_date+8&lt;=e.obs_date and (o.repaid_date is null or o.repaid_date&lt;=date &#x27;2000-01-01&#x27; or o.repaid_date&gt;o.due_date+7) then 1 else 0 end)::float8 hist_d7_bad_count,
+extract(epoch from(e.obs_time-max(o.apply_time)))/86400.0 days_since_apply,
+extract(epoch from(e.obs_time-min(o.apply_time)))/86400.0 user_tenure_days,
+sum(case when o.apply_time&gt;=e.obs_time-interval &#x27;30 days&#x27; then 1 else 0 end)::float8 hist_apply_30d,
+sum(case when o.is_remit=1 and o.remit_time&lt;e.obs_time and o.remit_time&gt;=e.obs_time-interval &#x27;30 days&#x27; then 1 else 0 end)::float8 hist_funded_30d,
+sum(case when o.repaid_time&lt;e.obs_time and o.repaid_time&gt;=e.obs_time-interval &#x27;30 days&#x27; then 1 else 0 end)::float8 hist_settled_30d,
+sum(case when o.apply_time&gt;=e.obs_time-interval &#x27;90 days&#x27; then 1 else 0 end)::float8 hist_apply_90d,
+sum(case when o.is_remit=1 and o.remit_time&lt;e.obs_time and o.remit_time&gt;=e.obs_time-interval &#x27;90 days&#x27; then 1 else 0 end)::float8 hist_funded_90d,
+sum(case when o.repaid_time&lt;e.obs_time and o.repaid_time&gt;=e.obs_time-interval &#x27;90 days&#x27; then 1 else 0 end)::float8 hist_settled_90d,
+sum(case when o.apply_time&gt;=e.obs_time-interval &#x27;365 days&#x27; then 1 else 0 end)::float8 hist_apply_365d,
+sum(case when o.is_remit=1 and o.remit_time&lt;e.obs_time and o.remit_time&gt;=e.obs_time-interval &#x27;365 days&#x27; then 1 else 0 end)::float8 hist_funded_365d,
+sum(case when o.repaid_time&lt;e.obs_time and o.repaid_time&gt;=e.obs_time-interval &#x27;365 days&#x27; then 1 else 0 end)::float8 hist_settled_365d
+FROM tmp_c405_base e LEFT JOIN tmp_c405_orders o ON o.user_id=e.user_id AND o.apply_time&lt;e.obs_time AND o.serial_id IS DISTINCT FROM e.target_serial GROUP BY e.event_id,e.obs_time,e.obs_date;
+
+CREATE TEMP TABLE tmp_c405_credit AS
+WITH prev_credit AS (
+      SELECT e.event_id,v.max_credit_apply_amt,
+        row_number() over(partition by e.event_id order by v.vir_time desc,v.serial_id desc) rn
+      FROM tmp_c405_base e JOIN tmp_c405_orders p ON p.serial_id=e.prev_serial
+      LEFT JOIN tmp_c405_offers v ON v.serial_id=p.serial_id AND v.user_id=p.user_id AND v.vir_time&lt;=p.apply_time
+    ), offer_counts AS (
+      SELECT e.event_id,count(distinct v.serial_id)::float8 offer_count_since_anchor,
+        sum(case when v.is_pass1=1 then 1 else 0 end)::float8 pass_offer_rows_since_anchor
+      FROM tmp_c405_base e LEFT JOIN tmp_c405_offers v ON v.user_id=e.user_id
+        AND v.vir_time&gt;=e.anchor_time AND v.vir_time&lt;=e.obs_time
+      GROUP BY e.event_id
+    ) SELECT e.event_id,p.max_credit_apply_amt::float8 prev_credit,
+        CASE WHEN e.prev_remit_amt&gt;0 AND p.max_credit_apply_amt&gt;0 THEN e.prev_remit_amt/p.max_credit_apply_amt END::float8 prev_utilization,
+        c.offer_count_since_anchor,c.pass_offer_rows_since_anchor
+      FROM tmp_c405_base e LEFT JOIN prev_credit p ON p.event_id=e.event_id AND p.rn=1
+      LEFT JOIN offer_counts c ON c.event_id=e.event_id;
+
+CREATE TEMP TABLE tmp_c405_behavior AS
+WITH pay_dates AS (
+       SELECT DISTINCT r.user_id::bigint user_id,r.payin_date
+       FROM wangchuanliang.repayment_record_copy r
+       WHERE r.amount&gt;0 AND r.payin_date&gt;=DATE &#x27;2025-04-01&#x27; AND r.payin_date&lt;DATE &#x27;2026-10-08&#x27;
+    ), daily AS (
+       SELECT user_id,active_date,sum(active_status) active_status,sum(newpage) newpage,sum(amount_selection) amount_selection,sum(term_selection) term_selection,sum(plan_newdetails) plan_newdetails,sum(newconfirm) newconfirm,sum(contract_newdetails) contract_newdetails,sum(coupons_page) coupons_page,sum(active_duration) active_duration,sum(apply_duration) apply_duration
+       FROM wangchuanliang.event_track
+       WHERE active_date&gt;=DATE &#x27;2025-04-01&#x27; AND active_date&lt;DATE &#x27;2026-10-08&#x27;
+       GROUP BY user_id,active_date
+    ) SELECT e.event_id,
+sum(case when a.active_date&gt;=e.obs_date-7 AND a.active_status&gt;0 then 1 else 0 end)::float8 app_active_days_7d,
+sum(case when a.active_date&gt;=e.obs_date-7 then coalesce(a.active_status,0) else 0 end)::float8 app_active_status_7d,
+sum(case when a.active_date&gt;=e.obs_date-7 then coalesce(a.newpage,0) else 0 end)::float8 app_newpage_7d,
+sum(case when a.active_date&gt;=e.obs_date-7 then coalesce(a.amount_selection,0) else 0 end)::float8 app_amount_selection_7d,
+sum(case when a.active_date&gt;=e.obs_date-7 then coalesce(a.term_selection,0) else 0 end)::float8 app_term_selection_7d,
+sum(case when a.active_date&gt;=e.obs_date-7 then coalesce(a.plan_newdetails,0) else 0 end)::float8 app_plan_newdetails_7d,
+sum(case when a.active_date&gt;=e.obs_date-7 then coalesce(a.newconfirm,0) else 0 end)::float8 app_newconfirm_7d,
+sum(case when a.active_date&gt;=e.obs_date-7 then coalesce(a.contract_newdetails,0) else 0 end)::float8 app_contract_newdetails_7d,
+sum(case when a.active_date&gt;=e.obs_date-7 then coalesce(a.coupons_page,0) else 0 end)::float8 app_coupons_page_7d,
+sum(case when a.active_date&gt;=e.obs_date-7 then coalesce(a.active_duration,0) else 0 end)::float8 app_active_duration_7d,
+sum(case when a.active_date&gt;=e.obs_date-7 then coalesce(a.apply_duration,0) else 0 end)::float8 app_apply_duration_7d,
+sum(case when a.active_date&gt;=e.obs_date-7 AND pd.user_id IS NULL AND a.active_status&gt;0 then 1 else 0 end)::float8 nonpay_active_days_7d,
+sum(case when a.active_date&gt;=e.obs_date-7 AND pd.user_id IS NULL then coalesce(a.active_status,0) else 0 end)::float8 nonpay_active_status_7d,
+sum(case when a.active_date&gt;=e.obs_date-7 AND pd.user_id IS NULL then coalesce(a.newpage,0) else 0 end)::float8 nonpay_newpage_7d,
+sum(case when a.active_date&gt;=e.obs_date-7 AND pd.user_id IS NULL then coalesce(a.amount_selection,0) else 0 end)::float8 nonpay_amount_selection_7d,
+sum(case when a.active_date&gt;=e.obs_date-7 AND pd.user_id IS NULL then coalesce(a.term_selection,0) else 0 end)::float8 nonpay_term_selection_7d,
+sum(case when a.active_date&gt;=e.obs_date-7 AND pd.user_id IS NULL then coalesce(a.plan_newdetails,0) else 0 end)::float8 nonpay_plan_newdetails_7d,
+sum(case when a.active_date&gt;=e.obs_date-7 AND pd.user_id IS NULL then coalesce(a.newconfirm,0) else 0 end)::float8 nonpay_newconfirm_7d,
+sum(case when a.active_date&gt;=e.obs_date-7 AND pd.user_id IS NULL then coalesce(a.contract_newdetails,0) else 0 end)::float8 nonpay_contract_newdetails_7d,
+sum(case when a.active_date&gt;=e.obs_date-7 AND pd.user_id IS NULL then coalesce(a.coupons_page,0) else 0 end)::float8 nonpay_coupons_page_7d,
+sum(case when a.active_date&gt;=e.obs_date-7 AND pd.user_id IS NULL then coalesce(a.active_duration,0) else 0 end)::float8 nonpay_active_duration_7d,
+sum(case when a.active_date&gt;=e.obs_date-7 AND pd.user_id IS NULL then coalesce(a.apply_duration,0) else 0 end)::float8 nonpay_apply_duration_7d,
+sum(case when a.active_date&gt;=e.obs_date-30 AND a.active_status&gt;0 then 1 else 0 end)::float8 app_active_days_30d,
+sum(case when a.active_date&gt;=e.obs_date-30 then coalesce(a.active_status,0) else 0 end)::float8 app_active_status_30d,
+sum(case when a.active_date&gt;=e.obs_date-30 then coalesce(a.newpage,0) else 0 end)::float8 app_newpage_30d,
+sum(case when a.active_date&gt;=e.obs_date-30 then coalesce(a.amount_selection,0) else 0 end)::float8 app_amount_selection_30d,
+sum(case when a.active_date&gt;=e.obs_date-30 then coalesce(a.term_selection,0) else 0 end)::float8 app_term_selection_30d,
+sum(case when a.active_date&gt;=e.obs_date-30 then coalesce(a.plan_newdetails,0) else 0 end)::float8 app_plan_newdetails_30d,
+sum(case when a.active_date&gt;=e.obs_date-30 then coalesce(a.newconfirm,0) else 0 end)::float8 app_newconfirm_30d,
+sum(case when a.active_date&gt;=e.obs_date-30 then coalesce(a.contract_newdetails,0) else 0 end)::float8 app_contract_newdetails_30d,
+sum(case when a.active_date&gt;=e.obs_date-30 then coalesce(a.coupons_page,0) else 0 end)::float8 app_coupons_page_30d,
+sum(case when a.active_date&gt;=e.obs_date-30 then coalesce(a.active_duration,0) else 0 end)::float8 app_active_duration_30d,
+sum(case when a.active_date&gt;=e.obs_date-30 then coalesce(a.apply_duration,0) else 0 end)::float8 app_apply_duration_30d,
+sum(case when a.active_date&gt;=e.obs_date-30 AND pd.user_id IS NULL AND a.active_status&gt;0 then 1 else 0 end)::float8 nonpay_active_days_30d,
+sum(case when a.active_date&gt;=e.obs_date-30 AND pd.user_id IS NULL then coalesce(a.active_status,0) else 0 end)::float8 nonpay_active_status_30d,
+sum(case when a.active_date&gt;=e.obs_date-30 AND pd.user_id IS NULL then coalesce(a.newpage,0) else 0 end)::float8 nonpay_newpage_30d,
+sum(case when a.active_date&gt;=e.obs_date-30 AND pd.user_id IS NULL then coalesce(a.amount_selection,0) else 0 end)::float8 nonpay_amount_selection_30d,
+sum(case when a.active_date&gt;=e.obs_date-30 AND pd.user_id IS NULL then coalesce(a.term_selection,0) else 0 end)::float8 nonpay_term_selection_30d,
+sum(case when a.active_date&gt;=e.obs_date-30 AND pd.user_id IS NULL then coalesce(a.plan_newdetails,0) else 0 end)::float8 nonpay_plan_newdetails_30d,
+sum(case when a.active_date&gt;=e.obs_date-30 AND pd.user_id IS NULL then coalesce(a.newconfirm,0) else 0 end)::float8 nonpay_newconfirm_30d,
+sum(case when a.active_date&gt;=e.obs_date-30 AND pd.user_id IS NULL then coalesce(a.contract_newdetails,0) else 0 end)::float8 nonpay_contract_newdetails_30d,
+sum(case when a.active_date&gt;=e.obs_date-30 AND pd.user_id IS NULL then coalesce(a.coupons_page,0) else 0 end)::float8 nonpay_coupons_page_30d,
+sum(case when a.active_date&gt;=e.obs_date-30 AND pd.user_id IS NULL then coalesce(a.active_duration,0) else 0 end)::float8 nonpay_active_duration_30d,
+sum(case when a.active_date&gt;=e.obs_date-30 AND pd.user_id IS NULL then coalesce(a.apply_duration,0) else 0 end)::float8 nonpay_apply_duration_30d,
+sum(case when a.active_date&gt;=e.obs_date-90 AND a.active_status&gt;0 then 1 else 0 end)::float8 app_active_days_90d,
+sum(case when a.active_date&gt;=e.obs_date-90 then coalesce(a.active_status,0) else 0 end)::float8 app_active_status_90d,
+sum(case when a.active_date&gt;=e.obs_date-90 then coalesce(a.newpage,0) else 0 end)::float8 app_newpage_90d,
+sum(case when a.active_date&gt;=e.obs_date-90 then coalesce(a.amount_selection,0) else 0 end)::float8 app_amount_selection_90d,
+sum(case when a.active_date&gt;=e.obs_date-90 then coalesce(a.term_selection,0) else 0 end)::float8 app_term_selection_90d,
+sum(case when a.active_date&gt;=e.obs_date-90 then coalesce(a.plan_newdetails,0) else 0 end)::float8 app_plan_newdetails_90d,
+sum(case when a.active_date&gt;=e.obs_date-90 then coalesce(a.newconfirm,0) else 0 end)::float8 app_newconfirm_90d,
+sum(case when a.active_date&gt;=e.obs_date-90 then coalesce(a.contract_newdetails,0) else 0 end)::float8 app_contract_newdetails_90d,
+sum(case when a.active_date&gt;=e.obs_date-90 then coalesce(a.coupons_page,0) else 0 end)::float8 app_coupons_page_90d,
+sum(case when a.active_date&gt;=e.obs_date-90 then coalesce(a.active_duration,0) else 0 end)::float8 app_active_duration_90d,
+sum(case when a.active_date&gt;=e.obs_date-90 then coalesce(a.apply_duration,0) else 0 end)::float8 app_apply_duration_90d,
+sum(case when a.active_date&gt;=e.obs_date-90 AND pd.user_id IS NULL AND a.active_status&gt;0 then 1 else 0 end)::float8 nonpay_active_days_90d,
+sum(case when a.active_date&gt;=e.obs_date-90 AND pd.user_id IS NULL then coalesce(a.active_status,0) else 0 end)::float8 nonpay_active_status_90d,
+sum(case when a.active_date&gt;=e.obs_date-90 AND pd.user_id IS NULL then coalesce(a.newpage,0) else 0 end)::float8 nonpay_newpage_90d,
+sum(case when a.active_date&gt;=e.obs_date-90 AND pd.user_id IS NULL then coalesce(a.amount_selection,0) else 0 end)::float8 nonpay_amount_selection_90d,
+sum(case when a.active_date&gt;=e.obs_date-90 AND pd.user_id IS NULL then coalesce(a.term_selection,0) else 0 end)::float8 nonpay_term_selection_90d,
+sum(case when a.active_date&gt;=e.obs_date-90 AND pd.user_id IS NULL then coalesce(a.plan_newdetails,0) else 0 end)::float8 nonpay_plan_newdetails_90d,
+sum(case when a.active_date&gt;=e.obs_date-90 AND pd.user_id IS NULL then coalesce(a.newconfirm,0) else 0 end)::float8 nonpay_newconfirm_90d,
+sum(case when a.active_date&gt;=e.obs_date-90 AND pd.user_id IS NULL then coalesce(a.contract_newdetails,0) else 0 end)::float8 nonpay_contract_newdetails_90d,
+sum(case when a.active_date&gt;=e.obs_date-90 AND pd.user_id IS NULL then coalesce(a.coupons_page,0) else 0 end)::float8 nonpay_coupons_page_90d,
+sum(case when a.active_date&gt;=e.obs_date-90 AND pd.user_id IS NULL then coalesce(a.active_duration,0) else 0 end)::float8 nonpay_active_duration_90d,
+sum(case when a.active_date&gt;=e.obs_date-90 AND pd.user_id IS NULL then coalesce(a.apply_duration,0) else 0 end)::float8 nonpay_apply_duration_90d,
+(e.obs_date-max(case when a.active_status&gt;0 then a.active_date end))::float8 days_since_app_90d
+       FROM tmp_c405_base e LEFT JOIN daily a ON a.user_id=e.user_id
+       AND a.active_date&gt;=e.obs_date-90 AND a.active_date&lt;e.obs_date
+       LEFT JOIN pay_dates pd ON pd.user_id=a.user_id AND pd.payin_date=a.active_date
+       GROUP BY e.event_id,e.obs_date;
+
+SELECT e.*,
+h.hist_apply_count,
+h.hist_funded_count,
+h.hist_settled_count,
+h.hist_early_count,
+h.hist_avg_remit,
+h.hist_avg_fee,
+h.hist_avg_loan_day,
+h.hist_avg_repay_days,
+h.hist_avg_early_days,
+h.hist_d7_mature_count,
+h.hist_d7_bad_count,
+h.days_since_apply,
+h.user_tenure_days,
+h.hist_apply_30d,
+h.hist_funded_30d,
+h.hist_settled_30d,
+h.hist_apply_90d,
+h.hist_funded_90d,
+h.hist_settled_90d,
+h.hist_apply_365d,
+h.hist_funded_365d,
+h.hist_settled_365d,
+c.prev_credit,
+c.prev_utilization,
+c.offer_count_since_anchor,
+c.pass_offer_rows_since_anchor,
+b.app_active_days_7d,
+b.app_active_status_7d,
+b.app_newpage_7d,
+b.app_amount_selection_7d,
+b.app_term_selection_7d,
+b.app_plan_newdetails_7d,
+b.app_newconfirm_7d,
+b.app_contract_newdetails_7d,
+b.app_coupons_page_7d,
+b.app_active_duration_7d,
+b.app_apply_duration_7d,
+b.nonpay_active_days_7d,
+b.nonpay_active_status_7d,
+b.nonpay_newpage_7d,
+b.nonpay_amount_selection_7d,
+b.nonpay_term_selection_7d,
+b.nonpay_plan_newdetails_7d,
+b.nonpay_newconfirm_7d,
+b.nonpay_contract_newdetails_7d,
+b.nonpay_coupons_page_7d,
+b.nonpay_active_duration_7d,
+b.nonpay_apply_duration_7d,
+b.app_active_days_30d,
+b.app_active_status_30d,
+b.app_newpage_30d,
+b.app_amount_selection_30d,
+b.app_term_selection_30d,
+b.app_plan_newdetails_30d,
+b.app_newconfirm_30d,
+b.app_contract_newdetails_30d,
+b.app_coupons_page_30d,
+b.app_active_duration_30d,
+b.app_apply_duration_30d,
+b.nonpay_active_days_30d,
+b.nonpay_active_status_30d,
+b.nonpay_newpage_30d,
+b.nonpay_amount_selection_30d,
+b.nonpay_term_selection_30d,
+b.nonpay_plan_newdetails_30d,
+b.nonpay_newconfirm_30d,
+b.nonpay_contract_newdetails_30d,
+b.nonpay_coupons_page_30d,
+b.nonpay_active_duration_30d,
+b.nonpay_apply_duration_30d,
+b.app_active_days_90d,
+b.app_active_status_90d,
+b.app_newpage_90d,
+b.app_amount_selection_90d,
+b.app_term_selection_90d,
+b.app_plan_newdetails_90d,
+b.app_newconfirm_90d,
+b.app_contract_newdetails_90d,
+b.app_coupons_page_90d,
+b.app_active_duration_90d,
+b.app_apply_duration_90d,
+b.nonpay_active_days_90d,
+b.nonpay_active_status_90d,
+b.nonpay_newpage_90d,
+b.nonpay_amount_selection_90d,
+b.nonpay_term_selection_90d,
+b.nonpay_plan_newdetails_90d,
+b.nonpay_newconfirm_90d,
+b.nonpay_contract_newdetails_90d,
+b.nonpay_coupons_page_90d,
+b.nonpay_active_duration_90d,
+b.nonpay_apply_duration_90d,
+b.days_since_app_90d
+FROM tmp_c405_base e
+LEFT JOIN tmp_c405_history h ON h.event_id=e.event_id
+LEFT JOIN tmp_c405_credit c ON c.event_id=e.event_id
+LEFT JOIN tmp_c405_behavior b ON b.event_id=e.event_id;
+
+
+-- V2新增特征：本次实际执行使用冻结V1事件快照载入同结构TEMP表。
+CREATE TEMP TABLE tmp_churn_v2_observations AS
+SELECT event_id,user_id,obs_time,obs_date,anchor_date,target_serial FROM tmp_c405_base;
+
+WITH cyc AS (
+      SELECT DISTINCT serial_id FROM wangchuanliang.side_recycle_type_copy WHERE recycle_type=2
+    ), hist AS (
+      SELECT e.event_id,o.serial_id,o.remit_amt,o.loan_day,o.remit_time,o.due_date,o.repaid_time,
+        row_number() over(partition by e.event_id order by o.remit_time desc,o.serial_id desc) recency_rank,
+        case when o.repaid_time&gt;timestamp &#x27;2000-01-01&#x27; and o.repaid_time&lt;e.obs_time then 1 else 0 end settled_before_obs,
+        case when o.due_date&gt;date &#x27;2000-01-01&#x27; and o.due_date+1&lt;=e.obs_date then 1 else 0 end mature_d0,
+        case when o.due_date&gt;date &#x27;2000-01-01&#x27; and o.due_date+8&lt;=e.obs_date then 1 else 0 end mature_d7,
+        case when o.repaid_date&gt;date &#x27;2000-01-01&#x27; and o.repaid_date&lt;=o.due_date then 0 else 1 end bad_d0,
+        case when o.repaid_date&gt;date &#x27;2000-01-01&#x27; and o.repaid_date&lt;=o.due_date+7 then 0 else 1 end bad_d7,
+        case when o.repaid_time&gt;timestamp &#x27;2000-01-01&#x27; and o.repaid_time&lt;e.obs_time then o.due_date-o.repaid_date end early_days,
+        case when o.repaid_time&gt;timestamp &#x27;2000-01-01&#x27; and o.repaid_time&lt;e.obs_time then extract(epoch from(o.repaid_time-o.remit_time))/86400.0 end repay_days,
+        case when c.serial_id is not null then 1 else 0 end is_cycle
+      FROM tmp_churn_v2_observations e JOIN wangchuanliang.order_loan_f_v2_copy o
+        ON o.user_id=e.user_id AND o.apply_time&lt;e.obs_time AND o.remit_time&lt;e.obs_time
+        AND o.is_remit=1 AND o.remit_amt&gt;0 AND o.serial_id IS DISTINCT FROM e.target_serial
+      LEFT JOIN cyc c ON c.serial_id=o.serial_id
+    ) SELECT e.event_id,
+count(h.serial_id)::float8 detail_funded_count,
+sum(case when h.settled_before_obs=1 then 1 else 0 end)::float8 detail_settled_count,
+sum(case when h.mature_d0=1 then 1 else 0 end)::float8 detail_d0_mature_count,
+sum(case when h.mature_d0=1 and h.bad_d0=1 then 1 else 0 end)::float8 detail_d0_bad_count,
+sum(case when h.mature_d7=1 then 1 else 0 end)::float8 detail_d7_mature_count,
+sum(case when h.mature_d7=1 and h.bad_d7=1 then 1 else 0 end)::float8 detail_d7_bad_count,
+sum(case when h.settled_before_obs=1 and h.early_days&gt;0 then 1 else 0 end)::float8 detail_early_count,
+avg(case when h.settled_before_obs=1 then h.early_days end)::float8 detail_early_days_mean,
+stddev_samp(case when h.settled_before_obs=1 then h.early_days end)::float8 detail_early_days_std,
+min(case when h.settled_before_obs=1 then h.early_days end)::float8 detail_early_days_min,
+avg(case when h.settled_before_obs=1 then h.repay_days end)::float8 detail_repay_days_mean,
+stddev_samp(case when h.settled_before_obs=1 then h.repay_days end)::float8 detail_repay_days_std,
+sum(case when h.is_cycle=1 then 1 else 0 end)::float8 detail_cycle_funded_count,
+sum(case when h.due_date&lt;e.obs_date and (h.repaid_time is null or h.repaid_time&lt;=timestamp &#x27;2000-01-01&#x27; or h.repaid_time&gt;=e.obs_time) then 1 else 0 end)::float8 detail_unsettled_due_asof_count,
+max(case when h.remit_time&lt;e.obs_time then h.remit_time end) detail_latest_history_remit_time,
+max(case when h.recency_rank=1 then h.remit_amt end)::float8 last1_remit_amt,
+max(case when h.recency_rank=1 then h.loan_day end)::float8 last1_loan_day,
+max(case when h.recency_rank=1 and h.settled_before_obs=1 then h.early_days end)::float8 last1_early_days,
+max(case when h.recency_rank=1 and h.settled_before_obs=1 then h.repay_days end)::float8 last1_repay_days,
+max(case when h.recency_rank=1 and h.mature_d0=1 then h.bad_d0 end)::float8 last1_bad_d0,
+max(case when h.recency_rank=1 and h.mature_d7=1 then h.bad_d7 end)::float8 last1_bad_d7,
+max(case when h.recency_rank=1 then h.is_cycle end)::float8 last1_is_cycle,
+max(case when h.recency_rank=2 then h.remit_amt end)::float8 last2_remit_amt,
+max(case when h.recency_rank=2 then h.loan_day end)::float8 last2_loan_day,
+max(case when h.recency_rank=2 and h.settled_before_obs=1 then h.early_days end)::float8 last2_early_days,
+max(case when h.recency_rank=2 and h.settled_before_obs=1 then h.repay_days end)::float8 last2_repay_days,
+max(case when h.recency_rank=2 and h.mature_d0=1 then h.bad_d0 end)::float8 last2_bad_d0,
+max(case when h.recency_rank=2 and h.mature_d7=1 then h.bad_d7 end)::float8 last2_bad_d7,
+max(case when h.recency_rank=2 then h.is_cycle end)::float8 last2_is_cycle,
+max(case when h.recency_rank=3 then h.remit_amt end)::float8 last3_remit_amt,
+max(case when h.recency_rank=3 then h.loan_day end)::float8 last3_loan_day,
+max(case when h.recency_rank=3 and h.settled_before_obs=1 then h.early_days end)::float8 last3_early_days,
+max(case when h.recency_rank=3 and h.settled_before_obs=1 then h.repay_days end)::float8 last3_repay_days,
+max(case when h.recency_rank=3 and h.mature_d0=1 then h.bad_d0 end)::float8 last3_bad_d0,
+max(case when h.recency_rank=3 and h.mature_d7=1 then h.bad_d7 end)::float8 last3_bad_d7,
+max(case when h.recency_rank=3 then h.is_cycle end)::float8 last3_is_cycle,
+max(case when h.recency_rank=4 then h.remit_amt end)::float8 last4_remit_amt,
+max(case when h.recency_rank=4 then h.loan_day end)::float8 last4_loan_day,
+max(case when h.recency_rank=4 and h.settled_before_obs=1 then h.early_days end)::float8 last4_early_days,
+max(case when h.recency_rank=4 and h.settled_before_obs=1 then h.repay_days end)::float8 last4_repay_days,
+max(case when h.recency_rank=4 and h.mature_d0=1 then h.bad_d0 end)::float8 last4_bad_d0,
+max(case when h.recency_rank=4 and h.mature_d7=1 then h.bad_d7 end)::float8 last4_bad_d7,
+max(case when h.recency_rank=4 then h.is_cycle end)::float8 last4_is_cycle,
+max(case when h.recency_rank=5 then h.remit_amt end)::float8 last5_remit_amt,
+max(case when h.recency_rank=5 then h.loan_day end)::float8 last5_loan_day,
+max(case when h.recency_rank=5 and h.settled_before_obs=1 then h.early_days end)::float8 last5_early_days,
+max(case when h.recency_rank=5 and h.settled_before_obs=1 then h.repay_days end)::float8 last5_repay_days,
+max(case when h.recency_rank=5 and h.mature_d0=1 then h.bad_d0 end)::float8 last5_bad_d0,
+max(case when h.recency_rank=5 and h.mature_d7=1 then h.bad_d7 end)::float8 last5_bad_d7,
+max(case when h.recency_rank=5 then h.is_cycle end)::float8 last5_is_cycle,
+sum(case when h.recency_rank&lt;=3 and h.mature_d0=1 then 1 else 0 end)::float8 last3_d0_mature_count,
+sum(case when h.recency_rank&lt;=3 and h.mature_d0=1 and h.bad_d0=1 then 1 else 0 end)::float8 last3_d0_bad_count,
+sum(case when h.recency_rank&lt;=3 and h.mature_d7=1 then 1 else 0 end)::float8 last3_d7_mature_count,
+sum(case when h.recency_rank&lt;=3 and h.mature_d7=1 and h.bad_d7=1 then 1 else 0 end)::float8 last3_d7_bad_count,
+sum(case when h.recency_rank&lt;=3 and h.settled_before_obs=1 then 1 else 0 end)::float8 last3_settled_count,
+sum(case when h.recency_rank&lt;=3 and h.settled_before_obs=1 and h.early_days&gt;0 then 1 else 0 end)::float8 last3_early_count,
+sum(case when h.recency_rank&lt;=5 and h.mature_d0=1 then 1 else 0 end)::float8 last5_d0_mature_count,
+sum(case when h.recency_rank&lt;=5 and h.mature_d0=1 and h.bad_d0=1 then 1 else 0 end)::float8 last5_d0_bad_count,
+sum(case when h.recency_rank&lt;=5 and h.mature_d7=1 then 1 else 0 end)::float8 last5_d7_mature_count,
+sum(case when h.recency_rank&lt;=5 and h.mature_d7=1 and h.bad_d7=1 then 1 else 0 end)::float8 last5_d7_bad_count,
+sum(case when h.recency_rank&lt;=5 and h.settled_before_obs=1 then 1 else 0 end)::float8 last5_settled_count,
+sum(case when h.recency_rank&lt;=5 and h.settled_before_obs=1 and h.early_days&gt;0 then 1 else 0 end)::float8 last5_early_count,
+sum(case when h.recency_rank&lt;=10 and h.mature_d0=1 then 1 else 0 end)::float8 last10_d0_mature_count,
+sum(case when h.recency_rank&lt;=10 and h.mature_d0=1 and h.bad_d0=1 then 1 else 0 end)::float8 last10_d0_bad_count,
+sum(case when h.recency_rank&lt;=10 and h.mature_d7=1 then 1 else 0 end)::float8 last10_d7_mature_count,
+sum(case when h.recency_rank&lt;=10 and h.mature_d7=1 and h.bad_d7=1 then 1 else 0 end)::float8 last10_d7_bad_count,
+sum(case when h.recency_rank&lt;=10 and h.settled_before_obs=1 then 1 else 0 end)::float8 last10_settled_count,
+sum(case when h.recency_rank&lt;=10 and h.settled_before_obs=1 and h.early_days&gt;0 then 1 else 0 end)::float8 last10_early_count,
+sum(case when h.remit_time&gt;=e.obs_time-interval &#x27;90 days&#x27; and h.mature_d7=1 then 1 else 0 end)::float8 detail_d7_mature_90d,
+sum(case when h.remit_time&gt;=e.obs_time-interval &#x27;90 days&#x27; and h.mature_d7=1 and h.bad_d7=1 then 1 else 0 end)::float8 detail_d7_bad_90d,
+sum(case when h.repaid_time&gt;=e.obs_time-interval &#x27;90 days&#x27; and h.settled_before_obs=1 then 1 else 0 end)::float8 detail_settled_90d,
+sum(case when h.repaid_time&gt;=e.obs_time-interval &#x27;90 days&#x27; and h.settled_before_obs=1 and h.early_days&gt;0 then 1 else 0 end)::float8 detail_early_90d,
+sum(case when h.remit_time&gt;=e.obs_time-interval &#x27;180 days&#x27; and h.mature_d7=1 then 1 else 0 end)::float8 detail_d7_mature_180d,
+sum(case when h.remit_time&gt;=e.obs_time-interval &#x27;180 days&#x27; and h.mature_d7=1 and h.bad_d7=1 then 1 else 0 end)::float8 detail_d7_bad_180d,
+sum(case when h.repaid_time&gt;=e.obs_time-interval &#x27;180 days&#x27; and h.settled_before_obs=1 then 1 else 0 end)::float8 detail_settled_180d,
+sum(case when h.repaid_time&gt;=e.obs_time-interval &#x27;180 days&#x27; and h.settled_before_obs=1 and h.early_days&gt;0 then 1 else 0 end)::float8 detail_early_180d,
+sum(case when h.remit_time&gt;=e.obs_time-interval &#x27;365 days&#x27; and h.mature_d7=1 then 1 else 0 end)::float8 detail_d7_mature_365d,
+sum(case when h.remit_time&gt;=e.obs_time-interval &#x27;365 days&#x27; and h.mature_d7=1 and h.bad_d7=1 then 1 else 0 end)::float8 detail_d7_bad_365d,
+sum(case when h.repaid_time&gt;=e.obs_time-interval &#x27;365 days&#x27; and h.settled_before_obs=1 then 1 else 0 end)::float8 detail_settled_365d,
+sum(case when h.repaid_time&gt;=e.obs_time-interval &#x27;365 days&#x27; and h.settled_before_obs=1 and h.early_days&gt;0 then 1 else 0 end)::float8 detail_early_365d
+      FROM tmp_churn_v2_observations e LEFT JOIN hist h ON h.event_id=e.event_id
+      GROUP BY e.event_id,e.obs_time,e.obs_date;
+</pre></details><details><summary>新增特征构造、历史订单聚合与实际训练代码</summary><pre># -*- coding: utf-8 -*-
+&quot;&quot;&quot;Frozen V1 cohort, latest 405 retained with churn interactions. Only local output and session TEMP writes.&quot;&quot;&quot;
+from common import *
+import io, time
+import numpy as np
+import pandas as pd
+from db import connect
+
+def history_sql():
+    cols = [
+        &#x27;count(h.serial_id)::float8 detail_funded_count&#x27;,
+        &quot;sum(case when h.settled_before_obs=1 then 1 else 0 end)::float8 detail_settled_count&quot;,
+        &quot;sum(case when h.mature_d0=1 then 1 else 0 end)::float8 detail_d0_mature_count&quot;,
+        &quot;sum(case when h.mature_d0=1 and h.bad_d0=1 then 1 else 0 end)::float8 detail_d0_bad_count&quot;,
+        &quot;sum(case when h.mature_d7=1 then 1 else 0 end)::float8 detail_d7_mature_count&quot;,
+        &quot;sum(case when h.mature_d7=1 and h.bad_d7=1 then 1 else 0 end)::float8 detail_d7_bad_count&quot;,
+        &quot;sum(case when h.settled_before_obs=1 and h.early_days&gt;0 then 1 else 0 end)::float8 detail_early_count&quot;,
+        &quot;avg(case when h.settled_before_obs=1 then h.early_days end)::float8 detail_early_days_mean&quot;,
+        &quot;stddev_samp(case when h.settled_before_obs=1 then h.early_days end)::float8 detail_early_days_std&quot;,
+        &quot;min(case when h.settled_before_obs=1 then h.early_days end)::float8 detail_early_days_min&quot;,
+        &quot;avg(case when h.settled_before_obs=1 then h.repay_days end)::float8 detail_repay_days_mean&quot;,
+        &quot;stddev_samp(case when h.settled_before_obs=1 then h.repay_days end)::float8 detail_repay_days_std&quot;,
+        &quot;sum(case when h.is_cycle=1 then 1 else 0 end)::float8 detail_cycle_funded_count&quot;,
+        &quot;sum(case when h.due_date&lt;e.obs_date and (h.repaid_time is null or h.repaid_time&lt;=timestamp &#x27;2000-01-01&#x27; or h.repaid_time&gt;=e.obs_time) then 1 else 0 end)::float8 detail_unsettled_due_asof_count&quot;,
+        &quot;max(case when h.remit_time&lt;e.obs_time then h.remit_time end) detail_latest_history_remit_time&quot;,
+    ]
+    for k in (1,2,3,4,5):
+        for value in (&#x27;remit_amt&#x27;,&#x27;loan_day&#x27;,&#x27;early_days&#x27;,&#x27;repay_days&#x27;,&#x27;bad_d0&#x27;,&#x27;bad_d7&#x27;,&#x27;is_cycle&#x27;):
+            # Outcomes of a past loan are available only after its evaluation horizon.
+            condition = f&#x27;h.recency_rank={k}&#x27;
+            if value == &#x27;bad_d7&#x27;: condition += &#x27; and h.mature_d7=1&#x27;
+            if value == &#x27;bad_d0&#x27;: condition += &#x27; and h.mature_d0=1&#x27;
+            if value in (&#x27;early_days&#x27;,&#x27;repay_days&#x27;): condition += &#x27; and h.settled_before_obs=1&#x27;
+            cols.append(f&#x27;max(case when {condition} then h.{value} end)::float8 last{k}_{value}&#x27;)
+    for k in (3,5,10):
+        for name, condition in (
+            (&#x27;d0_mature&#x27;, &#x27;h.mature_d0=1&#x27;),(&#x27;d0_bad&#x27;,&#x27;h.mature_d0=1 and h.bad_d0=1&#x27;),
+            (&#x27;d7_mature&#x27;, &#x27;h.mature_d7=1&#x27;),(&#x27;d7_bad&#x27;,&#x27;h.mature_d7=1 and h.bad_d7=1&#x27;),
+            (&#x27;settled&#x27;,&#x27;h.settled_before_obs=1&#x27;),(&#x27;early&#x27;,&#x27;h.settled_before_obs=1 and h.early_days&gt;0&#x27;)):
+            cols.append(f&#x27;sum(case when h.recency_rank&lt;={k} and {condition} then 1 else 0 end)::float8 last{k}_{name}_count&#x27;)
+    for w in (90,180,365):
+        for name, condition in (
+            (&#x27;d7_mature&#x27;,&#x27;h.mature_d7=1&#x27;),(&#x27;d7_bad&#x27;,&#x27;h.mature_d7=1 and h.bad_d7=1&#x27;),
+            (&#x27;settled&#x27;,&#x27;h.settled_before_obs=1&#x27;),(&#x27;early&#x27;,&#x27;h.settled_before_obs=1 and h.early_days&gt;0&#x27;)):
+            timecol = &#x27;h.repaid_time&#x27; if name in (&#x27;settled&#x27;,&#x27;early&#x27;) else &#x27;h.remit_time&#x27;
+            cols.append(f&quot;sum(case when {timecol}&gt;=e.obs_time-interval &#x27;{w} days&#x27; and {condition} then 1 else 0 end)::float8 detail_{name}_{w}d&quot;)
+    return &quot;&quot;&quot;WITH cyc AS (
+      SELECT DISTINCT serial_id FROM wangchuanliang.side_recycle_type_copy WHERE recycle_type=2
+    ), hist AS (
+      SELECT e.event_id,o.serial_id,o.remit_amt,o.loan_day,o.remit_time,o.due_date,o.repaid_time,
+        row_number() over(partition by e.event_id order by o.remit_time desc,o.serial_id desc) recency_rank,
+        case when o.repaid_time&gt;timestamp &#x27;2000-01-01&#x27; and o.repaid_time&lt;e.obs_time then 1 else 0 end settled_before_obs,
+        case when o.due_date&gt;date &#x27;2000-01-01&#x27; and o.due_date+1&lt;=e.obs_date then 1 else 0 end mature_d0,
+        case when o.due_date&gt;date &#x27;2000-01-01&#x27; and o.due_date+8&lt;=e.obs_date then 1 else 0 end mature_d7,
+        case when o.repaid_date&gt;date &#x27;2000-01-01&#x27; and o.repaid_date&lt;=o.due_date then 0 else 1 end bad_d0,
+        case when o.repaid_date&gt;date &#x27;2000-01-01&#x27; and o.repaid_date&lt;=o.due_date+7 then 0 else 1 end bad_d7,
+        case when o.repaid_time&gt;timestamp &#x27;2000-01-01&#x27; and o.repaid_time&lt;e.obs_time then o.due_date-o.repaid_date end early_days,
+        case when o.repaid_time&gt;timestamp &#x27;2000-01-01&#x27; and o.repaid_time&lt;e.obs_time then extract(epoch from(o.repaid_time-o.remit_time))/86400.0 end repay_days,
+        case when c.serial_id is not null then 1 else 0 end is_cycle
+      FROM tmp_churn_v2_observations e JOIN wangchuanliang.order_loan_f_v2_copy o
+        ON o.user_id=e.user_id AND o.apply_time&lt;e.obs_time AND o.remit_time&lt;e.obs_time
+        AND o.is_remit=1 AND o.remit_amt&gt;0 AND o.serial_id IS DISTINCT FROM e.target_serial
+      LEFT JOIN cyc c ON c.serial_id=o.serial_id
+    ) SELECT e.event_id,\n&quot;&quot;&quot; + &#x27;,\n&#x27;.join(cols) + &quot;&quot;&quot;
+      FROM tmp_churn_v2_observations e LEFT JOIN hist h ON h.event_id=e.event_id
+      GROUP BY e.event_id,e.obs_time,e.obs_date&quot;&quot;&quot;
+
+def main():
+    b = pd.read_pickle(OLD/&#x27;data/all_feature_snapshots.pkl.gz&#x27;, compression=&#x27;gzip&#x27;)
+    assert b.event_id.is_unique
+    sql = history_sql()
+    (ROOT/&#x27;新增历史还款特征.sql&#x27;).write_text(sql, encoding=&#x27;utf-8&#x27;)
+    path = ROOT/&#x27;data/history_detail.csv.gz&#x27;
+    if not path.exists():
+        from history_local import get_detail
+        q=get_detail(b)
+        assert q.event_id.is_unique and len(q)==len(b)
+    q=pd.read_csv(path,dtype={&#x27;event_id&#x27;:str},float_precision=&#x27;round_trip&#x27;)
+    assert q.event_id.is_unique
+    q[&#x27;detail_latest_history_remit_time&#x27;]=pd.to_datetime(q.detail_latest_history_remit_time,format=&#x27;mixed&#x27;)
+    b=b.merge(q,on=&#x27;event_id&#x27;,validate=&#x27;one_to_one&#x27;,how=&#x27;left&#x27;).copy()
+    assert (b.detail_latest_history_remit_time.dropna() &lt; b.loc[b.detail_latest_history_remit_time.notna(),&#x27;obs_time&#x27;]).all()
+    raw_names=json.loads((OLD/&#x27;analysis/feature_names.json&#x27;).read_text())
+    banned=set()
+    names=[f for f in raw_names if f not in banned]
+    names += [f for f in q.columns if f not in (&#x27;event_id&#x27;,&#x27;detail_latest_history_remit_time&#x27;)]
+    families={f:&#x27;V1已有实际生命周期&#x27; for f in names}
+    for f in q.columns:
+        if f in names:families[f]=&#x27;新增历史还款细分&#x27;
+    def add(name, values, family):
+        nonlocal b
+        b[name]=values;names.append(name);families[name]=family
+        if len(names)%32==0:b=b.copy()
+    def ratio(n,d):return b[n]/b[d].where(b[d]&gt;0)
+    for k in (3,5,10):
+        for v in (&#x27;d0&#x27;,&#x27;d7&#x27;):
+            add(f&#x27;last{k}_{v}_bad_rate&#x27;,ratio(f&#x27;last{k}_{v}_bad_count&#x27;,f&#x27;last{k}_{v}_mature_count&#x27;),&#x27;最近多笔逾期比例&#x27;)
+        add(f&#x27;last{k}_early_rate&#x27;,ratio(f&#x27;last{k}_early_count&#x27;,f&#x27;last{k}_settled_count&#x27;),&#x27;最近多笔提前结清&#x27;)
+    for w in (90,180,365):
+        add(f&#x27;detail_d7_bad_rate_{w}d&#x27;,ratio(f&#x27;detail_d7_bad_{w}d&#x27;,f&#x27;detail_d7_mature_{w}d&#x27;),&#x27;历史窗口逾期&#x27;)
+        add(f&#x27;detail_early_rate_{w}d&#x27;,ratio(f&#x27;detail_early_{w}d&#x27;,f&#x27;detail_settled_{w}d&#x27;),&#x27;历史窗口提前结清&#x27;)
+    add(&#x27;detail_d0_bad_rate&#x27;,ratio(&#x27;detail_d0_bad_count&#x27;,&#x27;detail_d0_mature_count&#x27;),&#x27;历史到期逾期&#x27;)
+    add(&#x27;detail_cycle_funded_share&#x27;,ratio(&#x27;detail_cycle_funded_count&#x27;,&#x27;detail_funded_count&#x27;),&#x27;历史循环贷使用&#x27;)
+    for value in (&#x27;remit_amt&#x27;,&#x27;repay_days&#x27;,&#x27;early_days&#x27;,&#x27;loan_day&#x27;):
+        add(f&#x27;last1_minus_last2_{value}&#x27;,b[f&#x27;last1_{value}&#x27;]-b[f&#x27;last2_{value}&#x27;],&#x27;最近两笔变化&#x27;)
+        add(f&#x27;last1_minus_last3_{value}&#x27;,b[f&#x27;last1_{value}&#x27;]-b[f&#x27;last3_{value}&#x27;],&#x27;最近三笔变化&#x27;)
+    add(&#x27;recent3_vs_history_d7&#x27;,b.last3_d7_bad_rate-b.hist_d7_bad_rate,&#x27;逾期变化趋势&#x27;)
+    add(&#x27;recent3_vs_history_early&#x27;,b.last3_early_rate-b.hist_early_rate,&#x27;提前结清趋势&#x27;)
+    add(&#x27;churn_over_prev_term&#x27;,b.churn_days/b.prev_loan_day.where(b.prev_loan_day&gt;0),&#x27;流失相对账期&#x27;)
+    add(&#x27;churn_over_hist_repay_speed&#x27;,b.churn_days/b.hist_avg_repay_days.where(b.hist_avg_repay_days&gt;0),&#x27;流失相对还款速度&#x27;)
+    add(&#x27;lifecycle_funded_per_90d&#x27;,b.hist_funded_count/b.user_tenure_days.where(b.user_tenure_days&gt;0)*90,&#x27;历史借款频次&#x27;)
+    for family in (&#x27;app&#x27;,&#x27;nonpay&#x27;):
+        for metric in (&#x27;active_status&#x27;,&#x27;newpage&#x27;,&#x27;amount_selection&#x27;,&#x27;plan_newdetails&#x27;,&#x27;active_duration&#x27;,&#x27;apply_duration&#x27;):
+            add(f&#x27;{family}_{metric}_8to30d&#x27;,b[f&#x27;{family}_{metric}_30d&#x27;]-b[f&#x27;{family}_{metric}_7d&#x27;],&#x27;App不重叠窗口&#x27;)
+            add(f&#x27;{family}_{metric}_31to90d&#x27;,b[f&#x27;{family}_{metric}_90d&#x27;]-b[f&#x27;{family}_{metric}_30d&#x27;],&#x27;App不重叠窗口&#x27;)
+        for w in (7,30,90):
+            add(f&#x27;{family}_has_activity_{w}d&#x27;,(b[f&#x27;{family}_active_status_{w}d&#x27;]&gt;0).astype(float),&#x27;App活动标记&#x27;)
+            add(f&#x27;{family}_plan_per_page_{w}d&#x27;,ratio(f&#x27;{family}_plan_newdetails_{w}d&#x27;,f&#x27;{family}_newpage_{w}d&#x27;),&#x27;App方案比较强度&#x27;)
+    add(&#x27;app_snapshot_empty_90d&#x27;,(b.app_active_status_90d==0).astype(float),&#x27;App零记录标记，不能区分缺采&#x27;)
+    b[&#x27;prev_utilization_missing&#x27;]=b.prev_utilization.isna().astype(float)
+    # Latest 405 retained; 363, identifiers, target outcomes and date encodings excluded.
+    thresholds=json.loads((OLD/&#x27;analysis/405_grade_mapping.json&#x27;).read_text())[&#x27;thresholds_high_to_low&#x27;]
+    bands=np.select([b.risk_score_405&gt;=thresholds[0],b.risk_score_405&gt;=thresholds[1],b.risk_score_405&gt;=thresholds[2]],[0,1,2],default=3)
+    add(&#x27;score405_times_churn_log&#x27;,(b.risk_score_405-thresholds[1])/25*b.churn_log1p,&#x27;405与流失交互&#x27;)
+    add(&#x27;score405_times_early_rate&#x27;,(b.risk_score_405-thresholds[1])/25*b.hist_early_rate,&#x27;405与历史还款交互&#x27;)
+    for grade in range(4):
+        add(f&#x27;score405_band_{grade}&#x27;,(bands==grade).astype(float),&#x27;405训练期分档&#x27;)
+        add(f&#x27;score405_band_{grade}_churn_log&#x27;,(bands==grade)*b.churn_log1p,&#x27;405与流失交互&#x27;)
+        for days in (15,30,60,90):
+            add(f&#x27;score405_band_{grade}_churn_ge{days}&#x27;,((bands==grade)&amp;(b.churn_days&gt;=days)).astype(float),&#x27;405与流失交互&#x27;)
+    assert not any(any(token in f.lower() for token in (&#x27;363&#x27;,&#x27;target&#x27;,&#x27;serial&#x27;)) or f==&#x27;user_id&#x27; for f in names)
+    assert len(names)==len(set(names))
+    for f in names:b[f]=pd.to_numeric(b[f],errors=&#x27;coerce&#x27;).replace([np.inf,-np.inf],np.nan)
+    b.to_pickle(ROOT/&#x27;data/feature_snapshots.pkl.gz&#x27;,compression=&#x27;gzip&#x27;)
+    b[[&#x27;event_id&#x27;,&#x27;user_id&#x27;,&#x27;obs_time&#x27;,&#x27;obs_date&#x27;,&#x27;anchor_time&#x27;,&#x27;anchor_date&#x27;,&#x27;target_serial&#x27;,&#x27;target_due_date&#x27;,&#x27;target_d7&#x27;,&#x27;sample_kind&#x27;]+names].to_csv(ROOT/&#x27;data/features_labels.csv.gz&#x27;,index=False,compression=&#x27;gzip&#x27;)
+    save(&#x27;analysis/features.json&#x27;,{&#x27;features&#x27;:names,&#x27;families&#x27;:families,&#x27;removed&#x27;:sorted(banned),&#x27;inherited_count&#x27;:len(raw_names)-len(banned),&#x27;feature_count&#x27;:len(names),&#x27;new_count&#x27;:len(names)-(len(raw_names)-len(banned))})
+    save(&#x27;analysis/data_contract.json&#x27;,{&#x27;population&#x27;:&#x27;Frozen V1 score-available cohort; latest pre-observation 405 retained, 363 excluded. Score-missing offers remain excluded.&#x27;,&#x27;cutoff_exclusive&#x27;:&#x27;2026-10-08&#x27;,&#x27;data_date&#x27;:&#x27;2026-10-07&#x27;,&#x27;observation&#x27;:&#x27;first return application, or live cutoff&#x27;,&#x27;label&#x27;:&#x27;whole funded order unsettled at due_date+D7 end&#x27;,&#x27;evaluation&#x27;:&#x27;V1 historical test already viewed; comparative audit, not a fresh untouched holdout&#x27;,&#x27;source_snapshot_sha256&#x27;:digest(OLD/&#x27;data/all_feature_snapshots.pkl.gz&#x27;),&#x27;history_detail_sha256&#x27;:digest(path),&#x27;rows&#x27;:len(b),&#x27;target_excluded_from_history&#x27;:True,&#x27;latest_history_remit_after_obs&#x27;:0})
+    print(&#x27;PREPARED&#x27;,len(b),len(names),&#x27;features&#x27;,flush=True)
+if __name__==&#x27;__main__&#x27;:main()
+</pre><pre># -*- coding: utf-8 -*-
+&quot;&quot;&quot;Equivalent as-of history aggregation locally; no target loan features.&quot;&quot;&quot;
+from common import *
+import io,time
+import numpy as np,pandas as pd
+from db import connect
+RAW_SQL=&quot;&quot;&quot;WITH cyc AS (
+ SELECT DISTINCT serial_id FROM wangchuanliang.side_recycle_type_copy WHERE recycle_type=2
+) SELECT o.user_id,o.serial_id,o.apply_time,o.remit_time,o.remit_amt,o.loan_day,
+ o.repaid_time,o.repaid_date,o.due_date,
+ CASE WHEN c.serial_id IS NOT NULL THEN 1 ELSE 0 END is_cycle
+FROM wangchuanliang.order_loan_f_v2_copy o
+JOIN tmp_churn_v2_users u ON u.user_id=o.user_id
+LEFT JOIN cyc c ON c.serial_id=o.serial_id
+WHERE o.is_remit=1 AND o.remit_amt&gt;0
+ AND o.apply_time&gt;=TIMESTAMP &#x27;2000-01-01&#x27;
+ AND o.apply_time&lt;TIMESTAMP &#x27;2026-10-08&#x27;
+ AND o.remit_time&lt;TIMESTAMP &#x27;2026-10-08&#x27;&quot;&quot;&quot;
+def get_detail(b):
+    raw=ROOT/&#x27;data/history_raw_orders.csv.gz&#x27;
+    (ROOT/&#x27;历史订单源数据取数.sql&#x27;).write_text(RAW_SQL,encoding=&#x27;utf-8&#x27;)
+    if not raw.exists():
+        con=connect();con.autocommit=True;cur=con.cursor()
+        try:
+            cur.execute(&quot;SET TIME ZONE &#x27;America/Belize&#x27;&quot;);cur.execute(&#x27;SET query_dop=1&#x27;);cur.execute(&#x27;SET statement_timeout=0&#x27;)
+            cur.execute(&#x27;CREATE TEMP TABLE tmp_churn_v2_users(user_id bigint)&#x27;)
+            buf=io.StringIO();b[[&#x27;user_id&#x27;]].drop_duplicates().to_csv(buf,index=False,header=False);buf.seek(0)
+            cur.copy_expert(&#x27;COPY tmp_churn_v2_users FROM STDIN WITH (FORMAT CSV)&#x27;,buf)
+            print(&#x27;EXTRACT_RAW_HISTORY&#x27;,b.user_id.nunique(),&#x27;users&#x27;,flush=True);at=time.time()
+            # Reuse the existing proven compressed transport. Freeze the query
+            # in a session-local table and paginate on unique serial_id first.
+            from extract import dump_query
+            cur.execute(&#x27;CREATE TEMP TABLE tmp_churn_v2_raw_orders AS &#x27;+RAW_SQL)
+            cur.execute(&#x27;SELECT count(*) FROM tmp_churn_v2_raw_orders&#x27;);expected=cur.fetchone()[0]
+            export_sql=&#x27;SELECT serial_id,user_id,apply_time,remit_time,remit_amt,loan_day,repaid_time,repaid_date,due_date,is_cycle FROM tmp_churn_v2_raw_orders&#x27;
+            count=dump_query(cur,export_sql,raw)
+            assert count==expected
+            print(&#x27;RAW_HISTORY_DONE&#x27;,count,&#x27;seconds&#x27;,round(time.time()-at,1),flush=True)
+        finally:cur.close();con.close()
+    o=pd.read_csv(raw,float_precision=&#x27;round_trip&#x27;)
+    assert o.serial_id.is_unique
+    for field in (&#x27;apply_time&#x27;,&#x27;remit_time&#x27;,&#x27;repaid_time&#x27;,&#x27;repaid_date&#x27;,&#x27;due_date&#x27;):o[field]=pd.to_datetime(o[field],format=&#x27;mixed&#x27;)
+    e=b[[&#x27;event_id&#x27;,&#x27;user_id&#x27;,&#x27;obs_time&#x27;,&#x27;obs_date&#x27;,&#x27;target_serial&#x27;]]
+    h=e.merge(o,on=&#x27;user_id&#x27;,how=&#x27;inner&#x27;)
+    h=h[(h.apply_time&lt;h.obs_time)&amp;(h.remit_time&lt;h.obs_time)&amp;(h.serial_id!=h.target_serial)].copy()
+    h=h.sort_values([&#x27;event_id&#x27;,&#x27;remit_time&#x27;,&#x27;serial_id&#x27;],ascending=[True,False,False]);h[&#x27;recency_rank&#x27;]=h.groupby(&#x27;event_id&#x27;).cumcount()+1
+    h[&#x27;settled_before_obs&#x27;]=(h.repaid_time&gt;pd.Timestamp(&#x27;2000-01-01&#x27;))&amp;(h.repaid_time&lt;h.obs_time)
+    h[&#x27;mature_d0&#x27;]=(h.due_date&gt;pd.Timestamp(&#x27;2000-01-01&#x27;))&amp;(h.due_date+pd.Timedelta(days=1)&lt;=h.obs_date)
+    h[&#x27;mature_d7&#x27;]=(h.due_date&gt;pd.Timestamp(&#x27;2000-01-01&#x27;))&amp;(h.due_date+pd.Timedelta(days=8)&lt;=h.obs_date)
+    h[&#x27;bad_d0&#x27;]=~((h.repaid_date&gt;pd.Timestamp(&#x27;2000-01-01&#x27;))&amp;(h.repaid_date&lt;=h.due_date))
+    h[&#x27;bad_d7&#x27;]=~((h.repaid_date&gt;pd.Timestamp(&#x27;2000-01-01&#x27;))&amp;(h.repaid_date&lt;=h.due_date+pd.Timedelta(days=7)))
+    h[&#x27;early_days&#x27;]=(h.due_date-h.repaid_date).dt.days.where(h.settled_before_obs)
+    h[&#x27;repay_days&#x27;]=(h.repaid_time-h.remit_time).dt.total_seconds().div(86400).where(h.settled_before_obs)
+    ix=pd.Index(b.event_id,name=&#x27;event_id&#x27;);values={}
+    def aggregate(name,series,kind=&#x27;sum&#x27;,zero=False):
+        agg=series.groupby(h.event_id).agg(kind).reindex(ix)
+        values[name]=agg.fillna(0) if zero else agg
+    aggregate(&#x27;detail_funded_count&#x27;,h.serial_id,&#x27;count&#x27;,True)
+    aggregate(&#x27;detail_settled_count&#x27;,h.settled_before_obs.astype(int),zero=True)
+    for d in (&#x27;d0&#x27;,&#x27;d7&#x27;):
+        aggregate(f&#x27;detail_{d}_mature_count&#x27;,h[f&#x27;mature_{d}&#x27;].astype(int),zero=True)
+        aggregate(f&#x27;detail_{d}_bad_count&#x27;,(h[f&#x27;mature_{d}&#x27;]&amp;h[f&#x27;bad_{d}&#x27;]).astype(int),zero=True)
+    early=h.settled_before_obs&amp;(h.early_days&gt;0)
+    aggregate(&#x27;detail_early_count&#x27;,early.astype(int),zero=True)
+    for field in (&#x27;early_days&#x27;,&#x27;repay_days&#x27;):
+        for stat in (&#x27;mean&#x27;,&#x27;std&#x27;):aggregate(f&#x27;detail_{field}_{stat}&#x27;,h[field],stat)
+    aggregate(&#x27;detail_early_days_min&#x27;,h.early_days,&#x27;min&#x27;)
+    aggregate(&#x27;detail_cycle_funded_count&#x27;,h.is_cycle,&#x27;sum&#x27;,True)
+    unsettled=(h.due_date&lt;h.obs_date)&amp;(h.repaid_time.isna()|(h.repaid_time&lt;=pd.Timestamp(&#x27;2000-01-01&#x27;))|(h.repaid_time&gt;=h.obs_time))
+    aggregate(&#x27;detail_unsettled_due_asof_count&#x27;,unsettled.astype(int),zero=True)
+    aggregate(&#x27;detail_latest_history_remit_time&#x27;,h.remit_time,&#x27;max&#x27;)
+    for k in (1,2,3,4,5):
+        for value in (&#x27;remit_amt&#x27;,&#x27;loan_day&#x27;,&#x27;early_days&#x27;,&#x27;repay_days&#x27;,&#x27;bad_d0&#x27;,&#x27;bad_d7&#x27;,&#x27;is_cycle&#x27;):
+            mask=h.recency_rank==k
+            if value==&#x27;bad_d0&#x27;:mask &amp;= h.mature_d0
+            if value==&#x27;bad_d7&#x27;:mask &amp;= h.mature_d7
+            if value in (&#x27;early_days&#x27;,&#x27;repay_days&#x27;):mask &amp;= h.settled_before_obs
+            aggregate(f&#x27;last{k}_{value}&#x27;,h[value].astype(float).where(mask),&#x27;max&#x27;)
+    for k in (3,5,10):
+        conditions={&#x27;d0_mature&#x27;:h.mature_d0,&#x27;d0_bad&#x27;:h.mature_d0&amp;h.bad_d0,&#x27;d7_mature&#x27;:h.mature_d7,&#x27;d7_bad&#x27;:h.mature_d7&amp;h.bad_d7,&#x27;settled&#x27;:h.settled_before_obs,&#x27;early&#x27;:early}
+        for name,mask in conditions.items():aggregate(f&#x27;last{k}_{name}_count&#x27;,((h.recency_rank&lt;=k)&amp;mask).astype(int),zero=True)
+    for w in (90,180,365):
+        for name,cond in [(&#x27;d7_mature&#x27;,h.mature_d7),(&#x27;d7_bad&#x27;,h.mature_d7&amp;h.bad_d7),(&#x27;settled&#x27;,h.settled_before_obs),(&#x27;early&#x27;,early)]:
+            timecol=h.repaid_time if name in (&#x27;settled&#x27;,&#x27;early&#x27;) else h.remit_time
+            mask=(timecol&gt;=h.obs_time-pd.Timedelta(days=w))&amp;cond
+            aggregate(f&#x27;detail_{name}_{w}d&#x27;,mask.astype(int),zero=True)
+    q=pd.DataFrame(values,index=ix).reset_index()
+    assert q.event_id.is_unique and len(q)==len(b)
+    assert (q.detail_d7_bad_count&lt;=q.detail_d7_mature_count).all()
+    assert (q.detail_d0_bad_count&lt;=q.detail_d0_mature_count).all()
+    assert (q.detail_early_count&lt;=q.detail_settled_count).all()
+    for kind in (&#x27;d0_mature&#x27;,&#x27;d0_bad&#x27;,&#x27;d7_mature&#x27;,&#x27;d7_bad&#x27;,&#x27;settled&#x27;,&#x27;early&#x27;):
+        assert (q[f&#x27;last3_{kind}_count&#x27;]&lt;=q[f&#x27;last5_{kind}_count&#x27;]).all()
+        assert (q[f&#x27;last5_{kind}_count&#x27;]&lt;=q[f&#x27;last10_{kind}_count&#x27;]).all()
+    q.to_csv(ROOT/&#x27;data/history_detail.csv.gz&#x27;,index=False,compression=&#x27;gzip&#x27;)
+    save(&#x27;analysis/history_asof_audit.json&#x27;,{&#x27;raw_orders&#x27;:len(o),&#x27;observations&#x27;:len(b),&#x27;joined_history_rows&#x27;:len(h),&#x27;history_target_rows&#x27;:int((h.serial_id==h.target_serial).sum()),&#x27;history_apply_at_or_after_obs&#x27;:int((h.apply_time&gt;=h.obs_time).sum()),&#x27;history_remit_at_or_after_obs&#x27;:int((h.remit_time&gt;=h.obs_time).sum()),&#x27;d7_maturity_rule&#x27;:&#x27;due_date+8&lt;=obs_date&#x27;,&#x27;method&#x27;:&#x27;Extract unique users historical loans once, aggregate per frozen observation locally&#x27;,&#x27;raw_sha256&#x27;:digest(raw)})
+    print(&#x27;LOCAL_HISTORY_AGGREGATED&#x27;,len(q),&#x27;rows&#x27;,flush=True)
+    return q
+</pre><pre># -*- coding: utf-8 -*-
+from common import *
+import time,platform
+import numpy as np,pandas as pd,joblib
+from sklearn.ensemble import HistGradientBoostingClassifier
+from sklearn.linear_model import LogisticRegression
+from sklearn.impute import SimpleImputer
+from sklearn.preprocessing import StandardScaler
+from sklearn.pipeline import make_pipeline
+from sklearn.metrics import roc_auc_score,roc_curve,average_precision_score,brier_score_loss,log_loss
+
+SEED=20261010
+def metrics(y,p):
+    y=np.asarray(y,int);p=np.clip(np.asarray(p,float),1e-6,1-1e-6)
+    out={&#x27;n&#x27;:len(y),&#x27;bad&#x27;:int(y.sum()),&#x27;bad_rate&#x27;:float(y.mean()) if len(y) else None,&#x27;mean_prediction&#x27;:float(p.mean()) if len(p) else None}
+    if len(np.unique(y))&lt;2:return out
+    f,t,_=roc_curve(y,p);idx=np.argsort(-p,kind=&#x27;stable&#x27;)[:max(1,int(np.ceil(len(y)*.2)))]
+    return {**out,&#x27;auc&#x27;:float(roc_auc_score(y,p)),&#x27;ks&#x27;:float(max(t-f)),&#x27;ap&#x27;:float(average_precision_score(y,p)),&#x27;brier&#x27;:float(brier_score_loss(y,p)),&#x27;log_loss&#x27;:float(log_loss(y,p)),&#x27;top20_bad_rate&#x27;:float(y[idx].mean()),&#x27;top20_bad_recall&#x27;:float(y[idx].sum()/y.sum())}
+def raw_predict(model,x):return model.predict_proba(x)[:,1]
+def fit_calibrator(p,y):
+    p=np.clip(p,1e-6,1-1e-6);c=LogisticRegression(C=1000,max_iter=2000,random_state=SEED)
+    c.fit(np.log(p/(1-p)).reshape(-1,1),y)
+    assert c.coef_[0,0]&gt;0
+    return c
+def predict(bundle,df):
+    p=np.clip(raw_predict(bundle[&#x27;model&#x27;],df[bundle[&#x27;features&#x27;]]),1e-6,1-1e-6)
+    return bundle[&#x27;calibrator&#x27;].predict_proba(np.log(p/(1-p)).reshape(-1,1))[:,1]
+def bootstrap(df,a,b,rep=1000):
+    rng=np.random.default_rng(SEED);uids,inv=np.unique(df.user_id,return_inverse=True);y=df.target_d7.to_numpy(int)
+    values=[]
+    for _ in range(rep):
+        cnt=np.bincount(rng.integers(0,len(uids),len(uids)),minlength=len(uids));w=cnt[inv]
+        values.append(roc_auc_score(y,df[a],sample_weight=w)-roc_auc_score(y,df[b],sample_weight=w))
+    return {&#x27;iterations&#x27;:rep,&#x27;unit&#x27;:&#x27;user_id&#x27;,&#x27;low95&#x27;:float(np.quantile(values,.025)),&#x27;high95&#x27;:float(np.quantile(values,.975)),&#x27;mean&#x27;:float(np.mean(values))}
+def main():
+    started=time.time();b=pd.read_pickle(ROOT/&#x27;data/feature_snapshots.pkl.gz&#x27;);info=json.loads((ROOT/&#x27;analysis/features.json&#x27;).read_text());allcols=info[&#x27;features&#x27;]
+    h=b[b.sample_kind==&#x27;historical&#x27;].copy()
+    masks={
+        &#x27;train&#x27;:(h.obs_date&gt;=&#x27;2025-07-01&#x27;)&amp;(h.obs_date&lt;&#x27;2026-06-01&#x27;)&amp;(h.target_due_date+pd.Timedelta(days=8)&lt;=pd.Timestamp(&#x27;2026-06-01&#x27;)),
+        &#x27;tune&#x27;:(h.obs_date&gt;=&#x27;2026-06-01&#x27;)&amp;(h.obs_date&lt;&#x27;2026-07-01&#x27;)&amp;(h.target_due_date+pd.Timedelta(days=8)&lt;=pd.Timestamp(&#x27;2026-07-01&#x27;)),
+        &#x27;calibration&#x27;:(h.obs_date&gt;=&#x27;2026-07-01&#x27;)&amp;(h.obs_date&lt;&#x27;2026-08-01&#x27;)&amp;(h.target_due_date+pd.Timedelta(days=8)&lt;=pd.Timestamp(&#x27;2026-08-01&#x27;)),
+        &#x27;test&#x27;:(h.obs_date&gt;=&#x27;2026-08-01&#x27;)&amp;(h.obs_date&lt;&#x27;2026-10-08&#x27;)&amp;(h.target_due_date+pd.Timedelta(days=8)&lt;=pd.Timestamp(&#x27;2026-10-08&#x27;)),
+        &#x27;refit&#x27;:(h.obs_date&gt;=&#x27;2025-07-01&#x27;)&amp;(h.obs_date&lt;&#x27;2026-07-01&#x27;)&amp;(h.target_due_date+pd.Timedelta(days=8)&lt;=pd.Timestamp(&#x27;2026-07-01&#x27;)),
+    }
+    sets={k:h.loc[v].copy() for k,v in masks.items()}
+    tr,va,ca,te=[sets[k] for k in (&#x27;train&#x27;,&#x27;tune&#x27;,&#x27;calibration&#x27;,&#x27;test&#x27;)]
+    old=joblib.load(OLD/&#x27;models/churn405_v1.joblib&#x27;)
+    oldpred=pd.read_csv(OLD/&#x27;data/test_predictions.csv.gz&#x27;,float_precision=&#x27;round_trip&#x27;)
+    assert set(te.event_id)==set(oldpred.event_id)
+    assert te.event_id.is_unique
+    for k,d in sets.items():
+        print(&#x27;SPLIT&#x27;,k,len(d),int(d.target_d7.sum()),flush=True)
+        d[[&#x27;event_id&#x27;,&#x27;user_id&#x27;,&#x27;obs_time&#x27;,&#x27;obs_date&#x27;,&#x27;target_serial&#x27;,&#x27;target_due_date&#x27;,&#x27;target_d7&#x27;]+allcols].to_csv(ROOT/&#x27;data&#x27;/f&#x27;{k}_features_labels.csv.gz&#x27;,index=False,compression=&#x27;gzip&#x27;)
+    assert set(sets[&#x27;refit&#x27;].event_id).isdisjoint(ca.event_id) and set(sets[&#x27;refit&#x27;].event_id).isdisjoint(te.event_id)
+    # Outcome maturity closes before each next stage. No target loans are features.
+    assert (sets[&#x27;refit&#x27;].target_due_date+pd.Timedelta(days=8)&lt;=pd.Timestamp(&#x27;2026-07-01&#x27;)).all()
+    assert (ca.target_due_date+pd.Timedelta(days=8)&lt;=pd.Timestamp(&#x27;2026-08-01&#x27;)).all()
+    lifecycle=[f for f in allcols if not f.startswith((&#x27;app_&#x27;,&#x27;nonpay_&#x27;,&#x27;days_since_app&#x27;))]
+    interaction=[f for f in lifecycle if f.startswith((&#x27;risk_score&#x27;,&#x27;score&#x27;,&#x27;churn&#x27;,&#x27;hist_d7&#x27;,&#x27;last3_d7&#x27;,&#x27;last5_d7&#x27;,&#x27;detail_d7&#x27;,&#x27;previous_loan_count&#x27;,&#x27;prev_early&#x27;,&#x27;hist_early&#x27;))]
+    oldcols=old[&#x27;features&#x27;];oldval=metrics(va.target_d7,predict(old,va))
+    specs=[]
+    legacy_interactions=list(dict.fromkeys(oldcols+[f for f in allcols if f.startswith(&#x27;score405&#x27;) or f.startswith(&#x27;churn_over_&#x27;)]))
+    for i,leaves in enumerate((7,15,31)):
+        specs.append((f&#x27;legacy_churn_interactions_{i}&#x27;,legacy_interactions,dict(max_leaf_nodes=leaves,max_iter=250,learning_rate=.035,l2_regularization=30,min_samples_leaf=150)))
+    for leaves,it,rate,reg,minleaf in [(7,200,.04,30,150),(15,180,.05,10,100),(15,300,.03,30,150),(15,400,.025,60,200),(31,250,.035,40,150),(31,350,.03,80,250),(63,200,.035,80,300)]:
+        params=dict(max_leaf_nodes=leaves,max_iter=it,learning_rate=rate,l2_regularization=reg,min_samples_leaf=minleaf)
+        specs.append((f&#x27;lifecycle_{len(specs)}&#x27;,lifecycle,params))
+    for i,params in enumerate([dict(max_leaf_nodes=15,max_iter=180,learning_rate=.05,l2_regularization=20,min_samples_leaf=150),dict(max_leaf_nodes=31,max_iter=300,learning_rate=.03,l2_regularization=60,min_samples_leaf=250),dict(max_leaf_nodes=7,max_iter=250,learning_rate=.035,l2_regularization=30,min_samples_leaf=250)]):specs.append((f&#x27;app_full_{i}&#x27;,allcols,params))
+    specs.extend([(f&#x27;405_churn_history_{i}&#x27;,interaction,dict(max_leaf_nodes=leaves,max_iter=250,learning_rate=.035,l2_regularization=30,min_samples_leaf=150)) for i,leaves in enumerate((5,10,15))])
+    candidates={};experiments=[]
+    for tag,cols,params in specs:
+        at=time.time();model=HistGradientBoostingClassifier(random_state=SEED,early_stopping=False,**params)
+        model.fit(tr[cols],tr.target_d7);p=raw_predict(model,va[cols]);met=metrics(va.target_d7,p)
+        long=va.churn_days&gt;=30
+        experiment={&#x27;tag&#x27;:tag,&#x27;features&#x27;:len(cols),&#x27;params&#x27;:params,&#x27;validation&#x27;:met,&#x27;long_churn_validation&#x27;:metrics(va.loc[long,&#x27;target_d7&#x27;],p[long]),&#x27;seconds&#x27;:round(time.time()-at,2)}
+        experiments.append(experiment);candidates[tag]=(model,cols,params)
+        save(&#x27;analysis/tuning.json&#x27;,experiments);print(&#x27;FIT&#x27;,tag,&#x27;auc&#x27;,round(met[&#x27;auc&#x27;],4),&#x27;long_auc&#x27;,round(experiment[&#x27;long_churn_validation&#x27;].get(&#x27;auc&#x27;,0),4),flush=True)
+    for strength in (.01,.1,1):
+        tag=f&#x27;logistic_interaction_C{strength}&#x27;;model=make_pipeline(SimpleImputer(strategy=&#x27;median&#x27;,add_indicator=True),StandardScaler(),LogisticRegression(C=strength,max_iter=2000,random_state=SEED))
+        model.fit(tr[lifecycle],tr.target_d7);p=raw_predict(model,va[lifecycle]);met=metrics(va.target_d7,p)
+        long=va.churn_days&gt;=30
+        experiments.append({&#x27;tag&#x27;:tag,&#x27;features&#x27;:len(lifecycle),&#x27;params&#x27;:{&#x27;C&#x27;:strength},&#x27;validation&#x27;:met,&#x27;long_churn_validation&#x27;:metrics(va.loc[long,&#x27;target_d7&#x27;],p[long])})
+        candidates[tag]=(model,lifecycle,{&#x27;C&#x27;:strength});save(&#x27;analysis/tuning.json&#x27;,experiments)
+        print(&#x27;FIT&#x27;,tag,&#x27;auc&#x27;,round(met[&#x27;auc&#x27;],4),flush=True)
+    chosen=max(experiments,key=lambda r:r[&#x27;validation&#x27;][&#x27;auc&#x27;])[&#x27;tag&#x27;];frozen,cols,params=candidates[chosen]
+    save(&#x27;analysis/locked_selection.json&#x27;,{&#x27;chosen&#x27;:chosen,&#x27;features&#x27;:cols,&#x27;validation_rule&#x27;:&#x27;Highest June mature overall AUC; subgroup results diagnostic only&#x27;,&#x27;refit_policy&#x27;:&#x27;Predeclared: refit selected configuration on all pre-July labels mature by July 1; July only for calibration, August onward only evaluation&#x27;,&#x27;historical_test_reuse&#x27;:&#x27;V1 test already inspected; not a new untouched test&#x27;})
+    for tag,(m,fs,p) in candidates.items():joblib.dump({&#x27;model&#x27;:m,&#x27;features&#x27;:fs},ROOT/&#x27;models&#x27;/f&#x27;candidate_{tag}.joblib&#x27;)
+    import sklearn.base
+    model=sklearn.base.clone(frozen);model.fit(sets[&#x27;refit&#x27;][cols],sets[&#x27;refit&#x27;].target_d7)
+    cal=fit_calibrator(raw_predict(model,ca[cols]),ca.target_d7)
+    frozen_bundle={&#x27;model&#x27;:frozen,&#x27;features&#x27;:cols,&#x27;calibrator&#x27;:fit_calibrator(raw_predict(frozen,ca[cols]),ca.target_d7)}
+    bundle={&#x27;model&#x27;:model,&#x27;features&#x27;:cols,&#x27;calibrator&#x27;:cal,&#x27;contract&#x27;:&#x27;Latest pre-observation 405 + churn&gt;=7; first return application; funded whole-order D7 label; no 363&#x27;,&#x27;seed&#x27;:SEED}
+    # Quantile bands freeze on July users. No test outcomes influence the thresholds.
+    ca[&#x27;p_v2&#x27;]=predict(bundle,ca)
+    ref=ca.sort_values(&#x27;obs_time&#x27;).drop_duplicates(&#x27;user_id&#x27;,keep=&#x27;last&#x27;);cuts=np.quantile(ref.p_v2,[.1,.3,.6]).tolist()
+    bundle[&#x27;relative_risk_grade_thresholds&#x27;]=cuts
+    joblib.dump(bundle,ROOT/&#x27;models/churn405_v2.joblib&#x27;)
+    joblib.dump(frozen_bundle,ROOT/&#x27;models/churn405_v2_fixed_train_ablation.joblib&#x27;)
+    te=te.merge(oldpred[[&#x27;event_id&#x27;,&#x27;target_d7&#x27;,&#x27;prob_d7_risk_enhanced&#x27;,&#x27;prob_d7_risk_405_only&#x27;,&#x27;grade_405&#x27;]],on=&#x27;event_id&#x27;,validate=&#x27;one_to_one&#x27;,suffixes=(&#x27;&#x27;,&#x27;_old&#x27;))
+    assert (te.target_d7==te.target_d7_old).all()
+    te[&#x27;p_v1&#x27;]=te.prob_d7_risk_enhanced;te[&#x27;p_405_baseline&#x27;]=te.prob_d7_risk_405_only
+    assert np.max(np.abs(predict(old,te)-te.p_v1))&lt;1e-12
+    te[&#x27;p_v2&#x27;]=predict(bundle,te);te[&#x27;p_v2_fixed_train&#x27;]=predict(frozen_bundle,te)
+    def grade(p):return np.select([p&lt;=cuts[0],p&lt;=cuts[1],p&lt;=cuts[2]],[&#x27;较低风险&#x27;,&#x27;偏低风险&#x27;,&#x27;中等风险&#x27;],default=&#x27;较高风险&#x27;)
+    te[&#x27;v2_relative_risk_grade&#x27;]=grade(te.p_v2)
+    te[&#x27;risk_score_v2&#x27;]=1000*(1-te.p_v2)
+    te[&#x27;churn_group&#x27;]=pd.cut(te.churn_days,[6,14,29,59,89,np.inf],labels=[&#x27;7–14天&#x27;,&#x27;15–29天&#x27;,&#x27;30–59天&#x27;,&#x27;60–89天&#x27;,&#x27;90天以上&#x27;]).astype(str)
+    te[&#x27;month&#x27;]=te.obs_date.dt.strftime(&#x27;%Y-%m&#x27;)
+    te[&#x27;new_user&#x27;]=~te.user_id.isin(sets[&#x27;refit&#x27;].user_id)
+    result={&#x27;selected&#x27;:chosen,&#x27;candidate_features&#x27;:len(allcols),&#x27;selected_features&#x27;:len(cols),&#x27;test&#x27;:{name:metrics(te.target_d7,te[p]) for name,p in [(&#x27;V1&#x27;,&#x27;p_v1&#x27;),(&#x27;V2_fixed_train&#x27;,&#x27;p_v2_fixed_train&#x27;),(&#x27;V2&#x27;,&#x27;p_v2&#x27;),(&#x27;405_probability_baseline&#x27;,&#x27;p_405_baseline&#x27;)]},&#x27;raw_405_auc&#x27;:float(roc_auc_score(te.target_d7,-te.risk_score_405)),&#x27;v1_validation&#x27;:oldval,&#x27;splits&#x27;:{k:{&#x27;rows&#x27;:len(d),&#x27;users&#x27;:int(d.user_id.nunique()),&#x27;bad&#x27;:int(d.target_d7.sum())} for k,d in sets.items()},&#x27;grade_reference_users&#x27;:len(ref),&#x27;grade_thresholds&#x27;:cuts,&#x27;runtime_seconds&#x27;:round(time.time()-started,2)}
+    print(&#x27;LOCKED&#x27;,chosen,&#x27;TEST&#x27;,json.dumps(result[&#x27;test&#x27;],ensure_ascii=False),flush=True)
+    result[&#x27;auc_delta_v2_minus_v1_ci&#x27;]=bootstrap(te,&#x27;p_v2&#x27;,&#x27;p_v1&#x27;)
+    result[&#x27;fixed_train_auc_delta_ci&#x27;]=bootstrap(te,&#x27;p_v2_fixed_train&#x27;,&#x27;p_v1&#x27;)
+    result[&#x27;model_status&#x27;]=&#x27;offline_gain_requires_prospective_validation&#x27; if result[&#x27;auc_delta_v2_minus_v1_ci&#x27;][&#x27;low95&#x27;]&gt;0 else &#x27;experimental_not_promoted&#x27;
+    long=te[te.churn_days&gt;=30].copy()
+    result[&#x27;long_churn&#x27;]={name:metrics(long.target_d7,long[p]) for name,p in [(&#x27;V1&#x27;,&#x27;p_v1&#x27;),(&#x27;V2&#x27;,&#x27;p_v2&#x27;)]}
+    result[&#x27;long_churn_auc_delta_ci&#x27;]=bootstrap(long,&#x27;p_v2&#x27;,&#x27;p_v1&#x27;,500)
+    focus=te[(te.grade_405==&#x27;优质&#x27;)&amp;(te.churn_days&gt;=30)].copy()
+    result[&#x27;quality_long_churn&#x27;]={name:metrics(focus.target_d7,focus[p]) for name,p in [(&#x27;V1&#x27;,&#x27;p_v1&#x27;),(&#x27;V2&#x27;,&#x27;p_v2&#x27;)]}
+    result[&#x27;quality_long_churn_auc_delta_ci&#x27;]=bootstrap(focus,&#x27;p_v2&#x27;,&#x27;p_v1&#x27;,500)
+    groups=[]
+    for fields in ([&#x27;month&#x27;],[&#x27;grade_405&#x27;],[&#x27;churn_group&#x27;],[&#x27;grade_405&#x27;,&#x27;churn_group&#x27;],[&#x27;v2_relative_risk_grade&#x27;],[&#x27;grade_405&#x27;,&#x27;v2_relative_risk_grade&#x27;],[&#x27;new_user&#x27;]):
+        for key,d in te.groupby(fields,observed=True):
+            key=key if isinstance(key,tuple) else (key,)
+            groups.append({&#x27;group_type&#x27;:&#x27; × &#x27;.join(fields),&#x27;group&#x27;:&#x27; / &#x27;.join(map(str,key)),&#x27;n&#x27;:len(d),&#x27;bad&#x27;:int(d.target_d7.sum()),&#x27;actual&#x27;:float(d.target_d7.mean()),&#x27;v1&#x27;:metrics(d.target_d7,d.p_v1),&#x27;v2&#x27;:metrics(d.target_d7,d.p_v2),&#x27;raw405_auc&#x27;:float(roc_auc_score(d.target_d7,-d.risk_score_405)) if d.target_d7.nunique()&gt;1 else None})
+    grade_order=[&#x27;较低风险&#x27;,&#x27;偏低风险&#x27;,&#x27;中等风险&#x27;,&#x27;较高风险&#x27;]
+    grade_actual=[next(g[&#x27;actual&#x27;] for g in groups if g[&#x27;group_type&#x27;]==&#x27;v2_relative_risk_grade&#x27; and g[&#x27;group&#x27;]==level) for level in grade_order]
+    result[&#x27;relative_grade_actual_rates&#x27;]={&#x27;low_to_high_order&#x27;:grade_order,&#x27;actual_rates&#x27;:grade_actual,&#x27;monotonic&#x27;:bool(np.all(np.diff(grade_actual)&gt;=0))}
+    # Feature importance uses June validation only, three repeats per field group.
+    importance=[];rng=np.random.default_rng(SEED)
+    groups_f={&#x27;405及评分流失交互&#x27;:[f for f in cols if f==&#x27;risk_score_405&#x27; or f.startswith(&#x27;score405&#x27;)],&#x27;流失天数&#x27;:[f for f in cols if f.startswith(&#x27;churn&#x27;)],&#x27;新增还款细分&#x27;:[f for f in cols if f.startswith((&#x27;last&#x27;,&#x27;detail&#x27;,&#x27;recent3&#x27;))],&#x27;实际App&#x27;:[f for f in cols if f.startswith(&#x27;app_&#x27;) or f.startswith(&#x27;days_since_app&#x27;)],&#x27;非还款日App&#x27;:[f for f in cols if f.startswith(&#x27;nonpay_&#x27;)],&#x27;已有历史额度还款&#x27;:[f for f in cols if f.startswith((&#x27;hist_&#x27;,&#x27;prev_&#x27;,&#x27;previous_&#x27;,&#x27;credit&#x27;))]}
+    base_auc=roc_auc_score(va.target_d7,raw_predict(frozen,va[cols]))
+    for name,fs in groups_f.items():
+        if not fs:continue
+        values=[]
+        for _ in range(3):
+            perm=va[cols].copy();perm.loc[:,fs]=perm[fs].iloc[rng.permutation(len(perm))].to_numpy()
+            values.append(base_auc-roc_auc_score(va.target_d7,raw_predict(frozen,perm)))
+        importance.append({&#x27;group&#x27;:name,&#x27;features&#x27;:len(fs),&#x27;validation_auc_drop_mean&#x27;:float(np.mean(values)),&#x27;drops&#x27;:values})
+    te.to_csv(ROOT/&#x27;data/test_predictions.csv.gz&#x27;,index=False,compression=&#x27;gzip&#x27;)
+    detail=[&#x27;event_id&#x27;,&#x27;user_id&#x27;,&#x27;target_serial&#x27;,&#x27;obs_time&#x27;,&#x27;anchor_date&#x27;,&#x27;churn_days&#x27;,&#x27;risk_score_405&#x27;,&#x27;grade_405&#x27;,&#x27;target_d7&#x27;,&#x27;p_v1&#x27;,&#x27;p_v2&#x27;,&#x27;risk_score_v2&#x27;,&#x27;v2_relative_risk_grade&#x27;]
+    te[detail].to_csv(ROOT/&#x27;测试逐笔预测与V1对照.csv&#x27;,index=False)
+    live=b[b.sample_kind==&#x27;live&#x27;].copy();live[&#x27;p_v2&#x27;]=predict(bundle,live);live[&#x27;p_v1&#x27;]=predict(old,live)
+    live[&#x27;risk_score_v2&#x27;]=1000*(1-live.p_v2);live[&#x27;v2_relative_risk_grade&#x27;]=grade(live.p_v2)
+    live[&#x27;requires_recredit&#x27;]=live.score_age_days&gt;=15;live[&#x27;prediction_scope&#x27;]=&#x27;未再次提单用户，风险外推仅影子验证；过期资格需重新获额&#x27;
+    live[&#x27;model_status&#x27;]=result[&#x27;model_status&#x27;]
+    live[[&#x27;event_id&#x27;,&#x27;user_id&#x27;,&#x27;obs_time&#x27;,&#x27;anchor_date&#x27;,&#x27;churn_days&#x27;,&#x27;score_serial&#x27;,&#x27;score_offer_time&#x27;,&#x27;score_age_days&#x27;,&#x27;risk_score_405&#x27;,&#x27;p_v1&#x27;,&#x27;p_v2&#x27;,&#x27;risk_score_v2&#x27;,&#x27;v2_relative_risk_grade&#x27;,&#x27;requires_recredit&#x27;,&#x27;prediction_scope&#x27;,&#x27;model_status&#x27;]].to_csv(ROOT/&#x27;当前流失用户V2重新评分.csv&#x27;,index=False)
+    live.to_csv(ROOT/&#x27;data/live_predictions.csv.gz&#x27;,index=False,compression=&#x27;gzip&#x27;)
+    result[&#x27;live_rows&#x27;]=len(live);result[&#x27;live_requires_recredit&#x27;]=int(live.requires_recredit.sum())
+    save(&#x27;analysis/results.json&#x27;,result);save(&#x27;analysis/test_groups.json&#x27;,groups);save(&#x27;analysis/group_importance.json&#x27;,importance)
+    exported=pd.read_csv(ROOT/&#x27;data/test_predictions.csv.gz&#x27;,float_precision=&#x27;round_trip&#x27;)
+    error=float(np.max(np.abs(predict(bundle,exported)-exported.p_v2)))
+    assert error&lt;1e-12
+    save(&#x27;analysis/verification.json&#x27;,{&#x27;same_test_event_ids&#x27;:True,&#x27;same_test_labels&#x27;:True,&#x27;v1_prediction_replayed&#x27;:True,&#x27;v2_export_replay_max_error&#x27;:error,&#x27;model_sha256&#x27;:digest(ROOT/&#x27;models/churn405_v2.joblib&#x27;),&#x27;v1_model_sha256&#x27;:digest(OLD/&#x27;models/churn405_v1.joblib&#x27;),&#x27;no_363&#x27;:not any(&#x27;363&#x27; in f for f in cols),&#x27;no_target_ids_as_features&#x27;:not any(&#x27;target&#x27; in f or &#x27;serial&#x27; in f or f==&#x27;user_id&#x27; for f in cols),&#x27;405_is_input&#x27;:&#x27;risk_score_405&#x27; in cols})
+    save(&#x27;analysis/environment.json&#x27;,{&#x27;python&#x27;:sys.version,&#x27;sklearn&#x27;:__import__(&#x27;sklearn&#x27;).__version__,&#x27;seed&#x27;:SEED,&#x27;threads&#x27;:4,&#x27;unavailable_algorithms&#x27;:&#x27;LightGBM and XGBoost import fail: macOS libomp absent. No global environment changes.&#x27;})
+    print(&#x27;COMPLETE&#x27;,json.dumps(result,ensure_ascii=False),flush=True)
+if __name__==&#x27;__main__&#x27;:main()
+</pre></details></section><footer class="footer">网页仅汇总数据；用户级特征、训练样本、测试与评分明细、模型均仅本地保存。</footer></main></body></html>
