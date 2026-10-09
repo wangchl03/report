@@ -1,0 +1,309 @@
+<!doctype html>
+<html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="description" content="2026年9月16至30日，T0事件405评分>490、>480、全部及其余事件的D0、D3、D7提单率对照；含完整已执行PGSQL。"><title>T0用户405评分与提单转化对比分析</title><style>
+:root{--bg:#061b2a;--panel:#0b2a40;--line:#21465a;--ink:#d9e7ef;--muted:#9bb5c7;--cyan:#43c7e7;--green:#64dcae;--amber:#ffc26b}
+*{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.8 -apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei",sans-serif}.wrap{max-width:1320px;margin:auto;padding:46px 30px 64px}.hero{text-align:center;padding:0 0 28px;border-bottom:1px solid var(--line)}.eyebrow{font-size:14px;letter-spacing:2px;color:var(--green);font-weight:750}h1{font-size:36px;line-height:1.45;color:#fff;margin:15px 0}h2{text-align:center;font-size:25px;color:var(--cyan);margin:0 0 24px}h3{font-size:19px;color:var(--amber);margin:22px 0 9px}p{margin:8px 0 14px}.small{font-size:14px;color:var(--muted)}strong{color:var(--green)}a{color:var(--cyan);text-decoration:none}a:hover{text-decoration:underline}nav{display:flex;justify-content:center;flex-wrap:wrap;gap:9px;padding:20px 0}nav a,.button{display:inline-block;padding:6px 13px;border:1px solid var(--line);border-radius:7px;background:var(--panel);font:inherit;color:var(--cyan);cursor:pointer}section{margin:24px 0;padding:28px;background:#082235;border:1px solid var(--line);border-radius:14px;scroll-margin-top:16px}.kpis{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px;margin:22px 0}.kpi{background:var(--panel);padding:18px;border-radius:10px;border-top:3px solid var(--green)}.kpi b{display:block;color:var(--green);font-size:clamp(24px,2.2vw,32px);font-variant-numeric:tabular-nums}.kpi span{font-size:14px;color:var(--muted)}.findings,.steps{display:grid;gap:12px}.finding,.step{padding:16px 18px;background:var(--panel);border-left:3px solid var(--cyan);border-radius:7px}.finding h3,.step h3{margin:0 0 6px}.finding p,.step p{margin:0}.note{padding:15px 18px;background:var(--panel);border-left:3px solid var(--amber);border-radius:8px;margin:18px 0}.table-scroll{overflow-x:auto;margin:18px 0}table{border-collapse:collapse;width:100%;font-size:14px;font-variant-numeric:tabular-nums}th,td{padding:11px 13px;border-bottom:1px solid var(--line);text-align:right;white-space:nowrap}th{color:var(--cyan);background:#123b51}th:first-child,td:first-child{text-align:left}td:first-child{color:#eaf4fa;font-weight:650}tr:last-child td{border-bottom:0}.legend{display:flex;flex-wrap:wrap;gap:14px 24px;margin:15px 0;font-size:14px}.legend span{display:flex;align-items:center;gap:8px}.legend i{display:inline-block;width:12px;height:12px;border-radius:50%}.chart-scroll{overflow-x:auto;margin:15px 0}svg{display:block;width:100%;min-width:960px;max-width:none}.bar,.segment{cursor:help}details{border:1px solid var(--line);border-radius:8px;padding:12px 15px;margin:16px 0}summary{cursor:pointer;color:var(--cyan);font-weight:700}code{color:#b3e4f5;font:13px/1.65 ui-monospace,SFMono-Regular,Menlo,monospace;overflow-wrap:anywhere}pre{background:#041725;border:1px solid var(--line);border-radius:8px;padding:20px;overflow:auto;margin:15px 0;max-height:780px;line-height:1.65}pre code{white-space:pre;overflow-wrap:normal}.formula{white-space:pre-wrap}.method-table td{white-space:normal;text-align:left;vertical-align:top}.method-table td:first-child{width:160px}.actions{display:flex;gap:12px;flex-wrap:wrap;align-items:center}.footer{text-align:center;font-size:13px;color:var(--muted);margin-top:26px}
+@media(max-width:800px){.wrap{padding:24px 14px}section{padding:22px 16px}h1{font-size:27px}h2{font-size:22px}.kpis{grid-template-columns:repeat(2,minmax(0,1fr))}.hero p{font-size:14px}.table-scroll table{min-width:650px}.method-table{min-width:650px}nav{gap:7px}nav a{padding:5px 8px;font-size:13px}pre{padding:14px}}
+@media print{body{background:white;color:#111}.wrap{max-width:none;padding:0}section,.finding,.step,.note,.kpi{background:white;break-inside:avoid}h1,h2,h3,strong,.kpi b,th,td:first-child{color:#163c58}.small,.kpi span{color:#555}nav,.actions{display:none}.chart-scroll,.table-scroll{overflow:visible}svg{min-width:0}pre{max-height:none;background:#eee;color:#111}pre code{white-space:pre-wrap;color:#222}table{font-size:10px}}
+</style></head>
+<body><main class="wrap">
+<header class="hero"><div class="eyebrow">405评分分层 · T0事件维度 · 同一母集对照</div><h1>T0用户405评分<br>与提单转化对比分析</h1><p>统计期：2026年9月16—30日　｜　生成日期：2026年10月9日</p><p class="small">主口径1：用户后续提单率　｜　完整数据截至2026年10月8日　｜　D0 / D3 / D7窗口均成熟</p></header>
+<nav><a href="#summary">核心结论</a><a href="#compare">四组对照</a><a href="#timing">首次提单时点</a><a href="#action">判断与建议</a><a href="#method">统计口径</a><a href="#audit">复现校验</a><a href="#sql">完整PGSQL</a></nav>
+
+<section id="summary"><h2>一、核心结论：评分高，不等于提单意愿强</h2>
+<div class="kpis"><article class="kpi"><b>10,338</b><span>全部T0事件</span></article><article class="kpi"><b>10.74%</b><span>>480分客群的T0事件占比</span></article><article class="kpi"><b>-13.60pp</b><span>>480分当天提单率较大盘</span></article><article class="kpi"><b>-11.76pp</b><span>>480分D7提单率较大盘</span></article></div>
+<div class="findings"><article class="finding"><h3>规模｜>480分覆盖1,110次事件，不是大多数T0事件</h3><p>>490分仅430次，占4.16%；放宽到>480分，占比提高至10.74%。</p></article><article class="finding"><h3>转化｜两个高分门槛下，三个窗口均低于大盘</h3><p>>480分当天25.50%、D3 42.43%、D7 53.51%；全部T0分别为39.10%、56.79%、65.27%。</p></article><article class="finding"><h3>对照｜剔除>480分事件后，其余客群转化更高</h3><p>其余9,228次事件的当天、D3、D7提单率为40.73%、58.52%、66.69%。这是样本构成变化后的统计结果，不是剔除用户带来的经营增益。</p></article></div>
+</section>
+
+<section id="compare"><h2>二、四类客群：规模与累计提单率对照</h2>
+<div class="table-scroll"><table class=""><thead><tr><th>405评分分组</th><th>T0事件数</th><th>当天提单率</th><th>D3提单率</th><th>D7提单率</th></tr></thead><tbody><tr><td>405分 >490</td><td>430</td><td>24.19%</td><td>41.63%</td><td>52.56%</td></tr><tr><td>405分 >480</td><td>1,110</td><td>25.50%</td><td>42.43%</td><td>53.51%</td></tr><tr><td>全部T0</td><td>10,338</td><td>39.10%</td><td>56.79%</td><td>65.27%</td></tr><tr><td>剔除 >480分（≤480）</td><td>9,228</td><td>40.73%</td><td>58.52%</td><td>66.69%</td></tr></tbody></table></div><p class="small">分母均为本组T0事件数，不按期间去重用户；>490分包含在>480分组内，四行不能相加。</p>
+<h3>同一观察窗口，高分客群的累计提单率更低</h3><div class="legend"><span><i style="background:#43c7e7"></i>当天 D0</span><span><i style="background:#ffc26b"></i>T0至D+3</span><span><i style="background:#64dcae"></i>T0至D+7</span></div><div class="chart-scroll"><svg viewBox="0 0 1260 560" role="img" aria-labelledby="compare-title"><title id="compare-title">四类客群的当天、D3、D7累计提单率</title><line x1="260.0" y1="18" x2="260.0" y2="478" stroke="#21465a"/><text x="260.0" y="515" text-anchor="middle" fill="#9bb5c7" font-size="16">0.0%</text><line x1="368.75" y1="18" x2="368.75" y2="478" stroke="#21465a"/><text x="368.75" y="515" text-anchor="middle" fill="#9bb5c7" font-size="16">10.0%</text><line x1="477.5" y1="18" x2="477.5" y2="478" stroke="#21465a"/><text x="477.5" y="515" text-anchor="middle" fill="#9bb5c7" font-size="16">20.0%</text><line x1="586.25" y1="18" x2="586.25" y2="478" stroke="#21465a"/><text x="586.25" y="515" text-anchor="middle" fill="#9bb5c7" font-size="16">30.0%</text><line x1="695.0" y1="18" x2="695.0" y2="478" stroke="#21465a"/><text x="695.0" y="515" text-anchor="middle" fill="#9bb5c7" font-size="16">40.0%</text><line x1="803.75" y1="18" x2="803.75" y2="478" stroke="#21465a"/><text x="803.75" y="515" text-anchor="middle" fill="#9bb5c7" font-size="16">50.0%</text><line x1="912.5" y1="18" x2="912.5" y2="478" stroke="#21465a"/><text x="912.5" y="515" text-anchor="middle" fill="#9bb5c7" font-size="16">60.0%</text><line x1="1021.25" y1="18" x2="1021.25" y2="478" stroke="#21465a"/><text x="1021.25" y="515" text-anchor="middle" fill="#9bb5c7" font-size="16">70.0%</text><line x1="1130.0" y1="18" x2="1130.0" y2="478" stroke="#21465a"/><text x="1130.0" y="515" text-anchor="middle" fill="#9bb5c7" font-size="16">80.0%</text><text x="12" y="68" fill="#eaf4fa" font-size="18" font-weight="700">405分 &gt;490</text><text x="12" y="97" fill="#9bb5c7" font-size="15">430次T0事件</text><rect class="bar" data-series="d0" x="260" y="35" width="263.0663" height="19" rx="3" fill="#43c7e7"><title>405分 &gt;490 · D0提单率 24.19%；提单事件104 / T0事件430</title></rect><text class="bar-value" x="535.0663" y="50" fill="#43c7e7" font-size="18" font-weight="750">24.19%</text><rect class="bar" data-series="d3" x="260" y="63" width="452.7263" height="19" rx="3" fill="#ffc26b"><title>405分 &gt;490 · D3提单率 41.63%；提单事件179 / T0事件430</title></rect><text class="bar-value" x="724.7263" y="78" fill="#ffc26b" font-size="18" font-weight="750">41.63%</text><rect class="bar" data-series="d7" x="260" y="91" width="571.5900" height="19" rx="3" fill="#64dcae"><title>405分 &gt;490 · D7提单率 52.56%；提单事件226 / T0事件430</title></rect><text class="bar-value" x="843.5900" y="106" fill="#64dcae" font-size="18" font-weight="750">52.56%</text><text x="12" y="180" fill="#eaf4fa" font-size="18" font-weight="700">405分 &gt;480</text><text x="12" y="209" fill="#9bb5c7" font-size="15">1,110次T0事件</text><rect class="bar" data-series="d0" x="260" y="147" width="277.3125" height="19" rx="3" fill="#43c7e7"><title>405分 &gt;480 · D0提单率 25.50%；提单事件283 / T0事件1,110</title></rect><text class="bar-value" x="549.3125" y="162" fill="#43c7e7" font-size="18" font-weight="750">25.50%</text><rect class="bar" data-series="d3" x="260" y="175" width="461.4263" height="19" rx="3" fill="#ffc26b"><title>405分 &gt;480 · D3提单率 42.43%；提单事件471 / T0事件1,110</title></rect><text class="bar-value" x="733.4262" y="190" fill="#ffc26b" font-size="18" font-weight="750">42.43%</text><rect class="bar" data-series="d7" x="260" y="203" width="581.9212" height="19" rx="3" fill="#64dcae"><title>405分 &gt;480 · D7提单率 53.51%；提单事件594 / T0事件1,110</title></rect><text class="bar-value" x="853.9212" y="218" fill="#64dcae" font-size="18" font-weight="750">53.51%</text><text x="12" y="292" fill="#eaf4fa" font-size="18" font-weight="700">全部T0</text><text x="12" y="321" fill="#9bb5c7" font-size="15">10,338次T0事件</text><rect class="bar" data-series="d0" x="260" y="259" width="425.2125" height="19" rx="3" fill="#43c7e7"><title>全部T0 · D0提单率 39.10%；提单事件4,042 / T0事件10,338</title></rect><text class="bar-value" x="697.2125" y="274" fill="#43c7e7" font-size="18" font-weight="750">39.10%</text><rect class="bar" data-series="d3" x="260" y="287" width="617.5913" height="19" rx="3" fill="#ffc26b"><title>全部T0 · D3提单率 56.79%；提单事件5,871 / T0事件10,338</title></rect><text class="bar-value" x="889.5913" y="302" fill="#ffc26b" font-size="18" font-weight="750">56.79%</text><rect class="bar" data-series="d7" x="260" y="315" width="709.8112" height="19" rx="3" fill="#64dcae"><title>全部T0 · D7提单率 65.27%；提单事件6,748 / T0事件10,338</title></rect><text class="bar-value" x="981.8112" y="330" fill="#64dcae" font-size="18" font-weight="750">65.27%</text><text x="12" y="404" fill="#eaf4fa" font-size="18" font-weight="700">剔除 &gt;480分（≤480）</text><text x="12" y="433" fill="#9bb5c7" font-size="15">9,228次T0事件</text><rect class="bar" data-series="d0" x="260" y="371" width="442.9387" height="19" rx="3" fill="#43c7e7"><title>剔除 &gt;480分（≤480） · D0提单率 40.73%；提单事件3,759 / T0事件9,228</title></rect><text class="bar-value" x="714.9388" y="386" fill="#43c7e7" font-size="18" font-weight="750">40.73%</text><rect class="bar" data-series="d3" x="260" y="399" width="636.4050" height="19" rx="3" fill="#ffc26b"><title>剔除 &gt;480分（≤480） · D3提单率 58.52%；提单事件5,400 / T0事件9,228</title></rect><text class="bar-value" x="908.4050" y="414" fill="#ffc26b" font-size="18" font-weight="750">58.52%</text><rect class="bar" data-series="d7" x="260" y="427" width="725.2537" height="19" rx="3" fill="#64dcae"><title>剔除 &gt;480分（≤480） · D7提单率 66.69%；提单事件6,154 / T0事件9,228</title></rect><text class="bar-value" x="997.2537" y="442" fill="#64dcae" font-size="18" font-weight="750">66.69%</text><text x="695" y="553" text-anchor="middle" fill="#9bb5c7" font-size="15">累计提单率（同一分母；D0 ≤ D3 ≤ D7）</text></svg></div>
+<h3>相对全部T0的提单率差值</h3><div class="table-scroll"><table class=""><thead><tr><th>分组</th><th>当天较大盘</th><th>D3较大盘</th><th>D7较大盘</th></tr></thead><tbody><tr><td>405分 >490</td><td>-14.91pp</td><td>-15.16pp</td><td>-12.72pp</td></tr><tr><td>405分 >480</td><td>-13.60pp</td><td>-14.36pp</td><td>-11.76pp</td></tr><tr><td>全部T0</td><td>+0.00pp</td><td>+0.00pp</td><td>+0.00pp</td></tr><tr><td>剔除 >480分（≤480）</td><td>+1.64pp</td><td>+1.73pp</td><td>+1.41pp</td></tr></tbody></table></div><p class="small">差值单位pp；先由未舍入比率计算再显示，可能与表中已舍入百分比相减相差0.01pp。</p>
+<details><summary>展开分子、分母与事件占比</summary><div class="table-scroll"><table class=""><thead><tr><th>分组</th><th>去重用户数¹</th><th>T0事件占比</th><th>D0提单事件</th><th>D3提单事件</th><th>D7提单事件</th></tr></thead><tbody><tr><td>405分 >490</td><td>418</td><td>4.16%</td><td>104</td><td>179</td><td>226</td></tr><tr><td>405分 >480</td><td>1,060</td><td>10.74%</td><td>283</td><td>471</td><td>594</td></tr><tr><td>全部T0</td><td>9,502</td><td>100.00%</td><td>4,042</td><td>5,871</td><td>6,748</td></tr><tr><td>剔除 >480分（≤480）</td><td>8,550</td><td>89.26%</td><td>3,759</td><td>5,400</td><td>6,154</td></tr></tbody></table></div><p class="small">¹ 去重用户数仅帮助识别规模，不作为提单率分母。同一用户在不同T0事件的评分可能不同，各组用户人数不可相加。</p></details>
+</section>
+
+<section id="timing"><h2>三、首次提单时点：后续补回了一部分，但D7仍未追平</h2>
+<div class="legend"><span><i style="background:#43c7e7"></i>当天首次提单</span><span><i style="background:#80b1ff"></i>D1–D3首次提单</span><span><i style="background:#ffc26b"></i>D4–D7首次提单</span><span><i style="background:#657c91"></i>截至D7未提单</span></div><div class="chart-scroll"><svg viewBox="0 0 1260 490" role="img" aria-labelledby="timing-title"><title id="timing-title">首次提单时间与截至D7未提单的互斥分布</title><text x="12" y="54" fill="#eaf4fa" font-size="18" font-weight="700">405分 &gt;490</text><rect class="segment" x="260.0000" y="30" width="227.3488" height="40" fill="#43c7e7" stroke="#082235" stroke-width="2"><title>405分 &gt;490 · 当天提单：104次，占T0事件24.19%</title></rect><text class="segment-value" x="373.6744" y="56" text-anchor="middle" fill="#062235" font-size="17" font-weight="800">24.19%</text><rect class="segment" x="487.3488" y="30" width="163.9535" height="40" fill="#80b1ff" stroke="#082235" stroke-width="2"><title>405分 &gt;490 · D1–D3首次提单：75次，占T0事件17.44%</title></rect><text class="segment-value" x="569.3256" y="56" text-anchor="middle" fill="#062235" font-size="17" font-weight="800">17.44%</text><rect class="segment" x="651.3023" y="30" width="102.7442" height="40" fill="#ffc26b" stroke="#082235" stroke-width="2"><title>405分 &gt;490 · D4–D7首次提单：47次，占T0事件10.93%</title></rect><text class="segment-value" x="702.6744" y="56" text-anchor="middle" fill="#062235" font-size="17" font-weight="800">10.93%</text><rect class="segment" x="754.0465" y="30" width="445.9535" height="40" fill="#657c91" stroke="#082235" stroke-width="2"><title>405分 &gt;490 · 截至D7未提单：204次，占T0事件47.44%</title></rect><text class="segment-value" x="977.0233" y="56" text-anchor="middle" fill="#ffffff" font-size="17" font-weight="800">47.44%</text><text x="260" y="96" fill="#9bb5c7" font-size="15">截至D7提单：226次；其中当天提单占46.02%</text><text x="12" y="162" fill="#eaf4fa" font-size="18" font-weight="700">405分 &gt;480</text><rect class="segment" x="260.0000" y="138" width="239.6577" height="40" fill="#43c7e7" stroke="#082235" stroke-width="2"><title>405分 &gt;480 · 当天提单：283次，占T0事件25.50%</title></rect><text class="segment-value" x="379.8288" y="164" text-anchor="middle" fill="#062235" font-size="17" font-weight="800">25.50%</text><rect class="segment" x="499.6577" y="138" width="159.2072" height="40" fill="#80b1ff" stroke="#082235" stroke-width="2"><title>405分 &gt;480 · D1–D3首次提单：188次，占T0事件16.94%</title></rect><text class="segment-value" x="579.2613" y="164" text-anchor="middle" fill="#062235" font-size="17" font-weight="800">16.94%</text><rect class="segment" x="658.8649" y="138" width="104.1622" height="40" fill="#ffc26b" stroke="#082235" stroke-width="2"><title>405分 &gt;480 · D4–D7首次提单：123次，占T0事件11.08%</title></rect><text class="segment-value" x="710.9459" y="164" text-anchor="middle" fill="#062235" font-size="17" font-weight="800">11.08%</text><rect class="segment" x="763.0270" y="138" width="436.9730" height="40" fill="#657c91" stroke="#082235" stroke-width="2"><title>405分 &gt;480 · 截至D7未提单：516次，占T0事件46.49%</title></rect><text class="segment-value" x="981.5135" y="164" text-anchor="middle" fill="#ffffff" font-size="17" font-weight="800">46.49%</text><text x="260" y="204" fill="#9bb5c7" font-size="15">截至D7提单：594次；其中当天提单占47.64%</text><text x="12" y="270" fill="#eaf4fa" font-size="18" font-weight="700">全部T0</text><rect class="segment" x="260.0000" y="246" width="367.5256" height="40" fill="#43c7e7" stroke="#082235" stroke-width="2"><title>全部T0 · 当天提单：4,042次，占T0事件39.10%</title></rect><text class="segment-value" x="443.7628" y="272" text-anchor="middle" fill="#062235" font-size="17" font-weight="800">39.10%</text><rect class="segment" x="627.5256" y="246" width="166.3049" height="40" fill="#80b1ff" stroke="#082235" stroke-width="2"><title>全部T0 · D1–D3首次提单：1,829次，占T0事件17.69%</title></rect><text class="segment-value" x="710.6781" y="272" text-anchor="middle" fill="#062235" font-size="17" font-weight="800">17.69%</text><rect class="segment" x="793.8305" y="246" width="79.7427" height="40" fill="#ffc26b" stroke="#082235" stroke-width="2"><title>全部T0 · D4–D7首次提单：877次，占T0事件8.48%</title></rect><text class="segment-value" x="833.7019" y="272" text-anchor="middle" fill="#062235" font-size="17" font-weight="800">8.48%</text><rect class="segment" x="873.5732" y="246" width="326.4268" height="40" fill="#657c91" stroke="#082235" stroke-width="2"><title>全部T0 · 截至D7未提单：3,590次，占T0事件34.73%</title></rect><text class="segment-value" x="1036.7866" y="272" text-anchor="middle" fill="#ffffff" font-size="17" font-weight="800">34.73%</text><text x="260" y="312" fill="#9bb5c7" font-size="15">截至D7提单：6,748次；其中当天提单占59.90%</text><text x="12" y="378" fill="#eaf4fa" font-size="18" font-weight="700">剔除 &gt;480分（≤480）</text><rect class="segment" x="260.0000" y="354" width="382.9064" height="40" fill="#43c7e7" stroke="#082235" stroke-width="2"><title>剔除 &gt;480分（≤480） · 当天提单：3,759次，占T0事件40.73%</title></rect><text class="segment-value" x="451.4532" y="380" text-anchor="middle" fill="#062235" font-size="17" font-weight="800">40.73%</text><rect class="segment" x="642.9064" y="354" width="167.1586" height="40" fill="#80b1ff" stroke="#082235" stroke-width="2"><title>剔除 &gt;480分（≤480） · D1–D3首次提单：1,641次，占T0事件17.78%</title></rect><text class="segment-value" x="726.4857" y="380" text-anchor="middle" fill="#062235" font-size="17" font-weight="800">17.78%</text><rect class="segment" x="810.0650" y="354" width="76.8054" height="40" fill="#ffc26b" stroke="#082235" stroke-width="2"><title>剔除 &gt;480分（≤480） · D4–D7首次提单：754次，占T0事件8.17%</title></rect><text class="segment-value" x="848.4677" y="380" text-anchor="middle" fill="#062235" font-size="17" font-weight="800">8.17%</text><rect class="segment" x="886.8704" y="354" width="313.1296" height="40" fill="#657c91" stroke="#082235" stroke-width="2"><title>剔除 &gt;480分（≤480） · 截至D7未提单：3,074次，占T0事件33.31%</title></rect><text class="segment-value" x="1043.4352" y="380" text-anchor="middle" fill="#ffffff" font-size="17" font-weight="800">33.31%</text><text x="260" y="420" fill="#9bb5c7" font-size="15">截至D7提单：6,154次；其中当天提单占61.08%</text><text x="260.0" y="478" text-anchor="middle" fill="#9bb5c7" font-size="16">0.0%</text><text x="495.0" y="478" text-anchor="middle" fill="#9bb5c7" font-size="16">25.0%</text><text x="730.0" y="478" text-anchor="middle" fill="#9bb5c7" font-size="16">50.0%</text><text x="965.0" y="478" text-anchor="middle" fill="#9bb5c7" font-size="16">75.0%</text><text x="1200.0" y="478" text-anchor="middle" fill="#9bb5c7" font-size="16">100.0%</text></svg></div><div class="table-scroll"><table class=""><thead><tr><th>分组</th><th>当天提单</th><th>D1–D3首次提单</th><th>D4–D7首次提单</th><th>截至D7未提单</th></tr></thead><tbody><tr><td>405分 >490</td><td>104</td><td>75</td><td>47</td><td>204</td></tr><tr><td>405分 >480</td><td>283</td><td>188</td><td>123</td><td>516</td></tr><tr><td>全部T0</td><td>4,042</td><td>1,829</td><td>877</td><td>3,590</td></tr><tr><td>剔除 >480分（≤480）</td><td>3,759</td><td>1,641</td><td>754</td><td>3,074</td></tr></tbody></table></div>
+<div class="findings"><article class="finding"><h3>延迟｜高分客群当天完成提单的比例更低</h3><p>在D7内已经提单的事件里，>480分当天提单占47.64%，全部T0为59.90%。</p></article><article class="finding"><h3>未转化｜不能仅用“提单延后”解释全部差距</h3><p>>480分在D1–D7新增提单占本组T0事件28.02%，但截至D7仍有516次事件未提单，占46.49%；全部T0未提单占34.73%。</p></article></div>
+<p class="small">四段互斥并覆盖本组全部成熟事件；百分比独立保留两位小数，合计可能与100%相差0.01。这里只观察到D7，不将D7未提单解释为永久流失。</p>
+</section>
+
+<section id="action"><h2>四、判断边界与后续分析方向</h2>
+<div class="steps"><article class="step"><h3>已经确认｜高分客群存在较弱的提单转化</h3><p>本批>480分、>490分客群在D0、D3、D7均低于大盘，值得单独识别其借款需求和产品接受度。</p></article><article class="step"><h3>尚未确认｜原因不是由分数本身解释</h3><p>本报告没有比较息费、额度、借款次数、页面行为和实际逾期；不能据此判断高分导致低提单，也不能直接证明产品太贵或用户风险更低。</p></article><article class="step"><h3>具体方向｜风险评分与提单意愿分开使用</h3><p>在既定风险准入范围内，进一步按借款次数、变额幅度、额度使用率、产品息费及非还款日App行为细分高分未提单客群；再用小范围对照测试验证让利能否带来增量提单及净收益。</p></article></div>
+<p class="small">统计期仅15天，且>490分只有430次事件；不能把本批差异直接推广为长期规律。相关方法背景：<a href="https://wangchl03.github.io/report/churn7plus-405-risk-model-v2-validation.html?v=6ceefb3" target="_blank" rel="noopener">405流失风险模型V2验证报告</a>（其样本和目标与本报告不同）。</p>
+</section>
+
+<section id="method"><h2>五、统计口径与计算逻辑</h2><div class="table-scroll"><table class="method-table"><thead><tr><th>口径项</th><th>执行定义</th></tr></thead><tbody><tr><td>统计样本</td><td>2026-09-16至2026-09-30，含首尾；按T0获额日期归组，不按后续提单日期归组。</td></tr><tr><td>严格T0</td><td>上一笔整笔放款订单当日结清；结清时无其他在贷；当日结清后获额通过；<code>is_pass1=1</code>、<code>loan_type_code=2</code>、<code>recycle_type=3</code>。本报告不是循环贷，也不是流失≥7天用户的专门样本。</td></tr><tr><td>20秒去重</td><td>先筛合格获额；同用户＋serial_id留最新记录；相邻获额间隔≤20秒链式合批；每批按获额时间倒序、serial_id倒序留一笔。统计期前后读取缓冲数据后再裁剪。</td></tr><tr><td>结清匹配</td><td>同日且结清时间≤获额时间；多笔结清取最近一笔，同时间取最大订单号；0在贷按历史放款及结清时间重建。</td></tr><tr><td>405评分</td><td>每次T0观测时刻，取时间≤该时刻的最新获额通过订单，同时间取最大serial_id；按user_id＋serial_id匹配<code>model_result_copy.kabybxgboost405apd7crecyc</code>。不平均、不取历史最高分、不使用未来获额、不加入363分。</td></tr><tr><td>评分缺失</td><td>NULL或占位分-9999999视为缺分；不回填更早订单分数。缺分不进入>480或>490组，在其余事件里保留并单列。本批缺分为0，所以其余事件＝评分≤480。</td></tr><tr><td>分组筛选</td><td>>480、>490均严格大于，等于阈值不纳入；>490属于>480的子集。剔除按事件评分，不是把某用户在期间所有事件整人删除。</td></tr><tr><td>主口径1</td><td>分母为用户×T0事件；分子为事件之后同用户的后续任意订单首次提单，不要求原serial_id。一笔提单只归提单前最近一次T0，归属边界使用全部T0事件，不能先筛高分。</td></tr><tr><td>D0 / D3 / D7</td><td>从获额时间起：D0到当天结束；D3到D+3结束（含当天共4个自然日）；D7到D+7结束（共8个自然日）。均左闭右开。</td></tr><tr><td>补充口径2</td><td>只认user_id＋原获额serial_id；提单时间≥获额时间，且在15天有效期内。同一母集，只改变分子。</td></tr><tr><td>数据截止</td><td>完整数据日2026-10-08；右开边界2026-10-09 00:00:00；业务时区America/Belize。四组的D0、D3、D7均已成熟；本报告只代表9月16—30日，不代表完整9月。</td></tr><tr><td>比率与差值</td><td>提单率＝成熟窗口提单事件数÷成熟窗口T0事件数；事件占比＝分组事件数÷全部T0事件数；差值先用未舍入比率计算，再保留2位小数，单位pp。</td></tr></tbody></table></div>
+<h3>口径伪代码</h3><pre class="formula"><code>合格获额 = 获额通过 AND 续贷 AND recycle_type=3
+同订单去重 → 同用户20秒链式合批 → 批内取最晚时间、最大serial_id
+T0母集 = 去重获额关联当日最近一次结清，并且结清时0在贷
+下一T0时刻 = 从全部T0母集计算（不先筛评分）
+
+对每次T0事件e：
+  最近通过获额 = 最新记录(获额时间 &lt;= e.vir_time)
+  405分 = 对应获额订单的评分；缺分不回填旧分
+  首次提单 = MIN(同用户apply_time)
+             WHERE apply_time &gt;= e.vir_time
+               AND apply_time &lt; e.vir_date + 8 days
+               AND apply_time &lt; 下一T0时刻（如存在）
+
+  D0 = 首次提单 &lt; e.vir_date + 1 day
+  D3 = 首次提单 &lt; e.vir_date + 4 days
+  D7 = 首次提单 &lt; e.vir_date + 8 days
+  分组 = &gt;490；&gt;480；全部；&lt;=480或缺分（四行，不是四个互斥组）
+
+每组：提单率 = SUM(提单标记 × 窗口成熟标记) / SUM(窗口成熟标记)
+互斥时点：D0；D3-D0；D7-D3；成熟分母-D7
+</code></pre>
+<details><summary>补充对照：口径2｜原获额订单提单率</summary><p class="small">与主表使用相同事件分母，只认原获额订单serial_id的提单，不与口径1混用。</p><div class="table-scroll"><table class=""><thead><tr><th>分组</th><th>原订单D0：数量 / 比率</th><th>原订单D3：数量 / 比率</th><th>原订单D7：数量 / 比率</th></tr></thead><tbody><tr><td>405分 >490</td><td>104 / 24.19%</td><td>177 / 41.16%</td><td>211 / 49.07%</td></tr><tr><td>405分 >480</td><td>283 / 25.50%</td><td>466 / 41.98%</td><td>551 / 49.64%</td></tr><tr><td>全部T0</td><td>4,041 / 39.09%</td><td>5,808 / 56.18%</td><td>6,485 / 62.73%</td></tr><tr><td>剔除 >480分（≤480）</td><td>3,758 / 40.72%</td><td>5,342 / 57.89%</td><td>5,934 / 64.30%</td></tr></tbody></table></div></details>
+</section>
+
+<section id="audit"><h2>六、执行结果与复现校验</h2><div class="table-scroll"><table class=""><thead><tr><th>母表阶段或校验项</th><th>执行结果</th></tr></thead><tbody><tr><td>合格获额记录（通过＋续贷＋type=3）</td><td>21,540</td></tr><tr><td>同用户＋serial_id去重后</td><td>21,540</td></tr><tr><td>20秒链式批次去重后</td><td>16,664</td></tr><tr><td>关联同日结清且0在贷：最终T0母集</td><td>10,338</td></tr><tr><td>405分缺失事件</td><td>0</td></tr><tr><td>评分对应获额发生在T0之后</td><td>0</td></tr><tr><td>评分对应获额与T0保留订单不同</td><td>0</td></tr><tr><td>最终母集重复serial_id</td><td>0</td></tr><tr><td>提单时间早于T0观测时间</td><td>0</td></tr><tr><td>全部＝>480＋其余，事件数及各窗口分子</td><td>逐项校验通过</td></tr><tr><td>四组D0、D3、D7成熟分母＝各组事件数</td><td>逐项校验通过</td></tr></tbody></table></div>
+<div class="note"><strong>本次已执行完整SQL，并核对四组结果。</strong><br>保持统计边界和母表不变；公开网页只含汇总数据。源copy表可能存在后续补录或修订，固定日期参数不能替代不可变快照；后续重跑数值若变化，应核对源表版本。</div>
+<p class="small">model_result_copy没有独立评分生成时间字段；评分的时点约束通过最近获额订单完成，不能审计同一订单评分记录是否曾被后续覆盖。原始结果与校验记录已本地保存。</p>
+</section>
+
+<section id="sql"><h2>附录｜完整PGSQL：复现全部表格与图表指标</h2>
+<p>整段执行下方SQL即可输出四组结果。无需建表、无需删除原表、没有存储过程或占位代码；已在当前GaussDB(DWS)数据源执行。</p>
+<p class="small">主要输出：事件数、去重用户数、D0/D3/D7成熟分母、口径1/2分子与比率、分组占比、相对大盘差值、互斥提单时点及母表审计。数据库需具备上述源表只读权限；不能承诺其他数据库版本不经适配即可执行。</p>
+<div class="actions"><button class="button" id="copy-sql" type="button">复制完整SQL</button><a class="button" href="t0-405-score-application-rate-20260916-20260930.sql" download>下载.sql文件</a><span class="small" id="copy-status" role="status"></span></div>
+<pre id="sql-block"><code id="sql-source">/* 报告完整复现SQL：T0 405评分四组对照：2026-09-16至2026-09-30（含首尾）。
+   只读；严格T0母集、20秒获额去重和观测时刻最新405分沿用已核对查询。
+   分母为T0事件，不按统计期去重用户。
+   &gt;490包含在&gt;480内；全部T0 = &gt;480事件 + 剔除&gt;480的其余事件。
+   缺失分保留在其余事件并单列审计，不将缺分解释为低分。
+   D3含T0至D+3；D7含T0至D+7；数据完整日截至2026-10-08。
+   输出主表、口径2、分组占比、相对大盘差值、互斥提单时点分布、母表及时间质量审计。
+   差值按未四舍五入比率计算后保留两位小数，单位pp。
+   本查询已在现有GaussDB(DWS)数据源执行；含DWS列存背景表，不是跨库通用DDL。
+*/
+WITH params AS (
+    SELECT DATE &#x27;2026-09-16&#x27; AS start_date,
+           DATE &#x27;2026-10-01&#x27; AS end_date,
+           TIMESTAMP &#x27;2026-10-09 00:00:00&#x27; AS data_cutoff_ts,
+           490::numeric AS score_threshold
+), raw_pass_offer AS (
+    SELECT v.user_id, v.serial_id, v.vir_date::date AS vir_date,
+           v.vir_unix, v.loan_type_code,
+           (TO_TIMESTAMP(v.vir_unix) AT TIME ZONE &#x27;America/Belize&#x27;) AS vir_time
+    FROM wangchuanliang.order_vir_f_copy v CROSS JOIN params p
+    WHERE v.is_pass1 = 1 AND v.vir_unix &gt; 0
+      AND v.vir_date &gt;= p.start_date - 1
+      AND v.vir_date &lt; p.data_cutoff_ts::date + 1
+), qualified_offer AS (
+    SELECT v.* FROM raw_pass_offer v
+    WHERE v.loan_type_code = 2
+      AND EXISTS (
+          SELECT 1 FROM wangchuanliang.side_recycle_type_copy r
+          WHERE r.serial_id = v.serial_id AND r.recycle_type = 3
+      )
+), serial_latest AS (
+    SELECT DISTINCT ON (user_id, serial_id) *
+    FROM qualified_offer
+    ORDER BY user_id, serial_id, vir_unix DESC
+), lagged AS (
+    SELECT v.*, LAG(vir_time) OVER (
+        PARTITION BY user_id ORDER BY vir_time, serial_id
+    ) AS previous_time
+    FROM serial_latest v
+), batched AS (
+    SELECT l.*, SUM(CASE
+        WHEN previous_time IS NULL
+          OR vir_time - previous_time &gt; INTERVAL &#x27;20 seconds&#x27;
+        THEN 1 ELSE 0 END) OVER (
+        PARTITION BY user_id ORDER BY vir_time, serial_id
+        ROWS UNBOUNDED PRECEDING
+    ) AS batch_id
+    FROM lagged l
+), batch_ranked AS (
+    SELECT b.*, ROW_NUMBER() OVER (
+        PARTITION BY user_id, batch_id ORDER BY vir_time DESC, serial_id DESC
+    ) AS batch_rn
+    FROM batched b
+), dedup_offer AS (
+    SELECT b.* FROM batch_ranked b CROSS JOIN params p
+    WHERE batch_rn = 1 AND vir_date &gt;= p.start_date
+      AND vir_time &lt; p.data_cutoff_ts
+), candidate_users AS (
+    SELECT DISTINCT user_id FROM dedup_offer
+), all_orders AS (
+    SELECT DISTINCT ON (o.user_id, o.serial_id)
+           o.user_id, o.serial_id, o.apply_time, o.apply_date,
+           o.is_remit, o.remit_amt, o.remit_time,
+           o.is_repaid, o.repaid_date, o.repaid_time, o.loan_status_code
+    FROM wangchuanliang.order_loan_f_v2_copy o
+    INNER JOIN candidate_users u ON u.user_id = o.user_id
+    ORDER BY o.user_id, o.serial_id, o.apply_time ASC NULLS LAST
+), clean_settlement AS (
+    SELECT o.* FROM all_orders o CROSS JOIN params p
+    WHERE o.is_remit = 1 AND o.remit_amt &gt; 0
+      AND (o.is_repaid = 1 OR o.loan_status_code = 7)
+      AND o.repaid_time &gt; TIMESTAMP &#x27;2000-01-01&#x27;
+      AND o.repaid_date &gt;= p.start_date
+      AND o.repaid_time &lt; p.data_cutoff_ts
+      /* 在结清时刻没有其他未结清的已放款订单，按历史时间重建。 */
+      AND NOT EXISTS (
+          SELECT 1 FROM all_orders x
+          WHERE x.user_id = o.user_id AND x.serial_id &lt;&gt; o.serial_id
+            AND x.is_remit = 1 AND x.remit_amt &gt; 0
+            AND x.remit_time &lt;= o.repaid_time
+            AND (x.repaid_time IS NULL
+                 OR x.repaid_time &lt;= TIMESTAMP &#x27;2000-01-01&#x27;
+                 OR x.repaid_time &gt; o.repaid_time)
+      )
+), settlement_matched AS (
+    SELECT e.*, s.serial_id AS settled_serial_id, s.repaid_time,
+           ROW_NUMBER() OVER (
+               PARTITION BY e.user_id, e.serial_id
+               ORDER BY s.repaid_time DESC, s.serial_id DESC
+           ) AS settlement_rn
+    FROM dedup_offer e INNER JOIN clean_settlement s
+      ON s.user_id = e.user_id AND s.repaid_date = e.vir_date
+     AND s.repaid_time &lt;= e.vir_time
+), strict_t0_all AS (
+    SELECT e.*, LEAD(vir_time) OVER (
+        PARTITION BY user_id ORDER BY vir_time, serial_id
+    ) AS next_t0_time
+    FROM settlement_matched e WHERE settlement_rn = 1
+), cohort AS (
+    SELECT e.* FROM strict_t0_all e CROSS JOIN params p
+    WHERE e.vir_date &gt;= p.start_date AND e.vir_date &lt; p.end_date
+), latest_pass_ranked AS (
+    /* e本身已经获额通过。因此最近通过记录一定在e当天，不必回填更早日。 */
+    SELECT e.user_id, e.serial_id AS event_serial_id,
+           v.serial_id AS score_serial_id, v.vir_time AS score_offer_time,
+           ROW_NUMBER() OVER (
+               PARTITION BY e.user_id, e.serial_id
+               ORDER BY v.vir_time DESC, v.serial_id DESC
+           ) AS score_offer_rn
+    FROM cohort e INNER JOIN raw_pass_offer v
+      ON v.user_id = e.user_id AND v.vir_date = e.vir_date
+     AND v.vir_time &lt;= e.vir_time
+), scored_cohort AS (
+    SELECT e.*, a.score_serial_id, a.score_offer_time,
+           NULLIF(m.kabybxgboost405apd7crecyc, -9999999) AS score_405
+    FROM cohort e
+    LEFT JOIN latest_pass_ranked a
+      ON a.user_id = e.user_id AND a.event_serial_id = e.serial_id
+     AND a.score_offer_rn = 1
+    LEFT JOIN wangchuanliang.model_result_copy m
+      ON m.user_id = e.user_id AND m.serial_id = a.score_serial_id
+), first_user_apply AS (
+    SELECT e.user_id, e.serial_id, MIN(o.apply_time) AS first_apply_time
+    FROM cohort e CROSS JOIN params p
+    LEFT JOIN all_orders o
+      ON o.user_id = e.user_id AND o.apply_time &gt;= e.vir_time
+     AND o.apply_time &lt; e.vir_date + INTERVAL &#x27;8 days&#x27;
+     AND o.apply_time &lt; p.data_cutoff_ts
+     /* next_t0_time来自所有严格T0事件，不能先筛490分再分配提单。 */
+     AND (e.next_t0_time IS NULL OR o.apply_time &lt; e.next_t0_time)
+    GROUP BY e.user_id, e.serial_id
+), first_order_apply AS (
+    SELECT e.user_id, e.serial_id, MIN(o.apply_time) AS first_apply_time
+    FROM cohort e CROSS JOIN params p
+    LEFT JOIN all_orders o
+      ON o.user_id = e.user_id AND o.serial_id = e.serial_id
+     AND o.apply_time &gt;= e.vir_time
+     AND o.apply_time &lt; e.vir_date + INTERVAL &#x27;8 days&#x27;
+     AND o.apply_time &lt; e.vir_time + INTERVAL &#x27;15 days&#x27;
+     AND o.apply_time &lt; p.data_cutoff_ts
+    GROUP BY e.user_id, e.serial_id
+), event_labels AS (
+    SELECT e.*, p.data_cutoff_ts, p.score_threshold,
+           u.first_apply_time AS p1_first_apply_time,
+           o.first_apply_time AS p2_first_apply_time,
+           CASE WHEN e.vir_date + INTERVAL &#x27;1 day&#x27; &lt;= p.data_cutoff_ts THEN 1 ELSE 0 END AS d0_mature,
+           CASE WHEN e.vir_date + INTERVAL &#x27;4 days&#x27; &lt;= p.data_cutoff_ts THEN 1 ELSE 0 END AS d3_mature,
+           CASE WHEN e.vir_date + INTERVAL &#x27;8 days&#x27; &lt;= p.data_cutoff_ts THEN 1 ELSE 0 END AS d7_mature,
+           CASE WHEN u.first_apply_time &lt; e.vir_date + INTERVAL &#x27;1 day&#x27; THEN 1 ELSE 0 END AS p1_d0,
+           CASE WHEN u.first_apply_time &lt; e.vir_date + INTERVAL &#x27;4 days&#x27; THEN 1 ELSE 0 END AS p1_d3,
+           CASE WHEN u.first_apply_time &lt; e.vir_date + INTERVAL &#x27;8 days&#x27; THEN 1 ELSE 0 END AS p1_d7,
+           CASE WHEN o.first_apply_time &lt; e.vir_date + INTERVAL &#x27;1 day&#x27; THEN 1 ELSE 0 END AS p2_d0,
+           CASE WHEN o.first_apply_time &lt; e.vir_date + INTERVAL &#x27;4 days&#x27; THEN 1 ELSE 0 END AS p2_d3,
+           CASE WHEN o.first_apply_time &lt; e.vir_date + INTERVAL &#x27;8 days&#x27; THEN 1 ELSE 0 END AS p2_d7
+    FROM scored_cohort e CROSS JOIN params p
+    LEFT JOIN first_user_apply u ON u.user_id = e.user_id AND u.serial_id = e.serial_id
+    LEFT JOIN first_order_apply o ON o.user_id = e.user_id AND o.serial_id = e.serial_id
+), grouped_events AS (
+    SELECT e.*, &#x27;405分&gt;490&#x27;::text AS sample_group, 1 AS group_order
+    FROM event_labels e WHERE score_405 &gt; 490
+    UNION ALL
+    SELECT e.*, &#x27;405分&gt;480&#x27;::text AS sample_group, 2 AS group_order
+    FROM event_labels e WHERE score_405 &gt; 480
+    UNION ALL
+    SELECT e.*, &#x27;全部T0&#x27;::text AS sample_group, 3 AS group_order
+    FROM event_labels e
+    UNION ALL
+    SELECT e.*, &#x27;剔除405分&gt;480的T0事件&#x27;::text AS sample_group, 4 AS group_order
+    FROM event_labels e WHERE score_405 &lt;= 480 OR score_405 IS NULL
+), aggregate_counts AS (
+    SELECT sample_group, group_order,
+           COUNT(*) AS t0_event_count,
+           COUNT(DISTINCT user_id) AS unique_user_count,
+           SUM(CASE WHEN score_405 IS NULL THEN 1 ELSE 0 END) AS missing_score_count,
+           SUM(d0_mature) AS d0_mature_count,
+           SUM(d3_mature) AS d3_mature_count,
+           SUM(d7_mature) AS d7_mature_count,
+           SUM(p1_d0*d0_mature) AS p1_d0_apply_count,
+           SUM(p1_d3*d3_mature) AS p1_d3_apply_count,
+           SUM(p1_d7*d7_mature) AS p1_d7_apply_count,
+           SUM(p2_d0*d0_mature) AS p2_d0_apply_count,
+           SUM(p2_d3*d3_mature) AS p2_d3_apply_count,
+           SUM(p2_d7*d7_mature) AS p2_d7_apply_count
+    FROM grouped_events GROUP BY sample_group, group_order
+), audits AS (
+    SELECT
+        (SELECT COUNT(*) FROM qualified_offer q CROSS JOIN params p
+         WHERE q.vir_date &gt;= p.start_date AND q.vir_date &lt; p.end_date) AS qualified_raw_rows,
+        (SELECT COUNT(*) FROM serial_latest q CROSS JOIN params p
+         WHERE q.vir_date &gt;= p.start_date AND q.vir_date &lt; p.end_date) AS unique_serial_events,
+        (SELECT COUNT(*) FROM dedup_offer q CROSS JOIN params p
+         WHERE q.vir_date &gt;= p.start_date AND q.vir_date &lt; p.end_date) AS after_20s_events,
+        (SELECT COUNT(*) FROM event_labels WHERE score_offer_time &gt; vir_time) AS future_score_offer_events,
+        (SELECT COUNT(*) FROM event_labels WHERE score_serial_id &lt;&gt; serial_id) AS different_score_offer_events,
+        (SELECT COUNT(*) - COUNT(DISTINCT serial_id) FROM event_labels) AS duplicate_event_serial_count,
+        (SELECT COUNT(*) FROM event_labels
+         WHERE p1_first_apply_time &lt; vir_time OR p2_first_apply_time &lt; vir_time) AS negative_apply_delay_count
+)
+SELECT c.*,
+       ROUND(100.0 * c.p1_d0_apply_count / NULLIF(c.d0_mature_count, 0), 2) AS p1_d0_pct,
+       ROUND(100.0 * c.p1_d3_apply_count / NULLIF(c.d3_mature_count, 0), 2) AS p1_d3_pct,
+       ROUND(100.0 * c.p1_d7_apply_count / NULLIF(c.d7_mature_count, 0), 2) AS p1_d7_pct,
+       ROUND(100.0 * c.p2_d0_apply_count / NULLIF(c.d0_mature_count, 0), 2) AS p2_d0_pct,
+       ROUND(100.0 * c.p2_d3_apply_count / NULLIF(c.d3_mature_count, 0), 2) AS p2_d3_pct,
+       ROUND(100.0 * c.p2_d7_apply_count / NULLIF(c.d7_mature_count, 0), 2) AS p2_d7_pct,
+       ROUND(100.0 * c.t0_event_count / NULLIF(total.t0_event_count, 0), 2) AS event_share_pct,
+       ROUND(100.0 * c.p1_d0_apply_count / NULLIF(c.d0_mature_count, 0)
+             - 100.0 * total.p1_d0_apply_count / NULLIF(total.d0_mature_count, 0), 2) AS vs_all_d0_pp,
+       ROUND(100.0 * c.p1_d3_apply_count / NULLIF(c.d3_mature_count, 0)
+             - 100.0 * total.p1_d3_apply_count / NULLIF(total.d3_mature_count, 0), 2) AS vs_all_d3_pp,
+       ROUND(100.0 * c.p1_d7_apply_count / NULLIF(c.d7_mature_count, 0)
+             - 100.0 * total.p1_d7_apply_count / NULLIF(total.d7_mature_count, 0), 2) AS vs_all_d7_pp,
+       c.p1_d3_apply_count - c.p1_d0_apply_count AS d1_d3_apply_count,
+       c.p1_d7_apply_count - c.p1_d3_apply_count AS d4_d7_apply_count,
+       c.d7_mature_count - c.p1_d7_apply_count AS d7_no_apply_count,
+       ROUND(100.0 * (c.p1_d3_apply_count - c.p1_d0_apply_count)
+             / NULLIF(c.d7_mature_count, 0), 2) AS d1_d3_event_pct,
+       ROUND(100.0 * (c.p1_d7_apply_count - c.p1_d3_apply_count)
+             / NULLIF(c.d7_mature_count, 0), 2) AS d4_d7_event_pct,
+       ROUND(100.0 * (c.d7_mature_count - c.p1_d7_apply_count)
+             / NULLIF(c.d7_mature_count, 0), 2) AS d7_no_apply_pct,
+       ROUND(100.0 * c.p1_d0_apply_count / NULLIF(c.p1_d7_apply_count, 0), 2) AS d0_share_of_d7_pct,
+       ROUND(100.0 * (c.p1_d7_apply_count - c.p1_d0_apply_count)
+             / NULLIF(c.d7_mature_count, 0), 2) AS d1_d7_event_pct,
+       a.*, p.start_date, p.end_date - 1 AS last_event_date, p.data_cutoff_ts,
+       p.data_cutoff_ts::date - 1 AS data_date
+FROM aggregate_counts c
+CROSS JOIN (SELECT * FROM aggregate_counts WHERE sample_group = &#x27;全部T0&#x27;) total
+CROSS JOIN audits a CROSS JOIN params p
+ORDER BY c.group_order;
+</code></pre>
+</section>
+<footer class="footer">T0事件维度 · 405评分观测时点固定 · 汇总网页公开，用户明细仅本地</footer>
+</main><script>
+document.getElementById('copy-sql').addEventListener('click',async()=>{
+ const text=document.getElementById('sql-source').textContent;
+ const status=document.getElementById('copy-status');
+ try{await navigator.clipboard.writeText(text);status.textContent='完整SQL已复制';}
+ catch{const selection=window.getSelection();const range=document.createRange();range.selectNodeContents(document.getElementById('sql-source'));selection.removeAllRanges();selection.addRange(range);status.textContent='已选中SQL，请按⌘C或Ctrl+C复制';}
+});
+</script></body></html>
