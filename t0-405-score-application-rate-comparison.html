@@ -33,7 +33,7 @@
 </section>
 
 <section id="method"><h2>五、统计口径与计算逻辑</h2><div class="table-scroll"><table class="method-table"><thead><tr><th>口径项</th><th>执行定义</th></tr></thead><tbody><tr><td>统计样本</td><td>2026-09-16至2026-09-30，含首尾；按T0获额日期归组，不按后续提单日期归组。</td></tr><tr><td>严格T0</td><td>上一笔整笔放款订单当日结清；结清时无其他在贷；当日结清后获额通过；<code>is_pass1=1</code>、<code>loan_type_code=2</code>、<code>recycle_type=3</code>。本报告不是循环贷，也不是流失≥7天用户的专门样本。</td></tr><tr><td>20秒去重</td><td>先筛合格获额；同用户＋serial_id留最新记录；相邻获额间隔≤20秒链式合批；每批按获额时间倒序、serial_id倒序留一笔。统计期前后读取缓冲数据后再裁剪。</td></tr><tr><td>结清匹配</td><td>同日且结清时间≤获额时间；多笔结清取最近一笔，同时间取最大订单号；0在贷按历史放款及结清时间重建。</td></tr><tr><td>405评分</td><td>每次T0观测时刻，取时间≤该时刻的最新获额通过订单，同时间取最大serial_id；按user_id＋serial_id匹配<code>model_result_copy.kabybxgboost405apd7crecyc</code>。不平均、不取历史最高分、不使用未来获额、不加入363分。</td></tr><tr><td>评分缺失</td><td>NULL或占位分-9999999视为缺分；不回填更早订单分数。缺分不进入>480或>490组，在其余事件里保留并单列。本批缺分为0，所以其余事件＝评分≤480。</td></tr><tr><td>分组筛选</td><td>>480、>490均严格大于，等于阈值不纳入；>490属于>480的子集。剔除按事件评分，不是把某用户在期间所有事件整人删除。</td></tr><tr><td>主口径1</td><td>分母为用户×T0事件；分子为事件之后同用户的后续任意订单首次提单，不要求原serial_id。一笔提单只归提单前最近一次T0，归属边界使用全部T0事件，不能先筛高分。</td></tr><tr><td>D0 / D3 / D7</td><td>从获额时间起：D0到当天结束；D3到D+3结束（含当天共4个自然日）；D7到D+7结束（共8个自然日）。均左闭右开。</td></tr><tr><td>补充口径2</td><td>只认user_id＋原获额serial_id；提单时间≥获额时间，且在15天有效期内。同一母集，只改变分子。</td></tr><tr><td>数据截止</td><td>完整数据日2026-10-08；右开边界2026-10-09 00:00:00；业务时区America/Belize。四组的D0、D3、D7均已成熟；本报告只代表9月16—30日，不代表完整9月。</td></tr><tr><td>比率与差值</td><td>提单率＝成熟窗口提单事件数÷成熟窗口T0事件数；事件占比＝分组事件数÷全部T0事件数；差值先用未舍入比率计算，再保留2位小数，单位pp。</td></tr></tbody></table></div>
-<h3>口径伪代码</h3><pre class="formula"><code>合格获额 = 获额通过 AND 续贷 AND recycle_type=3
+<details id="pseudo-details"><summary>口径伪代码（点击展开 / 收起）</summary><pre class="formula"><code>合格获额 = 获额通过 AND 续贷 AND recycle_type=3
 同订单去重 → 同用户20秒链式合批 → 批内取最晚时间、最大serial_id
 T0母集 = 去重获额关联当日最近一次结清，并且结清时0在贷
 下一T0时刻 = 从全部T0母集计算（不先筛评分）
@@ -53,7 +53,7 @@ T0母集 = 去重获额关联当日最近一次结清，并且结清时0在贷
 
 每组：提单率 = SUM(提单标记 × 窗口成熟标记) / SUM(窗口成熟标记)
 互斥时点：D0；D3-D0；D7-D3；成熟分母-D7
-</code></pre>
+</code></pre></details>
 <details><summary>补充对照：口径2｜原获额订单提单率</summary><p class="small">与主表使用相同事件分母，只认原获额订单serial_id的提单，不与口径1混用。</p><div class="table-scroll"><table class=""><thead><tr><th>分组</th><th>原订单D0：数量 / 比率</th><th>原订单D3：数量 / 比率</th><th>原订单D7：数量 / 比率</th></tr></thead><tbody><tr><td>405分 >490</td><td>104 / 24.19%</td><td>177 / 41.16%</td><td>211 / 49.07%</td></tr><tr><td>405分 >480</td><td>283 / 25.50%</td><td>466 / 41.98%</td><td>551 / 49.64%</td></tr><tr><td>全部T0</td><td>4,041 / 39.09%</td><td>5,808 / 56.18%</td><td>6,485 / 62.73%</td></tr><tr><td>剔除 >480分（≤480）</td><td>3,758 / 40.72%</td><td>5,342 / 57.89%</td><td>5,934 / 64.30%</td></tr></tbody></table></div></details>
 </section>
 
@@ -63,6 +63,7 @@ T0母集 = 去重获额关联当日最近一次结清，并且结清时0在贷
 </section>
 
 <section id="sql"><h2>附录｜完整PGSQL：复现全部表格与图表指标</h2>
+<details id="sql-details"><summary>查看完整PGSQL及执行说明（点击展开 / 收起）</summary>
 <p>整段执行下方SQL即可输出四组结果。无需建表、无需删除原表、没有存储过程或占位代码；已在当前GaussDB(DWS)数据源执行。</p>
 <p class="small">主要输出：事件数、去重用户数、D0/D3/D7成熟分母、口径1/2分子与比率、分组占比、相对大盘差值、互斥提单时点及母表审计。数据库需具备上述源表只读权限；不能承诺其他数据库版本不经适配即可执行。</p>
 <div class="actions"><button class="button" id="copy-sql" type="button">复制完整SQL</button><a class="button" href="t0-405-score-application-rate-20260916-20260930.sql" download>下载.sql文件</a><span class="small" id="copy-status" role="status"></span></div>
@@ -297,6 +298,7 @@ CROSS JOIN (SELECT * FROM aggregate_counts WHERE sample_group = &#x27;全部T0&#
 CROSS JOIN audits a CROSS JOIN params p
 ORDER BY c.group_order;
 </code></pre>
+</details>
 </section>
 <footer class="footer">T0事件维度 · 405评分观测时点固定 · 汇总网页公开，用户明细仅本地</footer>
 </main><script>
