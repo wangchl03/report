@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>结清再启 · 召回结清后再获额</title>
+<title>流失用户召回后——用户资质和流失风险</title>
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
 <style>
 :root{--bg:#06192b;--line:#2a5c7e;--text:#eff8ff;--muted:#aac5da;--cy:#43c7e7;--gr:#64dcae;--am:#ffc26b;--pk:#f68ab0}
@@ -11,7 +11,7 @@
 .wrap{max-width:1180px;margin:auto;padding:28px 36px 80px}
 .hero{text-align:center;padding:28px 12px 22px;border-bottom:1px solid var(--line)}
 .kicker{color:var(--cy);font-size:12px;letter-spacing:.22em;font-weight:700}
-.hero h1{font-size:44px;font-weight:800;letter-spacing:.22em;line-height:1.2;margin:12px 0 8px;color:#fff}
+.hero h1{font-size:32px;font-weight:800;letter-spacing:.04em;line-height:1.35;margin:12px 0 8px;color:#fff}
 .lede{margin:0;color:#d5e8f4;font-size:16px;font-weight:500;letter-spacing:.04em}
 .nav{position:sticky;top:0;z-index:5;background:rgba(6,25,43,.94);backdrop-filter:blur(10px);border-bottom:1px solid var(--line);display:flex;gap:18px;overflow:auto;padding:12px 0;margin:0 -36px;padding-left:36px}
 .nav a{white-space:nowrap;color:#c6dae7;font-size:14px;text-decoration:none;font-weight:650}
@@ -50,14 +50,14 @@ details.code{margin:10px 0;background:rgba(10,41,68,.95);border:1px solid var(--
 details.code summary{cursor:pointer;color:var(--cy);font-weight:700}
 pre.sql{overflow:auto;max-height:720px;font-size:11.5px;line-height:1.5;color:#d7ecf8;white-space:pre}
 .foot{color:#7fa6c2;font-size:12.5px;margin-top:40px;border-top:1px solid var(--line);padding-top:16px;line-height:1.9}
-@media(max-width:900px){.g2,.g4,.hero-facts,.flow,.kv{grid-template-columns:1fr 1fr}.wrap{padding:18px 16px 56px}.nav{margin:0 -16px;padding-left:16px}.hero h1{font-size:32px;letter-spacing:.12em}}
+@media(max-width:900px){.g2,.g4,.hero-facts,.flow,.kv{grid-template-columns:1fr 1fr}.wrap{padding:18px 16px 56px}.nav{margin:0 -16px;padding-left:16px}.hero h1{font-size:24px;letter-spacing:.02em}}
 </style>
 </head>
 <body>
 <main class="wrap">
 <header class="hero">
   <div class="kicker">T7 召回 · 截至 2026-10-13</div>
-  <h1>结清再启</h1>
+  <h1>流失用户召回后——用户资质和流失风险</h1>
   <p class="lede">召回用户结清后再获额：再度流失更高，未提单的人资质更好</p>
   <div class="hero-facts">
     <div class="f"><span class="k">召回后再获额</span><span class="v">recall_date = 2026-08-18。首次放款结清后，结清当天最后一笔获额通过。窗口已满 1,002 人。</span></div>
@@ -160,6 +160,18 @@ pre.sql{overflow:auto;max-height:720px;font-size:11.5px;line-height:1.5;color:#d
       <div class="box s"><canvas id="medChart"></canvas></div>
     </article>
   </div>
+  <ol class="pts">
+    <li>
+      <span class="t">召回用户分数更高</span>
+      <span class="d">结清后再获额的分布整体右移，高于 9 月普通 T0。</span>
+      <dl class="kv">
+        <div><dt>召回 · 中位数</dt><dd>519</dd></div>
+        <div><dt>9月 T0 · 中位数</dt><dd>496</dd></div>
+        <div><dt>召回 · 520 分及以上</dt><dd>49.3%</dd></div>
+        <div><dt>9月 T0 · 520 分及以上</dt><dd>25.1%</dd></div>
+      </dl>
+    </li>
+  </ol>
   <div class="grid g2">
     <article class="chart">
       <h3>召回后再获额 · 各窗口分数分布</h3>
@@ -172,6 +184,18 @@ pre.sql{overflow:auto;max-height:720px;font-size:11.5px;line-height:1.5;color:#d
       <div class="box"><canvas id="distS"></canvas></div>
     </article>
   </div>
+  <ol class="pts">
+    <li>
+      <span class="t">未提单的人分数更高</span>
+      <span class="d">两边都是 7 日内未提单最高、当天提单最低。高分段里，未提单的一层更厚。</span>
+      <dl class="kv">
+        <div><dt>召回 · 未提单</dt><dd>524</dd></div>
+        <div><dt>召回 · 当天提单</dt><dd>513</dd></div>
+        <div><dt>9月 T0 · 未提单</dt><dd>507</dd></div>
+        <div><dt>9月 T0 · 当天提单</dt><dd>488</dd></div>
+      </dl>
+    </li>
+  </ol>
   <details class="code">
     <summary>分数段明细</summary>
   <h3>召回结清后再获额 · 2026-08-21 至 2026-10-06</h3>
