@@ -39,6 +39,10 @@ tr.total td{background:rgba(100,220,174,.12);font-weight:700;color:#fff}
 details.code{margin:10px 0;background:rgba(10,41,68,.95);border:1px solid var(--line);border-radius:12px;padding:10px 14px}
 details.code summary{cursor:pointer;color:var(--cy);font-weight:700}
 pre.sql{overflow:auto;max-height:720px;font-size:11.5px;line-height:1.5;color:#d7ecf8;white-space:pre}
+.pts{margin:18px 0 0;padding:0;list-style:none;display:grid;gap:10px}
+.pts li{padding:12px 14px;background:rgba(10,41,68,.95);border:1px solid var(--line);border-radius:10px}
+.pts .t{display:block;font-weight:800;color:#fff}
+.pts .d{display:block;color:var(--muted);font-size:14px;line-height:1.65}
 .foot{color:#7fa6c2;font-size:12.5px;margin-top:40px;border-top:1px solid var(--line);padding-top:16px;line-height:1.9}
 @media(max-width:900px){.g2,.g4,.hero-facts{grid-template-columns:1fr}.wrap{padding:18px 16px 56px}.nav{margin:0 -16px;padding-left:16px}.hero h1{font-size:22px}}
 </style>
@@ -46,74 +50,45 @@ pre.sql{overflow:auto;max-height:720px;font-size:11.5px;line-height:1.5;color:#d
 <body>
 <main class="wrap">
 <header class="hero">
-  <div class="kicker">T7 召回 · 提单意愿模型 V1 / V2 · 截至 2026-10-13</div>
-  <h1>V2 把提单用户更集中地排进高分档</h1>
+  <div class="kicker">T7 召回 · 提单意愿模型 · 截至 2026-10-13</div>
+  <h1>V2 对提单用户的区分度与识别精度</h1>
   <div class="hero-facts">
-    <div class="f"><span class="k">V1</span><span class="v">t7recall_active0910。触达 2026-09-10。7,792 人，分数 5–115。</span></div>
-    <div class="f"><span class="k">V2</span><span class="v">t7recalllist_active0918。触达 2026-09-18。8,669 人，分数 20.22–100。</span></div>
-    <div class="f"><span class="k">五档</span><span class="v">各批内部按分数从高到低。S 前10%，A 10%–20%，B 20%–40%，C 40%–70%，D 后30%。</span></div>
+    <div class="f"><span class="k">V2 样本</span><span class="v">t7recalllist_active0918。触达日 2026-09-18。名单 8,669 人，提单用户 1,141 人。</span></div>
+    <div class="f"><span class="k">V1 对照</span><span class="v">t7recall_active0910。触达日 2026-09-10。名单 7,792 人，提单用户 1,677 人。</span></div>
+    <div class="f"><span class="k">观察窗</span><span class="v">V2 共 26 日，V1 共 34 日，均截至 2026-10-13。整体提单率不用于版本比较。</span></div>
   </div>
 </header>
 <nav class="nav">
   <a href="#kpi">结论</a>
-  <a href="#read">怎么比</a>
   <a href="#bands">五档提单率</a>
-  <a href="#cover">提单覆盖</a>
+  <a href="#compare">版本对照</a>
   <a href="#scope">口径</a>
   <a href="#sql">SQL 附录</a>
 </nav>
 
-<section class="grid g4" id="kpi" style="margin-top:18px">
-  <article class="card"><div class="label">V2 的 S / D</div><div class="num">11.2 倍</div><div class="sub">V1 是 5.1 倍</div></article>
-  <article class="card"><div class="label">V2 前10%覆盖提单用户</div><div class="num gold">29.54%</div><div class="sub">337 / 1,141 · V1 为 22.66%</div></article>
-  <article class="card"><div class="label">V2 前三分之一覆盖</div><div class="num mint">65.56%</div><div class="sub">748 / 1,141 · V1 为 57.72%</div></article>
-  <article class="card"><div class="label">V2 的 S 档相对本批</div><div class="num">2.95 倍</div><div class="sub">本批提单率 13.16% · V1 的 S 档是本批的 2.26 倍</div></article>
-</section>
-
-<section id="read">
-  <h2>怎么读这次升级</h2>
-  <div class="callout green">
-    <span class="ch">V2 五档提单率逐档下降，高分和低分拉开了 11.2 倍。</span>
-    <div class="bd">S 档 38.87%，A 档 26.87%，B 档 14.42%，C 档 8.88%，D 档 3.46%。相邻两档都是高档高于低档。S 档提单率是 D 档的 11.2 倍。这就是 V2 的区分度：分数位次越靠前，召回日之后提单的比例越高。</div>
+<section id="kpi">
+  <h2>结论</h2>
+  <div class="grid g4" style="margin-top:14px">
+    <article class="card"><div class="label">V2 · S / D</div><div class="num">11.2 倍</div><div class="sub">V1 对照 5.1 倍</div></article>
+    <article class="card"><div class="label">V2 · 前10%覆盖率</div><div class="num gold">29.54%</div><div class="sub">337 / 1,141 · V1 22.66%</div></article>
+    <article class="card"><div class="label">V2 · 前三分之一覆盖率</div><div class="num mint">65.56%</div><div class="sub">748 / 1,141 · V1 57.72%</div></article>
+    <article class="card"><div class="label">V2 · S 档相对本批</div><div class="num">2.95 倍</div><div class="sub">本批提单率 13.16% · V1 2.26 倍</div></article>
   </div>
-  <div class="callout">
-    <span class="ch">同样的高分位次，V2 覆盖到的提单用户更集中。</span>
-    <div class="bd">前 10% 用户里，V2 覆盖 337 个提单用户，占该批全部提单用户的 29.54%；V1 覆盖 380 个，占 22.66%。前三分之一用户里，V2 覆盖 748 个，占 65.56%；V1 覆盖 968 个，占 57.72%。高分档用更少的名单比例，圈进了更高比例的实际提单用户。</div>
-  </div>
-  <div class="callout gold">
-    <span class="ch">两批的整体提单率各自保留，用来看档内高低，不用来比哪一版触达更多。</span>
-    <div class="bd">V1 从 2026-09-10 观察到 2026-10-13，提单率 21.52%（1,677/7,792）。V2 从 2026-09-18 观察到 2026-10-13，提单率 13.16%（1,141/8,669）。V1 多看了 8 天。两版分数也不是同一套量纲，V1 是 5–115，V2 是 20.22–100。比较放在各批内部的五档落差，以及高分档占本批提单用户的比例。</div>
-  </div>
+  <ol class="pts">
+    <li><span class="t">1. 区分度</span><span class="d">V2 五档提单率由 S 档 38.87% 降至 D 档 3.46%，S/D = 11.2。五档单调下降。</span></li>
+    <li><span class="t">2. 识别精度</span><span class="d">分数前 10% 覆盖 29.54% 的提单用户，前三分之一覆盖 65.56%。V1 对应为 22.66% 与 57.72%。</span></li>
+    <li><span class="t">3. 比较边界</span><span class="d">V1 观察窗 34 日（2026-09-10 至 2026-10-13），V2 观察窗 26 日（2026-09-18 至 2026-10-13）。分数区间分别为 5–115 与 20.22–100。版本比较使用档内比值和覆盖率。</span></li>
+  </ol>
 </section>
 
 <section id="bands">
   <h2>五档提单率</h2>
-  <p class="desc">提单率 = 该档在召回日及之后有过提单的人数 / 该档名单人数。分数是该档内的最低分到最高分。</p>
-  <div class="grid g2">
-    <article class="chart">
-      <h3>五档提单率</h3>
-      <p>V1 从 S 到 D 也下降。V2 的底档更低，高低倍数更大。</p>
-      <div class="box"><canvas id="rateChart"></canvas></div>
-    </article>
-    <article class="chart">
-      <h3>高分档占本批提单用户</h3>
-      <p>前 10% 和前三分之一，各自占本批全部提单用户的比例。</p>
-      <div class="box"><canvas id="coverChart"></canvas></div>
-    </article>
-  </div>
-  <h3>V1 · t7recall_active0910 · 2026-09-10 起</h3>
-  <div class="table"><table>
-    <thead><tr><th>客群</th><th>分数位次</th><th>分数</th><th>人数</th><th>提单人数</th><th>提单率</th></tr></thead>
-    <tbody>
-<tr><td>S</td><td>前10%</td><td>58–115</td><td>780</td><td>380</td><td>48.72%</td></tr>
-<tr><td>A</td><td>10%–20%</td><td>20–58</td><td>779</td><td>295</td><td>37.87%</td></tr>
-<tr><td>B</td><td>20%–40%</td><td>13–20</td><td>1,558</td><td>419</td><td>26.89%</td></tr>
-<tr><td>C</td><td>40%–70%</td><td>6–13</td><td>2,338</td><td>360</td><td>15.40%</td></tr>
-<tr><td>D</td><td>后30%</td><td>5–6</td><td>2,337</td><td>223</td><td>9.54%</td></tr>
-<tr class="total"><td>汇总</td><td>全部</td><td>5–115</td><td>7,792</td><td>1,677</td><td>21.52%</td></tr>
-    </tbody>
-  </table></div>
-  <h3>V2 · t7recalllist_active0918 · 2026-09-18 起</h3>
+  <p class="desc">仅列 V2，表 t7recalllist_active0918。提单率 = 该档在 2026-09-18 至 2026-10-13 有提单记录的用户数 / 该档名单用户数。</p>
+  <article class="chart">
+    <h3>V2 五档提单率</h3>
+    <p>S 前10%，A 10%–20%，B 20%–40%，C 40%–70%，D 后30%。</p>
+    <div class="box"><canvas id="rateChart"></canvas></div>
+  </article>
   <div class="table"><table>
     <thead><tr><th>客群</th><th>分数位次</th><th>分数</th><th>人数</th><th>提单人数</th><th>提单率</th></tr></thead>
     <tbody>
@@ -125,57 +100,83 @@ pre.sql{overflow:auto;max-height:720px;font-size:11.5px;line-height:1.5;color:#d
 <tr class="total"><td>汇总</td><td>全部</td><td>20.22–100</td><td>8,669</td><td>1,141</td><td>13.16%</td></tr>
     </tbody>
   </table></div>
-  <h3>档差和相对倍数</h3>
-  <div class="table"><table>
-    <thead><tr><th>指标</th><th>V1</th><th>V2</th></tr></thead>
-    <tbody>
-      <tr><td>S 提单率</td><td>48.72%</td><td>38.87%</td></tr>
-      <tr><td>A 提单率</td><td>37.87%</td><td>26.87%</td></tr>
-      <tr><td>B 提单率</td><td>26.89%</td><td>14.42%</td></tr>
-      <tr><td>C 提单率</td><td>15.40%</td><td>8.88%</td></tr>
-      <tr><td>D 提单率</td><td>9.54%</td><td>3.46%</td></tr>
-      <tr><td>S / D</td><td>5.1 倍</td><td>11.2 倍</td></tr>
-      <tr><td>S 档 / 本批提单率</td><td>2.26 倍</td><td>2.95 倍</td></tr>
-      <tr class="total"><td>本批提单率</td><td>21.52%</td><td>13.16%</td></tr>
-    </tbody>
-  </table></div>
 </section>
 
-<section id="cover">
-  <h2>高分用户覆盖了多少提单用户</h2>
-  <p class="desc">前 10% 用十分位，和 S 档是同一批人。前三分之一用三分位，分数线低于 S+A，高于只看前 20%。</p>
+<section id="compare">
+  <h2>版本对照</h2>
+  <p class="desc">对照指标在各版本内部计算。覆盖率的分母是该版本全部提单用户。</p>
+  <article class="chart">
+    <h3>高分档覆盖率</h3>
+    <p>前 10% 与 S 档为同一用户集。前三分之一为 NTILE(3) 的最高档。</p>
+    <div class="box"><canvas id="coverChart"></canvas></div>
+  </article>
   <div class="table"><table>
-    <thead><tr><th>模型</th><th>名单人数</th><th>提单用户</th><th>前10%人数</th><th>前10%分数</th><th>覆盖提单用户</th><th>占提单用户</th><th>前三分之一人数</th><th>前三分之一分数</th><th>覆盖提单用户</th><th>占提单用户</th></tr></thead>
+    <thead><tr><th>指标</th><th>V2</th><th>V1</th></tr></thead>
     <tbody>
-      <tr><td>V1</td><td>7,792</td><td>1,677</td><td>780</td><td>58–115</td><td>380</td><td>22.66%</td><td>2,598</td><td>15–115</td><td>968</td><td>57.72%</td></tr>
-      <tr><td>V2</td><td>8,669</td><td>1,141</td><td>867</td><td>95.25–100</td><td>337</td><td>29.54%</td><td>2,890</td><td>83.15–100</td><td>748</td><td>65.56%</td></tr>
+      <tr><td>S / D</td><td>11.2 倍</td><td>5.1 倍</td></tr>
+      <tr><td>前10%覆盖率</td><td>29.54%</td><td>22.66%</td></tr>
+      <tr><td>前三分之一覆盖率</td><td>65.56%</td><td>57.72%</td></tr>
+      <tr><td>S 档 / 本批提单率</td><td>2.95 倍</td><td>2.26 倍</td></tr>
     </tbody>
   </table></div>
-  <div class="callout green">
-    <span class="ch">V2 升级之后，高分档对提单用户的识别更准，五档提单率本身也有区分度。</span>
-    <div class="bd">识别更准，看的是覆盖：名单里分数最高的 10% 人，在 V2 里对应了 29.54% 的提单用户，在 V1 里对应了 22.66%。分数最高的三分之一，V2 对应 65.56%，V1 对应 57.72%。区分度看的是 V2 自己的五档：38.87%、26.87%、14.42%、8.88%、3.46%，从高到低逐档下降，S 是 D 的 11.2 倍。V1 五档也下降，S 是 D 的 5.1 倍，而且 D 档分数堆在 5–6 分，底部分不开。V2 的 D 档从 20.22 分铺到 60.77 分，提单率仍然只有 3.46%。</div>
-  </div>
+  <details class="code">
+    <summary>明细表</summary>
+    <h3>V1 五档提单率 · t7recall_active0910 · 2026-09-10 起</h3>
+    <div class="table"><table>
+      <thead><tr><th>客群</th><th>分数位次</th><th>分数</th><th>人数</th><th>提单人数</th><th>提单率</th></tr></thead>
+      <tbody>
+<tr><td>S</td><td>前10%</td><td>58–115</td><td>780</td><td>380</td><td>48.72%</td></tr>
+<tr><td>A</td><td>10%–20%</td><td>20–58</td><td>779</td><td>295</td><td>37.87%</td></tr>
+<tr><td>B</td><td>20%–40%</td><td>13–20</td><td>1,558</td><td>419</td><td>26.89%</td></tr>
+<tr><td>C</td><td>40%–70%</td><td>6–13</td><td>2,338</td><td>360</td><td>15.40%</td></tr>
+<tr><td>D</td><td>后30%</td><td>5–6</td><td>2,337</td><td>223</td><td>9.54%</td></tr>
+<tr class="total"><td>汇总</td><td>全部</td><td>5–115</td><td>7,792</td><td>1,677</td><td>21.52%</td></tr>
+      </tbody>
+    </table></div>
+    <h3>五档提单率对照</h3>
+    <div class="table"><table>
+      <thead><tr><th>指标</th><th>V2</th><th>V1</th></tr></thead>
+      <tbody>
+        <tr><td>S 提单率</td><td>38.87%</td><td>48.72%</td></tr>
+        <tr><td>A 提单率</td><td>26.87%</td><td>37.87%</td></tr>
+        <tr><td>B 提单率</td><td>14.42%</td><td>26.89%</td></tr>
+        <tr><td>C 提单率</td><td>8.88%</td><td>15.40%</td></tr>
+        <tr><td>D 提单率</td><td>3.46%</td><td>9.54%</td></tr>
+        <tr class="total"><td>本批提单率</td><td>13.16%</td><td>21.52%</td></tr>
+      </tbody>
+    </table></div>
+    <h3>高分覆盖明细</h3>
+    <div class="table"><table>
+      <thead><tr><th>模型</th><th>名单人数</th><th>提单用户</th><th>前10%人数</th><th>前10%分数</th><th>覆盖提单用户</th><th>覆盖率</th><th>前三分之一人数</th><th>前三分之一分数</th><th>覆盖提单用户</th><th>覆盖率</th></tr></thead>
+      <tbody>
+        <tr><td>V2</td><td>8,669</td><td>1,141</td><td>867</td><td>95.25–100</td><td>337</td><td>29.54%</td><td>2,890</td><td>83.15–100</td><td>748</td><td>65.56%</td></tr>
+        <tr><td>V1</td><td>7,792</td><td>1,677</td><td>780</td><td>58–115</td><td>380</td><td>22.66%</td><td>2,598</td><td>15–115</td><td>968</td><td>57.72%</td></tr>
+      </tbody>
+    </table></div>
+  </details>
 </section>
 
 <section id="scope">
   <h2>口径</h2>
   <div class="table def"><table>
     <tbody>
-      <tr><th>V1 名单</th><td>wangchuanliang.t7recall_active0910。库里没有 t7recalllist_active0910。同一 churn_user_id 保留分数最高的一行。</td></tr>
-      <tr><th>V2 名单</th><td>wangchuanliang.t7recalllist_active0918。同一 churn_user_id 保留分数最高的一行。</td></tr>
-      <tr><th>召回日</th><td>V1 为 2026-09-10，V2 为 2026-09-18。两张表都没有单独的 recall_date 列，触达日用表名对应的日期。</td></tr>
-      <tr><th>提单</th><td>order_loan_f_v2_copy 中 apply_date 大于等于该批召回日，并且小于等于 2026-10-13。按用户计，有一笔即算提单。不要求放款。</td></tr>
-      <tr><th>五档</th><td>各批内部按 score 从高到低、user_id 次序排名。名次百分位 &lt;10% 为 S，&lt;20% 为 A，&lt;40% 为 B，&lt;70% 为 C，其余为 D。</td></tr>
-      <tr><th>前10%</th><td>各批 NTILE(10) 的第 1 档，与 S 档人数一致。</td></tr>
-      <tr><th>前三分之一</th><td>各批 NTILE(3) 的第 1 档。覆盖比例的分母是该批全部提单用户。</td></tr>
-      <tr><th>数据日</th><td>仓库 CURRENT_DATE = 2026-10-13。</td></tr>
+      <tr><th>V2 名单</th><td>wangchuanliang.t7recalllist_active0918。字段 churn_user_id、score。同一 churn_user_id 按 score DESC NULLS LAST 保留一行。表内无 recall_date，触达日取 2026-09-18。</td></tr>
+      <tr><th>V1 名单</th><td>wangchuanliang.t7recall_active0910。去重规则与 V2 相同。库内无 t7recalllist_active0910。触达日取 2026-09-10。</td></tr>
+      <tr><th>提单用户</th><td>order_loan_f_v2_copy.apply_date ≥ 该版本触达日，且 apply_date ≤ 2026-10-13。同一 user_id 有至少 1 笔订单记为提单用户。不筛选 is_remit，不要求 remit_amt &gt; 0。</td></tr>
+      <tr><th>提单率</th><td>档内提单用户数 / 档内名单用户数。分母为去重后的名单人数，分子为上述提单用户与该档的交集。</td></tr>
+      <tr><th>五档切分</th><td>版本内按 score DESC、user_id 升序编号。pct = (row_number − 1) / 名单人数。S：pct &lt; 0.10；A：pct &lt; 0.20；B：pct &lt; 0.40；C：pct &lt; 0.70；D：其余。正文五档表只列 V2。</td></tr>
+      <tr><th>前10%</th><td>版本内 NTILE(10) = 1，排序与五档相同。该集合与 S 档人数一致。覆盖率 = 该集合中的提单用户数 / 该版本全部提单用户数。</td></tr>
+      <tr><th>前三分之一</th><td>版本内 NTILE(3) = 1。覆盖率分母同样为该版本全部提单用户数。</td></tr>
+      <tr><th>S / D</th><td>S 档提单率 ÷ D 档提单率。在各版本内部计算，不跨版本比较绝对分数。</td></tr>
+      <tr><th>S 档相对本批</th><td>S 档提单率 ÷ 该版本整体提单率。</td></tr>
+      <tr><th>数据日</th><td>kaby_dw CURRENT_DATE = 2026-10-13。V1 观察 34 个自然日，V2 观察 26 个自然日，均含起止日。</td></tr>
     </tbody>
   </table></div>
 </section>
 
 <section id="sql">
   <h2>SQL 附录</h2>
-  <details class="code" open>
+  <details class="code">
     <summary>完整 PGSQL</summary>
     <pre class="sql">
 DROP TABLE IF EXISTS tmp_u;
@@ -253,7 +254,7 @@ ORDER BY g.model;
 </pre>
   </details>
 </section>
-<p class="foot">源表 t7recall_active0910、t7recalllist_active0918、order_loan_f_v2_copy。两版 score 量纲不同。整体提单率受观察天数影响，档差和覆盖比例在各批内部计算。</p>
+<p class="foot">源表 wangchuanliang.t7recall_active0910、wangchuanliang.t7recalllist_active0918、wangchuanliang.order_loan_f_v2_copy。明细表与 SQL 默认折叠。</p>
 </main>
 <script>
 const ticks = {color:'#aac5da', font:{size:12}};
@@ -264,7 +265,6 @@ new Chart(document.getElementById('rateChart'), {
   data:{
     labels:['S 前10%','A 10–20%','B 20–40%','C 40–70%','D 后30%'],
     datasets:[
-      {label:'V1', data:[48.72, 37.87, 26.89, 15.4, 9.54], backgroundColor:'rgba(170,197,218,.55)', borderRadius:6},
       {label:'V2', data:[38.87, 26.87, 14.42, 8.88, 3.46], backgroundColor:'rgba(67,199,231,.85)', borderRadius:6}
     ]
   },
