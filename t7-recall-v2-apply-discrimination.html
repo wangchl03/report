@@ -1,0 +1,295 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>T7 召回 V2 模型提单区分度</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+<style>
+:root{--bg:#06192b;--line:#2a5c7e;--text:#eff8ff;--muted:#aac5da;--cy:#43c7e7;--gr:#64dcae;--am:#ffc26b;--pk:#f68ab0}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font:16px/1.75 -apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei",sans-serif}
+.wrap{max-width:1180px;margin:auto;padding:28px 36px 80px}
+.hero{text-align:center;padding:28px 12px 22px;border-bottom:1px solid var(--line)}
+.kicker{color:var(--cy);font-size:13px;letter-spacing:.14em;font-weight:700}
+.hero h1{font-size:30px;line-height:1.35;margin:10px 0 8px}
+.nav{position:sticky;top:0;z-index:5;background:rgba(6,25,43,.94);backdrop-filter:blur(10px);border-bottom:1px solid var(--line);display:flex;gap:18px;overflow:auto;padding:12px 0;margin:0 -36px;padding-left:36px}
+.nav a{white-space:nowrap;color:#c6dae7;font-size:14px;text-decoration:none}
+.nav a:hover{color:var(--cy)}
+h2{font-size:22px;font-weight:800;color:#fff;margin:44px 0 4px;padding:0 0 8px;border-bottom:1px solid var(--line);scroll-margin-top:58px}
+h3{font-size:16px;font-weight:750;color:#f3fbff;margin:16px 0 8px}
+.desc{color:var(--muted);margin:0 0 12px;font-size:13px;line-height:1.6}
+.hero-facts{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin-top:16px;text-align:left}
+.hero-facts .f{background:rgba(10,41,68,.75);border:1px solid var(--line);border-radius:10px;padding:10px 12px}
+.hero-facts .k{display:block;font-size:11px;font-weight:800;letter-spacing:.1em;color:var(--cy);margin-bottom:4px}
+.hero-facts .v{display:block;font-size:13px;color:#c5d8e6;line-height:1.55}
+.grid{display:grid;gap:14px}.g4{grid-template-columns:repeat(4,minmax(0,1fr))}.g2{grid-template-columns:repeat(2,minmax(0,1fr))}
+.card,.chart{background:rgba(10,41,68,.95);border:1px solid var(--line);border-radius:14px;padding:16px}
+.label{color:var(--muted);font-size:12px}.num{font-size:26px;font-weight:800;margin:4px 0 2px;color:var(--cy)}
+.sub{color:var(--muted);font-size:12px}.mint{color:var(--gr)}.gold{color:var(--am)}.pink{color:var(--pk)}
+.box{height:320px;position:relative}.chart h3{margin:0 0 2px;font-size:16px;color:#fff}.chart p{font-size:12.5px;color:var(--muted);margin:0 0 10px}
+.callout{background:#0a2a45;border:1px solid #2a5c7e;border-left:4px solid #43c7e7;border-radius:10px;padding:14px 18px;margin:14px 0}
+.callout.gold{border-left-color:#ffc26b}.callout.green{border-left-color:#64dcae}
+.callout .ch{display:block;font-size:16px;font-weight:800;color:#fff;margin:0 0 8px}
+.callout .bd{color:var(--muted);font-size:14px;line-height:1.7}
+.table{overflow-x:auto;margin:12px 0}table{width:100%;border-collapse:collapse;font-size:13px}
+th,td{padding:8px 10px;border-bottom:1px solid rgba(42,92,126,.45);text-align:right;white-space:nowrap}
+th{color:var(--muted);background:rgba(12,48,78,.65)}th:first-child,td:first-child{text-align:left}
+tr.total td{background:rgba(100,220,174,.12);font-weight:700;color:#fff}
+.table.def td,.table.def th{text-align:left;white-space:normal}
+details.code{margin:10px 0;background:rgba(10,41,68,.95);border:1px solid var(--line);border-radius:12px;padding:10px 14px}
+details.code summary{cursor:pointer;color:var(--cy);font-weight:700}
+pre.sql{overflow:auto;max-height:720px;font-size:11.5px;line-height:1.5;color:#d7ecf8;white-space:pre}
+.foot{color:#7fa6c2;font-size:12.5px;margin-top:40px;border-top:1px solid var(--line);padding-top:16px;line-height:1.9}
+@media(max-width:900px){.g2,.g4,.hero-facts{grid-template-columns:1fr}.wrap{padding:18px 16px 56px}.nav{margin:0 -16px;padding-left:16px}.hero h1{font-size:22px}}
+</style>
+</head>
+<body>
+<main class="wrap">
+<header class="hero">
+  <div class="kicker">T7 召回 · 提单意愿模型 V1 / V2 · 截至 2026-10-13</div>
+  <h1>V2 把提单用户更集中地排进高分档</h1>
+  <div class="hero-facts">
+    <div class="f"><span class="k">V1</span><span class="v">t7recall_active0910。触达 2026-09-10。7,792 人，分数 5–115。</span></div>
+    <div class="f"><span class="k">V2</span><span class="v">t7recalllist_active0918。触达 2026-09-18。8,669 人，分数 20.22–100。</span></div>
+    <div class="f"><span class="k">五档</span><span class="v">各批内部按分数从高到低。S 前10%，A 10%–20%，B 20%–40%，C 40%–70%，D 后30%。</span></div>
+  </div>
+</header>
+<nav class="nav">
+  <a href="#kpi">结论</a>
+  <a href="#read">怎么比</a>
+  <a href="#bands">五档提单率</a>
+  <a href="#cover">提单覆盖</a>
+  <a href="#scope">口径</a>
+  <a href="#sql">SQL 附录</a>
+</nav>
+
+<section class="grid g4" id="kpi" style="margin-top:18px">
+  <article class="card"><div class="label">V2 的 S / D</div><div class="num">11.2 倍</div><div class="sub">V1 是 5.1 倍</div></article>
+  <article class="card"><div class="label">V2 前10%覆盖提单用户</div><div class="num gold">29.54%</div><div class="sub">337 / 1,141 · V1 为 22.66%</div></article>
+  <article class="card"><div class="label">V2 前三分之一覆盖</div><div class="num mint">65.56%</div><div class="sub">748 / 1,141 · V1 为 57.72%</div></article>
+  <article class="card"><div class="label">V2 的 S 档相对本批</div><div class="num">2.95 倍</div><div class="sub">本批提单率 13.16% · V1 的 S 档是本批的 2.26 倍</div></article>
+</section>
+
+<section id="read">
+  <h2>怎么读这次升级</h2>
+  <div class="callout green">
+    <span class="ch">V2 五档提单率逐档下降，高分和低分拉开了 11.2 倍。</span>
+    <div class="bd">S 档 38.87%，A 档 26.87%，B 档 14.42%，C 档 8.88%，D 档 3.46%。相邻两档都是高档高于低档。S 档提单率是 D 档的 11.2 倍。这就是 V2 的区分度：分数位次越靠前，召回日之后提单的比例越高。</div>
+  </div>
+  <div class="callout">
+    <span class="ch">同样的高分位次，V2 覆盖到的提单用户更集中。</span>
+    <div class="bd">前 10% 用户里，V2 覆盖 337 个提单用户，占该批全部提单用户的 29.54%；V1 覆盖 380 个，占 22.66%。前三分之一用户里，V2 覆盖 748 个，占 65.56%；V1 覆盖 968 个，占 57.72%。高分档用更少的名单比例，圈进了更高比例的实际提单用户。</div>
+  </div>
+  <div class="callout gold">
+    <span class="ch">两批的整体提单率各自保留，用来看档内高低，不用来比哪一版触达更多。</span>
+    <div class="bd">V1 从 2026-09-10 观察到 2026-10-13，提单率 21.52%（1,677/7,792）。V2 从 2026-09-18 观察到 2026-10-13，提单率 13.16%（1,141/8,669）。V1 多看了 8 天。两版分数也不是同一套量纲，V1 是 5–115，V2 是 20.22–100。比较放在各批内部的五档落差，以及高分档占本批提单用户的比例。</div>
+  </div>
+</section>
+
+<section id="bands">
+  <h2>五档提单率</h2>
+  <p class="desc">提单率 = 该档在召回日及之后有过提单的人数 / 该档名单人数。分数是该档内的最低分到最高分。</p>
+  <div class="grid g2">
+    <article class="chart">
+      <h3>五档提单率</h3>
+      <p>V1 从 S 到 D 也下降。V2 的底档更低，高低倍数更大。</p>
+      <div class="box"><canvas id="rateChart"></canvas></div>
+    </article>
+    <article class="chart">
+      <h3>高分档占本批提单用户</h3>
+      <p>前 10% 和前三分之一，各自占本批全部提单用户的比例。</p>
+      <div class="box"><canvas id="coverChart"></canvas></div>
+    </article>
+  </div>
+  <h3>V1 · t7recall_active0910 · 2026-09-10 起</h3>
+  <div class="table"><table>
+    <thead><tr><th>客群</th><th>分数位次</th><th>分数</th><th>人数</th><th>提单人数</th><th>提单率</th></tr></thead>
+    <tbody>
+<tr><td>S</td><td>前10%</td><td>58–115</td><td>780</td><td>380</td><td>48.72%</td></tr>
+<tr><td>A</td><td>10%–20%</td><td>20–58</td><td>779</td><td>295</td><td>37.87%</td></tr>
+<tr><td>B</td><td>20%–40%</td><td>13–20</td><td>1,558</td><td>419</td><td>26.89%</td></tr>
+<tr><td>C</td><td>40%–70%</td><td>6–13</td><td>2,338</td><td>360</td><td>15.40%</td></tr>
+<tr><td>D</td><td>后30%</td><td>5–6</td><td>2,337</td><td>223</td><td>9.54%</td></tr>
+<tr class="total"><td>汇总</td><td>全部</td><td>5–115</td><td>7,792</td><td>1,677</td><td>21.52%</td></tr>
+    </tbody>
+  </table></div>
+  <h3>V2 · t7recalllist_active0918 · 2026-09-18 起</h3>
+  <div class="table"><table>
+    <thead><tr><th>客群</th><th>分数位次</th><th>分数</th><th>人数</th><th>提单人数</th><th>提单率</th></tr></thead>
+    <tbody>
+<tr><td>S</td><td>前10%</td><td>95.25–100</td><td>867</td><td>337</td><td>38.87%</td></tr>
+<tr><td>A</td><td>10%–20%</td><td>90.32–95.25</td><td>867</td><td>233</td><td>26.87%</td></tr>
+<tr><td>B</td><td>20%–40%</td><td>79.61–90.32</td><td>1,734</td><td>250</td><td>14.42%</td></tr>
+<tr><td>C</td><td>40%–70%</td><td>60.77–79.61</td><td>2,601</td><td>231</td><td>8.88%</td></tr>
+<tr><td>D</td><td>后30%</td><td>20.22–60.77</td><td>2,600</td><td>90</td><td>3.46%</td></tr>
+<tr class="total"><td>汇总</td><td>全部</td><td>20.22–100</td><td>8,669</td><td>1,141</td><td>13.16%</td></tr>
+    </tbody>
+  </table></div>
+  <h3>档差和相对倍数</h3>
+  <div class="table"><table>
+    <thead><tr><th>指标</th><th>V1</th><th>V2</th></tr></thead>
+    <tbody>
+      <tr><td>S 提单率</td><td>48.72%</td><td>38.87%</td></tr>
+      <tr><td>A 提单率</td><td>37.87%</td><td>26.87%</td></tr>
+      <tr><td>B 提单率</td><td>26.89%</td><td>14.42%</td></tr>
+      <tr><td>C 提单率</td><td>15.40%</td><td>8.88%</td></tr>
+      <tr><td>D 提单率</td><td>9.54%</td><td>3.46%</td></tr>
+      <tr><td>S / D</td><td>5.1 倍</td><td>11.2 倍</td></tr>
+      <tr><td>S 档 / 本批提单率</td><td>2.26 倍</td><td>2.95 倍</td></tr>
+      <tr class="total"><td>本批提单率</td><td>21.52%</td><td>13.16%</td></tr>
+    </tbody>
+  </table></div>
+</section>
+
+<section id="cover">
+  <h2>高分用户覆盖了多少提单用户</h2>
+  <p class="desc">前 10% 用十分位，和 S 档是同一批人。前三分之一用三分位，分数线低于 S+A，高于只看前 20%。</p>
+  <div class="table"><table>
+    <thead><tr><th>模型</th><th>名单人数</th><th>提单用户</th><th>前10%人数</th><th>前10%分数</th><th>覆盖提单用户</th><th>占提单用户</th><th>前三分之一人数</th><th>前三分之一分数</th><th>覆盖提单用户</th><th>占提单用户</th></tr></thead>
+    <tbody>
+      <tr><td>V1</td><td>7,792</td><td>1,677</td><td>780</td><td>58–115</td><td>380</td><td>22.66%</td><td>2,598</td><td>15–115</td><td>968</td><td>57.72%</td></tr>
+      <tr><td>V2</td><td>8,669</td><td>1,141</td><td>867</td><td>95.25–100</td><td>337</td><td>29.54%</td><td>2,890</td><td>83.15–100</td><td>748</td><td>65.56%</td></tr>
+    </tbody>
+  </table></div>
+  <div class="callout green">
+    <span class="ch">V2 升级之后，高分档对提单用户的识别更准，五档提单率本身也有区分度。</span>
+    <div class="bd">识别更准，看的是覆盖：名单里分数最高的 10% 人，在 V2 里对应了 29.54% 的提单用户，在 V1 里对应了 22.66%。分数最高的三分之一，V2 对应 65.56%，V1 对应 57.72%。区分度看的是 V2 自己的五档：38.87%、26.87%、14.42%、8.88%、3.46%，从高到低逐档下降，S 是 D 的 11.2 倍。V1 五档也下降，S 是 D 的 5.1 倍，而且 D 档分数堆在 5–6 分，底部分不开。V2 的 D 档从 20.22 分铺到 60.77 分，提单率仍然只有 3.46%。</div>
+  </div>
+</section>
+
+<section id="scope">
+  <h2>口径</h2>
+  <div class="table def"><table>
+    <tbody>
+      <tr><th>V1 名单</th><td>wangchuanliang.t7recall_active0910。库里没有 t7recalllist_active0910。同一 churn_user_id 保留分数最高的一行。</td></tr>
+      <tr><th>V2 名单</th><td>wangchuanliang.t7recalllist_active0918。同一 churn_user_id 保留分数最高的一行。</td></tr>
+      <tr><th>召回日</th><td>V1 为 2026-09-10，V2 为 2026-09-18。两张表都没有单独的 recall_date 列，触达日用表名对应的日期。</td></tr>
+      <tr><th>提单</th><td>order_loan_f_v2_copy 中 apply_date 大于等于该批召回日，并且小于等于 2026-10-13。按用户计，有一笔即算提单。不要求放款。</td></tr>
+      <tr><th>五档</th><td>各批内部按 score 从高到低、user_id 次序排名。名次百分位 &lt;10% 为 S，&lt;20% 为 A，&lt;40% 为 B，&lt;70% 为 C，其余为 D。</td></tr>
+      <tr><th>前10%</th><td>各批 NTILE(10) 的第 1 档，与 S 档人数一致。</td></tr>
+      <tr><th>前三分之一</th><td>各批 NTILE(3) 的第 1 档。覆盖比例的分母是该批全部提单用户。</td></tr>
+      <tr><th>数据日</th><td>仓库 CURRENT_DATE = 2026-10-13。</td></tr>
+    </tbody>
+  </table></div>
+</section>
+
+<section id="sql">
+  <h2>SQL 附录</h2>
+  <details class="code" open>
+    <summary>完整 PGSQL</summary>
+    <pre class="sql">
+DROP TABLE IF EXISTS tmp_u;
+CREATE TEMP TABLE tmp_u AS
+SELECT 'V1' AS model, '2026-09-10'::date AS start_dt, user_id, score FROM (
+    SELECT DISTINCT ON (churn_user_id)
+        churn_user_id::bigint AS user_id, score::numeric AS score
+    FROM wangchuanliang.t7recall_active0910
+    WHERE churn_user_id IS NOT NULL
+    ORDER BY churn_user_id, score DESC NULLS LAST
+) a
+UNION ALL
+SELECT 'V2', '2026-09-18'::date, user_id, score FROM (
+    SELECT DISTINCT ON (churn_user_id)
+        churn_user_id::bigint AS user_id, score::numeric AS score
+    FROM wangchuanliang.t7recalllist_active0918
+    WHERE churn_user_id IS NOT NULL
+    ORDER BY churn_user_id, score DESC NULLS LAST
+) b;
+
+DROP TABLE IF EXISTS tmp_g;
+CREATE TEMP TABLE tmp_g AS
+SELECT model, start_dt, user_id, score,
+       CASE
+           WHEN pct &lt; 0.10 THEN 'S'
+           WHEN pct &lt; 0.20 THEN 'A'
+           WHEN pct &lt; 0.40 THEN 'B'
+           WHEN pct &lt; 0.70 THEN 'C'
+           ELSE 'D'
+       END AS grp,
+       NTILE(3) OVER (PARTITION BY model ORDER BY score DESC NULLS LAST, user_id) AS tertile,
+       NTILE(10) OVER (PARTITION BY model ORDER BY score DESC NULLS LAST, user_id) AS decile
+FROM (
+    SELECT model, start_dt, user_id, score,
+           (ROW_NUMBER() OVER (PARTITION BY model ORDER BY score DESC NULLS LAST, user_id) - 1)::numeric
+               / NULLIF(COUNT(*) OVER (PARTITION BY model), 0) AS pct
+    FROM tmp_u
+) u;
+
+DROP TABLE IF EXISTS tmp_a;
+CREATE TEMP TABLE tmp_a AS
+SELECT u.model, u.user_id
+FROM tmp_u u
+INNER JOIN wangchuanliang.order_loan_f_v2_copy o ON o.user_id = u.user_id
+WHERE o.apply_date &gt;= u.start_dt AND o.apply_date &lt;= CURRENT_DATE
+GROUP BY u.model, u.user_id;
+
+SELECT CURRENT_DATE AS as_of;
+
+SELECT g.model, g.grp,
+       COUNT(*) AS n_user,
+       COUNT(a.user_id) AS n_apply,
+       MIN(g.score) AS smin,
+       MAX(g.score) AS smax
+FROM tmp_g g
+LEFT JOIN tmp_a a ON a.model = g.model AND a.user_id = g.user_id
+GROUP BY g.model, g.grp
+ORDER BY g.model, CASE g.grp WHEN 'S' THEN 1 WHEN 'A' THEN 2 WHEN 'B' THEN 3 WHEN 'C' THEN 4 ELSE 5 END;
+
+SELECT g.model,
+       COUNT(*) AS n_user,
+       COUNT(a.user_id) AS n_apply,
+       SUM(CASE WHEN g.decile = 1 THEN 1 ELSE 0 END) AS n_top10,
+       SUM(CASE WHEN g.decile = 1 AND a.user_id IS NOT NULL THEN 1 ELSE 0 END) AS apply_top10,
+       MIN(CASE WHEN g.decile = 1 THEN g.score END) AS smin10,
+       MAX(CASE WHEN g.decile = 1 THEN g.score END) AS smax10,
+       SUM(CASE WHEN g.tertile = 1 THEN 1 ELSE 0 END) AS n_top3,
+       SUM(CASE WHEN g.tertile = 1 AND a.user_id IS NOT NULL THEN 1 ELSE 0 END) AS apply_top3,
+       MIN(CASE WHEN g.tertile = 1 THEN g.score END) AS smin3,
+       MAX(CASE WHEN g.tertile = 1 THEN g.score END) AS smax3
+FROM tmp_g g
+LEFT JOIN tmp_a a ON a.model = g.model AND a.user_id = g.user_id
+GROUP BY g.model
+ORDER BY g.model;
+</pre>
+  </details>
+</section>
+<p class="foot">源表 t7recall_active0910、t7recalllist_active0918、order_loan_f_v2_copy。两版 score 量纲不同。整体提单率受观察天数影响，档差和覆盖比例在各批内部计算。</p>
+</main>
+<script>
+const ticks = {color:'#aac5da', font:{size:12}};
+const grid = {color:'rgba(42,92,126,.35)'};
+const yPct = {ticks:{color:'#aac5da', font:{size:12}, callback:(v)=>v+'%'}, grid:grid};
+new Chart(document.getElementById('rateChart'), {
+  type:'bar',
+  data:{
+    labels:['S 前10%','A 10–20%','B 20–40%','C 40–70%','D 后30%'],
+    datasets:[
+      {label:'V1', data:[48.72, 37.87, 26.89, 15.4, 9.54], backgroundColor:'rgba(170,197,218,.55)', borderRadius:6},
+      {label:'V2', data:[38.87, 26.87, 14.42, 8.88, 3.46], backgroundColor:'rgba(67,199,231,.85)', borderRadius:6}
+    ]
+  },
+  options:{
+    responsive:true, maintainAspectRatio:false,
+    plugins:{legend:{labels:{color:'#eff8ff'}}, tooltip:{callbacks:{label:(c)=>c.dataset.label+' '+c.parsed.y.toFixed(2)+'%'}}},
+    scales:{x:{ticks:ticks, grid:{display:false}}, y:Object.assign({suggestedMax:60}, yPct)}
+  }
+});
+new Chart(document.getElementById('coverChart'), {
+  type:'bar',
+  data:{
+    labels:['前10%覆盖','前三分之一覆盖'],
+    datasets:[
+      {label:'V1', data:[22.66, 57.72], backgroundColor:'rgba(170,197,218,.55)', borderRadius:6},
+      {label:'V2', data:[29.54, 65.56], backgroundColor:'rgba(100,220,174,.85)', borderRadius:6}
+    ]
+  },
+  options:{
+    responsive:true, maintainAspectRatio:false,
+    plugins:{legend:{labels:{color:'#eff8ff'}}, tooltip:{callbacks:{label:(c)=>c.dataset.label+' '+c.parsed.y.toFixed(2)+'%'}}},
+    scales:{x:{ticks:ticks, grid:{display:false}}, y:Object.assign({suggestedMax:80}, yPct)}
+  }
+});
+</script>
+
+</body>
+</html>
