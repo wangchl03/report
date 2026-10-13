@@ -1,0 +1,436 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>召回结清后再获额的提单率与资质</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+<style>
+:root{--bg:#06192b;--line:#2a5c7e;--text:#eff8ff;--muted:#aac5da;--cy:#43c7e7;--gr:#64dcae;--am:#ffc26b;--pk:#f68ab0}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font:16px/1.75 -apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei",sans-serif}
+.wrap{max-width:1180px;margin:auto;padding:28px 36px 80px}
+.hero{text-align:center;padding:28px 12px 22px;border-bottom:1px solid var(--line)}
+.kicker{color:var(--cy);font-size:13px;letter-spacing:.14em;font-weight:700}
+.hero h1{font-size:30px;line-height:1.35;margin:10px 0 8px}
+.nav{position:sticky;top:0;z-index:5;background:rgba(6,25,43,.94);backdrop-filter:blur(10px);border-bottom:1px solid var(--line);display:flex;gap:18px;overflow:auto;padding:12px 0;margin:0 -36px;padding-left:36px}
+.nav a{white-space:nowrap;color:#c6dae7;font-size:14px;text-decoration:none}
+h2{font-size:22px;font-weight:800;color:#fff;margin:44px 0 4px;padding:0 0 8px;border-bottom:1px solid var(--line);scroll-margin-top:58px}
+h3{font-size:16px;font-weight:750;color:#f3fbff;margin:16px 0 8px}
+.desc{color:var(--muted);margin:0 0 12px;font-size:13px;line-height:1.6}
+.hero-facts{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin-top:16px;text-align:left}
+.hero-facts .f{background:rgba(10,41,68,.75);border:1px solid var(--line);border-radius:10px;padding:10px 12px}
+.hero-facts .k{display:block;font-size:11px;font-weight:800;letter-spacing:.1em;color:var(--cy);margin-bottom:4px}
+.hero-facts .v{display:block;font-size:13px;color:#c5d8e6;line-height:1.55}
+.grid{display:grid;gap:14px}.g4{grid-template-columns:repeat(4,minmax(0,1fr))}.g2{grid-template-columns:repeat(2,minmax(0,1fr))}
+.card,.chart{background:rgba(10,41,68,.95);border:1px solid var(--line);border-radius:14px;padding:16px}
+.label{color:var(--muted);font-size:12px}.num{font-size:26px;font-weight:800;margin:4px 0 2px;color:var(--cy)}
+.sub{color:var(--muted);font-size:12px}.mint{color:var(--gr)}.gold{color:var(--am)}.pink{color:var(--pk)}
+.box{height:320px;position:relative}.box.s{height:280px}
+.chart h3{margin:0 0 2px;font-size:16px;color:#fff}.chart p{font-size:12.5px;color:var(--muted);margin:0 0 10px}
+.flow{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;margin:14px 0}
+.flow .st{background:rgba(10,41,68,.95);border:1px solid var(--line);border-radius:10px;padding:10px 12px}
+.flow .n{font-size:18px;font-weight:800;color:#fff}
+.flow .t{font-size:12px;color:var(--muted)}
+.pts{margin:18px 0 0;padding:0;list-style:none;display:grid;gap:10px}
+.pts li{padding:12px 14px;background:rgba(10,41,68,.95);border:1px solid var(--line);border-radius:10px}
+.pts .t{display:block;font-weight:800;color:#fff}
+.pts .d{display:block;color:var(--muted);font-size:14px;line-height:1.65}
+.table{overflow-x:auto;margin:12px 0}table{width:100%;border-collapse:collapse;font-size:13px}
+th,td{padding:8px 10px;border-bottom:1px solid rgba(42,92,126,.45);text-align:right;white-space:nowrap}
+th{color:var(--muted);background:rgba(12,48,78,.65)}th:first-child,td:first-child{text-align:left}
+tr.total td{background:rgba(100,220,174,.12);font-weight:700;color:#fff}
+.table.def td,.table.def th{text-align:left;white-space:normal}
+details.code{margin:10px 0;background:rgba(10,41,68,.95);border:1px solid var(--line);border-radius:12px;padding:10px 14px}
+details.code summary{cursor:pointer;color:var(--cy);font-weight:700}
+pre.sql{overflow:auto;max-height:720px;font-size:11.5px;line-height:1.5;color:#d7ecf8;white-space:pre}
+.foot{color:#7fa6c2;font-size:12.5px;margin-top:40px;border-top:1px solid var(--line);padding-top:16px;line-height:1.9}
+@media(max-width:900px){.g2,.g4,.hero-facts,.flow{grid-template-columns:1fr}.wrap{padding:18px 16px 56px}.nav{margin:0 -16px;padding-left:16px}.hero h1{font-size:22px}}
+</style>
+</head>
+<body>
+<main class="wrap">
+<header class="hero">
+  <div class="kicker">T7 召回 · 结清后再获额 · 截至 2026-10-13</div>
+  <h1>结清后再流失更高，未提单用户资质更好</h1>
+  <div class="hero-facts">
+    <div class="f"><span class="k">召回后再获额</span><span class="v">recall_date = 2026-08-18。首次放款结清后，结清当天最后一笔获额通过。窗口已满 1,002 人。</span></div>
+    <div class="f"><span class="k">9月普通 T0</span><span class="v">2026-09-01 至 2026-09-30 的 T0 获额通过人日，21,092。获额规则与上列同一套。</span></div>
+    <div class="f"><span class="k">模型分</span><span class="v">model_result_copy.kabybmerge410fpd7cre，挂在最后一笔获额订单。分越高，资质越好。</span></div>
+  </div>
+</header>
+<nav class="nav">
+  <a href="#kpi">结论</a>
+  <a href="#rate">提单率</a>
+  <a href="#score">资质</a>
+  <a href="#scope">口径</a>
+  <a href="#sql">SQL 附录</a>
+</nav>
+
+<section id="kpi">
+  <h2>结论</h2>
+  <div class="grid g4" style="margin-top:14px">
+    <article class="card"><div class="label">召回 · 7日内未提单</div><div class="num pink">53.89%</div><div class="sub">540 / 1,002 · 9月 T0 33.35%</div></article>
+    <article class="card"><div class="label">未提单率差距</div><div class="num gold">20.5 pp</div><div class="sub">召回高于 9 月普通 T0</div></article>
+    <article class="card"><div class="label">获额分中位数</div><div class="num">519</div><div class="sub">9月 T0 为 496</div></article>
+    <article class="card"><div class="label">召回 · 未提单中位数</div><div class="num mint">524</div><div class="sub">当天提单 513 · 9月未提单 507</div></article>
+  </div>
+  <ol class="pts">
+    <li><span class="t">1. 再度流失</span><span class="d">结清后再获额的 7 日内未提单率为 53.89%，9 月普通 T0 为 33.35%。当天提单率 21.56%，9 月 T0 为 39.68%。召回用户把这笔放款结清之后，再次停满 7 天的比例更高。</span></li>
+    <li><span class="t">2. 整体资质</span><span class="d">再获额订单的模型分中位数 519，9 月 T0 为 496。520 分及以上占 49.3%，9 月 T0 为 25.1%。这批结清后再获额的用户，分数高于普通 T0。</span></li>
+    <li><span class="t">3. 未提单用户更优</span><span class="d">召回后 7 日内未提单用户的中位数是 524，高于同批当天提单的 513。9 月 T0 同样是未提单（507）高于当天提单（488）。高分用户停下来的比例更高，适合继续用提额或让利召回。</span></li>
+  </ol>
+</section>
+
+<section id="rate">
+  <h2>提单率</h2>
+  <p class="desc">分母是获额通过人日。当天、3 日内、7 日内依次包含更早的天数。7 日内未提单是 7 日内没有第一次提单的人日。</p>
+  <div class="flow">
+    <div class="st"><div class="t">8月18日召回名单</div><div class="n">11,585</div></div>
+    <div class="st"><div class="t">召回后首次放款已结清</div><div class="n">1,638</div></div>
+    <div class="st"><div class="t">结清当天再获额且窗口已满</div><div class="n">1,002</div></div>
+    <div class="st"><div class="t">其中 7 日内未提单</div><div class="n">540</div></div>
+  </div>
+  <div class="grid g2">
+    <article class="chart">
+      <h3>累计提单率</h3>
+      <p>当天含获额当日。3 日内为第 0–3 天。7 日内为第 0–7 天。</p>
+      <div class="box"><canvas id="rateChart"></canvas></div>
+    </article>
+    <article class="chart">
+      <h3>7 日内未提单</h3>
+      <p>与 7 日内提单互补。召回高出 9 月 T0 约 20.5 个百分点。</p>
+      <div class="box"><canvas id="noneChart"></canvas></div>
+    </article>
+  </div>
+  <div class="table"><table>
+    <thead><tr><th>客群</th><th>获额通过</th><th>当天提单</th><th>3日内提单</th><th>7日内提单</th><th>7日内未提单</th></tr></thead>
+    <tbody>
+      <tr><td>召回结清后再获额</td><td>1,002</td><td>216<br>21.56%</td><td>370<br>36.93%</td><td>462<br>46.11%</td><td>540<br>53.89%</td></tr>
+      <tr><td>9月普通 T0</td><td>21,092</td><td>8,369<br>39.68%</td><td>12,203<br>57.86%</td><td>14,058<br>66.65%</td><td>7,034<br>33.35%</td></tr>
+    </tbody>
+  </table></div>
+</section>
+
+<section id="score">
+  <h2>资质</h2>
+  <p class="desc">模型分取结清当天最后一笔获额通过订单。继续提单时，申请时点从这笔获额的 vir_time 起算。下表的当天、1–3 日、4–7 日、7 日内未提单互斥。</p>
+  <div class="grid g2">
+    <article class="chart">
+      <h3>获额订单的分数分布</h3>
+      <p>召回后再获额整体右移。520 分及以上明显多于 9 月 T0。</p>
+      <div class="box"><canvas id="allChart"></canvas></div>
+    </article>
+    <article class="chart">
+      <h3>各提单窗口的中位数</h3>
+      <p>两边都是当天最低，7 日内未提单最高。</p>
+      <div class="box s"><canvas id="medChart"></canvas></div>
+    </article>
+  </div>
+  <div class="grid g2">
+    <article class="chart">
+      <h3>召回后再获额 · 分数结构</h3>
+      <p>未提单用户在 540 分及以上的占比更高。</p>
+      <div class="box"><canvas id="stackR"></canvas></div>
+    </article>
+    <article class="chart">
+      <h3>9月普通 T0 · 分数结构</h3>
+      <p>当天提单集中在 460–519，未提单向 520 分以上移动。</p>
+      <div class="box"><canvas id="stackS"></canvas></div>
+    </article>
+  </div>
+  <h3>召回结清后再获额 · 2026-08-21 至 2026-10-06</h3>
+  <div class="table"><table>
+    <thead><tr><th>窗口</th><th>人数</th><th>中位数</th><th>&lt;460</th><th>460–479</th><th>480–499</th><th>500–519</th><th>520–539</th><th>540–559</th><th>≥560</th></tr></thead>
+    <tbody>
+<tr class="total"><td>全部</td><td>1,002</td><td>519</td><td>43<br>4.3%</td><td>78<br>7.8%</td><td>123<br>12.3%</td><td>264<br>26.3%</td><td>230<br>23.0%</td><td>124<br>12.4%</td><td>140<br>14.0%</td></tr>
+<tr><td>当天</td><td>216</td><td>513</td><td>8<br>3.7%</td><td>15<br>6.9%</td><td>39<br>18.1%</td><td>71<br>32.9%</td><td>44<br>20.4%</td><td>24<br>11.1%</td><td>15<br>6.9%</td></tr>
+<tr><td>1-3日</td><td>154</td><td>518</td><td>7<br>4.5%</td><td>13<br>8.4%</td><td>12<br>7.8%</td><td>52<br>33.8%</td><td>38<br>24.7%</td><td>13<br>8.4%</td><td>19<br>12.3%</td></tr>
+<tr><td>4-7日</td><td>92</td><td>517</td><td>6<br>6.5%</td><td>6<br>6.5%</td><td>16<br>17.4%</td><td>23<br>25.0%</td><td>24<br>26.1%</td><td>9<br>9.8%</td><td>8<br>8.7%</td></tr>
+<tr><td>7日内未提单</td><td>540</td><td>524</td><td>22<br>4.1%</td><td>44<br>8.1%</td><td>56<br>10.4%</td><td>118<br>21.9%</td><td>124<br>23.0%</td><td>78<br>14.4%</td><td>98<br>18.1%</td></tr>
+    </tbody>
+  </table></div>
+  <h3>9月普通 T0</h3>
+  <div class="table"><table>
+    <thead><tr><th>窗口</th><th>人数</th><th>中位数</th><th>&lt;460</th><th>460–479</th><th>480–499</th><th>500–519</th><th>520–539</th><th>540–559</th><th>≥560</th></tr></thead>
+    <tbody>
+<tr class="total"><td>全部</td><td>21,092</td><td>496</td><td>3,133<br>14.9%</td><td>3,888<br>18.4%</td><td>4,146<br>19.7%</td><td>4,627<br>21.9%</td><td>2,637<br>12.5%</td><td>1,323<br>6.3%</td><td>1,338<br>6.3%</td></tr>
+<tr><td>当天</td><td>8,369</td><td>488</td><td>1,562<br>18.7%</td><td>1,826<br>21.8%</td><td>1,796<br>21.5%</td><td>1,888<br>22.6%</td><td>788<br>9.4%</td><td>318<br>3.8%</td><td>191<br>2.3%</td></tr>
+<tr><td>1-3日</td><td>3,834</td><td>496</td><td>582<br>15.2%</td><td>730<br>19.0%</td><td>743<br>19.4%</td><td>881<br>23.0%</td><td>479<br>12.5%</td><td>209<br>5.5%</td><td>210<br>5.5%</td></tr>
+<tr><td>4-7日</td><td>1,855</td><td>500</td><td>241<br>13.0%</td><td>327<br>17.6%</td><td>357<br>19.2%</td><td>425<br>22.9%</td><td>241<br>13.0%</td><td>108<br>5.8%</td><td>156<br>8.4%</td></tr>
+<tr><td>7日内未提单</td><td>7,034</td><td>507</td><td>748<br>10.6%</td><td>1,005<br>14.3%</td><td>1,250<br>17.8%</td><td>1,433<br>20.4%</td><td>1,129<br>16.1%</td><td>688<br>9.8%</td><td>781<br>11.1%</td></tr>
+    </tbody>
+  </table></div>
+</section>
+
+<section id="scope">
+  <h2>口径</h2>
+  <div class="table def"><table>
+    <tbody>
+      <tr><th>召回名单</th><td>wangchuanliang.t7recalllist_0818_0819，recall_date = 2026-08-18，churn_user_id 去重。名单 11,585 人。</td></tr>
+      <tr><th>首次放款结清</th><td>apply_date ≥ 2026-08-18，is_remit = 1 且 remit_amt &gt; 0，按 apply_time、serial_id 取第一笔。该笔 loan_status_code = 7，且 repaid_time、repaid_date 晚于 2000-01-01。结清 1,638 人。</td></tr>
+      <tr><th>最后一笔获额</th><td>结清当日的 T0 获额：loan_type_code = 2，is_pass1 = 1，recycle_type = 3。20 秒内多笔合成一批，批内留 vir_time、serial_id 最晚的一笔。获额日等于该笔结清日，vir_time ≥ repaid_time，且该笔结清为干净结清。同一用户同一天再留最晚一笔。继续提单理论上使用这笔订单。</td></tr>
+      <tr><th>干净结清</th><td>已打款，且 is_repaid = 1 或 loan_status_code = 7。结清时点之前不存在另一笔状态 5、状态 8，或更晚才结清的订单。</td></tr>
+      <tr><th>观察窗</th><td>获额日 ≤ 2026-10-13 − 7 天，7 日窗口已走完。召回样本获额日 2026-08-21 至 2026-10-06，共 1,002 人。</td></tr>
+      <tr><th>9月普通 T0</th><td>获额日 2026-09-01 至 2026-09-30。获额、去重、干净结清、当天最后一笔的规则与上列相同。人日 21,092。</td></tr>
+      <tr><th>第一次提单</th><td>order_loan_f_v2_copy 中 apply_time ≥ 该笔获额 vir_time 的最早一笔，并列时取 serial_id 较小者。apply_d = apply_date − vir_date。不要求放款。</td></tr>
+      <tr><th>提单率窗口</th><td>当天：apply_d = 0。3 日内：apply_d ∈ [0, 3]。7 日内：apply_d ∈ [0, 7]。7 日内未提单：没有第一次提单，或第一次提单 apply_d ≥ 8。</td></tr>
+      <tr><th>资质窗口</th><td>当天、1–3 日（apply_d ∈ [1, 3]）、4–7 日（apply_d ∈ [4, 7]）、7 日内未提单。四档互斥，加总等于获额通过。</td></tr>
+      <tr><th>模型分</th><td>model_result_copy.serial_id = 最后一笔获额 serial_id，字段 kabybmerge410fpd7cre。分值 &gt; 0 为有效分。本报告两侧有效分覆盖率为 100%。读法与获额风控分一致：分越高，资质越好。</td></tr>
+      <tr><th>数据日</th><td>kaby_dw CURRENT_DATE = 2026-10-13。</td></tr>
+    </tbody>
+  </table></div>
+</section>
+
+<section id="sql">
+  <h2>SQL 附录</h2>
+  <details class="code">
+    <summary>完整 PGSQL。分数段里的 __SRC__ 先用 tmp_rec，再换 tmp_sep</summary>
+    <pre class="sql">
+DROP TABLE IF EXISTS tmp_u;
+CREATE TEMP TABLE tmp_u AS
+SELECT DISTINCT churn_user_id::bigint AS user_id
+FROM wangchuanliang.t7recalllist_0818_0819
+WHERE recall_date = DATE '2026-08-18' AND churn_user_id IS NOT NULL;
+
+DROP TABLE IF EXISTS tmp_ord;
+CREATE TEMP TABLE tmp_ord AS
+SELECT o.user_id, o.serial_id, o.apply_time, o.apply_date::date AS apply_date,
+       o.is_remit, COALESCE(o.remit_amt,0) AS remit_amt,
+       o.loan_status_code, o.is_repaid, o.repaid_time, o.repaid_date::date AS repaid_date
+FROM wangchuanliang.order_loan_f_v2_copy o
+WHERE o.user_id IN (SELECT user_id FROM tmp_u);
+CREATE INDEX ON tmp_ord (user_id);
+
+DROP TABLE IF EXISTS tmp_first;
+CREATE TEMP TABLE tmp_first AS
+SELECT user_id, serial_id, repaid_time, repaid_date
+FROM (
+    SELECT o.*, ROW_NUMBER() OVER (PARTITION BY o.user_id ORDER BY o.apply_time, o.serial_id) AS rn
+    FROM tmp_ord o
+    WHERE o.apply_date >= DATE '2026-08-18' AND o.is_remit = 1 AND o.remit_amt > 0
+) z
+WHERE rn = 1 AND loan_status_code = 7
+  AND repaid_time > TIMESTAMP '2000-01-01 00:00:00'
+  AND repaid_date > DATE '2000-01-01';
+
+DROP TABLE IF EXISTS tmp_rec;
+CREATE TEMP TABLE tmp_rec AS
+WITH params AS (
+    SELECT DATE '2026-08-18' AS start_date, CURRENT_DATE + 1 AS end_date
+), raw_offer AS (
+    SELECT DISTINCT ON (v.user_id, v.serial_id)
+        v.user_id, v.serial_id, v.vir_date::date AS vir_date, TO_TIMESTAMP(v.vir_unix) AS vir_time
+    FROM wangchuanliang.order_vir_f_copy v
+    INNER JOIN wangchuanliang.side_recycle_type_copy r ON r.serial_id = v.serial_id
+    INNER JOIN tmp_first f ON f.user_id = v.user_id
+    CROSS JOIN params p
+    WHERE v.is_pass1 = 1 AND v.loan_type_code = 2 AND r.recycle_type = 3
+      AND v.vir_date >= p.start_date - 1 AND v.vir_date &lt; p.end_date
+    ORDER BY v.user_id, v.serial_id, v.vir_unix DESC
+), lagged AS (
+    SELECT r.*, LAG(r.vir_time) OVER (PARTITION BY r.user_id ORDER BY r.vir_time, r.serial_id) AS prev_vir_time
+    FROM raw_offer r
+), batched AS (
+    SELECT l.*, SUM(CASE WHEN l.prev_vir_time IS NULL OR l.vir_time - l.prev_vir_time > INTERVAL '20 seconds' THEN 1 ELSE 0 END)
+      OVER (PARTITION BY l.user_id ORDER BY l.vir_time, l.serial_id ROWS UNBOUNDED PRECEDING) AS batch_id
+    FROM lagged l
+), dedup_offer AS (
+    SELECT user_id, serial_id, vir_date, vir_time
+    FROM (
+        SELECT b.*, ROW_NUMBER() OVER (PARTITION BY b.user_id, b.batch_id ORDER BY b.vir_time DESC, b.serial_id DESC) AS batch_rn
+        FROM batched b
+    ) x
+    CROSS JOIN params p
+    WHERE batch_rn = 1 AND vir_date >= p.start_date AND vir_date &lt; p.end_date
+), clean_settlement AS (
+    SELECT o.user_id, o.serial_id, o.repaid_time, o.repaid_date
+    FROM tmp_ord o
+    WHERE o.is_remit = 1 AND (o.is_repaid = 1 OR o.loan_status_code = 7)
+      AND o.repaid_time > TIMESTAMP '2000-01-01 00:00:00'
+      AND NOT EXISTS (
+          SELECT 1 FROM tmp_ord x
+          WHERE x.user_id = o.user_id AND x.serial_id &lt;> o.serial_id AND x.apply_time &lt; o.repaid_time
+            AND (x.loan_status_code IN (5, 8) OR (x.loan_status_code = 7 AND x.repaid_time > o.repaid_time))
+      )
+), paired AS (
+    SELECT e.user_id, e.serial_id AS credit_serial_id, e.vir_date, e.vir_time,
+           ROW_NUMBER() OVER (PARTITION BY e.user_id, e.vir_date ORDER BY e.vir_time DESC, e.serial_id DESC) AS day_rn
+    FROM dedup_offer e
+    INNER JOIN tmp_first f
+        ON f.user_id = e.user_id AND f.repaid_date = e.vir_date AND e.vir_time >= f.repaid_time
+    INNER JOIN clean_settlement s
+        ON s.user_id = f.user_id AND s.serial_id = f.serial_id
+)
+SELECT user_id, credit_serial_id, vir_date, vir_time
+FROM paired
+WHERE day_rn = 1 AND vir_date &lt;= CURRENT_DATE - 7
+;
+
+
+DROP TABLE IF EXISTS tmp_sep;
+CREATE TEMP TABLE tmp_sep AS
+WITH params AS (
+    SELECT DATE '2026-09-01' AS start_date, DATE '2026-10-01' AS end_date
+), raw_offer AS (
+    SELECT DISTINCT ON (v.user_id, v.serial_id)
+        v.user_id, v.serial_id, v.vir_date::date AS vir_date, TO_TIMESTAMP(v.vir_unix) AS vir_time
+    FROM wangchuanliang.order_vir_f_copy v
+    INNER JOIN wangchuanliang.side_recycle_type_copy r ON r.serial_id = v.serial_id
+    CROSS JOIN params p
+    WHERE v.is_pass1 = 1 AND v.loan_type_code = 2 AND r.recycle_type = 3
+      AND v.vir_date >= p.start_date - 1 AND v.vir_date &lt; p.end_date
+    ORDER BY v.user_id, v.serial_id, v.vir_unix DESC
+), lagged AS (
+    SELECT r.*, LAG(r.vir_time) OVER (PARTITION BY r.user_id ORDER BY r.vir_time, r.serial_id) AS prev_vir_time
+    FROM raw_offer r
+), batched AS (
+    SELECT l.*, SUM(CASE WHEN l.prev_vir_time IS NULL OR l.vir_time - l.prev_vir_time > INTERVAL '20 seconds' THEN 1 ELSE 0 END)
+      OVER (PARTITION BY l.user_id ORDER BY l.vir_time, l.serial_id ROWS UNBOUNDED PRECEDING) AS batch_id
+    FROM lagged l
+), dedup_offer AS (
+    SELECT user_id, serial_id, vir_date, vir_time
+    FROM (
+        SELECT b.*, ROW_NUMBER() OVER (PARTITION BY b.user_id, b.batch_id ORDER BY b.vir_time DESC, b.serial_id DESC) AS batch_rn
+        FROM batched b
+    ) x
+    CROSS JOIN params p
+    WHERE batch_rn = 1 AND vir_date >= p.start_date AND vir_date &lt; p.end_date
+), candidate_users AS (SELECT DISTINCT user_id FROM dedup_offer),
+all_orders AS (
+    SELECT o.user_id, o.serial_id, o.apply_time, o.repaid_time, o.repaid_date::date AS repaid_date,
+           o.loan_status_code, o.is_remit, o.is_repaid
+    FROM wangchuanliang.order_loan_f_v2_copy o
+    INNER JOIN candidate_users u ON u.user_id = o.user_id
+), clean_settlement AS (
+    SELECT o.user_id, o.serial_id, o.repaid_time, o.repaid_date
+    FROM all_orders o
+    WHERE o.is_remit = 1 AND (o.is_repaid = 1 OR o.loan_status_code = 7)
+      AND o.repaid_time > TIMESTAMP '2000-01-01 00:00:00'
+      AND NOT EXISTS (
+          SELECT 1 FROM all_orders x
+          WHERE x.user_id = o.user_id AND x.serial_id &lt;> o.serial_id AND x.apply_time &lt; o.repaid_time
+            AND (x.loan_status_code IN (5, 8) OR (x.loan_status_code = 7 AND x.repaid_time > o.repaid_time))
+      )
+), paired AS (
+    SELECT e.user_id, e.serial_id AS credit_serial_id, e.vir_date, e.vir_time,
+           ROW_NUMBER() OVER (PARTITION BY e.user_id, e.vir_date ORDER BY e.vir_time DESC, e.serial_id DESC) AS day_rn
+    FROM dedup_offer e
+    INNER JOIN clean_settlement s
+        ON s.user_id = e.user_id AND s.repaid_date = e.vir_date AND e.vir_time >= s.repaid_time
+)
+SELECT user_id, credit_serial_id, vir_date, vir_time FROM paired WHERE day_rn = 1
+;
+
+
+DROP TABLE IF EXISTS tmp_sc;
+CREATE TEMP TABLE tmp_sc AS
+SELECT t.user_id, t.vir_date,
+       CASE WHEN m.kabybmerge410fpd7cre > 0 THEN m.kabybmerge410fpd7cre END AS score,
+       a.apply_d,
+       CASE
+         WHEN a.apply_d = 0 THEN '当天'
+         WHEN a.apply_d BETWEEN 1 AND 3 THEN '1-3日'
+         WHEN a.apply_d BETWEEN 4 AND 7 THEN '4-7日'
+         ELSE '7日内未提单'
+       END AS bucket
+FROM __SRC__ t
+LEFT JOIN wangchuanliang.model_result_copy m ON m.serial_id = t.credit_serial_id
+LEFT JOIN (
+    SELECT user_id, vir_date, apply_d FROM (
+        SELECT t.user_id, t.vir_date, (a.apply_date::date - t.vir_date) AS apply_d,
+               ROW_NUMBER() OVER (PARTITION BY t.user_id, t.vir_date ORDER BY a.apply_time, a.serial_id) AS rn
+        FROM __SRC__ t
+        INNER JOIN wangchuanliang.order_loan_f_v2_copy a
+          ON a.user_id = t.user_id AND a.apply_time >= t.vir_time
+    ) z WHERE rn = 1
+) a ON a.user_id = t.user_id AND a.vir_date = t.vir_date;
+
+SELECT bucket, COUNT(*) AS n,
+       SUM(CASE WHEN score IS NULL THEN 1 ELSE 0 END) AS n_miss,
+       ROUND(AVG(score)::numeric, 1) AS avg_s,
+       ROUND(PERCENTILE_CONT(0.5) WITHIN GROUP (ORDER BY score)::numeric, 1) AS p50,
+       SUM(CASE WHEN score &lt; 460 THEN 1 ELSE 0 END) AS b1,
+       SUM(CASE WHEN score >= 460 AND score &lt; 480 THEN 1 ELSE 0 END) AS b2,
+       SUM(CASE WHEN score >= 480 AND score &lt; 500 THEN 1 ELSE 0 END) AS b3,
+       SUM(CASE WHEN score >= 500 AND score &lt; 520 THEN 1 ELSE 0 END) AS b4,
+       SUM(CASE WHEN score >= 520 AND score &lt; 540 THEN 1 ELSE 0 END) AS b5,
+       SUM(CASE WHEN score >= 540 AND score &lt; 560 THEN 1 ELSE 0 END) AS b6,
+       SUM(CASE WHEN score >= 560 THEN 1 ELSE 0 END) AS b7
+FROM (
+    SELECT '全部' AS bucket, score FROM tmp_sc
+    UNION ALL
+    SELECT bucket, score FROM tmp_sc
+) z
+GROUP BY bucket
+</pre>
+  </details>
+</section>
+<p class="foot">源表 t7recalllist_0818_0819、order_vir_f_copy、side_recycle_type_copy、order_loan_f_v2_copy、model_result_copy。提单率按累计窗口，资质表按互斥窗口。</p>
+</main>
+<script>
+const ticks = {color:'#aac5da', font:{size:12}};
+const grid = {color:'rgba(42,92,126,.35)'};
+const legend = {labels:{color:'#eff8ff'}};
+const yPct = {ticks:{color:'#aac5da', font:{size:12}, callback:(v)=>v+'%'}, grid:grid};
+new Chart(document.getElementById('rateChart'), {
+  type:'bar',
+  data:{labels:['当天','3日内','7日内'],
+    datasets:[
+      {label:'召回结清后再获额', data:[21.56, 36.93, 46.11], backgroundColor:'rgba(246,138,176,.85)', borderRadius:6},
+      {label:'9月普通T0', data:[39.68, 57.86, 66.65], backgroundColor:'rgba(67,199,231,.75)', borderRadius:6}
+    ]},
+  options:{responsive:true, maintainAspectRatio:false,
+    plugins:{legend:legend, tooltip:{callbacks:{label:(c)=>c.dataset.label+' '+c.parsed.y.toFixed(2)+'%'}}},
+    scales:{x:{ticks:ticks, grid:{display:false}}, y:Object.assign({suggestedMax:80}, yPct)}}
+});
+new Chart(document.getElementById('noneChart'), {
+  type:'bar',
+  data:{labels:['7日内未提单'],
+    datasets:[
+      {label:'召回结清后再获额', data:[53.89], backgroundColor:'rgba(246,138,176,.85)', borderRadius:6},
+      {label:'9月普通T0', data:[33.35], backgroundColor:'rgba(67,199,231,.75)', borderRadius:6}
+    ]},
+  options:{responsive:true, maintainAspectRatio:false,
+    plugins:{legend:legend, tooltip:{callbacks:{label:(c)=>c.dataset.label+' '+c.parsed.y.toFixed(2)+'%'}}},
+    scales:{x:{ticks:ticks, grid:{display:false}}, y:Object.assign({suggestedMax:70}, yPct)}}
+});
+new Chart(document.getElementById('allChart'), {
+  type:'bar',
+  data:{labels:["<460", "460–479", "480–499", "500–519", "520–539", "540–559", "≥560"],
+    datasets:[
+      {label:'召回结清后再获额', data:[4.3, 7.8, 12.3, 26.3, 23.0, 12.4, 14.0], backgroundColor:'rgba(246,138,176,.85)', borderRadius:6},
+      {label:'9月普通T0', data:[14.9, 18.4, 19.7, 21.9, 12.5, 6.3, 6.3], backgroundColor:'rgba(67,199,231,.75)', borderRadius:6}
+    ]},
+  options:{responsive:true, maintainAspectRatio:false,
+    plugins:{legend:legend, tooltip:{callbacks:{label:(c)=>c.dataset.label+' '+c.parsed.y.toFixed(1)+'%'}}},
+    scales:{x:{ticks:ticks, grid:{display:false}}, y:Object.assign({suggestedMax:40}, yPct)}}
+});
+new Chart(document.getElementById('medChart'), {
+  type:'bar',
+  data:{labels:['当天','1–3日','4–7日','7日内未提单'],
+    datasets:[
+      {label:'召回结清后再获额', data:[513.0, 518.0, 517.0, 524.0], backgroundColor:'rgba(246,138,176,.85)', borderRadius:6},
+      {label:'9月普通T0', data:[488.0, 496.0, 500.0, 507.0], backgroundColor:'rgba(67,199,231,.75)', borderRadius:6}
+    ]},
+  options:{responsive:true, maintainAspectRatio:false, plugins:{legend:legend},
+    scales:{x:{ticks:ticks, grid:{display:false}}, y:{ticks:ticks, grid:grid, suggestedMin:460, suggestedMax:560}}}
+});
+function stack(id, shares) {
+  const labels = ['当天','1–3日','4–7日','7日内未提单'];
+  const keys = ['当天','1-3日','4-7日','7日内未提单'];
+  const names = ["<460", "460–479", "480–499", "500–519", "520–539", "540–559", "≥560"];
+  const colors = ["#8fb4cc", "#43c7e7", "#64dcae", "#ffc26b", "#f68ab0", "#c084fc", "#fb7185"];
+  new Chart(document.getElementById(id), {
+    type:'bar',
+    data:{labels:labels, datasets:names.map((name,i)=>({label:name, data:keys.map(k=>shares[k][i]), backgroundColor:colors[i]}))},
+    options:{responsive:true, maintainAspectRatio:false,
+      plugins:{legend:legend, tooltip:{callbacks:{label:(c)=>c.dataset.label+' '+c.parsed.y.toFixed(1)+'%'}}},
+      scales:{x:{stacked:true, ticks:ticks, grid:{display:false}}, y:{stacked:true, suggestedMax:100, ticks:Object.assign({}, yPct.ticks), grid:grid}}}
+  });
+}
+stack('stackR', {"当天": [3.7, 6.9, 18.1, 32.9, 20.4, 11.1, 6.9], "1-3日": [4.5, 8.4, 7.8, 33.8, 24.7, 8.4, 12.3], "4-7日": [6.5, 6.5, 17.4, 25.0, 26.1, 9.8, 8.7], "7日内未提单": [4.1, 8.1, 10.4, 21.9, 23.0, 14.4, 18.1]});
+stack('stackS', {"当天": [18.7, 21.8, 21.5, 22.6, 9.4, 3.8, 2.3], "1-3日": [15.2, 19.0, 19.4, 23.0, 12.5, 5.5, 5.5], "4-7日": [13.0, 17.6, 19.2, 22.9, 13.0, 5.8, 8.4], "7日内未提单": [10.6, 14.3, 17.8, 20.4, 16.1, 9.8, 11.1]});
+</script>
+
+</body>
+</html>
