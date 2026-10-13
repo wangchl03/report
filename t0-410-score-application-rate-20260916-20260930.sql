@@ -1,19 +1,17 @@
-/* 报告完整复现SQL：T0 410评分四组对照：2026-09-16至2026-09-30（含首尾）。
-   只读；严格T0母集、20秒获额去重和观测时刻最新410分沿用已核对查询。
-   分母为T0事件，不按统计期去重用户。
-   >490包含在>480内；全部T0 = >480事件 + 剔除>480的其余事件。
-   仅纳入410有效分1—3000（含边界），缺失和无效分直接过滤，不单独统计。
-   全部T0和其余事件均为有效410评分可分析样本；其他时间/事件/提单定义不变。
-   D3含T0至D+3；D7含T0至D+7；数据完整日截至2026-10-08。
-   输出主表、口径2、分组占比、相对大盘差值、互斥提单时点分布、母表及时间质量审计。
-   差值按未四舍五入比率计算后保留两位小数，单位pp。
-   本查询已在现有GaussDB(DWS)数据源执行；含DWS列存背景表，不是跨库通用DDL。
-*/
+-- T0 410评分四档对照；统计期保持2026-09-16—2026-09-30（含首尾）。
+-- 评分边界固定自9月完整月份T0：546、515、496；同分不拆分。
+-- 四档实际评分范围：546—726、515—545、496—514、386—495。
+-- 完整数据截至2026-10-08；D0/D3/D7、口径1/2、严格母表均不变。
+-- 全部T0行只作比较基准与四档对账；网页主表仍展示四类。
+SET TIME ZONE 'America/Belize';
+SET query_dop = 1;
 WITH params AS (
     SELECT DATE '2026-09-16' AS start_date,
            DATE '2026-10-01' AS end_date,
            TIMESTAMP '2026-10-09 00:00:00' AS data_cutoff_ts,
-           490::numeric AS score_threshold,
+           546::numeric AS top10_min_score,
+           515::numeric AS top30_min_score,
+           496::numeric AS top50_min_score,
            1::numeric AS valid_score_min,
            3000::numeric AS valid_score_max
 ), raw_pass_offer AS (
@@ -155,7 +153,7 @@ WITH params AS (
      AND o.apply_time < p.data_cutoff_ts
     GROUP BY e.user_id, e.serial_id
 ), event_labels AS (
-    SELECT e.*, p.data_cutoff_ts, p.score_threshold,
+    SELECT e.*, p.data_cutoff_ts,
            u.first_apply_time AS p1_first_apply_time,
            o.first_apply_time AS p2_first_apply_time,
            CASE WHEN e.vir_date + INTERVAL '1 day' <= p.data_cutoff_ts THEN 1 ELSE 0 END AS d0_mature,
@@ -171,17 +169,24 @@ WITH params AS (
     LEFT JOIN first_user_apply u ON u.user_id = e.user_id AND u.serial_id = e.serial_id
     LEFT JOIN first_order_apply o ON o.user_id = e.user_id AND o.serial_id = e.serial_id
 ), grouped_events AS (
-    SELECT e.*, '410分>490'::text AS sample_group, 1 AS group_order
-    FROM event_labels e WHERE score_410 > 490
+    /* 四组互斥；边界固定来自2026年9月完整月份T0评分分布，报告统计期不变。 */
+    SELECT e.*, '前10%｜546—726分'::text AS sample_group, 1 AS group_order
+    FROM event_labels e CROSS JOIN params p WHERE e.score_410 >= p.top10_min_score
     UNION ALL
-    SELECT e.*, '410分>480'::text AS sample_group, 2 AS group_order
-    FROM event_labels e WHERE score_410 > 480
+    SELECT e.*, '10%—30%｜515—545分'::text AS sample_group, 2 AS group_order
+    FROM event_labels e CROSS JOIN params p
+    WHERE e.score_410 >= p.top30_min_score AND e.score_410 < p.top10_min_score
     UNION ALL
-    SELECT e.*, '全部T0'::text AS sample_group, 3 AS group_order
+    SELECT e.*, '30%—50%｜496—514分'::text AS sample_group, 3 AS group_order
+    FROM event_labels e CROSS JOIN params p
+    WHERE e.score_410 >= p.top50_min_score AND e.score_410 < p.top30_min_score
+    UNION ALL
+    SELECT e.*, '后50%｜386—495分'::text AS sample_group, 4 AS group_order
+    FROM event_labels e CROSS JOIN params p WHERE e.score_410 < p.top50_min_score
+    UNION ALL
+    /* 仅作为大盘基准与对账，网页四类主表不新增第五类。 */
+    SELECT e.*, '全部T0'::text AS sample_group, 0 AS group_order
     FROM event_labels e
-    UNION ALL
-    SELECT e.*, '剔除410分>480的T0事件'::text AS sample_group, 4 AS group_order
-    FROM event_labels e WHERE score_410 <= 480
 ), aggregate_counts AS (
     SELECT sample_group, group_order,
            COUNT(*) AS t0_event_count,
@@ -206,6 +211,10 @@ WITH params AS (
          WHERE q.vir_date >= p.start_date AND q.vir_date < p.end_date) AS after_20s_events,
         (SELECT COUNT(*) FROM cohort) AS strict_t0_before_score_count,
         (SELECT COUNT(*) FROM selected_model_scores WHERE distinct_score_count > 1) AS score_conflict_order_count,
+        (SELECT COUNT(*) FROM event_labels WHERE score_410 < 386 OR score_410 > 726) AS outside_september_score_range_count,
+        (SELECT COUNT(*) FROM event_labels WHERE score_410 <> FLOOR(score_410)) AS noninteger_score_count,
+        (SELECT MIN(score_410) FROM event_labels) AS observed_score_min,
+        (SELECT MAX(score_410) FROM event_labels) AS observed_score_max,
         (SELECT COUNT(*) FROM event_labels WHERE score_offer_time > vir_time) AS future_score_offer_events,
         (SELECT COUNT(*) FROM event_labels WHERE score_serial_id <> serial_id) AS different_score_offer_events,
         (SELECT COUNT(*) - COUNT(DISTINCT serial_id) FROM event_labels) AS duplicate_event_serial_count,
@@ -240,7 +249,8 @@ SELECT c.*,
              / NULLIF(c.d7_mature_count, 0), 2) AS d1_d7_event_pct,
        a.*, p.start_date, p.end_date - 1 AS last_event_date, p.data_cutoff_ts,
        p.data_cutoff_ts::date - 1 AS data_date,
-       p.valid_score_min, p.valid_score_max
+       p.valid_score_min, p.valid_score_max,
+       p.top10_min_score, p.top30_min_score, p.top50_min_score
 FROM aggregate_counts c
 CROSS JOIN (SELECT * FROM aggregate_counts WHERE sample_group = '全部T0') total
 CROSS JOIN audits a CROSS JOIN params p
