@@ -3,20 +3,21 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>召回结清后再获额的提单率与资质</title>
+<title>结清再启 · 召回结清后再获额</title>
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
 <style>
 :root{--bg:#06192b;--line:#2a5c7e;--text:#eff8ff;--muted:#aac5da;--cy:#43c7e7;--gr:#64dcae;--am:#ffc26b;--pk:#f68ab0}
 *{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font:16px/1.75 -apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei",sans-serif}
 .wrap{max-width:1180px;margin:auto;padding:28px 36px 80px}
 .hero{text-align:center;padding:28px 12px 22px;border-bottom:1px solid var(--line)}
-.kicker{color:var(--cy);font-size:13px;letter-spacing:.14em;font-weight:700}
-.hero h1{font-size:30px;line-height:1.35;margin:10px 0 8px}
+.kicker{color:var(--cy);font-size:12px;letter-spacing:.22em;font-weight:700}
+.hero h1{font-size:44px;font-weight:800;letter-spacing:.22em;line-height:1.2;margin:12px 0 8px;color:#fff}
+.lede{margin:0;color:#d5e8f4;font-size:16px;font-weight:500;letter-spacing:.04em}
 .nav{position:sticky;top:0;z-index:5;background:rgba(6,25,43,.94);backdrop-filter:blur(10px);border-bottom:1px solid var(--line);display:flex;gap:18px;overflow:auto;padding:12px 0;margin:0 -36px;padding-left:36px}
-.nav a{white-space:nowrap;color:#c6dae7;font-size:14px;text-decoration:none}
-h2{font-size:22px;font-weight:800;color:#fff;margin:44px 0 4px;padding:0 0 8px;border-bottom:1px solid var(--line);scroll-margin-top:58px}
-h3{font-size:16px;font-weight:750;color:#f3fbff;margin:16px 0 8px}
-.desc{color:var(--muted);margin:0 0 12px;font-size:13px;line-height:1.6}
+.nav a{white-space:nowrap;color:#c6dae7;font-size:14px;text-decoration:none;font-weight:650}
+h2{font-size:26px;font-weight:800;letter-spacing:.06em;color:#fff;margin:48px 0 14px;padding:2px 0 2px 14px;border-left:4px solid var(--cy);scroll-margin-top:58px}
+h3{font-size:18px;font-weight:800;letter-spacing:.03em;color:#fff;margin:18px 0 8px}
+.desc{color:var(--muted);margin:0 0 14px;font-size:14px;font-weight:400;line-height:1.7}
 .hero-facts{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin-top:16px;text-align:left}
 .hero-facts .f{background:rgba(10,41,68,.75);border:1px solid var(--line);border-radius:10px;padding:10px 12px}
 .hero-facts .k{display:block;font-size:11px;font-weight:800;letter-spacing:.1em;color:var(--cy);margin-bottom:4px}
@@ -26,15 +27,20 @@ h3{font-size:16px;font-weight:750;color:#f3fbff;margin:16px 0 8px}
 .label{color:var(--muted);font-size:12px}.num{font-size:26px;font-weight:800;margin:4px 0 2px;color:var(--cy)}
 .sub{color:var(--muted);font-size:12px}.mint{color:var(--gr)}.gold{color:var(--am)}.pink{color:var(--pk)}
 .box{height:320px;position:relative}.box.s{height:280px}
-.chart h3{margin:0 0 2px;font-size:16px;color:#fff}.chart p{font-size:12.5px;color:var(--muted);margin:0 0 10px}
+.chart h3{margin:0 0 6px;font-size:18px;font-weight:800;letter-spacing:.03em;color:#fff}.chart p{font-size:13px;font-weight:400;color:var(--muted);margin:0 0 12px;line-height:1.65}
 .flow{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;margin:14px 0}
 .flow .st{background:rgba(10,41,68,.95);border:1px solid var(--line);border-radius:10px;padding:10px 12px}
 .flow .n{font-size:18px;font-weight:800;color:#fff}
 .flow .t{font-size:12px;color:var(--muted)}
-.pts{margin:18px 0 0;padding:0;list-style:none;display:grid;gap:10px}
-.pts li{padding:12px 14px;background:rgba(10,41,68,.95);border:1px solid var(--line);border-radius:10px}
-.pts .t{display:block;font-weight:800;color:#fff}
-.pts .d{display:block;color:var(--muted);font-size:14px;line-height:1.65}
+.pts{margin:18px 0 0;padding:0;list-style:none;display:grid;gap:12px}
+.pts li{padding:16px 16px 14px;background:rgba(10,41,68,.95);border:1px solid var(--line);border-radius:12px}
+.pts .t{display:block;font-size:18px;font-weight:800;letter-spacing:.04em;color:#fff;margin-bottom:4px}
+.pts .d{display:block;color:var(--muted);font-size:14px;font-weight:400;line-height:1.6;margin-bottom:12px}
+.kv{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;margin:0}
+.kv div{background:rgba(6,25,43,.55);border-radius:8px;padding:8px 10px}
+.kv dt{font-size:12px;font-weight:700;letter-spacing:.04em;color:var(--cy)}
+.kv dd{margin:2px 0 0;font-size:20px;font-weight:800;color:#fff;line-height:1.25}
+.kv dd span{display:block;margin-top:2px;font-size:12px;font-weight:500;color:var(--muted)}
 .table{overflow-x:auto;margin:12px 0}table{width:100%;border-collapse:collapse;font-size:13px}
 th,td{padding:8px 10px;border-bottom:1px solid rgba(42,92,126,.45);text-align:right;white-space:nowrap}
 th{color:var(--muted);background:rgba(12,48,78,.65)}th:first-child,td:first-child{text-align:left}
@@ -44,14 +50,15 @@ details.code{margin:10px 0;background:rgba(10,41,68,.95);border:1px solid var(--
 details.code summary{cursor:pointer;color:var(--cy);font-weight:700}
 pre.sql{overflow:auto;max-height:720px;font-size:11.5px;line-height:1.5;color:#d7ecf8;white-space:pre}
 .foot{color:#7fa6c2;font-size:12.5px;margin-top:40px;border-top:1px solid var(--line);padding-top:16px;line-height:1.9}
-@media(max-width:900px){.g2,.g4,.hero-facts,.flow{grid-template-columns:1fr}.wrap{padding:18px 16px 56px}.nav{margin:0 -16px;padding-left:16px}.hero h1{font-size:22px}}
+@media(max-width:900px){.g2,.g4,.hero-facts,.flow,.kv{grid-template-columns:1fr 1fr}.wrap{padding:18px 16px 56px}.nav{margin:0 -16px;padding-left:16px}.hero h1{font-size:32px;letter-spacing:.12em}}
 </style>
 </head>
 <body>
 <main class="wrap">
 <header class="hero">
-  <div class="kicker">T7 召回 · 结清后再获额 · 截至 2026-10-13</div>
-  <h1>结清后再流失更高，未提单用户资质更好</h1>
+  <div class="kicker">T7 召回 · 截至 2026-10-13</div>
+  <h1>结清再启</h1>
+  <p class="lede">召回用户结清后再获额：再度流失更高，未提单的人资质更好</p>
   <div class="hero-facts">
     <div class="f"><span class="k">召回后再获额</span><span class="v">recall_date = 2026-08-18。首次放款结清后，结清当天最后一笔获额通过。窗口已满 1,002 人。</span></div>
     <div class="f"><span class="k">9月普通 T0</span><span class="v">2026-09-01 至 2026-09-30 的 T0 获额通过人日，21,092。获额规则与上列同一套。</span></div>
@@ -75,9 +82,36 @@ pre.sql{overflow:auto;max-height:720px;font-size:11.5px;line-height:1.5;color:#d
     <article class="card"><div class="label">召回 · 未提单中位数</div><div class="num mint">524</div><div class="sub">当天提单 513 · 9月未提单 507</div></article>
   </div>
   <ol class="pts">
-    <li><span class="t">1. 再度流失</span><span class="d">结清后再获额的 7 日内未提单率为 53.89%，9 月普通 T0 为 33.35%。当天提单率 21.56%，9 月 T0 为 39.68%。召回用户把这笔放款结清之后，再次停满 7 天的比例更高。</span></li>
-    <li><span class="t">2. 整体资质</span><span class="d">再获额订单的模型分中位数 519，9 月 T0 为 496。520 分及以上占 49.3%，9 月 T0 为 25.1%。这批结清后再获额的用户，分数高于普通 T0。</span></li>
-    <li><span class="t">3. 未提单用户更优</span><span class="d">召回后 7 日内未提单用户的中位数是 524，高于同批当天提单的 513。9 月 T0 同样是未提单（507）高于当天提单（488）。高分用户停下来的比例更高，适合继续用提额或让利召回。</span></li>
+    <li>
+      <span class="t">1. 再度流失</span>
+      <span class="d">结清后再获额，7 日内停下来的比例更高。</span>
+      <dl class="kv">
+        <div><dt>召回 · 7日内未提单</dt><dd>53.89%<span>540 / 1,002</span></dd></div>
+        <div><dt>9月 T0 · 7日内未提单</dt><dd>33.35%</dd></div>
+        <div><dt>高出</dt><dd>20.5 pp</dd></div>
+        <div><dt>当天提单</dt><dd>21.56%<span>9月 T0 为 39.68%</span></dd></div>
+      </dl>
+    </li>
+    <li>
+      <span class="t">2. 整体资质</span>
+      <span class="d">这批再获额订单的分数高于普通 T0。</span>
+      <dl class="kv">
+        <div><dt>召回 · 中位数</dt><dd>519</dd></div>
+        <div><dt>9月 T0 · 中位数</dt><dd>496</dd></div>
+        <div><dt>召回 · 520 分及以上</dt><dd>49.3%</dd></div>
+        <div><dt>9月 T0 · 520 分及以上</dt><dd>25.1%</dd></div>
+      </dl>
+    </li>
+    <li>
+      <span class="t">3. 未提单更优</span>
+      <span class="d">两边都是未提单的人分数更高，适合继续用提额或让利召回。</span>
+      <dl class="kv">
+        <div><dt>召回 · 未提单</dt><dd>524</dd></div>
+        <div><dt>召回 · 当天提单</dt><dd>513</dd></div>
+        <div><dt>9月 T0 · 未提单</dt><dd>507</dd></div>
+        <div><dt>9月 T0 · 当天提单</dt><dd>488</dd></div>
+      </dl>
+    </li>
   </ol>
 </section>
 
@@ -129,12 +163,12 @@ pre.sql{overflow:auto;max-height:720px;font-size:11.5px;line-height:1.5;color:#d
   <div class="grid g2">
     <article class="chart">
       <h3>召回后再获额 · 各窗口分数分布</h3>
-      <p>横轴是分数段，纵轴是该窗口内的人数占比。峰值所在的分数段，就是这批人主要集中的范围。</p>
+      <p>面积按 1,002 人的占比堆积。轮廓是整批人的分数分布，颜色是各窗口的贡献。顶层越厚，这个分数段里未提单的人越多。</p>
       <div class="box"><canvas id="distR"></canvas></div>
     </article>
     <article class="chart">
       <h3>9月普通 T0 · 各窗口分数分布</h3>
-      <p>当天提单的峰值在 500 分以下。7 日内未提单的曲线整体右移。</p>
+      <p>面积按 21,092 人日的占比堆积。当天提单主要堆在 500 分以下，未提单的一层在高分段更厚。</p>
       <div class="box"><canvas id="distS"></canvas></div>
     </article>
   </div>
@@ -424,24 +458,28 @@ new Chart(document.getElementById('medChart'), {
 function dist(id, shares) {
   const names = ["<460", "460–479", "480–499", "500–519", "520–539", "540–559", "≥560"];
   const series = [
-    {label:'当天', key:'当天', color:'#f68ab0'},
-    {label:'1–3日', key:'1-3日', color:'#43c7e7'},
-    {label:'4–7日', key:'4-7日', color:'#ffc26b'},
-    {label:'7日内未提单', key:'7日内未提单', color:'#64dcae'}
+    {label:'当天', key:'当天', color:'#f68ab0', fill:'rgba(246,138,176,.9)'},
+    {label:'1–3日', key:'1-3日', color:'#43c7e7', fill:'rgba(67,199,231,.82)'},
+    {label:'4–7日', key:'4-7日', color:'#ffc26b', fill:'rgba(255,194,107,.86)'},
+    {label:'7日内未提单', key:'7日内未提单', color:'#64dcae', fill:'rgba(100,220,174,.84)'}
   ];
   new Chart(document.getElementById(id), {
     type:'line',
     data:{labels:names, datasets:series.map(s=>({
-      label:s.label, data:shares[s.key], borderColor:s.color, backgroundColor:s.color,
-      tension:0.25, pointRadius:3, borderWidth:2, fill:false
+      label:s.label, data:shares[s.key], borderColor:s.color, backgroundColor:s.fill,
+      tension:0.35, pointRadius:0, pointHoverRadius:4, borderWidth:1.5, fill:true, stack:'band'
     }))},
     options:{responsive:true, maintainAspectRatio:false,
+      interaction:{mode:'index', intersect:false},
       plugins:{legend:legend, tooltip:{callbacks:{label:(c)=>c.dataset.label+' '+c.parsed.y.toFixed(1)+'%'}}},
-      scales:{x:{ticks:ticks, grid:{display:false}}, y:{min:0, max:40, ticks:Object.assign({}, yPct.ticks), grid:grid}}}
+      scales:{
+        x:{stacked:true, ticks:ticks, grid:{display:false}},
+        y:{stacked:true, min:0, ticks:Object.assign({}, yPct.ticks), grid:grid}
+      }}
   });
 }
-dist('distR', {"当天": [3.7, 6.9, 18.1, 32.9, 20.4, 11.1, 6.9], "1-3日": [4.5, 8.4, 7.8, 33.8, 24.7, 8.4, 12.3], "4-7日": [6.5, 6.5, 17.4, 25.0, 26.1, 9.8, 8.7], "7日内未提单": [4.1, 8.1, 10.4, 21.9, 23.0, 14.4, 18.1]});
-dist('distS', {"当天": [18.7, 21.8, 21.5, 22.6, 9.4, 3.8, 2.3], "1-3日": [15.2, 19.0, 19.4, 23.0, 12.5, 5.5, 5.5], "4-7日": [13.0, 17.6, 19.2, 22.9, 13.0, 5.8, 8.4], "7日内未提单": [10.6, 14.3, 17.8, 20.4, 16.1, 9.8, 11.1]});
+dist('distR', {"当天": [0.8, 1.5, 3.9, 7.1, 4.4, 2.4, 1.5], "1-3日": [0.7, 1.3, 1.2, 5.2, 3.8, 1.3, 1.9], "4-7日": [0.6, 0.6, 1.6, 2.3, 2.4, 0.9, 0.8], "7日内未提单": [2.2, 4.4, 5.6, 11.8, 12.4, 7.8, 9.8]});
+dist('distS', {"当天": [7.4, 8.7, 8.5, 9.0, 3.7, 1.5, 0.9], "1-3日": [2.8, 3.5, 3.5, 4.2, 2.3, 1.0, 1.0], "4-7日": [1.1, 1.6, 1.7, 2.0, 1.1, 0.5, 0.7], "7日内未提单": [3.5, 4.8, 5.9, 6.8, 5.4, 3.3, 3.7]});
 </script>
 
 </body>
