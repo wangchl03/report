@@ -263,6 +263,68 @@ def fact_record(r,catalog,spec,metadata):
             for prop in ('loan_term','days','daily_fee','total_fee'):result[f'{prefix}_product_{slot}_{prop}']=info.get(prop)
     return {f['name']:result.get(f['name']) for f in spec}
 
+def dual_attribute_summary(rows,catalog):
+    """Double-offer bundled choices; daily-rate extrema explicitly include ties.
+
+    Offer structure uses all double-offer T0 events. Choice overlap uses only
+    original-serial D0 first applications whose actual product belongs to that
+    offer. Missing attributes are audited, not assumed to be zero. Existing
+    comparable-preference fields and the 115-column workbook remain unchanged.
+    """
+    totals=collections.Counter();months=collections.defaultdict(collections.Counter)
+    attributes=('days','daily_fee','total_fee')
+    for r in rows:
+        if r['current_offer_product_count']!=2:continue
+        n=r['n'];eligible=bool(r['d0_choice_eligible']);y=r['y'] if eligible else 0
+        m=months[r['month']]
+        for t in (totals,m):
+            t['dual_t0']+=n;t['dual_d0']+=r['y'];t['attributable_choices']+=y
+        products=[catalog.get(pid) for pid in r['current_offer_combo'].split('+')]
+        if not all(p and all(p.get(k) is not None for k in attributes) for p in products):
+            for t in (totals,m):t['attribute_missing_events']+=n;t['attribute_missing_choices']+=y
+            continue
+        terms=sorted(p.get('loan_term') for p in products if p.get('loan_term') is not None)
+        long,short=sorted(products,key=lambda p:p['days'],reverse=True)
+        strict=long['days']>short['days'] and long['daily_fee']<short['daily_fee'] and long['total_fee']>short['total_fee']
+        chosen=catalog.get(r['d0_actual_product_no']) if eligible else None
+        for t in (totals,m):
+            t['complete_events']+=n;t['complete_choices']+=y
+            t['adjacent_2_3_or_3_4_events']+=n if terms in ([2,3],[3,4]) else 0
+            t['long_low_daily_high_fee_events']+=n if strict else 0
+            if not eligible:continue
+            assert chosen and chosen['product_no'] in {p['product_no'] for p in products}
+            islong=chosen['days']==long['days'];min_daily=min(p['daily_fee'] for p in products);max_daily=max(p['daily_fee'] for p in products)
+            min_fee=min(p['total_fee'] for p in products)
+            t['long_choices']+=y if islong else 0
+            t['min_daily_including_ties']+=y if chosen['daily_fee']==min_daily else 0
+            t['max_daily_including_ties']+=y if chosen['daily_fee']==max_daily else 0
+            t['equal_daily_choices']+=y if min_daily==max_daily else 0
+            t['min_fee_choices']+=y if chosen['total_fee']==min_fee else 0
+            t['long_and_min_daily_including_ties']+=y if islong and chosen['daily_fee']==min_daily else 0
+            t['min_fee_and_max_daily_including_ties']+=y if chosen['total_fee']==min_fee and chosen['daily_fee']==max_daily else 0
+            if strict:
+                t['strict_tradeoff_choices']+=y
+                t['strict_tradeoff_long_choices']+=y if islong else 0
+                t['strict_tradeoff_short_choices']+=y if not islong else 0
+    def with_rates(c):
+        c=dict(c)
+        for name,num,den in (
+          ('long_choice_share','long_choices','complete_choices'),
+          ('min_fee_choice_share','min_fee_choices','complete_choices'),
+          ('long_also_min_daily_share','long_and_min_daily_including_ties','long_choices'),
+          ('min_fee_also_max_daily_share','min_fee_and_max_daily_including_ties','min_fee_choices'),
+          ('strict_long_choice_share','strict_tradeoff_long_choices','strict_tradeoff_choices'),
+          ('strict_short_choice_share','strict_tradeoff_short_choices','strict_tradeoff_choices'),
+          ('long_low_daily_high_fee_event_share','long_low_daily_high_fee_events','dual_t0'),
+          ('adjacent_period_event_share','adjacent_2_3_or_3_4_events','dual_t0')):
+            c[name]=ratio(c.get(num,0),c.get(den,0))
+        return c
+    assert totals['complete_events']+totals['attribute_missing_events']==totals['dual_t0']
+    assert totals['strict_tradeoff_long_choices']+totals['strict_tradeoff_short_choices']==totals['strict_tradeoff_choices']
+    return {'totals':with_rates(totals),'monthly':[{'month':month,**with_rates(c)} for month,c in sorted(months.items())],
+      'tie_rule':'最低/最高日息均含并列；相同日息可同时命中，不同日息仅命中对应最低或最高。',
+      'sample_rule':'恰为双获额产品；结构按全部T0事件，选择按原serial_id且实际产品在原组合的D0首次提单。'}
+
 def run(source,output,baseline,day_baseline):
     rows,catalog,extra=enrich(source)
     max_slots=max(max(r['previous_offer_product_count'],r['current_offer_product_count']) for r in rows)
@@ -335,6 +397,7 @@ def run(source,output,baseline,day_baseline):
     analysis={'metadata':source['metadata'],'overall':overall,'views':views,'paths_all':all_paths,'comparisons':comparisons,'recent_comparisons':recent,
       'negative':comparisons[:30],'positive':list(reversed([r for r in comparisons if r['delta_pp']>0]))[:30],
       'standardization':standard,'quality':quality,'preference_totals':preference_totals,'dimensions':DISPLAY,'pairs':pairs,
+      'dual_attribute_coupling':dual_attribute_summary(rows,catalog),
       'coverage':{'full_joint_rows':len(rows),'joint_fields':len(spec),'two_way_family_pairs':len(list(itertools.combinations(ANALYSIS_DIMS,2))),
         'planned_multiway_projections':len(set(plans)),'eligible_comparison_count':len(comparisons),'paths':len(all_paths),'max_product_slots':max_slots},
       'reconciliation':{key:{k:v for k,v in value.items() if k!='changes'} for key,value in reconciliation.items()}}

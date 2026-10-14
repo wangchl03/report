@@ -9,7 +9,7 @@ D0 = 同用户获额后当日首次提单；其他serial_id提单也计入口径
 联合汇总 = month × 原方向/幅度/六维 × 账期 × 前后组合 × 实际产品/来源
 提单率 = SUM(D0事件数)/SUM(T0事件数)
 贷后 = D0首次提单中已放款、已到期订单，按本次源快照还款/状态
-未提单事件不能用“实际提单产品”筛掉后再算总体提单率</pre></details></section><section id="overview"><h2>三、月度趋势：额度与产品迁移共同展开</h2><div id="monthly-table"></div><h3>额度方向 × 变额幅度 × 月份</h3><div id="credit-matrix" class="chart"></div><h3>产品迁移 × 月份</h3><div id="migration-matrix" class="chart"></div><p class="note">底色表示当天提单率，文字为提单率与T0事件量。灰格没有样本，不当作0%。</p></section><section id="dimensions"><h2>四、原六维与新增账期、产品维度</h2><div class="toolbar"><label>维度<select id="dimension-selector"></select></label><label>月份<select id="dimension-month"></select></label></div><div id="dimension-table"></div><p class="note">两套410分档来自同一个评分，不是两个独立风控模型。缺失分档底层保留；只在图轴/可选项隐藏，不暗中扩大或缩小总体分母。</p></section><section id="interact"><h2>五、多维交叉筛选与气泡矩阵</h2><div id="filters" class="toolbar filters"></div><div class="toolbar"><label>横轴<select id="axis-x"></select></label><label>纵轴<select id="axis-y"></select></label><label>对比起月<select id="start-month"></select></label><label>对比止月<select id="end-month"></select></label><label>每期最小事件数<select id="minimum"><option>30</option><option selected>100</option><option>300</option></select></label><button id="reset">重置</button></div><div id="bubble-note" class="note"></div><div id="bubble" class="chart"></div><div id="bubble-table"></div><p class="note">圆面积=两期事件量，颜色=同组合提单率变化（红降、绿升）。轴最多显示事件量最大的12档，覆盖率明确列示；悬停查看分子分母。选择产品是结果，仅在偏好区域展示，不作为总体转化筛选器。</p></section><section id="flows"><h2>六、产品迁移与提单去向：三层流图</h2><label>月份<select id="flow-month"></select></label><div id="flow-note" class="note"></div><div id="flow" class="chart"></div><h3>具体产品路径的月度表现</h3><div id="path-table"></div><h3>具体路径：前后逐产品属性对照</h3><label>选择路径<select id="attribute-path"></select></label><div id="attribute-note" class="note"></div><div id="attribute-table"></div><p class="note">完整T0母体贯穿前获额组合→当前组合→提单去向，保留未提单和异获额订单。流图将小组合合并为“其他”，不把产品目录槽位当推荐顺序。</p></section><section id="cross"><h2>七、重点下滑与提升组合：多维共同定位</h2><div class="grid2"><article><h3>1月→9月高下滑组合</h3><div id="negative"></div></article><article><h3>1月→9月仍有提升的组合</h3><div id="positive"></div></article></div><h3>8月→9月：新产品时代的同路径对照</h3><div id="recent"></div><p class="note">各期至少100次事件（8→9月至少50次）。不同投影交叉重叠，不能把这些组合贡献简单相加。新路径若1月不存在，不填1月0%或制造下降幅度。</p></section><section id="pairs"><h2>八、14类维度的91组两两交叉与稳健性</h2><div id="pair-summary"></div><div id="pair-map" class="chart"></div><h3>共同格子标准化比较</h3><div id="standard"></div><p class="note">标准化只在两期各≥10事件的共同格子上，用两期归一化事件权重的平均权重加权“格内提单率差”。覆盖不足时不能外推全体；这不是因果效应估计。</p></section><section id="preference"><h2>九、产品选择偏好、盈利和风险同时检查</h2><p>最低日息 79.66%（12,442/15,619）；最低总息费 23.81%（7,395/31,063）；最长账期 77.43%（24,052/31,063）；继续选上笔产品 65.77%（8,474/12,885）。</p><p class="note">以上分母分别是属性存在真实差异的多产品、原组合内可识别选择；继续选上笔产品的分母还要求该产品仍可选。条件不同，四个比例不能直接互相比较。</p><div class="toolbar"><label>月份<select id="preference-month"></select></label><label>获额组合<select id="preference-combo"></select></label></div><div id="preference-table"></div><h3>产品路径的转化—盈利—风险气泡图</h3><div id="finance-note" class="note"></div><div id="finance" class="chart"></div><p class="note">横轴提单率、纵轴账面盈利率，圆面积到期数、色深当前逾期率；仅显示到期数≥100且到期覆盖≥50%的大路径。其余仍保留在数据表，不能将未到期或小样本当低风险。</p></section><section id="explorer"><h2>十、完整联合宽表与Tableau下钻</h2><p>联合宽表保留原26个字段，追加产品、迁移及条件偏好字段。完整115列联合明细与逐格财务数据只保存本地Excel；网页只预览高量匿名分组，最多30行。公开小样本到期数&lt;20的财务值隐藏，交互母体仅使用事件/提单计数。</p><div id="detail-note" class="note"></div><div id="detail"></div><p><a class="button" href="t0-product-migration-credit-term-cross-analysis-summary.zip">下载公开汇总CSV（ZIP，事件数≥50）</a></p><details><summary>Tableau计算字段与下钻建议</summary><pre>当天提单率 = SUM([d0_apply_event_count]) / SUM([t0_event_count])
+未提单事件不能用“实际提单产品”筛掉后再算总体提单率</pre></details></section><section id="overview"><h2>三、月度趋势：额度与产品迁移共同展开</h2><div id="monthly-table"></div><h3>额度方向 × 变额幅度 × 月份</h3><div id="credit-matrix" class="chart"></div><h3>产品迁移 × 月份</h3><div id="migration-matrix" class="chart"></div><p class="note">底色表示当天提单率，文字为提单率与T0事件量。灰格没有样本，不当作0%。</p></section><section id="dimensions"><h2>四、原六维与新增账期、产品维度</h2><div class="toolbar"><label>维度<select id="dimension-selector"></select></label><label>月份<select id="dimension-month"></select></label></div><div id="dimension-table"></div><p class="note">两套410分档来自同一个评分，不是两个独立风控模型。缺失分档底层保留；只在图轴/可选项隐藏，不暗中扩大或缩小总体分母。</p></section><section id="interact"><h2>五、多维交叉筛选与气泡矩阵</h2><div id="filters" class="toolbar filters"></div><div class="toolbar"><label>横轴<select id="axis-x"></select></label><label>纵轴<select id="axis-y"></select></label><label>对比起月<select id="start-month"></select></label><label>对比止月<select id="end-month"></select></label><label>每期最小事件数<select id="minimum"><option>30</option><option selected>100</option><option>300</option></select></label><button id="reset">重置</button></div><div id="bubble-note" class="note"></div><div id="bubble" class="chart"></div><div id="bubble-table"></div><p class="note">圆面积=两期事件量，颜色=同组合提单率变化（红降、绿升）。轴最多显示事件量最大的12档，覆盖率明确列示；悬停查看分子分母。选择产品是结果，仅在偏好区域展示，不作为总体转化筛选器。</p></section><section id="flows"><h2>六、产品迁移与提单去向：三层流图</h2><label>月份<select id="flow-month"></select></label><div id="flow-note" class="note"></div><div id="flow" class="chart"></div><h3>具体产品路径的月度表现</h3><div id="path-table"></div><h3>具体路径：前后逐产品属性对照</h3><label>选择路径<select id="attribute-path"></select></label><div id="attribute-note" class="note"></div><div id="attribute-table"></div><p class="note">完整T0母体贯穿前获额组合→当前组合→提单去向，保留未提单和异获额订单。流图将小组合合并为“其他”，不把产品目录槽位当推荐顺序。</p></section><section id="cross"><h2>七、重点下滑与提升组合：多维共同定位</h2><div class="grid2"><article><h3>1月→9月高下滑组合</h3><div id="negative"></div></article><article><h3>1月→9月仍有提升的组合</h3><div id="positive"></div></article></div><h3>8月→9月：新产品时代的同路径对照</h3><div id="recent"></div><p class="note">各期至少100次事件（8→9月至少50次）。不同投影交叉重叠，不能把这些组合贡献简单相加。新路径若1月不存在，不填1月0%或制造下降幅度。</p></section><section id="pairs"><h2>八、14类维度的91组两两交叉与稳健性</h2><div id="pair-summary"></div><div id="pair-map" class="chart"></div><h3>共同格子标准化比较</h3><div id="standard"></div><p class="note">标准化只在两期各≥10事件的共同格子上，用两期归一化事件权重的平均权重加权“格内提单率差”。覆盖不足时不能外推全体；这不是因果效应估计。</p></section><section id="preference"><h2>九、产品选择偏好、盈利和风险同时检查</h2><h3>双产品：用户选择的是一套产品方案</h3><div id="bundled-findings" class="findings bundled"></div><div id="bundled-monthly"></div><p class="note">同日息同时计入“最低／最高日息（含并列）”；不同日息只计入对应的高低档。两个指标可重叠，不要求合计100%。选择占比只看原获额订单、原组合内的当天首次提单；不是全部T0用户的提单率。</p><details><summary>展开分子、分母与原独立指标（默认折叠）</summary><div class="detail-body"><div id="bundled-audit"></div><p>最低日息 79.66%（12,442/15,619）；最低总息费 23.81%（7,395/31,063）；最长账期 77.43%（24,052/31,063）；继续选上笔产品 65.77%（8,474/12,885）。</p><p class="note">原独立指标保留原定义：仅在对应属性确有差异时比较；最低日息79.66%不包含同日息组合。继续选上笔产品还要求该产品仍可选，四个比例分母不同。</p></div></details><div class="toolbar"><label>月份<select id="preference-month"></select></label><label>获额组合<select id="preference-combo"></select></label></div><div id="preference-table"></div><h3>产品路径的转化—盈利—风险气泡图</h3><div id="finance-note" class="note"></div><div id="finance" class="chart"></div><p class="note">横轴提单率、纵轴账面盈利率，圆面积到期数、色深当前逾期率；仅显示到期数≥100且到期覆盖≥50%的大路径。其余仍保留在数据表，不能将未到期或小样本当低风险。</p></section><section id="explorer"><h2>十、完整联合宽表与Tableau下钻</h2><p>联合宽表保留原26个字段，追加产品、迁移及条件偏好字段。完整115列联合明细与逐格财务数据只保存本地Excel；网页只预览高量匿名分组，最多30行。公开小样本到期数&lt;20的财务值隐藏，交互母体仅使用事件/提单计数。</p><div id="detail-note" class="note"></div><div id="detail"></div><p><a class="button" href="t0-product-migration-credit-term-cross-analysis-summary.zip">下载公开汇总CSV（ZIP，事件数≥50）</a></p><details><summary>Tableau计算字段与下钻建议</summary><pre>当天提单率 = SUM([d0_apply_event_count]) / SUM([t0_event_count])
 盈利率 = SUM([d0_due_profit_amt_mxn]) / SUM([d0_due_remit_amt_mxn])
 订单逾期率 = SUM([d0_overdue_order_count]) / SUM([d0_due_order_count])
 到期覆盖率 = SUM([d0_due_order_count]) / SUM([d0_funded_order_count])
@@ -707,6 +707,68 @@ def fact_record(r,catalog,spec,metadata):
             for prop in (&#x27;loan_term&#x27;,&#x27;days&#x27;,&#x27;daily_fee&#x27;,&#x27;total_fee&#x27;):result[f&#x27;{prefix}_product_{slot}_{prop}&#x27;]=info.get(prop)
     return {f[&#x27;name&#x27;]:result.get(f[&#x27;name&#x27;]) for f in spec}
 
+def dual_attribute_summary(rows,catalog):
+    &quot;&quot;&quot;Double-offer bundled choices; daily-rate extrema explicitly include ties.
+
+    Offer structure uses all double-offer T0 events. Choice overlap uses only
+    original-serial D0 first applications whose actual product belongs to that
+    offer. Missing attributes are audited, not assumed to be zero. Existing
+    comparable-preference fields and the 115-column workbook remain unchanged.
+    &quot;&quot;&quot;
+    totals=collections.Counter();months=collections.defaultdict(collections.Counter)
+    attributes=(&#x27;days&#x27;,&#x27;daily_fee&#x27;,&#x27;total_fee&#x27;)
+    for r in rows:
+        if r[&#x27;current_offer_product_count&#x27;]!=2:continue
+        n=r[&#x27;n&#x27;];eligible=bool(r[&#x27;d0_choice_eligible&#x27;]);y=r[&#x27;y&#x27;] if eligible else 0
+        m=months[r[&#x27;month&#x27;]]
+        for t in (totals,m):
+            t[&#x27;dual_t0&#x27;]+=n;t[&#x27;dual_d0&#x27;]+=r[&#x27;y&#x27;];t[&#x27;attributable_choices&#x27;]+=y
+        products=[catalog.get(pid) for pid in r[&#x27;current_offer_combo&#x27;].split(&#x27;+&#x27;)]
+        if not all(p and all(p.get(k) is not None for k in attributes) for p in products):
+            for t in (totals,m):t[&#x27;attribute_missing_events&#x27;]+=n;t[&#x27;attribute_missing_choices&#x27;]+=y
+            continue
+        terms=sorted(p.get(&#x27;loan_term&#x27;) for p in products if p.get(&#x27;loan_term&#x27;) is not None)
+        long,short=sorted(products,key=lambda p:p[&#x27;days&#x27;],reverse=True)
+        strict=long[&#x27;days&#x27;]&gt;short[&#x27;days&#x27;] and long[&#x27;daily_fee&#x27;]&lt;short[&#x27;daily_fee&#x27;] and long[&#x27;total_fee&#x27;]&gt;short[&#x27;total_fee&#x27;]
+        chosen=catalog.get(r[&#x27;d0_actual_product_no&#x27;]) if eligible else None
+        for t in (totals,m):
+            t[&#x27;complete_events&#x27;]+=n;t[&#x27;complete_choices&#x27;]+=y
+            t[&#x27;adjacent_2_3_or_3_4_events&#x27;]+=n if terms in ([2,3],[3,4]) else 0
+            t[&#x27;long_low_daily_high_fee_events&#x27;]+=n if strict else 0
+            if not eligible:continue
+            assert chosen and chosen[&#x27;product_no&#x27;] in {p[&#x27;product_no&#x27;] for p in products}
+            islong=chosen[&#x27;days&#x27;]==long[&#x27;days&#x27;];min_daily=min(p[&#x27;daily_fee&#x27;] for p in products);max_daily=max(p[&#x27;daily_fee&#x27;] for p in products)
+            min_fee=min(p[&#x27;total_fee&#x27;] for p in products)
+            t[&#x27;long_choices&#x27;]+=y if islong else 0
+            t[&#x27;min_daily_including_ties&#x27;]+=y if chosen[&#x27;daily_fee&#x27;]==min_daily else 0
+            t[&#x27;max_daily_including_ties&#x27;]+=y if chosen[&#x27;daily_fee&#x27;]==max_daily else 0
+            t[&#x27;equal_daily_choices&#x27;]+=y if min_daily==max_daily else 0
+            t[&#x27;min_fee_choices&#x27;]+=y if chosen[&#x27;total_fee&#x27;]==min_fee else 0
+            t[&#x27;long_and_min_daily_including_ties&#x27;]+=y if islong and chosen[&#x27;daily_fee&#x27;]==min_daily else 0
+            t[&#x27;min_fee_and_max_daily_including_ties&#x27;]+=y if chosen[&#x27;total_fee&#x27;]==min_fee and chosen[&#x27;daily_fee&#x27;]==max_daily else 0
+            if strict:
+                t[&#x27;strict_tradeoff_choices&#x27;]+=y
+                t[&#x27;strict_tradeoff_long_choices&#x27;]+=y if islong else 0
+                t[&#x27;strict_tradeoff_short_choices&#x27;]+=y if not islong else 0
+    def with_rates(c):
+        c=dict(c)
+        for name,num,den in (
+          (&#x27;long_choice_share&#x27;,&#x27;long_choices&#x27;,&#x27;complete_choices&#x27;),
+          (&#x27;min_fee_choice_share&#x27;,&#x27;min_fee_choices&#x27;,&#x27;complete_choices&#x27;),
+          (&#x27;long_also_min_daily_share&#x27;,&#x27;long_and_min_daily_including_ties&#x27;,&#x27;long_choices&#x27;),
+          (&#x27;min_fee_also_max_daily_share&#x27;,&#x27;min_fee_and_max_daily_including_ties&#x27;,&#x27;min_fee_choices&#x27;),
+          (&#x27;strict_long_choice_share&#x27;,&#x27;strict_tradeoff_long_choices&#x27;,&#x27;strict_tradeoff_choices&#x27;),
+          (&#x27;strict_short_choice_share&#x27;,&#x27;strict_tradeoff_short_choices&#x27;,&#x27;strict_tradeoff_choices&#x27;),
+          (&#x27;long_low_daily_high_fee_event_share&#x27;,&#x27;long_low_daily_high_fee_events&#x27;,&#x27;dual_t0&#x27;),
+          (&#x27;adjacent_period_event_share&#x27;,&#x27;adjacent_2_3_or_3_4_events&#x27;,&#x27;dual_t0&#x27;)):
+            c[name]=ratio(c.get(num,0),c.get(den,0))
+        return c
+    assert totals[&#x27;complete_events&#x27;]+totals[&#x27;attribute_missing_events&#x27;]==totals[&#x27;dual_t0&#x27;]
+    assert totals[&#x27;strict_tradeoff_long_choices&#x27;]+totals[&#x27;strict_tradeoff_short_choices&#x27;]==totals[&#x27;strict_tradeoff_choices&#x27;]
+    return {&#x27;totals&#x27;:with_rates(totals),&#x27;monthly&#x27;:[{&#x27;month&#x27;:month,**with_rates(c)} for month,c in sorted(months.items())],
+      &#x27;tie_rule&#x27;:&#x27;最低/最高日息均含并列；相同日息可同时命中，不同日息仅命中对应最低或最高。&#x27;,
+      &#x27;sample_rule&#x27;:&#x27;恰为双获额产品；结构按全部T0事件，选择按原serial_id且实际产品在原组合的D0首次提单。&#x27;}
+
 def run(source,output,baseline,day_baseline):
     rows,catalog,extra=enrich(source)
     max_slots=max(max(r[&#x27;previous_offer_product_count&#x27;],r[&#x27;current_offer_product_count&#x27;]) for r in rows)
@@ -779,6 +841,7 @@ def run(source,output,baseline,day_baseline):
     analysis={&#x27;metadata&#x27;:source[&#x27;metadata&#x27;],&#x27;overall&#x27;:overall,&#x27;views&#x27;:views,&#x27;paths_all&#x27;:all_paths,&#x27;comparisons&#x27;:comparisons,&#x27;recent_comparisons&#x27;:recent,
       &#x27;negative&#x27;:comparisons[:30],&#x27;positive&#x27;:list(reversed([r for r in comparisons if r[&#x27;delta_pp&#x27;]&gt;0]))[:30],
       &#x27;standardization&#x27;:standard,&#x27;quality&#x27;:quality,&#x27;preference_totals&#x27;:preference_totals,&#x27;dimensions&#x27;:DISPLAY,&#x27;pairs&#x27;:pairs,
+      &#x27;dual_attribute_coupling&#x27;:dual_attribute_summary(rows,catalog),
       &#x27;coverage&#x27;:{&#x27;full_joint_rows&#x27;:len(rows),&#x27;joint_fields&#x27;:len(spec),&#x27;two_way_family_pairs&#x27;:len(list(itertools.combinations(ANALYSIS_DIMS,2))),
         &#x27;planned_multiway_projections&#x27;:len(set(plans)),&#x27;eligible_comparison_count&#x27;:len(comparisons),&#x27;paths&#x27;:len(all_paths),&#x27;max_product_slots&#x27;:max_slots},
       &#x27;reconciliation&#x27;:{key:{k:v for k,v in value.items() if k!=&#x27;changes&#x27;} for key,value in reconciliation.items()}}
