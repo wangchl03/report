@@ -64,6 +64,7 @@ pre.sql{overflow:auto;max-height:720px;font-size:11.5px;line-height:1.5;color:#d
   <a href="#sum">结论</a>
   <a href="#base">基本信息</a>
   <a href="#month">月度</a>
+  <a href="#shift">盈利率异动</a>
   <a href="#score">410 分</a>
   <a href="#scope">口径</a>
 </nav>
@@ -83,7 +84,7 @@ pre.sql{overflow:auto;max-height:720px;font-size:11.5px;line-height:1.5;color:#d
     </li>
     <li>
       <span class="t">2. 100742 正在放量</span>
-      <span class="d">4 月才出现。9 月订单数超过 100741，当月盈利率降到 3.25%。</span>
+      <span class="d">4 月才出现。9 月订单数超过 100741。盈利率从 7 月 20.61% 降到 9 月 3.25%，低分放量只解释约 2 个百分点。</span>
       <dl class="kv">
         <div><dt>订单</dt><dd>3,397<span>占比 15.82%</span></dd></div>
         <div><dt>逾期率</dt><dd>36.83%</dd></div>
@@ -182,6 +183,69 @@ pre.sql{overflow:auto;max-height:720px;font-size:11.5px;line-height:1.5;color:#d
   </table></div>
 </section>
 
+<section id="shift">
+  <h2>盈利率异动</h2>
+  <p class="desc">只看 100742。7 月盈利率 20.61%，8 月 14.24%，9 月 3.25%。放款从 589 笔增到 1,180 笔。先确认掉的是盈利，再看低分结构解释了多少，最后用到期后 14 天的等长窗口看各段自己是否在掉。</p>
+  <ol class="pts">
+    <li>
+      <span class="t">1. 掉的是盈利率，放款笔数在增加</span>
+      <span class="d">6–7 月盈利率在 20% 以上。8 月降 6.37 个百分点，9 月再降 10.99 个百分点。订单数 7 月 589、8 月 806、9 月 1,180。</span>
+      <dl class="kv">
+        <div><dt>7 月</dt><dd>20.61%<span>589 笔</span></dd></div>
+        <div><dt>8 月</dt><dd>14.24%<span>806 笔</span></dd></div>
+        <div><dt>9 月</dt><dd>3.25%<span>1,180 笔</span></dd></div>
+        <div><dt>7 月到 9 月</dt><dd>−17.36 pp</dd></div>
+      </dl>
+    </li>
+    <li>
+      <span class="t">2. 低分放款变多，只解释约 2 个百分点</span>
+      <span class="d">低分按本产品订单中位数 464 来切。低于 464 的笔数从 7 月 231 增到 9 月 606，占比从 39.2% 升到 51.4%。492 分及以上从 196 笔降到 140 笔。若 9 月只换成这个结构、各段盈利率仍停在 7 月，整体还有约 18.5%。和实际 3.25% 的差距，来自各段内部。</span>
+      <dl class="kv">
+        <div><dt>9 月低于 464</dt><dd>606 笔<span>占比 51.4%</span></dd></div>
+        <div><dt>9 月 492 分及以上</dt><dd>140 笔<span>7 月为 196 笔</span></dd></div>
+        <div><dt>只换结构</dt><dd>18.5%</dd></div>
+        <div><dt>结构解释</dt><dd>约 2 pp<span>其余约 15 pp</span></dd></div>
+      </dl>
+    </li>
+    <li>
+      <span class="t">3. 9 月各分数段一起掉</span>
+      <span class="d">用到期后 14 天内的还款比较，9 月只留 9 月 29 日及以前到期的 1,154 笔，使 7、8、9 月都观察满 14 天。这个窗口下，7 月 18.81%，9 月 1.68%。492 分及以上从 24.41% 降到 8.04%，低于 464 从 4.26% 变为 −8.57%。8 月高分段仍有 28.33%，当月下降大约一半来自低分占比上升。9 月的主因是各段还款变差。</span>
+      <dl class="kv">
+        <div><dt>14 天 · 7 月</dt><dd>18.81%</dd></div>
+        <div><dt>14 天 · 9 月</dt><dd>1.68%</dd></div>
+        <div><dt>高分 · 7 月</dt><dd>24.41%</dd></div>
+        <div><dt>高分 · 9 月</dt><dd>8.04%</dd></div>
+      </dl>
+    </li>
+  </ol>
+  <article class="chart" style="margin-top:14px">
+    <h3>到期后 14 天 · 各分数段盈利率</h3>
+    <p>8 月 492 分及以上仍为 28.33%。9 月三段都下降，高分段降到 8.04%。</p>
+    <div class="box"><canvas id="bandChart"></canvas></div>
+  </article>
+  <details class="code">
+    <summary>分数结构与分段盈利</summary>
+    <div class="table"><table>
+      <thead><tr><th>到期月</th><th>笔数</th><th>中位数</th><th>低于 464</th><th>占比</th><th>464–491</th><th>492 及以上</th><th>当前盈利率</th><th>14 天盈利率</th></tr></thead>
+      <tbody>
+        <tr><td>6月</td><td>543</td><td>475</td><td>212</td><td>39.0%</td><td>163</td><td>168</td><td>20.40%</td><td>13.82%</td></tr>
+        <tr><td>7月</td><td>589</td><td>475</td><td>231</td><td>39.2%</td><td>162</td><td>196</td><td>20.61%</td><td>18.81%</td></tr>
+        <tr><td>8月</td><td>806</td><td>459</td><td>450</td><td>55.8%</td><td>210</td><td>146</td><td>14.24%</td><td>11.54%</td></tr>
+        <tr class="hi"><td>9月</td><td>1,180</td><td>463</td><td>606</td><td>51.4%</td><td>434</td><td>140</td><td>3.25%</td><td>1.68%</td></tr>
+      </tbody>
+    </table></div>
+    <p class="desc">9 月 14 天盈利率对应 1,154 笔，due_date ≤ 2026-09-29。这 1,154 笔的当前累计盈利率是 2.87%。</p>
+    <div class="table"><table>
+      <thead><tr><th>分数段</th><th>7 月当前</th><th>8 月当前</th><th>9 月当前</th><th>7 月 14 天</th><th>8 月 14 天</th><th>9 月 14 天</th></tr></thead>
+      <tbody>
+        <tr><td>低于 464</td><td>5.62%</td><td>1.40%</td><td>−5.96%</td><td>4.26%</td><td>−1.84%</td><td>−8.57%</td></tr>
+        <tr><td>464–491</td><td>28.43%</td><td>14.97%</td><td>9.66%</td><td>25.68%</td><td>14.93%</td><td>9.58%</td></tr>
+        <tr><td>492 及以上</td><td>25.92%</td><td>32.67%</td><td>9.64%</td><td>24.41%</td><td>28.33%</td><td>8.04%</td></tr>
+      </tbody>
+    </table></div>
+  </details>
+</section>
+
 <section id="score">
   <h2>410 分</h2>
   <p class="desc">模型分 kabybmerge410fpd7cre，挂在放款订单上。分越高，资质越好。两款有效分覆盖率都是 100%。平均数和中位数按放款订单。人数区间按用户，同一用户多笔取到期最晚、serial_id 最大的那笔。</p>
@@ -225,6 +289,9 @@ pre.sql{overflow:auto;max-height:720px;font-size:11.5px;line-height:1.5;color:#d
         <tr><th>息费</th><td>前置 = Σpre_amt / Σremit_amt。后置 = Σpost_amt / Σremit_amt。总息费 = Σ(pre_amt + post_amt) / Σremit_amt。砍头息指 pre_amt &gt; 0。</td></tr>
         <tr><th>410 分</th><td>model_result_copy.serial_id = 放款订单 serial_id，字段 kabybmerge410fpd7cre。分值 &gt; 0 为有效分。两款覆盖率均为 100%。分越高，资质越好。</td></tr>
         <tr><th>用户分</th><td>同一产品、同一用户多笔放款，取 due_date 最晚、serial_id 最大的一笔。人数分组按该分数从高到低，(行号 − 1) / 人数。前 20% 为 &lt; 0.20，20%–50% 为 &lt; 0.50，其余为后 50%。</td></tr>
+        <tr><th>异动样本</th><td>仅 100742，到期月 2026-06 至 2026-09。低分线 464 是该产品 1–9 月到期订单的分数中位数。中间段为 [464, 492)，高分段为 ≥ 492。492 是该产品订单分数前 20% 的下沿。</td></tr>
+        <tr><th>结构对照</th><td>9 月各段放款金额权重，乘以 7 月各段当前盈利率，得到约 18.5%。与 7 月 20.61% 的差约为结构影响，与 9 月实际 3.25% 的差为各段内部变化。</td></tr>
+        <tr><th>14 天窗口</th><td>还款取 repayment_record_copy 中 payin_date ≤ due_date + 14 的金额。9 月只保留 due_date ≤ 2026-09-29 的订单，使 7、8、9 月都观察满 14 天。盈利率仍是这段还款合计减去放款，再除以放款。</td></tr>
       </tbody>
     </table></div>
   </details>
@@ -304,6 +371,16 @@ new Chart(document.getElementById('pChart'), {
   ]},
   options:{responsive:true, maintainAspectRatio:false, plugins:{legend:legend, tooltip:{callbacks:{label:(c)=>c.dataset.label+' '+(c.parsed.y==null?'':c.parsed.y.toFixed(2)+'%')}}},
     scales:{x:{ticks:ticks, grid:{display:false}}, y:{min:0, max:25, ticks:{color:'#aac5da', font:{size:12}, callback:(v)=>v+'%'}, grid:grid}}}
+});
+new Chart(document.getElementById('bandChart'), {
+  type:'line',
+  data:{labels:['7月','8月','9月'], datasets:[
+    {label:'低于 464', data:[4.26,-1.84,-8.57], borderColor:'#f68ab0', backgroundColor:'#f68ab0', tension:0.25, pointRadius:3},
+    {label:'464–491', data:[25.68,14.93,9.58], borderColor:'#ffc26b', backgroundColor:'#ffc26b', tension:0.25, pointRadius:3},
+    {label:'492 及以上', data:[24.41,28.33,8.04], borderColor:'#43c7e7', backgroundColor:'#43c7e7', tension:0.25, pointRadius:3}
+  ]},
+  options:{responsive:true, maintainAspectRatio:false, plugins:{legend:legend, tooltip:{callbacks:{label:(c)=>c.dataset.label+' '+c.parsed.y.toFixed(2)+'%'}}},
+    scales:{x:{ticks:ticks, grid:{display:false}}, y:{min:-15, max:35, ticks:{color:'#aac5da', font:{size:12}, callback:(v)=>v+'%'}, grid:grid}}}
 });
 </script>
 </body>
