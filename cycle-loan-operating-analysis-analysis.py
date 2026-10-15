@@ -37,13 +37,16 @@ def derive(s):
     rows=[r for r in background if r['month']==month];cy=next((r for r in rows if r['order_type']=='cycle'),None)
     st=next((r for r in rows if r['order_type']=='settled_reloan'),None)
     alln=sum(r['funded_orders'] for r in rows);alla=sum(r['funded_remit_amt'] for r in rows)
+    renew=[r for r in rows if r['loan_type']=='reloan']
+    renew_n=sum(r['funded_orders'] for r in renew);renew_amt=sum(r['funded_remit_amt'] for r in renew)
     scale.append({'month':month,'all_funded_orders':alln,'all_funded_remit_amt':alla,
       'cycle_funded_orders':cy['funded_orders'] if cy else 0,'settled_funded_orders':st['funded_orders'] if st else 0,
+      'reloan_funded_orders':renew_n,'reloan_funded_remit_amt':renew_amt,
       'firstloan_funded_orders':sum(r['funded_orders'] for r in rows if r['order_type']=='firstloan'),
       'unknown_funded_orders':sum(r['funded_orders'] for r in rows if r['order_type']=='unknown'),
-      'cycle_share_all':ratio(cy['funded_orders'],alln) if cy else 0,
-      'cycle_share_reloan':ratio(cy['funded_orders'],cy['funded_orders']+(st['funded_orders'] if st else 0)) if cy else 0,
-      'cycle_amount_share_all':ratio(cy['funded_remit_amt'],alla) if cy else 0})
+      'unknown_reloan_orders':sum(r['funded_orders'] for r in renew if r['order_type']=='unknown'),
+      'cycle_share_reloan':ratio(cy['funded_orders'],renew_n) if cy else 0,
+      'cycle_amount_share_reloan':ratio(cy['funded_remit_amt'],renew_amt) if cy else 0})
   # Four-question qualification and cadence retain their own January-Oct13 boundaries.
   funded={r['month']:r for r in a['funded_monthly']};q1=[]
   for r in a['offer_monthly']:

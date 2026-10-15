@@ -1068,6 +1068,10 @@ WITH params AS (
          WHEN o.remit_succ_rnb=3 THEN '3次' WHEN o.remit_succ_rnb=4 THEN '4次'
          WHEN o.remit_succ_rnb=5 THEN '5次' WHEN o.remit_succ_rnb>=6 THEN '6次及以上' ELSE '缺失' END AS loan_band
   FROM funding o LEFT JOIN tags t ON t.serial_id=o.serial_id
+), funding_background AS (
+  SELECT TO_CHAR(month_start,'YYYY-MM') AS month,order_type,loan_type,
+        COUNT(*) AS funded_orders,SUM(remit_amt) AS funded_remit_amt
+        FROM labeled GROUP BY month_start,order_type,loan_type
 ), matured AS (
   SELECT o.* FROM labeled o CROSS JOIN params p WHERE o.due_date>DATE '2000-01-01' AND o.due_date<p.as_of_date-7
 ), repayments AS (
@@ -1118,7 +1122,8 @@ WITH params AS (
   FROM params p
 )
 SELECT 'finance_cells'::text AS result_kind,ROW_TO_JSON(x)::text AS payload FROM cells x
-UNION ALL SELECT 'finance_audit',ROW_TO_JSON(x)::text FROM audit x;
+UNION ALL SELECT 'finance_audit',ROW_TO_JSON(x)::text FROM audit x
+UNION ALL SELECT 'funding_background',ROW_TO_JSON(x)::text FROM funding_background x;
 -- END MODULE: finance
 
 

@@ -1,5 +1,5 @@
 'use strict';
-const SLUG='cycle-loan-operating-analysis',VERSION='354269528608';
+const SLUG='cycle-loan-operating-analysis',VERSION='15f4eef3ec03';
 const C={blue:'#77b8ff',green:'#49d5ae',gold:'#ffca7d',red:'#ff939d',purple:'#c5afff',muted:'#a9bed0',ink:'#e8f2fa',line:'#31506a',dark:'#091b2c'};
 const typeName={cycle:'循环贷',settled_reloan:'结清续贷',firstloan:'首贷',unknown:'标签未知'};
 const typeColor={cycle:C.blue,settled_reloan:C.green,firstloan:C.gold,unknown:'#a7a8b1'};
@@ -61,9 +61,9 @@ function horizontalBars(id,items,{suffix='',percent=false,Wmin=580}={}){
   items.forEach((a,i)=>{const yy=T+i*row,w=a.value/max*range;body+=txt(L-12,yy+15,a.name,C.muted,12,'end')+`<rect x="${L}" y="${yy}" width="${w}" height="24" fill="${a.color}" rx="2">${title(a.name+' '+num(a.value))}</rect>`+txt(L+w+10,yy+16,(percent?pct(a.value):num(a.value))+suffix,a.color,12);});svg(id,W,H,body,'数量与构成条形图');
 }
 function supply(){
-  stackedChart('funding-volume',D.funding_monthly,[{key:'cycle_funded_orders',name:'循环贷',color:C.blue},{key:'settled_funded_orders',name:'结清续贷',color:C.green},{key:'firstloan_funded_orders',name:'首贷',color:C.gold},{key:'unknown_funded_orders',name:'标签未知',color:'#a7a8b1'}]);
-  lineChart('funding-shares',D.funding_monthly,[{key:'cycle_share_all',name:'占全部订单',color:C.blue},{key:'cycle_share_reloan',name:'占类型2＋3续贷',color:C.green},{key:'cycle_amount_share_all',name:'占全部本金',color:C.gold}],{minWidth:580,caption:'10月*为部分月份；比例不能直接替代经营质量',min:.10,max:.75});
-  table('funding-table',['放款月份','全部放款数','循环贷数','结清续贷数','首贷数','循环贷占全部','循环贷占续贷','循环贷本金占全部'],D.funding_monthly.map(r=>[r.month+(partial(r.month)?'*':''),num(r.all_funded_orders),num(r.cycle_funded_orders),num(r.settled_funded_orders),num(r.firstloan_funded_orders),pct(r.cycle_share_all),pct(r.cycle_share_reloan),pct(r.cycle_amount_share_all)]));
+  stackedChart('funding-volume',D.funding_monthly,[{key:'cycle_funded_orders',name:'循环贷',color:C.blue},{key:'settled_funded_orders',name:'结清续贷',color:C.green},{key:'unknown_reloan_orders',name:'标签未知续贷',color:'#a7a8b1'}]);
+  lineChart('funding-shares',D.funding_monthly,[{key:'cycle_share_reloan',name:'续贷订单占比',color:C.blue},{key:'cycle_amount_share_reloan',name:'续贷本金占比',color:C.gold}],{minWidth:580,caption:'分母均为成功放款续贷，不含首贷；10月*为部分月份',min:.30,max:.80});
+  table('funding-table',['放款月份','续贷放款总数','循环贷数','结清续贷数','标签未知续贷数','循环贷订单占比','循环贷本金占比'],D.funding_monthly.map(r=>[r.month+(partial(r.month)?'*':''),num(r.reloan_funded_orders),num(r.cycle_funded_orders),num(r.settled_funded_orders),num(r.unknown_reloan_orders),pct(r.cycle_share_reloan),pct(r.cycle_amount_share_reloan)]));
   const seq=D.funded_sequence.filter(r=>r.order_type==='cycle'),months=[...new Set(seq.map(r=>r.month))].sort();
   const rows=months.map(month=>{const rs=seq.filter(r=>r.month===month),n=sum(rs,'funded_orders');return {month,...Object.fromEntries(bands.map(b=>[b,rs.find(r=>r.loan_band===b)?.funded_orders/n||0]))};});
   stackedChart('sequence-chart',rows,bands.map((b,i)=>({key:b,name:b,color:[C.blue,C.green,C.gold,C.purple,C.red][i]})),{percent:true,minWidth:1050,labelKey:'6次及以上'});
@@ -190,7 +190,8 @@ async function init(){
   D=await(await fetch(SLUG+'.data.json?v='+VERSION)).json();
   $('report-meta').textContent='更新时间：'+D.meta.updated_at+'｜主体：2025-07-01至'+D.meta.main_end_business_date+'取数时｜金额：MXN｜增长及T0衔接：2026-01-01至2026-10-13';
   $('max-due').textContent=D.meta.mature_due_max;
-  kpis('headline-kpis',[[num(D.offer_orders),'独立循环贷获额订单；截至快照'],['22.37% → 38.97%','2026年1→9月循环贷占全部放款'],['37.26% → 26.53%','2026年1→9月独立订单当日提单率'],['13.20% / 37.20%','8月循环贷实际盈利率／当前订单逾期率']]);
+  const janSupply=D.funding_monthly.find(r=>r.month==='2026-01'),sepSupply=D.funding_monthly.find(r=>r.month==='2026-09');
+  kpis('headline-kpis',[[num(D.offer_orders),'独立循环贷获额订单；截至快照'],[pct(janSupply.cycle_share_reloan)+' → '+pct(sepSupply.cycle_share_reloan),'2026年1→9月循环贷占续贷放款'],['37.26% → 26.53%','2026年1→9月独立订单当日提单率'],['13.20% / 37.20%','8月循环贷实际盈利率／当前订单逾期率']]);
   const months=D.funding_monthly.map(r=>r.month);options('quality-month',months,'2026-08');options('bridge-month',[...new Set(D.t0_bridge.map(r=>r.month))].sort(),'2026-09');options('detail-month',months);options('detail-band',bands.filter(b=>D.finance_cells.some(r=>r.loan_band===b)));
   supply();conversion();duration();drivers();quality();matrix();lifecycle();bridge();details();audits();
   ['offer-rule','short-window-mode'].forEach(id=>$(id).addEventListener('change',conversion));

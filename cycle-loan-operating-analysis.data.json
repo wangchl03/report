@@ -1,6 +1,6 @@
 {
   "meta": {
-    "updated_at": "2026-10-15 01:13（北京时间）",
+    "updated_at": "2026-10-15 10:53（北京时间）",
     "source_business_timezone": "America/Belize",
     "main_start_date": "2025-07-01",
     "main_end_business_date": "2026-10-14",
@@ -11,7 +11,8 @@
     "bridge_end_date": "2026-10-13",
     "bridge_cutoff": "2026-10-14T08:51:44.700928-06:00",
     "currency": "MXN",
-    "mature_due_max": "2026-10-06"
+    "mature_due_max": "2026-10-06",
+    "cycle_share_denominator": "全部成功放款且loan_type=reloan的续贷订单；排除首贷；标签未知续贷保留在分母"
   },
   "funding_monthly": [
     {
@@ -20,11 +21,13 @@
       "all_funded_remit_amt": 99108816.0,
       "cycle_funded_orders": 9581,
       "settled_funded_orders": 13863,
+      "reloan_funded_orders": 23470,
+      "reloan_funded_remit_amt": 80809185.0,
       "firstloan_funded_orders": 15460,
       "unknown_funded_orders": 26,
-      "cycle_share_all": 0.24610839969175444,
-      "cycle_share_reloan": 0.4086759938577035,
-      "cycle_amount_share_all": 0.4190776529910316
+      "unknown_reloan_orders": 26,
+      "cycle_share_reloan": 0.40822326374094586,
+      "cycle_amount_share_reloan": 0.5139798155370581
     },
     {
       "month": "2025-08",
@@ -32,11 +35,13 @@
       "all_funded_remit_amt": 104878445.0,
       "cycle_funded_orders": 10099,
       "settled_funded_orders": 14684,
+      "reloan_funded_orders": 24796,
+      "reloan_funded_remit_amt": 88597215.0,
       "firstloan_funded_orders": 13256,
       "unknown_funded_orders": 13,
-      "cycle_share_all": 0.26539997897613793,
-      "cycle_share_reloan": 0.40749707460759393,
-      "cycle_amount_share_all": 0.4495161040955556
+      "unknown_reloan_orders": 13,
+      "cycle_share_reloan": 0.40728343281174384,
+      "cycle_amount_share_reloan": 0.5321222568903549
     },
     {
       "month": "2025-09",
@@ -44,11 +49,13 @@
       "all_funded_remit_amt": 105062416.0,
       "cycle_funded_orders": 9891,
       "settled_funded_orders": 13833,
+      "reloan_funded_orders": 23748,
+      "reloan_funded_remit_amt": 85195095.0,
       "firstloan_funded_orders": 16096,
       "unknown_funded_orders": 24,
-      "cycle_share_all": 0.2482431482782853,
-      "cycle_share_reloan": 0.4169195751138088,
-      "cycle_amount_share_all": 0.4372703555570243
+      "unknown_reloan_orders": 24,
+      "cycle_share_reloan": 0.4164982314300152,
+      "cycle_amount_share_reloan": 0.5392409034815913
     },
     {
       "month": "2025-10",
@@ -56,11 +63,13 @@
       "all_funded_remit_amt": 101303634.0,
       "cycle_funded_orders": 10413,
       "settled_funded_orders": 15499,
+      "reloan_funded_orders": 25954,
+      "reloan_funded_remit_amt": 83313306.0,
       "firstloan_funded_orders": 13569,
       "unknown_funded_orders": 42,
-      "cycle_share_all": 0.2634668420919465,
-      "cycle_share_reloan": 0.4018601420191417,
-      "cycle_amount_share_all": 0.4297212674522614
+      "unknown_reloan_orders": 42,
+      "cycle_share_reloan": 0.4012098327810742,
+      "cycle_amount_share_reloan": 0.5225134866212127
     },
     {
       "month": "2025-11",
@@ -68,11 +77,13 @@
       "all_funded_remit_amt": 105088807.0,
       "cycle_funded_orders": 10391,
       "settled_funded_orders": 15845,
+      "reloan_funded_orders": 26259,
+      "reloan_funded_remit_amt": 85586450.0,
       "firstloan_funded_orders": 13589,
       "unknown_funded_orders": 23,
-      "cycle_share_all": 0.26076591045974706,
-      "cycle_share_reloan": 0.39605885043451744,
-      "cycle_amount_share_all": 0.4140365776537933
+      "unknown_reloan_orders": 23,
+      "cycle_share_reloan": 0.39571194638028867,
+      "cycle_amount_share_reloan": 0.5083819927102947
     },
     {
       "month": "2025-12",
@@ -80,11 +91,13 @@
       "all_funded_remit_amt": 111733857.0,
       "cycle_funded_orders": 9871,
       "settled_funded_orders": 15178,
+      "reloan_funded_orders": 25078,
+      "reloan_funded_remit_amt": 91291120.0,
       "firstloan_funded_orders": 14165,
       "unknown_funded_orders": 29,
-      "cycle_share_all": 0.2515353056596081,
-      "cycle_share_reloan": 0.39406762745019763,
-      "cycle_amount_share_all": 0.3913232852957005
+      "unknown_reloan_orders": 29,
+      "cycle_share_reloan": 0.39361193077597895,
+      "cycle_amount_share_reloan": 0.4789519506387916
     },
     {
       "month": "2026-01",
@@ -92,11 +105,13 @@
       "all_funded_remit_amt": 140480327.0,
       "cycle_funded_orders": 12460,
       "settled_funded_orders": 19036,
+      "reloan_funded_orders": 31533,
+      "reloan_funded_remit_amt": 104909992.0,
       "firstloan_funded_orders": 24168,
       "unknown_funded_orders": 37,
-      "cycle_share_all": 0.2236943681441985,
-      "cycle_share_reloan": 0.3956057912115824,
-      "cycle_amount_share_all": 0.34528778538506677
+      "unknown_reloan_orders": 37,
+      "cycle_share_reloan": 0.3951415976913075,
+      "cycle_amount_share_reloan": 0.4623595910673599
     },
     {
       "month": "2026-02",
@@ -104,11 +119,13 @@
       "all_funded_remit_amt": 146693306.0,
       "cycle_funded_orders": 12963,
       "settled_funded_orders": 21566,
+      "reloan_funded_orders": 34536,
+      "reloan_funded_remit_amt": 108919792.0,
       "firstloan_funded_orders": 23836,
       "unknown_funded_orders": 7,
-      "cycle_share_all": 0.22207565271020352,
-      "cycle_share_reloan": 0.37542355701004954,
-      "cycle_amount_share_all": 0.3497405941618086
+      "unknown_reloan_orders": 7,
+      "cycle_share_reloan": 0.3753474635163308,
+      "cycle_amount_share_reloan": 0.47103105007765717
     },
     {
       "month": "2026-03",
@@ -116,11 +133,13 @@
       "all_funded_remit_amt": 131078203.0,
       "cycle_funded_orders": 11487,
       "settled_funded_orders": 21997,
+      "reloan_funded_orders": 33488,
+      "reloan_funded_remit_amt": 103036424.0,
       "firstloan_funded_orders": 19765,
       "unknown_funded_orders": 4,
-      "cycle_share_all": 0.21570615739958313,
-      "cycle_share_reloan": 0.34305937164018635,
-      "cycle_amount_share_all": 0.3862361158552044
+      "unknown_reloan_orders": 4,
+      "cycle_share_reloan": 0.34301839464882944,
+      "cycle_amount_share_reloan": 0.4913518349588685
     },
     {
       "month": "2026-04",
@@ -128,11 +147,13 @@
       "all_funded_remit_amt": 135356577.0,
       "cycle_funded_orders": 13655,
       "settled_funded_orders": 20937,
+      "reloan_funded_orders": 34634,
+      "reloan_funded_remit_amt": 101276265.0,
       "firstloan_funded_orders": 23904,
       "unknown_funded_orders": 42,
-      "cycle_share_all": 0.2332672793740818,
-      "cycle_share_reloan": 0.3947444495837188,
-      "cycle_amount_share_all": 0.40531055982599207
+      "unknown_reloan_orders": 42,
+      "cycle_share_reloan": 0.39426575041866374,
+      "cycle_amount_share_reloan": 0.5417009602397955
     },
     {
       "month": "2026-05",
@@ -140,11 +161,13 @@
       "all_funded_remit_amt": 153007180.0,
       "cycle_funded_orders": 16595,
       "settled_funded_orders": 22908,
+      "reloan_funded_orders": 39524,
+      "reloan_funded_remit_amt": 114445826.0,
       "firstloan_funded_orders": 25365,
       "unknown_funded_orders": 21,
-      "cycle_share_all": 0.2557444250951625,
-      "cycle_share_reloan": 0.42009467635369463,
-      "cycle_amount_share_all": 0.40989435920588824
+      "unknown_reloan_orders": 21,
+      "cycle_share_reloan": 0.41987147049893736,
+      "cycle_amount_share_reloan": 0.5480040836089557
     },
     {
       "month": "2026-06",
@@ -152,11 +175,13 @@
       "all_funded_remit_amt": 177719104.0,
       "cycle_funded_orders": 19700,
       "settled_funded_orders": 22209,
+      "reloan_funded_orders": 41987,
+      "reloan_funded_remit_amt": 127119643.0,
       "firstloan_funded_orders": 28856,
       "unknown_funded_orders": 78,
-      "cycle_share_all": 0.27807969735894866,
-      "cycle_share_reloan": 0.47006609558805984,
-      "cycle_amount_share_all": 0.42259650937695475
+      "unknown_reloan_orders": 78,
+      "cycle_share_reloan": 0.46919284540453,
+      "cycle_amount_share_reloan": 0.5908093448626189
     },
     {
       "month": "2026-07",
@@ -164,11 +189,13 @@
       "all_funded_remit_amt": 182692280.0,
       "cycle_funded_orders": 20760,
       "settled_funded_orders": 22284,
+      "reloan_funded_orders": 43066,
+      "reloan_funded_remit_amt": 137928809.0,
       "firstloan_funded_orders": 27611,
       "unknown_funded_orders": 22,
-      "cycle_share_all": 0.29373063372808694,
-      "cycle_share_reloan": 0.4822971842765542,
-      "cycle_amount_share_all": 0.4375276776884059
+      "unknown_reloan_orders": 22,
+      "cycle_share_reloan": 0.48205080574002696,
+      "cycle_amount_share_reloan": 0.5795230857101071
     },
     {
       "month": "2026-08",
@@ -176,11 +203,13 @@
       "all_funded_remit_amt": 197285227.0,
       "cycle_funded_orders": 24273,
       "settled_funded_orders": 21529,
+      "reloan_funded_orders": 45804,
+      "reloan_funded_remit_amt": 150811142.0,
       "firstloan_funded_orders": 30767,
       "unknown_funded_orders": 2,
-      "cycle_share_all": 0.3169999085815779,
-      "cycle_share_reloan": 0.5299550237980875,
-      "cycle_amount_share_all": 0.4900501951927703
+      "unknown_reloan_orders": 2,
+      "cycle_share_reloan": 0.5299318836782814,
+      "cycle_amount_share_reloan": 0.6410644645871059
     },
     {
       "month": "2026-09",
@@ -188,11 +217,13 @@
       "all_funded_remit_amt": 216744712.0,
       "cycle_funded_orders": 29740,
       "settled_funded_orders": 20193,
+      "reloan_funded_orders": 49933,
+      "reloan_funded_remit_amt": 172044847.0,
       "firstloan_funded_orders": 26387,
       "unknown_funded_orders": 0,
-      "cycle_share_all": 0.38967505241090145,
+      "unknown_reloan_orders": 0,
       "cycle_share_reloan": 0.5955981014559509,
-      "cycle_amount_share_all": 0.5503955039973478
+      "cycle_amount_share_reloan": 0.6933966176853876
     },
     {
       "month": "2026-10",
@@ -200,11 +231,13 @@
       "all_funded_remit_amt": 96186220.0,
       "cycle_funded_orders": 12895,
       "settled_funded_orders": 8179,
+      "reloan_funded_orders": 21082,
+      "reloan_funded_remit_amt": 78118670.0,
       "firstloan_funded_orders": 10827,
       "unknown_funded_orders": 8,
-      "cycle_share_all": 0.4041179604500298,
-      "cycle_share_reloan": 0.6118914301983487,
-      "cycle_amount_share_all": 0.5794243187849569
+      "unknown_reloan_orders": 8,
+      "cycle_share_reloan": 0.6116592353666636,
+      "cycle_amount_share_reloan": 0.7134355334006582
     }
   ],
   "finance_monthly": [

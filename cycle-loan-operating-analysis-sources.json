@@ -1,6 +1,6 @@
 {
   "metadata": {
-    "updated_at": "2026-10-15 01:13（北京时间）",
+    "updated_at": "2026-10-15 10:53（北京时间）",
     "source_business_timezone": "America/Belize",
     "main_start_date": "2025-07-01",
     "main_end_business_date": "2026-10-14",
@@ -11,7 +11,8 @@
     "bridge_end_date": "2026-10-13",
     "bridge_cutoff": "2026-10-14T08:51:44.700928-06:00",
     "currency": "MXN",
-    "mature_due_max": "2026-10-06"
+    "mature_due_max": "2026-10-06",
+    "cycle_share_denominator": "全部成功放款且loan_type=reloan的续贷订单；排除首贷；标签未知续贷保留在分母"
   },
   "activity": {
     "offer_monthly": [
@@ -30102,378 +30103,441 @@
       {
         "month": "2025-07",
         "order_type": "cycle",
+        "loan_type": "reloan",
         "funded_orders": 9581,
         "funded_remit_amt": 41534290.0
       },
       {
         "month": "2025-07",
         "order_type": "firstloan",
+        "loan_type": "firstloan",
         "funded_orders": 15460,
         "funded_remit_amt": 18299631.0
       },
       {
         "month": "2025-07",
         "order_type": "settled_reloan",
+        "loan_type": "reloan",
         "funded_orders": 13863,
         "funded_remit_amt": 39109125.0
       },
       {
         "month": "2025-07",
         "order_type": "unknown",
+        "loan_type": "reloan",
         "funded_orders": 26,
         "funded_remit_amt": 165770.0
       },
       {
         "month": "2025-08",
         "order_type": "cycle",
+        "loan_type": "reloan",
         "funded_orders": 10099,
         "funded_remit_amt": 47144550.0
       },
       {
         "month": "2025-08",
         "order_type": "firstloan",
+        "loan_type": "firstloan",
         "funded_orders": 13256,
         "funded_remit_amt": 16281230.0
       },
       {
         "month": "2025-08",
         "order_type": "settled_reloan",
+        "loan_type": "reloan",
         "funded_orders": 14684,
         "funded_remit_amt": 41295265.0
       },
       {
         "month": "2025-08",
         "order_type": "unknown",
+        "loan_type": "reloan",
         "funded_orders": 13,
         "funded_remit_amt": 157400.0
       },
       {
         "month": "2025-09",
         "order_type": "cycle",
+        "loan_type": "reloan",
         "funded_orders": 9891,
         "funded_remit_amt": 45940680.0
       },
       {
         "month": "2025-09",
         "order_type": "firstloan",
+        "loan_type": "firstloan",
         "funded_orders": 16096,
         "funded_remit_amt": 19867321.0
       },
       {
         "month": "2025-09",
         "order_type": "settled_reloan",
+        "loan_type": "reloan",
         "funded_orders": 13833,
         "funded_remit_amt": 39068325.0
       },
       {
         "month": "2025-09",
         "order_type": "unknown",
+        "loan_type": "reloan",
         "funded_orders": 24,
         "funded_remit_amt": 186090.0
       },
       {
         "month": "2025-10",
         "order_type": "cycle",
+        "loan_type": "reloan",
         "funded_orders": 10413,
         "funded_remit_amt": 43532326.0
       },
       {
         "month": "2025-10",
         "order_type": "firstloan",
+        "loan_type": "firstloan",
         "funded_orders": 13569,
         "funded_remit_amt": 17990328.0
       },
       {
         "month": "2025-10",
         "order_type": "settled_reloan",
+        "loan_type": "reloan",
         "funded_orders": 15499,
         "funded_remit_amt": 39464210.0
       },
       {
         "month": "2025-10",
         "order_type": "unknown",
+        "loan_type": "reloan",
         "funded_orders": 42,
         "funded_remit_amt": 316770.0
       },
       {
         "month": "2025-11",
         "order_type": "cycle",
+        "loan_type": "reloan",
         "funded_orders": 10391,
         "funded_remit_amt": 43510610.0
       },
       {
         "month": "2025-11",
         "order_type": "firstloan",
+        "loan_type": "firstloan",
         "funded_orders": 13589,
         "funded_remit_amt": 19502357.0
       },
       {
         "month": "2025-11",
         "order_type": "settled_reloan",
+        "loan_type": "reloan",
         "funded_orders": 15845,
         "funded_remit_amt": 41855020.0
       },
       {
         "month": "2025-11",
         "order_type": "unknown",
+        "loan_type": "reloan",
         "funded_orders": 23,
         "funded_remit_amt": 220820.0
       },
       {
         "month": "2025-12",
         "order_type": "cycle",
+        "loan_type": "reloan",
         "funded_orders": 9871,
         "funded_remit_amt": 43724060.0
       },
       {
         "month": "2025-12",
         "order_type": "firstloan",
+        "loan_type": "firstloan",
         "funded_orders": 14165,
         "funded_remit_amt": 20442737.0
       },
       {
         "month": "2025-12",
         "order_type": "settled_reloan",
+        "loan_type": "reloan",
         "funded_orders": 15178,
         "funded_remit_amt": 47395550.0
       },
       {
         "month": "2025-12",
         "order_type": "unknown",
+        "loan_type": "reloan",
         "funded_orders": 29,
         "funded_remit_amt": 171510.0
       },
       {
         "month": "2026-01",
         "order_type": "cycle",
+        "loan_type": "reloan",
         "funded_orders": 12460,
         "funded_remit_amt": 48506141.0
       },
       {
         "month": "2026-01",
         "order_type": "firstloan",
+        "loan_type": "firstloan",
         "funded_orders": 24168,
         "funded_remit_amt": 35570335.0
       },
       {
         "month": "2026-01",
         "order_type": "settled_reloan",
+        "loan_type": "reloan",
         "funded_orders": 19036,
         "funded_remit_amt": 56220691.0
       },
       {
         "month": "2026-01",
         "order_type": "unknown",
+        "loan_type": "reloan",
         "funded_orders": 37,
         "funded_remit_amt": 183160.0
       },
       {
         "month": "2026-02",
         "order_type": "cycle",
+        "loan_type": "reloan",
         "funded_orders": 12963,
         "funded_remit_amt": 51304604.0
       },
       {
         "month": "2026-02",
         "order_type": "firstloan",
+        "loan_type": "firstloan",
         "funded_orders": 23836,
         "funded_remit_amt": 37773514.0
       },
       {
         "month": "2026-02",
         "order_type": "settled_reloan",
+        "loan_type": "reloan",
         "funded_orders": 21566,
         "funded_remit_amt": 57607088.0
       },
       {
         "month": "2026-02",
         "order_type": "unknown",
+        "loan_type": "reloan",
         "funded_orders": 7,
         "funded_remit_amt": 8100.0
       },
       {
         "month": "2026-03",
         "order_type": "cycle",
+        "loan_type": "reloan",
         "funded_orders": 11487,
         "funded_remit_amt": 50627136.0
       },
       {
         "month": "2026-03",
         "order_type": "firstloan",
+        "loan_type": "firstloan",
         "funded_orders": 19765,
         "funded_remit_amt": 28041779.0
       },
       {
         "month": "2026-03",
         "order_type": "settled_reloan",
+        "loan_type": "reloan",
         "funded_orders": 21997,
         "funded_remit_amt": 52394228.0
       },
       {
         "month": "2026-03",
         "order_type": "unknown",
+        "loan_type": "reloan",
         "funded_orders": 4,
         "funded_remit_amt": 15060.0
       },
       {
         "month": "2026-04",
         "order_type": "cycle",
+        "loan_type": "reloan",
         "funded_orders": 13655,
         "funded_remit_amt": 54861450.0
       },
       {
         "month": "2026-04",
         "order_type": "firstloan",
+        "loan_type": "firstloan",
         "funded_orders": 23904,
         "funded_remit_amt": 34080312.0
       },
       {
         "month": "2026-04",
         "order_type": "settled_reloan",
+        "loan_type": "reloan",
         "funded_orders": 20937,
         "funded_remit_amt": 46178405.0
       },
       {
         "month": "2026-04",
         "order_type": "unknown",
+        "loan_type": "reloan",
         "funded_orders": 42,
         "funded_remit_amt": 236410.0
       },
       {
         "month": "2026-05",
         "order_type": "cycle",
+        "loan_type": "reloan",
         "funded_orders": 16595,
         "funded_remit_amt": 62716780.0
       },
       {
         "month": "2026-05",
         "order_type": "firstloan",
+        "loan_type": "firstloan",
         "funded_orders": 25365,
         "funded_remit_amt": 38561354.0
       },
       {
         "month": "2026-05",
         "order_type": "settled_reloan",
+        "loan_type": "reloan",
         "funded_orders": 22908,
         "funded_remit_amt": 51665766.0
       },
       {
         "month": "2026-05",
         "order_type": "unknown",
+        "loan_type": "reloan",
         "funded_orders": 21,
         "funded_remit_amt": 63280.0
       },
       {
         "month": "2026-06",
         "order_type": "cycle",
+        "loan_type": "reloan",
         "funded_orders": 19700,
         "funded_remit_amt": 75103473.0
       },
       {
         "month": "2026-06",
         "order_type": "firstloan",
+        "loan_type": "firstloan",
         "funded_orders": 28856,
         "funded_remit_amt": 50599461.0
       },
       {
         "month": "2026-06",
         "order_type": "settled_reloan",
+        "loan_type": "reloan",
         "funded_orders": 22209,
         "funded_remit_amt": 51753700.0
       },
       {
         "month": "2026-06",
         "order_type": "unknown",
+        "loan_type": "reloan",
         "funded_orders": 78,
         "funded_remit_amt": 262470.0
       },
       {
         "month": "2026-07",
         "order_type": "cycle",
+        "loan_type": "reloan",
         "funded_orders": 20760,
         "funded_remit_amt": 79932929.0
       },
       {
         "month": "2026-07",
         "order_type": "firstloan",
+        "loan_type": "firstloan",
         "funded_orders": 27611,
         "funded_remit_amt": 44763471.0
       },
       {
         "month": "2026-07",
         "order_type": "settled_reloan",
+        "loan_type": "reloan",
         "funded_orders": 22284,
         "funded_remit_amt": 57931510.0
       },
       {
         "month": "2026-07",
         "order_type": "unknown",
+        "loan_type": "reloan",
         "funded_orders": 22,
         "funded_remit_amt": 64370.0
       },
       {
         "month": "2026-08",
         "order_type": "cycle",
+        "loan_type": "reloan",
         "funded_orders": 24273,
         "funded_remit_amt": 96679664.0
       },
       {
         "month": "2026-08",
         "order_type": "firstloan",
+        "loan_type": "firstloan",
         "funded_orders": 30767,
         "funded_remit_amt": 46474085.0
       },
       {
         "month": "2026-08",
         "order_type": "settled_reloan",
+        "loan_type": "reloan",
         "funded_orders": 21529,
         "funded_remit_amt": 54128378.0
       },
       {
         "month": "2026-08",
         "order_type": "unknown",
+        "loan_type": "reloan",
         "funded_orders": 2,
         "funded_remit_amt": 3100.0
       },
       {
         "month": "2026-09",
         "order_type": "cycle",
+        "loan_type": "reloan",
         "funded_orders": 29740,
         "funded_remit_amt": 119295315.0
       },
       {
         "month": "2026-09",
         "order_type": "firstloan",
+        "loan_type": "firstloan",
         "funded_orders": 26387,
         "funded_remit_amt": 44699865.0
       },
       {
         "month": "2026-09",
         "order_type": "settled_reloan",
+        "loan_type": "reloan",
         "funded_orders": 20193,
         "funded_remit_amt": 52749532.0
       },
       {
         "month": "2026-10",
         "order_type": "cycle",
+        "loan_type": "reloan",
         "funded_orders": 12895,
         "funded_remit_amt": 55732635.0
       },
       {
         "month": "2026-10",
         "order_type": "firstloan",
+        "loan_type": "firstloan",
         "funded_orders": 10827,
         "funded_remit_amt": 18067550.0
       },
       {
         "month": "2026-10",
         "order_type": "settled_reloan",
+        "loan_type": "reloan",
         "funded_orders": 8179,
         "funded_remit_amt": 22361815.0
       },
       {
         "month": "2026-10",
         "order_type": "unknown",
+        "loan_type": "reloan",
         "funded_orders": 8,
         "funded_remit_amt": 24220.0
       }
