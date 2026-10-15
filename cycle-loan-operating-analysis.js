@@ -1,5 +1,5 @@
 'use strict';
-const SLUG='cycle-loan-operating-analysis',VERSION='15f4eef3ec03';
+const SLUG='cycle-loan-operating-analysis',VERSION='429acb8e8064';
 const C={blue:'#77b8ff',green:'#49d5ae',gold:'#ffca7d',red:'#ff939d',purple:'#c5afff',muted:'#a9bed0',ink:'#e8f2fa',line:'#31506a',dark:'#091b2c'};
 const typeName={cycle:'循环贷',settled_reloan:'结清续贷',firstloan:'首贷',unknown:'标签未知'};
 const typeColor={cycle:C.blue,settled_reloan:C.green,firstloan:C.gold,unknown:'#a7a8b1'};
@@ -19,7 +19,7 @@ function title(t){return '<title>'+esc(t)+'</title>';}
 function width(id,minimum=580){return Math.max(minimum,Math.floor($(id).clientWidth-26));}
 function legend(items){return '<div class="legend">'+items.map(([name,color])=>'<span><i class="swatch" style="background:'+color+'"></i>'+esc(name)+'</span>').join('')+'</div>';}
 function lineChart(id,rows,series,options={}){
-  const W=width(id,options.minWidth??1050),H=options.height??365,L=58,R=168,T=32,B=48;
+  const W=width(id,options.minWidth??1050),H=options.height??365,L=58,R=options.endLabels===false?28:168,T=32,B=48;
   const vals=series.flatMap(s=>rows.map(r=>r[s.key]).filter(v=>v!==null&&v!==undefined));
   if(!vals.length){$(id).textContent='无可展示的有效数据。';return;}
   let lo=options.min??Math.floor(Math.min(...vals)*100/5)*.05-.025,hi=options.max??Math.ceil(Math.max(...vals)*100/5)*.05+.025;
@@ -34,11 +34,21 @@ function lineChart(id,rows,series,options={}){
     if(!pts.length)return;
     body+=`<polyline points="${pts.map(p=>x(p.i)+','+y(p.v)).join(' ')}" fill="none" stroke="${s.color}" stroke-width="2.3" ${s.dash?'stroke-dasharray="6 4"':''}/>`;
     pts.forEach(p=>body+=`<circle cx="${x(p.i)}" cy="${y(p.v)}" r="3.3" fill="${s.color}" tabindex="0">${title(p.r.month+' '+s.name+' '+(options.valueFormat?options.valueFormat(p.v):pct(p.v))+(p.r.n_offer?'；分母 '+num(p.r.n_offer):''))}</circle>`);
+    if(options.pointLabels)pts.forEach(p=>{
+      const anchor=p.i===0?'start':'middle';
+      const dy=s.labelSide==='below'?25:-12;
+      const prev=rows[p.i-1]?.[s.key],next=rows[p.i+1]?.[s.key],below=s.labelSide==='below';
+      const incoming=prev===undefined?0:(below?p.v-prev:prev-p.v),outgoing=next===undefined?0:(below?p.v-next:next-p.v);
+      const nudge=p.i>0&&p.i<rows.length-1&&Math.max(incoming,outgoing)>.025?(incoming>=outgoing?12:-12):0;
+      body+=txt(x(p.i)+nudge,y(p.v)+dy,options.valueFormat?options.valueFormat(p.v):pct(p.v),s.color,12,anchor,`class="data-label point-data-label" data-month="${esc(p.r.month)}" data-series="${esc(s.key)}"`);
+    });
     const p=pts.at(-1);lastLabels.push({y:y(p.v),text:s.name+' '+(options.valueFormat?options.valueFormat(p.v):pct(p.v)),color:s.color});
   });
-  lastLabels.sort((a,b)=>a.y-b.y);let previous=T-20;
-  lastLabels.forEach(l=>{l.yy=Math.max(l.y,previous+22,T+5);previous=l.yy;});
-  const overflow=Math.max(0,previous-(H-B-3));lastLabels.forEach(l=>body+=txt(W-R+15,l.yy-overflow+4,l.text,l.color,12,'start','class="data-label"'));
+  if(options.endLabels!==false){
+    lastLabels.sort((a,b)=>a.y-b.y);let previous=T-20;
+    lastLabels.forEach(l=>{l.yy=Math.max(l.y,previous+22,T+5);previous=l.yy;});
+    const overflow=Math.max(0,previous-(H-B-3));lastLabels.forEach(l=>body+=txt(W-R+15,l.yy-overflow+4,l.text,l.color,12,'start','class="data-label"'));
+  }
   body+=txt(L,18,options.caption??'数据标签放在曲线右侧；悬停数据点可查看精确数值',C.muted,11);
   svg(id,W,H,body,options.title??'月度趋势');$(id).insertAdjacentHTML('beforeend',legend(series.map(s=>[s.name,s.color])));
 }
@@ -50,7 +60,7 @@ function stackedChart(id,rows,series,options={}){
   rows.forEach((r,i)=>{const xx=L+step*i+step/2;let acc=0;
     series.forEach(s=>{const v=r[s.key]??0;body+=`<rect x="${xx-bw/2}" y="${y(acc+v)}" width="${bw}" height="${Math.max(0,y(acc)-y(acc+v))}" fill="${s.color}">${title(r.month+' '+s.name+' '+(options.percent?pct(v):num(v)))}</rect>`;acc+=v;});
     const lab=options.percent?series.find(s=>s.key===(options.labelKey??series[0].key)):null;
-    if(rows.length<=10||(i%2===0&&i<rows.length-2)||i===rows.length-1)body+=txt(xx,y(acc)-8,options.percent?pct(r[lab.key]??0,1):num(acc),options.percent?lab.color:C.ink,11,'middle','class="data-label"');
+    if(options.showAllLabels||rows.length<=10||(i%2===0&&i<rows.length-2)||i===rows.length-1)body+=txt(xx,y(acc)-8,options.percent?pct(r[lab.key]??0,1):num(options.totalKey?r[options.totalKey]:acc),options.percent?lab.color:C.ink,11,'middle',`class="data-label" data-month="${esc(r.month)}"`);
     body+=txt(xx,H-B+23,mLabel(r.month)+(partial(r.month)?'*':''),C.muted,10,'middle');
   });
   if(options.percent)body+=txt(L,17,'顶部标签：'+series.find(s=>s.key===(options.labelKey??series[0].key)).name+'占比',C.muted,11);
@@ -61,8 +71,8 @@ function horizontalBars(id,items,{suffix='',percent=false,Wmin=580}={}){
   items.forEach((a,i)=>{const yy=T+i*row,w=a.value/max*range;body+=txt(L-12,yy+15,a.name,C.muted,12,'end')+`<rect x="${L}" y="${yy}" width="${w}" height="24" fill="${a.color}" rx="2">${title(a.name+' '+num(a.value))}</rect>`+txt(L+w+10,yy+16,(percent?pct(a.value):num(a.value))+suffix,a.color,12);});svg(id,W,H,body,'数量与构成条形图');
 }
 function supply(){
-  stackedChart('funding-volume',D.funding_monthly,[{key:'cycle_funded_orders',name:'循环贷',color:C.blue},{key:'settled_funded_orders',name:'结清续贷',color:C.green},{key:'unknown_reloan_orders',name:'标签未知续贷',color:'#a7a8b1'}]);
-  lineChart('funding-shares',D.funding_monthly,[{key:'cycle_share_reloan',name:'续贷订单占比',color:C.blue},{key:'cycle_amount_share_reloan',name:'续贷本金占比',color:C.gold}],{minWidth:580,caption:'分母均为成功放款续贷，不含首贷；10月*为部分月份',min:.30,max:.80});
+  stackedChart('funding-volume',D.funding_monthly,[{key:'cycle_funded_orders',name:'循环贷',color:C.blue},{key:'settled_funded_orders',name:'结清续贷',color:C.green},{key:'firstloan_funded_orders',name:'首贷',color:C.gold},{key:'unknown_funded_orders',name:'标签未知',color:'#a7a8b1'}],{minWidth:1050,height:400,showAllLabels:true,totalKey:'all_funded_orders',title:'全部成功放款数量与结构（含首贷）；顶部为全部放款订单数'});
+  lineChart('funding-shares',D.funding_monthly,[{key:'cycle_share_reloan',name:'续贷订单占比',color:C.blue,labelSide:'below'},{key:'cycle_amount_share_reloan',name:'续贷本金占比',color:C.gold,labelSide:'above'}],{minWidth:1050,height:420,endLabels:false,pointLabels:true,caption:'分母均为成功放款续贷，不含首贷；数据标签为各月占比，10月*为部分月份',min:.30,max:.80});
   table('funding-table',['放款月份','续贷放款总数','循环贷数','结清续贷数','标签未知续贷数','循环贷订单占比','循环贷本金占比'],D.funding_monthly.map(r=>[r.month+(partial(r.month)?'*':''),num(r.reloan_funded_orders),num(r.cycle_funded_orders),num(r.settled_funded_orders),num(r.unknown_reloan_orders),pct(r.cycle_share_reloan),pct(r.cycle_amount_share_reloan)]));
   const seq=D.funded_sequence.filter(r=>r.order_type==='cycle'),months=[...new Set(seq.map(r=>r.month))].sort();
   const rows=months.map(month=>{const rs=seq.filter(r=>r.month===month),n=sum(rs,'funded_orders');return {month,...Object.fromEntries(bands.map(b=>[b,rs.find(r=>r.loan_band===b)?.funded_orders/n||0]))};});
