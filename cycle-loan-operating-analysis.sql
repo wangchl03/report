@@ -1,7 +1,7 @@
 /* 循环贷经营分析：完整只读SQL。每模块返回result_kind/payload两列JSON。
    各模块使用其本次实际取数时刻，归属月份和分母在注释内分别说明。
    原始表为当前快照；日后重跑历史时点过滤，不能还原当时的当前逾期状态。
-   精确重建本报告请使用同时提供的聚合sources.json与analysis.py。 */
+   获额事件统一20秒去重；以下完整只读模块提供图表统计底数与指标。 */
 SET TIME ZONE 'America/Belize';
 SET query_dop=1;
 
@@ -168,6 +168,39 @@ WITH params AS (
          (SELECT COUNT(*) FROM eligible_offers WHERE vir_time::date<>vir_date) AS eligible_offer_date_mismatch_orders
   FROM cycle_offer_history c
 )
+, report_qualification AS (
+  SELECT o.*,f.new_cycle_borrowers,f.old_cycle_borrowers,f.new_cycle_funded_orders,f.old_cycle_funded_orders,
+    f.old_cycle_funded_orders::numeric/NULLIF(f.old_cycle_borrowers,0) AS old_group_frequency
+  FROM offer_monthly o JOIN funded_monthly f ON f.month=o.month
+), report_cadence AS (
+  SELECT m.*,early_settled_orders::numeric/NULLIF(due_date_known_orders,0) AS early_share,
+    held_day_sum::numeric/NULLIF(held_day_known_orders,0) AS held_days,
+    scheduled_day_sum::numeric/NULLIF(scheduled_day_known_orders,0) AS scheduled_days
+  FROM settlement_monthly m WHERE order_type='cycle'
+), report_sequence AS (
+  SELECT s.*,funded_orders::numeric/NULLIF(SUM(funded_orders) OVER(PARTITION BY month,order_type),0) AS order_share
+  FROM funded_sequence s WHERE order_type='cycle'
+), report_growth_groups AS (
+  SELECT 'new'::text AS group_name,j.new_cycle_borrowers AS n0,s.new_cycle_borrowers AS n1,
+    j.new_cycle_funded_orders::numeric/NULLIF(j.new_cycle_borrowers,0) AS f0,
+    s.new_cycle_funded_orders::numeric/NULLIF(s.new_cycle_borrowers,0) AS f1
+  FROM report_qualification j CROSS JOIN report_qualification s WHERE j.month='2026-01' AND s.month='2026-09'
+  UNION ALL
+  SELECT 'old',j.old_cycle_borrowers,s.old_cycle_borrowers,
+    j.old_cycle_funded_orders::numeric/NULLIF(j.old_cycle_borrowers,0),
+    s.old_cycle_funded_orders::numeric/NULLIF(s.old_cycle_borrowers,0)
+  FROM report_qualification j CROSS JOIN report_qualification s WHERE j.month='2026-01' AND s.month='2026-09'
+), report_funding_growth AS (
+  SELECT SUM(n1*f1-n0*f0) AS order_increase,
+    SUM(CASE WHEN group_name='new' THEN n1*f1-n0*f0 ELSE 0 END) AS new_group_increase,
+    SUM(CASE WHEN group_name='old' THEN n1*f1-n0*f0 ELSE 0 END) AS old_group_increase,
+    SUM((n1-n0)*(f0+f1)/2) AS borrower_number_component,
+    SUM((f1-f0)*(n0+n1)/2) AS frequency_component,
+    SUM((n1-n0)*(f0+f1)/2)/NULLIF(SUM(n1*f1-n0*f0),0) AS borrower_number_share,
+    SUM((f1-f0)*(n0+n1)/2)/NULLIF(SUM(n1*f1-n0*f0),0) AS frequency_share
+  FROM report_growth_groups
+)
+
 SELECT 'offer_monthly'::text AS result_kind,ROW_TO_JSON(x)::text AS payload FROM offer_monthly x
 UNION ALL SELECT 'new_qualification_monthly',ROW_TO_JSON(x)::text FROM first_qualification_monthly x
 UNION ALL SELECT 'funded_monthly',ROW_TO_JSON(x)::text FROM funded_monthly x
@@ -177,7 +210,11 @@ UNION ALL SELECT 'fixed_old_monthly',ROW_TO_JSON(x)::text FROM fixed_old_monthly
 UNION ALL SELECT 'settlement_monthly',ROW_TO_JSON(x)::text FROM settlement_monthly x
 UNION ALL SELECT 'settlement_cross',ROW_TO_JSON(x)::text FROM settlement_cross x
 UNION ALL SELECT 'settlement_origin',ROW_TO_JSON(x)::text FROM settlement_origin x
-UNION ALL SELECT 'source_audit',ROW_TO_JSON(x)::text FROM source_audit x;
+UNION ALL SELECT 'source_audit',ROW_TO_JSON(x)::text FROM source_audit x
+UNION ALL SELECT 'report_qualification',ROW_TO_JSON(x)::text FROM report_qualification x
+UNION ALL SELECT 'report_cadence',ROW_TO_JSON(x)::text FROM report_cadence x
+UNION ALL SELECT 'report_sequence',ROW_TO_JSON(x)::text FROM report_sequence x
+UNION ALL SELECT 'report_funding_growth',ROW_TO_JSON(x)::text FROM report_funding_growth x;
 -- END MODULE: activity
 
 
@@ -352,9 +389,20 @@ WITH params AS (
     (SELECT SUM(t0_events) FROM settlement_funnel_base) AS funnel_t0_events,
     (SELECT COUNT(*) FROM settled_scope WHERE repaid_time::date<>repaid_date) AS settlement_time_date_mismatch_orders
 )
+, report_funnel_base AS (
+  SELECT month,CASE WHEN order_type='cycle' THEN 'cycle' ELSE 'non_cycle' END AS kind,SUM(all_settled_orders) AS all_settled_orders,SUM(zero_outstanding_settled_orders) AS zero_outstanding_settled_orders,SUM(canonical_clean_scenes) AS canonical_clean_scenes,SUM(same_day_type3_pass_scenes) AS same_day_type3_pass_scenes,SUM(strict_t0_settled_orders) AS strict_t0_settled_orders,SUM(strict_t0_events) AS strict_t0_events
+  FROM monthly_funnel WHERE order_type IN ('cycle','firstloan','settled_reloan') GROUP BY month,kind
+), report_t0_bridge AS (
+  SELECT f.*,zero_outstanding_settled_orders::numeric/NULLIF(all_settled_orders,0) AS zero_outstanding_share,
+    same_day_type3_pass_scenes::numeric/NULLIF(canonical_clean_scenes,0) AS type3_pass_given_zero_scene,
+    strict_t0_settled_orders::numeric/NULLIF(all_settled_orders,0) AS t0_order_share
+  FROM report_funnel_base f
+)
+
 SELECT 'monthly_funnel'::text AS result_kind,ROW_TO_JSON(x)::text AS payload FROM monthly_funnel x
 UNION ALL SELECT 't0_type_counts',ROW_TO_JSON(x)::text FROM t0_type_counts x
-UNION ALL SELECT 'funnel_audit',ROW_TO_JSON(x)::text FROM funnel_audit x;
+UNION ALL SELECT 'funnel_audit',ROW_TO_JSON(x)::text FROM funnel_audit x
+UNION ALL SELECT 'report_t0_bridge',ROW_TO_JSON(x)::text FROM report_t0_bridge x;
 -- END MODULE: funnel
 
 
@@ -509,12 +557,39 @@ WITH params AS (
     (SELECT COUNT(*) FROM post WHERE repaid_time>TIMESTAMP '2000-01-01' AND repaid_time<remit_time) AS negative_holding_time_orders,
     (SELECT COUNT(*) FROM user_state WHERE risk_status='待核验') AS unmapped_risk_users
 )
+, report_known_paths AS (
+  SELECT p.cohort_name,p.path,
+    CASE WHEN p.path='首笔循环贷后全部循环贷' THEN p.users ELSE p.verified_transition_users END AS users,
+    p.single_order_users,t.users AS cohort_users
+  FROM paths p JOIN totals t ON t.cohort_name=p.cohort_name WHERE p.path<>'其他或缺失标签路径'
+), report_lifecycle_paths AS (
+  SELECT p.*,p.users::numeric/NULLIF(p.cohort_users,0) AS share FROM report_known_paths p
+  UNION ALL
+  SELECT t.cohort_name,'其他标签或时序未核验',t.users-COALESCE(SUM(p.users),0),0,t.users,
+    (t.users-COALESCE(SUM(p.users),0))::numeric/NULLIF(t.users,0)
+  FROM totals t LEFT JOIN report_known_paths p ON p.cohort_name=t.cohort_name GROUP BY t.cohort_name,t.users
+), report_silence_risk AS (
+  SELECT s.*,SUM(users) OVER(PARTITION BY cohort_name,path,silent_days) AS silent_users_in_path,
+    users::numeric/NULLIF(SUM(users) OVER(PARTITION BY cohort_name,path,silent_days),0) AS share
+  FROM silence s
+), report_return_share AS (
+  SELECT cohort_name,
+    SUM(CASE WHEN path='转结清续贷后又回循环贷' THEN users ELSE 0 END) AS returned_cycle_users,
+    SUM(CASE WHEN path IN ('转结清续贷后又回循环贷','转结清续贷后未再循环贷') THEN users ELSE 0 END) AS verified_type3_users,
+    SUM(CASE WHEN path='转结清续贷后又回循环贷' THEN users ELSE 0 END)::numeric/
+      NULLIF(SUM(CASE WHEN path IN ('转结清续贷后又回循环贷','转结清续贷后未再循环贷') THEN users ELSE 0 END),0) AS return_share
+  FROM report_known_paths GROUP BY cohort_name
+)
+
 SELECT 'lifecycle_totals'::text AS result_kind,ROW_TO_JSON(x)::text AS payload FROM totals x
 UNION ALL SELECT 'lifecycle_paths',ROW_TO_JSON(x)::text FROM paths x
 UNION ALL SELECT 'lifecycle_silence_risk',ROW_TO_JSON(x)::text FROM silence x
 UNION ALL SELECT 'lifecycle_monthly_paths',ROW_TO_JSON(x)::text FROM monthly_paths x
 UNION ALL SELECT 'cancellation_audit',ROW_TO_JSON(x)::text FROM cancellation_audit x
-UNION ALL SELECT 'lifecycle_source_audit',ROW_TO_JSON(x)::text FROM audit x;
+UNION ALL SELECT 'lifecycle_source_audit',ROW_TO_JSON(x)::text FROM audit x
+UNION ALL SELECT 'report_lifecycle_paths',ROW_TO_JSON(x)::text FROM report_lifecycle_paths x
+UNION ALL SELECT 'report_silence_risk',ROW_TO_JSON(x)::text FROM report_silence_risk x
+UNION ALL SELECT 'report_return_share',ROW_TO_JSON(x)::text FROM report_return_share x;
 -- END MODULE: lifecycle
 
 
@@ -694,6 +769,31 @@ WITH params AS (
     (SELECT COUNT(*) FROM offers)-(SELECT COUNT(DISTINCT serial_id) FROM offers) AS duplicate_selected_serials
   FROM measured
 )
+, report_day_counts AS (
+  SELECT month,SUM(CASE WHEN day_group<=7 THEN orders ELSE 0 END) AS within7,
+    SUM(CASE WHEN day_group=15 THEN orders ELSE 0 END) AS day15 FROM available_days GROUP BY month
+), report_duration_monthly AS (
+  SELECT m.*,m.completed_available_orders::numeric/NULLIF(m.eligible_orders,0) AS completed_coverage,
+    d.within7::numeric/NULLIF(m.completed_available_orders,0) AS within7_share,
+    d.day15::numeric/NULLIF(m.completed_available_orders,0) AS day15_share
+  FROM monthly m JOIN report_day_counts d ON d.month=m.month
+), report_window_summary AS (
+  SELECT SUM(eligible_orders) AS eligible_orders,SUM(completed_available_orders) AS completed_orders,
+    SUM(completed_available_orders*completed_available_mean_days)/NULLIF(SUM(completed_available_orders),0) AS mean_days,
+    SUM(completed_available_orders*within7_share)/NULLIF(SUM(completed_available_orders),0) AS within7_share,
+    SUM(completed_potential_overwritten_orders)::numeric/NULLIF(SUM(completed_available_orders),0) AS overwritten_potential_share,
+    SUM(still_valid_unapplied_orders) AS still_valid_unapplied_orders,
+    SUM(overwritten_unapplied_orders) AS unapplied_overwritten,SUM(expired_unapplied_orders) AS unapplied_expired
+  FROM report_duration_monthly
+), report_available_heatmap AS (
+  SELECT m.month,d.day,COALESCE(SUM(a.orders),0) AS orders,
+    COALESCE(SUM(a.orders),0)::numeric/NULLIF(m.completed_available_orders,0) AS share,
+    m.completed_available_orders AS completed_orders
+  FROM monthly m CROSS JOIN (VALUES(0),(1),(2),(3),(4),(5),(6),(7),(8),(9),(10),(11),(12),(13),(14),(15)) d(day)
+  LEFT JOIN available_days a ON a.month=m.month AND a.day_group=d.day
+  GROUP BY m.month,d.day,m.completed_available_orders
+)
+
 SELECT 'duration_monthly'::text AS result_kind,ROW_TO_JSON(x)::text AS payload FROM monthly x
 UNION ALL SELECT 'duration_raw_serial_monthly',ROW_TO_JSON(x)::text FROM raw_monthly x
 UNION ALL SELECT 'available_calendar_day_distribution',ROW_TO_JSON(x)::text FROM available_days x
@@ -701,7 +801,10 @@ UNION ALL SELECT 'actual_calendar_day_distribution',ROW_TO_JSON(x)::text FROM ac
 UNION ALL SELECT 'available_full24h_day_distribution',ROW_TO_JSON(x)::text FROM elapsed_days x
 UNION ALL SELECT 'still_valid_observed_day_distribution',ROW_TO_JSON(x)::text FROM censored_days x
 UNION ALL SELECT 'renewal_at_next_close_audit',ROW_TO_JSON(x)::text FROM renewal_audit x
-UNION ALL SELECT 'duration_source_audit',ROW_TO_JSON(x)::text FROM audit x;
+UNION ALL SELECT 'duration_source_audit',ROW_TO_JSON(x)::text FROM audit x
+UNION ALL SELECT 'report_duration_monthly',ROW_TO_JSON(x)::text FROM report_duration_monthly x
+UNION ALL SELECT 'report_window_summary',ROW_TO_JSON(x)::text FROM report_window_summary x
+UNION ALL SELECT 'report_available_heatmap',ROW_TO_JSON(x)::text FROM report_available_heatmap x;
 -- END MODULE: duration
 
 
@@ -914,7 +1017,7 @@ WITH params AS (
 -- MODULE: offers
 /* 循环贷获额订单提单率，纯订单维，与T0用户后续提单口径不同。
    分母：is_pass1=1且recycle_type唯一为2；每个serial_id仅保留最新通过获额记录。
-   主表保留不同serial；同时给既往20秒批次去重对照，不能混用两套分母。
+   主表统一20秒批次去重，每批仅保留最晚时间、同时间最大serial。
    分子：获额serial_id=提单serial_id，取本serial首次提单。不要求成功放款。
    不按用户找其他serial，也不以随后结清时间再截断实际同serial提单。
    D1/D2为第1/第2天单日，另给累计D0-D1/D0-D2。
@@ -948,7 +1051,7 @@ WITH params AS (
   FROM with_batch v
 ), offers AS (
   SELECT v.*,DATE_TRUNC('month',v.vir_time)::date AS month_start
-  FROM ranked v CROSS JOIN params p WHERE v.vir_time>=p.start_date::timestamp
+  FROM ranked v CROSS JOIN params p WHERE v.batch_rn=1 AND v.vir_time>=p.start_date::timestamp
 ), matched_loan_rows AS (
   SELECT o.serial_id,o.user_id AS offer_user_id,a.user_id AS apply_user_id,a.apply_date,a.apply_time,
     CASE WHEN a.apply_time>TIMESTAMP '2000-01-01' AND a.apply_time<=p.snapshot_time THEN a.apply_time
@@ -974,8 +1077,7 @@ WITH params AS (
   FROM offers o LEFT JOIN first_apply f ON f.serial_id=o.serial_id
   LEFT JOIN loan_presence l ON l.serial_id=o.serial_id CROSS JOIN params p
 ), variants AS (
-  SELECT 'serial_id订单去重'::text AS denominator_rule,b.* FROM base b
-  UNION ALL SELECT '20秒批次去重对照',b.* FROM base b WHERE b.batch_rn=1
+  SELECT '20秒去重获额事件'::text AS denominator_rule,b.* FROM base b
 ), counts AS (
   SELECT denominator_rule,month_start,COUNT(*) AS n_offer,
     SUM(CASE WHEN user_mismatch_rows=0 AND apply_day=0 THEN 1 ELSE 0 END) AS n_d0,
@@ -1018,7 +1120,7 @@ WITH params AS (
   GROUP BY denominator_rule,TO_CHAR(month_start,'YYYY-MM'),apply_day
 ), source_audit AS (
   SELECT (SELECT COUNT(*) FROM eligible_rows) AS eligible_source_rows_with_padding,
-    (SELECT COUNT(*) FROM offers) AS serial_dedup_offer_count,
+    (SELECT COUNT(*) FROM ranked v CROSS JOIN params p WHERE v.vir_time>=p.start_date::timestamp) AS serial_dedup_offer_count,
     (SELECT COUNT(*) FROM offers WHERE batch_rn=1) AS batch20_dedup_offer_count,
     (SELECT COUNT(*) FROM (SELECT serial_id FROM eligible_rows GROUP BY serial_id HAVING COUNT(DISTINCT user_id)>1) z) AS serial_multi_user_count,
     (SELECT COUNT(*) FROM tags WHERE type_n>1) AS conflicting_type_serials,
@@ -1026,9 +1128,30 @@ WITH params AS (
     (SELECT COUNT(*) FROM offers WHERE loan_type_code<>2 OR loan_type_code IS NULL) AS cycle_offer_not_reloan_code_count,
     (SELECT COUNT(*) FROM offers)-(SELECT COUNT(DISTINCT serial_id) FROM offers) AS duplicate_serial_count
 )
+, report_offer_summary AS (
+  SELECT SUM(n_offer) AS offer_events,SUM(n_d0) AS d0_events,
+    SUM(n_d3_cumulative) AS d3_events,SUM(n_d7_cumulative) AS d7_events,
+    SUM(n_d15_cumulative) AS d15_events,
+    SUM(n_d7_cumulative)::numeric/NULLIF(SUM(n_d15_cumulative),0) AS d7_share_of_d15,
+    SUM(n_d8_d14) AS d8_d14_events
+  FROM counts
+), report_offer_change AS (
+  SELECT j.n_offer AS january_events,s.n_offer AS september_events,
+    j.n_d0::numeric/NULLIF(j.n_offer,0) AS january_d0,
+    s.n_d0::numeric/NULLIF(s.n_offer,0) AS september_d0,
+    j.n_d15_cumulative::numeric/NULLIF(j.n_offer,0) AS january_d15,
+    s.n_d15_cumulative::numeric/NULLIF(s.n_offer,0) AS september_d15,
+    100.0*(s.n_d0::numeric/NULLIF(s.n_offer,0)-j.n_d0::numeric/NULLIF(j.n_offer,0)) AS d0_change_pp,
+    100.0*(s.n_d15_cumulative::numeric/NULLIF(s.n_offer,0)-j.n_d15_cumulative::numeric/NULLIF(j.n_offer,0)) AS d15_change_pp
+  FROM counts j CROSS JOIN counts s
+  WHERE j.month_start=DATE '2026-01-01' AND s.month_start=DATE '2026-09-01'
+)
+
 SELECT 'monthly'::text AS result_kind,ROW_TO_JSON(x)::text AS payload FROM monthly x
 UNION ALL SELECT 'daily_distribution',ROW_TO_JSON(x)::text FROM daily_distribution x
-UNION ALL SELECT 'source_audit',ROW_TO_JSON(x)::text FROM source_audit x;
+UNION ALL SELECT 'source_audit',ROW_TO_JSON(x)::text FROM source_audit x
+UNION ALL SELECT 'report_offer_summary',ROW_TO_JSON(x)::text FROM report_offer_summary x
+UNION ALL SELECT 'report_offer_change',ROW_TO_JSON(x)::text FROM report_offer_change x;
 -- END MODULE: offers
 
 
@@ -1121,9 +1244,86 @@ WITH params AS (
          AND (o.remit_time IS NULL OR o.remit_time<=TIMESTAMP '2000-01-01')) AS invalid_remit_time_in_period_orders
   FROM params p
 )
+, report_finance_month_base AS (
+  SELECT month,order_type,SUM(COALESCE(funded_orders,0)) AS funded_orders,
+    SUM(COALESCE(funded_remit_amt,0)) AS funded_remit_amt,
+    SUM(COALESCE(contractual_fee_amt,0)) AS contractual_fee_amt,
+    SUM(COALESCE(fee_known_remit_amt,0)) AS fee_known_remit_amt,
+    SUM(COALESCE(loan_day_sum,0)) AS loan_day_sum,
+    SUM(COALESCE(loan_day_known_orders,0)) AS loan_day_known_orders,
+    SUM(COALESCE(matured_orders,0)) AS matured_orders,
+    SUM(COALESCE(matured_remit_amt,0)) AS matured_remit_amt,
+    SUM(COALESCE(current_book_repaid_amt,0)) AS current_book_repaid_amt,
+    SUM(COALESCE(current_cash_repaid_amt,0)) AS current_cash_repaid_amt,
+    SUM(COALESCE(paid_by_due_amt,0)) AS paid_by_due_amt,
+    SUM(COALESCE(paid_by_d7_amt,0)) AS paid_by_d7_amt,
+    SUM(COALESCE(current_status8_orders,0)) AS current_status8_orders,
+    SUM(COALESCE(due_overdue_orders,0)) AS due_overdue_orders,
+    SUM(COALESCE(d7_overdue_orders,0)) AS d7_overdue_orders
+  FROM cells WHERE order_type IN ('cycle','settled_reloan') GROUP BY month,order_type
+), report_finance_cells AS (
+  SELECT c.*,
+    c.matured_orders::numeric/NULLIF(c.funded_orders,0) AS maturity_coverage,
+    c.funded_remit_amt/NULLIF(c.funded_orders,0) AS average_remit_amt,
+    c.contractual_fee_amt/NULLIF(c.fee_known_remit_amt,0) AS weighted_fee_rate,
+    c.loan_day_sum::numeric/NULLIF(c.loan_day_known_orders,0) AS average_loan_days,
+    CASE WHEN c.matured_orders>0 THEN c.current_cash_repaid_amt-c.matured_remit_amt END AS cash_profit_amt,
+    CASE WHEN c.matured_orders>0 THEN c.current_book_repaid_amt-c.matured_remit_amt END AS book_profit_amt,
+    CASE WHEN c.matured_orders>0 THEN c.paid_by_d7_amt-c.matured_remit_amt END AS d7_profit_amt,
+    (c.current_cash_repaid_amt-c.matured_remit_amt)/NULLIF(c.matured_remit_amt,0) AS cash_profit_rate,
+    (c.current_book_repaid_amt-c.matured_remit_amt)/NULLIF(c.matured_remit_amt,0) AS book_profit_rate,
+    (c.paid_by_d7_amt-c.matured_remit_amt)/NULLIF(c.matured_remit_amt,0) AS d7_profit_rate,
+    c.current_status8_orders::numeric/NULLIF(c.matured_orders,0) AS current_overdue_rate,
+    c.d7_overdue_orders::numeric/NULLIF(c.matured_orders,0) AS d7_overdue_rate
+ FROM cells c WHERE c.order_type IN ('cycle','settled_reloan')
+), report_finance_monthly AS (
+  SELECT c.*,
+    c.matured_orders::numeric/NULLIF(c.funded_orders,0) AS maturity_coverage,
+    c.funded_remit_amt/NULLIF(c.funded_orders,0) AS average_remit_amt,
+    c.contractual_fee_amt/NULLIF(c.fee_known_remit_amt,0) AS weighted_fee_rate,
+    c.loan_day_sum::numeric/NULLIF(c.loan_day_known_orders,0) AS average_loan_days,
+    CASE WHEN c.matured_orders>0 THEN c.current_cash_repaid_amt-c.matured_remit_amt END AS cash_profit_amt,
+    CASE WHEN c.matured_orders>0 THEN c.current_book_repaid_amt-c.matured_remit_amt END AS book_profit_amt,
+    CASE WHEN c.matured_orders>0 THEN c.paid_by_d7_amt-c.matured_remit_amt END AS d7_profit_amt,
+    (c.current_cash_repaid_amt-c.matured_remit_amt)/NULLIF(c.matured_remit_amt,0) AS cash_profit_rate,
+    (c.current_book_repaid_amt-c.matured_remit_amt)/NULLIF(c.matured_remit_amt,0) AS book_profit_rate,
+    (c.paid_by_d7_amt-c.matured_remit_amt)/NULLIF(c.matured_remit_amt,0) AS d7_profit_rate,
+    c.current_status8_orders::numeric/NULLIF(c.matured_orders,0) AS current_overdue_rate,
+    c.d7_overdue_orders::numeric/NULLIF(c.matured_orders,0) AS d7_overdue_rate
+ FROM report_finance_month_base c
+), report_funding_base AS (
+  SELECT month,SUM(funded_orders) AS all_funded_orders,SUM(funded_remit_amt) AS all_funded_remit_amt,
+    SUM(CASE WHEN loan_type='reloan' THEN funded_orders ELSE 0 END) AS reloan_funded_orders,
+    SUM(CASE WHEN loan_type='reloan' THEN funded_remit_amt ELSE 0 END) AS reloan_funded_remit_amt,
+    SUM(CASE WHEN order_type='cycle' THEN funded_orders ELSE 0 END) AS cycle_funded_orders,
+    SUM(CASE WHEN order_type='cycle' THEN funded_remit_amt ELSE 0 END) AS cycle_funded_remit_amt,
+    SUM(CASE WHEN order_type='settled_reloan' THEN funded_orders ELSE 0 END) AS settled_funded_orders,
+    SUM(CASE WHEN order_type='firstloan' THEN funded_orders ELSE 0 END) AS firstloan_funded_orders,
+    SUM(CASE WHEN order_type='unknown' THEN funded_orders ELSE 0 END) AS unknown_funded_orders,
+    SUM(CASE WHEN order_type='unknown' AND loan_type='reloan' THEN funded_orders ELSE 0 END) AS unknown_reloan_orders
+  FROM funding_background GROUP BY month
+), report_funding_monthly AS (
+  SELECT b.*,cycle_funded_orders::numeric/NULLIF(reloan_funded_orders,0) AS cycle_share_reloan,
+    cycle_funded_remit_amt/NULLIF(reloan_funded_remit_amt,0) AS cycle_amount_share_reloan
+  FROM report_funding_base b
+), report_quality_comparison AS (
+  SELECT c.month,c.loan_band,c.matured_orders AS cycle_matured_orders,s.matured_orders AS settled_matured_orders,
+    100.0*(c.cash_profit_rate-s.cash_profit_rate) AS cash_profit_gap_pp,
+    100.0*(c.d7_profit_rate-s.d7_profit_rate) AS d7_profit_gap_pp,
+    100.0*(c.current_overdue_rate-s.current_overdue_rate) AS current_overdue_gap_pp,
+    100.0*(c.d7_overdue_rate-s.d7_overdue_rate) AS d7_overdue_gap_pp
+  FROM report_finance_cells c JOIN report_finance_cells s ON s.month=c.month AND s.loan_band=c.loan_band
+  WHERE c.order_type='cycle' AND s.order_type='settled_reloan' AND c.matured_orders>=30 AND s.matured_orders>=30
+    AND c.loan_band IN ('2次','3次','4次','5次','6次及以上')
+)
+
 SELECT 'finance_cells'::text AS result_kind,ROW_TO_JSON(x)::text AS payload FROM cells x
 UNION ALL SELECT 'finance_audit',ROW_TO_JSON(x)::text FROM audit x
-UNION ALL SELECT 'funding_background',ROW_TO_JSON(x)::text FROM funding_background x;
+UNION ALL SELECT 'funding_background',ROW_TO_JSON(x)::text FROM funding_background x
+UNION ALL SELECT 'report_finance_cells',ROW_TO_JSON(x)::text FROM report_finance_cells x
+UNION ALL SELECT 'report_finance_monthly',ROW_TO_JSON(x)::text FROM report_finance_monthly x
+UNION ALL SELECT 'report_funding_monthly',ROW_TO_JSON(x)::text FROM report_funding_monthly x
+UNION ALL SELECT 'report_quality_comparison',ROW_TO_JSON(x)::text FROM report_quality_comparison x;
 -- END MODULE: finance
 
 

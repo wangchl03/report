@@ -1,5 +1,5 @@
 'use strict';
-const SLUG='cycle-loan-operating-analysis',VERSION='be36a790e5a3';
+const SLUG='cycle-loan-operating-analysis',VERSION='79945b00f7b5';
 const C={blue:'#77b8ff',green:'#49d5ae',gold:'#ffca7d',red:'#ff939d',purple:'#c5afff',muted:'#a9bed0',ink:'#e8f2fa',line:'#31506a',dark:'#091b2c'};
 const typeName={cycle:'循环贷',settled_reloan:'结清续贷',firstloan:'首贷',unknown:'标签未知'};
 const typeColor={cycle:C.blue,settled_reloan:C.green,firstloan:C.gold,unknown:'#a7a8b1'};
@@ -39,7 +39,8 @@ function lineChart(id,rows,series,options={}){
       const dy=s.labelSide==='below'?25:-12;
       const prev=rows[p.i-1]?.[s.key],next=rows[p.i+1]?.[s.key],below=s.labelSide==='below';
       const incoming=prev===undefined?0:(below?p.v-prev:prev-p.v),outgoing=next===undefined?0:(below?p.v-next:next-p.v);
-      const nudge=p.i>0&&p.i<rows.length-1&&Math.max(incoming,outgoing)>.025?(incoming>=outgoing?12:-12):0;
+      // The first point is left-anchored; give the second centered label extra clearance.
+      const nudge=p.i===1?10:(p.i>0&&p.i<rows.length-1&&Math.max(incoming,outgoing)>.025?(incoming>=outgoing?12:-12):0);
       body+=txt(x(p.i)+nudge,y(p.v)+dy,options.valueFormat?options.valueFormat(p.v):pct(p.v),s.color,12,anchor,`class="data-label point-data-label" data-month="${esc(p.r.month)}" data-series="${esc(s.key)}"`);
     });
     const p=pts.at(-1);lastLabels.push({y:y(p.v),text:s.name+' '+(options.valueFormat?options.valueFormat(p.v):pct(p.v)),color:s.color});
@@ -90,24 +91,24 @@ function supply(){
   stackedChart('sequence-chart',rows,bands.map((b,i)=>({key:b,name:b,color:[C.blue,C.green,C.gold,C.purple,C.red][i]})),{percent:true,minWidth:1050,barMaxWidth:56,segmentLabelKeys:bands,showAllLabels:true,labelKey:'6次及以上',caption:'柱内：各借款次数占当月循环贷放款订单的比例；顶部：6次及以上占比',title:'循环贷借款次数结构；柱内标注2次、3次、4次、5次、6次及以上占比，顶部为6次及以上占比'});
 }
 function conversion(){
-  const rule=$('offer-rule').value,cumulative=$('short-window-mode').value==='cumulative';
+  const rule=D.meta.offer_rule,cumulative=$('short-window-mode').value==='cumulative';
   offerRows=D.offer_monthly.filter(r=>r.denominator_rule===rule);
   lineChart('offer-chart',offerRows,[{key:'d0',name:'当日D0',color:C.blue},{key:'d3',name:'D0至D3',color:C.green},{key:'d7',name:'D0至D7',color:C.gold},{key:'d15',name:'15日D0至D14',color:C.purple}],{min:.20,max:.75});
-  $('offer-denominator-note').textContent='当前分母：'+rule+'，合计'+num(sum(offerRows,'n_offer'))+'笔。所有比例的分母均为获额订单，不是提单用户数。10月*截至取数时；D1/D2当前显示'+(cumulative?'累计窗口。':'各自单日。');
-  table('offer-table',['获额月份','获额订单数','当日提单数','当日率',cumulative?'D0至D1累计率':'第1日单日率',cumulative?'D0至D2累计率':'第2日单日率','D3累计数','D3累计率','D7累计数','D7累计率','15日内数','15日内率'],offerRows.map(r=>[r.month+(partial(r.month)?'*':''),num(r.n_offer),num(r.n_d0),pct(r.d0),pct(cumulative?r.d1_cumulative:r.d1_single),pct(cumulative?r.d2_cumulative:r.d2_single),num(r.n_d3_cumulative),pct(r.d3),num(r.n_d7_cumulative),pct(r.d7),num(r.n_d15_cumulative),pct(r.d15)]));
+  $('offer-denominator-note').textContent='统一分母：'+rule+'，合计'+num(sum(offerRows,'n_offer'))+'次。不按月去重用户；分子只匹配每批保留的原获额订单号。10月*截至取数时；D1/D2当前显示'+(cumulative?'累计窗口。':'各自单日。');
+  table('offer-table',['获额月份','获额事件数','当日提单事件数','当日率',cumulative?'D0至D1累计率':'第1日单日率',cumulative?'D0至D2累计率':'第2日单日率','D3累计事件数','D3累计率','D7累计事件数','D7累计率','15日内事件数','15日内率'],offerRows.map(r=>[r.month+(partial(r.month)?'*':''),num(r.n_offer),num(r.n_d0),pct(r.d0),pct(cumulative?r.d1_cumulative:r.d1_single),pct(cumulative?r.d2_cumulative:r.d2_single),num(r.n_d3_cumulative),pct(r.d3),num(r.n_d7_cumulative),pct(r.d7),num(r.n_d15_cumulative),pct(r.d15)]));
   const delay=offerRows.map(r=>({month:r.month,d0:r.n_d0/r.n_d15_cumulative,d13:(r.n_d3_cumulative-r.n_d0)/r.n_d15_cumulative,d47:r.n_d4_d7/r.n_d15_cumulative,d814:r.n_d8_d14/r.n_d15_cumulative}));
   stackedChart('apply-delay-chart',delay,[{key:'d0',name:'当日',color:C.blue},{key:'d13',name:'D1至D3',color:C.green},{key:'d47',name:'D4至D7',color:C.gold},{key:'d814',name:'D8至D14',color:C.purple}],{percent:true});
   const inc=offerRows.map(r=>({month:r.month,d03:r.d3-r.d0,d37:r.d7-r.d3,d715:r.d15-r.d7}));
-  lineChart('window-increment-chart',inc,[{key:'d03',name:'D1至D3增量',color:C.green},{key:'d37',name:'D4至D7增量',color:C.gold},{key:'d715',name:'D8至D14增量',color:C.purple}],{minWidth:580,min:0,max:.25,caption:'分母仍为获额订单；这里是增量，不是占已提单的比例'});
+  lineChart('window-increment-chart',inc,[{key:'d03',name:'D1至D3增量',color:C.green},{key:'d37',name:'D4至D7增量',color:C.gold},{key:'d715',name:'D8至D14增量',color:C.purple}],{minWidth:650,min:0,max:.28,caption:'分母为20秒去重获额事件；标签为增量占分母比例，不是已提单内占比'});
 }
 function duration(){
-  const w=D.window_summary;kpis('window-kpis',[[num(w.mean_days,2)+'天','完整可用窗口平均时长；20秒去重样本'],[pct(w.within7_share),'完整窗口在D0至D7结束'],[pct(w.overwritten_potential_share),'按下次结清规则提前终止窗口'],[num(w.still_valid_unapplied_orders),'截至快照仍有效未提单']]);
+  const w=D.window_summary;kpis('window-kpis',[[num(w.mean_days,2)+'天','完整理论窗口平均时长；20秒去重样本'],[pct(w.within7_share),'完整窗口在D0至D7结束'],[pct(w.overwritten_potential_share),'按下次结清规则提前终止窗口'],[num(w.still_valid_unapplied_orders),'截至快照仍在理论窗口且未提单']]);
   const rows=D.window_monthly,W=1160,H=85+rows.length*34,L=125,T=49,cw=60,rh=34;let body=txt(L,20,'格内为完整窗口占比；悬停查看数量。10月条件样本明显未成熟。',C.muted,12);
   for(let day=0;day<16;day++)body+=txt(L+day*cw+cw/2,T-12,String(day)+'日',C.muted,11,'middle');
   rows.forEach((r,i)=>{const y=T+i*rh;body+=txt(L-12,y+22,r.month+(r.completed_coverage<.9999?'*':''),C.muted,12,'end');
     for(let day=0;day<16;day++){const cell=D.window_heatmap.find(a=>a.month===r.month&&a.day===day),alpha=.08+Math.min(1,cell.share/.25)*.8;body+=`<g tabindex="0">${title(r.month+' 日组'+day+'：'+num(cell.orders)+'/'+num(cell.completed_orders)+'='+pct(cell.share)+'；完整覆盖'+pct(r.completed_coverage))}<rect x="${L+day*cw}" y="${y}" width="${cw-3}" height="${rh-3}" fill="${C.blue}" opacity="${alpha}"/><text x="${L+day*cw+cw/2-1}" y="${y+21}" text-anchor="middle" fill="${cell.share>.12?'#081523':C.ink}" font-size="11">${pct(cell.share,1)}</text></g>`;}});
   svg('duration-heatmap',W,H,body,'月份与有效自然日二维分布热力图');
-  table('duration-table',['获额月份','20秒去重获额数','完整窗口数','完整覆盖率','已完成均值（天）','D0至D7结束占比','15日到期占比','仍有效未提单'],rows.map(r=>[r.month,num(r.eligible_orders),num(r.completed_available_orders),pct(r.completed_coverage),num(r.completed_available_mean_days,2),pct(r.within7_share),pct(r.day15_share),num(r.still_valid_unapplied_orders)]));
+  table('duration-table',['获额月份','20秒去重获额事件数','完整窗口数','完整覆盖率','已完成均值（天）','D0至D7结束占比','15日到期占比','仍在理论窗内未提单'],rows.map(r=>[r.month,num(r.eligible_orders),num(r.completed_available_orders),pct(r.completed_coverage),num(r.completed_available_mean_days,2),pct(r.within7_share),pct(r.day15_share),num(r.still_valid_unapplied_orders)]));
   horizontalBars('expiry-results',[{name:'未提单被结清覆盖',value:w.unapplied_overwritten,color:C.blue},{name:'未提单15日到期',value:w.unapplied_expired,color:C.gold},{name:'仍有效未提单',value:w.still_valid_unapplied_orders,color:C.green}]);
   table('renewal-table',['原订单状态','下次结清20秒内新获额','延迟但24小时内获额','24小时内无证据'],D.renewal_audit.renewal_coverage.map(r=>[r.actual_end_reason,num(r.renewed_within20s_orders),num(r.renewed_later_within24h_orders),num(r.no_renewal_within24h_orders)]));
 }
@@ -210,20 +211,21 @@ function audits(){
 async function init(){
   D=await(await fetch(SLUG+'.data.json?v='+VERSION)).json();
   $('report-meta').textContent='更新时间：'+D.meta.updated_at+'｜主体：2025-07-01至'+D.meta.main_end_business_date+'取数时｜金额：MXN｜增长及T0衔接：2026-01-01至2026-10-13';
-  $('max-due').textContent=D.meta.mature_due_max;
+  document.querySelectorAll('[data-mature-due]').forEach(el=>el.textContent=D.meta.mature_due_max);
   const janSupply=D.funding_monthly.find(r=>r.month==='2026-01'),sepSupply=D.funding_monthly.find(r=>r.month==='2026-09');
-  kpis('headline-kpis',[[num(D.offer_orders),'独立循环贷获额订单；截至快照'],[pct(janSupply.cycle_share_reloan)+' → '+pct(sepSupply.cycle_share_reloan),'2026年1→9月循环贷占续贷放款'],['37.26% → 26.53%','2026年1→9月独立订单当日提单率'],['13.20% / 37.20%','8月循环贷实际盈利率／当前订单逾期率']]);
+  const janOffer=D.offer_monthly.find(r=>r.month==='2026-01'),sepOffer=D.offer_monthly.find(r=>r.month==='2026-09');
+  kpis('headline-kpis',[[num(D.offer_orders),'20秒去重循环贷获额事件；截至快照'],[pct(janSupply.cycle_share_reloan)+' → '+pct(sepSupply.cycle_share_reloan),'2026年1→9月循环贷占续贷放款'],[pct(janOffer.d0)+' → '+pct(sepOffer.d0),'2026年1→9月获额事件当日提单率'],['13.20% / 37.20%','8月循环贷实际盈利率／当前订单逾期率']]);
   const months=D.funding_monthly.map(r=>r.month);options('quality-month',months,'2026-08');options('bridge-month',[...new Set(D.t0_bridge.map(r=>r.month))].sort(),'2026-09');options('detail-month',months);options('detail-band',bands.filter(b=>D.finance_cells.some(r=>r.loan_band===b)));
-  supply();conversion();duration();drivers();quality();matrix();lifecycle();bridge();details();audits();
-  ['offer-rule','short-window-mode'].forEach(id=>$(id).addEventListener('change',conversion));
+  supply();conversion();duration();drivers();quality();matrix();lifecycle();bridge();details();
+  $('short-window-mode').addEventListener('change',conversion);
   ['quality-month','profit-metric','risk-metric'].forEach(id=>$(id).addEventListener('change',quality));
   ['matrix-type','matrix-metric'].forEach(id=>$(id).addEventListener('change',matrix));
   ['lifecycle-cohort','silence-days'].forEach(id=>$(id).addEventListener('change',lifecycle));
   $('bridge-month').addEventListener('change',bridge);['detail-month','detail-type','detail-band'].forEach(id=>$(id).addEventListener('change',details));
-  $('offer-download').addEventListener('click',()=>downloadCSV(offerRows,'循环贷获额订单月度提单率.csv'));
+  $('offer-download').addEventListener('click',()=>downloadCSV(offerRows,'循环贷20秒去重获额事件月度提单率.csv'));
   $('detail-download').addEventListener('click',()=>downloadCSV(detailRows,'循环贷经营质量筛选汇总.csv'));
   let sqlLoaded=false;$('sql-details').addEventListener('toggle',async()=>{if(!$('sql-details').open||sqlLoaded)return;try{const r=await fetch(SLUG+'.sql?v='+VERSION);if(!r.ok)throw new Error('SQL加载失败');$('sql-pre').textContent=await r.text();sqlLoaded=true;}catch(e){$('sql-pre').textContent='加载失败，请点击完整PGSQL下载链接。';}});
-  $('load-state').textContent='汇总数据已加载。可切换订单分母、月份、借款次数及收益风险口径；详细数据最多预览30行。';
+  $('load-state').textContent='汇总数据已加载。循环贷获额事件统一20秒去重；每个统计模块下方可展开指标与标签口径；详细数据最多预览30行。';
   window.reportReady=true;window.reportCounts={charts:document.querySelectorAll('.chart svg').length,detailPreview:Math.min(30,detailRows.length),details:document.querySelectorAll('details').length};
 }
 init().catch(e=>{$('load-state').textContent='报告数据加载异常：'+e.message;$('load-state').classList.add('error');window.reportError=e.message;});
