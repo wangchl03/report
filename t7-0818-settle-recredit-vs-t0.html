@@ -243,6 +243,20 @@ pre.sql{overflow:auto;max-height:720px;font-size:11.5px;line-height:1.5;color:#d
     </tbody>
   </table></div>
   </details>
+  <details class="code">
+    <summary>再次流失判定</summary>
+    <p class="desc">上一表是指标定义。再次流失按下面顺序判定：前四步决定能否进入分母，第五步决定是否记为流失。获额当天是第 0 天，第 7 天仍算在 7 日内。</p>
+    <div class="table def"><table>
+      <tbody>
+        <tr><th>1. 圈人</th><td>t7recalllist_0818_0819，recall_date = 2026-08-18，churn_user_id 去重。名单只用来圈人，名单上的分数不参与判定。</td></tr>
+        <tr><th>2. 首次放款已结清</th><td>召回后第一笔成功放款，loan_status_code = 7，且为干净结清。未结清、或结清时点前仍有状态 5、状态 8、更晚才结清的订单，不进入。</td></tr>
+        <tr><th>3. 结清当天再获额</th><td>获额日等于结清日，vir_time ≥ repaid_time，loan_type_code = 2，is_pass1 = 1，recycle_type = 3。20 秒去重后，当天留最后一笔。获额早于结清，或不是结清当天获额的，不进入。</td></tr>
+        <tr><th>4. 观察窗已满</th><td>获额日 ≤ 数据日 − 7 天。7 日窗口还没走完的，不进入分母，也不判定流失。</td></tr>
+        <tr><th>5. 记为再次流失</th><td>从这笔获额的 vir_time 起，没有第一次提单，或第一次提单 apply_d ≥ 8。这项就是 7 日内未提单。apply_d ∈ [0, 7] 的第一次提单不算流失，不要求该笔已经放款。</td></tr>
+        <tr><th>不参与判定</th><td>kabybmerge410fpd7cre 只挂在这笔获额订单上，用于流失之后的资质对照，不作为流失条件。9 月普通 T0 用同一套结清、获额和提单规则，对照的是获额人日。</td></tr>
+      </tbody>
+    </table></div>
+  </details>
 </section>
 
 <section id="sql">
