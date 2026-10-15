@@ -1,5 +1,5 @@
 'use strict';
-const SLUG='cycle-loan-operating-analysis',VERSION='b816c320794a';
+const SLUG='cycle-loan-operating-analysis',VERSION='f313c95b30bb';
 const C={blue:'#77b8ff',green:'#49d5ae',gold:'#ffca7d',red:'#ff939d',purple:'#c5afff',muted:'#a9bed0',ink:'#e8f2fa',line:'#31506a',dark:'#091b2c'};
 const typeName={cycle:'循环贷',settled_reloan:'结清续贷',firstloan:'首贷',unknown:'标签未知'};
 const typeColor={cycle:C.blue,settled_reloan:C.green,firstloan:C.gold,unknown:'#a7a8b1'};
@@ -44,6 +44,12 @@ function lineChart(id,rows,series,options={}){
     });
     const p=pts.at(-1);lastLabels.push({y:y(p.v),text:s.name+' '+(options.valueFormat?options.valueFormat(p.v):pct(p.v)),color:s.color});
   });
+  (options.pointLinks??[]).forEach(a=>{
+    const i=rows.findIndex(r=>r.month===a.month);if(i<0)return;
+    const values=series.map(s=>rows[i][s.key]).filter(v=>v!==null&&v!==undefined);if(!values.length)return;
+    const xx=Math.max(L,Math.min(W-R-121,x(i)-58)),yy=y(values.reduce((n,v)=>n+v,0)/values.length)-13;
+    body+=`<a class="chart-note-link" href="${esc(a.href)}" target="_blank" rel="noopener noreferrer" aria-label="${esc(a.ariaLabel)}">${title(a.ariaLabel)}<rect x="${xx}" y="${yy}" width="116" height="27" rx="5" fill="${C.dark}" stroke="${C.blue}"/>${txt(xx+58,yy+18,a.text,C.blue,12,'middle')}</a>`;
+  });
   if(options.endLabels!==false){
     lastLabels.sort((a,b)=>a.y-b.y);let previous=T-20;
     lastLabels.forEach(l=>{l.yy=Math.max(l.y,previous+22,T+5);previous=l.yy;});
@@ -77,7 +83,7 @@ function horizontalBars(id,items,{suffix='',percent=false,Wmin=580}={}){
 }
 function supply(){
   stackedChart('funding-volume',D.funding_monthly,[{key:'cycle_funded_orders',name:'循环贷',color:C.blue},{key:'settled_funded_orders',name:'结清续贷',color:C.green},{key:'firstloan_funded_orders',name:'首贷',color:C.gold},{key:'unknown_funded_orders',name:'标签未知',color:'#a7a8b1'}],{minWidth:1050,height:400,barMaxWidth:50,segmentLabelKeys:['cycle_funded_orders','settled_funded_orders','firstloan_funded_orders'],showAllLabels:true,totalKey:'all_funded_orders',title:'全部成功放款数量与结构（含首贷）；柱内为各类型订单数，顶部为全部放款订单数'});
-  lineChart('funding-shares',D.funding_monthly,[{key:'cycle_share_reloan',name:'续贷订单占比',color:C.blue,labelSide:'below'},{key:'cycle_amount_share_reloan',name:'续贷本金占比',color:C.gold,labelSide:'above'}],{minWidth:1050,height:420,endLabels:false,pointLabels:true,caption:'分母均为成功放款续贷，不含首贷；数据标签为各月占比，10月*为部分月份',min:.30,max:.80});
+  lineChart('funding-shares',D.funding_monthly,[{key:'cycle_share_reloan',name:'续贷订单占比',color:C.blue,labelSide:'below'},{key:'cycle_amount_share_reloan',name:'续贷本金占比',color:C.gold,labelSide:'above'}],{minWidth:1050,height:420,endLabels:false,pointLabels:true,caption:'分母均为成功放款续贷，不含首贷；数据标签为各月占比，10月*为部分月份',min:.30,max:.80,pointLinks:[{month:'2026-03',text:'查看3月分析 ↗',href:'cycle-loan-march-2026-share-analysis.html?v='+VERSION,ariaLabel:'查看2026年3月订单与本金占比变化分析（新标签页）'}]});
   table('funding-table',['放款月份','续贷放款总数','循环贷数','结清续贷数','标签未知续贷数','循环贷订单占比','循环贷本金占比'],D.funding_monthly.map(r=>[r.month+(partial(r.month)?'*':''),num(r.reloan_funded_orders),num(r.cycle_funded_orders),num(r.settled_funded_orders),num(r.unknown_reloan_orders),pct(r.cycle_share_reloan),pct(r.cycle_amount_share_reloan)]));
   const seq=D.funded_sequence.filter(r=>r.order_type==='cycle'),months=[...new Set(seq.map(r=>r.month))].sort();
   const rows=months.map(month=>{const rs=seq.filter(r=>r.month===month),n=sum(rs,'funded_orders');return {month,...Object.fromEntries(bands.map(b=>[b,rs.find(r=>r.loan_band===b)?.funded_orders/n||0]))};});

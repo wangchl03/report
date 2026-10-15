@@ -1,4 +1,4 @@
-<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>循环贷经营分析报告｜供给、转化、收益风险与用户生命周期</title><meta name="description" content="基于2025年7月至2026年10月循环贷订单统计，分析获额、提单、有效时长、放款结构、成熟订单盈利风险和用户生命周期。"><link rel="stylesheet" href="cycle-loan-operating-analysis.css?v=b816c320794a"></head><body>
+<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>循环贷经营分析报告｜供给、转化、收益风险与用户生命周期</title><meta name="description" content="基于2025年7月至2026年10月循环贷订单统计，分析获额、提单、有效时长、放款结构、成熟订单盈利风险和用户生命周期。"><link rel="stylesheet" href="cycle-loan-operating-analysis.css?v=f313c95b30bb"></head><body>
 <header><div class="eyebrow">循环贷经营专题 · 订单维度</div><h1>循环贷经营分析报告</h1><p class="lead">规模扩大，但获额转化与收益风险效率需要分别管理</p><div class="meta" id="report-meta">正在读取报告快照…</div></header>
 <nav aria-label="报告目录"><a href="#summary">核心结论</a><a href="#definitions">统计口径</a><a href="#supply">供给与放款</a><a href="#conversion">提单转化</a><a href="#window">有效时长</a><a href="#drivers">增长来源</a><a href="#quality">收益风险</a><a href="#lifecycle">生命周期</a><a href="#bridge">T0衔接</a><a href="#actions">经营动作</a><a href="#detail">完整数据</a><a href="#appendix">复现代码</a></nav>
 <main><div id="load-state" class="status" role="status">正在加载已核验的汇总数据…</div>
@@ -75,4 +75,4 @@ T0衔接 = 单独复用严格T0事件母表，不替代循环贷获额订单分�
   --sql cycle-loan-operating-analysis.sql \
   --output-dir ./requery</pre><p>原始订单表是当前快照。未来重新查询可能因新增回款、当前状态变化而与本版不同，不能仅靠日期条件还原历史时刻的状态8。已保存的聚合存档是本报告数字精确复现的基准。报告为静态快照，不自动每日刷新。</p></div></details>
 <details><summary>来源、分母与数据质量核验｜默认折叠</summary><div class="detail-body"><div id="audit-table" class="table-wrap"></div><p class="note">来源为wangchuanliang订单、获额、循环贷类型、分期和还款流水表。各模块只读执行并独立对账；类型冲突、重复分期、订单号跨用户、提单早于获额等核验结果随存档保留。</p></div></details></section>
-</main><footer>循环贷经营分析 · 公开页面仅展示聚合指标 · 用户和订单明细不上传</footer><script src="cycle-loan-operating-analysis.js?v=b816c320794a" defer></script></body></html>
+</main><footer>循环贷经营分析 · 公开页面仅展示聚合指标 · 用户和订单明细不上传</footer><script src="cycle-loan-operating-analysis.js?v=f313c95b30bb" defer></script></body></html>
