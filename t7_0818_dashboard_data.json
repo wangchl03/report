@@ -1,18 +1,18 @@
 {
   "kpi": {
     "n_user": 11585,
-    "n_apply": 3306,
-    "apply_rate": 28.54,
-    "n_apply_week": 392,
-    "n_first_week": 93,
-    "n_remit": 6330,
-    "n_remit_week": 376,
-    "n_due": 3848,
-    "n_due_od": 1347,
-    "profit_pct": 13.17,
-    "overdue_pct": 35.01,
+    "n_apply": 3307,
+    "apply_rate": 28.55,
+    "n_apply_week": 394,
+    "n_first_week": 94,
+    "n_remit": 6331,
+    "n_remit_week": 377,
+    "n_due": 3973,
+    "n_due_od": 1380,
+    "profit_pct": 12.91,
+    "overdue_pct": 34.73,
     "week_start": "2026-10-12",
-    "as_of": "2026-10-15",
+    "as_of": "2026-10-16",
     "recall_date": "2026-08-18",
     "remit_day": "o.remit_date::date"
   },
@@ -370,6 +370,12 @@
       "n": 21,
       "cum": 3306,
       "rate": 28.54
+    },
+    {
+      "d": "2026-10-16",
+      "n": 1,
+      "cum": 3307,
+      "rate": 28.55
     }
   ],
   "apply_daily": [
@@ -667,6 +673,11 @@
       "d": "2026-10-15",
       "n_order": 102,
       "n_user": 97
+    },
+    {
+      "d": "2026-10-16",
+      "n_order": 2,
+      "n_user": 2
     }
   ],
   "remit_daily": [
@@ -964,6 +975,11 @@
       "d": "2026-10-15",
       "n": 86,
       "cum": 6330
+    },
+    {
+      "d": "2026-10-16",
+      "n": 1,
+      "cum": 6331
     }
   ],
   "due_daily": [
@@ -1549,6 +1565,17 @@
       "overdue_pct": 51.65,
       "cum_profit_pct": 13.17,
       "cum_overdue_pct": 35.01
+    },
+    {
+      "d": "2026-10-16",
+      "n_due": 125,
+      "n_od": 33,
+      "repaid": 561479.0,
+      "remit": 529080.0,
+      "profit_pct": 6.12,
+      "overdue_pct": 26.4,
+      "cum_profit_pct": 12.91,
+      "cum_overdue_pct": 34.73
     }
   ],
   "strat": [
@@ -1579,8 +1606,8 @@
     {
       "strat": "10d+10r",
       "n_user": 339,
-      "n_apply": 74,
-      "pct": 21.83
+      "n_apply": 75,
+      "pct": 22.12
     },
     {
       "strat": "40d",
@@ -1623,8 +1650,8 @@
     {
       "bin": "91-180d",
       "n_user": 1890,
-      "n_apply": 326,
-      "pct": 17.25
+      "n_apply": 327,
+      "pct": 17.3
     },
     {
       "bin": "180d+",

@@ -4,19 +4,19 @@
     "n_vir": 1022,
     "n_pass": 922,
     "n_apply": 712,
-    "n_apply_order": 1180,
+    "n_apply_order": 1182,
     "pass_rate": 90.22,
     "apply_rate": 77.22,
-    "n_apply_week": 122,
+    "n_apply_week": 123,
     "n_first_week": 40,
-    "n_remit": 1331,
-    "n_remit_week": 116,
-    "n_due": 576,
-    "n_due_od": 173,
-    "profit_pct": 23.49,
-    "overdue_pct": 30.03,
+    "n_remit": 1332,
+    "n_remit_week": 117,
+    "n_due": 605,
+    "n_due_od": 174,
+    "profit_pct": 23.74,
+    "overdue_pct": 28.76,
     "week_start": "2026-10-12",
-    "as_of": "2026-10-15",
+    "as_of": "2026-10-16",
     "recall_date": "2026-09-10",
     "remit_day": "o.remit_date::date"
   },
@@ -308,6 +308,14 @@
       "cum": 712,
       "cum_pass": 922,
       "rate": 77.22
+    },
+    {
+      "d": "2026-10-16",
+      "n": 0,
+      "n_pass": 0,
+      "cum": 712,
+      "cum_pass": 922,
+      "rate": 77.22
     }
   ],
   "apply_daily": [
@@ -490,6 +498,11 @@
       "d": "2026-10-15",
       "n_order": 22,
       "n_user": 22
+    },
+    {
+      "d": "2026-10-16",
+      "n_order": 2,
+      "n_user": 2
     }
   ],
   "remit_daily": [
@@ -672,6 +685,11 @@
       "d": "2026-10-15",
       "n": 20,
       "cum": 1331
+    },
+    {
+      "d": "2026-10-16",
+      "n": 1,
+      "cum": 1332
     }
   ],
   "due_daily": [
@@ -993,6 +1011,17 @@
       "overdue_pct": 43.48,
       "cum_profit_pct": 23.49,
       "cum_overdue_pct": 30.03
+    },
+    {
+      "d": "2026-10-16",
+      "n_due": 29,
+      "n_od": 1,
+      "repaid": 100426.0,
+      "remit": 77785.0,
+      "profit_pct": 29.11,
+      "overdue_pct": 3.45,
+      "cum_profit_pct": 23.74,
+      "cum_overdue_pct": 28.76
     }
   ],
   "strat": [
