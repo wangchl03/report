@@ -41,7 +41,7 @@ details.code pre{overflow:auto;max-height:520px;font-size:11px;line-height:1.45;
 <div class="top">
   <div class="kicker">DASHBOARD · T7+ RECALL · 2026-08-18</div>
   <h1>流失 7 天以上召回 · 看板</h1>
-  <p class="meta">名单 11,585 人（仅 recall_date=2026-08-18，不含同表 8/19 批次） · 统计至 2026-10-20 · 本周 2026-10-19 起（周一）</p>
+  <p class="meta">名单 11,585 人 · 统计至 2026-10-20 · 本周 2026-10-19 起（周一）</p>
 </div>
 <section class="kpis">
   <article class="card"><div class="label">提单率</div><div class="num a">29.67%</div><div class="sub">3,437 / 11,585 · 8/18至今去重用户</div></article>
@@ -1002,7 +1002,7 @@ def write_html(data, batch):
     RECALL_DATE = batch[&quot;recall_date&quot;]
     md = md_label(RECALL_DATE)
     list_note = (
-        &quot;（仅 recall_date=2026-08-18，不含同表 8/19 批次）&quot;
+        &quot;&quot;
         if batch.get(&quot;filter_recall_date&quot;)
         else &quot;&quot;
     )
@@ -1322,7 +1322,7 @@ def panel_body(data, batch, pfx):
     md = md_label(batch[&quot;recall_date&quot;])
     rd = batch[&quot;recall_date&quot;]
     list_note = (
-        &quot;（仅 recall_date=2026-08-18，不含同表 8/19 批次）&quot;
+        &quot;&quot;
         if batch.get(&quot;filter_recall_date&quot;)
         else &quot;&quot;
     )
@@ -1694,7 +1694,7 @@ details.code pre{overflow:auto;max-height:520px;font-size:11px;line-height:1.45;
 &lt;div class=&quot;top&quot;&gt;
   &lt;div class=&quot;kicker&quot;&gt;DASHBOARD · T7+ RECALL · 2026-08-18&lt;/div&gt;
   &lt;h1&gt;流失 7 天以上召回 · 看板&lt;/h1&gt;
-  &lt;p class=&quot;meta&quot;&gt;名单 11,585 人（仅 recall_date=2026-08-18，不含同表 8/19 批次） · 统计至 2026-10-20 · 本周 2026-10-19 起（周一）&lt;/p&gt;
+  &lt;p class=&quot;meta&quot;&gt;名单 11,585 人 · 统计至 2026-10-20 · 本周 2026-10-19 起（周一）&lt;/p&gt;
 &lt;/div&gt;
 &lt;section class=&quot;kpis&quot;&gt;
   &lt;article class=&quot;card&quot;&gt;&lt;div class=&quot;label&quot;&gt;提单率&lt;/div&gt;&lt;div class=&quot;num a&quot;&gt;29.67%&lt;/div&gt;&lt;div class=&quot;sub&quot;&gt;3,437 / 11,585 · 8/18至今去重用户&lt;/div&gt;&lt;/article&gt;

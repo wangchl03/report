@@ -716,11 +716,7 @@ def write_html(data, batch):
     RECALL_DATE = batch["recall_date"]
     md = md_label(RECALL_DATE)
     due_note = (f"到期 {k['n_due']:,} 单" if k['n_due'] else "尚无到期订单") if batch['slug'] in ('1010','1016') else "到期订单"
-    list_note = (
-        "（仅 recall_date=2026-08-18，不含同表 8/19 批次）"
-        if batch.get("filter_recall_date")
-        else ""
-    )
+    list_note = ""
     HTML_PATH = HERE / f"t7-{batch['slug']}.html"
     json_name = f"t7_{batch['slug']}_dashboard_data.json"
 
@@ -1039,11 +1035,7 @@ def panel_body(data, batch, pfx):
     md = md_label(batch["recall_date"])
     rd = batch["recall_date"]
     due_note = (f"到期 {k['n_due']:,} 单" if k['n_due'] else "尚无到期订单") if batch['slug'] in ('1010','1016') else "到期订单"
-    list_note = (
-        "（仅 recall_date=2026-08-18，不含同表 8/19 批次）"
-        if batch.get("filter_recall_date")
-        else ""
-    )
+    list_note = ""
     return f"""
 <div class="top">
   <div class="kicker">DASHBOARD · T7+ RECALL · {rd}</div>
