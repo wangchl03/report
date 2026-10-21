@@ -1185,6 +1185,7 @@ new Chart(document.getElementById('__P__c10'), {type:'bar', data:{labels:D.churn
 
 
 def write_hub(items):
+    items = sorted(items, key=lambda item: (0 if item[0].get("cumulative") else 1, item[0]["recall_date"]))
     payload = {batch["slug"]: data for batch, data in items}
     btns = []
     panels = []
