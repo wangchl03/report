@@ -1,0 +1,660 @@
+<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>核心利润客群：用户生命周期特征分析</title><style>*{box-sizing:border-box}:root{color-scheme:dark;--bg:#061b2a;--panel:#0b2a40;--paper:#082235;--line:#21465a;--ink:#d9e7ef;--muted:#9bb5c7;--cyan:#43c7e7;--green:#64dcae;--amber:#ffc26b}body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.8 -apple-system,BlinkMacSystemFont,"PingFang SC",sans-serif}main{max-width:1320px;margin:auto;padding:34px 24px 60px}h1{font-size:33px;line-height:1.4;margin:10px 0 14px;text-align:center;color:#f3faff}h2{font-size:23px;line-height:1.5;margin:0 0 14px;color:var(--cyan)}h3{font-size:18px;margin:18px 0 8px;color:var(--amber)}p{margin:10px 0}section{padding:26px;margin:22px 0;border:1px solid var(--line);border-radius:12px;background:var(--paper);scroll-margin-top:20px}nav{display:flex;justify-content:center;text-align:center;gap:20px;flex-wrap:wrap;margin:20px 0;font-size:14px}a,summary{color:var(--cyan);text-decoration:none}a:hover{text-decoration:underline}.note,.chart-note,.muted{font-size:14px;color:var(--muted)}.conclusion{padding:12px 16px;border-left:3px solid var(--cyan);background:#123146;margin:14px 0}.cards{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px;margin:20px 0}.card{padding:16px;background:var(--panel);border:1px solid var(--line);border-top:3px solid var(--cyan);border-radius:8px}.card h3{font-size:14px;line-height:1.4;margin:0 0 3px;color:var(--ink)}.card strong{display:block;font-size:29px;line-height:1.5;color:var(--green);font-variant-numeric:tabular-nums}.card small{display:block;font-size:12px;color:var(--muted);margin-top:3px}.profiles{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:15px}.profile{padding:18px;border:1px solid var(--line);border-radius:9px;background:var(--panel)}.profile h3{margin-top:0}.tag{display:inline-block;border:1px solid var(--line);border-radius:5px;font-size:13px;padding:3px 8px;margin:3px;color:var(--green)}.figure svg{display:block;width:100%;height:auto}.scroll{overflow:auto}table{width:100%;border-collapse:collapse;font-size:13px;margin:14px 0;font-variant-numeric:tabular-nums}th,td{padding:10px 12px;border-bottom:1px solid var(--line);text-align:right;vertical-align:top}th{white-space:nowrap;background:#123b51;color:var(--cyan)}th:first-child,td:first-child{text-align:left}tbody tr:nth-child(even){background:var(--panel)}.data-details{border-top:1px solid var(--line);padding:13px 0;margin-top:10px}summary{cursor:pointer;font-size:14px}.definition{border-left:2px solid #3e6a82;padding-left:14px}.definition b{color:var(--ink)}pre{overflow:auto;background:#041725;border:1px solid var(--line);border-radius:8px;padding:18px;max-height:600px}code{font:12px/1.65 ui-monospace,Menlo,monospace;white-space:pre}select{background:var(--panel);color:var(--ink);font:inherit;padding:7px 12px;border:1px solid var(--line);border-radius:6px}.interactive{margin:14px 0}.good{color:var(--green)}.bad{color:#ff7a83}#appendix{padding:18px 24px}#appendix h2{font-size:20px}.center{text-align:center}a:focus-visible,summary:focus-visible,select:focus-visible{outline:2px solid var(--cyan);outline-offset:4px}@media(max-width:1000px){.cards{grid-template-columns:repeat(2,minmax(0,1fr))}.profiles{grid-template-columns:1fr}}@media(max-width:650px){main{padding:20px 12px}section{padding:20px 15px}h1{font-size:26px}.cards{grid-template-columns:1fr}.figure{overflow:auto}.figure svg{min-width:720px}table{font-size:12px}}@media print{nav,.interactive,#appendix{display:none}section{break-inside:auto}.figure{break-inside:avoid}}</style></head><body><main><header><h1>核心利润客群：用户生命周期特征分析</h1><p class="muted center">生成时间 · 2026年10月21日</p></header><nav><a href="#core">核心判断</a><a href="#profiles">客群特征</a><a href="#history">逾期与结清</a><a href="#retention">结清后提单</a><a href="#usage">额度使用率</a><a href="#latest">当前与获额</a><a href="#definitions">指标口径</a><a href="#appendix">复原报告代码</a></nav><section id="core"><h2>核心判断</h2><p class="conclusion">历史利润集中于多次借款用户：4,747人、占全部用户1.22%，贡献公司约80%的净利润。覆盖90%的6,144人中，借款11次及以上用户贡献公司66.31%的净利润；多次借款、高历史贡献与逾期记录可以同时存在。</p><div class="cards"><div class="card"><h3>覆盖80%净利润的最少用户</h3><strong>4,747人</strong><small>占全部统计用户1.22%</small></div><div class="card"><h3>覆盖90%净利润的最少用户</h3><strong>6,144人</strong><small>占全部统计用户1.58%</small></div><div class="card"><h3>核心90%中当前状态8用户</h3><strong>57.44%</strong><small>3,529 / 6,144人；全部保留</small></div><div class="card"><h3>核心90%中曾分期逾期后结清</h3><strong>55.24%</strong><small>3,394 / 6,144人</small></div></div><p>核心用户中，66.22%曾在完全结清后的7天内未再提单；按结清事件统计，该比例为26.33%。历史发生过提单中断，不代表用户之后一直没有回来。</p><p class="note">利润窗口：2025-01-01—2026-09-30成功放款订单，按当前还款金额减放款本金。公司净利润包含负贡献抵消；覆盖90%净利润不等于覆盖90%盈利用户的正利润。所有状态8用户保留，本报告只描述客群，不筛选运营可触达资格。</p><details class="data-details"><summary>展开50%—90%利润覆盖人数及金额</summary><div class="scroll"><table><thead><tr><th>目标净利润覆盖</th><th>最少用户数</th><th>占全部用户</th><th>名单实际利润</th><th>实际覆盖</th><th>其中当前状态8占比</th></tr></thead><tbody><tr><td>50%</td><td>1,847</td><td>0.48%</td><td>143,450,985.72</td><td>50.00%</td><td>56.31%</td></tr><tr><td>60%</td><td>2,627</td><td>0.68%</td><td>172,142,928.56</td><td>60.00%</td><td>57.52%</td></tr><tr><td>70%</td><td>3,586</td><td>0.92%</td><td>200,837,816.42</td><td>70.01%</td><td>57.86%</td></tr><tr><td>80%</td><td>4,747</td><td>1.22%</td><td>229,521,815.24</td><td>80.01%</td><td>57.36%</td></tr><tr><td>90%</td><td>6,144</td><td>1.58%</td><td>258,195,670.34</td><td>90.00%</td><td>57.44%</td></tr></tbody></table></div></details></section><section id="profiles"><h2>三类核心用户，借款习惯有什么不同</h2><p class="note">以下三类互斥，合计为历史贡献前90%名单；不代表全部用户中该借款次数的所有人。按生命周期成功借款次数划分，状态8不参与分组。</p><div class="profiles"><article class="profile"><h3>借款11次及以上</h3><p><b>3,746人</b> · 贡献公司净利润<b>66.31%</b></p><div class="tag">借款次数中位数 15.0次</div><div class="tag">单笔放款 7,793.83</div><p>用户典型借款间隔：<b>10.77天</b>；曾有循环贷放款的用户占<b>94.13%</b>。</p><p>完全结清后曾7天未再提单：<b>64.64%</b>（2,212 / 3,422人）；当前状态8占<b>64.20%</b>。</p></article><article class="profile"><h3>借款6—10次</h3><p><b>2,008人</b> · 贡献公司净利润<b>20.34%</b></p><div class="tag">借款次数中位数 8.0次</div><div class="tag">单笔放款 8,576.00</div><p>用户典型借款间隔：<b>13.07天</b>；曾有循环贷放款的用户占<b>87.45%</b>。</p><p>完全结清后曾7天未再提单：<b>67.05%</b>（1,225 / 1,827人）；当前状态8占<b>52.54%</b>。</p></article><article class="profile"><h3>借款5次及以下</h3><p><b>390人</b> · 贡献公司净利润<b>3.35%</b></p><div class="tag">借款次数中位数 5.0次</div><div class="tag">单笔放款 10,121.51</div><p>用户典型借款间隔：<b>14.51天</b>；曾有循环贷放款的用户占<b>77.18%</b>。</p><p>完全结清后曾7天未再提单：<b>76.86%</b>（279 / 363人）；当前状态8占<b>17.69%</b>。</p></article></div><p class="conclusion">借款11次及以上组的典型借款间隔为10.77天，完全结清后再提单的典型间隔为1.00天。该组7天未再提单事件率为24.11%，低于6—10次组的31.01%和5次及以下组的44.96%，复借更快。</p><p class="conclusion">覆盖80%净利润的用户，平均生命周期借款14.56次，全体用户为2.73次；统计期单笔平均放款8,477.45，全体为2,619.99。这批用户同时具有借款次数多、单笔金额较高的特征。</p><details class="data-details"><summary>展开核心80%与全部用户的基础特征对比</summary><div class="scroll"><table><thead><tr><th>指标</th><th>全部统计用户</th><th>覆盖80%最小名单</th></tr></thead><tbody><tr><td>用户数</td><td>388,031</td><td>4,747</td></tr><tr><td>平均生命周期成功借款次数</td><td>2.73</td><td>14.56</td></tr><tr><td>借款至少6次用户占比</td><td>10.94%</td><td>95.66%</td></tr><tr><td>统计期单笔平均放款金额</td><td>2,619.99</td><td>8,477.45</td></tr><tr><td>统计期订单当前已结清占比</td><td>64.53%</td><td>92.30%</td></tr><tr><td>统计期续贷订单占比（非循环贷口径）</td><td>61.87%</td><td>93.22%</td></tr></tbody></table></div></details><div class="figure"><svg role="img" aria-label="各类用户典型借款与结清后再提单间隔" viewBox="0 0 1120 321" xmlns="http://www.w3.org/2000/svg"><title>各类用户典型借款与结清后再提单间隔</title><rect x="270" y="13" width="13" height="13" rx="3" fill="#43c7e7"/><text x="290" y="25" fill="#d9e7ef" font-size="14">相邻成功借款间隔</text><rect x="515" y="13" width="13" height="13" rx="3" fill="#64dcae"/><text x="535" y="25" fill="#d9e7ef" font-size="14">完全结清后再提单间隔</text><text x="252" y="80" fill="#d9e7ef" text-anchor="end" font-size="15">借款11次及以上</text><rect x="270" y="62" width="470.23" height="18" rx="3" fill="#43c7e7"/><text x="749.23" y="76" fill="#43c7e7" font-size="14">10.77天</text><rect x="270" y="88" width="43.80" height="18" rx="3" fill="#64dcae"/><text x="322.80" y="102" fill="#64dcae" font-size="14">1.00天</text><text x="252" y="158" fill="#d9e7ef" text-anchor="end" font-size="15">借款6—10次</text><rect x="270" y="140" width="570.90" height="18" rx="3" fill="#43c7e7"/><text x="849.90" y="154" fill="#43c7e7" font-size="14">13.07天</text><rect x="270" y="166" width="71.88" height="18" rx="3" fill="#64dcae"/><text x="350.88" y="180" fill="#64dcae" font-size="14">1.65天</text><text x="252" y="236" fill="#d9e7ef" text-anchor="end" font-size="15">借款5次及以下</text><rect x="270" y="218" width="633.93" height="18" rx="3" fill="#43c7e7"/><text x="912.93" y="232" fill="#43c7e7" font-size="14">14.51天</text><rect x="270" y="244" width="87.75" height="18" rx="3" fill="#64dcae"/><text x="366.75" y="258" fill="#64dcae" font-size="14">2.01天</text></svg></div><p class="chart-note">先计算每位用户的历史间隔中位数，再取客群用户中位数。结清后间隔仅使用已观察到下次提单的事件，未再提单不填0；两个指标衡量不同阶段，不能直接相减。</p><details class="data-details"><summary>展开客群完整特征对比表</summary><div class="scroll"><table><thead><tr><th>指标</th><th>借款11次及以上</th><th>借款6—10次</th><th>借款5次及以下</th></tr></thead><tbody><tr><td>用户数</td><td>3,746</td><td>2,008</td><td>390</td></tr><tr><td>公司净利润贡献占比</td><td>66.31%</td><td>20.34%</td><td>3.35%</td></tr><tr><td>生命周期借款次数中位数</td><td>15.0</td><td>8.0</td><td>5.0</td></tr><tr><td>单笔平均放款金额（统计期）</td><td>7,793.83</td><td>8,576.00</td><td>10,121.51</td></tr><tr><td>相邻借款间隔：用户中位数的中位数/天</td><td>10.77</td><td>13.07</td><td>14.51</td></tr><tr><td>完全结清至下次提单：用户中位数的中位数/天</td><td>1.00</td><td>1.65</td><td>2.01</td></tr><tr><td>曾整笔提前结清用户占比</td><td>99.60%</td><td>97.91%</td><td>92.05%</td></tr><tr><td>统计期订单当前已结清占比</td><td>92.39%</td><td>89.50%</td><td>95.00%</td></tr><tr><td>曾循环贷成功放款用户占比</td><td>94.13%</td><td>87.45%</td><td>77.18%</td></tr><tr><td>全部历史放款订单中循环贷占比</td><td>60.35%</td><td>48.84%</td><td>39.58%</td></tr><tr><td>最近一次放款是循环贷的用户占比</td><td>61.91%</td><td>53.34%</td><td>46.41%</td></tr><tr><td>最近一次获额是循环贷的用户占比</td><td>29.18%</td><td>18.03%</td><td>8.46%</td></tr></tbody></table></div></details></section><section id="history"><h2>历史分期逾期后结清，与当前逾期分开看</h2><div class="figure"><svg role="img" aria-label="历史分期逾期后结清与当前状态8用户占比" viewBox="0 0 1120 321" xmlns="http://www.w3.org/2000/svg"><title>历史分期逾期后结清与当前状态8用户占比</title><rect x="270" y="13" width="13" height="13" rx="3" fill="#64dcae"/><text x="290" y="25" fill="#d9e7ef" font-size="14">曾分期逾期后整笔结清</text><rect x="515" y="13" width="13" height="13" rx="3" fill="#ff7a83"/><text x="535" y="25" fill="#d9e7ef" font-size="14">当前有状态8订单</text><text x="252" y="80" fill="#d9e7ef" text-anchor="end" font-size="15">借款11次及以上</text><rect x="270" y="62" width="369.50" height="18" rx="3" fill="#64dcae"/><text x="648.50" y="76" fill="#64dcae" font-size="14">54.64%</text><rect x="270" y="88" width="434.13" height="18" rx="3" fill="#ff7a83"/><text x="713.13" y="102" fill="#ff7a83" font-size="14">64.20%</text><text x="252" y="158" fill="#d9e7ef" text-anchor="end" font-size="15">借款6—10次</text><rect x="270" y="140" width="380.86" height="18" rx="3" fill="#64dcae"/><text x="659.86" y="154" fill="#64dcae" font-size="14">56.32%</text><rect x="270" y="166" width="355.27" height="18" rx="3" fill="#ff7a83"/><text x="634.27" y="180" fill="#ff7a83" font-size="14">52.54%</text><text x="252" y="236" fill="#d9e7ef" text-anchor="end" font-size="15">借款5次及以下</text><rect x="270" y="218" width="374.51" height="18" rx="3" fill="#64dcae"/><text x="653.51" y="232" fill="#64dcae" font-size="14">55.38%</text><rect x="270" y="244" width="119.63" height="18" rx="3" fill="#ff7a83"/><text x="398.63" y="258" fill="#ff7a83" font-size="14">17.69%</text></svg></div><p class="conclusion">历史核心90%名单中，3,394人曾有分期逾期后整笔结清，3,529人当前仍持有状态8订单。两个标记可以重叠：曾经结清过逾期贷款的用户，也可能在后续订单再次逾期。</p><p class="chart-note">历史标记取全生命周期分期记录：任一期overdue_days_period&gt;0，或实际分期还款日期晚于分期应还日期，且该整笔贷款后来已结清。两组柱图分母均为该客群全部用户；当前状态8来自特征快照。</p><details class="data-details"><summary>展开互斥逾期特征分类及明细统计</summary><div class="scroll"><table><thead><tr><th>特征分类</th><th>用户数</th><th>占核心90%名单</th><th>历史利润</th><th>占公司净利润</th></tr></thead><tbody><tr><td>当前有状态8订单</td><td>3,529</td><td>57.44%</td><td>145,163,840.96</td><td>50.60%</td></tr><tr><td>当前无状态8，曾分期逾期后结清</td><td>1,527</td><td>24.85%</td><td>66,095,123.70</td><td>23.04%</td></tr><tr><td>当前无状态8，未识别到分期逾期后结清</td><td>1,088</td><td>17.71%</td><td>46,936,705.68</td><td>16.36%</td></tr></tbody></table></div><div class="scroll"><table><thead><tr><th>客群</th><th>曾逾期后结清用户/全组用户</th><th>曾逾期后结清订单/历史已结清订单</th></tr></thead><tbody><tr><td>借款11次及以上</td><td>2,047 / 3,746</td><td>5,456 / 58,425（9.34%）</td></tr><tr><td>借款6—10次</td><td>1,131 / 2,008</td><td>2,245 / 14,223（15.78%）</td></tr><tr><td>借款5次及以下</td><td>216 / 390</td><td>360 / 1,600（22.50%）</td></tr></tbody></table></div></details></section><section id="retention"><h2>完全结清后，是否曾5天或7天未再提单</h2><div class="figure"><svg role="img" aria-label="曾发生完全结清后5天及7天未提单的用户占比" viewBox="0 0 1120 321" xmlns="http://www.w3.org/2000/svg"><title>曾发生完全结清后5天及7天未提单的用户占比</title><rect x="270" y="13" width="13" height="13" rx="3" fill="#43c7e7"/><text x="290" y="25" fill="#d9e7ef" font-size="14">曾5天未再提单的用户</text><rect x="515" y="13" width="13" height="13" rx="3" fill="#ffc26b"/><text x="535" y="25" fill="#d9e7ef" font-size="14">曾7天未再提单的用户</text><text x="252" y="80" fill="#d9e7ef" text-anchor="end" font-size="15">借款11次及以上</text><rect x="270" y="62" width="464.82" height="18" rx="3" fill="#43c7e7"/><text x="743.82" y="76" fill="#43c7e7" font-size="14">68.74%</text><rect x="270" y="88" width="437.09" height="18" rx="3" fill="#ffc26b"/><text x="716.09" y="102" fill="#ffc26b" font-size="14">64.64%</text><text x="252" y="158" fill="#d9e7ef" text-anchor="end" font-size="15">借款6—10次</text><rect x="270" y="140" width="478.35" height="18" rx="3" fill="#43c7e7"/><text x="757.35" y="154" fill="#43c7e7" font-size="14">70.74%</text><rect x="270" y="166" width="453.38" height="18" rx="3" fill="#ffc26b"/><text x="732.38" y="180" fill="#ffc26b" font-size="14">67.05%</text><text x="252" y="236" fill="#d9e7ef" text-anchor="end" font-size="15">借款5次及以下</text><rect x="270" y="218" width="538.00" height="18" rx="3" fill="#43c7e7"/><text x="817.00" y="232" fill="#43c7e7" font-size="14">79.56%</text><rect x="270" y="244" width="519.72" height="18" rx="3" fill="#ffc26b"/><text x="798.72" y="258" fill="#ffc26b" font-size="14">76.86%</text></svg></div><p class="chart-note">上图为用户口径：分母分别为该客群至少有1次已观察满5天、7天的完全结清事件的用户。完全结清指用户名下全部已放款订单均已结清。5天、7天为精确120/168小时，未成熟事件不进入分母。</p><p class="conclusion">整体共有30,203次观察成熟的完全结清事件，其中7,953次在7天内未再提单，占26.33%；其中7,035次后来仍再次提单。该指标描述“阶段性中断”，不能直接认定永久流失。</p><div class="figure"><svg role="img" aria-label="观察满7天的完全结清事件：后续提单间隔" viewBox="0 0 1120 399" xmlns="http://www.w3.org/2000/svg"><title>观察满7天的完全结清事件：后续提单间隔</title><rect x="270" y="13" width="13" height="13" rx="3" fill="#43c7e7"/><text x="290" y="25" fill="#d9e7ef" font-size="14">成熟完全结清事件占比</text><text x="252" y="80" fill="#d9e7ef" text-anchor="end" font-size="15">0—1天</text><rect x="270" y="62" width="617.39" height="18" rx="3" fill="#43c7e7"/><text x="896.39" y="76" fill="#43c7e7" font-size="14">52.46%</text><text x="252" y="132" fill="#d9e7ef" text-anchor="end" font-size="15">1—3天</text><rect x="270" y="114" width="135.80" height="18" rx="3" fill="#43c7e7"/><text x="414.80" y="128" fill="#43c7e7" font-size="14">11.54%</text><text x="252" y="184" fill="#d9e7ef" text-anchor="end" font-size="15">3—5天</text><rect x="270" y="166" width="68.85" height="18" rx="3" fill="#43c7e7"/><text x="347.85" y="180" fill="#43c7e7" font-size="14">5.85%</text><text x="252" y="236" fill="#d9e7ef" text-anchor="end" font-size="15">5—7天</text><rect x="270" y="218" width="44.97" height="18" rx="3" fill="#43c7e7"/><text x="323.97" y="232" fill="#43c7e7" font-size="14">3.82%</text><text x="252" y="288" fill="#d9e7ef" text-anchor="end" font-size="15">超过7天后再提单</text><rect x="270" y="270" width="274.13" height="18" rx="3" fill="#43c7e7"/><text x="553.13" y="284" fill="#43c7e7" font-size="14">23.29%</text><text x="252" y="340" fill="#d9e7ef" text-anchor="end" font-size="15">截至观察时点仍未再提单</text><rect x="270" y="322" width="35.77" height="18" rx="3" fill="#43c7e7"/><text x="314.77" y="336" fill="#43c7e7" font-size="14">3.04%</text></svg></div><details class="data-details"><summary>展开用户口径与事件口径的分子分母</summary><div class="scroll"><table><thead><tr><th>客群</th><th>5天中断用户/成熟用户</th><th>5天中断事件/成熟事件</th><th>7天中断用户/成熟用户</th><th>7天中断事件/成熟事件</th><th>当前结清后仍未再提单超过7天人数</th></tr></thead><tbody><tr><td>借款11次及以上</td><td>2,353 / 3,423（68.74%）</td><td>6,223 / 22,332（27.87%）</td><td>2,212 / 3,422（64.64%）</td><td>5,377 / 22,306（24.11%）</td><td>313</td></tr><tr><td>借款6—10次</td><td>1,296 / 1,832（70.74%）</td><td>2,458 / 7,007（35.08%）</td><td>1,225 / 1,827（67.05%）</td><td>2,166 / 6,985（31.01%）</td><td>406</td></tr><tr><td>借款5次及以下</td><td>292 / 367（79.56%）</td><td>452 / 920（49.13%）</td><td>279 / 363（76.86%）</td><td>410 / 912（44.96%）</td><td>199</td></tr></tbody></table></div><div class="scroll"><table><thead><tr><th>下次提单间隔</th><th>事件数</th><th>占观察成熟事件</th></tr></thead><tbody><tr><td>0—1天</td><td>15,844</td><td>52.46%</td></tr><tr><td>1—3天</td><td>3,485</td><td>11.54%</td></tr><tr><td>3—5天</td><td>1,767</td><td>5.85%</td></tr><tr><td>5—7天</td><td>1,154</td><td>3.82%</td></tr><tr><td>超过7天后再提单</td><td>7,035</td><td>23.29%</td></tr><tr><td>截至观察时点仍未再提单</td><td>918</td><td>3.04%</td></tr></tbody></table></div></details></section><section id="usage"><h2>额度使用率与循环贷习惯</h2><div class="figure"><svg role="img" aria-label="提单额度使用率：订单均值与总额加权比率" viewBox="0 0 1120 321" xmlns="http://www.w3.org/2000/svg"><title>提单额度使用率：订单均值与总额加权比率</title><rect x="270" y="13" width="13" height="13" rx="3" fill="#43c7e7"/><text x="290" y="25" fill="#d9e7ef" font-size="14">有效提单订单使用率均值</text><rect x="515" y="13" width="13" height="13" rx="3" fill="#64dcae"/><text x="535" y="25" fill="#d9e7ef" font-size="14">总提单金额 / 总获额额度</text><text x="252" y="80" fill="#d9e7ef" text-anchor="end" font-size="15">借款11次及以上</text><rect x="270" y="62" width="586.27" height="18" rx="3" fill="#43c7e7"/><text x="865.27" y="76" fill="#43c7e7" font-size="14">88.92%</text><rect x="270" y="88" width="555.07" height="18" rx="3" fill="#64dcae"/><text x="834.07" y="102" fill="#64dcae" font-size="14">84.19%</text><text x="252" y="158" fill="#d9e7ef" text-anchor="end" font-size="15">借款6—10次</text><rect x="270" y="140" width="600.00" height="18" rx="3" fill="#43c7e7"/><text x="879.00" y="154" fill="#43c7e7" font-size="14">91.00%</text><rect x="270" y="166" width="575.64" height="18" rx="3" fill="#64dcae"/><text x="854.64" y="180" fill="#64dcae" font-size="14">87.31%</text><text x="252" y="236" fill="#d9e7ef" text-anchor="end" font-size="15">借款5次及以下</text><rect x="270" y="218" width="633.93" height="18" rx="3" fill="#43c7e7"/><text x="912.93" y="232" fill="#43c7e7" font-size="14">96.15%</text><rect x="270" y="244" width="623.80" height="18" rx="3" fill="#64dcae"/><text x="902.80" y="258" fill="#64dcae" font-size="14">94.61%</text></svg></div><p class="conclusion">核心90%名单的提单额度使用率均值为89.52%，总额加权比率为85.15%；90.87%的用户曾有循环贷成功放款。额度使用率与循环贷使用反映资金使用习惯，不直接代表信用资质好坏。</p><p class="chart-note">额度使用率使用2025-01-01—2026-09-30提单订单。分母来自同用户、同订单、提单前最近一次通过获额的max_credit_apply_amt；分子为apply_amt。有效匹配75,523 / 81,239笔，覆盖92.96%；超过100%的30,488笔原样保留，未截断。循环贷用户指全历史至少有一笔recycle_type=2成功放款订单。</p><p class="note">超过100%的记录占有效匹配订单40.37%。本指标严格表示apply_amt与获额额度之比；两金额字段是否包含相同费用尚未核实，不据此认定用户超额借款。5次及以下组单笔平均放款10,121.51、使用率均值96.15%，均高于11次及以上组。</p><details class="data-details"><summary>展开额度匹配覆盖与循环贷数据</summary><div class="scroll"><table><thead><tr><th>客群</th><th>有效额度匹配/提单订单</th><th>使用率均值</th><th>总额加权比率</th><th>超过100%订单数</th><th>循环贷用户/全组</th><th>循环贷放款订单/全部历史放款订单</th></tr></thead><tbody><tr><td>借款11次及以上</td><td>58,034 / 61,108（94.97%）</td><td>88.92%</td><td>84.19%</td><td>23,595</td><td>3,526 / 3,746（94.13%）</td><td>39,311 / 65,143（60.35%）</td></tr><tr><td>借款6—10次</td><td>15,756 / 18,041（87.33%）</td><td>91.00%</td><td>87.31%</td><td>6,191</td><td>1,756 / 2,008（87.45%）</td><td>8,069 / 16,520（48.84%）</td></tr><tr><td>借款5次及以下</td><td>1,733 / 2,090（82.92%）</td><td>96.15%</td><td>94.61%</td><td>702</td><td>301 / 390（77.18%）</td><td>686 / 1,733（39.58%）</td></tr></tbody></table></div></details></section><section id="latest"><h2>当前无状态8用户，最新一笔获额是否通过</h2><div class="figure"><svg role="img" aria-label="无当前状态8用户内的最新获额结果" viewBox="0 0 1120 321" xmlns="http://www.w3.org/2000/svg"><title>无当前状态8用户内的最新获额结果</title><rect x="270" y="13" width="13" height="13" rx="3" fill="#64dcae"/><text x="290" y="25" fill="#d9e7ef" font-size="14">最新获额通过</text><rect x="515" y="13" width="13" height="13" rx="3" fill="#ff7a83"/><text x="535" y="25" fill="#d9e7ef" font-size="14">最新获额未通过</text><text x="252" y="80" fill="#d9e7ef" text-anchor="end" font-size="15">借款11次及以上</text><rect x="270" y="62" width="613.16" height="18" rx="3" fill="#64dcae"/><text x="892.16" y="76" fill="#64dcae" font-size="14">90.68%</text><rect x="270" y="88" width="63.03" height="18" rx="3" fill="#ff7a83"/><text x="342.03" y="102" fill="#ff7a83" font-size="14">9.32%</text><text x="252" y="158" fill="#d9e7ef" text-anchor="end" font-size="15">借款6—10次</text><rect x="270" y="140" width="529.32" height="18" rx="3" fill="#64dcae"/><text x="808.32" y="154" fill="#64dcae" font-size="14">78.28%</text><rect x="270" y="166" width="146.87" height="18" rx="3" fill="#ff7a83"/><text x="425.87" y="180" fill="#ff7a83" font-size="14">21.72%</text><text x="252" y="236" fill="#d9e7ef" text-anchor="end" font-size="15">借款5次及以下</text><rect x="270" y="218" width="511.88" height="18" rx="3" fill="#64dcae"/><text x="790.88" y="232" fill="#64dcae" font-size="14">75.70%</text><rect x="270" y="244" width="164.31" height="18" rx="3" fill="#ff7a83"/><text x="443.31" y="258" fill="#ff7a83" font-size="14">24.30%</text></svg></div><p class="conclusion">历史核心90%名单中，无当前状态8用户2,615人：最新获额通过2,205人（84.32%），未通过410人（15.68%），结果缺失或未知0人（0.00%）。这些是客群现状描述，本轮不据此排除任何人。</p><p class="chart-note">最新获额从全部获额订单中按获额时间取最后一笔；同一时刻取serial_id最大，再以vir_rnb打破剩余并列。沿用is_pass1：1为通过、0为未通过。未通过不等同已经确认风控拒绝；通过也不直接等同当前具备所有提单条件。</p><details class="data-details"><summary>展开最新获额结果及分母</summary><div class="scroll"><table><thead><tr><th>客群</th><th>全组用户</th><th>当前状态8用户</th><th>无当前状态8用户（分母）</th><th>最新获额通过</th><th>最新获额未通过</th><th>结果缺失或未知</th></tr></thead><tbody><tr><td>借款11次及以上</td><td>3,746</td><td>2,405（64.20%）</td><td>1,341</td><td>1,216（90.68%）</td><td>125（9.32%）</td><td>0（0.00%）</td></tr><tr><td>借款6—10次</td><td>2,008</td><td>1,055（52.54%）</td><td>953</td><td>746（78.28%）</td><td>207（21.72%）</td><td>0（0.00%）</td></tr><tr><td>借款5次及以下</td><td>390</td><td>69（17.69%）</td><td>321</td><td>243（75.70%）</td><td>78（24.30%）</td><td>0（0.00%）</td></tr></tbody></table></div></details><div class="interactive"><label for="coverage-selector">切换累计核心名单：</label><select id="coverage-selector"><option value="0" >覆盖50%净利润</option><option value="1" >覆盖60%净利润</option><option value="2" >覆盖70%净利润</option><option value="3" >覆盖80%净利润</option><option value="4" selected>覆盖90%净利润</option></select><div id="coverage-detail" aria-live="polite"></div></div></section><section id="definitions"><h2>指标口径与数据边界</h2><p>利润名单冻结时点（北京时间）：2026-10-21T11:57:47.510787；生命周期特征快照（北京时间）：2026-10-21T12:42:12.729613。所有业务日期和事件时间均按America/Belize处理。</p><details class="data-details"><summary>展开完整指标定义</summary><p class="definition"><b>利润与统计订单：</b>2025-01-01至2026-09-30成功放款订单，当前repaid_amt减remit_amt；未结清及状态8保留，回款不截断至9月30日；利润排序和名单冻结于前次统计快照。</p><p class="definition"><b>生命周期借款次数：</b>截至原利润快照，全历史成功放款订单数；不是当前单的第几次借款。特征取数时点另列。</p><p class="definition"><b>先分期逾期、后整笔结清：</b>全历史成功放款订单中，任一期overdue_days_period&gt;0，或实际分期还款日期晚于分期应还日期，且整笔is_repaid=1并有有效结清时间。用户占比分母为该客群全部用户；不是当前仍逾期。</p><p class="definition"><b>用户名下完全结清事件：</b>以整笔实际结清时间为事件时点；按用户全部已放款订单的[放款时间,实际结清时间)重建余额，要求该时点结清后所有在借订单数为0。同一时刻多笔结清合为1次事件；不是结清任一单即计。</p><p class="definition"><b>5天/7天未再提单：</b>全生命周期完全结清事件，观察已满5×24小时/7×24小时才入相应分母；从结清时刻至其后120/168小时内无任何真实订单提单，记5/7天未再提单。包含失败提单；页面进页不算提单。窗口含终点，结清同刻提单记已提单。</p><p class="definition"><b>用户率和事件率分母：</b>事件率=未在5/7天内再提单的完全结清事件数/观察成熟事件数；曾发生用户占比=至少发生1次该中断的用户数/至少有1次成熟完全结清事件的用户数。不是所有用户为分母。</p><p class="definition"><b>结清后再提单间隔：</b>仅已观察到下次提单的完全结清事件计算间隔；先取用户内间隔中位数，再取客群用户中位数，仍未再提单不填0。</p><p class="definition"><b>提单额度使用率：</b>统计期内提单订单：同用户同serial_id、提单时点前最近获额记录，要求is_pass1=1且max_credit_apply_amt&gt;0；使用率=apply_amt/max_credit_apply_amt。主指标是有效订单使用率算术平均，并列总提单金额/总额度的加权比率。不用放款金额、不把缺失填0、不截断超过100%的值。</p><p class="definition"><b>当前逾期用户：</b>特征快照下，用户名下任一订单loan_status_code=8；分母为客群全部用户；仅描述不排除。</p><p class="definition"><b>无当前逾期内的最新获额结果：</b>用户全部获额记录按vir_unix、serial_id、vir_rnb降序取最新一笔；同一时刻取serial_id最大。仅在无当前状态8用户内计算通过/未通过占比，is_pass1=1为通过、0为未通过；未通过不直接等同风控拒绝，缺失单列。</p><p class="definition"><b>循环贷用户：</b>全历史至少有1笔成功放款订单，side_recycle_type_copy.recycle_type=2。循环贷用户与续贷用户不是同义词；另列最近放款是否循环贷和循环贷订单占比。</p><p class="definition"><b>借款间隔：</b>按实际成功放款时间排序，相邻成功借款间隔；图表主值先取用户内间隔中位数，再取客群用户中位数。同日借多笔可产生小于1天间隔。</p><p class="definition"><b>提前结清：</b>整笔实际结清日期严格早于整笔最终应还日期，is_repaid=1；用户占比按全组用户计算。</p><p class="definition"><b>解释边界：</b>历史中断可在之后再次提单，不等同永久流失；本次不做运营可触达筛选。贷款、分期、获额、循环贷类型分表在相邻只读快照提取，事件统一截止贷款特征快照，未取得不可变历史入库快照，源副本后补会影响复跑结果。</p></details><p class="note">核对：核心用户6,144人均保留；特征快照相对利润快照，状态8标记变化0人、生命周期成功借款次数变化0人、统计期利润变化0人。利润分组和贡献不随本轮特征提取重排。</p><details class="data-details"><summary>展开数据完整性检查</summary><div class="scroll"><table><thead><tr><th>检查项</th><th>结果</th></tr></thead><tbody><tr><td>loans</td><td>90521</td></tr><tr><td>periods</td><td>90521</td></tr><tr><td>offers</td><td>85917</td></tr><tr><td>recycle_duplicate_same_type_rows</td><td>0</td></tr><tr><td>offer_extract_equivalence</td><td>Only latest user offers and exact pre-application offers transferred; selected from all history with no loss of requested metrics.</td></tr><tr><td>apply_time_date_fallback</td><td>0</td></tr><tr><td>remit_time_date_fallback</td><td>0</td></tr><tr><td>repaid_time_date_fallback</td><td>0</td></tr><tr><td>future_or_missing_apply_rows</td><td>0</td></tr><tr><td>settled_missing_or_pre_remit_timestamp_orders</td><td>0</td></tr><tr><td>period_source_rows_aggregated</td><td>301461</td></tr><tr><td>period_history_transfer</td><td>per-order MAX historical-lateness marker, computed from complete source installment rows</td></tr><tr><td>funded_orders_missing_periods</td><td>0</td></tr><tr><td>offer_rows_with_invalid_or_future_event_time</td><td>0</td></tr><tr><td>usage_period_submitted_orders</td><td>81239</td></tr><tr><td>usage_period_matched_orders</td><td>75523</td></tr><tr><td>usage_over100_orders</td><td>30488</td></tr><tr><td>funded_history_extent</td><td>[&#x27;2023-01-10 20:49:13&#x27;, &#x27;2026-10-20 00:19:08&#x27;]</td></tr><tr><td>apply_history_extent</td><td>[&#x27;2022-11-05 00:04:07&#x27;, &#x27;2026-10-20 00:17:12&#x27;]</td></tr><tr><td>current_status8_changed_vs_frozen</td><td>0</td></tr><tr><td>lifetime_count_changed_vs_frozen</td><td>0</td></tr><tr><td>source_profit_changed_vs_frozen_users</td><td>0</td></tr></tbody></table></div></details></section><section id="appendix"><h2>附录：复原报告代码</h2><details class="data-details"><summary>展开完整SQL / Python代码与下载</summary><p class="note">完整代码共11个文件。汇总结果可直接复原网页；重新提取用户级历史需数据库只读权限和利润名单输入。公开网页包仅含汇总数据与代码。</p><p><a href="复原报告代码.zip">下载代码与汇总结果</a> · <a href="analysis.json">下载报告汇总数据</a></p><details class="data-details"><summary>extract.py</summary><pre><code>&quot;&quot;&quot;Read-only complete histories for the frozen profit-core cohort. No database writes.&quot;&quot;&quot;
+from pathlib import Path
+import os, sys, json, time, base64, secrets, hashlib, warnings
+warnings.filterwarnings(&#x27;ignore&#x27;, category=UserWarning)
+import pandas as pd
+import psycopg2
+W=Path(__file__).resolve().parent
+sys.path.insert(0,str(W.parent/&#x27;intent_v2_behavior_windows_20261019/vendor&#x27;))
+from pgpy import PGPMessage
+
+def connection_kwargs():
+    keys={&#x27;host&#x27;:&#x27;DB_HOST&#x27;,&#x27;port&#x27;:&#x27;DB_PORT&#x27;,&#x27;dbname&#x27;:&#x27;DB_NAME&#x27;,&#x27;user&#x27;:&#x27;DB_USER&#x27;,&#x27;password&#x27;:&#x27;DB_PASSWORD&#x27;}
+    if all(os.environ.get(keys[k]) for k in [&#x27;host&#x27;,&#x27;dbname&#x27;,&#x27;user&#x27;,&#x27;password&#x27;]):
+        return {k:os.environ[v] for k,v in keys.items() if os.environ.get(v)}
+    sys.path.insert(0,&#x27;/Users/wangchuanliang/Documents/Codex/2026-09-21/ji-x/work&#x27;)
+    from analyze_t0_down_d1_d5_maturity_profit import connection_kwargs as local_connection
+    return local_connection()
+
+COHORT=Path(os.environ.get(&#x27;CORE_CUSTOMER_COHORT_JSON&#x27;,str(W.parent/&#x27;profit_concentration_20250101_20260930_20261021/result.json&#x27;)))
+filt=&#x27; IN (SELECT unnest(%(users)s::bigint[]))&#x27;
+queries={
+ &#x27;loans&#x27;:&#x27;&#x27;&#x27;SELECT o.user_id,o.serial_id,o.apply_time,o.apply_date,o.apply_amt::text apply_amt,
+ o.remit_time,o.remit_date,o.remit_amt::text remit_amt,o.repaid_time,o.repaid_date,o.due_date,
+ o.is_remit,o.is_repaid,o.repaid_amt::text repaid_amt,o.loan_status_code,o.overdue_days,o.loan_type,
+ o.total_term,o.product_no FROM wangchuanliang.order_loan_f_v2_copy o WHERE o.user_id&#x27;&#x27;&#x27;+filt,
+ &#x27;periods&#x27;:&#x27;&#x27;&#x27;SELECT p.user_id,p.serial_id,p.current_term,p.due_date_period,p.repaid_time_period,
+ p.repaid_date_period,p.is_repaid_period,p.overdue_days_period,p.loan_status_code_period,
+ p.expect_repay_amt_period::text expect_repay_amt_period,p.repaid_amt_period::text repaid_amt_period
+ FROM wangchuanliang.repayment_plan_v2_copy p WHERE p.user_id&#x27;&#x27;&#x27;+filt,
+ &#x27;offers&#x27;:&#x27;&#x27;&#x27;SELECT v.user_id,v.serial_id,v.vir_unix,v.vir_date,v.vir_rnb,v.loan_type_code,
+ v.is_pass1,v.is_pass,v.vir_status_code,v.max_credit_apply_amt::text credit_amt,
+ v.max_risk_credit_amount::text risk_credit_amt,v.is_can_apply,v.is_eff
+ FROM wangchuanliang.order_vir_f_copy v WHERE v.user_id&#x27;&#x27;&#x27;+filt,
+ &#x27;recycle&#x27;:&#x27;&#x27;&#x27;SELECT r.serial_id,r.recycle_type FROM wangchuanliang.side_recycle_type_copy r
+ WHERE EXISTS (SELECT 1 FROM wangchuanliang.order_loan_f_v2_copy o WHERE o.serial_id=r.serial_id AND o.user_id&#x27;&#x27;&#x27;+filt+&#x27;&#x27;&#x27;)
+ OR EXISTS (SELECT 1 FROM wangchuanliang.order_vir_f_copy v WHERE v.serial_id=r.serial_id AND v.user_id&#x27;&#x27;&#x27;+filt+&#x27;&#x27;&#x27;)&#x27;&#x27;&#x27;
+}
+
+def main():
+    started=time.monotonic();cohort=json.loads(COHORT.read_text());users=sorted(r[&#x27;user_id&#x27;] for r in cohort[&#x27;members&#x27;])
+    cohort_hash=hashlib.sha256(COHORT.read_bytes()).hexdigest()
+    manifest=W/&#x27;extraction_manifest.json&#x27;
+    if manifest.exists():
+        old=json.loads(manifest.read_text())
+        if old.get(&#x27;complete&#x27;) and old[&#x27;cohort_sha256&#x27;]==cohort_hash and all(hashlib.sha256((W/(k+&#x27;.pkl.gz&#x27;)).read_bytes()).hexdigest()==v[&#x27;sha256&#x27;] for k,v in old[&#x27;tables&#x27;].items()):
+            print(&#x27;Complete verified extraction reused.&#x27;,flush=True);return
+    (W/&#x27;extraction_inprogress.json&#x27;).write_text(json.dumps({&#x27;complete&#x27;:False,&#x27;requested_users&#x27;:len(users),&#x27;tables&#x27;:list(queries)}))
+    tables={}
+    with psycopg2.connect(**dict(connection_kwargs(),connect_timeout=20,keepalives=1,keepalives_idle=30,keepalives_interval=10,keepalives_count=3,application_name=&#x27;core_customer_lifetime_portrait_readonly&#x27;)) as conn:
+        conn.set_session(readonly=True,isolation_level=&#x27;REPEATABLE READ&#x27;)
+        with conn.cursor() as c:
+            for setting in [&quot;SET TIME ZONE &#x27;America/Belize&#x27;&quot;,&#x27;SET query_dop=1&#x27;,&#x27;SET statement_timeout=300000&#x27;]:c.execute(setting)
+            c.execute(&quot;SELECT current_timestamp,current_timestamp AT TIME ZONE &#x27;America/Belize&#x27;,current_timestamp AT TIME ZONE &#x27;Asia/Shanghai&#x27;,current_setting(&#x27;transaction_read_only&#x27;)&quot;)
+            snapshot,business_cutoff,shanghai_cutoff,ro=c.fetchone();assert ro==&#x27;on&#x27;
+            (W/&#x27;loan_snapshot.json&#x27;).write_text(json.dumps({&#x27;snapshot&#x27;:snapshot.isoformat(),&#x27;business_cutoff&#x27;:business_cutoff.isoformat(),&#x27;shanghai_cutoff&#x27;:shanghai_cutoff.isoformat(),&#x27;cohort_sha256&#x27;:cohort_hash},indent=2))
+            print(json.dumps({&#x27;snapshot&#x27;:str(snapshot),&#x27;readonly&#x27;:ro,&#x27;users&#x27;:len(users)}),flush=True)
+            for name,q in queries.items():
+                (W/(name+&#x27;_query.sql&#x27;)).write_text(q)
+                t=time.monotonic();frames=[];n=0
+                for shard in range(8):
+                    chunk=users[shard::8];key=secrets.token_urlsafe(32)
+                    sql=&quot;SELECT COUNT(*),encode(pgp_sym_encrypt(string_agg(row_to_json(q)::text,E&#x27;\\n&#x27;),%(key)s,&#x27;compress-algo=1,compress-level=6,cipher-algo=aes256&#x27;),&#x27;base64&#x27;) FROM (&quot;+q+&quot;) q&quot;
+                    c.execute(sql,{&#x27;users&#x27;:&#x27;{&#x27;+&#x27;,&#x27;.join(map(str,chunk))+&#x27;}&#x27;,&#x27;key&#x27;:key});count,blob=c.fetchone()
+                    print(json.dumps({&#x27;table&#x27;:name,&#x27;shard&#x27;:shard,&#x27;rows&#x27;:count,&#x27;transfer_bytes&#x27;:len(blob or &#x27;&#x27;)}),flush=True)
+                    if count:
+                        msg=PGPMessage.from_blob(base64.b64decode(blob)).decrypt(key).message
+                        if isinstance(msg,(bytes,bytearray)):msg=bytes(msg).decode()
+                        frame=pd.DataFrame([json.loads(line) for line in str(msg).splitlines()])
+                    else:frame=pd.DataFrame()
+                    assert len(frame)==count
+                    frames.append(frame);n+=count
+                df=pd.concat(frames,ignore_index=True)
+                assert len(df)==n
+                if &#x27;user_id&#x27; in df:assert set(df.user_id).issubset(set(users))
+                target=W/(name+&#x27;.pkl.gz&#x27;);df.to_pickle(str(target)+&#x27;.partial&#x27;,compression=&#x27;gzip&#x27;);Path(str(target)+&#x27;.partial&#x27;).replace(target)
+                tables[name]={&#x27;rows&#x27;:n,&#x27;sha256&#x27;:hashlib.sha256(target.read_bytes()).hexdigest(),&#x27;seconds&#x27;:round(time.monotonic()-t,1)}
+                print(json.dumps({&#x27;table&#x27;:name,**tables[name]}),flush=True)
+        conn.rollback()
+    result={&#x27;complete&#x27;:True,&#x27;read_only&#x27;:True,&#x27;single_repeatable_read_snapshot&#x27;:True,&#x27;snapshot&#x27;:snapshot.isoformat(),
+            &#x27;business_cutoff&#x27;:business_cutoff.isoformat(),&#x27;shanghai_cutoff&#x27;:shanghai_cutoff.isoformat(),&#x27;business_timezone&#x27;:&#x27;America/Belize&#x27;,
+            &#x27;cohort_sha256&#x27;:cohort_hash,&#x27;requested_users&#x27;:len(users),&#x27;tables&#x27;:tables,&#x27;seconds&#x27;:round(time.monotonic()-started,1)}
+    manifest.write_text(json.dumps(result,ensure_ascii=False,indent=2));(W/&#x27;extraction_inprogress.json&#x27;).unlink(missing_ok=True)
+    print(json.dumps({&#x27;complete&#x27;:True,&#x27;seconds&#x27;:result[&#x27;seconds&#x27;]}),flush=True)
+
+if __name__==&#x27;__main__&#x27;:main()
+</code></pre></details><details class="data-details"><summary>extract_supplement.py</summary><pre><code>&quot;&quot;&quot;Bounded parallel, read-only supplements; preserve the completed main loan snapshot.&quot;&quot;&quot;
+from pathlib import Path
+from concurrent.futures import ThreadPoolExecutor
+import json,base64,secrets,time,hashlib,os,signal
+import pandas as pd
+import psycopg2
+from extract import W,COHORT,queries,connection_kwargs,PGPMessage
+
+def run(name,users):
+    t=time.monotonic();frames=[]
+    query=queries[name]
+    if name==&#x27;periods&#x27;:
+        # Only the per-order historical-lateness marker is needed; aggregate before transfer.
+        query=&#x27;&#x27;&#x27;SELECT p.user_id,p.serial_id,COUNT(*)::bigint period_rows,
+         MAX(CASE WHEN p.overdue_days_period&gt;0 OR (p.is_repaid_period=1
+          AND p.repaid_date_period&gt;p.due_date_period AND p.repaid_date_period&gt;=DATE &#x27;2000-01-01&#x27;)
+          THEN 1 ELSE 0 END) AS has_late_period
+         FROM wangchuanliang.repayment_plan_v2_copy p
+         WHERE p.user_id IN (SELECT unnest(%(users)s::bigint[])) GROUP BY p.user_id,p.serial_id&#x27;&#x27;&#x27;
+    (W/(name+&#x27;_query.sql&#x27;)).write_text(query)
+    with psycopg2.connect(**dict(connection_kwargs(),connect_timeout=20,keepalives=1,keepalives_idle=30,keepalives_interval=10,keepalives_count=3,application_name=&#x27;core_portrait_supplement_&#x27;+name)) as conn:
+        conn.set_session(readonly=True,isolation_level=&#x27;REPEATABLE READ&#x27;)
+        with conn.cursor() as c:
+            for setting in [&quot;SET TIME ZONE &#x27;America/Belize&#x27;&quot;,&#x27;SET query_dop=1&#x27;,&#x27;SET statement_timeout=300000&#x27;]:c.execute(setting)
+            c.execute(&quot;SELECT current_timestamp AT TIME ZONE &#x27;America/Belize&#x27;,current_setting(&#x27;transaction_read_only&#x27;)&quot;)
+            snap,ro=c.fetchone();assert ro==&#x27;on&#x27;
+            for i in range(8):
+                key=secrets.token_urlsafe(32);chunk=users[i::8]
+                sql=&quot;SELECT COUNT(*),encode(pgp_sym_encrypt(string_agg(row_to_json(q)::text,E&#x27;\\n&#x27;),%(key)s,&#x27;compress-algo=1,compress-level=6,cipher-algo=aes256&#x27;),&#x27;base64&#x27;) FROM (&quot;+query+&quot;) q&quot;
+                c.execute(sql,{&#x27;users&#x27;:&#x27;{&#x27;+&#x27;,&#x27;.join(map(str,chunk))+&#x27;}&#x27;,&#x27;key&#x27;:key});count,blob=c.fetchone()
+                if count:
+                    msg=PGPMessage.from_blob(base64.b64decode(blob)).decrypt(key).message
+                    if isinstance(msg,(bytes,bytearray)):msg=bytes(msg).decode()
+                    frame=pd.DataFrame([json.loads(line) for line in str(msg).splitlines()])
+                else:frame=pd.DataFrame()
+                assert len(frame)==count;frames.append(frame)
+                print(json.dumps({&#x27;table&#x27;:name,&#x27;shard&#x27;:i,&#x27;rows&#x27;:count,&#x27;bytes&#x27;:len(blob or &#x27;&#x27;),&#x27;seconds&#x27;:round(time.monotonic()-t,1)}),flush=True)
+        conn.rollback()
+    df=pd.concat(frames,ignore_index=True);target=W/(name+&#x27;.pkl.gz&#x27;);df.to_pickle(str(target)+&#x27;.partial&#x27;,compression=&#x27;gzip&#x27;);Path(str(target)+&#x27;.partial&#x27;).replace(target)
+    info={&#x27;rows&#x27;:len(df),&#x27;sha256&#x27;:hashlib.sha256(target.read_bytes()).hexdigest(),&#x27;snapshot_business&#x27;:snap.isoformat(),&#x27;seconds&#x27;:round(time.monotonic()-t,1),&#x27;read_only&#x27;:True}
+    (W/(name+&#x27;_manifest.json&#x27;)).write_text(json.dumps(info,indent=2))
+    return info
+
+def main():
+    users=sorted(r[&#x27;user_id&#x27;] for r in json.loads(COHORT.read_text())[&#x27;members&#x27;])
+    with ThreadPoolExecutor(max_workers=3) as pool:
+        fut={name:pool.submit(run,name,users) for name in [&#x27;periods&#x27;,&#x27;offers&#x27;,&#x27;recycle&#x27;]}
+        results={name:f.result() for name,f in fut.items()}
+    (W/&#x27;supplement_manifest.json&#x27;).write_text(json.dumps({&#x27;complete&#x27;:True,&#x27;tables&#x27;:results},indent=2))
+    print(json.dumps({&#x27;complete&#x27;:True,&#x27;tables&#x27;:results}),flush=True)
+
+if __name__==&#x27;__main__&#x27;:main()
+</code></pre></details><details class="data-details"><summary>extract_offers_compact.py</summary><pre><code>&quot;&quot;&quot;Transfer only latest user offers and the exact pre-application offers used for utilization.&quot;&quot;&quot;
+from concurrent.futures import ThreadPoolExecutor
+from pathlib import Path
+from datetime import datetime,timezone,timedelta
+import json,base64,secrets,hashlib,time
+import pandas as pd
+import psycopg2
+from extract import W,COHORT,connection_kwargs,PGPMessage
+
+QUERY=&#x27;&#x27;&#x27;WITH offer_source AS (
+ SELECT v.user_id,v.serial_id,v.vir_unix,v.vir_date,v.vir_rnb,v.loan_type_code,
+ v.is_pass1,v.is_pass,v.vir_status_code,v.max_credit_apply_amt::text credit_amt,
+ v.max_risk_credit_amount::text risk_credit_amt,v.is_can_apply,v.is_eff,
+ ROW_NUMBER() OVER(PARTITION BY v.user_id ORDER BY v.vir_unix DESC,v.serial_id DESC,v.vir_rnb DESC) AS user_rn
+ FROM wangchuanliang.order_vir_f_copy v
+ WHERE v.user_id IN (SELECT unnest(%(users)s::bigint[])) AND v.vir_unix&gt;946706400 AND v.vir_unix&lt;=%(epoch)s
+), matched AS (
+ SELECT v.*,ROW_NUMBER() OVER(PARTITION BY v.user_id,v.serial_id ORDER BY v.vir_unix DESC,v.vir_rnb DESC) AS order_rn
+ FROM offer_source v JOIN wangchuanliang.order_loan_f_v2_copy o ON o.user_id=v.user_id AND o.serial_id=v.serial_id
+ WHERE o.apply_amt&gt;0 AND o.apply_date&gt;=DATE &#x27;2025-01-01&#x27; AND o.apply_date&lt;DATE &#x27;2026-10-01&#x27;
+ AND TIMESTAMP &#x27;epoch&#x27;+v.vir_unix*INTERVAL &#x27;1 second&#x27;-INTERVAL &#x27;6 hours&#x27;&lt;=
+ CASE WHEN o.apply_time&gt;=TIMESTAMP &#x27;2000-01-01&#x27; THEN o.apply_time ELSE o.apply_date::timestamp END
+)
+SELECT user_id,serial_id,vir_unix,vir_date,vir_rnb,loan_type_code,is_pass1,is_pass,vir_status_code,credit_amt,risk_credit_amt,is_can_apply,is_eff
+ FROM offer_source WHERE user_rn=1
+UNION
+SELECT user_id,serial_id,vir_unix,vir_date,vir_rnb,loan_type_code,is_pass1,is_pass,vir_status_code,credit_amt,risk_credit_amt,is_can_apply,is_eff
+ FROM matched WHERE order_rn=1&#x27;&#x27;&#x27;
+
+def run(i,users,epoch):
+    started=time.monotonic();key=secrets.token_urlsafe(32)
+    with psycopg2.connect(**dict(connection_kwargs(),connect_timeout=20,keepalives=1,keepalives_idle=30,application_name=&#x27;core_portrait_compact_offers&#x27;)) as conn:
+        conn.set_session(readonly=True,isolation_level=&#x27;REPEATABLE READ&#x27;)
+        with conn.cursor() as c:
+            for s in [&quot;SET TIME ZONE &#x27;America/Belize&#x27;&quot;,&#x27;SET query_dop=1&#x27;,&#x27;SET statement_timeout=180000&#x27;]:c.execute(s)
+            c.execute(&quot;SELECT current_timestamp AT TIME ZONE &#x27;America/Belize&#x27;&quot;);snap=c.fetchone()[0]
+            sql=&quot;SELECT COUNT(*),encode(pgp_sym_encrypt(string_agg(row_to_json(q)::text,E&#x27;\\n&#x27;),%(key)s,&#x27;compress-algo=1,compress-level=6,cipher-algo=aes256&#x27;),&#x27;base64&#x27;) FROM (&quot;+QUERY+&quot;) q&quot;
+            c.execute(sql,{&#x27;users&#x27;:&#x27;{&#x27;+&#x27;,&#x27;.join(map(str,users[i::8]))+&#x27;}&#x27;,&#x27;epoch&#x27;:epoch,&#x27;key&#x27;:key});n,blob=c.fetchone()
+            msg=PGPMessage.from_blob(base64.b64decode(blob)).decrypt(key).message
+            if isinstance(msg,(bytes,bytearray)):msg=bytes(msg).decode()
+            df=pd.DataFrame([json.loads(line) for line in str(msg).splitlines()]);assert len(df)==n
+        conn.rollback()
+    info={&#x27;shard&#x27;:i,&#x27;rows&#x27;:n,&#x27;snapshot_business&#x27;:snap.isoformat(),&#x27;seconds&#x27;:round(time.monotonic()-started,1)}
+    print(json.dumps(info),flush=True);return df,info
+
+def main():
+    users=sorted(r[&#x27;user_id&#x27;] for r in json.loads(COHORT.read_text())[&#x27;members&#x27;])
+    epoch=datetime.fromisoformat(json.loads((W/&#x27;loan_snapshot.json&#x27;).read_text())[&#x27;business_cutoff&#x27;]).replace(tzinfo=timezone(timedelta(hours=-6))).timestamp()
+    (W/&#x27;offers_compact_query.sql&#x27;).write_text(QUERY)
+    with ThreadPoolExecutor(max_workers=4) as pool:results=list(pool.map(lambda i:run(i,users,epoch),range(8)))
+    df=pd.concat([r[0] for r in results],ignore_index=True);assert not df.duplicated([&#x27;user_id&#x27;,&#x27;serial_id&#x27;,&#x27;vir_unix&#x27;,&#x27;vir_rnb&#x27;]).any()
+    p=W/&#x27;offers_compact.pkl.gz&#x27;;df.to_pickle(p)
+    info={&#x27;rows&#x27;:len(df),&#x27;sha256&#x27;:hashlib.sha256(p.read_bytes()).hexdigest(),&#x27;snapshot_business&#x27;:min(r[1][&#x27;snapshot_business&#x27;] for r in results),
+          &#x27;shards&#x27;:[r[1] for r in results],&#x27;read_only&#x27;:True,&#x27;same_event_cutoff&#x27;:True,&#x27;compact_equivalent_latest_and_utilization_offers&#x27;:True}
+    (W/&#x27;offers_compact_manifest.json&#x27;).write_text(json.dumps(info,indent=2));print(json.dumps({&#x27;complete&#x27;:True,&#x27;rows&#x27;:len(df)}),flush=True)
+
+if __name__==&#x27;__main__&#x27;:main()
+</code></pre></details><details class="data-details"><summary>finalize_extraction.py</summary><pre><code>&quot;&quot;&quot;Finalize separately verified read-only table extractions; never claim one shared snapshot.&quot;&quot;&quot;
+import json,hashlib
+from pathlib import Path
+from extract import W,COHORT
+
+def main():
+    d=json.loads((W/&#x27;loan_snapshot.json&#x27;).read_text())
+    compact=W/&#x27;offers_compact_manifest.json&#x27;
+    if compact.exists():
+        tables={n:json.loads((W/(n+&#x27;_manifest.json&#x27;)).read_text()) for n in [&#x27;periods&#x27;,&#x27;recycle&#x27;]}
+        import shutil
+        shutil.copy2(W/&#x27;offers_compact.pkl.gz&#x27;,W/&#x27;offers.pkl.gz&#x27;)
+        tables[&#x27;offers&#x27;]=json.loads(compact.read_text())
+        (W/&#x27;offers_query.sql&#x27;).write_text((W/&#x27;offers_compact_query.sql&#x27;).read_text())
+    else:
+        supp=json.loads((W/&#x27;supplement_manifest.json&#x27;).read_text());assert supp[&#x27;complete&#x27;];tables=supp[&#x27;tables&#x27;]
+    p=W/&#x27;loans.pkl.gz&#x27;
+    import pandas as pd
+    f=pd.read_pickle(p);assert f.user_id.nunique()==6144 and not f.serial_id.duplicated().any()
+    tables[&#x27;loans&#x27;]={&#x27;rows&#x27;:len(f),&#x27;sha256&#x27;:hashlib.sha256(p.read_bytes()).hexdigest(),&#x27;snapshot_business&#x27;:d[&#x27;business_cutoff&#x27;],&#x27;read_only&#x27;:True}
+    for name,info in tables.items():assert hashlib.sha256((W/(name+&#x27;.pkl.gz&#x27;)).read_bytes()).hexdigest()==info[&#x27;sha256&#x27;]
+    assert hashlib.sha256(COHORT.read_bytes()).hexdigest()==d[&#x27;cohort_sha256&#x27;]
+    result={**d,&#x27;complete&#x27;:True,&#x27;read_only&#x27;:True,&#x27;single_repeatable_read_snapshot&#x27;:False,&#x27;repeatable_read_per_shard&#x27;:True,
+            &#x27;business_timezone&#x27;:&#x27;America/Belize&#x27;,&#x27;requested_users&#x27;:6144,&#x27;tables&#x27;:tables,
+            &#x27;availability_limit&#x27;:&#x27;Source tables extracted at adjacent read-only snapshots; loan snapshot fixes event cutoff. No immutable historical ingestion snapshot.&#x27;}
+    (W/&#x27;extraction_manifest.json&#x27;).write_text(json.dumps(result,indent=2));(W/&#x27;extraction_inprogress.json&#x27;).unlink(missing_ok=True)
+    p=W/&#x27;periods_aggregate_query.sql&#x27;
+    if p.exists():(W/&#x27;periods_query.sql&#x27;).write_text(p.read_text())
+    print(json.dumps({&#x27;complete&#x27;:True,&#x27;tables&#x27;:{k:v[&#x27;rows&#x27;] for k,v in tables.items()},&#x27;read_only&#x27;:True}))
+
+if __name__==&#x27;__main__&#x27;:main()
+</code></pre></details><details class="data-details"><summary>analyze.py</summary><pre><code>&quot;&quot;&quot;Describe frozen historical-profit cohorts, retaining every current status 8 user.&quot;&quot;&quot;
+from pathlib import Path
+import os,json,statistics,math
+from decimal import Decimal
+import numpy as np
+import pandas as pd
+W=Path(__file__).resolve().parent
+COHORT=Path(os.environ.get(&#x27;CORE_CUSTOMER_COHORT_JSON&#x27;,str(W.parent/&#x27;profit_concentration_20250101_20260930_20261021/result.json&#x27;)))
+DAY=pd.Timedelta(days=1)
+
+def safe(v):
+    if isinstance(v,dict):return {k:safe(x) for k,x in v.items()}
+    if isinstance(v,list):return [safe(x) for x in v]
+    if v is None:return None
+    if isinstance(v,(pd.Timestamp,)):return v.isoformat()
+    if isinstance(v,(np.integer,)):return int(v)
+    if isinstance(v,(np.bool_,)):return bool(v)
+    if isinstance(v,(Decimal,)):return str(v)
+    if isinstance(v,(float,np.floating)) and not math.isfinite(v):return None
+    return v
+def ratio(n,d):return float(n/d) if d else None
+def median(x):
+    a=[float(v) for v in x if v is not None and pd.notna(v)];return float(np.median(a)) if a else None
+def dates(df,t,d,cutoff):
+    ts=pd.to_datetime(df[t],errors=&#x27;coerce&#x27;);ds=pd.to_datetime(df[d],errors=&#x27;coerce&#x27;)
+    valid=ts.ge(&#x27;2000-01-01&#x27;)&amp;ts.le(cutoff)
+    fallback=(~valid)&amp;ds.ge(&#x27;2000-01-01&#x27;)&amp;ds.le(cutoff.normalize())
+    return ts.where(valid,ds.where(fallback)),int(fallback.sum())
+
+def main():
+    d=json.loads(COHORT.read_text());manifest=json.loads((W/&#x27;extraction_manifest.json&#x27;).read_text());assert manifest[&#x27;complete&#x27;]
+    cutoff=pd.Timestamp(manifest[&#x27;business_cutoff&#x27;]);start=pd.Timestamp(&#x27;2025-01-01&#x27;);end=pd.Timestamp(&#x27;2026-10-01&#x27;)
+    L=pd.read_pickle(W/&#x27;loans.pkl.gz&#x27;);P=pd.read_pickle(W/&#x27;periods.pkl.gz&#x27;);O=pd.read_pickle(W/&#x27;offers.pkl.gz&#x27;);R=pd.read_pickle(W/&#x27;recycle.pkl.gz&#x27;)
+    assert not L.serial_id.duplicated().any()
+    duplicate_types=int(R.serial_id.duplicated().sum());assert not (R.groupby(&#x27;serial_id&#x27;).recycle_type.nunique()&gt;1).any()
+    R=R.drop_duplicates(&#x27;serial_id&#x27;);L=L.merge(R,on=&#x27;serial_id&#x27;,how=&#x27;left&#x27;,validate=&#x27;many_to_one&#x27;);O=O.merge(R,on=&#x27;serial_id&#x27;,how=&#x27;left&#x27;,validate=&#x27;many_to_one&#x27;)
+    qa={&#x27;loans&#x27;:len(L),&#x27;periods&#x27;:len(P),&#x27;offers&#x27;:len(O),&#x27;recycle_duplicate_same_type_rows&#x27;:duplicate_types}
+    qa[&#x27;offer_extract_equivalence&#x27;]=(&#x27;Only latest user offers and exact pre-application offers transferred; selected from all history with no loss of requested metrics.&#x27; if manifest[&#x27;tables&#x27;][&#x27;offers&#x27;].get(&#x27;compact_equivalent_latest_and_utilization_offers&#x27;) else &#x27;Complete source offers transferred.&#x27;)
+    for t,dt in [(&#x27;apply_time&#x27;,&#x27;apply_date&#x27;),(&#x27;remit_time&#x27;,&#x27;remit_date&#x27;),(&#x27;repaid_time&#x27;,&#x27;repaid_date&#x27;)]:
+        L[t+&#x27;_valid&#x27;],qa[t+&#x27;_date_fallback&#x27;]=dates(L,t,dt,cutoff)
+    for c in [&#x27;apply_amt&#x27;,&#x27;remit_amt&#x27;,&#x27;repaid_amt&#x27;]:L[c]=pd.to_numeric(L[c],errors=&#x27;coerce&#x27;)
+    L[&#x27;apply_t&#x27;]=L.apply_time_valid;L[&#x27;remit_t&#x27;]=L.remit_time_valid;L[&#x27;settle_t&#x27;]=L.repaid_time_valid.where(L.is_repaid.eq(1))
+    status_flags=L.groupby(&#x27;user_id&#x27;).loan_status_code.agg(has8=lambda s:bool(s.eq(8).any()),has5=lambda s:bool(s.eq(5).any()))
+    qa[&#x27;future_or_missing_apply_rows&#x27;]=int(L.apply_t.isna().sum())
+    L=L.loc[L.apply_t.notna()].copy()
+    F=L.loc[L.is_remit.eq(1)&amp;L.remit_t.notna()].copy()
+    F[&#x27;invalid_settle_t&#x27;]=F.is_repaid.eq(1)&amp;(F.settle_t.isna()|F.settle_t.lt(F.remit_t))
+    qa[&#x27;settled_missing_or_pre_remit_timestamp_orders&#x27;]=int(F.invalid_settle_t.sum())
+    F.loc[F.invalid_settle_t,&#x27;settle_t&#x27;]=pd.NaT
+    F[&#x27;early_settled&#x27;]=F.settle_t.notna()&amp;F.settle_t.dt.normalize().lt(pd.to_datetime(F.due_date,errors=&#x27;coerce&#x27;))
+    if &#x27;has_late_period&#x27; in P:
+        assert not P.serial_id.duplicated().any()
+        PG=P.set_index(&#x27;serial_id&#x27;)[[&#x27;period_rows&#x27;,&#x27;has_late_period&#x27;]].copy()
+        PG[&#x27;has_late_period&#x27;]=PG.has_late_period.eq(1)
+        qa[&#x27;period_source_rows_aggregated&#x27;]=int(P.period_rows.sum())
+        qa[&#x27;period_history_transfer&#x27;]=&#x27;per-order MAX historical-lateness marker, computed from complete source installment rows&#x27;
+    else:
+        P[&#x27;repaid_period_t&#x27;],qa[&#x27;period_repaid_date_fallback&#x27;]=dates(P,&#x27;repaid_time_period&#x27;,&#x27;repaid_date_period&#x27;,cutoff)
+        P[&#x27;due_d&#x27;]=pd.to_datetime(P.due_date_period,errors=&#x27;coerce&#x27;)
+        P[&#x27;ever_late_period&#x27;]=P.overdue_days_period.gt(0)|(P.is_repaid_period.eq(1)&amp;P.repaid_period_t.dt.normalize().gt(P.due_d))
+        qa[&#x27;duplicate_period_rows&#x27;]=int(P.duplicated([&#x27;serial_id&#x27;,&#x27;current_term&#x27;]).sum())
+        PG=P.groupby(&#x27;serial_id&#x27;).agg(period_rows=(&#x27;current_term&#x27;,&#x27;size&#x27;),has_late_period=(&#x27;ever_late_period&#x27;,&#x27;max&#x27;))
+    F=F.join(PG,on=&#x27;serial_id&#x27;);F[&#x27;late_then_settled&#x27;]=F.has_late_period.fillna(False)&amp;F.is_repaid.eq(1)&amp;F.settle_t.notna()
+    qa[&#x27;funded_orders_missing_periods&#x27;]=int(F.period_rows.isna().sum())
+    O[&#x27;offer_t&#x27;]=pd.to_datetime(O.vir_unix,unit=&#x27;s&#x27;,errors=&#x27;coerce&#x27;)-pd.Timedelta(hours=6)
+    O[&#x27;credit_amt&#x27;]=pd.to_numeric(O.credit_amt,errors=&#x27;coerce&#x27;)
+    qa[&#x27;offer_rows_with_invalid_or_future_event_time&#x27;]=int((~(O.offer_t.ge(&#x27;2000-01-01&#x27;)&amp;O.offer_t.le(cutoff))).sum())
+    O=O.loc[O.offer_t.ge(&#x27;2000-01-01&#x27;)&amp;O.offer_t.le(cutoff)].copy()
+    O=O.sort_values([&#x27;offer_t&#x27;,&#x27;serial_id&#x27;,&#x27;vir_rnb&#x27;]).drop_duplicates([&#x27;user_id&#x27;,&#x27;serial_id&#x27;,&#x27;vir_unix&#x27;,&#x27;vir_rnb&#x27;],keep=&#x27;last&#x27;)
+    qa[&#x27;offer_pass_flags&#x27;]=O.groupby([&#x27;is_pass1&#x27;,&#x27;vir_status_code&#x27;],dropna=False).size().reset_index(name=&#x27;rows&#x27;).to_dict(&#x27;records&#x27;)
+    A=L.loc[L.apply_amt.gt(0)].copy()
+    right=O[[&#x27;user_id&#x27;,&#x27;serial_id&#x27;,&#x27;offer_t&#x27;,&#x27;credit_amt&#x27;,&#x27;is_pass1&#x27;]].sort_values(&#x27;offer_t&#x27;)
+    match=pd.merge_asof(A[[&#x27;user_id&#x27;,&#x27;serial_id&#x27;,&#x27;apply_t&#x27;,&#x27;apply_amt&#x27;]].sort_values(&#x27;apply_t&#x27;),right,
+                       by=[&#x27;user_id&#x27;,&#x27;serial_id&#x27;],left_on=&#x27;apply_t&#x27;,right_on=&#x27;offer_t&#x27;,direction=&#x27;backward&#x27;,allow_exact_matches=True)
+    match[&#x27;valid_usage&#x27;]=match.is_pass1.eq(1)&amp;match.credit_amt.gt(0)
+    match[&#x27;usage&#x27;]=np.where(match.valid_usage,match.apply_amt/match.credit_amt,np.nan)
+    M=match.loc[match.apply_t.ge(start)&amp;match.apply_t.lt(end)].copy()
+    qa[&#x27;usage_period_submitted_orders&#x27;]=len(M);qa[&#x27;usage_period_matched_orders&#x27;]=int(M.valid_usage.sum())
+    qa[&#x27;usage_over100_orders&#x27;]=int(M.usage.gt(1).sum())
+    qa[&#x27;funded_history_extent&#x27;]=[str(F.remit_t.min()),str(F.remit_t.max())]
+    qa[&#x27;apply_history_extent&#x27;]=[str(L.apply_t.min()),str(L.apply_t.max())]
+    groups_L={int(k):v.sort_values([&#x27;apply_t&#x27;,&#x27;serial_id&#x27;]) for k,v in L.groupby(&#x27;user_id&#x27;)}
+    groups_F={int(k):v.sort_values([&#x27;remit_t&#x27;,&#x27;serial_id&#x27;]) for k,v in F.groupby(&#x27;user_id&#x27;)}
+    groups_O={int(k):v.sort_values([&#x27;offer_t&#x27;,&#x27;serial_id&#x27;,&#x27;vir_rnb&#x27;]) for k,v in O.groupby(&#x27;user_id&#x27;)}
+    groups_M={int(k):v for k,v in M.groupby(&#x27;user_id&#x27;)}
+    rows=[];all_clear=[]
+    for orig in d[&#x27;members&#x27;]:
+        uid=orig[&#x27;user_id&#x27;];a=groups_L.get(uid,L.iloc[:0]);f=groups_F.get(uid,F.iloc[:0]);o=groups_O.get(uid,O.iloc[:0]);m=groups_M.get(uid,M.iloc[:0]);valid=m.loc[m.valid_usage]
+        row={**orig,&#x27;current_lifetime_loans&#x27;:len(f),&#x27;lifetime_apply_orders&#x27;:len(a),
+             &#x27;current_has8&#x27;:bool(status_flags.loc[uid,&#x27;has8&#x27;]),&#x27;current_has5&#x27;:bool(status_flags.loc[uid,&#x27;has5&#x27;]),
+             &#x27;median_borrow_gap_days&#x27;:median(f.remit_t.diff().dt.total_seconds()/86400),
+             &#x27;mean_borrow_gap_days&#x27;:float((f.remit_t.max()-f.remit_t.min())/DAY/(len(f)-1)) if len(f)&gt;1 else None,
+             &#x27;same_day_repeat_borrow_gaps&#x27;:int(f.remit_t.dt.normalize().diff().eq(pd.Timedelta(0)).sum()),
+             &#x27;has_late_then_settled&#x27;:bool(f.late_then_settled.any()),&#x27;late_then_settled_orders&#x27;:int(f.late_then_settled.sum()),
+             &#x27;settled_history_orders&#x27;:int(f.is_repaid.eq(1).sum()),&#x27;period_known_orders&#x27;:int(f.period_rows.notna().sum()),
+             &#x27;has_early_settled&#x27;:bool(f.early_settled.any()),&#x27;early_settled_orders&#x27;:int(f.early_settled.sum()),
+             &#x27;cycle_funded_orders&#x27;:int(f.recycle_type.eq(2).sum()),&#x27;has_cycle_funded&#x27;:bool(f.recycle_type.eq(2).any()),
+             &#x27;cycle_type_known_orders&#x27;:int(f.recycle_type.notna().sum()),&#x27;latest_funded_is_cycle&#x27;:bool(len(f) and f.iloc[-1].recycle_type==2),
+             &#x27;usage_orders&#x27;:len(valid),&#x27;usage_attempts&#x27;:len(m),&#x27;usage_sum&#x27;:float(valid.usage.sum()),
+             &#x27;usage_apply_amt&#x27;:float(valid.apply_amt.sum()),&#x27;usage_credit_amt&#x27;:float(valid.credit_amt.sum()),
+             &#x27;usage_gt100_orders&#x27;:int(valid.usage.gt(1).sum()),
+             &#x27;user_mean_usage&#x27;:float(valid.usage.mean()) if len(valid) else None,
+             &#x27;latest_offer_pass&#x27;:int(o.iloc[-1].is_pass1) if len(o) and pd.notna(o.iloc[-1].is_pass1) else None,
+             &#x27;latest_offer_date&#x27;:o.iloc[-1].offer_t.isoformat() if len(o) else None,
+             &#x27;latest_offer_is_cycle&#x27;:bool(len(o) and o.iloc[-1].recycle_type==2),
+             &#x27;latest_offer_credit&#x27;:float(o.iloc[-1].credit_amt) if len(o) and pd.notna(o.iloc[-1].credit_amt) else None,
+             &#x27;funded_orders&#x27;:len(f),&#x27;has_incomplete_timeline&#x27;:bool(f.invalid_settle_t.any())}
+        # A complete-settlement anchor must leave ZERO of this user&#x27;s prior disbursements outstanding.
+        # Group simultaneous openings and closings before assessing the balance; one settled loan alone is insufficient.
+        opens=pd.DataFrame({&#x27;t&#x27;:f.remit_t,&#x27;delta&#x27;:1,&#x27;is_close&#x27;:0})
+        close_f=f.loc[f.settle_t.notna()]
+        closes=pd.DataFrame({&#x27;t&#x27;:close_f.settle_t,&#x27;delta&#x27;:-1,&#x27;is_close&#x27;:1})
+        timeline=pd.concat([opens,closes]).groupby(&#x27;t&#x27;).agg(delta=(&#x27;delta&#x27;,&#x27;sum&#x27;),is_close=(&#x27;is_close&#x27;,&#x27;sum&#x27;)).sort_index()
+        timeline[&#x27;active_after&#x27;]=timeline.delta.cumsum()
+        assert (timeline.active_after&gt;=0).all(),uid
+        anchors=timeline.loc[timeline.is_close.gt(0)&amp;timeline.active_after.eq(0)].index
+        applies=a.apply_t.to_numpy(dtype=&#x27;datetime64[ns]&#x27;)
+        events=[]
+        for t in anchors:
+            idx=np.searchsorted(applies,t.to_datetime64(),side=&#x27;left&#x27;)
+            next_t=pd.Timestamp(applies[idx]) if idx&lt;len(applies) else None
+            elapsed=float((cutoff-t)/DAY);gap=float((next_t-t)/DAY) if next_t is not None else None
+            event={&#x27;user_id&#x27;:uid,&#x27;t&#x27;:t,&#x27;next_t&#x27;:next_t,&#x27;observed_days&#x27;:elapsed,&#x27;gap_days&#x27;:gap,
+                   &#x27;mature5&#x27;:elapsed&gt;=5,&#x27;mature7&#x27;:elapsed&gt;=7,
+                   &#x27;gap5&#x27;:elapsed&gt;=5 and (gap is None or gap&gt;5),&#x27;gap7&#x27;:elapsed&gt;=7 and (gap is None or gap&gt;7),
+                   &#x27;returned_after7&#x27;:gap is not None and gap&gt;7,&#x27;in_profit_period&#x27;:start&lt;=t&lt;end}
+            events.append(event);all_clear.append(event)
+        row.update({&#x27;full_clear_events&#x27;:len(events),
+                    &#x27;full_clear_mature5&#x27;:sum(e[&#x27;mature5&#x27;] for e in events),&#x27;full_clear_gap5&#x27;:sum(e[&#x27;gap5&#x27;] for e in events),
+                    &#x27;full_clear_mature7&#x27;:sum(e[&#x27;mature7&#x27;] for e in events),&#x27;full_clear_gap7&#x27;:sum(e[&#x27;gap7&#x27;] for e in events),
+                    &#x27;full_clear_returned_after7&#x27;:sum(e[&#x27;returned_after7&#x27;] for e in events),
+                    &#x27;has_gap5&#x27;:any(e[&#x27;gap5&#x27;] for e in events),&#x27;has_gap7&#x27;:any(e[&#x27;gap7&#x27;] for e in events),
+                    &#x27;return_gaps_observed&#x27;:len([e for e in events if e[&#x27;gap_days&#x27;] is not None]),
+                    &#x27;return_gap_median_days&#x27;:median(e[&#x27;gap_days&#x27;] for e in events if e[&#x27;gap_days&#x27;] is not None),
+                    &#x27;latest_clear_waiting_days&#x27;:float((cutoff-events[-1][&#x27;t&#x27;])/DAY) if events and events[-1][&#x27;next_t&#x27;] is None else None,
+                    &#x27;current_all_loans_settled&#x27;:bool(len(f) and (f.is_repaid.eq(1)&amp;f.settle_t.notna()).all())})
+        rows.append(row)
+    U=pd.DataFrame(rows);E=pd.DataFrame(all_clear)
+    assert len(U)==6144 and U.user_id.nunique()==6144
+    qa[&#x27;current_status8_changed_vs_frozen&#x27;]=int((U.current_has8.astype(int)!=U.has_current_status8).sum())
+    qa[&#x27;lifetime_count_changed_vs_frozen&#x27;]=int(U.current_lifetime_loans.ne(U.lifetime_loans).sum())
+    scoped_now=F.loc[pd.to_datetime(F.remit_date).ge(start)&amp;pd.to_datetime(F.remit_date).lt(end)].copy()
+    scoped_now[&#x27;profit_now&#x27;]=scoped_now.repaid_amt-scoped_now.remit_amt
+    profit_now=scoped_now.groupby(&#x27;user_id&#x27;).profit_now.sum()
+    qa[&#x27;source_profit_changed_vs_frozen_users&#x27;]=int(sum(not math.isclose(float(profit_now.get(r.user_id,0)),float(r.profit),abs_tol=.005) for r in U.itertuples()))
+    # No current-status or application-eligibility filters are applied to any cohort.
+    def summary(u,label):
+        uid=set(u.user_id);e=E.loc[E.user_id.isin(uid)];mv=u.usage_orders.sum();fund=u.funded_orders.sum()
+        clear5=u.full_clear_mature5.gt(0);clear7=u.full_clear_mature7.gt(0);no8=~u.current_has8
+        profit=sum((Decimal(v) for v in u.profit),Decimal(0))
+        return {&#x27;label&#x27;:label,&#x27;users&#x27;:len(u),&#x27;profit&#x27;:str(profit),&#x27;profit_share&#x27;:float(profit/Decimal(d[&#x27;totals&#x27;][&#x27;total_profit&#x27;])),
+         &#x27;user_share_all&#x27;:ratio(len(u),d[&#x27;totals&#x27;][&#x27;total_users&#x27;]),&#x27;life_loan_median&#x27;:median(u.lifetime_loans),&#x27;life_loan_mean&#x27;:float(u.lifetime_loans.mean()),
+         &#x27;borrow_gap_user_median&#x27;:median(u.median_borrow_gap_days),&#x27;borrow_gap_user_mean_median&#x27;:median(u.mean_borrow_gap_days),
+         &#x27;return_gap_user_median&#x27;:median(u.return_gap_median_days),&#x27;observed_return_users&#x27;:int(u.return_gaps_observed.gt(0).sum()),
+         &#x27;history_late_then_settled_users&#x27;:int(u.has_late_then_settled.sum()),&#x27;history_late_then_settled_share&#x27;:float(u.has_late_then_settled.mean()),
+         &#x27;history_late_then_settled_orders&#x27;:int(u.late_then_settled_orders.sum()),&#x27;settled_history_orders&#x27;:int(u.settled_history_orders.sum()),
+         &#x27;history_late_then_settled_order_share&#x27;:ratio(u.late_then_settled_orders.sum(),u.settled_history_orders.sum()),
+         &#x27;current_status8_users&#x27;:int(u.current_has8.sum()),&#x27;current_status8_share&#x27;:float(u.current_has8.mean()),
+         &#x27;no_current8_users&#x27;:int(no8.sum()),&#x27;no8_latest_pass_users&#x27;:int((no8&amp;u.latest_offer_pass.eq(1)).sum()),
+         &#x27;no8_latest_notpass_users&#x27;:int((no8&amp;u.latest_offer_pass.eq(0)).sum()),
+         &#x27;no8_latest_unknown_users&#x27;:int((no8&amp;~u.latest_offer_pass.isin([0,1])).sum()),
+         &#x27;no8_latest_pass_share&#x27;:ratio((no8&amp;u.latest_offer_pass.eq(1)).sum(),no8.sum()),
+         &#x27;no8_latest_notpass_share&#x27;:ratio((no8&amp;u.latest_offer_pass.eq(0)).sum(),no8.sum()),
+         &#x27;no8_latest_unknown_share&#x27;:ratio((no8&amp;~u.latest_offer_pass.isin([0,1])).sum(),no8.sum()),
+         &#x27;cycle_users&#x27;:int(u.has_cycle_funded.sum()),&#x27;cycle_user_share&#x27;:float(u.has_cycle_funded.mean()),
+         &#x27;cycle_funded_orders&#x27;:int(u.cycle_funded_orders.sum()),&#x27;funded_orders&#x27;:int(fund),
+         &#x27;cycle_order_share&#x27;:ratio(u.cycle_funded_orders.sum(),fund),&#x27;latest_funded_cycle_share&#x27;:float(u.latest_funded_is_cycle.mean()),
+         &#x27;latest_offer_cycle_share&#x27;:float(u.latest_offer_is_cycle.mean()),
+         &#x27;usage_orders&#x27;:int(mv),&#x27;usage_attempts&#x27;:int(u.usage_attempts.sum()),&#x27;usage_coverage&#x27;:ratio(mv,u.usage_attempts.sum()),
+         &#x27;usage_mean_order&#x27;:ratio(u.usage_sum.sum(),mv),&#x27;usage_weighted&#x27;:ratio(u.usage_apply_amt.sum(),u.usage_credit_amt.sum()),
+         &#x27;usage_user_median&#x27;:median(u.user_mean_usage),&#x27;usage_gt100_orders&#x27;:int(u.usage_gt100_orders.sum()),
+         &#x27;full_clear_events&#x27;:len(e),&#x27;full_clear_mature5&#x27;:int(e.mature5.sum()),&#x27;full_clear_mature7&#x27;:int(e.mature7.sum()),
+         &#x27;gap5_events&#x27;:int(e.gap5.sum()),&#x27;gap7_events&#x27;:int(e.gap7.sum()),
+         &#x27;gap5_event_share&#x27;:ratio(e.gap5.sum(),e.mature5.sum()),&#x27;gap7_event_share&#x27;:ratio(e.gap7.sum(),e.mature7.sum()),
+         &#x27;mature5_users&#x27;:int(clear5.sum()),&#x27;mature7_users&#x27;:int(clear7.sum()),
+         &#x27;ever_gap5_users&#x27;:int(u.has_gap5.sum()),&#x27;ever_gap7_users&#x27;:int(u.has_gap7.sum()),
+         &#x27;ever_gap5_share&#x27;:ratio(u.has_gap5.sum(),clear5.sum()),&#x27;ever_gap7_share&#x27;:ratio(u.has_gap7.sum(),clear7.sum()),
+         &#x27;returned_after7_events&#x27;:int(e.returned_after7.sum()),
+         &#x27;early_settled_users&#x27;:int(u.has_early_settled.sum()),&#x27;early_settled_user_share&#x27;:float(u.has_early_settled.mean()),
+         &#x27;current_all_settled_users&#x27;:int(u.current_all_loans_settled.sum()),&#x27;current_all_settled_share&#x27;:float(u.current_all_loans_settled.mean()),
+         &#x27;currently_waiting_after_clear7_users&#x27;:int(u.latest_clear_waiting_days.gt(7).sum()),
+         &#x27;principal_per_scoped_order&#x27;:float(sum(Decimal(v) for v in u.remit_amt)/sum(u.scoped_orders)),
+         &#x27;scoped_settled_order_share&#x27;:ratio(sum(u.settled_orders),sum(u.scoped_orders))}
+    results=[summary(U,&#x27;历史核心90%整体&#x27;)]
+    for label in d[&#x27;core90_classes&#x27;]:results.append(summary(U.loc[U.customer_class.eq(label[&#x27;customer_class&#x27;])],label[&#x27;customer_class&#x27;]))
+    cover=[summary(U.loc[U.profit_rank.le(r[&#x27;minimum_users&#x27;])],f&#x27;覆盖{r[&quot;target_pct&quot;]}%最小名单&#x27;) for r in d[&#x27;coverage&#x27;]]
+    mature=E.loc[E.mature7];gap_dist=[]
+    for label,lo,hi in [(&#x27;0—1天&#x27;,0,1),(&#x27;1—3天&#x27;,1,3),(&#x27;3—5天&#x27;,3,5),(&#x27;5—7天&#x27;,5,7),(&#x27;超过7天后再提单&#x27;,7,float(&#x27;inf&#x27;))]:
+        mask=(mature.gap_days.ge(lo) if lo==0 else mature.gap_days.gt(lo))&amp;mature.gap_days.le(hi)
+        gap_dist.append({&#x27;label&#x27;:label,&#x27;events&#x27;:int(mask.sum()),&#x27;share&#x27;:ratio(mask.sum(),len(mature))})
+    gap_dist.append({&#x27;label&#x27;:&#x27;截至观察时点仍未再提单&#x27;,&#x27;events&#x27;:int(mature.next_t.isna().sum()),&#x27;share&#x27;:ratio(mature.next_t.isna().sum(),len(mature))})
+    assert sum(x[&#x27;events&#x27;] for x in gap_dist)==len(mature)
+    # Mutually exclusive descriptive risk-history types, keeping all records.
+    history_types=[]
+    for label,mask in [(&#x27;当前有状态8订单&#x27;,U.current_has8),(&#x27;当前无状态8，曾分期逾期后结清&#x27;,~U.current_has8&amp;U.has_late_then_settled),(&#x27;当前无状态8，未识别到分期逾期后结清&#x27;,~U.current_has8&amp;~U.has_late_then_settled)]:
+        sub=U.loc[mask];p=sum((Decimal(v) for v in sub.profit),Decimal(0))
+        history_types.append({&#x27;label&#x27;:label,&#x27;users&#x27;:len(sub),&#x27;share&#x27;:ratio(len(sub),len(U)),&#x27;profit&#x27;:str(p),&#x27;profit_share&#x27;:float(p/Decimal(d[&#x27;totals&#x27;][&#x27;total_profit&#x27;]))})
+    assert sum(x[&#x27;users&#x27;] for x in history_types)==len(U)
+    public={&#x27;meta&#x27;:{&#x27;cohort_snapshot_shanghai&#x27;:d[&#x27;meta&#x27;][&#x27;shanghai_cutoff&#x27;],&#x27;feature_snapshot_shanghai&#x27;:manifest[&#x27;shanghai_cutoff&#x27;],
+                    &#x27;feature_snapshot_business&#x27;:manifest[&#x27;business_cutoff&#x27;],&#x27;timezone&#x27;:&#x27;America/Belize&#x27;,&#x27;profit_period&#x27;:[&#x27;2025-01-01&#x27;,&#x27;2026-09-30&#x27;]},
+            &#x27;company&#x27;:{k:d[&#x27;totals&#x27;][k] for k in [&#x27;total_users&#x27;,&#x27;total_profit&#x27;,&#x27;total_orders&#x27;,&#x27;positive_user_profit&#x27;,&#x27;negative_user_profit&#x27;]},
+            &#x27;coverage&#x27;:d[&#x27;coverage&#x27;],&#x27;simple_count_rules&#x27;:d[&#x27;loan_count_rules&#x27;],&#x27;baseline&#x27;:d[&#x27;baseline&#x27;],
+            &#x27;groups&#x27;:results,&#x27;coverage_profiles&#x27;:cover,&#x27;return_gap_distribution&#x27;:gap_dist,&#x27;history_types&#x27;:history_types,&#x27;qa&#x27;:qa,
+            &#x27;feature_definitions&#x27;:{
+             &#x27;profit&#x27;:&#x27;2025-01-01至2026-09-30成功放款订单，当前repaid_amt减remit_amt；未结清及状态8保留，回款不截断至9月30日；利润排序和名单冻结于前次统计快照。&#x27;,
+             &#x27;lifetime_count&#x27;:&#x27;截至原利润快照，全历史成功放款订单数；不是当前单的第几次借款。特征取数时点另列。&#x27;,
+             &#x27;historical_overdue_resolved&#x27;:&#x27;全历史成功放款订单中，任一期overdue_days_period&gt;0，或实际分期还款日期晚于分期应还日期，且整笔is_repaid=1并有有效结清时间。用户占比分母为该客群全部用户；不是当前仍逾期。&#x27;,
+             &#x27;full_clear&#x27;:&#x27;以整笔实际结清时间为事件时点；按用户全部已放款订单的[放款时间,实际结清时间)重建余额，要求该时点结清后所有在借订单数为0。同一时刻多笔结清合为1次事件；不是结清任一单即计。&#x27;,
+             &#x27;gap5_7&#x27;:&#x27;全生命周期完全结清事件，观察已满5×24小时/7×24小时才入相应分母；从结清时刻至其后120/168小时内无任何真实订单提单，记5/7天未再提单。包含失败提单；页面进页不算提单。窗口含终点，结清同刻提单记已提单。&#x27;,
+             &#x27;gap_user_vs_event&#x27;:&#x27;事件率=未在5/7天内再提单的完全结清事件数/观察成熟事件数；曾发生用户占比=至少发生1次该中断的用户数/至少有1次成熟完全结清事件的用户数。不是所有用户为分母。&#x27;,
+             &#x27;return_gap&#x27;:&#x27;仅已观察到下次提单的完全结清事件计算间隔；先取用户内间隔中位数，再取客群用户中位数，仍未再提单不填0。&#x27;,
+             &#x27;usage&#x27;:&#x27;统计期内提单订单：同用户同serial_id、提单时点前最近获额记录，要求is_pass1=1且max_credit_apply_amt&gt;0；使用率=apply_amt/max_credit_apply_amt。主指标是有效订单使用率算术平均，并列总提单金额/总额度的加权比率。不用放款金额、不把缺失填0、不截断超过100%的值。&#x27;,
+             &#x27;current_overdue&#x27;:&#x27;特征快照下，用户名下任一订单loan_status_code=8；分母为客群全部用户；仅描述不排除。&#x27;,
+             &#x27;latest_offer&#x27;:&#x27;用户全部获额记录按vir_unix、serial_id、vir_rnb降序取最新一笔；同一时刻取serial_id最大。仅在无当前状态8用户内计算通过/未通过占比，is_pass1=1为通过、0为未通过；未通过不直接等同风控拒绝，缺失单列。&#x27;,
+             &#x27;cycle_user&#x27;:&#x27;全历史至少有1笔成功放款订单，side_recycle_type_copy.recycle_type=2。循环贷用户与续贷用户不是同义词；另列最近放款是否循环贷和循环贷订单占比。&#x27;,
+             &#x27;borrow_gap&#x27;:&#x27;按实际成功放款时间排序，相邻成功借款间隔；图表主值先取用户内间隔中位数，再取客群用户中位数。同日借多笔可产生小于1天间隔。&#x27;,
+             &#x27;early_settlement&#x27;:&#x27;整笔实际结清日期严格早于整笔最终应还日期，is_repaid=1；用户占比按全组用户计算。&#x27;,
+             &#x27;limitations&#x27;:&#x27;历史中断可在之后再次提单，不等同永久流失；本次不做运营可触达筛选。贷款、分期、获额、循环贷类型分表在相邻只读快照提取，事件统一截止贷款特征快照，未取得不可变历史入库快照，源副本后补会影响复跑结果。&#x27;} }
+    public[&#x27;meta&#x27;][&#x27;table_snapshots&#x27;]={k:v.get(&#x27;snapshot_business&#x27;,manifest[&#x27;business_cutoff&#x27;]) for k,v in manifest[&#x27;tables&#x27;].items()}
+    (W/&#x27;analysis.json&#x27;).write_text(json.dumps(safe(public),ensure_ascii=False,indent=2,allow_nan=False))
+    U.to_pickle(W/&#x27;user_features.pkl.gz&#x27;);E.to_pickle(W/&#x27;full_clear_events.pkl.gz&#x27;)
+    (W/&#x27;qa.json&#x27;).write_text(json.dumps(safe({&#x27;passed&#x27;:True,**qa,&#x27;core_users&#x27;:len(U),&#x27;status8_users_retained&#x27;:int(U.current_has8.sum()),&#x27;mature7_events&#x27;:len(mature),&#x27;group_users_sum&#x27;:sum(g[&#x27;users&#x27;] for g in results[1:])}),ensure_ascii=False,indent=2,allow_nan=False))
+    print(json.dumps(safe({&#x27;groups&#x27;:results,&#x27;qa&#x27;:qa,&#x27;history_types&#x27;:history_types,&#x27;return_gap_distribution&#x27;:gap_dist}),ensure_ascii=False,allow_nan=False))
+
+if __name__==&#x27;__main__&#x27;:main()
+</code></pre></details><details class="data-details"><summary>build_report.py</summary><pre><code>&quot;&quot;&quot;Build the dark, self-contained aggregate report from the frozen analysis JSON.&quot;&quot;&quot;
+from pathlib import Path
+import os,json,html,re,hashlib,shutil,zipfile
+from datetime import datetime
+from zoneinfo import ZoneInfo
+W=Path(__file__).resolve().parent
+OUT=Path(os.environ.get(&#x27;CORE_CUSTOMER_REPORT_OUT&#x27;,str(W.parents[1]/&#x27;outputs/核心利润客群_用户生命周期特征分析_20261021&#x27;)))
+esc=lambda x:html.escape(str(x))
+def num(v,d=0):return &#x27;—&#x27; if v is None else f&#x27;{float(v):,.{d}f}&#x27;
+def pct(v):return &#x27;—&#x27; if v is None else f&#x27;{float(v)*100:.2f}%&#x27;
+def table(headers,rows):
+    return &#x27;&lt;div class=&quot;scroll&quot;&gt;&lt;table&gt;&lt;thead&gt;&lt;tr&gt;&#x27;+&#x27;&#x27;.join(&#x27;&lt;th&gt;&#x27;+esc(x)+&#x27;&lt;/th&gt;&#x27; for x in headers)+&#x27;&lt;/tr&gt;&lt;/thead&gt;&lt;tbody&gt;&#x27;+&#x27;&#x27;.join(&#x27;&lt;tr&gt;&#x27;+&#x27;&#x27;.join(&#x27;&lt;td&gt;&#x27;+esc(x)+&#x27;&lt;/td&gt;&#x27; for x in r)+&#x27;&lt;/tr&gt;&#x27; for r in rows)+&#x27;&lt;/tbody&gt;&lt;/table&gt;&lt;/div&gt;&#x27;
+def details(label,content):return &#x27;&lt;details class=&quot;data-details&quot;&gt;&lt;summary&gt;&#x27;+esc(label)+&#x27;&lt;/summary&gt;&#x27;+content+&#x27;&lt;/details&gt;&#x27;
+def chart(title,labels,series,percent=True,unit=&#x27;&#x27;,ceiling=None):
+    # Plain SVG: every bar has a visible label, and remains available offline.
+    width=1120;left=270;right=140;top=62;bar=18;gap=8;groupgap=26
+    stride=len(series)*(bar+gap)+groupgap;height=top+len(labels)*stride+25
+    maximum=max([v for s in series for v in s[&#x27;values&#x27;] if v is not None]+[0])
+    scale=ceiling or max(maximum*1.12,0.01);plot=width-left-right
+    svg=f&#x27;&lt;svg role=&quot;img&quot; aria-label=&quot;{esc(title)}&quot; viewBox=&quot;0 0 {width} {height}&quot; xmlns=&quot;http://www.w3.org/2000/svg&quot;&gt;&lt;title&gt;{esc(title)}&lt;/title&gt;&#x27;
+    for i,s in enumerate(series):
+        svg+=f&#x27;&lt;rect x=&quot;{left+i*245}&quot; y=&quot;13&quot; width=&quot;13&quot; height=&quot;13&quot; rx=&quot;3&quot; fill=&quot;{s[&quot;color&quot;]}&quot;/&gt;&lt;text x=&quot;{left+20+i*245}&quot; y=&quot;25&quot; fill=&quot;#d9e7ef&quot; font-size=&quot;14&quot;&gt;{esc(s[&quot;name&quot;])}&lt;/text&gt;&#x27;
+    for i,label in enumerate(labels):
+        y=top+i*stride
+        svg+=f&#x27;&lt;text x=&quot;{left-18}&quot; y=&quot;{y+bar}&quot; fill=&quot;#d9e7ef&quot; text-anchor=&quot;end&quot; font-size=&quot;15&quot;&gt;{esc(label)}&lt;/text&gt;&#x27;
+        for j,s in enumerate(series):
+            v=s[&#x27;values&#x27;][i];yy=y+j*(bar+gap);w=0 if v is None else max(0,v/scale*plot)
+            label_v=pct(v) if percent else num(v,2)+unit
+            svg+=f&#x27;&lt;rect x=&quot;{left}&quot; y=&quot;{yy}&quot; width=&quot;{w:.2f}&quot; height=&quot;{bar}&quot; rx=&quot;3&quot; fill=&quot;{s[&quot;color&quot;]}&quot;/&gt;&lt;text x=&quot;{left+w+9:.2f}&quot; y=&quot;{yy+14}&quot; fill=&quot;{s[&quot;color&quot;]}&quot; font-size=&quot;14&quot;&gt;{esc(label_v)}&lt;/text&gt;&#x27;
+    return &#x27;&lt;div class=&quot;figure&quot;&gt;&#x27;+svg+&#x27;&lt;/svg&gt;&lt;/div&gt;&#x27;
+
+def main():
+    OUT.mkdir(parents=True,exist_ok=True);d=json.loads((W/&#x27;analysis.json&#x27;).read_text());allg=d[&#x27;groups&#x27;][0];groups=d[&#x27;groups&#x27;][1:];g80=d[&#x27;coverage_profiles&#x27;][3]
+    colors=[&#x27;#43c7e7&#x27;,&#x27;#64dcae&#x27;,&#x27;#ffc26b&#x27;];labels=[&#x27;借款11次及以上&#x27;,&#x27;借款6—10次&#x27;,&#x27;借款5次及以下&#x27;]
+    css=&#x27;&#x27;&#x27;*{box-sizing:border-box}:root{color-scheme:dark;--bg:#061b2a;--panel:#0b2a40;--paper:#082235;--line:#21465a;--ink:#d9e7ef;--muted:#9bb5c7;--cyan:#43c7e7;--green:#64dcae;--amber:#ffc26b}body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.8 -apple-system,BlinkMacSystemFont,&quot;PingFang SC&quot;,sans-serif}main{max-width:1320px;margin:auto;padding:34px 24px 60px}h1{font-size:33px;line-height:1.4;margin:10px 0 14px;text-align:center;color:#f3faff}h2{font-size:23px;line-height:1.5;margin:0 0 14px;color:var(--cyan)}h3{font-size:18px;margin:18px 0 8px;color:var(--amber)}p{margin:10px 0}section{padding:26px;margin:22px 0;border:1px solid var(--line);border-radius:12px;background:var(--paper);scroll-margin-top:20px}nav{display:flex;justify-content:center;text-align:center;gap:20px;flex-wrap:wrap;margin:20px 0;font-size:14px}a,summary{color:var(--cyan);text-decoration:none}a:hover{text-decoration:underline}.note,.chart-note,.muted{font-size:14px;color:var(--muted)}.conclusion{padding:12px 16px;border-left:3px solid var(--cyan);background:#123146;margin:14px 0}.cards{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px;margin:20px 0}.card{padding:16px;background:var(--panel);border:1px solid var(--line);border-top:3px solid var(--cyan);border-radius:8px}.card h3{font-size:14px;line-height:1.4;margin:0 0 3px;color:var(--ink)}.card strong{display:block;font-size:29px;line-height:1.5;color:var(--green);font-variant-numeric:tabular-nums}.card small{display:block;font-size:12px;color:var(--muted);margin-top:3px}.profiles{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:15px}.profile{padding:18px;border:1px solid var(--line);border-radius:9px;background:var(--panel)}.profile h3{margin-top:0}.tag{display:inline-block;border:1px solid var(--line);border-radius:5px;font-size:13px;padding:3px 8px;margin:3px;color:var(--green)}.figure svg{display:block;width:100%;height:auto}.scroll{overflow:auto}table{width:100%;border-collapse:collapse;font-size:13px;margin:14px 0;font-variant-numeric:tabular-nums}th,td{padding:10px 12px;border-bottom:1px solid var(--line);text-align:right;vertical-align:top}th{white-space:nowrap;background:#123b51;color:var(--cyan)}th:first-child,td:first-child{text-align:left}tbody tr:nth-child(even){background:var(--panel)}.data-details{border-top:1px solid var(--line);padding:13px 0;margin-top:10px}summary{cursor:pointer;font-size:14px}.definition{border-left:2px solid #3e6a82;padding-left:14px}.definition b{color:var(--ink)}pre{overflow:auto;background:#041725;border:1px solid var(--line);border-radius:8px;padding:18px;max-height:600px}code{font:12px/1.65 ui-monospace,Menlo,monospace;white-space:pre}select{background:var(--panel);color:var(--ink);font:inherit;padding:7px 12px;border:1px solid var(--line);border-radius:6px}.interactive{margin:14px 0}.good{color:var(--green)}.bad{color:#ff7a83}#appendix{padding:18px 24px}#appendix h2{font-size:20px}.center{text-align:center}a:focus-visible,summary:focus-visible,select:focus-visible{outline:2px solid var(--cyan);outline-offset:4px}@media(max-width:1000px){.cards{grid-template-columns:repeat(2,minmax(0,1fr))}.profiles{grid-template-columns:1fr}}@media(max-width:650px){main{padding:20px 12px}section{padding:20px 15px}h1{font-size:26px}.cards{grid-template-columns:1fr}.figure{overflow:auto}.figure svg{min-width:720px}table{font-size:12px}}@media print{nav,.interactive,#appendix{display:none}section{break-inside:auto}.figure{break-inside:avoid}}&#x27;&#x27;&#x27;
+    parts=[f&#x27;&lt;!doctype html&gt;&lt;html lang=&quot;zh-CN&quot;&gt;&lt;head&gt;&lt;meta charset=&quot;utf-8&quot;&gt;&lt;meta name=&quot;viewport&quot; content=&quot;width=device-width,initial-scale=1&quot;&gt;&lt;title&gt;核心利润客群：用户生命周期特征分析&lt;/title&gt;&lt;style&gt;{css}&lt;/style&gt;&lt;/head&gt;&lt;body&gt;&lt;main&gt;&lt;header&gt;&lt;h1&gt;核心利润客群：用户生命周期特征分析&lt;/h1&gt;&lt;p class=&quot;muted center&quot;&gt;生成时间 · {datetime.now(ZoneInfo(&quot;Asia/Shanghai&quot;)).strftime(&quot;%Y年%m月%d日&quot;)}&lt;/p&gt;&lt;/header&gt;&#x27;]
+    nav=[(&#x27;core&#x27;,&#x27;核心判断&#x27;),(&#x27;profiles&#x27;,&#x27;客群特征&#x27;),(&#x27;history&#x27;,&#x27;逾期与结清&#x27;),(&#x27;retention&#x27;,&#x27;结清后提单&#x27;),(&#x27;usage&#x27;,&#x27;额度使用率&#x27;),(&#x27;latest&#x27;,&#x27;当前与获额&#x27;),(&#x27;definitions&#x27;,&#x27;指标口径&#x27;),(&#x27;appendix&#x27;,&#x27;复原报告代码&#x27;)]
+    parts.append(&#x27;&lt;nav&gt;&#x27;+&#x27;&#x27;.join(f&#x27;&lt;a href=&quot;#{k}&quot;&gt;{v}&lt;/a&gt;&#x27; for k,v in nav)+&#x27;&lt;/nav&gt;&#x27;)
+    parts.append(&#x27;&lt;section id=&quot;core&quot;&gt;&lt;h2&gt;核心判断&lt;/h2&gt;&#x27;)
+    parts.append(f&#x27;&lt;p class=&quot;conclusion&quot;&gt;历史利润集中于多次借款用户：{num(g80[&quot;users&quot;])}人、占全部用户{pct(g80[&quot;user_share_all&quot;])}，贡献公司约80%的净利润。覆盖90%的{num(allg[&quot;users&quot;])}人中，借款11次及以上用户贡献公司{pct(groups[0][&quot;profit_share&quot;])}的净利润；多次借款、高历史贡献与逾期记录可以同时存在。&lt;/p&gt;&#x27;)
+    cards=[(&#x27;覆盖80%净利润的最少用户&#x27;,num(g80[&#x27;users&#x27;])+&#x27;人&#x27;,&#x27;占全部统计用户&#x27;+pct(g80[&#x27;user_share_all&#x27;])),
+           (&#x27;覆盖90%净利润的最少用户&#x27;,num(allg[&#x27;users&#x27;])+&#x27;人&#x27;,&#x27;占全部统计用户&#x27;+pct(allg[&#x27;user_share_all&#x27;])),
+           (&#x27;核心90%中当前状态8用户&#x27;,pct(allg[&#x27;current_status8_share&#x27;]),num(allg[&#x27;current_status8_users&#x27;])+&#x27; / &#x27;+num(allg[&#x27;users&#x27;])+&#x27;人；全部保留&#x27;),
+           (&#x27;核心90%中曾分期逾期后结清&#x27;,pct(allg[&#x27;history_late_then_settled_share&#x27;]),num(allg[&#x27;history_late_then_settled_users&#x27;])+&#x27; / &#x27;+num(allg[&#x27;users&#x27;])+&#x27;人&#x27;)]
+    parts.append(&#x27;&lt;div class=&quot;cards&quot;&gt;&#x27;+&#x27;&#x27;.join(f&#x27;&lt;div class=&quot;card&quot;&gt;&lt;h3&gt;{esc(a)}&lt;/h3&gt;&lt;strong&gt;{esc(b)}&lt;/strong&gt;&lt;small&gt;{esc(c)}&lt;/small&gt;&lt;/div&gt;&#x27; for a,b,c in cards)+&#x27;&lt;/div&gt;&#x27;)
+    parts.append(f&#x27;&lt;p&gt;核心用户中，{pct(allg[&quot;ever_gap7_share&quot;])}曾在完全结清后的7天内未再提单；按结清事件统计，该比例为{pct(allg[&quot;gap7_event_share&quot;])}。历史发生过提单中断，不代表用户之后一直没有回来。&lt;/p&gt;&#x27;)
+    parts.append(&#x27;&lt;p class=&quot;note&quot;&gt;利润窗口：2025-01-01—2026-09-30成功放款订单，按当前还款金额减放款本金。公司净利润包含负贡献抵消；覆盖90%净利润不等于覆盖90%盈利用户的正利润。所有状态8用户保留，本报告只描述客群，不筛选运营可触达资格。&lt;/p&gt;&#x27;)
+    parts.append(details(&#x27;展开50%—90%利润覆盖人数及金额&#x27;,table([&#x27;目标净利润覆盖&#x27;,&#x27;最少用户数&#x27;,&#x27;占全部用户&#x27;,&#x27;名单实际利润&#x27;,&#x27;实际覆盖&#x27;,&#x27;其中当前状态8占比&#x27;],[[f&#x27;{r[&quot;target_pct&quot;]}%&#x27;,num(r[&#x27;minimum_users&#x27;]),pct(r[&#x27;user_share&#x27;]),num(r[&#x27;profit&#x27;],2),pct(r[&#x27;profit_share&#x27;]),pct(p[&#x27;current_status8_share&#x27;])] for r,p in zip(d[&#x27;coverage&#x27;],d[&#x27;coverage_profiles&#x27;])])))
+    parts.append(&#x27;&lt;/section&gt;&lt;section id=&quot;profiles&quot;&gt;&lt;h2&gt;三类核心用户，借款习惯有什么不同&lt;/h2&gt;&lt;p class=&quot;note&quot;&gt;以下三类互斥，合计为历史贡献前90%名单；不代表全部用户中该借款次数的所有人。按生命周期成功借款次数划分，状态8不参与分组。&lt;/p&gt;&lt;div class=&quot;profiles&quot;&gt;&#x27;)
+    for label,g in zip(labels,groups):
+        parts.append(f&#x27;&lt;article class=&quot;profile&quot;&gt;&lt;h3&gt;{esc(label)}&lt;/h3&gt;&lt;p&gt;&lt;b&gt;{num(g[&quot;users&quot;])}人&lt;/b&gt; · 贡献公司净利润&lt;b&gt;{pct(g[&quot;profit_share&quot;])}&lt;/b&gt;&lt;/p&gt;&lt;div class=&quot;tag&quot;&gt;借款次数中位数 {num(g[&quot;life_loan_median&quot;],1)}次&lt;/div&gt;&lt;div class=&quot;tag&quot;&gt;单笔放款 {num(g[&quot;principal_per_scoped_order&quot;],2)}&lt;/div&gt;&lt;p&gt;用户典型借款间隔：&lt;b&gt;{num(g[&quot;borrow_gap_user_median&quot;],2)}天&lt;/b&gt;；曾有循环贷放款的用户占&lt;b&gt;{pct(g[&quot;cycle_user_share&quot;])}&lt;/b&gt;。&lt;/p&gt;&lt;p&gt;完全结清后曾7天未再提单：&lt;b&gt;{pct(g[&quot;ever_gap7_share&quot;])}&lt;/b&gt;（{num(g[&quot;ever_gap7_users&quot;])} / {num(g[&quot;mature7_users&quot;])}人）；当前状态8占&lt;b&gt;{pct(g[&quot;current_status8_share&quot;])}&lt;/b&gt;。&lt;/p&gt;&lt;/article&gt;&#x27;)
+    parts.append(&#x27;&lt;/div&gt;&#x27;)
+    parts.append(f&#x27;&lt;p class=&quot;conclusion&quot;&gt;借款11次及以上组的典型借款间隔为{num(groups[0][&quot;borrow_gap_user_median&quot;],2)}天，完全结清后再提单的典型间隔为{num(groups[0][&quot;return_gap_user_median&quot;],2)}天。该组7天未再提单事件率为{pct(groups[0][&quot;gap7_event_share&quot;])}，低于6—10次组的{pct(groups[1][&quot;gap7_event_share&quot;])}和5次及以下组的{pct(groups[2][&quot;gap7_event_share&quot;])}，复借更快。&lt;/p&gt;&#x27;)
+    old80=d[&#x27;coverage&#x27;][3];base=d[&#x27;baseline&#x27;]
+    parts.append(f&#x27;&lt;p class=&quot;conclusion&quot;&gt;覆盖80%净利润的用户，平均生命周期借款{num(old80[&quot;mean_lifetime_loans&quot;],2)}次，全体用户为{num(base[&quot;mean_lifetime_loans&quot;],2)}次；统计期单笔平均放款{num(old80[&quot;avg_remit_per_order&quot;],2)}，全体为{num(base[&quot;avg_remit_per_order&quot;],2)}。这批用户同时具有借款次数多、单笔金额较高的特征。&lt;/p&gt;&#x27;)
+    parts.append(details(&#x27;展开核心80%与全部用户的基础特征对比&#x27;,table([&#x27;指标&#x27;,&#x27;全部统计用户&#x27;,&#x27;覆盖80%最小名单&#x27;],[
+       [&#x27;用户数&#x27;,num(d[&#x27;company&#x27;][&#x27;total_users&#x27;]),num(old80[&#x27;users&#x27;])],
+       [&#x27;平均生命周期成功借款次数&#x27;,num(base[&#x27;mean_lifetime_loans&#x27;],2),num(old80[&#x27;mean_lifetime_loans&#x27;],2)],
+       [&#x27;借款至少6次用户占比&#x27;,pct(base[&#x27;share_loans_ge6&#x27;]),pct(old80[&#x27;share_loans_ge6&#x27;])],
+       [&#x27;统计期单笔平均放款金额&#x27;,num(base[&#x27;avg_remit_per_order&#x27;],2),num(old80[&#x27;avg_remit_per_order&#x27;],2)],
+       [&#x27;统计期订单当前已结清占比&#x27;,pct(base[&#x27;settled_order_share&#x27;]),pct(old80[&#x27;settled_order_share&#x27;])],
+       [&#x27;统计期续贷订单占比（非循环贷口径）&#x27;,pct(base[&#x27;reloan_order_share&#x27;]),pct(old80[&#x27;reloan_order_share&#x27;])]
+    ])))
+    parts.append(chart(&#x27;各类用户典型借款与结清后再提单间隔&#x27;,labels,[{&#x27;name&#x27;:&#x27;相邻成功借款间隔&#x27;,&#x27;color&#x27;:colors[0],&#x27;values&#x27;:[g[&#x27;borrow_gap_user_median&#x27;] for g in groups]}, {&#x27;name&#x27;:&#x27;完全结清后再提单间隔&#x27;,&#x27;color&#x27;:colors[1],&#x27;values&#x27;:[g[&#x27;return_gap_user_median&#x27;] for g in groups]}],False,&#x27;天&#x27;))
+    parts.append(&#x27;&lt;p class=&quot;chart-note&quot;&gt;先计算每位用户的历史间隔中位数，再取客群用户中位数。结清后间隔仅使用已观察到下次提单的事件，未再提单不填0；两个指标衡量不同阶段，不能直接相减。&lt;/p&gt;&#x27;)
+    parts.append(details(&#x27;展开客群完整特征对比表&#x27;,table([&#x27;指标&#x27;]+labels,[
+      [&#x27;用户数&#x27;]+[num(g[&#x27;users&#x27;]) for g in groups],[&#x27;公司净利润贡献占比&#x27;]+[pct(g[&#x27;profit_share&#x27;]) for g in groups],
+      [&#x27;生命周期借款次数中位数&#x27;]+[num(g[&#x27;life_loan_median&#x27;],1) for g in groups],[&#x27;单笔平均放款金额（统计期）&#x27;]+[num(g[&#x27;principal_per_scoped_order&#x27;],2) for g in groups],
+      [&#x27;相邻借款间隔：用户中位数的中位数/天&#x27;]+[num(g[&#x27;borrow_gap_user_median&#x27;],2) for g in groups],
+      [&#x27;完全结清至下次提单：用户中位数的中位数/天&#x27;]+[num(g[&#x27;return_gap_user_median&#x27;],2) for g in groups],
+      [&#x27;曾整笔提前结清用户占比&#x27;]+[pct(g[&#x27;early_settled_user_share&#x27;]) for g in groups],[&#x27;统计期订单当前已结清占比&#x27;]+[pct(g[&#x27;scoped_settled_order_share&#x27;]) for g in groups],
+      [&#x27;曾循环贷成功放款用户占比&#x27;]+[pct(g[&#x27;cycle_user_share&#x27;]) for g in groups],[&#x27;全部历史放款订单中循环贷占比&#x27;]+[pct(g[&#x27;cycle_order_share&#x27;]) for g in groups],
+      [&#x27;最近一次放款是循环贷的用户占比&#x27;]+[pct(g[&#x27;latest_funded_cycle_share&#x27;]) for g in groups],[&#x27;最近一次获额是循环贷的用户占比&#x27;]+[pct(g[&#x27;latest_offer_cycle_share&#x27;]) for g in groups]
+    ])))
+    parts.append(&#x27;&lt;/section&gt;&lt;section id=&quot;history&quot;&gt;&lt;h2&gt;历史分期逾期后结清，与当前逾期分开看&lt;/h2&gt;&#x27;)
+    parts.append(chart(&#x27;历史分期逾期后结清与当前状态8用户占比&#x27;,labels,[{&#x27;name&#x27;:&#x27;曾分期逾期后整笔结清&#x27;,&#x27;color&#x27;:colors[1],&#x27;values&#x27;:[g[&#x27;history_late_then_settled_share&#x27;] for g in groups]},{&#x27;name&#x27;:&#x27;当前有状态8订单&#x27;,&#x27;color&#x27;:&#x27;#ff7a83&#x27;,&#x27;values&#x27;:[g[&#x27;current_status8_share&#x27;] for g in groups]}],ceiling=1.05))
+    parts.append(f&#x27;&lt;p class=&quot;conclusion&quot;&gt;历史核心90%名单中，{num(allg[&quot;history_late_then_settled_users&quot;])}人曾有分期逾期后整笔结清，{num(allg[&quot;current_status8_users&quot;])}人当前仍持有状态8订单。两个标记可以重叠：曾经结清过逾期贷款的用户，也可能在后续订单再次逾期。&lt;/p&gt;&#x27;)
+    parts.append(&#x27;&lt;p class=&quot;chart-note&quot;&gt;历史标记取全生命周期分期记录：任一期overdue_days_period&amp;gt;0，或实际分期还款日期晚于分期应还日期，且该整笔贷款后来已结清。两组柱图分母均为该客群全部用户；当前状态8来自特征快照。&lt;/p&gt;&#x27;)
+    parts.append(details(&#x27;展开互斥逾期特征分类及明细统计&#x27;,table([&#x27;特征分类&#x27;,&#x27;用户数&#x27;,&#x27;占核心90%名单&#x27;,&#x27;历史利润&#x27;,&#x27;占公司净利润&#x27;],[[r[&#x27;label&#x27;],num(r[&#x27;users&#x27;]),pct(r[&#x27;share&#x27;]),num(r[&#x27;profit&#x27;],2),pct(r[&#x27;profit_share&#x27;])] for r in d[&#x27;history_types&#x27;]])+table([&#x27;客群&#x27;,&#x27;曾逾期后结清用户/全组用户&#x27;,&#x27;曾逾期后结清订单/历史已结清订单&#x27;],[[labels[i],f&#x27;{num(g[&quot;history_late_then_settled_users&quot;])} / {num(g[&quot;users&quot;])}&#x27;,f&#x27;{num(g[&quot;history_late_then_settled_orders&quot;])} / {num(g[&quot;settled_history_orders&quot;])}（{pct(g[&quot;history_late_then_settled_order_share&quot;])}）&#x27;] for i,g in enumerate(groups)])))
+    parts.append(&#x27;&lt;/section&gt;&lt;section id=&quot;retention&quot;&gt;&lt;h2&gt;完全结清后，是否曾5天或7天未再提单&lt;/h2&gt;&#x27;)
+    parts.append(chart(&#x27;曾发生完全结清后5天及7天未提单的用户占比&#x27;,labels,[{&#x27;name&#x27;:&#x27;曾5天未再提单的用户&#x27;,&#x27;color&#x27;:colors[0],&#x27;values&#x27;:[g[&#x27;ever_gap5_share&#x27;] for g in groups]},{&#x27;name&#x27;:&#x27;曾7天未再提单的用户&#x27;,&#x27;color&#x27;:colors[2],&#x27;values&#x27;:[g[&#x27;ever_gap7_share&#x27;] for g in groups]}],ceiling=1.05))
+    parts.append(&#x27;&lt;p class=&quot;chart-note&quot;&gt;上图为用户口径：分母分别为该客群至少有1次已观察满5天、7天的完全结清事件的用户。完全结清指用户名下全部已放款订单均已结清。5天、7天为精确120/168小时，未成熟事件不进入分母。&lt;/p&gt;&#x27;)
+    parts.append(f&#x27;&lt;p class=&quot;conclusion&quot;&gt;整体共有{num(allg[&quot;full_clear_mature7&quot;])}次观察成熟的完全结清事件，其中{num(allg[&quot;gap7_events&quot;])}次在7天内未再提单，占{pct(allg[&quot;gap7_event_share&quot;])}；其中{num(allg[&quot;returned_after7_events&quot;])}次后来仍再次提单。该指标描述“阶段性中断”，不能直接认定永久流失。&lt;/p&gt;&#x27;)
+    parts.append(chart(&#x27;观察满7天的完全结清事件：后续提单间隔&#x27;,[r[&#x27;label&#x27;] for r in d[&#x27;return_gap_distribution&#x27;]],[{&#x27;name&#x27;:&#x27;成熟完全结清事件占比&#x27;,&#x27;color&#x27;:colors[0],&#x27;values&#x27;:[r[&#x27;share&#x27;] for r in d[&#x27;return_gap_distribution&#x27;]]}],ceiling=max(.3,max(r[&#x27;share&#x27;] for r in d[&#x27;return_gap_distribution&#x27;])*1.15)))
+    parts.append(details(&#x27;展开用户口径与事件口径的分子分母&#x27;,table([&#x27;客群&#x27;,&#x27;5天中断用户/成熟用户&#x27;,&#x27;5天中断事件/成熟事件&#x27;,&#x27;7天中断用户/成熟用户&#x27;,&#x27;7天中断事件/成熟事件&#x27;,&#x27;当前结清后仍未再提单超过7天人数&#x27;],[[labels[i],f&#x27;{num(g[&quot;ever_gap5_users&quot;])} / {num(g[&quot;mature5_users&quot;])}（{pct(g[&quot;ever_gap5_share&quot;])}）&#x27;,f&#x27;{num(g[&quot;gap5_events&quot;])} / {num(g[&quot;full_clear_mature5&quot;])}（{pct(g[&quot;gap5_event_share&quot;])}）&#x27;,f&#x27;{num(g[&quot;ever_gap7_users&quot;])} / {num(g[&quot;mature7_users&quot;])}（{pct(g[&quot;ever_gap7_share&quot;])}）&#x27;,f&#x27;{num(g[&quot;gap7_events&quot;])} / {num(g[&quot;full_clear_mature7&quot;])}（{pct(g[&quot;gap7_event_share&quot;])}）&#x27;,num(g[&#x27;currently_waiting_after_clear7_users&#x27;])] for i,g in enumerate(groups)])+table([&#x27;下次提单间隔&#x27;,&#x27;事件数&#x27;,&#x27;占观察成熟事件&#x27;],[[r[&#x27;label&#x27;],num(r[&#x27;events&#x27;]),pct(r[&#x27;share&#x27;])] for r in d[&#x27;return_gap_distribution&#x27;]])))
+    parts.append(&#x27;&lt;/section&gt;&lt;section id=&quot;usage&quot;&gt;&lt;h2&gt;额度使用率与循环贷习惯&lt;/h2&gt;&#x27;)
+    parts.append(chart(&#x27;提单额度使用率：订单均值与总额加权比率&#x27;,labels,[{&#x27;name&#x27;:&#x27;有效提单订单使用率均值&#x27;,&#x27;color&#x27;:colors[0],&#x27;values&#x27;:[g[&#x27;usage_mean_order&#x27;] for g in groups]},{&#x27;name&#x27;:&#x27;总提单金额 / 总获额额度&#x27;,&#x27;color&#x27;:colors[1],&#x27;values&#x27;:[g[&#x27;usage_weighted&#x27;] for g in groups]}]))
+    parts.append(f&#x27;&lt;p class=&quot;conclusion&quot;&gt;核心90%名单的提单额度使用率均值为{pct(allg[&quot;usage_mean_order&quot;])}，总额加权比率为{pct(allg[&quot;usage_weighted&quot;])}；{pct(allg[&quot;cycle_user_share&quot;])}的用户曾有循环贷成功放款。额度使用率与循环贷使用反映资金使用习惯，不直接代表信用资质好坏。&lt;/p&gt;&#x27;)
+    parts.append(f&#x27;&lt;p class=&quot;chart-note&quot;&gt;额度使用率使用2025-01-01—2026-09-30提单订单。分母来自同用户、同订单、提单前最近一次通过获额的max_credit_apply_amt；分子为apply_amt。有效匹配{num(allg[&quot;usage_orders&quot;])} / {num(allg[&quot;usage_attempts&quot;])}笔，覆盖{pct(allg[&quot;usage_coverage&quot;])}；超过100%的{num(allg[&quot;usage_gt100_orders&quot;])}笔原样保留，未截断。循环贷用户指全历史至少有一笔recycle_type=2成功放款订单。&lt;/p&gt;&#x27;)
+    parts.append(f&#x27;&lt;p class=&quot;note&quot;&gt;超过100%的记录占有效匹配订单{pct(allg[&quot;usage_gt100_orders&quot;]/allg[&quot;usage_orders&quot;])}。本指标严格表示apply_amt与获额额度之比；两金额字段是否包含相同费用尚未核实，不据此认定用户超额借款。5次及以下组单笔平均放款{num(groups[2][&quot;principal_per_scoped_order&quot;],2)}、使用率均值{pct(groups[2][&quot;usage_mean_order&quot;])}，均高于11次及以上组。&lt;/p&gt;&#x27;)
+    parts.append(details(&#x27;展开额度匹配覆盖与循环贷数据&#x27;,table([&#x27;客群&#x27;,&#x27;有效额度匹配/提单订单&#x27;,&#x27;使用率均值&#x27;,&#x27;总额加权比率&#x27;,&#x27;超过100%订单数&#x27;,&#x27;循环贷用户/全组&#x27;,&#x27;循环贷放款订单/全部历史放款订单&#x27;],[[labels[i],f&#x27;{num(g[&quot;usage_orders&quot;])} / {num(g[&quot;usage_attempts&quot;])}（{pct(g[&quot;usage_coverage&quot;])}）&#x27;,pct(g[&#x27;usage_mean_order&#x27;]),pct(g[&#x27;usage_weighted&#x27;]),num(g[&#x27;usage_gt100_orders&#x27;]),f&#x27;{num(g[&quot;cycle_users&quot;])} / {num(g[&quot;users&quot;])}（{pct(g[&quot;cycle_user_share&quot;])}）&#x27;,f&#x27;{num(g[&quot;cycle_funded_orders&quot;])} / {num(g[&quot;funded_orders&quot;])}（{pct(g[&quot;cycle_order_share&quot;])}）&#x27;] for i,g in enumerate(groups)])))
+    parts.append(&#x27;&lt;/section&gt;&lt;section id=&quot;latest&quot;&gt;&lt;h2&gt;当前无状态8用户，最新一笔获额是否通过&lt;/h2&gt;&#x27;)
+    parts.append(chart(&#x27;无当前状态8用户内的最新获额结果&#x27;,labels,[{&#x27;name&#x27;:&#x27;最新获额通过&#x27;,&#x27;color&#x27;:colors[1],&#x27;values&#x27;:[g[&#x27;no8_latest_pass_share&#x27;] for g in groups]},{&#x27;name&#x27;:&#x27;最新获额未通过&#x27;,&#x27;color&#x27;:&#x27;#ff7a83&#x27;,&#x27;values&#x27;:[g[&#x27;no8_latest_notpass_share&#x27;] for g in groups]}],ceiling=1.05))
+    parts.append(f&#x27;&lt;p class=&quot;conclusion&quot;&gt;历史核心90%名单中，无当前状态8用户{num(allg[&quot;no_current8_users&quot;])}人：最新获额通过{num(allg[&quot;no8_latest_pass_users&quot;])}人（{pct(allg[&quot;no8_latest_pass_share&quot;])}），未通过{num(allg[&quot;no8_latest_notpass_users&quot;])}人（{pct(allg[&quot;no8_latest_notpass_share&quot;])}），结果缺失或未知{num(allg[&quot;no8_latest_unknown_users&quot;])}人（{pct(allg[&quot;no8_latest_unknown_share&quot;])}）。这些是客群现状描述，本轮不据此排除任何人。&lt;/p&gt;&#x27;)
+    parts.append(&#x27;&lt;p class=&quot;chart-note&quot;&gt;最新获额从全部获额订单中按获额时间取最后一笔；同一时刻取serial_id最大，再以vir_rnb打破剩余并列。沿用is_pass1：1为通过、0为未通过。未通过不等同已经确认风控拒绝；通过也不直接等同当前具备所有提单条件。&lt;/p&gt;&#x27;)
+    parts.append(details(&#x27;展开最新获额结果及分母&#x27;,table([&#x27;客群&#x27;,&#x27;全组用户&#x27;,&#x27;当前状态8用户&#x27;,&#x27;无当前状态8用户（分母）&#x27;,&#x27;最新获额通过&#x27;,&#x27;最新获额未通过&#x27;,&#x27;结果缺失或未知&#x27;],[[labels[i],num(g[&#x27;users&#x27;]),f&#x27;{num(g[&quot;current_status8_users&quot;])}（{pct(g[&quot;current_status8_share&quot;])}）&#x27;,num(g[&#x27;no_current8_users&#x27;]),f&#x27;{num(g[&quot;no8_latest_pass_users&quot;])}（{pct(g[&quot;no8_latest_pass_share&quot;])}）&#x27;,f&#x27;{num(g[&quot;no8_latest_notpass_users&quot;])}（{pct(g[&quot;no8_latest_notpass_share&quot;])}）&#x27;,f&#x27;{num(g[&quot;no8_latest_unknown_users&quot;])}（{pct(g[&quot;no8_latest_unknown_share&quot;])}）&#x27;] for i,g in enumerate(groups)])))
+    parts.append(&#x27;&lt;div class=&quot;interactive&quot;&gt;&lt;label for=&quot;coverage-selector&quot;&gt;切换累计核心名单：&lt;/label&gt;&lt;select id=&quot;coverage-selector&quot;&gt;&#x27;+&#x27;&#x27;.join(f&#x27;&lt;option value=&quot;{i}&quot; {&quot;selected&quot; if i==4 else &quot;&quot;}&gt;覆盖{50+i*10}%净利润&lt;/option&gt;&#x27; for i in range(5))+&#x27;&lt;/select&gt;&lt;div id=&quot;coverage-detail&quot; aria-live=&quot;polite&quot;&gt;&lt;/div&gt;&lt;/div&gt;&#x27;)
+    parts.append(&#x27;&lt;/section&gt;&lt;section id=&quot;definitions&quot;&gt;&lt;h2&gt;指标口径与数据边界&lt;/h2&gt;&#x27;)
+    definitions_names={&#x27;profit&#x27;:&#x27;利润与统计订单&#x27;,&#x27;lifetime_count&#x27;:&#x27;生命周期借款次数&#x27;,&#x27;historical_overdue_resolved&#x27;:&#x27;先分期逾期、后整笔结清&#x27;,&#x27;full_clear&#x27;:&#x27;用户名下完全结清事件&#x27;,&#x27;gap5_7&#x27;:&#x27;5天/7天未再提单&#x27;,&#x27;gap_user_vs_event&#x27;:&#x27;用户率和事件率分母&#x27;,&#x27;return_gap&#x27;:&#x27;结清后再提单间隔&#x27;,&#x27;usage&#x27;:&#x27;提单额度使用率&#x27;,&#x27;current_overdue&#x27;:&#x27;当前逾期用户&#x27;,&#x27;latest_offer&#x27;:&#x27;无当前逾期内的最新获额结果&#x27;,&#x27;cycle_user&#x27;:&#x27;循环贷用户&#x27;,&#x27;borrow_gap&#x27;:&#x27;借款间隔&#x27;,&#x27;early_settlement&#x27;:&#x27;提前结清&#x27;,&#x27;limitations&#x27;:&#x27;解释边界&#x27;}
+    parts.append(f&#x27;&lt;p&gt;利润名单冻结时点（北京时间）：{esc(d[&quot;meta&quot;][&quot;cohort_snapshot_shanghai&quot;])}；生命周期特征快照（北京时间）：{esc(d[&quot;meta&quot;][&quot;feature_snapshot_shanghai&quot;])}。所有业务日期和事件时间均按America/Belize处理。&lt;/p&gt;&#x27;)
+    parts.append(details(&#x27;展开完整指标定义&#x27;, &#x27;&#x27;.join(f&#x27;&lt;p class=&quot;definition&quot;&gt;&lt;b&gt;{definitions_names[k]}：&lt;/b&gt;{esc(v)}&lt;/p&gt;&#x27; for k,v in d[&#x27;feature_definitions&#x27;].items())))
+    qa=d[&#x27;qa&#x27;];parts.append(f&#x27;&lt;p class=&quot;note&quot;&gt;核对：核心用户{num(allg[&quot;users&quot;])}人均保留；特征快照相对利润快照，状态8标记变化{num(qa[&quot;current_status8_changed_vs_frozen&quot;])}人、生命周期成功借款次数变化{num(qa[&quot;lifetime_count_changed_vs_frozen&quot;])}人、统计期利润变化{num(qa[&quot;source_profit_changed_vs_frozen_users&quot;])}人。利润分组和贡献不随本轮特征提取重排。&lt;/p&gt;&#x27;)
+    parts.append(details(&#x27;展开数据完整性检查&#x27;,table([&#x27;检查项&#x27;,&#x27;结果&#x27;],[[k,str(v)] for k,v in qa.items() if k not in [&#x27;offer_pass_flags&#x27;]])))
+    parts.append(&#x27;&lt;/section&gt;&lt;section id=&quot;appendix&quot;&gt;&lt;h2&gt;附录：复原报告代码&lt;/h2&gt;&#x27;)
+    # Everything, including the count of files, remains collapsed by default.
+    files=[&#x27;extract.py&#x27;,&#x27;extract_supplement.py&#x27;,&#x27;extract_offers_compact.py&#x27;,&#x27;finalize_extraction.py&#x27;,&#x27;analyze.py&#x27;,&#x27;build_report.py&#x27;,&#x27;cohort_query.sql&#x27;,&#x27;loans_query.sql&#x27;,&#x27;periods_query.sql&#x27;,&#x27;offers_query.sql&#x27;,&#x27;recycle_query.sql&#x27;]
+    code=&#x27;&lt;p class=&quot;note&quot;&gt;完整代码共&#x27;+str(len(files))+&#x27;个文件。汇总结果可直接复原网页；重新提取用户级历史需数据库只读权限和利润名单输入。公开网页包仅含汇总数据与代码。&lt;/p&gt;&lt;p&gt;&lt;a href=&quot;复原报告代码.zip&quot;&gt;下载代码与汇总结果&lt;/a&gt; · &lt;a href=&quot;analysis.json&quot;&gt;下载报告汇总数据&lt;/a&gt;&lt;/p&gt;&#x27;
+    for name in files:code+=details(name,&#x27;&lt;pre&gt;&lt;code&gt;&#x27;+esc((W/name).read_text())+&#x27;&lt;/code&gt;&lt;/pre&gt;&#x27;)
+    parts.append(details(&#x27;展开完整SQL / Python代码与下载&#x27;,code));parts.append(&#x27;&lt;/section&gt;&#x27;)
+    payload=json.dumps(d[&#x27;coverage_profiles&#x27;],ensure_ascii=False).replace(&#x27;&lt;/&#x27;,&#x27;&lt;\\/&#x27;)
+    parts.append(&#x27;&lt;script id=&quot;coverage-data&quot; type=&quot;application/json&quot;&gt;&#x27;+payload+&#x27;&lt;/script&gt;&lt;script&gt;const profiles=JSON.parse(document.getElementById(&quot;coverage-data&quot;).textContent);const fmt=x=&gt;x==null?&quot;—&quot;:(x*100).toFixed(2)+&quot;%&quot;;const n=x=&gt;new Intl.NumberFormat(&quot;zh-CN&quot;).format(x);function refresh(){const g=profiles[document.getElementById(&quot;coverage-selector&quot;).value];document.getElementById(&quot;coverage-detail&quot;).innerHTML=`&lt;p class=&quot;conclusion&quot;&gt;${g.label}：${n(g.users)}人；当前状态8占${fmt(g.current_status8_share)}；曾逾期后结清占${fmt(g.history_late_then_settled_share)}；曾7天未再提单占${fmt(g.ever_gap7_share)}（分母${n(g.mature7_users)}人）；循环贷用户占${fmt(g.cycle_user_share)}；无状态8的${n(g.no_current8_users)}人中，最新获额通过${fmt(g.no8_latest_pass_share)}、未通过${fmt(g.no8_latest_notpass_share)}。&lt;/p&gt;`}document.getElementById(&quot;coverage-selector&quot;).addEventListener(&quot;change&quot;,refresh);refresh();&lt;/script&gt;&#x27;)
+    parts.append(&#x27;&lt;/main&gt;&lt;/body&gt;&lt;/html&gt;&#x27;);report=&#x27;&#x27;.join(parts)
+    assert not re.search(r&#x27;&lt;details[^&gt;]*\bopen(?:\s|&gt;)&#x27;,report)
+    assert &#x27;user_id&#x27; not in report.split(&#x27;&lt;section id=&quot;appendix&quot;&gt;&#x27;)[0]
+    target=OUT/&#x27;核心利润客群_用户生命周期特征分析报告.html&#x27;;target.write_text(report)
+    (OUT/&#x27;analysis.json&#x27;).write_text(json.dumps(d,ensure_ascii=False,indent=2))
+    code_dir=OUT/&#x27;复原代码&#x27;;code_dir.mkdir(exist_ok=True)
+    for name in files:shutil.copy2(W/name,code_dir/name)
+    shutil.copy2(W/&#x27;analysis.json&#x27;,code_dir/&#x27;analysis.json&#x27;)
+    (code_dir/&#x27;README.txt&#x27;).write_text(&#x27;核心利润客群生命周期特征分析\n\n离线复原网页：python3 build_report.py（与analysis.json置于同目录）。可设置CORE_CUSTOMER_REPORT_OUT指定输出目录。\n重新提取：设置CORE_CUSTOMER_COHORT_JSON为前次利润集中度结果JSON文件；配置DB_HOST、DB_PORT、DB_NAME、DB_USER、DB_PASSWORD，以只读用户依次运行extract.py、analyze.py、build_report.py。extract.py中的本机连接回退为当前工作区兼容入口；其他环境请提供环境变量。需要pandas、numpy、psycopg2、pgpy、pyarrow。使用缓存提取必须具备完整extraction_manifest.json和匹配SHA256。\n利润名单冻结于前次快照，公开包不包含用户ID、订单ID或明细缓存。重新取数会随源副本后补发生变化。\n&#x27;)
+    with zipfile.ZipFile(OUT/&#x27;复原报告代码.zip&#x27;,&#x27;w&#x27;,zipfile.ZIP_DEFLATED) as z:
+        for p in sorted(code_dir.iterdir()):z.write(p,p.name)
+    print(json.dumps({&#x27;file&#x27;:str(target),&#x27;bytes&#x27;:target.stat().st_size,&#x27;figures&#x27;:report.count(&#x27;&lt;svg &#x27;),&#x27;all_tables_collapsed&#x27;:True,&#x27;source_files&#x27;:len(files)},ensure_ascii=False))
+
+if __name__==&#x27;__main__&#x27;:main()
+</code></pre></details><details class="data-details"><summary>cohort_query.sql</summary><pre><code>SET TIME ZONE &#x27;America/Belize&#x27;;
+WITH funded AS (
+ SELECT user_id,serial_id,remit_time,remit_date,remit_amt,repaid_amt,is_repaid,loan_status_code,loan_type,total_term,overdue_days
+ FROM wangchuanliang.order_loan_f_v2_copy
+ WHERE is_remit=1 AND remit_time&lt;=CURRENT_TIMESTAMP AT TIME ZONE &#x27;America/Belize&#x27;
+), lifetime AS (
+ SELECT user_id,COUNT(*) AS lifetime_loans,
+ MIN(CASE WHEN remit_date&gt;=DATE &#x27;2000-01-01&#x27; THEN remit_date END) AS first_remit_date,
+ MAX(CASE WHEN remit_date&gt;=DATE &#x27;2000-01-01&#x27; THEN remit_date END) AS last_remit_date,
+ MAX(CASE WHEN loan_status_code=8 THEN 1 ELSE 0 END) AS has_current_status8,
+ MAX(CASE WHEN loan_status_code=5 THEN 1 ELSE 0 END) AS has_current_status5,
+ MAX(overdue_days) AS max_recorded_overdue_days
+ FROM funded GROUP BY user_id
+), scoped AS (
+ SELECT * FROM funded WHERE remit_date&gt;=DATE &#x27;2025-01-01&#x27; AND remit_date&lt;DATE &#x27;2026-10-01&#x27;
+), user_profit AS (
+ SELECT user_id,COUNT(*) AS scoped_orders,SUM(remit_amt) AS remit_amt,SUM(repaid_amt) AS repaid_amt,
+ SUM(repaid_amt-remit_amt) AS profit,
+ SUM(CASE WHEN is_repaid=1 THEN 1 ELSE 0 END) AS settled_orders,
+ SUM(CASE WHEN loan_status_code=8 THEN 1 ELSE 0 END) AS scoped_status8_orders,
+ SUM(CASE WHEN loan_type=&#x27;reloan&#x27; THEN 1 ELSE 0 END) AS reloan_orders,
+ SUM(total_term) AS total_terms,SUM(CASE WHEN total_term IS NOT NULL THEN 1 ELSE 0 END) AS known_term_orders
+ FROM scoped GROUP BY user_id
+), features AS (
+ SELECT p.*,l.lifetime_loans,l.first_remit_date,l.last_remit_date,
+ l.has_current_status8,l.has_current_status5,l.max_recorded_overdue_days,
+ ((CURRENT_TIMESTAMP AT TIME ZONE &#x27;America/Belize&#x27;)::date-l.last_remit_date) AS days_since_last_remit,
+ CASE WHEN l.lifetime_loans&gt;1 THEN (l.last_remit_date-l.first_remit_date)::numeric/(l.lifetime_loans-1) ELSE NULL END AS mean_lifetime_borrow_gap_days
+ FROM user_profit p JOIN lifetime l ON l.user_id=p.user_id
+), totals AS (
+ SELECT COUNT(*) AS total_users,SUM(scoped_orders) AS total_orders,
+ SUM(remit_amt) AS total_remit_amt,SUM(repaid_amt) AS total_repaid_amt,SUM(profit) AS total_profit,
+ SUM(CASE WHEN profit&gt;0 THEN profit ELSE 0 END) AS positive_user_profit,
+ SUM(CASE WHEN profit&lt;0 THEN profit ELSE 0 END) AS negative_user_profit,
+ SUM(CASE WHEN profit&gt;0 THEN 1 ELSE 0 END) AS profitable_users,
+ SUM(lifetime_loans) AS total_lifetime_loans,SUM(settled_orders) AS total_settled_orders,
+ SUM(has_current_status8) AS current_status8_users,SUM(has_current_status5) AS current_status5_users,
+ SUM(CASE WHEN lifetime_loans&gt;=6 THEN 1 ELSE 0 END) AS loans_ge6_users,
+ SUM(CASE WHEN lifetime_loans&gt;=11 THEN 1 ELSE 0 END) AS loans_ge11_users,
+ SUM(days_since_last_remit) AS total_days_since_last_remit,
+ SUM(total_terms) AS total_terms,SUM(known_term_orders) AS known_term_orders,
+ SUM(reloan_orders) AS reloan_orders
+ FROM features
+), ranked AS (
+ SELECT f.*,ROW_NUMBER() OVER(ORDER BY profit DESC,user_id ASC) AS profit_rank,
+ SUM(profit) OVER(ORDER BY profit DESC,user_id ASC ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW) AS cumulative_profit
+ FROM features f WHERE profit&gt;0
+), cutoffs AS (
+ SELECT MIN(CASE WHEN r.cumulative_profit&gt;=t.total_profit*0.5 THEN r.profit_rank END) AS k50,
+ MIN(CASE WHEN r.cumulative_profit&gt;=t.total_profit*0.6 THEN r.profit_rank END) AS k60,
+ MIN(CASE WHEN r.cumulative_profit&gt;=t.total_profit*0.7 THEN r.profit_rank END) AS k70,
+ MIN(CASE WHEN r.cumulative_profit&gt;=t.total_profit*0.8 THEN r.profit_rank END) AS k80,
+ MIN(CASE WHEN r.cumulative_profit&gt;=t.total_profit*0.9 THEN r.profit_rank END) AS k90
+ FROM ranked r CROSS JOIN totals t
+)
+SELECT r.*,c.k50,c.k60,c.k70,c.k80,c.k90
+ FROM ranked r CROSS JOIN cutoffs c WHERE r.profit_rank&lt;=c.k90 ORDER BY r.profit_rank</code></pre></details><details class="data-details"><summary>loans_query.sql</summary><pre><code>SELECT o.user_id,o.serial_id,o.apply_time,o.apply_date,o.apply_amt::text apply_amt,
+ o.remit_time,o.remit_date,o.remit_amt::text remit_amt,o.repaid_time,o.repaid_date,o.due_date,
+ o.is_remit,o.is_repaid,o.repaid_amt::text repaid_amt,o.loan_status_code,o.overdue_days,o.loan_type,
+ o.total_term,o.product_no FROM wangchuanliang.order_loan_f_v2_copy o WHERE o.user_id IN (SELECT unnest(%(users)s::bigint[]))</code></pre></details><details class="data-details"><summary>periods_query.sql</summary><pre><code>SELECT p.user_id,p.serial_id,COUNT(*)::bigint period_rows,
+         MAX(CASE WHEN p.overdue_days_period&gt;0 OR (p.is_repaid_period=1
+          AND p.repaid_date_period&gt;p.due_date_period AND p.repaid_date_period&gt;=DATE &#x27;2000-01-01&#x27;)
+          THEN 1 ELSE 0 END) AS has_late_period
+         FROM wangchuanliang.repayment_plan_v2_copy p
+         WHERE p.user_id IN (SELECT unnest(%(users)s::bigint[])) GROUP BY p.user_id,p.serial_id</code></pre></details><details class="data-details"><summary>offers_query.sql</summary><pre><code>WITH offer_source AS (
+ SELECT v.user_id,v.serial_id,v.vir_unix,v.vir_date,v.vir_rnb,v.loan_type_code,
+ v.is_pass1,v.is_pass,v.vir_status_code,v.max_credit_apply_amt::text credit_amt,
+ v.max_risk_credit_amount::text risk_credit_amt,v.is_can_apply,v.is_eff,
+ ROW_NUMBER() OVER(PARTITION BY v.user_id ORDER BY v.vir_unix DESC,v.serial_id DESC,v.vir_rnb DESC) AS user_rn
+ FROM wangchuanliang.order_vir_f_copy v
+ WHERE v.user_id IN (SELECT unnest(%(users)s::bigint[])) AND v.vir_unix&gt;946706400 AND v.vir_unix&lt;=%(epoch)s
+), matched AS (
+ SELECT v.*,ROW_NUMBER() OVER(PARTITION BY v.user_id,v.serial_id ORDER BY v.vir_unix DESC,v.vir_rnb DESC) AS order_rn
+ FROM offer_source v JOIN wangchuanliang.order_loan_f_v2_copy o ON o.user_id=v.user_id AND o.serial_id=v.serial_id
+ WHERE o.apply_amt&gt;0 AND o.apply_date&gt;=DATE &#x27;2025-01-01&#x27; AND o.apply_date&lt;DATE &#x27;2026-10-01&#x27;
+ AND TIMESTAMP &#x27;epoch&#x27;+v.vir_unix*INTERVAL &#x27;1 second&#x27;-INTERVAL &#x27;6 hours&#x27;&lt;=
+ CASE WHEN o.apply_time&gt;=TIMESTAMP &#x27;2000-01-01&#x27; THEN o.apply_time ELSE o.apply_date::timestamp END
+)
+SELECT user_id,serial_id,vir_unix,vir_date,vir_rnb,loan_type_code,is_pass1,is_pass,vir_status_code,credit_amt,risk_credit_amt,is_can_apply,is_eff
+ FROM offer_source WHERE user_rn=1
+UNION
+SELECT user_id,serial_id,vir_unix,vir_date,vir_rnb,loan_type_code,is_pass1,is_pass,vir_status_code,credit_amt,risk_credit_amt,is_can_apply,is_eff
+ FROM matched WHERE order_rn=1</code></pre></details><details class="data-details"><summary>recycle_query.sql</summary><pre><code>SELECT r.serial_id,r.recycle_type FROM wangchuanliang.side_recycle_type_copy r
+ WHERE EXISTS (SELECT 1 FROM wangchuanliang.order_loan_f_v2_copy o WHERE o.serial_id=r.serial_id AND o.user_id IN (SELECT unnest(%(users)s::bigint[])))
+ OR EXISTS (SELECT 1 FROM wangchuanliang.order_vir_f_copy v WHERE v.serial_id=r.serial_id AND v.user_id IN (SELECT unnest(%(users)s::bigint[])))</code></pre></details></details></section><script id="coverage-data" type="application/json">[{"label": "覆盖50%最小名单", "users": 1847, "profit": "143450985.720000000000000000", "profit_share": 0.5000347783040143, "user_share_all": 0.004759928974746863, "life_loan_median": 17.0, "life_loan_mean": 18.76773145641581, "borrow_gap_user_median": 11.724751157407407, "borrow_gap_user_mean_median": 14.264679232804232, "return_gap_user_median": 1.0751041666666667, "observed_return_users": 1704, "history_late_then_settled_users": 1060, "history_late_then_settled_share": 0.5739036275040607, "history_late_then_settled_orders": 2728, "settled_history_orders": 31566, "history_late_then_settled_order_share": 0.08642209972755496, "current_status8_users": 1040, "current_status8_share": 0.5630752571737954, "no_current8_users": 807, "no8_latest_pass_users": 717, "no8_latest_notpass_users": 90, "no8_latest_unknown_users": 0, "no8_latest_pass_share": 0.8884758364312267, "no8_latest_notpass_share": 0.11152416356877323, "no8_latest_unknown_share": 0.0, "cycle_users": 1743, "cycle_user_share": 0.9436924742826205, "cycle_funded_orders": 21180, "funded_orders": 34664, "cycle_order_share": 0.6110085391183937, "latest_funded_cycle_share": 0.6280454791553871, "latest_offer_cycle_share": 0.27720628045479156, "usage_orders": 30712, "usage_attempts": 32112, "usage_coverage": 0.956402590931739, "usage_mean_order": 0.906404152072231, "usage_weighted": 0.8737162701462597, "usage_user_median": 0.9369609817111357, "usage_gt100_orders": 13270, "full_clear_events": 11861, "full_clear_mature5": 11837, "full_clear_mature7": 11823, "gap5_events": 3314, "gap7_events": 2882, "gap5_event_share": 0.27996958688856977, "gap7_event_share": 0.24376215850460967, "mature5_users": 1720, "mature7_users": 1719, "ever_gap5_users": 1255, "ever_gap7_users": 1193, "ever_gap5_share": 0.7296511627906976, "ever_gap7_share": 0.6940081442699244, "returned_after7_events": 2626, "early_settled_users": 1837, "early_settled_user_share": 0.9945858148348673, "current_all_settled_users": 338, "current_all_settled_share": 0.18299945858148348, "currently_waiting_after_clear7_users": 256, "principal_per_scoped_order": 10220.490758675027, "scoped_settled_order_share": 0.9370998982305243}, {"label": "覆盖60%最小名单", "users": 2627, "profit": "172142928.560000000000000000", "profit_share": 0.6000478190307926, "user_share_all": 0.006770077648435306, "life_loan_median": 15.0, "life_loan_mean": 17.090216977540923, "borrow_gap_user_median": 11.835208333333334, "borrow_gap_user_mean_median": 14.218614969135803, "return_gap_user_median": 1.0738252314814816, "observed_return_users": 2405, "history_late_then_settled_users": 1493, "history_late_then_settled_share": 0.5683288922725542, "history_late_then_settled_orders": 3738, "settled_history_orders": 40676, "history_late_then_settled_order_share": 0.0918969416855148, "current_status8_users": 1511, "current_status8_share": 0.5751808146174343, "no_current8_users": 1116, "no8_latest_pass_users": 974, "no8_latest_notpass_users": 142, "no8_latest_unknown_users": 0, "no8_latest_pass_share": 0.8727598566308243, "no8_latest_notpass_share": 0.12724014336917563, "no8_latest_unknown_share": 0.0, "cycle_users": 2447, "cycle_user_share": 0.9314807765511991, "cycle_funded_orders": 26989, "funded_orders": 44896, "cycle_order_share": 0.6011448681397007, "latest_funded_cycle_share": 0.6094404263418348, "latest_offer_cycle_share": 0.26417967263037684, "usage_orders": 40045, "usage_attempts": 42026, "usage_coverage": 0.9528625136820064, "usage_mean_order": 0.9024681427616713, "usage_weighted": 0.8662627571092635, "usage_user_median": 0.9326174596854536, "usage_gt100_orders": 16957, "full_clear_events": 15667, "full_clear_mature5": 15636, "full_clear_mature7": 15615, "gap5_events": 4444, "gap7_events": 3883, "gap5_event_share": 0.28421591199795343, "gap7_event_share": 0.24867114953570285, "mature5_users": 2435, "mature7_users": 2433, "ever_gap5_users": 1747, "ever_gap7_users": 1656, "ever_gap5_share": 0.7174537987679671, "ever_gap7_share": 0.6806411837237978, "returned_after7_events": 3504, "early_settled_users": 2609, "early_settled_user_share": 0.9931480776551199, "current_all_settled_users": 509, "current_all_settled_share": 0.19375713741910924, "currently_waiting_after_clear7_users": 379, "principal_per_scoped_order": 9603.575134753917, "scoped_settled_order_share": 0.9317162863331822}, {"label": "覆盖70%最小名单", "users": 3586, "profit": "200837816.420000000000000000", "profit_share": 0.7000711253714, "user_share_all": 0.009241529671598404, "life_loan_median": 14.0, "life_loan_mean": 15.723647518126045, "borrow_gap_user_median": 11.953385416666666, "borrow_gap_user_mean_median": 14.291696727109054, "return_gap_user_median": 1.0908449074074074, "observed_return_users": 3261, "history_late_then_settled_users": 2039, "history_late_then_settled_share": 0.5686001115448969, "history_late_then_settled_orders": 5007, "settled_history_orders": 50776, "history_late_then_settled_order_share": 0.09860957932881677, "current_status8_users": 2075, "current_status8_share": 0.5786391522587842, "no_current8_users": 1511, "no8_latest_pass_users": 1304, "no8_latest_notpass_users": 207, "no8_latest_unknown_users": 0, "no8_latest_pass_share": 0.8630046326935804, "no8_latest_notpass_share": 0.1369953673064196, "no8_latest_unknown_share": 0.0, "cycle_users": 3315, "cycle_user_share": 0.9244283324037925, "cycle_funded_orders": 33448, "funded_orders": 56385, "cycle_order_share": 0.5932074133191452, "latest_funded_cycle_share": 0.598159509202454, "latest_offer_cycle_share": 0.25683212493028446, "usage_orders": 50707, "usage_attempts": 53702, "usage_coverage": 0.9442292652042754, "usage_mean_order": 0.8988203590998587, "usage_weighted": 0.8597666693592965, "usage_user_median": 0.929762818403441, "usage_gt100_orders": 21067, "full_clear_events": 19920, "full_clear_mature5": 19878, "full_clear_mature7": 19850, "gap5_events": 5825, "gap7_events": 5077, "gap5_event_share": 0.29303752892645135, "gap7_event_share": 0.2557682619647355, "mature5_users": 3314, "mature7_users": 3311, "ever_gap5_users": 2356, "ever_gap7_users": 2229, "ever_gap5_share": 0.7109233554616777, "ever_gap7_share": 0.6732105104198127, "returned_after7_events": 4557, "early_settled_users": 3554, "early_settled_user_share": 0.9910764082543224, "current_all_settled_users": 715, "current_all_settled_share": 0.19938650306748465, "currently_waiting_after_clear7_users": 520, "principal_per_scoped_order": 8985.887924513278, "scoped_settled_order_share": 0.9268821913445077}, {"label": "覆盖80%最小名单", "users": 4747, "profit": "229521815.240000000000000000", "profit_share": 0.8000564752025069, "user_share_all": 0.012233558658973123, "life_loan_median": 13.0, "life_loan_mean": 14.559721929639773, "borrow_gap_user_median": 11.978472222222223, "borrow_gap_user_mean_median": 14.30690806878307, "return_gap_user_median": 1.1099189814814814, "observed_return_users": 4293, "history_late_then_settled_users": 2658, "history_late_then_settled_share": 0.5599325890035812, "history_late_then_settled_orders": 6414, "settled_history_orders": 61944, "history_late_then_settled_order_share": 0.10354513754358775, "current_status8_users": 2723, "current_status8_share": 0.5736254476511481, "no_current8_users": 2024, "no8_latest_pass_users": 1727, "no8_latest_notpass_users": 297, "no8_latest_unknown_users": 0, "no8_latest_pass_share": 0.8532608695652174, "no8_latest_notpass_share": 0.14673913043478262, "no8_latest_unknown_share": 0.0, "cycle_users": 4345, "cycle_user_share": 0.915314935748894, "cycle_funded_orders": 40318, "funded_orders": 69115, "cycle_order_share": 0.5833465962526224, "latest_funded_cycle_share": 0.5881609437539499, "latest_offer_cycle_share": 0.25131662102380453, "usage_orders": 62398, "usage_attempts": 66603, "usage_coverage": 0.9368647057940332, "usage_mean_order": 0.8960773489166652, "usage_weighted": 0.854723870123586, "usage_user_median": 0.9260073474285356, "usage_gt100_orders": 25446, "full_clear_events": 24888, "full_clear_mature5": 24834, "full_clear_mature7": 24791, "gap5_events": 7374, "gap7_events": 6432, "gap5_event_share": 0.29693162599661754, "gap7_event_share": 0.2594489935863822, "mature5_users": 4370, "mature7_users": 4363, "ever_gap5_users": 3094, "ever_gap7_users": 2926, "ever_gap5_share": 0.7080091533180778, "ever_gap7_share": 0.6706394682557874, "returned_after7_events": 5714, "early_settled_users": 4696, "early_settled_user_share": 0.9892563724457553, "current_all_settled_users": 999, "current_all_settled_share": 0.21044870444491257, "currently_waiting_after_clear7_users": 718, "principal_per_scoped_order": 8477.454507215427, "scoped_settled_order_share": 0.9230246554067172}, {"label": "覆盖90%最小名单", "users": 6144, "profit": "258195670.340000000000000000", "profit_share": 0.9000064665259261, "user_share_all": 0.015833786475822807, "life_loan_median": 12.0, "life_loan_mean": 13.573567708333334, "borrow_gap_user_median": 11.989768518518519, "borrow_gap_user_mean_median": 14.293302629886831, "return_gap_user_median": 1.1779629629629629, "observed_return_users": 5510, "history_late_then_settled_users": 3394, "history_late_then_settled_share": 0.5524088541666666, "history_late_then_settled_orders": 8061, "settled_history_orders": 74248, "history_late_then_settled_order_share": 0.10856858097187803, "current_status8_users": 3529, "current_status8_share": 0.5743815104166666, "no_current8_users": 2615, "no8_latest_pass_users": 2205, "no8_latest_notpass_users": 410, "no8_latest_unknown_users": 0, "no8_latest_pass_share": 0.8432122370936902, "no8_latest_notpass_share": 0.15678776290630975, "no8_latest_unknown_share": 0.0, "cycle_users": 5583, "cycle_user_share": 0.90869140625, "cycle_funded_orders": 48066, "funded_orders": 83396, "cycle_order_share": 0.5763585783490814, "latest_funded_cycle_share": 0.5812174479166666, "latest_offer_cycle_share": 0.2421875, "usage_orders": 75523, "usage_attempts": 81239, "usage_coverage": 0.9296397050677631, "usage_mean_order": 0.8952137424942449, "usage_weighted": 0.8514556587611539, "usage_user_median": 0.9261245691468805, "usage_gt100_orders": 30488, "full_clear_events": 30344, "full_clear_mature5": 30259, "full_clear_mature7": 30203, "gap5_events": 9133, "gap7_events": 7953, "gap5_event_share": 0.3018275554380515, "gap7_event_share": 0.2633182134225077, "mature5_users": 5622, "mature7_users": 5612, "ever_gap5_users": 3941, "ever_gap7_users": 3716, "ever_gap5_share": 0.7009960868018499, "ever_gap7_share": 0.662152530292231, "returned_after7_events": 7035, "early_settled_users": 6056, "early_settled_user_share": 0.9856770833333334, "current_all_settled_users": 1327, "current_all_settled_share": 0.21598307291666666, "currently_waiting_after_clear7_users": 918, "principal_per_scoped_order": 8009.389500434695, "scoped_settled_order_share": 0.9184110211997593}]</script><script>const profiles=JSON.parse(document.getElementById("coverage-data").textContent);const fmt=x=>x==null?"—":(x*100).toFixed(2)+"%";const n=x=>new Intl.NumberFormat("zh-CN").format(x);function refresh(){const g=profiles[document.getElementById("coverage-selector").value];document.getElementById("coverage-detail").innerHTML=`<p class="conclusion">${g.label}：${n(g.users)}人；当前状态8占${fmt(g.current_status8_share)}；曾逾期后结清占${fmt(g.history_late_then_settled_share)}；曾7天未再提单占${fmt(g.ever_gap7_share)}（分母${n(g.mature7_users)}人）；循环贷用户占${fmt(g.cycle_user_share)}；无状态8的${n(g.no_current8_users)}人中，最新获额通过${fmt(g.no8_latest_pass_share)}、未通过${fmt(g.no8_latest_notpass_share)}。</p>`}document.getElementById("coverage-selector").addEventListener("change",refresh);refresh();</script></main></body></html>
