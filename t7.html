@@ -12,7 +12,7 @@
 .page-top{text-align:center}
 .kicker{color:var(--cy);font-size:12px;letter-spacing:2px;font-weight:700}
 h1{font-size:24px;margin:8px 0 6px}
-.tabs{display:flex;flex-wrap:wrap;gap:10px;justify-content:center;margin:18px 0 8px}
+.tabs{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;max-width:880px;margin:18px auto 8px}
 .tabs button{appearance:none;border:1px solid var(--line);background:#0c2944;color:var(--text);border-radius:999px;padding:10px 18px;font-size:14px;font-weight:700;cursor:pointer}
 .tabs button:hover{border-color:var(--cy)}
 .tabs button.on{background:var(--cy);color:#062033;border-color:var(--cy)}
