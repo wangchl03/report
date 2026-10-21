@@ -64,10 +64,31 @@ BATCHES = [
         "recall_date": "2026-10-16",
         "filter_recall_date": False,
     },
+    {
+        "slug": "cumulative",
+        "table": "七批召回名单合并（跨批次按用户去重）",
+        "recall_date": "2026-08-18",
+        "filter_recall_date": False,
+        "cumulative": True,
+    },
 ]
 
 
+def cumulative_list_parts():
+    return [
+        "SELECT d.*, '" + b["slug"] + "'::text AS source_batch FROM (" + list_cte(b) + ") d"
+        for b in BATCHES if not b.get("cumulative")
+    ]
+
+
 def list_cte(batch) -> str:
+    if batch.get("cumulative"):
+        return """WITH all_recall_lists AS (""" + "\nUNION ALL\n".join(cumulative_list_parts()) + """), ranked_users AS (
+            SELECT user_id,strat,churn_days,recall_dt,
+                   ROW_NUMBER() OVER(PARTITION BY user_id ORDER BY recall_dt,source_batch,strat,churn_days) AS rn
+            FROM all_recall_lists WHERE recall_dt<=CURRENT_DATE-1
+        )
+        SELECT user_id,strat,churn_days,recall_dt FROM ranked_users WHERE rn=1"""
     extra = ""
     if batch.get("filter_recall_date"):
         extra = (
@@ -77,7 +98,8 @@ def list_cte(batch) -> str:
     return f"""
 SELECT DISTINCT churn_user_id::bigint AS user_id,
        COALESCE(strat, 'NA') AS strat,
-       churn_days
+       churn_days,
+       DATE '{batch['recall_date']}' AS recall_dt
 FROM {batch['table']}
 WHERE churn_user_id IS NOT NULL{extra}
 """
@@ -252,14 +274,14 @@ def fetch(batch):
             FROM u
             INNER JOIN order_loan_f_v2_copy o ON o.user_id = u.user_id
             CROSS JOIN params p
-            WHERE o.apply_date >= p.recall_dt AND o.apply_date <= p.as_of
+            WHERE o.apply_date >= u.recall_dt AND o.apply_date <= p.as_of
         ),
         first_apply AS (
             SELECT o.user_id, MIN(o.apply_date) AS first_dt
             FROM u
             INNER JOIN order_loan_f_v2_copy o ON o.user_id = u.user_id
             CROSS JOIN params p
-            WHERE o.apply_date >= p.recall_dt AND o.apply_date <= p.as_of
+            WHERE o.apply_date >= u.recall_dt AND o.apply_date <= p.as_of
             GROUP BY 1
         )
         SELECT
@@ -269,49 +291,49 @@ def fetch(batch):
              FROM u
              INNER JOIN order_loan_f_v2_copy o ON o.user_id = u.user_id
              CROSS JOIN params p
-             WHERE o.apply_date >= p.week_start AND o.apply_date <= p.as_of) AS n_apply_week,
+             WHERE o.apply_date >= u.recall_dt AND o.apply_date >= p.week_start AND o.apply_date <= p.as_of) AS n_apply_week,
             (SELECT COUNT(*) FROM first_apply f CROSS JOIN params p
              WHERE f.first_dt >= p.week_start AND f.first_dt <= p.as_of) AS n_first_week,
             (SELECT COUNT(*)
              FROM u
              INNER JOIN order_loan_f_v2_copy o ON o.user_id = u.user_id
              CROSS JOIN params p
-             WHERE o.apply_date >= p.recall_dt AND o.apply_date <= p.as_of AND o.is_remit = 1
+             WHERE o.apply_date >= u.recall_dt AND o.apply_date <= p.as_of AND o.is_remit = 1
                AND COALESCE(o.remit_amt, 0) > 0
                AND {remit_day} <= p.as_of) AS n_remit,
             (SELECT COUNT(*)
              FROM u
              INNER JOIN order_loan_f_v2_copy o ON o.user_id = u.user_id
              CROSS JOIN params p
-             WHERE o.apply_date >= p.recall_dt AND o.apply_date <= p.as_of AND o.is_remit = 1
+             WHERE o.apply_date >= u.recall_dt AND o.apply_date <= p.as_of AND o.is_remit = 1
                AND COALESCE(o.remit_amt, 0) > 0
                AND {remit_day} >= p.week_start AND {remit_day} <= p.as_of) AS n_remit_week,
             (SELECT COUNT(*)
              FROM u
              INNER JOIN order_loan_f_v2_copy o ON o.user_id = u.user_id
              CROSS JOIN params p
-             WHERE o.apply_date >= p.recall_dt AND o.apply_date <= p.as_of AND o.is_due = 1 AND o.is_remit = 1
+             WHERE o.apply_date >= u.recall_dt AND o.apply_date <= p.as_of AND o.is_due = 1 AND o.is_remit = 1
                AND COALESCE(o.remit_amt, 0) > 0
                AND o.due_date < CURRENT_DATE) AS n_due,
             (SELECT COUNT(*)
              FROM u
              INNER JOIN order_loan_f_v2_copy o ON o.user_id = u.user_id
              CROSS JOIN params p
-             WHERE o.apply_date >= p.recall_dt AND o.apply_date <= p.as_of AND o.is_due = 1 AND o.is_remit = 1
+             WHERE o.apply_date >= u.recall_dt AND o.apply_date <= p.as_of AND o.is_due = 1 AND o.is_remit = 1
                AND COALESCE(o.remit_amt, 0) > 0 AND o.loan_status_code = 8
                AND o.due_date < CURRENT_DATE) AS n_due_od,
             (SELECT SUM(COALESCE(o.repaid_amt, 0))
              FROM u
              INNER JOIN order_loan_f_v2_copy o ON o.user_id = u.user_id
              CROSS JOIN params p
-             WHERE o.apply_date >= p.recall_dt AND o.apply_date <= p.as_of AND o.is_due = 1 AND o.is_remit = 1
+             WHERE o.apply_date >= u.recall_dt AND o.apply_date <= p.as_of AND o.is_due = 1 AND o.is_remit = 1
                AND COALESCE(o.remit_amt, 0) > 0
                AND o.due_date < CURRENT_DATE) AS due_repaid,
             (SELECT SUM(o.remit_amt)
              FROM u
              INNER JOIN order_loan_f_v2_copy o ON o.user_id = u.user_id
              CROSS JOIN params p
-             WHERE o.apply_date >= p.recall_dt AND o.apply_date <= p.as_of AND o.is_due = 1 AND o.is_remit = 1
+             WHERE o.apply_date >= u.recall_dt AND o.apply_date <= p.as_of AND o.is_due = 1 AND o.is_remit = 1
                AND COALESCE(o.remit_amt, 0) > 0
                AND o.due_date < CURRENT_DATE) AS due_remit,
             (SELECT week_start FROM params) AS week_start,
@@ -355,7 +377,7 @@ def fetch(batch):
           SELECT o.user_id, MIN(o.apply_date) AS first_apply
           FROM u
           INNER JOIN order_loan_f_v2_copy o
-            ON o.user_id = u.user_id AND o.apply_date >= DATE '{RECALL_DATE}' AND o.apply_date <= (CURRENT_DATE - 1)
+            ON o.user_id = u.user_id AND o.apply_date >= u.recall_dt AND o.apply_date <= (CURRENT_DATE - 1)
           GROUP BY 1
         )
         SELECT first_apply::text AS d, COUNT(*) AS n
@@ -378,7 +400,7 @@ def fetch(batch):
                COUNT(DISTINCT o.user_id) AS n_user
         FROM u
         INNER JOIN order_loan_f_v2_copy o
-          ON o.user_id = u.user_id AND o.apply_date >= DATE '{RECALL_DATE}' AND o.apply_date <= (CURRENT_DATE - 1)
+          ON o.user_id = u.user_id AND o.apply_date >= u.recall_dt AND o.apply_date <= (CURRENT_DATE - 1)
         GROUP BY 1 ORDER BY 1
         """,
     )
@@ -393,7 +415,7 @@ def fetch(batch):
         SELECT {remit_day}::text AS d, COUNT(*) AS n
         FROM u
         INNER JOIN order_loan_f_v2_copy o ON o.user_id = u.user_id
-        WHERE o.apply_date >= DATE '{RECALL_DATE}'
+        WHERE o.apply_date >= u.recall_dt
           AND o.is_remit = 1 AND COALESCE(o.remit_amt, 0) > 0
           AND {remit_day} IS NOT NULL
           AND {remit_day} <= (CURRENT_DATE - 1)
@@ -417,7 +439,7 @@ def fetch(batch):
                SUM(o.remit_amt) AS remit
         FROM u
         INNER JOIN order_loan_f_v2_copy o ON o.user_id = u.user_id
-        WHERE o.apply_date >= DATE '{RECALL_DATE}'
+        WHERE o.apply_date >= u.recall_dt
           AND o.is_due = 1 AND o.is_remit = 1 AND COALESCE(o.remit_amt, 0) > 0
           AND o.due_date IS NOT NULL
           AND o.due_date < CURRENT_DATE
@@ -436,7 +458,7 @@ def fetch(batch):
           SELECT DISTINCT o.user_id
           FROM u
           INNER JOIN order_loan_f_v2_copy o
-            ON o.user_id = u.user_id AND o.apply_date >= DATE '{RECALL_DATE}' AND o.apply_date <= (CURRENT_DATE - 1)
+            ON o.user_id = u.user_id AND o.apply_date >= u.recall_dt AND o.apply_date <= (CURRENT_DATE - 1)
         ) a ON a.user_id = u.user_id
         GROUP BY 1 ORDER BY n_user DESC
         """,
@@ -466,7 +488,7 @@ def fetch(batch):
           SELECT DISTINCT o.user_id
           FROM u
           INNER JOIN order_loan_f_v2_copy o
-            ON o.user_id = u.user_id AND o.apply_date >= DATE '{RECALL_DATE}' AND o.apply_date <= (CURRENT_DATE - 1)
+            ON o.user_id = u.user_id AND o.apply_date >= u.recall_dt AND o.apply_date <= (CURRENT_DATE - 1)
         ) a ON a.user_id = u.user_id
         GROUP BY 1
         """,
@@ -502,7 +524,7 @@ def build_sql(batch, remit_day: str) -> str:
     return f"""-- T7 召回看板 · 可复现 PGSQL
 -- 库：kaby_dw · schema：wangchuanliang
 -- 名单：{LIST_TABLE}
--- 触达日：{RECALL_DATE}
+-- 日历起点：{RECALL_DATE}；订单按名单中的用户级 recall_dt 起算，累计名单取各用户首次入选日期
 -- 放款日：优先 o.remit_date::date（无该列时用 o.apply_date::date）
 -- 本文件当前放款日表达式：{remit_day}
 -- 本周：DATE_TRUNC('week', CURRENT_DATE - 1)::date（周一）
@@ -540,14 +562,14 @@ apply_u AS (
     FROM tmp_t7_u u
     INNER JOIN order_loan_f_v2_copy o ON o.user_id = u.user_id
     CROSS JOIN params p
-    WHERE o.apply_date >= p.recall_dt AND o.apply_date <= p.as_of
+    WHERE o.apply_date >= u.recall_dt AND o.apply_date <= p.as_of
 ),
 first_apply AS (
     SELECT o.user_id, MIN(o.apply_date) AS first_dt
     FROM tmp_t7_u u
     INNER JOIN order_loan_f_v2_copy o ON o.user_id = u.user_id
     CROSS JOIN params p
-    WHERE o.apply_date >= p.recall_dt AND o.apply_date <= p.as_of
+    WHERE o.apply_date >= u.recall_dt AND o.apply_date <= p.as_of
     GROUP BY 1
 )
 SELECT
@@ -559,49 +581,49 @@ SELECT
      FROM tmp_t7_u u
      INNER JOIN order_loan_f_v2_copy o ON o.user_id = u.user_id
      CROSS JOIN params p
-     WHERE o.apply_date >= p.week_start AND o.apply_date <= p.as_of) AS n_apply_week,
+     WHERE o.apply_date >= u.recall_dt AND o.apply_date >= p.week_start AND o.apply_date <= p.as_of) AS n_apply_week,
     (SELECT COUNT(*) FROM first_apply f CROSS JOIN params p
      WHERE f.first_dt >= p.week_start AND f.first_dt <= p.as_of) AS n_first_week,
     (SELECT COUNT(*)
      FROM tmp_t7_u u
      INNER JOIN order_loan_f_v2_copy o ON o.user_id = u.user_id
      CROSS JOIN params p
-             WHERE o.apply_date >= p.recall_dt AND o.apply_date <= p.as_of AND o.is_remit = 1
+             WHERE o.apply_date >= u.recall_dt AND o.apply_date <= p.as_of AND o.is_remit = 1
                AND COALESCE(o.remit_amt, 0) > 0
                AND {remit_day} <= p.as_of) AS n_remit,
     (SELECT COUNT(*)
      FROM tmp_t7_u u
      INNER JOIN order_loan_f_v2_copy o ON o.user_id = u.user_id
      CROSS JOIN params p
-     WHERE o.apply_date >= p.recall_dt AND o.apply_date <= p.as_of AND o.is_remit = 1
+     WHERE o.apply_date >= u.recall_dt AND o.apply_date <= p.as_of AND o.is_remit = 1
        AND COALESCE(o.remit_amt, 0) > 0
        AND {remit_day} >= p.week_start AND {remit_day} <= p.as_of) AS n_remit_week,
     (SELECT COUNT(*)
      FROM tmp_t7_u u
      INNER JOIN order_loan_f_v2_copy o ON o.user_id = u.user_id
      CROSS JOIN params p
-             WHERE o.apply_date >= p.recall_dt AND o.apply_date <= p.as_of AND o.is_due = 1 AND o.is_remit = 1
+             WHERE o.apply_date >= u.recall_dt AND o.apply_date <= p.as_of AND o.is_due = 1 AND o.is_remit = 1
                AND COALESCE(o.remit_amt, 0) > 0
                AND o.due_date < CURRENT_DATE) AS n_due,
     (SELECT COUNT(*)
      FROM tmp_t7_u u
      INNER JOIN order_loan_f_v2_copy o ON o.user_id = u.user_id
      CROSS JOIN params p
-             WHERE o.apply_date >= p.recall_dt AND o.apply_date <= p.as_of AND o.is_due = 1 AND o.is_remit = 1
+             WHERE o.apply_date >= u.recall_dt AND o.apply_date <= p.as_of AND o.is_due = 1 AND o.is_remit = 1
                AND COALESCE(o.remit_amt, 0) > 0 AND o.loan_status_code = 8
                AND o.due_date < CURRENT_DATE) AS n_due_od,
     (SELECT SUM(COALESCE(o.repaid_amt, 0))
      FROM tmp_t7_u u
      INNER JOIN order_loan_f_v2_copy o ON o.user_id = u.user_id
      CROSS JOIN params p
-             WHERE o.apply_date >= p.recall_dt AND o.apply_date <= p.as_of AND o.is_due = 1 AND o.is_remit = 1
+             WHERE o.apply_date >= u.recall_dt AND o.apply_date <= p.as_of AND o.is_due = 1 AND o.is_remit = 1
                AND COALESCE(o.remit_amt, 0) > 0
                AND o.due_date < CURRENT_DATE) AS due_repaid,
     (SELECT SUM(o.remit_amt)
      FROM tmp_t7_u u
      INNER JOIN order_loan_f_v2_copy o ON o.user_id = u.user_id
      CROSS JOIN params p
-             WHERE o.apply_date >= p.recall_dt AND o.apply_date <= p.as_of AND o.is_due = 1 AND o.is_remit = 1
+             WHERE o.apply_date >= u.recall_dt AND o.apply_date <= p.as_of AND o.is_due = 1 AND o.is_remit = 1
                AND COALESCE(o.remit_amt, 0) > 0
                AND o.due_date < CURRENT_DATE) AS due_remit,
     (SELECT week_start FROM params) AS week_start,
@@ -617,7 +639,7 @@ WITH fa AS (
   SELECT o.user_id, MIN(o.apply_date) AS first_apply
   FROM tmp_t7_u u
   INNER JOIN order_loan_f_v2_copy o
-    ON o.user_id = u.user_id AND o.apply_date >= DATE '{RECALL_DATE}' AND o.apply_date <= (CURRENT_DATE - 1)
+    ON o.user_id = u.user_id AND o.apply_date >= u.recall_dt AND o.apply_date <= (CURRENT_DATE - 1)
   GROUP BY 1
 )
 SELECT first_apply::text AS d, COUNT(*) AS n
@@ -633,7 +655,7 @@ SELECT o.apply_date::text AS d,
        COUNT(DISTINCT o.user_id) AS n_user
 FROM tmp_t7_u u
 INNER JOIN order_loan_f_v2_copy o
-  ON o.user_id = u.user_id AND o.apply_date >= DATE '{RECALL_DATE}' AND o.apply_date <= (CURRENT_DATE - 1)
+  ON o.user_id = u.user_id AND o.apply_date >= u.recall_dt AND o.apply_date <= (CURRENT_DATE - 1)
 GROUP BY 1
 ORDER BY 1;
 
@@ -643,7 +665,7 @@ ORDER BY 1;
 SELECT {remit_day}::text AS d, COUNT(*) AS n
 FROM tmp_t7_u u
 INNER JOIN order_loan_f_v2_copy o ON o.user_id = u.user_id
-WHERE o.apply_date >= DATE '{RECALL_DATE}'
+WHERE o.apply_date >= u.recall_dt
   AND o.is_remit = 1 AND COALESCE(o.remit_amt, 0) > 0
   AND {remit_day} IS NOT NULL
   AND {remit_day} <= (CURRENT_DATE - 1)
@@ -660,7 +682,7 @@ SELECT o.due_date::text AS d,
        SUM(o.remit_amt) AS remit
 FROM tmp_t7_u u
 INNER JOIN order_loan_f_v2_copy o ON o.user_id = u.user_id
-WHERE o.apply_date >= DATE '{RECALL_DATE}'
+WHERE o.apply_date >= u.recall_dt
   AND o.is_due = 1 AND o.is_remit = 1 AND COALESCE(o.remit_amt, 0) > 0
   AND o.due_date IS NOT NULL
   AND o.due_date < CURRENT_DATE
@@ -678,7 +700,7 @@ LEFT JOIN (
   SELECT DISTINCT o.user_id
   FROM tmp_t7_u u
   INNER JOIN order_loan_f_v2_copy o
-    ON o.user_id = u.user_id AND o.apply_date >= DATE '{RECALL_DATE}' AND o.apply_date <= (CURRENT_DATE - 1)
+    ON o.user_id = u.user_id AND o.apply_date >= u.recall_dt AND o.apply_date <= (CURRENT_DATE - 1)
 ) a ON a.user_id = u.user_id
 GROUP BY 1
 ORDER BY n_user DESC;
@@ -702,7 +724,7 @@ LEFT JOIN (
   SELECT DISTINCT o.user_id
   FROM tmp_t7_u u
   INNER JOIN order_loan_f_v2_copy o
-    ON o.user_id = u.user_id AND o.apply_date >= DATE '{RECALL_DATE}' AND o.apply_date <= (CURRENT_DATE - 1)
+    ON o.user_id = u.user_id AND o.apply_date >= u.recall_dt AND o.apply_date <= (CURRENT_DATE - 1)
 ) a ON a.user_id = u.user_id
 GROUP BY 1;
 """
@@ -717,6 +739,9 @@ def write_html(data, batch):
     md = md_label(RECALL_DATE)
     due_note = (f"到期 {k['n_due']:,} 单" if k['n_due'] else "尚无到期订单") if batch['slug'] in ('1010','1016') else "到期订单"
     list_note = ""
+    period_label = "首次召回后" if batch.get("cumulative") else md + "至今"
+    scope_note = ('<p class="meta">七批名单按用户去重；每人从首次入选日起统计，分层与流失天数取首次入选记录。累计曲线固定以合并名单为分母。</p>'
+                  if batch.get("cumulative") else "")
     HTML_PATH = HERE / f"t7-{batch['slug']}.html"
     json_name = f"t7_{batch['slug']}_dashboard_data.json"
 
@@ -767,16 +792,16 @@ details.code pre{{overflow:auto;max-height:520px;font-size:11px;line-height:1.45
 <body>
 <main class="wrap">
 <div class="top">
-  <div class="kicker">DASHBOARD · T7+ RECALL · {RECALL_DATE}</div>
+  <div class="kicker">DASHBOARD · T7+ RECALL · {'累计召回' if batch.get('cumulative') else RECALL_DATE}</div>
   <h1>流失 7 天以上召回 · 看板</h1>
   <p class="meta">名单 {fmt(k['n_user'])} 人{list_note} · 统计至 {k['as_of']} · 本周 {k['week_start']} 起（周一）</p>
-</div>
+{scope_note}</div>
 <section class="kpis">
-  <article class="card"><div class="label">提单率</div><div class="num a">{pct(k['apply_rate'])}</div><div class="sub">{fmt(k['n_apply'])} / {fmt(k['n_user'])} · {md}至今去重用户</div></article>
-  <article class="card"><div class="label">总提单人数</div><div class="num g">{fmt(k['n_apply'])}</div><div class="sub">{md}至今任意提单用户</div></article>
+  <article class="card"><div class="label">提单率</div><div class="num a">{pct(k['apply_rate'])}</div><div class="sub">{fmt(k['n_apply'])} / {fmt(k['n_user'])} · {period_label}去重用户</div></article>
+  <article class="card"><div class="label">总提单人数</div><div class="num g">{fmt(k['n_apply'])}</div><div class="sub">{period_label}任意提单用户</div></article>
   <article class="card"><div class="label">本周提单人数</div><div class="num">{fmt(k['n_apply_week'])}</div><div class="sub">本周有过提单的去重用户</div></article>
   <article class="card"><div class="label">本周新增提单人数</div><div class="num p">{fmt(k['n_first_week'])}</div><div class="sub">召回后首次提单落在本周</div></article>
-  <article class="card"><div class="label">放款单量</div><div class="num g">{fmt(k['n_remit'])}</div><div class="sub">{md}至今已放款订单数</div></article>
+  <article class="card"><div class="label">放款单量</div><div class="num g">{fmt(k['n_remit'])}</div><div class="sub">{period_label}已放款订单数</div></article>
   <article class="card"><div class="label">本周新增放款单量</div><div class="num">{fmt(k['n_remit_week'])}</div><div class="sub">本周新放款订单数</div></article>
   <article class="card"><div class="label">订单盈利率</div><div class="num a">{pct(k['profit_pct'])}</div><div class="sub">{due_note}</div></article>
   <article class="card"><div class="label">订单逾期率</div><div class="num p">{pct(k['overdue_pct'])}</div><div class="sub">{due_note}</div></article>
@@ -1019,6 +1044,7 @@ TAB_LABEL = {
     "0930": "9月30日批次",
     "1010": "10月10日批次",
     "1016": "10月16日批次",
+    "cumulative": "累计召回",
 }
 
 
@@ -1036,17 +1062,20 @@ def panel_body(data, batch, pfx):
     rd = batch["recall_date"]
     due_note = (f"到期 {k['n_due']:,} 单" if k['n_due'] else "尚无到期订单") if batch['slug'] in ('1010','1016') else "到期订单"
     list_note = ""
+    period_label = "首次召回后" if batch.get("cumulative") else md + "至今"
+    scope_note = ('<p class="meta">七批名单按用户去重；每人从首次入选日起统计，分层与流失天数取首次入选记录。累计曲线固定以合并名单为分母。</p>'
+                  if batch.get("cumulative") else "")
     return f"""
 <div class="top">
-  <div class="kicker">DASHBOARD · T7+ RECALL · {rd}</div>
+  <div class="kicker">DASHBOARD · T7+ RECALL · {'累计召回' if batch.get('cumulative') else rd}</div>
   <p class="meta">名单 {_fmt(k['n_user'])} 人{list_note} · 统计至 {k['as_of']} · 本周 {k['week_start']} 起（周一）</p>
-</div>
+{scope_note}</div>
 <section class="kpis">
-  <article class="card"><div class="label">提单率</div><div class="num a">{_pct(k['apply_rate'])}</div><div class="sub">{_fmt(k['n_apply'])} / {_fmt(k['n_user'])} · {md}至今去重用户</div></article>
-  <article class="card"><div class="label">总提单人数</div><div class="num g">{_fmt(k['n_apply'])}</div><div class="sub">{md}至今任意提单用户</div></article>
+  <article class="card"><div class="label">提单率</div><div class="num a">{_pct(k['apply_rate'])}</div><div class="sub">{_fmt(k['n_apply'])} / {_fmt(k['n_user'])} · {period_label}去重用户</div></article>
+  <article class="card"><div class="label">总提单人数</div><div class="num g">{_fmt(k['n_apply'])}</div><div class="sub">{period_label}任意提单用户</div></article>
   <article class="card"><div class="label">本周提单人数</div><div class="num">{_fmt(k['n_apply_week'])}</div><div class="sub">本周有过提单的去重用户</div></article>
   <article class="card"><div class="label">本周新增提单人数</div><div class="num p">{_fmt(k['n_first_week'])}</div><div class="sub">召回后首次提单落在本周</div></article>
-  <article class="card"><div class="label">放款单量</div><div class="num g">{_fmt(k['n_remit'])}</div><div class="sub">{md}至今已放款订单数</div></article>
+  <article class="card"><div class="label">放款单量</div><div class="num g">{_fmt(k['n_remit'])}</div><div class="sub">{period_label}已放款订单数</div></article>
   <article class="card"><div class="label">本周新增放款单量</div><div class="num">{_fmt(k['n_remit_week'])}</div><div class="sub">本周新放款订单数</div></article>
   <article class="card"><div class="label">订单盈利率</div><div class="num a">{_pct(k['profit_pct'])}</div><div class="sub">{due_note}</div></article>
   <article class="card"><div class="label">订单逾期率</div><div class="num p">{_pct(k['overdue_pct'])}</div><div class="sub">{due_note}</div></article>
