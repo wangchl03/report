@@ -52,6 +52,18 @@ BATCHES = [
         "recall_date": "2026-09-30",
         "filter_recall_date": False,
     },
+    {
+        "slug": "1010",
+        "table": "wangchuanliang.t7recalllist_1010",
+        "recall_date": "2026-10-10",
+        "filter_recall_date": False,
+    },
+    {
+        "slug": "1016",
+        "table": "wangchuanliang.t7recalllist_1016",
+        "recall_date": "2026-10-16",
+        "filter_recall_date": False,
+    },
 ]
 
 
@@ -703,6 +715,7 @@ def write_html(data, batch):
     LIST_TABLE = batch["table"]
     RECALL_DATE = batch["recall_date"]
     md = md_label(RECALL_DATE)
+    due_note = (f"到期 {k['n_due']:,} 单" if k['n_due'] else "尚无到期订单") if batch['slug'] in ('1010','1016') else "到期订单"
     list_note = (
         "（仅 recall_date=2026-08-18，不含同表 8/19 批次）"
         if batch.get("filter_recall_date")
@@ -769,8 +782,8 @@ details.code pre{{overflow:auto;max-height:520px;font-size:11px;line-height:1.45
   <article class="card"><div class="label">本周新增提单人数</div><div class="num p">{fmt(k['n_first_week'])}</div><div class="sub">召回后首次提单落在本周</div></article>
   <article class="card"><div class="label">放款单量</div><div class="num g">{fmt(k['n_remit'])}</div><div class="sub">{md}至今已放款订单数</div></article>
   <article class="card"><div class="label">本周新增放款单量</div><div class="num">{fmt(k['n_remit_week'])}</div><div class="sub">本周新放款订单数</div></article>
-  <article class="card"><div class="label">订单盈利率</div><div class="num a">{pct(k['profit_pct'])}</div><div class="sub">到期订单</div></article>
-  <article class="card"><div class="label">订单逾期率</div><div class="num p">{pct(k['overdue_pct'])}</div><div class="sub">到期订单</div></article>
+  <article class="card"><div class="label">订单盈利率</div><div class="num a">{pct(k['profit_pct'])}</div><div class="sub">{due_note}</div></article>
+  <article class="card"><div class="label">订单逾期率</div><div class="num p">{pct(k['overdue_pct'])}</div><div class="sub">{due_note}</div></article>
 </section>
 <div class="grid">
   <div class="card chart"><h3>累计提单人数与提单率</h3><p>按召回后首次提单日累计，分母={fmt(k['n_user'])}</p><div class="box"><canvas id="c1"></canvas></div></div>
@@ -1008,6 +1021,8 @@ TAB_LABEL = {
     "0910": "9月10日批次",
     "0917": "9月17日批次",
     "0930": "9月30日批次",
+    "1010": "10月10日批次",
+    "1016": "10月16日批次",
 }
 
 
@@ -1023,6 +1038,7 @@ def panel_body(data, batch, pfx):
     k = data["kpi"]
     md = md_label(batch["recall_date"])
     rd = batch["recall_date"]
+    due_note = (f"到期 {k['n_due']:,} 单" if k['n_due'] else "尚无到期订单") if batch['slug'] in ('1010','1016') else "到期订单"
     list_note = (
         "（仅 recall_date=2026-08-18，不含同表 8/19 批次）"
         if batch.get("filter_recall_date")
@@ -1040,8 +1056,8 @@ def panel_body(data, batch, pfx):
   <article class="card"><div class="label">本周新增提单人数</div><div class="num p">{_fmt(k['n_first_week'])}</div><div class="sub">召回后首次提单落在本周</div></article>
   <article class="card"><div class="label">放款单量</div><div class="num g">{_fmt(k['n_remit'])}</div><div class="sub">{md}至今已放款订单数</div></article>
   <article class="card"><div class="label">本周新增放款单量</div><div class="num">{_fmt(k['n_remit_week'])}</div><div class="sub">本周新放款订单数</div></article>
-  <article class="card"><div class="label">订单盈利率</div><div class="num a">{_pct(k['profit_pct'])}</div><div class="sub">到期订单</div></article>
-  <article class="card"><div class="label">订单逾期率</div><div class="num p">{_pct(k['overdue_pct'])}</div><div class="sub">到期订单</div></article>
+  <article class="card"><div class="label">订单盈利率</div><div class="num a">{_pct(k['profit_pct'])}</div><div class="sub">{due_note}</div></article>
+  <article class="card"><div class="label">订单逾期率</div><div class="num p">{_pct(k['overdue_pct'])}</div><div class="sub">{due_note}</div></article>
 </section>
 <div class="grid">
   <div class="card chart"><h3>累计提单人数与提单率</h3><p>按召回后首次提单日累计，分母={_fmt(k['n_user'])}</p><div class="box"><canvas id="{pfx}c1"></canvas></div></div>
