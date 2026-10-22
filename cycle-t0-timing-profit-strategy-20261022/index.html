@@ -927,27 +927,24 @@ function lineChartLayout(field,desiredWidth=1160,extraHeight=0){
  series.forEach((s,j)=&gt;s.points=s.values.map((v,i)=&gt;({x:xx(i),y:yy(v),series:j,month:i,value:v,text:pct(v)})));
  const points=series.flatMap(s=&gt;s.points),segments=series.flatMap(s=&gt;s.points.slice(1).map((p,i)=&gt;[s.points[i],p]));
  let labels=[];
- // Place close series on opposite sides and reject any box intersecting either line.
+ // Prefer the nearest collision-free position, with close series on opposite sides.
  // Bounds include padding for the real text, point marker and 3px line stroke.
  const ordered=[...points].sort((a,b)=&gt;a.month-b.month||a.y-b.y||a.series-b.series),choices=[];
  for(const point of ordered){
   const other=series[1-point.series].points[point.month],preferred=point.y&lt;=other.y?-1:1;
   const width=Math.ceil(point.text.length*8.5+16),height=26,candidates=[];
-  for(const sign of [preferred,-preferred])for(const distance of [27,43,59,75,91,107,123])for(const shift of [0,-22,22,-42,42]){
+  for(const sign of [preferred,-preferred])for(const distance of [23,27,31,35,39,43,49,57,65,75,87,101,117])for(const shift of [0,-10,10,-20,20,-30,30,-42,42]){
    const cx=point.x+shift,cy=point.y+sign*distance;
    const box={x:cx-width/2,y:cy-height/2,width,height};
    if(box.x&lt;left+3||box.x+width&gt;w-right-3||box.y&lt;35||box.y+height&gt;h-39)continue;
    if(segments.some(([a,b])=&gt;segmentMeetsBox(a,b,box,6)))continue;
    if(points.some(p=&gt;Math.hypot(p.x-Math.max(box.x,Math.min(p.x,box.x+width)),p.y-Math.max(box.y,Math.min(p.y,box.y+height)))&lt;10))continue;
-   candidates.push({...point,cx,cy,box,score:distance+Math.abs(shift)*.8+(sign===preferred?0:18)});
+   candidates.push({...point,cx,cy,box,score:Math.hypot(distance,shift)+Math.abs(shift)*.15+(sign===preferred?0:3)});
   }
   candidates.sort((a,b)=&gt;a.score-b.score);
   choices.push(candidates);
  }
- function leaderCrosses(a,b){
-  return (Math.abs(a.cx-a.x)&gt;1||Math.abs(a.cy-a.y)&gt;35)&amp;&amp;segmentMeetsBox({x:a.x,y:a.y+(a.cy&lt;a.y?-7:7)},{x:a.cx,y:a.cy+(a.cy&lt;a.y?13:-13)},b.box,3);
- }
- const conflict=(a,b)=&gt;rectsMeet(a.box,b.box,8)||leaderCrosses(a,b)||leaderCrosses(b,a);
+ const conflict=(a,b)=&gt;rectsMeet(a.box,b.box,8);
  let visits=0;
  function place(remaining){
   if(!remaining.length)return true;
@@ -961,6 +958,16 @@ function lineChartLayout(field,desiredWidth=1160,extraHeight=0){
  if(!place(choices.map((_,i)=&gt;i))){
   if(extraHeight&lt;200)return lineChartLayout(field,w,extraHeight+100);
   throw new Error(&#x27;Unable to place all monthly labels without collisions: &#x27;+field);
+ }
+ // Tighten the feasible layout without moving any label onto a line or another label.
+ for(let pass=0;pass&lt;4;pass++){
+  let changed=false;
+  for(let i=0;i&lt;labels.length;i++){
+   const current=labels[i],k=ordered.findIndex(p=&gt;p.series===current.series&amp;&amp;p.month===current.month);
+   const closer=choices[k].find(c=&gt;c.score&lt;current.score-.01&amp;&amp;!labels.some((l,j)=&gt;j!==i&amp;&amp;conflict(c,l)));
+   if(closer){labels[i]=closer;changed=true}
+  }
+  if(!changed)break;
  }
  labels.sort((a,b)=&gt;a.month-b.month||a.series-b.series);
  return {w,h,left,right,top,bottom,min,max,series,labels,segments,xx,yy};
@@ -1130,27 +1137,24 @@ function lineChartLayout(field,desiredWidth=1160,extraHeight=0){
  series.forEach((s,j)=>s.points=s.values.map((v,i)=>({x:xx(i),y:yy(v),series:j,month:i,value:v,text:pct(v)})));
  const points=series.flatMap(s=>s.points),segments=series.flatMap(s=>s.points.slice(1).map((p,i)=>[s.points[i],p]));
  let labels=[];
- // Place close series on opposite sides and reject any box intersecting either line.
+ // Prefer the nearest collision-free position, with close series on opposite sides.
  // Bounds include padding for the real text, point marker and 3px line stroke.
  const ordered=[...points].sort((a,b)=>a.month-b.month||a.y-b.y||a.series-b.series),choices=[];
  for(const point of ordered){
   const other=series[1-point.series].points[point.month],preferred=point.y<=other.y?-1:1;
   const width=Math.ceil(point.text.length*8.5+16),height=26,candidates=[];
-  for(const sign of [preferred,-preferred])for(const distance of [27,43,59,75,91,107,123])for(const shift of [0,-22,22,-42,42]){
+  for(const sign of [preferred,-preferred])for(const distance of [23,27,31,35,39,43,49,57,65,75,87,101,117])for(const shift of [0,-10,10,-20,20,-30,30,-42,42]){
    const cx=point.x+shift,cy=point.y+sign*distance;
    const box={x:cx-width/2,y:cy-height/2,width,height};
    if(box.x<left+3||box.x+width>w-right-3||box.y<35||box.y+height>h-39)continue;
    if(segments.some(([a,b])=>segmentMeetsBox(a,b,box,6)))continue;
    if(points.some(p=>Math.hypot(p.x-Math.max(box.x,Math.min(p.x,box.x+width)),p.y-Math.max(box.y,Math.min(p.y,box.y+height)))<10))continue;
-   candidates.push({...point,cx,cy,box,score:distance+Math.abs(shift)*.8+(sign===preferred?0:18)});
+   candidates.push({...point,cx,cy,box,score:Math.hypot(distance,shift)+Math.abs(shift)*.15+(sign===preferred?0:3)});
   }
   candidates.sort((a,b)=>a.score-b.score);
   choices.push(candidates);
  }
- function leaderCrosses(a,b){
-  return (Math.abs(a.cx-a.x)>1||Math.abs(a.cy-a.y)>35)&&segmentMeetsBox({x:a.x,y:a.y+(a.cy<a.y?-7:7)},{x:a.cx,y:a.cy+(a.cy<a.y?13:-13)},b.box,3);
- }
- const conflict=(a,b)=>rectsMeet(a.box,b.box,8)||leaderCrosses(a,b)||leaderCrosses(b,a);
+ const conflict=(a,b)=>rectsMeet(a.box,b.box,8);
  let visits=0;
  function place(remaining){
   if(!remaining.length)return true;
@@ -1164,6 +1168,16 @@ function lineChartLayout(field,desiredWidth=1160,extraHeight=0){
  if(!place(choices.map((_,i)=>i))){
   if(extraHeight<200)return lineChartLayout(field,w,extraHeight+100);
   throw new Error('Unable to place all monthly labels without collisions: '+field);
+ }
+ // Tighten the feasible layout without moving any label onto a line or another label.
+ for(let pass=0;pass<4;pass++){
+  let changed=false;
+  for(let i=0;i<labels.length;i++){
+   const current=labels[i],k=ordered.findIndex(p=>p.series===current.series&&p.month===current.month);
+   const closer=choices[k].find(c=>c.score<current.score-.01&&!labels.some((l,j)=>j!==i&&conflict(c,l)));
+   if(closer){labels[i]=closer;changed=true}
+  }
+  if(!changed)break;
  }
  labels.sort((a,b)=>a.month-b.month||a.series-b.series);
  return {w,h,left,right,top,bottom,min,max,series,labels,segments,xx,yy};
