@@ -1,7 +1,7 @@
 -- T7 召回看板 · 可复现 PGSQL
 -- 库：kaby_dw · schema：wangchuanliang
 -- 名单：wangchuanliang.t7recalllist_0917
--- 触达日：2026-09-17
+-- 日历起点：2026-09-17；订单按名单中的用户级 recall_dt 起算，累计名单取各用户首次入选日期
 -- 放款日：优先 o.remit_date::date（无该列时用 o.apply_date::date）
 -- 本文件当前放款日表达式：o.remit_date::date
 -- 本周：DATE_TRUNC('week', CURRENT_DATE - 1)::date（周一）
@@ -26,7 +26,8 @@ DROP TABLE IF EXISTS tmp_t7_u;
 CREATE TEMP TABLE tmp_t7_u AS
 SELECT DISTINCT churn_user_id::bigint AS user_id,
        COALESCE(strat, 'NA') AS strat,
-       churn_days
+       churn_days,
+       DATE '2026-09-17' AS recall_dt
 FROM wangchuanliang.t7recalllist_0917
 WHERE churn_user_id IS NOT NULL;
 
@@ -43,14 +44,14 @@ apply_u AS (
     FROM tmp_t7_u u
     INNER JOIN order_loan_f_v2_copy o ON o.user_id = u.user_id
     CROSS JOIN params p
-    WHERE o.apply_date >= p.recall_dt AND o.apply_date <= p.as_of
+    WHERE o.apply_date >= u.recall_dt AND o.apply_date <= p.as_of
 ),
 first_apply AS (
     SELECT o.user_id, MIN(o.apply_date) AS first_dt
     FROM tmp_t7_u u
     INNER JOIN order_loan_f_v2_copy o ON o.user_id = u.user_id
     CROSS JOIN params p
-    WHERE o.apply_date >= p.recall_dt AND o.apply_date <= p.as_of
+    WHERE o.apply_date >= u.recall_dt AND o.apply_date <= p.as_of
     GROUP BY 1
 )
 SELECT
@@ -62,49 +63,49 @@ SELECT
      FROM tmp_t7_u u
      INNER JOIN order_loan_f_v2_copy o ON o.user_id = u.user_id
      CROSS JOIN params p
-     WHERE o.apply_date >= p.week_start AND o.apply_date <= p.as_of) AS n_apply_week,
+     WHERE o.apply_date >= u.recall_dt AND o.apply_date >= p.week_start AND o.apply_date <= p.as_of) AS n_apply_week,
     (SELECT COUNT(*) FROM first_apply f CROSS JOIN params p
      WHERE f.first_dt >= p.week_start AND f.first_dt <= p.as_of) AS n_first_week,
     (SELECT COUNT(*)
      FROM tmp_t7_u u
      INNER JOIN order_loan_f_v2_copy o ON o.user_id = u.user_id
      CROSS JOIN params p
-             WHERE o.apply_date >= p.recall_dt AND o.apply_date <= p.as_of AND o.is_remit = 1
+             WHERE o.apply_date >= u.recall_dt AND o.apply_date <= p.as_of AND o.is_remit = 1
                AND COALESCE(o.remit_amt, 0) > 0
                AND o.remit_date::date <= p.as_of) AS n_remit,
     (SELECT COUNT(*)
      FROM tmp_t7_u u
      INNER JOIN order_loan_f_v2_copy o ON o.user_id = u.user_id
      CROSS JOIN params p
-     WHERE o.apply_date >= p.recall_dt AND o.apply_date <= p.as_of AND o.is_remit = 1
+     WHERE o.apply_date >= u.recall_dt AND o.apply_date <= p.as_of AND o.is_remit = 1
        AND COALESCE(o.remit_amt, 0) > 0
        AND o.remit_date::date >= p.week_start AND o.remit_date::date <= p.as_of) AS n_remit_week,
     (SELECT COUNT(*)
      FROM tmp_t7_u u
      INNER JOIN order_loan_f_v2_copy o ON o.user_id = u.user_id
      CROSS JOIN params p
-             WHERE o.apply_date >= p.recall_dt AND o.apply_date <= p.as_of AND o.is_due = 1 AND o.is_remit = 1
+             WHERE o.apply_date >= u.recall_dt AND o.apply_date <= p.as_of AND o.is_due = 1 AND o.is_remit = 1
                AND COALESCE(o.remit_amt, 0) > 0
                AND o.due_date < CURRENT_DATE) AS n_due,
     (SELECT COUNT(*)
      FROM tmp_t7_u u
      INNER JOIN order_loan_f_v2_copy o ON o.user_id = u.user_id
      CROSS JOIN params p
-             WHERE o.apply_date >= p.recall_dt AND o.apply_date <= p.as_of AND o.is_due = 1 AND o.is_remit = 1
+             WHERE o.apply_date >= u.recall_dt AND o.apply_date <= p.as_of AND o.is_due = 1 AND o.is_remit = 1
                AND COALESCE(o.remit_amt, 0) > 0 AND o.loan_status_code = 8
                AND o.due_date < CURRENT_DATE) AS n_due_od,
     (SELECT SUM(COALESCE(o.repaid_amt, 0))
      FROM tmp_t7_u u
      INNER JOIN order_loan_f_v2_copy o ON o.user_id = u.user_id
      CROSS JOIN params p
-             WHERE o.apply_date >= p.recall_dt AND o.apply_date <= p.as_of AND o.is_due = 1 AND o.is_remit = 1
+             WHERE o.apply_date >= u.recall_dt AND o.apply_date <= p.as_of AND o.is_due = 1 AND o.is_remit = 1
                AND COALESCE(o.remit_amt, 0) > 0
                AND o.due_date < CURRENT_DATE) AS due_repaid,
     (SELECT SUM(o.remit_amt)
      FROM tmp_t7_u u
      INNER JOIN order_loan_f_v2_copy o ON o.user_id = u.user_id
      CROSS JOIN params p
-             WHERE o.apply_date >= p.recall_dt AND o.apply_date <= p.as_of AND o.is_due = 1 AND o.is_remit = 1
+             WHERE o.apply_date >= u.recall_dt AND o.apply_date <= p.as_of AND o.is_due = 1 AND o.is_remit = 1
                AND COALESCE(o.remit_amt, 0) > 0
                AND o.due_date < CURRENT_DATE) AS due_remit,
     (SELECT week_start FROM params) AS week_start,
@@ -120,7 +121,7 @@ WITH fa AS (
   SELECT o.user_id, MIN(o.apply_date) AS first_apply
   FROM tmp_t7_u u
   INNER JOIN order_loan_f_v2_copy o
-    ON o.user_id = u.user_id AND o.apply_date >= DATE '2026-09-17' AND o.apply_date <= (CURRENT_DATE - 1)
+    ON o.user_id = u.user_id AND o.apply_date >= u.recall_dt AND o.apply_date <= (CURRENT_DATE - 1)
   GROUP BY 1
 )
 SELECT first_apply::text AS d, COUNT(*) AS n
@@ -136,7 +137,7 @@ SELECT o.apply_date::text AS d,
        COUNT(DISTINCT o.user_id) AS n_user
 FROM tmp_t7_u u
 INNER JOIN order_loan_f_v2_copy o
-  ON o.user_id = u.user_id AND o.apply_date >= DATE '2026-09-17' AND o.apply_date <= (CURRENT_DATE - 1)
+  ON o.user_id = u.user_id AND o.apply_date >= u.recall_dt AND o.apply_date <= (CURRENT_DATE - 1)
 GROUP BY 1
 ORDER BY 1;
 
@@ -146,7 +147,7 @@ ORDER BY 1;
 SELECT o.remit_date::date::text AS d, COUNT(*) AS n
 FROM tmp_t7_u u
 INNER JOIN order_loan_f_v2_copy o ON o.user_id = u.user_id
-WHERE o.apply_date >= DATE '2026-09-17'
+WHERE o.apply_date >= u.recall_dt
   AND o.is_remit = 1 AND COALESCE(o.remit_amt, 0) > 0
   AND o.remit_date::date IS NOT NULL
   AND o.remit_date::date <= (CURRENT_DATE - 1)
@@ -163,7 +164,7 @@ SELECT o.due_date::text AS d,
        SUM(o.remit_amt) AS remit
 FROM tmp_t7_u u
 INNER JOIN order_loan_f_v2_copy o ON o.user_id = u.user_id
-WHERE o.apply_date >= DATE '2026-09-17'
+WHERE o.apply_date >= u.recall_dt
   AND o.is_due = 1 AND o.is_remit = 1 AND COALESCE(o.remit_amt, 0) > 0
   AND o.due_date IS NOT NULL
   AND o.due_date < CURRENT_DATE
@@ -181,7 +182,7 @@ LEFT JOIN (
   SELECT DISTINCT o.user_id
   FROM tmp_t7_u u
   INNER JOIN order_loan_f_v2_copy o
-    ON o.user_id = u.user_id AND o.apply_date >= DATE '2026-09-17' AND o.apply_date <= (CURRENT_DATE - 1)
+    ON o.user_id = u.user_id AND o.apply_date >= u.recall_dt AND o.apply_date <= (CURRENT_DATE - 1)
 ) a ON a.user_id = u.user_id
 GROUP BY 1
 ORDER BY n_user DESC;
@@ -205,6 +206,6 @@ LEFT JOIN (
   SELECT DISTINCT o.user_id
   FROM tmp_t7_u u
   INNER JOIN order_loan_f_v2_copy o
-    ON o.user_id = u.user_id AND o.apply_date >= DATE '2026-09-17' AND o.apply_date <= (CURRENT_DATE - 1)
+    ON o.user_id = u.user_id AND o.apply_date >= u.recall_dt AND o.apply_date <= (CURRENT_DATE - 1)
 ) a ON a.user_id = u.user_id
 GROUP BY 1;
