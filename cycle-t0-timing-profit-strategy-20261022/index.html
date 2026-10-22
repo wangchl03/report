@@ -932,14 +932,14 @@ function lineChartLayout(field,desiredWidth=1160,extraHeight=0){
  const ordered=[...points].sort((a,b)=&gt;a.month-b.month||a.y-b.y||a.series-b.series),choices=[];
  for(const point of ordered){
   const other=series[1-point.series].points[point.month],preferred=point.y&lt;=other.y?-1:1;
-  const width=Math.ceil(point.text.length*8.5+16),height=26,candidates=[];
-  for(const sign of [preferred,-preferred])for(const distance of [23,27,31,35,39,43,49,57,65,75,87,101,117])for(const shift of [0,-10,10,-20,20,-30,30,-42,42]){
+  const width=Math.ceil([...point.text].reduce((n,c)=&gt;n+(c===&#x27;%&#x27;?12.5:c===&#x27;.&#x27;?4.5:8),0)+10),height=24,candidates=[];
+  for(const sign of [preferred,-preferred])for(const distance of [0,6,12,18,22,26,30,34,38,42,48,56,64,74,86,100,116])for(const shift of [0,-10,10,-20,20,-30,30,-42,42]){
    const cx=point.x+shift,cy=point.y+sign*distance;
    const box={x:cx-width/2,y:cy-height/2,width,height};
    if(box.x&lt;left+3||box.x+width&gt;w-right-3||box.y&lt;35||box.y+height&gt;h-39)continue;
    if(segments.some(([a,b])=&gt;segmentMeetsBox(a,b,box,6)))continue;
    if(points.some(p=&gt;Math.hypot(p.x-Math.max(box.x,Math.min(p.x,box.x+width)),p.y-Math.max(box.y,Math.min(p.y,box.y+height)))&lt;10))continue;
-   candidates.push({...point,cx,cy,box,score:Math.hypot(distance,shift)+Math.abs(shift)*.15+(sign===preferred?0:3)});
+   candidates.push({...point,cx,cy,box,score:(distance*distance+shift*shift)/30+Math.abs(shift)*.1+(sign===preferred?0:3)});
   }
   candidates.sort((a,b)=&gt;a.score-b.score);
   choices.push(candidates);
@@ -968,6 +968,19 @@ function lineChartLayout(field,desiredWidth=1160,extraHeight=0){
    if(closer){labels[i]=closer;changed=true}
   }
   if(!changed)break;
+ }
+ // Jointly move neighboring labels so one displaced label does not keep its neighbor far away.
+ for(let pass=0;pass&lt;2;pass++)for(let i=0;i&lt;labels.length;i++)for(let j=i+1;j&lt;labels.length;j++){
+  const a=labels[i],b=labels[j];
+  if(Math.abs(a.month-b.month)&gt;1||Math.max(Math.hypot(a.cx-a.x,a.cy-a.y),Math.hypot(b.cx-b.x,b.cy-b.y))&lt;34)continue;
+  const freeFor=l=&gt;choices[ordered.findIndex(p=&gt;p.series===l.series&amp;&amp;p.month===l.month)]
+   .filter(c=&gt;!labels.some((other,k)=&gt;k!==i&amp;&amp;k!==j&amp;&amp;conflict(c,other))).slice(0,24);
+  const aa=freeFor(a),bb=freeFor(b);let bestScore=a.score+b.score,best=null;
+  for(const x of aa)for(const y of bb){
+   const score=x.score+y.score;
+   if(score&lt;bestScore-.01&amp;&amp;!conflict(x,y)){bestScore=score;best=[x,y]}
+  }
+  if(best){labels[i]=best[0];labels[j]=best[1]}
  }
  labels.sort((a,b)=&gt;a.month-b.month||a.series-b.series);
  return {w,h,left,right,top,bottom,min,max,series,labels,segments,xx,yy};
@@ -1142,14 +1155,14 @@ function lineChartLayout(field,desiredWidth=1160,extraHeight=0){
  const ordered=[...points].sort((a,b)=>a.month-b.month||a.y-b.y||a.series-b.series),choices=[];
  for(const point of ordered){
   const other=series[1-point.series].points[point.month],preferred=point.y<=other.y?-1:1;
-  const width=Math.ceil(point.text.length*8.5+16),height=26,candidates=[];
-  for(const sign of [preferred,-preferred])for(const distance of [23,27,31,35,39,43,49,57,65,75,87,101,117])for(const shift of [0,-10,10,-20,20,-30,30,-42,42]){
+  const width=Math.ceil([...point.text].reduce((n,c)=>n+(c==='%'?12.5:c==='.'?4.5:8),0)+10),height=24,candidates=[];
+  for(const sign of [preferred,-preferred])for(const distance of [0,6,12,18,22,26,30,34,38,42,48,56,64,74,86,100,116])for(const shift of [0,-10,10,-20,20,-30,30,-42,42]){
    const cx=point.x+shift,cy=point.y+sign*distance;
    const box={x:cx-width/2,y:cy-height/2,width,height};
    if(box.x<left+3||box.x+width>w-right-3||box.y<35||box.y+height>h-39)continue;
    if(segments.some(([a,b])=>segmentMeetsBox(a,b,box,6)))continue;
    if(points.some(p=>Math.hypot(p.x-Math.max(box.x,Math.min(p.x,box.x+width)),p.y-Math.max(box.y,Math.min(p.y,box.y+height)))<10))continue;
-   candidates.push({...point,cx,cy,box,score:Math.hypot(distance,shift)+Math.abs(shift)*.15+(sign===preferred?0:3)});
+   candidates.push({...point,cx,cy,box,score:(distance*distance+shift*shift)/30+Math.abs(shift)*.1+(sign===preferred?0:3)});
   }
   candidates.sort((a,b)=>a.score-b.score);
   choices.push(candidates);
@@ -1178,6 +1191,19 @@ function lineChartLayout(field,desiredWidth=1160,extraHeight=0){
    if(closer){labels[i]=closer;changed=true}
   }
   if(!changed)break;
+ }
+ // Jointly move neighboring labels so one displaced label does not keep its neighbor far away.
+ for(let pass=0;pass<2;pass++)for(let i=0;i<labels.length;i++)for(let j=i+1;j<labels.length;j++){
+  const a=labels[i],b=labels[j];
+  if(Math.abs(a.month-b.month)>1||Math.max(Math.hypot(a.cx-a.x,a.cy-a.y),Math.hypot(b.cx-b.x,b.cy-b.y))<34)continue;
+  const freeFor=l=>choices[ordered.findIndex(p=>p.series===l.series&&p.month===l.month)]
+   .filter(c=>!labels.some((other,k)=>k!==i&&k!==j&&conflict(c,other))).slice(0,24);
+  const aa=freeFor(a),bb=freeFor(b);let bestScore=a.score+b.score,best=null;
+  for(const x of aa)for(const y of bb){
+   const score=x.score+y.score;
+   if(score<bestScore-.01&&!conflict(x,y)){bestScore=score;best=[x,y]}
+  }
+  if(best){labels[i]=best[0];labels[j]=best[1]}
  }
  labels.sort((a,b)=>a.month-b.month||a.series-b.series);
  return {w,h,left,right,top,bottom,min,max,series,labels,segments,xx,yy};
