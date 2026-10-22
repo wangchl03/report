@@ -975,7 +975,6 @@ function lines(title,field,width=1160){
  });
  labels.forEach(l=&gt;{
   const color=colors[l.series];
-  if(Math.abs(l.cx-l.x)&gt;1||Math.abs(l.cy-l.y)&gt;35){const endY=l.cy+(l.cy&lt;l.y?13:-13);z+=`&lt;path d=&quot;M${l.x} ${l.y+(l.cy&lt;l.y?-7:7)}L${l.cx} ${endY}&quot; stroke=&quot;${color}&quot; stroke-width=&quot;1&quot; stroke-opacity=&quot;.45&quot;/&gt;`}
   z+=`&lt;g class=&quot;data-label&quot; data-series=&quot;${l.series}&quot; data-month=&quot;${D.months[l.month]}&quot;&gt;&lt;rect class=&quot;data-label-box&quot; x=&quot;${l.box.x}&quot; y=&quot;${l.box.y}&quot; width=&quot;${l.box.width}&quot; height=&quot;${l.box.height}&quot; rx=&quot;4&quot; fill=&quot;#082235&quot;/&gt;&lt;text x=&quot;${l.cx}&quot; y=&quot;${l.cy+4.5}&quot; text-anchor=&quot;middle&quot; fill=&quot;${color}&quot; font-family=&quot;Arial,sans-serif&quot; font-size=&quot;14&quot; font-variant-numeric=&quot;tabular-nums&quot;&gt;${l.text}&lt;/text&gt;&lt;/g&gt;`;
  });
  z+=`&lt;text x=&quot;${w-right}&quot; y=&quot;20&quot; text-anchor=&quot;end&quot; fill=&quot;#9bb5c7&quot; font-size=&quot;12&quot;&gt;${D.months[0].slice(0,4)}年&lt;/text&gt;`;
@@ -1179,7 +1178,6 @@ function lines(title,field,width=1160){
  });
  labels.forEach(l=>{
   const color=colors[l.series];
-  if(Math.abs(l.cx-l.x)>1||Math.abs(l.cy-l.y)>35){const endY=l.cy+(l.cy<l.y?13:-13);z+=`<path d="M${l.x} ${l.y+(l.cy<l.y?-7:7)}L${l.cx} ${endY}" stroke="${color}" stroke-width="1" stroke-opacity=".45"/>`}
   z+=`<g class="data-label" data-series="${l.series}" data-month="${D.months[l.month]}"><rect class="data-label-box" x="${l.box.x}" y="${l.box.y}" width="${l.box.width}" height="${l.box.height}" rx="4" fill="#082235"/><text x="${l.cx}" y="${l.cy+4.5}" text-anchor="middle" fill="${color}" font-family="Arial,sans-serif" font-size="14" font-variant-numeric="tabular-nums">${l.text}</text></g>`;
  });
  z+=`<text x="${w-right}" y="20" text-anchor="end" fill="#9bb5c7" font-size="12">${D.months[0].slice(0,4)}年</text>`;
