@@ -907,14 +907,77 @@ function bars(title,series){
  series.forEach((s,j)=&gt;z+=`&lt;rect x=&quot;${left+j*160}&quot; y=&quot;12&quot; width=&quot;12&quot; height=&quot;12&quot; fill=&quot;${colors[j]}&quot;/&gt;&lt;text x=&quot;${left+18+j*160}&quot; y=&quot;23&quot; fill=&quot;${colors[j]}&quot; font-size=&quot;13&quot;&gt;${s.name}&lt;/text&gt;`);
  stageNames.forEach((s,i)=&gt;{const y=top+stride*i;z+=`&lt;text x=&quot;${left-10}&quot; y=&quot;${y+22}&quot; text-anchor=&quot;end&quot; fill=&quot;#d9e7ef&quot; font-size=&quot;14&quot;&gt;${s}&lt;/text&gt;`;series.forEach((s,j)=&gt;{const v=s.values[i],ww=Math.max(0,v||0)*scale,yy=y+j*21;z+=`&lt;rect x=&quot;${left}&quot; y=&quot;${yy}&quot; width=&quot;${ww.toFixed(2)}&quot; height=&quot;${bar}&quot; rx=&quot;3&quot; fill=&quot;${colors[j]}&quot;/&gt;&lt;text x=&quot;${left+ww+7}&quot; y=&quot;${yy+13}&quot; fill=&quot;${colors[j]}&quot; font-size=&quot;13&quot;&gt;${pct(v)}&lt;/text&gt;`})});return z+&#x27;&lt;/svg&gt;&#x27;;
 }
-function lines(title,field){
- const w=1160,h=340,left=66,right=70,top=58,bottom=50;
- const series=names.map(p=&gt;D.months.map(m=&gt;D.rows.find(r=&gt;r.product===p&amp;&amp;r.month===m&amp;&amp;r.stage===&#x27;D0&#x27;)[field]));
- const vals=series.flat().filter(x=&gt;x!=null),min=Math.max(0,Math.min(...vals)-.04),max=Math.max(...vals)+.04;
- const xx=i=&gt;left+(w-left-right)*i/8,yy=v=&gt;h-bottom-(v-min)/(max-min)*(h-top-bottom);
+function rectsMeet(a,b,gap=0){
+ return a.x&lt;b.x+b.width+gap&amp;&amp;a.x+a.width+gap&gt;b.x&amp;&amp;a.y&lt;b.y+b.height+gap&amp;&amp;a.y+a.height+gap&gt;b.y;
+}
+function segmentMeetsBox(a,b,box,pad=0){
+ const r={x:box.x-pad,y:box.y-pad,width:box.width+pad*2,height:box.height+pad*2};
+ let lo=0,hi=1;
+ for(const [start,delta,min,max] of [[a.x,b.x-a.x,r.x,r.x+r.width],[a.y,b.y-a.y,r.y,r.y+r.height]]){
+  if(Math.abs(delta)&lt;1e-9){if(start&lt;min||start&gt;max)return false;continue}
+  let u=(min-start)/delta,v=(max-start)/delta;if(u&gt;v)[u,v]=[v,u];lo=Math.max(lo,u);hi=Math.min(hi,v);if(lo&gt;hi)return false;
+ }
+ return true;
+}
+function lineChartLayout(field,desiredWidth=1160,extraHeight=0){
+ const w=Math.max(620,Math.min(1160,desiredWidth)),h=430+(w&lt;900?110:0)+extraHeight,left=76,right=54,top=64,bottom=56;
+ const series=names.map(name=&gt;({name,values:D.months.map(m=&gt;D.rows.find(r=&gt;r.product===name&amp;&amp;r.month===m&amp;&amp;r.stage===&#x27;D0&#x27;)[field])}));
+ const vals=series.flatMap(s=&gt;s.values).filter(x=&gt;x!=null),min=Math.max(0,Math.min(...vals)-.04),max=Math.max(...vals)+.04;
+ const xx=i=&gt;left+38+(w-left-right-76)*i/(D.months.length-1),yy=v=&gt;h-bottom-(v-min)/(max-min)*(h-top-bottom);
+ series.forEach((s,j)=&gt;s.points=s.values.map((v,i)=&gt;({x:xx(i),y:yy(v),series:j,month:i,value:v,text:pct(v)})));
+ const points=series.flatMap(s=&gt;s.points),segments=series.flatMap(s=&gt;s.points.slice(1).map((p,i)=&gt;[s.points[i],p]));
+ let labels=[];
+ // Place close series on opposite sides and reject any box intersecting either line.
+ // Bounds include padding for the real text, point marker and 3px line stroke.
+ const ordered=[...points].sort((a,b)=&gt;a.month-b.month||a.y-b.y||a.series-b.series),choices=[];
+ for(const point of ordered){
+  const other=series[1-point.series].points[point.month],preferred=point.y&lt;=other.y?-1:1;
+  const width=Math.ceil(point.text.length*8.5+16),height=26,candidates=[];
+  for(const sign of [preferred,-preferred])for(const distance of [27,43,59,75,91,107,123])for(const shift of [0,-22,22,-42,42]){
+   const cx=point.x+shift,cy=point.y+sign*distance;
+   const box={x:cx-width/2,y:cy-height/2,width,height};
+   if(box.x&lt;left+3||box.x+width&gt;w-right-3||box.y&lt;35||box.y+height&gt;h-39)continue;
+   if(segments.some(([a,b])=&gt;segmentMeetsBox(a,b,box,6)))continue;
+   if(points.some(p=&gt;Math.hypot(p.x-Math.max(box.x,Math.min(p.x,box.x+width)),p.y-Math.max(box.y,Math.min(p.y,box.y+height)))&lt;10))continue;
+   candidates.push({...point,cx,cy,box,score:distance+Math.abs(shift)*.8+(sign===preferred?0:18)});
+  }
+  candidates.sort((a,b)=&gt;a.score-b.score);
+  choices.push(candidates);
+ }
+ function leaderCrosses(a,b){
+  return (Math.abs(a.cx-a.x)&gt;1||Math.abs(a.cy-a.y)&gt;35)&amp;&amp;segmentMeetsBox({x:a.x,y:a.y+(a.cy&lt;a.y?-7:7)},{x:a.cx,y:a.cy+(a.cy&lt;a.y?13:-13)},b.box,3);
+ }
+ const conflict=(a,b)=&gt;rectsMeet(a.box,b.box,8)||leaderCrosses(a,b)||leaderCrosses(b,a);
+ let visits=0;
+ function place(remaining){
+  if(!remaining.length)return true;
+  if(++visits&gt;20000)return false;
+  let selected=-1,available=null;
+  for(const k of remaining){const free=choices[k].filter(c=&gt;!labels.some(l=&gt;conflict(c,l)));if(!free.length)return false;if(available===null||free.length&lt;available.length){selected=k;available=free}}
+  const rest=remaining.filter(k=&gt;k!==selected);
+  for(const candidate of available){labels.push(candidate);if(place(rest))return true;labels.pop()}
+  return false;
+ }
+ if(!place(choices.map((_,i)=&gt;i))){
+  if(extraHeight&lt;200)return lineChartLayout(field,w,extraHeight+100);
+  throw new Error(&#x27;Unable to place all monthly labels without collisions: &#x27;+field);
+ }
+ labels.sort((a,b)=&gt;a.month-b.month||a.series-b.series);
+ return {w,h,left,right,top,bottom,min,max,series,labels,segments,xx,yy};
+}
+function lines(title,field,width=1160){
+ const {w,h,left,right,bottom,min,max,series,labels,xx,yy}=lineChartLayout(field,width);
  let z=`&lt;svg role=&quot;img&quot; aria-label=&quot;${title}&quot; viewBox=&quot;0 0 ${w} ${h}&quot; xmlns=&quot;http://www.w3.org/2000/svg&quot;&gt;&lt;title&gt;${title}&lt;/title&gt;`;
- for(let i=0;i&lt;5;i++){const v=min+(max-min)*i/4,y=yy(v);z+=`&lt;path d=&quot;M${left} ${y}H${w-right}&quot; stroke=&quot;#21465a&quot;/&gt;&lt;text x=&quot;${left-10}&quot; y=&quot;${y+5}&quot; text-anchor=&quot;end&quot; fill=&quot;#9bb5c7&quot; font-size=&quot;12&quot;&gt;${pct(v)}&lt;/text&gt;`}
- names.forEach((name,j)=&gt;{z+=`&lt;text x=&quot;${left+j*150}&quot; y=&quot;20&quot; fill=&quot;${colors[j]}&quot; font-size=&quot;14&quot;&gt;${name}&lt;/text&gt;&lt;polyline points=&quot;${series[j].map((v,i)=&gt;xx(i)+&#x27;,&#x27;+yy(v)).join(&#x27; &#x27;)}&quot; stroke=&quot;${colors[j]}&quot; fill=&quot;none&quot; stroke-width=&quot;3&quot;/&gt;`;series[j].forEach((v,i)=&gt;z+=`&lt;circle cx=&quot;${xx(i)}&quot; cy=&quot;${yy(v)}&quot; r=&quot;4&quot; fill=&quot;${colors[j]}&quot;/&gt;&lt;text x=&quot;${xx(i)}&quot; y=&quot;${yy(v)+(j?22:-13)}&quot; text-anchor=&quot;middle&quot; fill=&quot;${colors[j]}&quot; font-size=&quot;13&quot;&gt;${pct(v)}&lt;/text&gt;`)});
+ for(let i=0;i&lt;5;i++){const v=min+(max-min)*i/4,y=yy(v);z+=`&lt;path d=&quot;M${left} ${y}H${w-right}&quot; stroke=&quot;#21465a&quot;/&gt;&lt;text x=&quot;${left-12}&quot; y=&quot;${y+5}&quot; text-anchor=&quot;end&quot; fill=&quot;#9bb5c7&quot; font-size=&quot;12&quot;&gt;${pct(v)}&lt;/text&gt;`}
+ series.forEach((s,j)=&gt;{
+  z+=`&lt;text x=&quot;${left+j*150}&quot; y=&quot;20&quot; fill=&quot;${colors[j]}&quot; font-size=&quot;14&quot;&gt;${s.name}&lt;/text&gt;&lt;polyline class=&quot;data-series-line&quot; data-series=&quot;${j}&quot; points=&quot;${s.points.map(p=&gt;p.x+&#x27;,&#x27;+p.y).join(&#x27; &#x27;)}&quot; stroke=&quot;${colors[j]}&quot; fill=&quot;none&quot; stroke-width=&quot;3&quot;/&gt;`;
+  s.points.forEach(p=&gt;z+=`&lt;circle cx=&quot;${p.x}&quot; cy=&quot;${p.y}&quot; r=&quot;4&quot; fill=&quot;${colors[j]}&quot;/&gt;`);
+ });
+ labels.forEach(l=&gt;{
+  const color=colors[l.series];
+  if(Math.abs(l.cx-l.x)&gt;1||Math.abs(l.cy-l.y)&gt;35){const endY=l.cy+(l.cy&lt;l.y?13:-13);z+=`&lt;path d=&quot;M${l.x} ${l.y+(l.cy&lt;l.y?-7:7)}L${l.cx} ${endY}&quot; stroke=&quot;${color}&quot; stroke-width=&quot;1&quot; stroke-opacity=&quot;.45&quot;/&gt;`}
+  z+=`&lt;g class=&quot;data-label&quot; data-series=&quot;${l.series}&quot; data-month=&quot;${D.months[l.month]}&quot;&gt;&lt;rect class=&quot;data-label-box&quot; x=&quot;${l.box.x}&quot; y=&quot;${l.box.y}&quot; width=&quot;${l.box.width}&quot; height=&quot;${l.box.height}&quot; rx=&quot;4&quot; fill=&quot;#082235&quot;/&gt;&lt;text x=&quot;${l.cx}&quot; y=&quot;${l.cy+4.5}&quot; text-anchor=&quot;middle&quot; fill=&quot;${color}&quot; font-family=&quot;Arial,sans-serif&quot; font-size=&quot;14&quot; font-variant-numeric=&quot;tabular-nums&quot;&gt;${l.text}&lt;/text&gt;&lt;/g&gt;`;
+ });
  D.months.forEach((m,i)=&gt;z+=`&lt;text x=&quot;${xx(i)}&quot; y=&quot;${h-18}&quot; text-anchor=&quot;middle&quot; fill=&quot;#9bb5c7&quot; font-size=&quot;13&quot;&gt;${m}&lt;/text&gt;`);return z+&#x27;&lt;/svg&gt;&#x27;;
 }
 const headers=[&#x27;类型&#x27;,&#x27;月份&#x27;,&#x27;阶段&#x27;,&#x27;获额事件&#x27;,&#x27;首次提单事件&#x27;,&#x27;提单率&#x27;,&#x27;到期订单&#x27;,&#x27;到期覆盖率&#x27;,&#x27;已到期放款本金&#x27;,&#x27;当前回款&#x27;,&#x27;账面利润&#x27;,&#x27;盈利率&#x27;];
@@ -930,8 +993,16 @@ function update(){
  document.getElementById(&#x27;scope&#x27;).textContent=`${m}：循环贷分母${num(c.offer_events)}次，T0分母${num(t.offer_events)}次获额事件。盈利率按已到期本金加权。`;
 }
 document.getElementById(&#x27;month&#x27;).addEventListener(&#x27;change&#x27;,update);update();
-document.getElementById(&#x27;monthly-rate&#x27;).innerHTML=lines(&#x27;D0首次提单率月度变化&#x27;,&#x27;apply_rate&#x27;);
-document.getElementById(&#x27;monthly-profit&#x27;).innerHTML=lines(&#x27;D0账面盈利率月度变化&#x27;,&#x27;profit_rate&#x27;);
+function renderMonthly(){
+ const width=Math.floor(document.getElementById(&#x27;monthly-rate&#x27;).clientWidth||1160);
+ document.getElementById(&#x27;monthly-rate&#x27;).innerHTML=lines(&#x27;D0首次提单率月度变化&#x27;,&#x27;apply_rate&#x27;,width);
+ document.getElementById(&#x27;monthly-profit&#x27;).innerHTML=lines(&#x27;D0账面盈利率月度变化&#x27;,&#x27;profit_rate&#x27;,width);
+}
+renderMonthly();
+if(typeof window!==&#x27;undefined&#x27;){
+ let chartResizeTimer;
+ window.addEventListener(&#x27;resize&#x27;,()=&gt;{clearTimeout(chartResizeTimer);chartResizeTimer=setTimeout(renderMonthly,120)});
+}
 document.getElementById(&#x27;monthly-table&#x27;).innerHTML=table(D.rows.filter(r=&gt;r.month!==&#x27;合计&#x27;));
 </code></pre></details><details><summary>build_workbook.mjs</summary><pre><code>import fs from &#x27;node:fs/promises&#x27;;
 import path from &#x27;node:path&#x27;;
@@ -1039,14 +1110,77 @@ function bars(title,series){
  series.forEach((s,j)=>z+=`<rect x="${left+j*160}" y="12" width="12" height="12" fill="${colors[j]}"/><text x="${left+18+j*160}" y="23" fill="${colors[j]}" font-size="13">${s.name}</text>`);
  stageNames.forEach((s,i)=>{const y=top+stride*i;z+=`<text x="${left-10}" y="${y+22}" text-anchor="end" fill="#d9e7ef" font-size="14">${s}</text>`;series.forEach((s,j)=>{const v=s.values[i],ww=Math.max(0,v||0)*scale,yy=y+j*21;z+=`<rect x="${left}" y="${yy}" width="${ww.toFixed(2)}" height="${bar}" rx="3" fill="${colors[j]}"/><text x="${left+ww+7}" y="${yy+13}" fill="${colors[j]}" font-size="13">${pct(v)}</text>`})});return z+'</svg>';
 }
-function lines(title,field){
- const w=1160,h=340,left=66,right=70,top=58,bottom=50;
- const series=names.map(p=>D.months.map(m=>D.rows.find(r=>r.product===p&&r.month===m&&r.stage==='D0')[field]));
- const vals=series.flat().filter(x=>x!=null),min=Math.max(0,Math.min(...vals)-.04),max=Math.max(...vals)+.04;
- const xx=i=>left+(w-left-right)*i/8,yy=v=>h-bottom-(v-min)/(max-min)*(h-top-bottom);
+function rectsMeet(a,b,gap=0){
+ return a.x<b.x+b.width+gap&&a.x+a.width+gap>b.x&&a.y<b.y+b.height+gap&&a.y+a.height+gap>b.y;
+}
+function segmentMeetsBox(a,b,box,pad=0){
+ const r={x:box.x-pad,y:box.y-pad,width:box.width+pad*2,height:box.height+pad*2};
+ let lo=0,hi=1;
+ for(const [start,delta,min,max] of [[a.x,b.x-a.x,r.x,r.x+r.width],[a.y,b.y-a.y,r.y,r.y+r.height]]){
+  if(Math.abs(delta)<1e-9){if(start<min||start>max)return false;continue}
+  let u=(min-start)/delta,v=(max-start)/delta;if(u>v)[u,v]=[v,u];lo=Math.max(lo,u);hi=Math.min(hi,v);if(lo>hi)return false;
+ }
+ return true;
+}
+function lineChartLayout(field,desiredWidth=1160,extraHeight=0){
+ const w=Math.max(620,Math.min(1160,desiredWidth)),h=430+(w<900?110:0)+extraHeight,left=76,right=54,top=64,bottom=56;
+ const series=names.map(name=>({name,values:D.months.map(m=>D.rows.find(r=>r.product===name&&r.month===m&&r.stage==='D0')[field])}));
+ const vals=series.flatMap(s=>s.values).filter(x=>x!=null),min=Math.max(0,Math.min(...vals)-.04),max=Math.max(...vals)+.04;
+ const xx=i=>left+38+(w-left-right-76)*i/(D.months.length-1),yy=v=>h-bottom-(v-min)/(max-min)*(h-top-bottom);
+ series.forEach((s,j)=>s.points=s.values.map((v,i)=>({x:xx(i),y:yy(v),series:j,month:i,value:v,text:pct(v)})));
+ const points=series.flatMap(s=>s.points),segments=series.flatMap(s=>s.points.slice(1).map((p,i)=>[s.points[i],p]));
+ let labels=[];
+ // Place close series on opposite sides and reject any box intersecting either line.
+ // Bounds include padding for the real text, point marker and 3px line stroke.
+ const ordered=[...points].sort((a,b)=>a.month-b.month||a.y-b.y||a.series-b.series),choices=[];
+ for(const point of ordered){
+  const other=series[1-point.series].points[point.month],preferred=point.y<=other.y?-1:1;
+  const width=Math.ceil(point.text.length*8.5+16),height=26,candidates=[];
+  for(const sign of [preferred,-preferred])for(const distance of [27,43,59,75,91,107,123])for(const shift of [0,-22,22,-42,42]){
+   const cx=point.x+shift,cy=point.y+sign*distance;
+   const box={x:cx-width/2,y:cy-height/2,width,height};
+   if(box.x<left+3||box.x+width>w-right-3||box.y<35||box.y+height>h-39)continue;
+   if(segments.some(([a,b])=>segmentMeetsBox(a,b,box,6)))continue;
+   if(points.some(p=>Math.hypot(p.x-Math.max(box.x,Math.min(p.x,box.x+width)),p.y-Math.max(box.y,Math.min(p.y,box.y+height)))<10))continue;
+   candidates.push({...point,cx,cy,box,score:distance+Math.abs(shift)*.8+(sign===preferred?0:18)});
+  }
+  candidates.sort((a,b)=>a.score-b.score);
+  choices.push(candidates);
+ }
+ function leaderCrosses(a,b){
+  return (Math.abs(a.cx-a.x)>1||Math.abs(a.cy-a.y)>35)&&segmentMeetsBox({x:a.x,y:a.y+(a.cy<a.y?-7:7)},{x:a.cx,y:a.cy+(a.cy<a.y?13:-13)},b.box,3);
+ }
+ const conflict=(a,b)=>rectsMeet(a.box,b.box,8)||leaderCrosses(a,b)||leaderCrosses(b,a);
+ let visits=0;
+ function place(remaining){
+  if(!remaining.length)return true;
+  if(++visits>20000)return false;
+  let selected=-1,available=null;
+  for(const k of remaining){const free=choices[k].filter(c=>!labels.some(l=>conflict(c,l)));if(!free.length)return false;if(available===null||free.length<available.length){selected=k;available=free}}
+  const rest=remaining.filter(k=>k!==selected);
+  for(const candidate of available){labels.push(candidate);if(place(rest))return true;labels.pop()}
+  return false;
+ }
+ if(!place(choices.map((_,i)=>i))){
+  if(extraHeight<200)return lineChartLayout(field,w,extraHeight+100);
+  throw new Error('Unable to place all monthly labels without collisions: '+field);
+ }
+ labels.sort((a,b)=>a.month-b.month||a.series-b.series);
+ return {w,h,left,right,top,bottom,min,max,series,labels,segments,xx,yy};
+}
+function lines(title,field,width=1160){
+ const {w,h,left,right,bottom,min,max,series,labels,xx,yy}=lineChartLayout(field,width);
  let z=`<svg role="img" aria-label="${title}" viewBox="0 0 ${w} ${h}" xmlns="http://www.w3.org/2000/svg"><title>${title}</title>`;
- for(let i=0;i<5;i++){const v=min+(max-min)*i/4,y=yy(v);z+=`<path d="M${left} ${y}H${w-right}" stroke="#21465a"/><text x="${left-10}" y="${y+5}" text-anchor="end" fill="#9bb5c7" font-size="12">${pct(v)}</text>`}
- names.forEach((name,j)=>{z+=`<text x="${left+j*150}" y="20" fill="${colors[j]}" font-size="14">${name}</text><polyline points="${series[j].map((v,i)=>xx(i)+','+yy(v)).join(' ')}" stroke="${colors[j]}" fill="none" stroke-width="3"/>`;series[j].forEach((v,i)=>z+=`<circle cx="${xx(i)}" cy="${yy(v)}" r="4" fill="${colors[j]}"/><text x="${xx(i)}" y="${yy(v)+(j?22:-13)}" text-anchor="middle" fill="${colors[j]}" font-size="13">${pct(v)}</text>`)});
+ for(let i=0;i<5;i++){const v=min+(max-min)*i/4,y=yy(v);z+=`<path d="M${left} ${y}H${w-right}" stroke="#21465a"/><text x="${left-12}" y="${y+5}" text-anchor="end" fill="#9bb5c7" font-size="12">${pct(v)}</text>`}
+ series.forEach((s,j)=>{
+  z+=`<text x="${left+j*150}" y="20" fill="${colors[j]}" font-size="14">${s.name}</text><polyline class="data-series-line" data-series="${j}" points="${s.points.map(p=>p.x+','+p.y).join(' ')}" stroke="${colors[j]}" fill="none" stroke-width="3"/>`;
+  s.points.forEach(p=>z+=`<circle cx="${p.x}" cy="${p.y}" r="4" fill="${colors[j]}"/>`);
+ });
+ labels.forEach(l=>{
+  const color=colors[l.series];
+  if(Math.abs(l.cx-l.x)>1||Math.abs(l.cy-l.y)>35){const endY=l.cy+(l.cy<l.y?13:-13);z+=`<path d="M${l.x} ${l.y+(l.cy<l.y?-7:7)}L${l.cx} ${endY}" stroke="${color}" stroke-width="1" stroke-opacity=".45"/>`}
+  z+=`<g class="data-label" data-series="${l.series}" data-month="${D.months[l.month]}"><rect class="data-label-box" x="${l.box.x}" y="${l.box.y}" width="${l.box.width}" height="${l.box.height}" rx="4" fill="#082235"/><text x="${l.cx}" y="${l.cy+4.5}" text-anchor="middle" fill="${color}" font-family="Arial,sans-serif" font-size="14" font-variant-numeric="tabular-nums">${l.text}</text></g>`;
+ });
  D.months.forEach((m,i)=>z+=`<text x="${xx(i)}" y="${h-18}" text-anchor="middle" fill="#9bb5c7" font-size="13">${m}</text>`);return z+'</svg>';
 }
 const headers=['类型','月份','阶段','获额事件','首次提单事件','提单率','到期订单','到期覆盖率','已到期放款本金','当前回款','账面利润','盈利率'];
@@ -1062,7 +1196,15 @@ function update(){
  document.getElementById('scope').textContent=`${m}：循环贷分母${num(c.offer_events)}次，T0分母${num(t.offer_events)}次获额事件。盈利率按已到期本金加权。`;
 }
 document.getElementById('month').addEventListener('change',update);update();
-document.getElementById('monthly-rate').innerHTML=lines('D0首次提单率月度变化','apply_rate');
-document.getElementById('monthly-profit').innerHTML=lines('D0账面盈利率月度变化','profit_rate');
+function renderMonthly(){
+ const width=Math.floor(document.getElementById('monthly-rate').clientWidth||1160);
+ document.getElementById('monthly-rate').innerHTML=lines('D0首次提单率月度变化','apply_rate',width);
+ document.getElementById('monthly-profit').innerHTML=lines('D0账面盈利率月度变化','profit_rate',width);
+}
+renderMonthly();
+if(typeof window!=='undefined'){
+ let chartResizeTimer;
+ window.addEventListener('resize',()=>{clearTimeout(chartResizeTimer);chartResizeTimer=setTimeout(renderMonthly,120)});
+}
 document.getElementById('monthly-table').innerHTML=table(D.rows.filter(r=>r.month!=='合计'));
 </script></body></html>
