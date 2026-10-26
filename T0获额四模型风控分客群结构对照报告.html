@@ -906,10 +906,8 @@ def appendix_section(data):
     codefiles=[p for p in [HERE/&#x27;reproduce_monthly.sql&#x27;,HERE/&#x27;extract.sql&#x27;,HERE/&#x27;extract.py&#x27;,HERE/&#x27;analyze.py&#x27;,HERE/&#x27;build_report.py&#x27;] if p.exists()]
     names={&#x27;reproduce_monthly.sql&#x27;:&#x27;完整复现PGSQL（月度四模型）｜reproduce_monthly.sql&#x27;}
     entries=&#x27;&#x27;.join(details(names.get(p.name,p.name),f&#x27;&lt;pre&gt;&lt;code&gt;{esc(p.read_text(encoding=&quot;utf-8&quot;))}&lt;/code&gt;&lt;/pre&gt;&#x27;,&#x27;code-file&#x27;) for p in codefiles)
-    quality=data.get(&#x27;quality&#x27;,{})
-    qual=details(&#x27;展开聚合质量校验结果&#x27;,f&#x27;&lt;pre&gt;&lt;code&gt;{esc(json.dumps(quality,ensure_ascii=False,indent=2))}&lt;/code&gt;&lt;/pre&gt;&#x27;) if quality else &#x27;&#x27;
     sources=&#x27;&lt;p class=&quot;footnote&quot;&gt;优先使用“完整复现PGSQL（月度四模型）”：在有权限的数据库客户端直接执行reproduce_monthly.sql，即可独立计算全期阈值与40行月度四模型结果，无需本地Python。其余代码保留取数、聚合与网页生成过程；extract.py依赖本地run_common连接模块，该模块及凭据不公开。附录不包含用户明细或模型二进制文件。&lt;/p&gt;&#x27;
-    return &#x27;&lt;section id=&quot;appendix&quot;&gt;&lt;h2&gt;附录：复原报告代码&lt;/h2&gt;&#x27;+sources+details(f&#x27;展开{len(codefiles)}个完整SQL / Python代码文件&#x27;,entries)+qual+&#x27;&lt;/section&gt;&#x27;
+    return &#x27;&lt;section id=&quot;appendix&quot;&gt;&lt;h2&gt;附录：复原报告代码&lt;/h2&gt;&#x27;+sources+details(f&#x27;展开{len(codefiles)}个完整SQL / Python代码文件&#x27;,entries)+&#x27;&lt;/section&gt;&#x27;
 
 
 CSS=&#x27;&#x27;&#x27;
@@ -954,31 +952,4 @@ if __name__==&#x27;__main__&#x27;:
     ap.add_argument(&#x27;--output&#x27;,type=Path,default=OUTFILE)
     args=ap.parse_args()
     build(args.input,args.output)
-</code></pre></details></details><details class=""><summary>展开聚合质量校验结果</summary><pre><code>{
-  &quot;same_monthly_population_across_four_models&quot;: true,
-  &quot;duplicate_user_day_events&quot;: 0,
-  &quot;offer_clock_diff&quot;: 0,
-  &quot;first_apply_clock_diff&quot;: 0,
-  &quot;score_status_counts&quot;: {
-    &quot;410&quot;: {
-      &quot;VALID&quot;: 211452
-    },
-    &quot;363&quot;: {
-      &quot;VALID&quot;: 211452
-    },
-    &quot;405&quot;: {
-      &quot;SENTINEL&quot;: 766,
-      &quot;VALID&quot;: 210686
-    },
-    &quot;407&quot;: {
-      &quot;SENTINEL&quot;: 89140,
-      &quot;VALID&quot;: 122312
-    }
-  },
-  &quot;raw_frequency_rows&quot;: 7728,
-  &quot;aggregation_reconciled&quot;: true,
-  &quot;unique_same_score_duplicates_collapsed&quot;: true,
-  &quot;distinct_score_conflicts_excluded&quot;: true,
-  &quot;source_user_mismatches_excluded&quot;: true,
-  &quot;valid_score_rule&quot;: &quot;non-NULL and not -9999999, following original report; finite values checked&quot;
-}</code></pre></details></section></main><footer>本报告为事件客群结构统计；相同用户可在不同业务日重复进入统计。数据、阈值与实现口径见正文及附录。</footer></body></html>
+</code></pre></details></details></section></main><footer>本报告为事件客群结构统计；相同用户可在不同业务日重复进入统计。数据、阈值与实现口径见正文及附录。</footer></body></html>
