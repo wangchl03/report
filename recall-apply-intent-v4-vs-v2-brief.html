@@ -1,0 +1,424 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>召回模型升级效果说明</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+<style>
+:root{--line:#2a5c7e;--text:#eff8ff;--muted:#aac5da;--cy:#43c7e7}
+*{box-sizing:border-box}body{margin:0;background:#06192b;color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei",sans-serif}
+.wrap{max-width:1480px;margin:auto;padding:32px 36px 80px}
+.hero{text-align:center;padding:28px 12px 22px;border-bottom:1px solid var(--line)}
+.hero h1{font-size:28px;line-height:1.35;margin:0 0 14px}
+.hero-points{list-style:none;margin:0 auto;padding:0;color:var(--muted);font-size:13px;line-height:1.9;display:inline-block;text-align:left}
+.hero-points li{position:relative;padding-left:14px}
+.hero-points li::before{content:'';position:absolute;left:0;top:.72em;width:5px;height:5px;border-radius:50%;background:var(--cy)}
+h2{font-size:22px;margin:40px 0 10px}
+h3{margin:0 0 6px;font-size:18px}
+.desc{color:var(--muted);margin:0 0 12px;line-height:1.7;font-size:14px}
+.grid{display:grid;gap:14px}.g2{grid-template-columns:repeat(2,minmax(0,1fr))}.g3{grid-template-columns:repeat(3,minmax(0,1fr))}.g4{grid-template-columns:repeat(4,minmax(0,1fr))}
+.card,.chart{background:rgba(10,41,68,.95);border:1px solid var(--line);border-radius:14px;padding:16px}
+.label{color:var(--muted);font-size:12px}.num{font-size:28px;font-weight:800;margin:4px 0 2px;color:var(--cy)}
+.num.pink{color:#f68ab0}.num.gold{color:#f5b942}.num.green{color:#7ee8c7}
+.sub{color:var(--muted);font-size:12px;line-height:1.6}
+.box{height:320px;position:relative}.chart p{font-size:13px;color:var(--muted);margin:0 0 10px}
+.callout{background:#0a2a45;border:1px solid #2a5c7e;border-left:4px solid #43c7e7;border-radius:10px;padding:14px 18px;margin:14px 0;line-height:1.7;font-size:14px}
+.callout.gold{border-left-color:#ffc26b}.callout.green{border-left-color:#64dcae}.callout.pink{border-left-color:#f68ab0}
+.callout .ch{font-weight:800;margin-bottom:6px}
+.callout ul{margin:0;padding-left:18px}
+.callout li{margin:2px 0}
+.table{overflow-x:auto;margin:12px 0}table{width:100%;border-collapse:collapse;font-size:13px}
+th,td{padding:8px 10px;border-bottom:1px solid rgba(42,92,126,.45);text-align:right;white-space:nowrap}
+th{color:var(--muted);background:rgba(12,48,78,.65)}th:first-child,td:first-child{text-align:left}
+.legend{display:flex;flex-wrap:wrap;gap:8px 14px;margin:8px 0 12px;color:#aac5da;font-size:12px}
+.legend .lg{display:inline-flex;align-items:center;gap:6px}
+.legend i{width:12px;height:12px;border-radius:2px;display:inline-block}
+.dots{display:grid;grid-template-columns:repeat(10,1fr);gap:5px;max-width:320px;margin-top:8px}
+.dot{aspect-ratio:1;border-radius:50%;background:#1a3d58}
+.dot.on-new{background:#7ee8c7}.dot.on-old{background:#f68ab0}
+.pair{display:flex;gap:28px;flex-wrap:wrap;align-items:flex-start}
+.pair .side{flex:1;min-width:260px}
+.foot{color:#7fa6c2;font-size:12.5px;margin-top:40px;border-top:1px solid var(--line);padding-top:16px;line-height:1.9}
+@media(max-width:900px){.g2,.g3,.g4{grid-template-columns:1fr}.wrap{padding:20px 14px 48px}}
+</style>
+</head>
+<body>
+<main class="wrap">
+<header class="hero">
+<h1>召回模型升级后，更先找到会提单的人</h1>
+<ul class="hero-points">
+<li>新模型是 V4，用的是 10月23日这批名单</li>
+<li>旧模型是 V2。拿来对比的是 9月18日、10月10日、10月16日三批</li>
+<li>只看召回当天、第2天、第3天有没有提单</li>
+<li>分数只用来排队。新旧分数的数字不能直接比大小</li>
+</ul>
+</header>
+
+<section class="grid g4" style="margin-top:18px">
+<article class="card"><div class="label">新模型 · 最高一档</div><div class="num green">14 人</div><div class="sub">每 100 个最高分用户里，3 天内提单的人数</div></article>
+<article class="card"><div class="label">上一批旧模型 · 最高一档</div><div class="num pink">10 人</div><div class="sub">10月16日这批。每 100 个最高分用户</div></article>
+<article class="card"><div class="label">100 个会提单的人</div><div class="num green">46 人</div><div class="sub">新模型把他们排进了最高一档。上一批只有 26 人</div></article>
+<article class="card"><div class="label">前三档能找到</div><div class="num green">74 人</div><div class="sub">每 100 个会提单的人里。四批里最多</div></article>
+</section>
+
+<h2>先看结论</h2>
+<div class="callout green"><div class="ch">升级后，高分的人更会提单</div>
+<ul>
+<li>最高一档：每 100 人有 14 人提单。上一批是 10 人。</li>
+<li>100 个真正会提单的人里，最高一档能找到 46 人。上一批只能找到 26 人。</li>
+<li>多找到 20 人。</li>
+</ul>
+</div>
+<div class="callout gold"><div class="ch">和旧模型最好的一批比，前三档更好</div>
+<ul>
+<li>只看最高一档，10月10日那批能找到 49 人，新模型是 46 人。差不多。</li>
+<li>看前三档，新模型找到 74 人。10月10日是 71 人，9月18日是 72 人。</li>
+</ul>
+</div>
+<div class="callout"><div class="ch">整体提单的人没有变多</div>
+<ul>
+<li>新模型这批，每 100 人里有 3 人提单。</li>
+<li>上一批每 100 人里有 4 人提单。</li>
+<li>变好的是排队，不是总人数。</li>
+</ul>
+</div>
+
+<h2>1. 只联系分数最高的一成人</h2>
+<p class="desc">每批名单按分数从高到低分成 10 档，人数一样多。这里只看最高那一档。问题是：100 个后来真的提单的人，有几个被排进了这一档。</p>
+<div class="chart">
+<h3>100 个会提单的人，最高一档找到几个</h3>
+<div class="box"><canvas id="cap10"></canvas></div>
+</div>
+<div class="callout green"><div class="ch">结论</div>
+<ul>
+<li>新模型找到 46 人。</li>
+<li>上一批只找到 26 人。</li>
+<li>旧模型最好的一批是 49 人，和新模型接近。</li>
+</ul>
+</div>
+
+<div class="chart">
+<h3>用 100 个点看差距</h3>
+<p>亮的点 = 被排进最高一档的人。灰的点 = 排在后面的人。</p>
+<div class="pair">
+<div class="side">
+<div class="label">上一批 · 10月16日 · 找到 26 人</div>
+<div class="dots" id="dotsOld"></div>
+</div>
+<div class="side">
+<div class="label">新模型 · 10月23日 · 找到 46 人</div>
+<div class="dots" id="dotsNew"></div>
+</div>
+</div>
+</div>
+<div class="callout pink"><div class="ch">结论</div>
+<ul>
+<li>同样 100 个会提单的人。</li>
+<li>升级后多亮出 20 个点。</li>
+<li>这 20 个人，上一批没有排到最前面。</li>
+</ul>
+</div>
+
+<h2>2. 联系分数最高的三成人</h2>
+<p class="desc">前三档大约是名单里分数最高的 30%。还是看：100 个会提单的人，有几个落在这三档里。</p>
+<div class="chart">
+<h3>100 个会提单的人，前三档找到几个</h3>
+<div class="box"><canvas id="cap30"></canvas></div>
+</div>
+<div class="callout green"><div class="ch">结论</div>
+<ul>
+<li>新模型找到 74 人。四批里最多。</li>
+<li>上一批找到 64 人。少 10 人。</li>
+<li>更早两批是 72 人和 71 人。新模型略高一点。</li>
+</ul>
+</div>
+
+<h2>3. 最高一档自己的提单</h2>
+<p class="desc">上面看的是“会提单的人排得靠不靠前”。这里看“被排到前面的人，自己提不提单”。单位都是每 100 人。</p>
+<div class="chart">
+<h3>每 100 人里，有几人在 3 天内提单</h3>
+<div class="box"><canvas id="rate"></canvas></div>
+</div>
+<div class="callout"><div class="ch">结论</div>
+<ul>
+<li>新模型最高一档是 14 人。全体只有 3 人。大约是全体的 4.6 倍。</li>
+<li>上一批最高一档是 10 人。全体已经有 4 人。只是全体的 2.6 倍。</li>
+<li>新模型最低一档不到 1 人。最高档大约是最低档的 36 倍。</li>
+</ul>
+</div>
+
+<div class="table"><table>
+<thead><tr><th>批次</th><th>名单人数</th><th>3天提单人数</th><th>全体每100人</th><th>最高档每100人</th><th>最低档每100人</th></tr></thead>
+<tbody>
+<tr><td>旧模型 · 9月18日</td><td>8,669</td><td>214</td><td>2.5</td><td>9.5</td><td>0.3</td></tr>
+<tr><td>旧模型 · 10月10日</td><td>15,818</td><td>329</td><td>2.1</td><td>10.1</td><td>0.4</td></tr>
+<tr><td>上一批 · 10月16日</td><td>5,438</td><td>211</td><td>3.9</td><td>9.9</td><td>1.1</td></tr>
+<tr><td>新模型 · 10月23日</td><td>12,742</td><td>394</td><td>3.1</td><td>14.1</td><td>0.4</td></tr>
+</tbody></table></div>
+<div class="callout gold"><div class="ch">结论</div>
+<ul>
+<li>人数最多的是 10月10日，1.6 万人。</li>
+<li>提单最多的是新模型，394 人。</li>
+<li>全体比例最高的是上一批，每 100 人 3.9 人。新模型是 3.1 人。</li>
+</ul>
+</div>
+
+<h2>4. 从高到低，十档差多少</h2>
+<p class="desc">每一格是这一档每 100 人里的提单人数。第 1 档分数最高。颜色越亮，提单越多。</p>
+<div class="chart">
+<div id="heat"></div>
+</div>
+<div class="callout green"><div class="ch">结论</div>
+<ul>
+<li>新模型从第 1 档到第 7 档，人数一路变少。14.1、5.4、3.5、1.7、1.5、1.3、1.2。</li>
+<li>上一批第 1 档和第 2 档几乎一样。9.9 人和 9.6 人。最高的一档没有被单独切开。</li>
+<li>新模型第 1 档 14.1 人，第 2 档只剩 5.4 人。最高的人被分开了。</li>
+</ul>
+</div>
+
+<div class="chart">
+<h3>上一批和新模型，十档并排</h3>
+<div class="box" style="height:360px"><canvas id="ladder"></canvas></div>
+</div>
+<div class="callout pink"><div class="ch">结论</div>
+<ul>
+<li>左边第 1 档，新模型明显高于上一批。</li>
+<li>从第 2 档开始，上一批反而不低。因为它没把人分开，高分两档差不多。</li>
+<li>最右边最低档，两批都很少。</li>
+</ul>
+</div>
+
+<h2>5. 会提单的人堆在哪一档</h2>
+<p class="desc">每一行是这批全部提单的人。色块越宽，这一档贡献的提单越多。第 1 档在最左边。随机排队时，每一档大约一样宽。</p>
+<div class="chart">
+<div class="legend">
+<span class="lg"><i style="background:#7ee8c7"></i>第1档</span>
+<span class="lg"><i style="background:#5ec8f0"></i>第2档</span>
+<span class="lg"><i style="background:#8ec8ff"></i>第3档</span>
+<span class="lg"><i style="background:#f5d76e"></i>第4档</span>
+<span class="lg"><i style="background:#f5b942"></i>第5档</span>
+<span class="lg"><i style="background:#f0a06a"></i>第6档</span>
+<span class="lg"><i style="background:#f68ab0"></i>第7档</span>
+<span class="lg"><i style="background:#d4a0e0"></i>第8档</span>
+<span class="lg"><i style="background:#9aa7c2"></i>第9档</span>
+<span class="lg"><i style="background:#5d7590"></i>第10档</span>
+</div>
+<div id="stacks"></div>
+</div>
+<div class="callout"><div class="ch">结论</div>
+<ul>
+<li>新模型将近一半的提单，来自最高一档。46%。</li>
+<li>上一批最高两档差不多宽。26% 和 25%。分不开谁更该先联系。</li>
+<li>10月10日那批最高一档最宽，占 49%。这是旧模型里最尖的一批。</li>
+</ul>
+</div>
+
+<h2>6. 三天里每天都这样吗</h2>
+<p class="desc">按第一次提单的那天来分。看的是：当天提单的人里，有多少被排在最高一档。一个人只算一次。</p>
+<div class="chart">
+<h3>当天提单的人里，最高一档占多少</h3>
+<div class="box"><canvas id="days"></canvas></div>
+</div>
+<div class="callout green"><div class="ch">结论</div>
+<ul>
+<li>新模型三天分别是 48%、42%、47%。都在四成以上。</li>
+<li>上一批三天是 27%、22%、28%。都在三成以下。</li>
+<li>不是只在召回当天有效。后两天也一样。</li>
+</ul>
+</div>
+
+<div class="table"><table>
+<thead><tr><th>批次</th><th>第1天提单</th><th>其中最高档</th><th>第2天提单</th><th>其中最高档</th><th>第3天提单</th><th>其中最高档</th></tr></thead>
+<tbody>
+<tr><td>9月18日</td><td>56</td><td>24</td><td>73</td><td>30</td><td>85</td><td>28</td></tr>
+<tr><td>10月10日</td><td>114</td><td>55</td><td>96</td><td>44</td><td>119</td><td>61</td></tr>
+<tr><td>10月16日</td><td>73</td><td>20</td><td>74</td><td>16</td><td>64</td><td>18</td></tr>
+<tr><td>10月23日 · 新模型</td><td>137</td><td>66</td><td>128</td><td>54</td><td>129</td><td>60</td></tr>
+</tbody></table></div>
+<div class="callout"><div class="ch">结论</div>
+<ul>
+<li>新模型 3 天一共 394 人提单。最高档占了 180 人。</li>
+<li>上一批 3 天一共 211 人。最高档只占 54 人。</li>
+</ul>
+</div>
+
+<h2>可以怎么用</h2>
+<div class="table"><table>
+<thead><tr><th>做法</th><th>这组数据说明</th></tr></thead>
+<tbody>
+<tr><td>先联系分数最高的一成人</td><td>新模型里，这档每 100 人有 14 人会提单。100 个会提单的人里能覆盖 46 人。</td></tr>
+<tr><td>前三成人都值得联系</td><td>能覆盖 74 个会提单的人。比只联系最高一档多覆盖 28 人。</td></tr>
+<tr><td>分数最低的一成人少打扰</td><td>新模型这档每 100 人不到 1 人提单。</td></tr>
+<tr><td>不要拿分数数字定同一个门槛</td><td>旧模型有的批次分数在 70 分上下。新模型大多在几分。只看名次。</td></tr>
+</tbody></table></div>
+<div class="callout gold"><div class="ch">结论</div>
+<ul>
+<li>升级后适合按名次安排联系顺序。</li>
+<li>先打最高一档，再打前三档。</li>
+<li>最低一档收益很小。</li>
+</ul>
+</div>
+
+<h2>看数时注意</h2>
+<div class="callout"><div class="ch">四批不是同一群人</div>
+<ul>
+<li>每批只看自己召回后的 3 天。不含第 4 天。</li>
+<li>名单会重叠。10月16日里，九成的人又出现在 10月23日。</li>
+<li>整体提单比例没有提高。提高的是高分人群里的提单，以及会提单的人被排到前面的比例。</li>
+</ul>
+</div>
+
+<p class="foot">名单：t7recalllist_active0918、active1010、active1016、active1023。提单看订单表里召回日起 3 天的申请。10月23日是新模型 V4，前三批是旧模型 V2。人数按四舍五入写成“每 100 人”，明细表保留一位小数。</p>
+</main>
+<script>
+const labels4 = ['9月18日\n旧模型', '10月10日\n旧模型', '10月16日\n上一批', '10月23日\n新模型'];
+const labels4s = ['9月18日', '10月10日', '10月16日', '10月23日'];
+const colors = ['#5ec8f0', '#f5b942', '#f68ab0', '#7ee8c7'];
+const axis = {
+  x: { ticks: { color: '#eff8ff', font: { size: 12 } }, grid: { display: false } },
+  y: { ticks: { color: '#9bb8cc' }, grid: { color: 'rgba(42,92,126,.35)' }, border: { display: false } }
+};
+function bar(id, data, suffix) {
+  new Chart(document.getElementById(id), {
+    type: 'bar',
+    data: { labels: labels4s, datasets: [{ data, backgroundColor: colors, borderWidth: 0, maxBarThickness: 72 }] },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      layout: { padding: { top: 18 } },
+      plugins: { legend: { display: false }, tooltip: { callbacks: { label: c => ' ' + c.parsed.y + suffix } } },
+      scales: {
+        x: axis.x,
+        y: { ...axis.y, beginAtZero: true, ticks: { color: '#9bb8cc', callback: v => v + suffix } }
+      }
+    },
+    plugins: [{
+      id: 'val',
+      afterDatasetsDraw(chart) {
+        const { ctx } = chart;
+        ctx.save();
+        ctx.fillStyle = '#eff8ff';
+        ctx.font = '12px sans-serif';
+        ctx.textAlign = 'center';
+        chart.getDatasetMeta(0).data.forEach((barEl, i) => {
+          ctx.fillText(data[i] + suffix, barEl.x, barEl.y - 6);
+        });
+        ctx.restore();
+      }
+    }]
+  });
+}
+bar('cap10', [38, 49, 26, 46], ' 人');
+bar('cap30', [72, 71, 64, 74], ' 人');
+
+new Chart(document.getElementById('rate'), {
+  type: 'bar',
+  data: {
+    labels: labels4s,
+    datasets: [
+      { label: '最高一档', data: [9.5, 10.1, 9.9, 14.1], backgroundColor: '#7ee8c7', maxBarThickness: 28 },
+      { label: '全体', data: [2.5, 2.1, 3.9, 3.1], backgroundColor: '#5ec8f0', maxBarThickness: 28 },
+      { label: '最低一档', data: [0.3, 0.4, 1.1, 0.4], backgroundColor: '#5d7590', maxBarThickness: 28 }
+    ]
+  },
+  options: {
+    responsive: true, maintainAspectRatio: false,
+    plugins: { legend: { labels: { color: '#cfe6f4', boxWidth: 12 } } },
+    scales: {
+      x: axis.x,
+      y: { ...axis.y, beginAtZero: true, ticks: { color: '#9bb8cc', callback: v => v + ' 人' } }
+    }
+  }
+});
+
+const heat = [
+  ['9月18日', [9.5,5.7,2.5,1.4,0.9,2.0,0.6,1.5,0.3,0.3]],
+  ['10月10日', [10.1,2.8,1.9,1.8,1.2,0.9,0.6,0.8,0.4,0.4]],
+  ['10月16日', [9.9,9.6,5.1,3.1,4.2,2.6,1.5,1.1,0.6,1.1]],
+  ['10月23日', [14.1,5.4,3.5,1.7,1.5,1.3,1.2,0.8,1.0,0.4]]
+];
+function heatColor(v) {
+  const t = Math.max(0, Math.min(1, v / 14.1));
+  const a = [22, 50, 74], b = [224, 160, 74];
+  const c = a.map((x, i) => Math.round(x + (b[i] - x) * t));
+  return `rgb(${c.join(',')})`;
+}
+const heatEl = document.getElementById('heat');
+let html = '<div style="overflow-x:auto"><table><thead><tr><th>批次</th>';
+for (let i = 1; i <= 10; i++) html += `<th>第${i}档</th>`;
+html += '</tr></thead><tbody>';
+heat.forEach(([name, row]) => {
+  html += `<tr><td>${name}</td>`;
+  row.forEach(v => {
+    const dark = v >= 8;
+    html += `<td style="background:${heatColor(v)};color:${dark ? '#06192b' : '#eff8ff'};font-weight:700;text-align:center">${v}</td>`;
+  });
+  html += '</tr>';
+});
+html += '</tbody></table></div>';
+heatEl.innerHTML = html;
+
+new Chart(document.getElementById('ladder'), {
+  type: 'bar',
+  data: {
+    labels: ['1','2','3','4','5','6','7','8','9','10'].map(x => '第' + x + '档'),
+    datasets: [
+      { label: '上一批 10月16日', data: [9.9,9.6,5.1,3.1,4.2,2.6,1.5,1.1,0.6,1.1], backgroundColor: '#f68ab0', maxBarThickness: 22 },
+      { label: '新模型 10月23日', data: [14.1,5.4,3.5,1.7,1.5,1.3,1.2,0.8,1.0,0.4], backgroundColor: '#7ee8c7', maxBarThickness: 22 }
+    ]
+  },
+  options: {
+    responsive: true, maintainAspectRatio: false,
+    plugins: { legend: { labels: { color: '#cfe6f4', boxWidth: 12 } } },
+    scales: {
+      x: axis.x,
+      y: { ...axis.y, beginAtZero: true, title: { display: true, text: '每100人里的提单人数', color: '#aac5da' }, ticks: { color: '#9bb8cc' } }
+    }
+  }
+});
+
+const stacks = [
+  ['9月18日', [38,23,10,6,4,8,2,6,1,1]],
+  ['10月10日', [49,14,9,9,6,4,3,4,2,2]],
+  ['10月16日', [26,25,13,8,11,7,4,3,1,3]],
+  ['10月23日 · 新模型', [46,18,11,6,5,4,4,3,3,1]]
+];
+const seg = ['#7ee8c7','#5ec8f0','#8ec8ff','#f5d76e','#f5b942','#f0a06a','#f68ab0','#d4a0e0','#9aa7c2','#5d7590'];
+document.getElementById('stacks').innerHTML = stacks.map(([name, parts]) => {
+  const bars = parts.map((p, i) => {
+    const label = p >= 8 ? p + '%' : '';
+    return `<div style="width:${p}%;background:${seg[i]};height:28px;display:flex;align-items:center;justify-content:center;color:#06192b;font-size:12px;font-weight:700">${label}</div>`;
+  }).join('');
+  return `<div style="display:flex;align-items:center;gap:10px;margin:8px 0"><div style="width:150px;color:#aac5da;font-size:13px">${name}</div><div style="flex:1;display:flex;border-radius:6px;overflow:hidden">${bars}</div></div>`;
+}).join('');
+
+new Chart(document.getElementById('days'), {
+  type: 'bar',
+  data: {
+    labels: ['召回当天', '第2天', '第3天'],
+    datasets: [
+      { label: '9月18日', data: [43, 41, 33], backgroundColor: '#5ec8f0', maxBarThickness: 22 },
+      { label: '10月10日', data: [48, 46, 51], backgroundColor: '#f5b942', maxBarThickness: 22 },
+      { label: '10月16日', data: [27, 22, 28], backgroundColor: '#f68ab0', maxBarThickness: 22 },
+      { label: '10月23日 新模型', data: [48, 42, 47], backgroundColor: '#7ee8c7', maxBarThickness: 22 }
+    ]
+  },
+  options: {
+    responsive: true, maintainAspectRatio: false,
+    plugins: { legend: { labels: { color: '#cfe6f4', boxWidth: 12 } } },
+    scales: {
+      x: axis.x,
+      y: { ...axis.y, beginAtZero: true, max: 60, ticks: { color: '#9bb8cc', callback: v => v + '%' } }
+    }
+  }
+});
+
+function dots(id, n, cls) {
+  const box = document.getElementById(id);
+  box.innerHTML = Array.from({ length: 100 }, (_, i) => `<div class="dot ${i < n ? cls : ''}"></div>`).join('');
+}
+dots('dotsOld', 26, 'on-old');
+dots('dotsNew', 46, 'on-new');
+</script>
+</body>
+</html>
