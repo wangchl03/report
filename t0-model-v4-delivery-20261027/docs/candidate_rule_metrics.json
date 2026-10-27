@@ -1,0 +1,92 @@
+{
+  "rule": "p_apply_d3 < 0.5",
+  "threshold_boundary": "等于0.5不入选；使用原始累计概率，不用批内100分归一化。",
+  "date_start": "2026-10-09",
+  "date_end": "2026-10-21",
+  "timezone": "America/Belize",
+  "outcome_cutoff_exclusive": "2026-10-25 00:00:00",
+  "all_scored_events": 8866,
+  "known_scored_events": 8717,
+  "unknown_scored_events": 149,
+  "all_candidates": 3701,
+  "known_candidates": 3656,
+  "unknown_candidates": 45,
+  "candidate_d0_nonapply": 3143,
+  "candidate_d0_apply": 513,
+  "candidate_d3_nonapply": 2488,
+  "candidate_d3_apply": 1168,
+  "metrics": [
+    {
+      "key": "candidate_coverage_all_scored",
+      "name": "候选覆盖全部评分事件",
+      "numerator": 3701,
+      "denominator": 8866,
+      "value": 0.41743740130836904,
+      "formula": "完整候选事件数 / 全部评分事件数（包含未知）"
+    },
+    {
+      "key": "d0_nonapply_precision",
+      "name": "候选D0未提单命中率",
+      "numerator": 3143,
+      "denominator": 3656,
+      "value": 0.8596827133479212,
+      "formula": "候选中D0未提单 / 候选中D0结果可判"
+    },
+    {
+      "key": "d0_apply_share",
+      "name": "候选D0实际提单占比",
+      "numerator": 513,
+      "denominator": 3656,
+      "value": 0.14031728665207877,
+      "formula": "候选中D0实际提单 / 候选中D0结果可判"
+    },
+    {
+      "key": "d0_nonapply_capture",
+      "name": "全部D0未提单目标覆盖",
+      "numerator": 3143,
+      "denominator": 5276,
+      "value": 0.5957164518574678,
+      "formula": "筛中D0未提单 / 全体可判样本中全部D0未提单"
+    },
+    {
+      "key": "d3_nonapply_precision",
+      "name": "候选D0—D3均未提单占比",
+      "numerator": 2488,
+      "denominator": 3656,
+      "value": 0.6805251641137856,
+      "formula": "候选中D3结束未提单 / 候选中D3结果可判"
+    },
+    {
+      "key": "d0_classification_accuracy",
+      "name": "将候选判未提单的全体D0分类准确率",
+      "numerator": 6071,
+      "denominator": 8717,
+      "value": 0.6964552024779167,
+      "formula": "候选未提单+非候选实际提单 / 全体D0可判"
+    },
+    {
+      "key": "d3_classification_accuracy",
+      "name": "将候选判未提单的全体D3分类准确率",
+      "numerator": 6375,
+      "denominator": 8717,
+      "value": 0.7313295858666973,
+      "formula": "候选D3未提单+非候选D3实际提单 / 全体D3可判"
+    }
+  ],
+  "d0_nonapply_precision_ci95": [
+    0.8483181773080647,
+    0.8696859457475936
+  ],
+  "d3_nonapply_precision_ci95": [
+    0.6636034626616604,
+    0.6961635005233117
+  ],
+  "full_candidate_d0_nonapply_identification_bounds": [
+    0.8492299378546339,
+    0.8613888138340989
+  ],
+  "identification_bounds_definition": "45次未知候选全为提单或全为未提单所得上下界，与抽样95%置信区间含义不同。",
+  "interpretation": "85.97%为候选名单在可判D0结果中的未提单命中率；全体D0分类准确率为69.65%，D3未提单命中为68.05%。",
+  "limitations": "该规则及客群已在同批10月结果上反复分析；此处是可复核描述，不是新盲测或已批准上线阈值，也不证明优惠增量收益。",
+  "source_sha256": "43bdf534b508b86683e4c93f649d799cb7fdda8f9d6547e7c11206725c47b2dc"
+}

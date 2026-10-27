@@ -1,0 +1,168 @@
+{
+  "title": "T0提单时点预测模型V4",
+  "model_version": "t0_timing_v4_20261008",
+  "model_sha256": "57b2aac902044a78679872fb6120afdda906796705a35bbb867c9a757cc8d3ce",
+  "model_bytes": 6067997,
+  "model_frozen_at_recorded": "2026-10-08 07:16:09.127187",
+  "freeze_timestamp_note": "原冻结记录未附时区；不据此推断精确UTC时刻。",
+  "delivery_state": "使用同一冻结模型文件及参数；本次整理不重训、不重新校准。",
+  "purpose": "在严格T0获额通过时点，预测用户从本次获额起至D0、D3、D7、D15结束前首次实际提单的累计概率。",
+  "event_definition": "结清后0在贷场景的严格T0获额通过事件；按用户20秒链式去重，保留真实重复T0事件。",
+  "architecture": {
+    "algorithm": "LightGBM LGBMClassifier, binary objective",
+    "global_classifier_count": 1,
+    "tree_count": 838,
+    "expert_model": false,
+    "calibrators": "4个逐条件风险区间sigmoid校准器",
+    "intervals": [
+      {
+        "id": 0,
+        "label": "D0",
+        "start_day": 0,
+        "end_day_exclusive": 1,
+        "length": 1
+      },
+      {
+        "id": 1,
+        "label": "D1—D3",
+        "start_day": 1,
+        "end_day_exclusive": 4,
+        "length": 3
+      },
+      {
+        "id": 2,
+        "label": "D4—D7",
+        "start_day": 4,
+        "end_day_exclusive": 8,
+        "length": 4
+      },
+      {
+        "id": 3,
+        "label": "D8—D15",
+        "start_day": 8,
+        "end_day_exclusive": 16,
+        "length": 8
+      }
+    ],
+    "conditional_risk": "在尚未提单且仍可观察的条件下，本区间发生首次提单的条件概率。",
+    "cumulative_formula": "p_Dh = 1 - product(1 - calibrated_interval_hazard) through horizon h",
+    "monotonicity": "0 <= p_D0 <= p_D3 <= p_D7 <= p_D15 <= 1"
+  },
+  "time_and_label": {
+    "timezone": "America/Belize",
+    "prediction_anchor": "T0获额通过时刻",
+    "D0": "从T0到获额业务日期次日00:00，不含右界。",
+    "D3": "从T0到获额业务日期+4日00:00，不含右界；覆盖D0—D3四个自然日期。",
+    "D7": "从T0到获额业务日期+8日00:00，不含右界。",
+    "D15": "从T0到获额业务日期+16日00:00，不含右界。",
+    "positive": "用户后续首次实际提单，不要求与本次获额serial一致，不要求审批或成功放款。",
+    "censoring": "下一严格T0右删失；提单后不再生成后续监督风险行；无法判定的标签保留未知。",
+    "evaluation_maturity": "先要求整个自然日窗口成熟；未成熟事件即使已有早正例也不混入评估。"
+  },
+  "feature_counts": {
+    "feature_count": 1930,
+    "prepared_numeric_count": 1947,
+    "encoder_generated_count": 35,
+    "encoder_retained_count": 32,
+    "external_numeric_required_count": 1895,
+    "interval_generated_count": 3,
+    "raw_categorical_required_count": 3,
+    "catalog_count": 1985,
+    "count_equation": "1930 = 1895 required external numeric + 3 runtime interval fields + 32 retained encoded columns"
+  },
+  "raw_categorical_fields": [
+    "vir_version",
+    "previous_product_no",
+    "risk_product"
+  ],
+  "training": {
+    "event_date_start": "2026-01-01",
+    "event_date_end_exclusive": "2026-08-16",
+    "nominal_period_events": 170832,
+    "effective_supervised_events": 167292,
+    "events_without_any_supervised_risk_interval": 3540,
+    "effective_supervised_users": 85764,
+    "expanded_binary_risk_rows": 358661,
+    "count_note": "170,832为期间候选事件；167,292才至少贡献一行监督区间；358,661为同事件按风险区间展开的相关训练行，不能当独立事件数。",
+    "source_label_data_cutoff_exclusive": "2026-10-07 00:00:00 America/Belize",
+    "nominal_experiment_available_before": "2026-09-01 00:00:00",
+    "experiment_time_note": "9月1日前可用为历史实验时间约束；模型实际冻结记录是10月8日，不是9月真实部署记录。",
+    "folds": [
+      {
+        "fold": "fold1",
+        "train_end_exclusive": "2026-06-01",
+        "validation_start": "2026-06-17",
+        "validation_end_exclusive": "2026-06-25"
+      },
+      {
+        "fold": "fold2",
+        "train_end_exclusive": "2026-07-01",
+        "validation_start": "2026-07-17",
+        "validation_end_exclusive": "2026-07-25"
+      },
+      {
+        "fold": "fold3",
+        "train_end_exclusive": "2026-07-16",
+        "validation_start": "2026-08-01",
+        "validation_end_exclusive": "2026-08-08"
+      }
+    ],
+    "selection": "第2、3开发折等权平均累计Brier优先，平均AUC次级。",
+    "calibration": "第1、2折OOF条件风险logit拟合逐区间LogisticRegression；第3折比较identity与sigmoid，冻结sigmoid。",
+    "selected_parameters": {
+      "num_leaves": 63,
+      "min_child_samples": 200,
+      "learning_rate": 0.025,
+      "max_depth": 8,
+      "reg_lambda": 10,
+      "reg_alpha": 0.1,
+      "colsample_bytree": 0.7,
+      "subsample": 0.85,
+      "max_bin": 127,
+      "seed": 20261008,
+      "n_estimators_final": 838,
+      "subsample_freq": 1
+    },
+    "retrospective_holdout": {
+      "date_start": "2026-09-01",
+      "date_end_exclusive": "2026-09-10",
+      "interpretation": "冻结后单独评估的历史时间留出；母表此前已保存，不是未来前瞻试验。"
+    },
+    "selection_limit": "开发折被用于模型、参数与校准选择，存在选择乐观性；后续复核时9月与10月标签已被查看。"
+  },
+  "model_usage_audit": {
+    "split_used_features": 1563,
+    "zero_split_and_gain_features": 367,
+    "note": "均保留在1,930列冻结输入合同中；此项描述训练分裂使用程度，不证明独立增量或因果贡献。"
+  },
+  "input_semantics": [
+    "订单提单<T0、放款/整笔结清≤T0；App<T0且页面时长仅使用T0时已经结束的记录。",
+    "支付<T0；已确认触发整笔结清订单的已知同秒流水允许=T0，不能把未知同秒或未来流水纳入。",
+    "产品合同画像使用对应获额业务日期之前的已知历史合同，不用无生效日期的当前产品表回填历史。",
+    "event_track_record的既有create_time/create_date行为时钟保持冻结含义。",
+    "NaN按冻结树模型缺失路径保留，不全局补0；未知类别按冻结词表编码0并保留相应未见/缺失标记。"
+  ],
+  "validation_snapshot": {
+    "primary": "docs/validation_metrics.json: primary_horizon_metrics",
+    "candidate_rule": "docs/candidate_rule_metrics.json",
+    "feature_dictionary": "schema/full_feature_dictionary.json"
+  },
+  "intended_use": "离线分析、人工辅助排序、真实T0影子评分建设及后续受控试验准备。",
+  "limitations": [
+    "所有结果均为历史回放；缺少当场封存的特征快照、available_at和score_generated_at，不能称线上前瞻验证。",
+    "下一T0删失可能与用户行为相关；完整个案指标不识别删失事件表现。",
+    "10月24日588次目标事件全部没有匹配风险源；原主检验保留，排除该日另报事后敏感性。",
+    "D15仅有10月9日一个成熟事件日期，805次可评；不支持跨日期长期稳定性结论。",
+    "训练期和后续时期有重复用户；无重复T0事件不等于完全按用户隔离。",
+    "开发折被用于模型、参数和校准选择；训练内及开发折结果存在乐观性。9月和10月标签在此次复核前已被查看。",
+    "预测关联、名单命中或Top分组不证明优惠因果增量、盈利或可自动发放。",
+    "尚无已完成的真实线上特征可得性、时延、成本和优惠随机对照验收；自动业务动作需另有实际执行证据。"
+  ],
+  "evidence_sha256": {
+    "training_summary": "cf0c5464ac3dfc3424669ce3afb4607d3a7989b56e75ec1756a026af169992c3",
+    "frozen_contract": "711a9cb3a92f73d87fd43ad5ec671af18e74b7e3c8a7d7451b3ed2a6f1510edc",
+    "feature_semantics": "587c7c157449ace68cac3f46015a013ed8276d9535ba310e19486c9467f171f7",
+    "validation_aggregates": "99e59d78c67bacbaa65bcd3a5c6e58b6b3aa55e6884897929b6af334d0c3ec2d",
+    "generalization_aggregates": "4c4a5e706bf5a62595d689ee9c7a6cd3afd42b803766932883e266953e495ab3"
+  }
+}
