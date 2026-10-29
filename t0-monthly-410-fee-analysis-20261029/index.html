@@ -1,0 +1,546 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="2026年9月和10月T0当天提单率、每日410高分前20%事件的当天提单率及两种加权息费口径对照分析。">
+<title>T0月度当天提单率与410高分客群息费分析</title>
+<style>
+.notice.complete{border-left-color:#6ee7b7;background:#142b25;color:#c1e9db}.notice.complete strong{color:#8ce7c5}
+
+:root{color-scheme:dark;--bg:#0b1220;--card:#121e30;--card2:#17263b;--ink:#e6edf7;--muted:#a9bbd2;--line:#2b3b51;--blue:#60a5fa;--amber:#fbbf24;--red:#fb7185;--green:#6ee7b7}
+*{box-sizing:border-box}html{scroll-behavior:smooth;scroll-padding-top:86px}body{margin:0;background:var(--bg);color:var(--ink);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif;line-height:1.7;font-size:16px}a{color:#93c5fd;text-decoration:none}a:hover{text-decoration:underline}.hero{max-width:1180px;margin:0 auto;padding:52px 24px 26px;text-align:center}.eyebrow{color:var(--blue);font-size:13px;letter-spacing:.1em}.hero h1{font-size:clamp(26px,3.3vw,40px);line-height:1.35;margin:12px 0 15px;letter-spacing:-.02em}.subtitle{color:var(--muted);margin:0}.meta{display:flex;justify-content:center;gap:10px 20px;flex-wrap:wrap;color:var(--muted);font-size:13px;margin-top:18px}.nav-shell{position:sticky;top:0;background:#0b1220f5;border-block:1px solid var(--line);z-index:20;backdrop-filter:blur(12px)}nav{max-width:1180px;margin:auto;display:flex;justify-content:center;gap:8px 24px;flex-wrap:wrap;padding:13px 20px}nav a{font-size:14px;color:#d7e4f5;font-weight:600}main{max-width:1180px;margin:0 auto;padding:24px 24px 65px}.notice{padding:16px 20px;border-left:4px solid var(--amber);border-radius:8px;background:#2b2419;color:#f6ddac;margin:0 0 24px}.notice strong{color:#fcd77d}.section{margin:0 0 24px;padding:28px;border:1px solid var(--line);background:var(--card);border-radius:14px;scroll-margin-top:95px}h2{font-size:23px;line-height:1.4;margin:0 0 18px}h3{font-size:17px;margin:24px 0 12px}.section-intro,.note{color:var(--muted)}.section-intro{margin:0 0 17px}.note{font-size:13px;margin:12px 0 0}.conclusions{padding:0;list-style:none;counter-reset:conclusion;display:grid;gap:13px;margin:0}.conclusions li{counter-increment:conclusion;background:var(--card2);padding:16px 18px 16px 54px;border-radius:10px;position:relative}.conclusions li:before{content:counter(conclusion);position:absolute;left:18px;top:17px;color:var(--blue);font-weight:800}.conclusions p{margin:5px 0 0;color:var(--muted);font-size:14px}.emphasis-red{color:var(--red);font-weight:700}.decrease{color:var(--red);font-weight:700}.rise{color:var(--green);font-weight:700}.legend{display:flex;justify-content:flex-end;gap:24px;font-size:14px;color:var(--muted);margin:0 8px 0}.legend span{display:flex;align-items:center;gap:8px}.dot{height:10px;width:10px;border-radius:50%;display:inline-block}.dot.sep{background:var(--blue)}.dot.oct{background:var(--amber)}figure{margin:0 0 20px}figure svg{width:100%;height:auto;display:block}.axis-text{fill:#a9bbd2;font-size:15px}.group-text{fill:#dce8f6;font-size:18px;font-weight:600}.value-text{font-size:23px;font-weight:750}rect:hover{opacity:.87}figcaption{padding:13px 16px;background:var(--card2);border-radius:8px;font-size:15px}.table-scroll{overflow-x:auto;border:1px solid var(--line);border-radius:9px}table{width:100%;border-collapse:collapse;font-variant-numeric:tabular-nums;white-space:nowrap}th{background:#1b2c44;color:#d9e9ff;font-size:13px;font-weight:650}td,th{padding:12px 15px;border-bottom:1px solid var(--line);text-align:right}td:first-child,th:first-child{text-align:left}tbody tr:last-child td{border-bottom:0}tbody tr:nth-child(even){background:#142237}tbody tr:hover{background:#1b2b42}.formulas{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin:18px 0 0}.formula{background:#0c1727;border:1px solid #304864;border-radius:9px;padding:16px 18px}.formula strong{display:block;color:#b9d7ff;margin-bottom:7px}.formula code{white-space:normal;font-size:14px;line-height:1.8;color:#dce8f6}.steps{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:22px}.step{border:1px solid #314660;border-radius:9px;background:#142337;padding:14px}.step b{display:block;color:var(--blue);font-size:13px}.step strong{display:block;margin:6px 0;font-size:15px}.step p{font-size:13px;color:var(--muted);margin:0}.rules{padding-left:20px;margin:16px 0 0}.rules li{margin:9px 0}.rules code,td code{background:#091422;padding:2px 5px;border-radius:4px;font-size:13px}.quality{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin:18px 0}.quality div{background:var(--card2);border-radius:9px;padding:14px 16px}.quality b{display:block;color:var(--green);font-size:21px}.quality span{color:var(--muted);font-size:13px}details{border:1px solid var(--line);border-radius:9px;background:#0b1524;overflow:hidden}summary{cursor:pointer;list-style-position:inside;padding:17px 18px;color:#c7ddf8;font-weight:650}details[open] summary{border-bottom:1px solid var(--line)}.code-actions{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;padding:12px 16px;background:#112037;font-size:13px}button{color:#c9e1ff;background:#203a59;border:1px solid #406488;border-radius:6px;padding:7px 12px;cursor:pointer;font:inherit}button:hover{background:#294b72}pre{margin:0;padding:20px 22px;overflow:auto;max-height:860px;tab-size:4;background:#08111e;color:#c9d9eb;font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:12px;line-height:1.75;white-space:pre}code{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace}.footnote{color:var(--muted);font-size:13px;border-top:1px solid var(--line);padding-top:15px;margin-top:20px}.limits{margin:0;padding-left:20px}.limits li{margin:12px 0}.limits strong{color:#c7ddf8}@media(max-width:760px){.hero{padding:30px 18px 22px}.hero h1{font-size:27px}main{padding:18px 12px 40px}.section{padding:20px 15px;border-radius:10px}nav{gap:7px 17px;padding:10px 12px}nav a{font-size:12px}.formulas{grid-template-columns:1fr}.steps{grid-template-columns:1fr 1fr}.quality{grid-template-columns:1fr}.group-text{font-size:18px}.value-text{font-size:25px}td,th{padding:11px 12px}.conclusions li{padding-right:12px}.notice{font-size:14px}.legend{margin-top:12px}.section h2{font-size:21px}}
+</style>
+</head>
+<body>
+<header class="hero">
+<div class="eyebrow">2026年9月—10月统计对照</div>
+<h1>T0月度当天提单率<br>与410高分客群息费分析</h1>
+<div class="meta"><span>生成日期：2026年10月29日</span><span>业务自然日：America/Belize</span><span>按事件计数</span></div>
+</header>
+<div class="nav-shell"><nav aria-label="报告目录">
+<a href="#conclusion">结论</a><a href="#conversion">当天提单率</a><a href="#fees">两种息费</a><a href="#definitions">统计口径</a><a href="#interpretation">解读与范围</a><a href="#appendix">附录PGSQL</a>
+</nav></div>
+<main>
+
+<section class="section" id="conclusion">
+<h2>一、结论</h2>
+<ol class="conclusions">
+<li><strong>整体当天提单率基本持平：<span class="emphasis-red">39.25% → 39.01%，下降0.24</span>个百分点。</strong><p>9月8,490 / 21,630次事件；10月1—28日7,209 / 18,479次事件。</p></li>
+<li><strong>每日410高分组的当天提单率略降：<span class="emphasis-red">22.04% → 21.04%，下降1.00</span>个百分点。</strong><p>每天独立选高分事件再按月累计。9月933 / 4,233次；10月1—28日768 / 3,650次。</p></li>
+<li><strong>同一批提单订单，两种口径的加权息费率<span class="emphasis-red">均上升</span>。</strong><p>订单口径<span class="emphasis-red">61.20% → 61.70%，上升0.51</span>个百分点；产品配置口径<span class="emphasis-red">53.66% → 54.74%，上升1.08</span>个百分点。</p></li>
+</ol>
+</section>
+
+<section class="section" id="conversion">
+<h2>二、整体与每日410高分组的当天提单率</h2>
+<p class="section-intro">分子为获额后当天首次提单的T0事件数，分母为对应客群的T0获额事件数。按获额日期归属月份。</p>
+<figure>
+<div class="legend"><span><i class="dot sep"></i>9月</span><span><i class="dot oct"></i>10月</span></div>
+<svg viewBox="0 0 1060 350" role="img" aria-label="整体与410高分组的月度当天提单率"><title>整体与410高分组的月度当天提单率</title><desc>9月1—30日与10月1—28日对比；整体与410高分组均覆盖统计期全部业务日。</desc><line x1="68" y1="285.00" x2="1035" y2="285.00" stroke="#2b3b51"/><text x="54" y="290.00" text-anchor="end" class="axis-text">0%</text><line x1="68" y1="236.40" x2="1035" y2="236.40" stroke="#2b3b51"/><text x="54" y="241.40" text-anchor="end" class="axis-text">10%</text><line x1="68" y1="187.80" x2="1035" y2="187.80" stroke="#2b3b51"/><text x="54" y="192.80" text-anchor="end" class="axis-text">20%</text><line x1="68" y1="139.20" x2="1035" y2="139.20" stroke="#2b3b51"/><text x="54" y="144.20" text-anchor="end" class="axis-text">30%</text><line x1="68" y1="90.60" x2="1035" y2="90.60" stroke="#2b3b51"/><text x="54" y="95.60" text-anchor="end" class="axis-text">40%</text><line x1="68" y1="42.00" x2="1035" y2="42.00" stroke="#2b3b51"/><text x="54" y="47.00" text-anchor="end" class="axis-text">50%</text><rect x="204.75" y="94.24" width="98" height="190.76" rx="7" fill="#60a5fa"><title>全部T0事件 · 9月：39.25%</title></rect><text x="253.75" y="81.24" text-anchor="middle" class="value-text" fill="#60a5fa">39.25%</text><rect x="316.75" y="95.40" width="98" height="189.60" rx="7" fill="#fbbf24"><title>全部T0事件 · 10月：39.01%</title></rect><text x="365.75" y="82.40" text-anchor="middle" class="value-text" fill="#fbbf24">39.01%</text><text x="309.75" y="318" text-anchor="middle" class="group-text">全部T0事件</text><rect x="688.25" y="177.88" width="98" height="107.12" rx="7" fill="#60a5fa"><title>每日410高分组 · 9月：22.04%</title></rect><text x="737.25" y="164.88" text-anchor="middle" class="value-text" fill="#60a5fa">22.04%</text><rect x="800.25" y="182.74" width="98" height="102.26" rx="7" fill="#fbbf24"><title>每日410高分组 · 10月：21.04%</title></rect><text x="849.25" y="169.74" text-anchor="middle" class="value-text" fill="#fbbf24">21.04%</text><text x="793.25" y="318" text-anchor="middle" class="group-text">每日410高分组</text></svg>
+<figcaption><strong>图后结论：</strong>整体变化为−0.24个百分点；每日410高分组变化为−1.00个百分点。高分组的当天提单率低于整体。</figcaption>
+</figure>
+<div class="table-scroll"><table><thead><tr><th scope="col">统计客群</th><th scope="col">有效期间</th><th scope="col">T0事件数 · 分母</th><th scope="col">当天提单事件数 · 分子</th><th scope="col">当天提单率</th></tr></thead><tbody><tr><td>全部T0事件</td><td>9月1—30日</td><td>21,630</td><td>8,490</td><td><strong>39.25%</strong></td></tr><tr><td>全部T0事件</td><td>10月1—28日</td><td>18,479</td><td>7,209</td><td><strong>39.01%</strong></td></tr><tr><td>每日410高分组</td><td>9月1—30日</td><td>4,233</td><td>933</td><td><strong>22.04%</strong></td></tr><tr><td>每日410高分组</td><td>10月1—28日</td><td>3,650</td><td>768</td><td><strong>21.04%</strong></td></tr></tbody></table></div>
+<p class="note">变化值按未四舍五入的比率计算。高分组不是按整月一次排名，也不是对每天的提单率取算术平均。</p>
+</section>
+
+<section class="section" id="fees">
+<h2>三、同一批当天提单订单的两种息费口径</h2>
+<p class="section-intro">两种计算均使用9月933笔、10月768笔订单；计费本金统一为订单字段remit_amt。未增加“成功放款”的筛选条件。</p>
+<figure>
+<div class="legend"><span><i class="dot sep"></i>9月</span><span><i class="dot oct"></i>10月</span></div>
+<svg viewBox="0 0 1060 350" role="img" aria-label="410高分组当天提单订单的两种加权息费率"><title>410高分组当天提单订单的两种加权息费率</title><desc>两种息费使用相同订单：9月933笔，10月768笔。</desc><line x1="68" y1="285.00" x2="1035" y2="285.00" stroke="#2b3b51"/><text x="54" y="290.00" text-anchor="end" class="axis-text">0%</text><line x1="68" y1="224.25" x2="1035" y2="224.25" stroke="#2b3b51"/><text x="54" y="229.25" text-anchor="end" class="axis-text">20%</text><line x1="68" y1="163.50" x2="1035" y2="163.50" stroke="#2b3b51"/><text x="54" y="168.50" text-anchor="end" class="axis-text">40%</text><line x1="68" y1="102.75" x2="1035" y2="102.75" stroke="#2b3b51"/><text x="54" y="107.75" text-anchor="end" class="axis-text">60%</text><line x1="68" y1="42.00" x2="1035" y2="42.00" stroke="#2b3b51"/><text x="54" y="47.00" text-anchor="end" class="axis-text">80%</text><rect x="204.75" y="99.12" width="98" height="185.88" rx="7" fill="#60a5fa"><title>口径一 · 订单息费 · 9月：61.20%</title></rect><text x="253.75" y="86.12" text-anchor="middle" class="value-text" fill="#60a5fa">61.20%</text><rect x="316.75" y="97.57" width="98" height="187.43" rx="7" fill="#fbbf24"><title>口径一 · 订单息费 · 10月：61.70%</title></rect><text x="365.75" y="84.57" text-anchor="middle" class="value-text" fill="#fbbf24">61.70%</text><text x="309.75" y="318" text-anchor="middle" class="group-text">口径一 · 订单息费</text><rect x="688.25" y="122.02" width="98" height="162.98" rx="7" fill="#60a5fa"><title>口径二 · 产品配置息费 · 9月：53.66%</title></rect><text x="737.25" y="109.02" text-anchor="middle" class="value-text" fill="#60a5fa">53.66%</text><rect x="800.25" y="118.74" width="98" height="166.26" rx="7" fill="#fbbf24"><title>口径二 · 产品配置息费 · 10月：54.74%</title></rect><text x="849.25" y="105.74" text-anchor="middle" class="value-text" fill="#fbbf24">54.74%</text><text x="793.25" y="318" text-anchor="middle" class="group-text">口径二 · 产品配置息费</text></svg>
+<figcaption><strong>图后结论：</strong>订单口径上升0.51个百分点，产品配置口径上升1.08个百分点。更换息费来源后，上升方向一致。</figcaption>
+</figure>
+<div class="table-scroll"><table><thead><tr><th scope="col">指标</th><th scope="col">9月1—30日</th><th scope="col">10月1—28日</th><th scope="col">10月－9月</th></tr></thead><tbody><tr><td>当天首次提单订单数</td><td>933</td><td>768</td><td>—</td></tr><tr><td>计费本金合计 · remit_amt</td><td>5,735,958.00</td><td>4,543,712.00</td><td>—</td></tr><tr><td>口径一：订单息费合计</td><td>3,510,190.00</td><td>2,803,665.00</td><td>—</td></tr><tr><td><strong>口径一：订单加权息费率</strong></td><td><strong>61.20%</strong></td><td><strong>61.70%</strong></td><td><span class="rise">+0.51个百分点</span></td></tr><tr><td>口径二：产品配置息费合计</td><td>3,077,737.46</td><td>2,487,108.60</td><td>—</td></tr><tr><td><strong>口径二：产品配置加权息费率</strong></td><td><strong>53.66%</strong></td><td><strong>54.74%</strong></td><td><span class="rise">+1.08个百分点</span></td></tr></tbody></table></div>
+<div class="formulas">
+<div class="formula"><strong>口径一：订单息费</strong><code>SUM(pre_amt + post_amt)<br>÷ SUM(remit_amt)</code></div>
+<div class="formula"><strong>口径二：产品配置息费</strong><code>SUM(product.total_fee × remit_amt)<br>÷ SUM(remit_amt)</code></div>
+</div>
+<p class="note">金额沿用源表单位，展示保留两位小数；计算中间保留原始精度。total_fee是比例值，例如0.406表示40.6%，无需再除以100。这里的息费率为全期息费口径。</p>
+</section>
+
+<section class="section" id="definitions">
+<h2>四、统计口径与样本生成过程</h2>
+<div class="steps">
+<div class="step"><b>01 · T0事件</b><strong>干净结清后当日获额通过</strong><p>还原结清时点在贷归零，限定T0类型，获额按同用户20秒链式去重。</p></div>
+<div class="step"><b>02 · 每日高分组</b><strong>每天独立筛选410高分</strong><p>分数严格高于当天有效评分事件的第80百分位，边界同分不拆分。</p></div>
+<div class="step"><b>03 · 当天首次提单</b><strong>从获额时刻起寻找提单</strong><p>到业务当天结束；遇到下一次有效T0则截断，单次事件只记一次。</p></div>
+<div class="step"><b>04 · 月度汇总</b><strong>先累加分子和分母，再相除</strong><p>提单率累计事件数；息费率累计金额，按remit_amt加权。</p></div>
+</div>
+<div class="table-scroll"><table><thead><tr><th scope="col">指标</th><th scope="col">分子</th><th scope="col">分母 / 统计范围</th></tr></thead><tbody><tr><td>整体当天提单率</td><td>该月T0获额后当天首次提单的事件数</td><td>该月全部有效T0获额事件数；不要求有模型分</td></tr><tr><td>410高分组当天提单率</td><td>每天入选高分组且当天提单的事件数，按月求和</td><td>每天入选高分组的T0事件数，按月求和</td></tr><tr><td>订单加权息费率</td><td>高分组当天首次提单订单的 SUM(pre_amt + post_amt)</td><td>同批订单的 SUM(remit_amt)，要求 remit_amt &gt; 0</td></tr><tr><td>产品配置加权息费率</td><td>高分组当天首次提单订单的 SUM(total_fee × remit_amt)</td><td>同批有效匹配产品订单的 SUM(remit_amt)</td></tr></tbody></table></div>
+</section>
+
+<section class="section" id="interpretation">
+<h2>五、数据核对与结论适用范围</h2>
+<div class="quality">
+<div><b>1,701笔 / 100%</b><span>两个月当天首次提单订单均成功匹配产品配置。</span></div>
+<div><b>0条关键异常</b><span>已检查事件重复归属、提单时间先后、订单及产品匹配。</span></div>
+<div><b>46项校验通过</b><span>文末完整SQL已执行，分子、分母、金额及费率与报告一致。</span></div>
+</div>
+<p class="footnote">数据来自wangchuanliang下的order_vir_f_copy、side_recycle_type_copy、order_loan_f_v2_copy、model_result_copy、product_info_copy。本次统一取数快照为2026-10-29 20:59（北京时间），订单、模型分及产品配置在同一只读快照内读取，附录完整SQL已执行核对。评分表与产品表未提供本报告使用的不可变历史版本，源表更新后重跑的结果可能变化。</p>
+</section>
+
+<section class="section" id="appendix">
+<h2>附录：完整PGSQL取数代码</h2>
+<p class="section-intro">整段执行后返回每月一行，含整体提单率、每日410高分组提单率、两种息费和质量校验字段。代码从源表直接取数，无需前置临时表或Python计算。</p>
+<details>
+<summary>展开完整取数代码 · 435行</summary>
+<div class="code-actions"><a href="01_完整取数代码_PGSQL.sql" download>下载独立SQL文件</a><button id="copy-sql" type="button">复制全部代码</button></div>
+<pre><code id="sql-code">-- 本次完整结果校验时间：2026-10-29 20:59:39（北京时间）；模型分已覆盖统计期全部T0事件。
+/*
+用途：T0 整体、每日 410 高分前 20% 的月度当天提单率，以及两种息费口径。
+统计：2026-09-01 至 2026-09-30；2026-10-01 至 2026-10-28，均包含结束日。
+环境：PostgreSQL / GaussDB(DWS)；业务时区 America/Belize。
+执行：整段执行，只读查询；不执行 DROP、CREATE、INSERT、UPDATE、DELETE。
+
+口径：
+  A. 月度提单率按事件计数。同一用户多次有效 T0 获额事件分别计入。
+  B. 每天独立选 410 高分事件，再按月累计事件数；不对每天的提单率取平均。
+  C. 高分组使用 score_410 &gt; 当天第 80 百分位；同分不拆分，实际占比略低于 20%。
+  D. 息费只使用高分组获额后当天首次提单的订单，且 remit_amt &gt; 0；不限制 is_remit。
+  E. 订单息费率 = SUM(pre_amt + post_amt) / SUM(remit_amt)。
+  F. 产品息费率 = SUM(product_info_copy.total_fee * remit_amt) / SUM(remit_amt)。
+     total_fee 已是比例值，例如 0.406 = 40.6%，不再除以 100。
+  G. 产品匹配失败或 total_fee 无效时，产品口径的分子、分母同步排除，并输出数量。
+     相同 product_no 多行仅在 total_fee 完全一致时合并，避免连接放大。
+  H. 缺失模型分不当作低分或未提单；整体提单率仍纳入这些 T0 事件。
+
+输出：每月一行，含全部分子、分母、费率、有效评分日期范围及质量校验字段。
+重跑：读取执行时的订单、评分和产品配置；源表后续更新会影响重跑结果。
+复核：event_audit 的四项异常计数应为 0；先核对这些字段，再使用业务指标。
+*/
+
+SET TIME ZONE &#x27;America/Belize&#x27;;
+SET query_dop = 1;
+
+-- 01. 统计范围：结束日期为排他上界，2026-10-29 表示包含 10 月 28 日。
+WITH params AS (
+    SELECT DATE &#x27;2026-09-01&#x27; AS base_start_date,
+           DATE &#x27;2026-09-01&#x27; AS output_start_date,
+           DATE &#x27;2026-10-29&#x27; AS output_end_date,
+           CURRENT_TIMESTAMP AT TIME ZONE &#x27;America/Belize&#x27; AS data_cutoff_ts
+),
+
+-- 02. 获额通过的续贷记录；业务用户黑名单统一排除。vir_unix 的单位为秒。
+raw_pass_offer AS (
+    SELECT v.user_id, v.serial_id, v.vir_date::date AS vir_date,
+           v.vir_unix,
+           TO_TIMESTAMP(v.vir_unix) AT TIME ZONE &#x27;America/Belize&#x27; AS vir_time
+    FROM wangchuanliang.order_vir_f_copy v CROSS JOIN params p
+    WHERE v.is_pass1 = 1 AND v.loan_type_code = 2 AND v.vir_unix &gt; 0
+      AND v.user_id NOT IN (5101518)
+      AND v.vir_date &gt;= p.base_start_date - 1
+      AND v.vir_date &lt; p.data_cutoff_ts::date + 1
+      AND TO_TIMESTAMP(v.vir_unix) AT TIME ZONE &#x27;America/Belize&#x27; &lt; p.data_cutoff_ts
+),
+
+-- 03. 仅保留 side_recycle_type_copy 中 recycle_type = 3 的 T0 获额。
+qualified_offer AS (
+    SELECT v.* FROM raw_pass_offer v
+    WHERE EXISTS (
+        SELECT 1 FROM wangchuanliang.side_recycle_type_copy r
+        WHERE r.serial_id = v.serial_id AND r.recycle_type = 3
+    )
+),
+
+-- 04. 同一用户、同一获额流水只保留时间最新的一条。
+serial_latest AS (
+    SELECT DISTINCT ON (user_id, serial_id) * FROM qualified_offer
+    ORDER BY user_id, serial_id, vir_unix DESC
+),
+
+-- 05. 获取同一用户相邻获额时刻，准备进行 20 秒链式去重。
+lagged AS (
+    SELECT v.*, LAG(vir_time) OVER (
+        PARTITION BY user_id ORDER BY vir_time, serial_id
+    ) AS previous_time
+    FROM serial_latest v
+),
+
+-- 06. 相邻获额间隔大于 20 秒才开新批次；连续相邻间隔不超过 20 秒归为一批。
+batched AS (
+    SELECT v.*, SUM(CASE WHEN previous_time IS NULL
+                              OR vir_time - previous_time &gt; INTERVAL &#x27;20 seconds&#x27;
+                        THEN 1 ELSE 0 END) OVER (
+        PARTITION BY user_id ORDER BY vir_time, serial_id ROWS UNBOUNDED PRECEDING
+    ) AS batch_id
+    FROM lagged v
+),
+
+-- 07. 每个获额批次取最后一条，时间相同时按流水号排序。
+batch_ranked AS (
+    SELECT v.*, ROW_NUMBER() OVER (
+        PARTITION BY user_id, batch_id ORDER BY vir_time DESC, serial_id DESC
+    ) AS batch_rn
+    FROM batched v
+),
+
+-- 08. 得到去重后的获额事件。
+dedup_offer AS (
+    SELECT v.* FROM batch_ranked v CROSS JOIN params p
+    WHERE batch_rn = 1 AND vir_date &gt;= p.base_start_date
+),
+
+-- 09. 提取候选用户，仅用于缩小订单查询范围，不按月合并用户事件。
+candidate_users AS (
+    SELECT DISTINCT user_id FROM dedup_offer
+),
+
+-- 10. 查询候选用户全部历史成功放款订单，用实际放款与结清时间还原在贷状态。
+funded_orders AS (
+    SELECT DISTINCT ON (o.user_id, o.serial_id)
+           o.user_id, o.serial_id, o.apply_time, o.remit_time,
+           o.remit_amt, o.is_remit, o.repaid_time, o.repaid_date,
+           o.is_repaid, o.loan_status_code
+    FROM wangchuanliang.order_loan_f_v2_copy o
+    JOIN candidate_users u ON u.user_id = o.user_id
+    WHERE o.is_remit = 1 AND o.remit_amt &gt; 0
+    ORDER BY o.user_id, o.serial_id, o.apply_time ASC NULLS LAST
+),
+
+-- 11. 找到结清时其他成功放款订单全部已结清的干净结清事件。
+clean_settlement AS (
+    SELECT o.* FROM funded_orders o CROSS JOIN params p
+    WHERE (o.is_repaid = 1 OR o.loan_status_code = 7)
+      AND o.repaid_time &gt; TIMESTAMP &#x27;2000-01-01&#x27;
+      AND o.repaid_date &gt;= p.base_start_date
+      AND o.repaid_time &lt; p.data_cutoff_ts
+      AND NOT EXISTS (
+          SELECT 1 FROM funded_orders x
+          WHERE x.user_id = o.user_id AND x.serial_id &lt;&gt; o.serial_id
+            AND x.remit_time &lt;= o.repaid_time
+            AND (x.repaid_time IS NULL
+                 OR x.repaid_time &lt;= TIMESTAMP &#x27;2000-01-01&#x27;
+                 OR x.repaid_time &gt; o.repaid_time)
+      )
+),
+
+-- 12. 获额必须发生在同一业务日的干净结清之后；匹配最近的合格结清事件。
+settlement_matched AS (
+    SELECT e.*, s.serial_id AS settled_serial_id, s.repaid_time,
+           ROW_NUMBER() OVER (
+               PARTITION BY e.user_id, e.serial_id
+               ORDER BY s.repaid_time DESC, s.serial_id DESC
+           ) AS settlement_rn
+    FROM dedup_offer e JOIN clean_settlement s
+      ON s.user_id = e.user_id AND s.repaid_date = e.vir_date
+     AND s.repaid_time &lt;= e.vir_time
+),
+
+-- 13. 获取下一次有效 T0 获额时刻，用于截断本次事件的提单归属。
+strict_t0_all AS (
+    SELECT e.*, LEAD(vir_time) OVER (
+        PARTITION BY user_id ORDER BY vir_time, serial_id
+    ) AS next_t0_time
+    FROM settlement_matched e WHERE settlement_rn = 1
+),
+
+-- 14. 按获额日期限定本次统计事件：9 月 1 日至 10 月 28 日。
+cohort AS (
+    SELECT e.*, p.data_cutoff_ts FROM strict_t0_all e CROSS JOIN params p
+    WHERE e.vir_date &gt;= p.output_start_date AND e.vir_date &lt; p.output_end_date
+),
+
+-- 15. 查询统计期内的提单；不要求提单后成功放款。
+raw_applications AS (
+    SELECT o.user_id,o.serial_id,o.apply_time,
+           COUNT(*) OVER (PARTITION BY o.user_id,o.serial_id) AS source_order_rows
+    FROM wangchuanliang.order_loan_f_v2_copy o
+    JOIN candidate_users u ON u.user_id=o.user_id
+    CROSS JOIN params p
+    WHERE o.apply_date&gt;=p.output_start_date
+      AND o.apply_date&lt;p.output_end_date
+      AND o.apply_time&gt;=p.output_start_date::timestamp
+      AND o.apply_time&lt;p.output_end_date::timestamp
+),
+
+-- 16. 同一用户、同一提单流水只保留最早的提单时间。
+applications AS (
+    SELECT DISTINCT ON (user_id,serial_id) *
+    FROM raw_applications
+    ORDER BY user_id,serial_id,apply_time
+),
+
+-- 17. 从获额时刻到当天结束匹配提单，并在下一次有效 T0 获额时刻截断。
+ranked AS (
+    SELECT e.user_id,e.serial_id AS credit_serial_id,
+           e.vir_date,e.vir_time,e.repaid_time,e.next_t0_time,
+           a.serial_id AS apply_serial_id,a.apply_time,a.source_order_rows,
+           ROW_NUMBER() OVER (
+               PARTITION BY e.user_id,e.serial_id
+               ORDER BY a.apply_time ASC NULLS LAST,a.serial_id ASC NULLS LAST
+           ) AS rn
+    FROM cohort e
+    LEFT JOIN applications a
+      ON a.user_id=e.user_id
+     AND a.apply_time&gt;=e.vir_time
+     AND a.apply_time&lt;(e.vir_date+1)::timestamp
+     AND (e.next_t0_time IS NULL OR a.apply_time&lt;e.next_t0_time)
+),
+
+-- 18. 每次 T0 事件只取获额后当天的首次提单；没有提单的事件仍保留在分母。
+labels AS (
+    SELECT * FROM ranked WHERE rn=1
+),
+
+-- 19. 模型分取本次获额流水对应的 410 分。同一流水存在不同用户或多个有效分时，不任意选分。
+model_per_serial AS (
+    SELECT m.serial_id,
+           COUNT(*) AS model_rows,
+           COUNT(DISTINCT m.user_id) AS user_versions,
+           MIN(m.user_id) AS model_user_id,
+           COUNT(DISTINCT CASE WHEN m.kabybmerge410fpd7cre IS NOT NULL
+                                    AND m.kabybmerge410fpd7cre&lt;&gt;-9999999
+                               THEN m.kabybmerge410fpd7cre END) AS score_versions,
+           MIN(CASE WHEN m.kabybmerge410fpd7cre IS NOT NULL
+                         AND m.kabybmerge410fpd7cre&lt;&gt;-9999999
+                    THEN m.kabybmerge410fpd7cre END) AS score_value
+    FROM wangchuanliang.model_result_copy m
+    WHERE EXISTS (SELECT 1 FROM labels l WHERE l.credit_serial_id=m.serial_id)
+    GROUP BY m.serial_id
+),
+
+-- 20. 获额事件与评分匹配；空值、缺省值 -9999999、评分冲突不参与高分组排名。
+scored AS (
+    SELECT l.*, TO_CHAR(l.vir_date,&#x27;YYYY-MM&#x27;) AS event_month,
+           m.model_rows, m.user_versions, m.score_versions,
+           CASE WHEN m.user_versions=1 AND m.model_user_id=l.user_id
+                     AND m.score_versions=1 THEN m.score_value END AS score_410
+    FROM labels l
+    LEFT JOIN model_per_serial m ON m.serial_id=l.credit_serial_id
+),
+
+-- 21. 每个业务日独立计算有效 410 分的第 80 百分位。
+daily_thresholds AS (
+    SELECT vir_date,
+           PERCENTILE_CONT(0.8) WITHIN GROUP (ORDER BY score_410) AS q80
+    FROM scored
+    WHERE score_410 IS NOT NULL
+    GROUP BY vir_date
+),
+
+-- 22. 取分数严格高于当天第 80 百分位的事件；边界同分不拆分。
+classified AS (
+    SELECT s.*, d.q80,
+           CASE WHEN s.score_410&gt;d.q80 THEN 1 ELSE 0 END AS top20_flag
+    FROM scored s
+    LEFT JOIN daily_thresholds d ON d.vir_date=s.vir_date
+),
+
+-- 23. 按月累计整体和每日高分组的分子、分母，保留缺分日期与事件数。
+monthly_population AS (
+    SELECT
+        event_month,
+        COUNT(*) AS all_t0_events,
+        SUM(CASE WHEN apply_serial_id IS NOT NULL THEN 1 ELSE 0 END)
+            AS all_d0_events,
+        COUNT(score_410) AS valid_score_events,
+        SUM(CASE WHEN score_410 IS NULL THEN 1 ELSE 0 END)
+            AS missing_or_invalid_score_events,
+        SUM(CASE WHEN model_rows IS NULL THEN 1 ELSE 0 END)
+            AS missing_model_rows,
+        SUM(CASE WHEN score_versions &gt; 1 THEN 1 ELSE 0 END)
+            AS score_conflict_events,
+        MIN(vir_date) AS first_event_date,
+        MAX(vir_date) AS last_event_date,
+        MIN(CASE WHEN score_410 IS NOT NULL THEN vir_date END)
+            AS first_valid_score_date,
+        MAX(CASE WHEN score_410 IS NOT NULL THEN vir_date END)
+            AS last_valid_score_date,
+        COUNT(DISTINCT CASE WHEN score_410 IS NOT NULL THEN vir_date END)
+            AS days_with_valid_scores,
+        SUM(top20_flag) AS top20_events,
+        SUM(CASE WHEN top20_flag = 1 AND apply_serial_id IS NOT NULL
+                 THEN 1 ELSE 0 END) AS top20_d0_events
+    FROM classified
+    GROUP BY event_month
+),
+
+-- 24. 提取高分组当天首次提单的订单属性。
+high_d0_orders AS (
+    SELECT
+        c.event_month,
+        c.user_id,
+        c.credit_serial_id,
+        c.apply_serial_id,
+        o.serial_id AS matched_order_id,
+        o.product_no,
+        o.loan_day,
+        o.total_term,
+        o.pre_amt,
+        o.post_amt,
+        o.remit_amt,
+        o.is_remit
+    FROM classified c
+    LEFT JOIN wangchuanliang.order_loan_f_v2_copy o
+        ON o.user_id = c.user_id
+       AND o.serial_id = c.apply_serial_id
+    WHERE c.top20_flag = 1
+      AND c.apply_serial_id IS NOT NULL
+),
+
+-- 25. 产品表先归为每个产品编号一行，检查空值和不同费率冲突。
+product_catalog AS (
+    SELECT
+        BTRIM(product_no) AS product_no,
+        COUNT(*) AS catalog_rows,
+        COUNT(DISTINCT total_fee) AS fee_versions,
+        CASE
+            WHEN COUNT(total_fee) = COUNT(*)
+             AND COUNT(DISTINCT total_fee) = 1
+            THEN MIN(total_fee)::numeric
+        END AS total_fee
+    FROM wangchuanliang.product_info_copy
+    WHERE NULLIF(BTRIM(product_no), &#x27;&#x27;) IS NOT NULL
+    GROUP BY BTRIM(product_no)
+),
+
+-- 26. 用本笔提单选择的产品编号匹配产品表；不使用获额可选产品列表。
+priced_orders AS (
+    SELECT
+        h.*,
+        p.product_no AS matched_product_no,
+        p.catalog_rows,
+        p.fee_versions,
+        p.total_fee,
+        CASE
+            WHEN h.remit_amt &gt; 0
+             AND p.total_fee IS NOT NULL
+             AND p.total_fee &gt;= 0
+            THEN 1
+            ELSE 0
+        END AS product_fee_valid
+    FROM high_d0_orders h
+    LEFT JOIN product_catalog p
+        ON p.product_no = NULLIF(BTRIM(h.product_no), &#x27;&#x27;)
+),
+
+-- 27. 两种息费分别累计金额，先累加、后相除；中间不对单笔金额四舍五入。
+monthly_fees AS (
+    SELECT
+        event_month,
+        COUNT(*) AS first_d0_order_rows,
+        COUNT(DISTINCT apply_serial_id) AS first_d0_distinct_orders,
+        SUM(CASE WHEN matched_order_id IS NULL THEN 1 ELSE 0 END)
+            AS unmatched_order_rows,
+        SUM(CASE WHEN remit_amt &gt; 0 THEN 1 ELSE 0 END)
+            AS order_fee_orders,
+        SUM(CASE WHEN remit_amt IS NULL OR remit_amt &lt;= 0 THEN 1 ELSE 0 END)
+            AS invalid_principal_orders,
+        SUM(CASE WHEN remit_amt &gt; 0 AND (pre_amt IS NULL OR post_amt IS NULL)
+                 THEN 1 ELSE 0 END) AS missing_order_fee_fields,
+        SUM(CASE WHEN remit_amt &gt; 0
+                 THEN COALESCE(pre_amt, 0) + COALESCE(post_amt, 0) END)
+            AS order_fee_amt,
+        SUM(CASE WHEN remit_amt &gt; 0 THEN remit_amt END)
+            AS order_principal_amt,
+        SUM(product_fee_valid) AS product_fee_orders,
+        SUM(CASE WHEN product_fee_valid = 1 THEN total_fee * remit_amt END)
+            AS product_fee_amt,
+        SUM(CASE WHEN product_fee_valid = 1 THEN remit_amt END)
+            AS product_principal_amt,
+        SUM(CASE WHEN matched_product_no IS NULL THEN 1 ELSE 0 END)
+            AS unmatched_product_orders,
+        SUM(CASE WHEN fee_versions &gt; 1 THEN 1 ELSE 0 END)
+            AS conflicting_product_fee_orders,
+        SUM(CASE WHEN matched_product_no IS NOT NULL
+                      AND (total_fee IS NULL OR total_fee &lt; 0)
+                 THEN 1 ELSE 0 END) AS invalid_product_fee_orders,
+        SUM(CASE WHEN product_fee_valid = 1 AND total_fee = 0
+                 THEN 1 ELSE 0 END) AS zero_product_fee_orders
+    FROM priced_orders
+    GROUP BY event_month
+),
+
+-- 28. 事件唯一性、订单归属与时间先后检查。
+event_audit AS (
+    SELECT
+        COUNT(*) - COUNT(DISTINCT credit_serial_id) AS repeated_t0_ids,
+        COUNT(apply_serial_id) - COUNT(DISTINCT apply_serial_id)
+            AS repeated_application_assignments,
+        SUM(CASE
+                WHEN repaid_time &gt; vir_time
+                  OR vir_time::date &lt;&gt; vir_date
+                  OR apply_time &lt; vir_time
+                  OR apply_time::date &lt;&gt; vir_date
+                  OR apply_time &gt;= next_t0_time
+                THEN 1 ELSE 0
+            END) AS invalid_label_times,
+        SUM(CASE WHEN source_order_rows &gt; 1 THEN 1 ELSE 0 END)
+            AS repeated_source_applications
+    FROM labels
+)
+
+-- 29. 最终输出：百分比字段为百分数值，例如 39.25 表示 39.25%。
+SELECT
+    p.event_month,
+    p.first_event_date,
+    p.last_event_date,
+    p.all_t0_events,
+    p.all_d0_events,
+    ROUND(p.all_d0_events::numeric / NULLIF(p.all_t0_events, 0) * 100, 2)
+        AS all_d0_rate_pct,
+    p.valid_score_events,
+    p.missing_or_invalid_score_events,
+    p.missing_model_rows,
+    p.score_conflict_events,
+    p.first_valid_score_date,
+    p.last_valid_score_date,
+    p.days_with_valid_scores,
+    p.top20_events,
+    p.top20_d0_events,
+    ROUND(p.top20_d0_events::numeric / NULLIF(p.top20_events, 0) * 100, 2)
+        AS top20_d0_rate_pct,
+    ROUND(p.top20_events::numeric / NULLIF(p.valid_score_events, 0) * 100, 2)
+        AS top20_selected_share_pct,
+    f.first_d0_order_rows,
+    f.first_d0_distinct_orders,
+    f.unmatched_order_rows,
+    f.order_fee_orders,
+    f.invalid_principal_orders,
+    f.missing_order_fee_fields,
+    f.order_principal_amt,
+    f.order_fee_amt,
+    ROUND(f.order_fee_amt / NULLIF(f.order_principal_amt, 0) * 100, 2)
+        AS order_fee_rate_pct,
+    f.product_fee_orders,
+    f.product_principal_amt,
+    f.product_fee_amt,
+    ROUND(f.product_fee_amt / NULLIF(f.product_principal_amt, 0) * 100, 2)
+        AS product_fee_rate_pct,
+    f.unmatched_product_orders,
+    f.conflicting_product_fee_orders,
+    f.invalid_product_fee_orders,
+    f.zero_product_fee_orders,
+    a.repeated_t0_ids,
+    a.repeated_application_assignments,
+    a.invalid_label_times,
+    a.repeated_source_applications
+FROM monthly_population p
+LEFT JOIN monthly_fees f
+    ON f.event_month = p.event_month
+CROSS JOIN event_audit a
+ORDER BY p.event_month;
+</code></pre>
+</details>
+</section>
+</main>
+<script>
+document.getElementById('copy-sql').addEventListener('click', async function () {
+  try {
+    await navigator.clipboard.writeText(document.getElementById('sql-code').textContent);
+    this.textContent = '已复制';
+    setTimeout(() => { this.textContent = '复制全部代码'; }, 1600);
+  } catch (error) {
+    const range = document.createRange();
+    range.selectNodeContents(document.getElementById('sql-code'));
+    const selection = window.getSelection();
+    selection.removeAllRanges();
+    selection.addRange(range);
+    this.textContent = '已选中，请复制';
+  }
+});
+</script>
+</body>
+</html>
