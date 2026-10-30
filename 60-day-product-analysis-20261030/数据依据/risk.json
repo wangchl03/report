@@ -1,0 +1,1522 @@
+{
+  "complete": true,
+  "snapshot": {
+    "business_time": "2026-10-29 00:02:48.595449",
+    "beijing_time": "2026-10-29 14:02:48.595449",
+    "read_only": "on"
+  },
+  "cohort_parameters": {
+    "cohort_cutoff": "2026-10-28 23:06:09.336055",
+    "cohort_date": "2026-10-28",
+    "maturity_date": "2026-10-28"
+  },
+  "cohorts": [
+    {
+      "loan_day": 21,
+      "mature_orders": 115476,
+      "overdue_orders": 42335,
+      "settled_orders": 73141,
+      "other_status_orders": 0,
+      "overdue_rate": 0.366612975856455,
+      "remit_amt": 265186306.0,
+      "repaid_amt": 298304506.89,
+      "missing_repaid": 0,
+      "profit_amt": 33118200.889999986,
+      "profit_rate": 0.12488654255774424
+    },
+    {
+      "loan_day": 28,
+      "mature_orders": 138319,
+      "overdue_orders": 48654,
+      "settled_orders": 89665,
+      "other_status_orders": 0,
+      "overdue_rate": 0.35175210925469386,
+      "remit_amt": 603079972.0,
+      "repaid_amt": 707860755.83,
+      "missing_repaid": 0,
+      "profit_amt": 104780783.83000004,
+      "profit_rate": 0.17374276828082105
+    },
+    {
+      "loan_day": 60,
+      "mature_orders": 2393,
+      "overdue_orders": 1000,
+      "settled_orders": 1393,
+      "other_status_orders": 0,
+      "overdue_rate": 0.41788549937317176,
+      "remit_amt": 17950054.0,
+      "repaid_amt": 23325196.35,
+      "missing_repaid": 0,
+      "profit_amt": 5375142.3500000015,
+      "profit_rate": 0.2994499264459038
+    }
+  ],
+  "summary": [
+    {
+      "loan_day": 21,
+      "model": "410",
+      "valid_n": 115129,
+      "groups": {
+        "overdue": {
+          "n": 42182,
+          "mean": 486.36337774406144,
+          "median": 486.0,
+          "p25": 465.0,
+          "p75": 508.0,
+          "min": 159.0,
+          "max": 641.0,
+          "excluded_or_missing": 153
+        },
+        "not_overdue": {
+          "n": 72947,
+          "mean": 494.4212236281136,
+          "median": 493.0,
+          "p25": 471.0,
+          "p75": 516.0,
+          "min": 178.0,
+          "max": 715.0,
+          "excluded_or_missing": 194
+        }
+      },
+      "mean_gap": 8.057845884052142,
+      "q50": 491.0,
+      "q80": 518.0,
+      "current_overdue_auc": 0.5640556285482223
+    },
+    {
+      "loan_day": 21,
+      "model": "363",
+      "valid_n": 115173,
+      "groups": {
+        "overdue": {
+          "n": 42207,
+          "mean": 453.2066481863198,
+          "median": 455.0,
+          "p25": 437.0,
+          "p75": 472.0,
+          "min": 287.0,
+          "max": 545.0,
+          "excluded_or_missing": 128
+        },
+        "not_overdue": {
+          "n": 72966,
+          "mean": 456.9330098950196,
+          "median": 459.0,
+          "p25": 440.0,
+          "p75": 475.0,
+          "min": 304.0,
+          "max": 545.0,
+          "excluded_or_missing": 175
+        }
+      },
+      "mean_gap": 3.7263617086998124,
+      "q50": 457.0,
+      "q80": 478.0,
+      "current_overdue_auc": 0.5389857468712482
+    },
+    {
+      "loan_day": 21,
+      "model": "405",
+      "valid_n": 114720,
+      "groups": {
+        "overdue": {
+          "n": 42049,
+          "mean": 440.56008466313114,
+          "median": 441.0,
+          "p25": 424.0,
+          "p75": 458.0,
+          "min": 342.0,
+          "max": 529.0,
+          "excluded_or_missing": 286
+        },
+        "not_overdue": {
+          "n": 72671,
+          "mean": 446.55042589203396,
+          "median": 447.0,
+          "p25": 430.0,
+          "p75": 464.0,
+          "min": 358.0,
+          "max": 549.0,
+          "excluded_or_missing": 470
+        }
+      },
+      "mean_gap": 5.990341228902821,
+      "q50": 445.0,
+      "q80": 466.0,
+      "current_overdue_auc": 0.5708588849173262
+    },
+    {
+      "loan_day": 28,
+      "model": "410",
+      "valid_n": 138094,
+      "groups": {
+        "overdue": {
+          "n": 48551,
+          "mean": 512.5335420485675,
+          "median": 512.0,
+          "p25": 491.0,
+          "p75": 533.0,
+          "min": 42.0,
+          "max": 704.0,
+          "excluded_or_missing": 103
+        },
+        "not_overdue": {
+          "n": 89543,
+          "mean": 526.0490378924093,
+          "median": 521.0,
+          "p25": 503.0,
+          "p75": 548.0,
+          "min": 78.0,
+          "max": 753.0,
+          "excluded_or_missing": 122
+        }
+      },
+      "mean_gap": 13.51549584384179,
+      "q50": 518.0,
+      "q80": 551.0,
+      "current_overdue_auc": 0.5971304075983384
+    },
+    {
+      "loan_day": 28,
+      "model": "363",
+      "valid_n": 138178,
+      "groups": {
+        "overdue": {
+          "n": 48592,
+          "mean": 461.1601909779388,
+          "median": 463.0,
+          "p25": 443.0,
+          "p75": 480.0,
+          "min": 310.0,
+          "max": 550.0,
+          "excluded_or_missing": 62
+        },
+        "not_overdue": {
+          "n": 89586,
+          "mean": 467.39432500613935,
+          "median": 468.0,
+          "p25": 449.0,
+          "p75": 487.0,
+          "min": 285.0,
+          "max": 558.0,
+          "excluded_or_missing": 79
+        }
+      },
+      "mean_gap": 6.234134028200572,
+      "q50": 466.0,
+      "q80": 489.0,
+      "current_overdue_auc": 0.5610244464473652
+    },
+    {
+      "loan_day": 28,
+      "model": "405",
+      "valid_n": 137808,
+      "groups": {
+        "overdue": {
+          "n": 48482,
+          "mean": 442.8864320778846,
+          "median": 443.0,
+          "p25": 424.0,
+          "p75": 461.0,
+          "min": 356.0,
+          "max": 573.0,
+          "excluded_or_missing": 172
+        },
+        "not_overdue": {
+          "n": 89326,
+          "mean": 452.66661442357207,
+          "median": 453.0,
+          "p25": 434.0,
+          "p75": 471.0,
+          "min": 351.0,
+          "max": 591.0,
+          "excluded_or_missing": 339
+        }
+      },
+      "mean_gap": 9.780182345687479,
+      "q50": 449.0,
+      "q80": 472.0,
+      "current_overdue_auc": 0.6016531004508485
+    },
+    {
+      "loan_day": 60,
+      "model": "410",
+      "valid_n": 2386,
+      "groups": {
+        "overdue": {
+          "n": 999,
+          "mean": 537.6056056056057,
+          "median": 534.0,
+          "p25": 510.0,
+          "p75": 566.0,
+          "min": 245.0,
+          "max": 697.0,
+          "excluded_or_missing": 1
+        },
+        "not_overdue": {
+          "n": 1387,
+          "mean": 552.7591925018024,
+          "median": 551.0,
+          "p25": 523.0,
+          "p75": 582.0,
+          "min": 250.0,
+          "max": 692.0,
+          "excluded_or_missing": 6
+        }
+      },
+      "mean_gap": 15.15358689619677,
+      "q50": 544.0,
+      "q80": 583.0,
+      "current_overdue_auc": 0.6055190013373142
+    },
+    {
+      "loan_day": 60,
+      "model": "363",
+      "valid_n": 2391,
+      "groups": {
+        "overdue": {
+          "n": 1000,
+          "mean": 471.667,
+          "median": 475.0,
+          "p25": 451.0,
+          "p75": 495.25,
+          "min": 324.0,
+          "max": 551.0,
+          "excluded_or_missing": 0
+        },
+        "not_overdue": {
+          "n": 1391,
+          "mean": 481.5607476635514,
+          "median": 485.0,
+          "p25": 460.5,
+          "p75": 505.0,
+          "min": 337.0,
+          "max": 552.0,
+          "excluded_or_missing": 2
+        }
+      },
+      "mean_gap": 9.893747663551437,
+      "q50": 480.0,
+      "q80": 507.0,
+      "current_overdue_auc": 0.5837721063982747
+    },
+    {
+      "loan_day": 60,
+      "model": "405",
+      "valid_n": 2379,
+      "groups": {
+        "overdue": {
+          "n": 991,
+          "mean": 459.3784056508577,
+          "median": 460.0,
+          "p25": 437.0,
+          "p75": 482.0,
+          "min": 378.0,
+          "max": 544.0,
+          "excluded_or_missing": 9
+        },
+        "not_overdue": {
+          "n": 1388,
+          "mean": 472.6851585014409,
+          "median": 474.0,
+          "p25": 453.0,
+          "p75": 492.0,
+          "min": 379.0,
+          "max": 568.0,
+          "excluded_or_missing": 5
+        }
+      },
+      "mean_gap": 13.306752850583223,
+      "q50": 469.0,
+      "q80": 493.0,
+      "current_overdue_auc": 0.6210560025823186
+    }
+  ],
+  "bands": [
+    {
+      "loan_day": 21,
+      "model": "410",
+      "band": "HIGH20",
+      "n": 22876,
+      "overdue_n": 6621,
+      "settled_n": 16255,
+      "overdue_rate": 0.2894299702745235,
+      "overdue_group_share": 0.15696268550566592,
+      "settled_group_share": 0.2228330157511618,
+      "min_score": 519.0,
+      "max_score": 715.0
+    },
+    {
+      "loan_day": 21,
+      "model": "410",
+      "band": "MID30",
+      "n": 33516,
+      "overdue_n": 11722,
+      "settled_n": 21794,
+      "overdue_rate": 0.3497434061343836,
+      "overdue_group_share": 0.277891043573088,
+      "settled_group_share": 0.29876485667676533,
+      "min_score": 492.0,
+      "max_score": 518.0
+    },
+    {
+      "loan_day": 21,
+      "model": "410",
+      "band": "LOW50",
+      "n": 58737,
+      "overdue_n": 23839,
+      "settled_n": 34898,
+      "overdue_rate": 0.40586002008955174,
+      "overdue_group_share": 0.565146270921246,
+      "settled_group_share": 0.4784021275720729,
+      "min_score": 159.0,
+      "max_score": 491.0
+    },
+    {
+      "loan_day": 21,
+      "model": "363",
+      "band": "HIGH20",
+      "n": 22212,
+      "overdue_n": 7233,
+      "settled_n": 14979,
+      "overdue_rate": 0.325634792004322,
+      "overdue_group_share": 0.17136967801549505,
+      "settled_group_share": 0.2052873941287723,
+      "min_score": 479.0,
+      "max_score": 545.0
+    },
+    {
+      "loan_day": 21,
+      "model": "363",
+      "band": "MID30",
+      "n": 34891,
+      "overdue_n": 12244,
+      "settled_n": 22647,
+      "overdue_rate": 0.35092144105929896,
+      "overdue_group_share": 0.2900940602269766,
+      "settled_group_share": 0.310377436066113,
+      "min_score": 458.0,
+      "max_score": 478.0
+    },
+    {
+      "loan_day": 21,
+      "model": "363",
+      "band": "LOW50",
+      "n": 58070,
+      "overdue_n": 22730,
+      "settled_n": 35340,
+      "overdue_rate": 0.39142414327535735,
+      "overdue_group_share": 0.5385362617575283,
+      "settled_group_share": 0.4843351698051147,
+      "min_score": 287.0,
+      "max_score": 457.0
+    },
+    {
+      "loan_day": 21,
+      "model": "405",
+      "band": "HIGH20",
+      "n": 21950,
+      "overdue_n": 6221,
+      "settled_n": 15729,
+      "overdue_rate": 0.28341685649202736,
+      "overdue_group_share": 0.14794644343504007,
+      "settled_group_share": 0.21644122139505442,
+      "min_score": 467.0,
+      "max_score": 549.0
+    },
+    {
+      "loan_day": 21,
+      "model": "405",
+      "band": "MID30",
+      "n": 33885,
+      "overdue_n": 11555,
+      "settled_n": 22330,
+      "overdue_rate": 0.3410063449904087,
+      "overdue_group_share": 0.2747984494280482,
+      "settled_group_share": 0.30727525422795887,
+      "min_score": 446.0,
+      "max_score": 466.0
+    },
+    {
+      "loan_day": 21,
+      "model": "405",
+      "band": "LOW50",
+      "n": 58885,
+      "overdue_n": 24273,
+      "settled_n": 34612,
+      "overdue_rate": 0.41221024029888764,
+      "overdue_group_share": 0.5772551071369117,
+      "settled_group_share": 0.4762835243769867,
+      "min_score": 342.0,
+      "max_score": 445.0
+    },
+    {
+      "loan_day": 28,
+      "model": "410",
+      "band": "HIGH20",
+      "n": 27073,
+      "overdue_n": 6628,
+      "settled_n": 20445,
+      "overdue_rate": 0.2448195619251653,
+      "overdue_group_share": 0.1365162406541575,
+      "settled_group_share": 0.22832605563807332,
+      "min_score": 552.0,
+      "max_score": 753.0
+    },
+    {
+      "loan_day": 28,
+      "model": "410",
+      "band": "MID30",
+      "n": 39844,
+      "overdue_n": 12525,
+      "settled_n": 27319,
+      "overdue_rate": 0.3143509687782351,
+      "overdue_group_share": 0.25797614879199193,
+      "settled_group_share": 0.3050936421607496,
+      "min_score": 519.0,
+      "max_score": 551.0
+    },
+    {
+      "loan_day": 28,
+      "model": "410",
+      "band": "LOW50",
+      "n": 71177,
+      "overdue_n": 29398,
+      "settled_n": 41779,
+      "overdue_rate": 0.4130266799668432,
+      "overdue_group_share": 0.6055076105538506,
+      "settled_group_share": 0.4665803022011771,
+      "min_score": 42.0,
+      "max_score": 518.0
+    },
+    {
+      "loan_day": 28,
+      "model": "363",
+      "band": "HIGH20",
+      "n": 26946,
+      "overdue_n": 7373,
+      "settled_n": 19573,
+      "overdue_rate": 0.27362131670748907,
+      "overdue_group_share": 0.1517327955218966,
+      "settled_group_share": 0.21848279865157502,
+      "min_score": 490.0,
+      "max_score": 558.0
+    },
+    {
+      "loan_day": 28,
+      "model": "363",
+      "band": "MID30",
+      "n": 41717,
+      "overdue_n": 14124,
+      "settled_n": 27593,
+      "overdue_rate": 0.3385670110506508,
+      "overdue_group_share": 0.2906651300625617,
+      "settled_group_share": 0.30800571517871095,
+      "min_score": 467.0,
+      "max_score": 489.0
+    },
+    {
+      "loan_day": 28,
+      "model": "363",
+      "band": "LOW50",
+      "n": 69515,
+      "overdue_n": 27095,
+      "settled_n": 42420,
+      "overdue_rate": 0.389771991656477,
+      "overdue_group_share": 0.5576020744155417,
+      "settled_group_share": 0.473511486169714,
+      "min_score": 285.0,
+      "max_score": 466.0
+    },
+    {
+      "loan_day": 28,
+      "model": "405",
+      "band": "HIGH20",
+      "n": 27088,
+      "overdue_n": 6385,
+      "settled_n": 20703,
+      "overdue_rate": 0.2357132309509746,
+      "overdue_group_share": 0.13169836227878387,
+      "settled_group_share": 0.23176902581555203,
+      "min_score": 473.0,
+      "max_score": 591.0
+    },
+    {
+      "loan_day": 28,
+      "model": "405",
+      "band": "MID30",
+      "n": 40930,
+      "overdue_n": 12990,
+      "settled_n": 27940,
+      "overdue_rate": 0.3173711214268263,
+      "overdue_group_share": 0.26793449115135515,
+      "settled_group_share": 0.3127868705640015,
+      "min_score": 450.0,
+      "max_score": 472.0
+    },
+    {
+      "loan_day": 28,
+      "model": "405",
+      "band": "LOW50",
+      "n": 69790,
+      "overdue_n": 29107,
+      "settled_n": 40683,
+      "overdue_rate": 0.417065482160768,
+      "overdue_group_share": 0.600367146569861,
+      "settled_group_share": 0.45544410362044646,
+      "min_score": 351.0,
+      "max_score": 449.0
+    },
+    {
+      "loan_day": 60,
+      "model": "410",
+      "band": "HIGH20",
+      "n": 468,
+      "overdue_n": 135,
+      "settled_n": 333,
+      "overdue_rate": 0.28846153846153844,
+      "overdue_group_share": 0.13513513513513514,
+      "settled_group_share": 0.24008651766402306,
+      "min_score": 584.0,
+      "max_score": 697.0
+    },
+    {
+      "loan_day": 60,
+      "model": "410",
+      "band": "MID30",
+      "n": 708,
+      "overdue_n": 275,
+      "settled_n": 433,
+      "overdue_rate": 0.3884180790960452,
+      "overdue_group_share": 0.2752752752752753,
+      "settled_group_share": 0.31218457101658253,
+      "min_score": 545.0,
+      "max_score": 583.0
+    },
+    {
+      "loan_day": 60,
+      "model": "410",
+      "band": "LOW50",
+      "n": 1210,
+      "overdue_n": 589,
+      "settled_n": 621,
+      "overdue_rate": 0.48677685950413224,
+      "overdue_group_share": 0.5895895895895896,
+      "settled_group_share": 0.44772891131939435,
+      "min_score": 245.0,
+      "max_score": 544.0
+    },
+    {
+      "loan_day": 60,
+      "model": "363",
+      "band": "HIGH20",
+      "n": 461,
+      "overdue_n": 146,
+      "settled_n": 315,
+      "overdue_rate": 0.31670281995661603,
+      "overdue_group_share": 0.146,
+      "settled_group_share": 0.22645578720345075,
+      "min_score": 508.0,
+      "max_score": 552.0
+    },
+    {
+      "loan_day": 60,
+      "model": "363",
+      "band": "MID30",
+      "n": 734,
+      "overdue_n": 289,
+      "settled_n": 445,
+      "overdue_rate": 0.39373297002724794,
+      "overdue_group_share": 0.289,
+      "settled_group_share": 0.3199137311286844,
+      "min_score": 481.0,
+      "max_score": 507.0
+    },
+    {
+      "loan_day": 60,
+      "model": "363",
+      "band": "LOW50",
+      "n": 1196,
+      "overdue_n": 565,
+      "settled_n": 631,
+      "overdue_rate": 0.47240802675585286,
+      "overdue_group_share": 0.565,
+      "settled_group_share": 0.45363048166786485,
+      "min_score": 324.0,
+      "max_score": 480.0
+    },
+    {
+      "loan_day": 60,
+      "model": "405",
+      "band": "HIGH20",
+      "n": 469,
+      "overdue_n": 141,
+      "settled_n": 328,
+      "overdue_rate": 0.3006396588486141,
+      "overdue_group_share": 0.14228052472250252,
+      "settled_group_share": 0.23631123919308358,
+      "min_score": 494.0,
+      "max_score": 568.0
+    },
+    {
+      "loan_day": 60,
+      "model": "405",
+      "band": "MID30",
+      "n": 707,
+      "overdue_n": 243,
+      "settled_n": 464,
+      "overdue_rate": 0.3437057991513437,
+      "overdue_group_share": 0.24520686175580222,
+      "settled_group_share": 0.33429394812680113,
+      "min_score": 470.0,
+      "max_score": 493.0
+    },
+    {
+      "loan_day": 60,
+      "model": "405",
+      "band": "LOW50",
+      "n": 1203,
+      "overdue_n": 607,
+      "settled_n": 596,
+      "overdue_rate": 0.5045719035743973,
+      "overdue_group_share": 0.6125126135216953,
+      "settled_group_share": 0.42939481268011526,
+      "min_score": 378.0,
+      "max_score": 469.0
+    }
+  ],
+  "common_score_sample_auc": [
+    {
+      "loan_day": 21,
+      "model": "410",
+      "n": 114679,
+      "overdue_n": 42025,
+      "current_overdue_auc": 0.563942909051363
+    },
+    {
+      "loan_day": 21,
+      "model": "363",
+      "n": 114679,
+      "overdue_n": 42025,
+      "current_overdue_auc": 0.53885668149447
+    },
+    {
+      "loan_day": 21,
+      "model": "405",
+      "n": 114679,
+      "overdue_n": 42025,
+      "current_overdue_auc": 0.5708427066414565
+    },
+    {
+      "loan_day": 28,
+      "model": "410",
+      "n": 137718,
+      "overdue_n": 48437,
+      "current_overdue_auc": 0.5971397141081063
+    },
+    {
+      "loan_day": 28,
+      "model": "363",
+      "n": 137718,
+      "overdue_n": 48437,
+      "current_overdue_auc": 0.5610585530490632
+    },
+    {
+      "loan_day": 28,
+      "model": "405",
+      "n": 137718,
+      "overdue_n": 48437,
+      "current_overdue_auc": 0.6016307198770161
+    },
+    {
+      "loan_day": 60,
+      "model": "410",
+      "n": 2374,
+      "overdue_n": 990,
+      "current_overdue_auc": 0.6073235972441176
+    },
+    {
+      "loan_day": 60,
+      "model": "363",
+      "n": 2374,
+      "overdue_n": 990,
+      "current_overdue_auc": 0.584201115198225
+    },
+    {
+      "loan_day": 60,
+      "model": "405",
+      "n": 2374,
+      "overdue_n": 990,
+      "current_overdue_auc": 0.620834793016874
+    }
+  ],
+  "monthly": [
+    {
+      "loan_day": 21,
+      "model": "410",
+      "month": "2026-01",
+      "overdue_n": 2267,
+      "settled_n": 4328,
+      "gap": 15.92862573759811
+    },
+    {
+      "loan_day": 21,
+      "model": "410",
+      "month": "2026-02",
+      "overdue_n": 2223,
+      "settled_n": 4513,
+      "gap": 14.335339433768524
+    },
+    {
+      "loan_day": 21,
+      "model": "410",
+      "month": "2026-03",
+      "overdue_n": 2244,
+      "settled_n": 4706,
+      "gap": 14.51675677805025
+    },
+    {
+      "loan_day": 21,
+      "model": "410",
+      "month": "2026-04",
+      "overdue_n": 2578,
+      "settled_n": 5511,
+      "gap": 11.352729761578473
+    },
+    {
+      "loan_day": 21,
+      "model": "410",
+      "month": "2026-05",
+      "overdue_n": 4669,
+      "settled_n": 8753,
+      "gap": 9.743780849044356
+    },
+    {
+      "loan_day": 21,
+      "model": "410",
+      "month": "2026-06",
+      "overdue_n": 5667,
+      "settled_n": 9555,
+      "gap": 7.461001435228184
+    },
+    {
+      "loan_day": 21,
+      "model": "410",
+      "month": "2026-07",
+      "overdue_n": 6121,
+      "settled_n": 10099,
+      "gap": 7.606211979591876
+    },
+    {
+      "loan_day": 21,
+      "model": "410",
+      "month": "2026-08",
+      "overdue_n": 7044,
+      "settled_n": 10891,
+      "gap": 4.335638165830005
+    },
+    {
+      "loan_day": 21,
+      "model": "410",
+      "month": "2026-09",
+      "overdue_n": 7604,
+      "settled_n": 12070,
+      "gap": 6.04831495393131
+    },
+    {
+      "loan_day": 21,
+      "model": "410",
+      "month": "2026-10",
+      "overdue_n": 1765,
+      "settled_n": 2521,
+      "gap": 4.425820501554654
+    },
+    {
+      "loan_day": 21,
+      "model": "363",
+      "month": "2026-01",
+      "overdue_n": 2281,
+      "settled_n": 4341,
+      "gap": 4.238240925583284
+    },
+    {
+      "loan_day": 21,
+      "model": "363",
+      "month": "2026-02",
+      "overdue_n": 2226,
+      "settled_n": 4517,
+      "gap": 3.937690617117596
+    },
+    {
+      "loan_day": 21,
+      "model": "363",
+      "month": "2026-03",
+      "overdue_n": 2247,
+      "settled_n": 4708,
+      "gap": 4.491341991341983
+    },
+    {
+      "loan_day": 21,
+      "model": "363",
+      "month": "2026-04",
+      "overdue_n": 2580,
+      "settled_n": 5511,
+      "gap": 3.945741919965542
+    },
+    {
+      "loan_day": 21,
+      "model": "363",
+      "month": "2026-05",
+      "overdue_n": 4672,
+      "settled_n": 8753,
+      "gap": 3.7789696908222936
+    },
+    {
+      "loan_day": 21,
+      "model": "363",
+      "month": "2026-06",
+      "overdue_n": 5667,
+      "settled_n": 9555,
+      "gap": 4.244686483951398
+    },
+    {
+      "loan_day": 21,
+      "model": "363",
+      "month": "2026-07",
+      "overdue_n": 6121,
+      "settled_n": 10099,
+      "gap": 2.485734457105309
+    },
+    {
+      "loan_day": 21,
+      "model": "363",
+      "month": "2026-08",
+      "overdue_n": 7044,
+      "settled_n": 10891,
+      "gap": 2.43596114322861
+    },
+    {
+      "loan_day": 21,
+      "model": "363",
+      "month": "2026-09",
+      "overdue_n": 7604,
+      "settled_n": 12070,
+      "gap": 4.07235931291558
+    },
+    {
+      "loan_day": 21,
+      "model": "363",
+      "month": "2026-10",
+      "overdue_n": 1765,
+      "settled_n": 2521,
+      "gap": 2.499035523697273
+    },
+    {
+      "loan_day": 21,
+      "model": "405",
+      "month": "2026-01",
+      "overdue_n": 2281,
+      "settled_n": 4339,
+      "gap": 8.767134819852629
+    },
+    {
+      "loan_day": 21,
+      "model": "405",
+      "month": "2026-02",
+      "overdue_n": 2226,
+      "settled_n": 4517,
+      "gap": 6.844838635952669
+    },
+    {
+      "loan_day": 21,
+      "model": "405",
+      "month": "2026-03",
+      "overdue_n": 2247,
+      "settled_n": 4708,
+      "gap": 8.056752437593559
+    },
+    {
+      "loan_day": 21,
+      "model": "405",
+      "month": "2026-04",
+      "overdue_n": 2580,
+      "settled_n": 5511,
+      "gap": 7.060165082097967
+    },
+    {
+      "loan_day": 21,
+      "model": "405",
+      "month": "2026-05",
+      "overdue_n": 4514,
+      "settled_n": 8460,
+      "gap": 6.163106479342957
+    },
+    {
+      "loan_day": 21,
+      "model": "405",
+      "month": "2026-06",
+      "overdue_n": 5667,
+      "settled_n": 9555,
+      "gap": 5.23299567658637
+    },
+    {
+      "loan_day": 21,
+      "model": "405",
+      "month": "2026-07",
+      "overdue_n": 6121,
+      "settled_n": 10099,
+      "gap": 4.125640556465214
+    },
+    {
+      "loan_day": 21,
+      "model": "405",
+      "month": "2026-08",
+      "overdue_n": 7044,
+      "settled_n": 10891,
+      "gap": 3.9878642978737844
+    },
+    {
+      "loan_day": 21,
+      "model": "405",
+      "month": "2026-09",
+      "overdue_n": 7604,
+      "settled_n": 12070,
+      "gap": 4.672400258530502
+    },
+    {
+      "loan_day": 21,
+      "model": "405",
+      "month": "2026-10",
+      "overdue_n": 1765,
+      "settled_n": 2521,
+      "gap": 3.77744431197209
+    },
+    {
+      "loan_day": 28,
+      "model": "410",
+      "month": "2026-01",
+      "overdue_n": 5335,
+      "settled_n": 9240,
+      "gap": 19.68825367072793
+    },
+    {
+      "loan_day": 28,
+      "model": "410",
+      "month": "2026-02",
+      "overdue_n": 5517,
+      "settled_n": 9499,
+      "gap": 18.08440127914406
+    },
+    {
+      "loan_day": 28,
+      "model": "410",
+      "month": "2026-03",
+      "overdue_n": 4675,
+      "settled_n": 9051,
+      "gap": 16.024848827529354
+    },
+    {
+      "loan_day": 28,
+      "model": "410",
+      "month": "2026-04",
+      "overdue_n": 4476,
+      "settled_n": 9093,
+      "gap": 14.805386711458539
+    },
+    {
+      "loan_day": 28,
+      "model": "410",
+      "month": "2026-05",
+      "overdue_n": 3906,
+      "settled_n": 8390,
+      "gap": 11.790772608016596
+    },
+    {
+      "loan_day": 28,
+      "model": "410",
+      "month": "2026-06",
+      "overdue_n": 4583,
+      "settled_n": 8273,
+      "gap": 12.435867089466797
+    },
+    {
+      "loan_day": 28,
+      "model": "410",
+      "month": "2026-07",
+      "overdue_n": 4810,
+      "settled_n": 8839,
+      "gap": 10.737861005809918
+    },
+    {
+      "loan_day": 28,
+      "model": "410",
+      "month": "2026-08",
+      "overdue_n": 6186,
+      "settled_n": 11475,
+      "gap": 11.189522028447186
+    },
+    {
+      "loan_day": 28,
+      "model": "410",
+      "month": "2026-09",
+      "overdue_n": 9063,
+      "settled_n": 15683,
+      "gap": 9.391744564248143
+    },
+    {
+      "loan_day": 28,
+      "model": "363",
+      "month": "2026-01",
+      "overdue_n": 5366,
+      "settled_n": 9272,
+      "gap": 5.6001699737940385
+    },
+    {
+      "loan_day": 28,
+      "model": "363",
+      "month": "2026-02",
+      "overdue_n": 5528,
+      "settled_n": 9509,
+      "gap": 5.517402985122317
+    },
+    {
+      "loan_day": 28,
+      "model": "363",
+      "month": "2026-03",
+      "overdue_n": 4677,
+      "settled_n": 9055,
+      "gap": 5.635745681222318
+    },
+    {
+      "loan_day": 28,
+      "model": "363",
+      "month": "2026-04",
+      "overdue_n": 4476,
+      "settled_n": 9093,
+      "gap": 6.471829448395795
+    },
+    {
+      "loan_day": 28,
+      "model": "363",
+      "month": "2026-05",
+      "overdue_n": 3909,
+      "settled_n": 8390,
+      "gap": 6.471400981384932
+    },
+    {
+      "loan_day": 28,
+      "model": "363",
+      "month": "2026-06",
+      "overdue_n": 4577,
+      "settled_n": 8270,
+      "gap": 6.957533104775223
+    },
+    {
+      "loan_day": 28,
+      "model": "363",
+      "month": "2026-07",
+      "overdue_n": 4810,
+      "settled_n": 8839,
+      "gap": 5.9363111037621366
+    },
+    {
+      "loan_day": 28,
+      "model": "363",
+      "month": "2026-08",
+      "overdue_n": 6186,
+      "settled_n": 11475,
+      "gap": 6.4617348049253565
+    },
+    {
+      "loan_day": 28,
+      "model": "363",
+      "month": "2026-09",
+      "overdue_n": 9063,
+      "settled_n": 15683,
+      "gap": 6.627987102320844
+    },
+    {
+      "loan_day": 28,
+      "model": "405",
+      "month": "2026-01",
+      "overdue_n": 5364,
+      "settled_n": 9272,
+      "gap": 12.32369497155804
+    },
+    {
+      "loan_day": 28,
+      "model": "405",
+      "month": "2026-02",
+      "overdue_n": 5527,
+      "settled_n": 9508,
+      "gap": 11.461570913705543
+    },
+    {
+      "loan_day": 28,
+      "model": "405",
+      "month": "2026-03",
+      "overdue_n": 4677,
+      "settled_n": 9055,
+      "gap": 10.75309454599244
+    },
+    {
+      "loan_day": 28,
+      "model": "405",
+      "month": "2026-04",
+      "overdue_n": 4476,
+      "settled_n": 9093,
+      "gap": 10.454619365159942
+    },
+    {
+      "loan_day": 28,
+      "model": "405",
+      "month": "2026-05",
+      "overdue_n": 3805,
+      "settled_n": 8132,
+      "gap": 10.92713990510066
+    },
+    {
+      "loan_day": 28,
+      "model": "405",
+      "month": "2026-06",
+      "overdue_n": 4574,
+      "settled_n": 8269,
+      "gap": 9.123190338552206
+    },
+    {
+      "loan_day": 28,
+      "model": "405",
+      "month": "2026-07",
+      "overdue_n": 4810,
+      "settled_n": 8839,
+      "gap": 7.052954598536701
+    },
+    {
+      "loan_day": 28,
+      "model": "405",
+      "month": "2026-08",
+      "overdue_n": 6186,
+      "settled_n": 11475,
+      "gap": 8.368273415196427
+    },
+    {
+      "loan_day": 28,
+      "model": "405",
+      "month": "2026-09",
+      "overdue_n": 9063,
+      "settled_n": 15683,
+      "gap": 7.868548406881473
+    },
+    {
+      "loan_day": 60,
+      "model": "410",
+      "month": "2026-02",
+      "overdue_n": 2,
+      "settled_n": 0,
+      "gap": null
+    },
+    {
+      "loan_day": 60,
+      "model": "410",
+      "month": "2026-03",
+      "overdue_n": 37,
+      "settled_n": 35,
+      "gap": 27.905791505791512
+    },
+    {
+      "loan_day": 60,
+      "model": "410",
+      "month": "2026-04",
+      "overdue_n": 71,
+      "settled_n": 92,
+      "gap": 5.126301285976751
+    },
+    {
+      "loan_day": 60,
+      "model": "410",
+      "month": "2026-05",
+      "overdue_n": 167,
+      "settled_n": 210,
+      "gap": 12.03792415169653
+    },
+    {
+      "loan_day": 60,
+      "model": "410",
+      "month": "2026-06",
+      "overdue_n": 361,
+      "settled_n": 539,
+      "gap": 22.060381644473523
+    },
+    {
+      "loan_day": 60,
+      "model": "410",
+      "month": "2026-07",
+      "overdue_n": 237,
+      "settled_n": 332,
+      "gap": 8.202404554928535
+    },
+    {
+      "loan_day": 60,
+      "model": "410",
+      "month": "2026-08",
+      "overdue_n": 124,
+      "settled_n": 179,
+      "gap": 12.548432149936957
+    },
+    {
+      "loan_day": 60,
+      "model": "363",
+      "month": "2026-01",
+      "overdue_n": 1,
+      "settled_n": 2,
+      "gap": 28.0
+    },
+    {
+      "loan_day": 60,
+      "model": "363",
+      "month": "2026-02",
+      "overdue_n": 2,
+      "settled_n": 0,
+      "gap": null
+    },
+    {
+      "loan_day": 60,
+      "model": "363",
+      "month": "2026-03",
+      "overdue_n": 37,
+      "settled_n": 35,
+      "gap": 20.380694980694955
+    },
+    {
+      "loan_day": 60,
+      "model": "363",
+      "month": "2026-04",
+      "overdue_n": 71,
+      "settled_n": 93,
+      "gap": 10.073754354081473
+    },
+    {
+      "loan_day": 60,
+      "model": "363",
+      "month": "2026-05",
+      "overdue_n": 167,
+      "settled_n": 211,
+      "gap": 4.221585265487988
+    },
+    {
+      "loan_day": 60,
+      "model": "363",
+      "month": "2026-06",
+      "overdue_n": 361,
+      "settled_n": 539,
+      "gap": 12.35585032300503
+    },
+    {
+      "loan_day": 60,
+      "model": "363",
+      "month": "2026-07",
+      "overdue_n": 237,
+      "settled_n": 332,
+      "gap": 9.385262569264398
+    },
+    {
+      "loan_day": 60,
+      "model": "363",
+      "month": "2026-08",
+      "overdue_n": 124,
+      "settled_n": 179,
+      "gap": 6.676878716885938
+    },
+    {
+      "loan_day": 60,
+      "model": "405",
+      "month": "2026-01",
+      "overdue_n": 1,
+      "settled_n": 2,
+      "gap": -6.0
+    },
+    {
+      "loan_day": 60,
+      "model": "405",
+      "month": "2026-02",
+      "overdue_n": 2,
+      "settled_n": 0,
+      "gap": null
+    },
+    {
+      "loan_day": 60,
+      "model": "405",
+      "month": "2026-03",
+      "overdue_n": 37,
+      "settled_n": 35,
+      "gap": 33.734362934362935
+    },
+    {
+      "loan_day": 60,
+      "model": "405",
+      "month": "2026-04",
+      "overdue_n": 71,
+      "settled_n": 93,
+      "gap": 19.47493563531725
+    },
+    {
+      "loan_day": 60,
+      "model": "405",
+      "month": "2026-05",
+      "overdue_n": 158,
+      "settled_n": 208,
+      "gap": 12.441273125608575
+    },
+    {
+      "loan_day": 60,
+      "model": "405",
+      "month": "2026-06",
+      "overdue_n": 361,
+      "settled_n": 539,
+      "gap": 15.065089243957459
+    },
+    {
+      "loan_day": 60,
+      "model": "405",
+      "month": "2026-07",
+      "overdue_n": 237,
+      "settled_n": 332,
+      "gap": 8.692821920593758
+    },
+    {
+      "loan_day": 60,
+      "model": "405",
+      "month": "2026-08",
+      "overdue_n": 124,
+      "settled_n": 179,
+      "gap": 6.8531266894935925
+    }
+  ],
+  "quality": [
+    {
+      "loan_day": 21,
+      "loan_status_code": 7,
+      "n": 73141,
+      "distinct_orders": 73141,
+      "users": 49380,
+      "missing_model_record": 0,
+      "model_user_conflicts": 0,
+      "missing_passed_credit": 173,
+      "credit_after_apply": 0,
+      "conflicts_410": 0,
+      "conflicts_363": 0,
+      "conflicts_405": 0,
+      "valid_410": 72947,
+      "valid_363": 72966,
+      "valid_405": 72671,
+      "repaid_missing": 0,
+      "remit_sum": "161192213.000000000000000000",
+      "repaid_sum": "258916301.170000000000000000"
+    },
+    {
+      "loan_day": 60,
+      "loan_status_code": 8,
+      "n": 1000,
+      "distinct_orders": 1000,
+      "users": 840,
+      "missing_model_record": 0,
+      "model_user_conflicts": 0,
+      "missing_passed_credit": 0,
+      "credit_after_apply": 0,
+      "conflicts_410": 0,
+      "conflicts_363": 0,
+      "conflicts_405": 0,
+      "valid_410": 999,
+      "valid_363": 1000,
+      "valid_405": 991,
+      "repaid_missing": 0,
+      "remit_sum": "7183534.000000000000000000",
+      "repaid_sum": "3702911.510000000000000000"
+    },
+    {
+      "loan_day": 60,
+      "loan_status_code": 7,
+      "n": 1393,
+      "distinct_orders": 1393,
+      "users": 962,
+      "missing_model_record": 0,
+      "model_user_conflicts": 0,
+      "missing_passed_credit": 2,
+      "credit_after_apply": 0,
+      "conflicts_410": 0,
+      "conflicts_363": 0,
+      "conflicts_405": 0,
+      "valid_410": 1387,
+      "valid_363": 1391,
+      "valid_405": 1388,
+      "repaid_missing": 0,
+      "remit_sum": "10766520.000000000000000000",
+      "repaid_sum": "19622284.840000000000000000"
+    },
+    {
+      "loan_day": 28,
+      "loan_status_code": 8,
+      "n": 48654,
+      "distinct_orders": 48654,
+      "users": 36598,
+      "missing_model_record": 0,
+      "model_user_conflicts": 0,
+      "missing_passed_credit": 50,
+      "credit_after_apply": 0,
+      "conflicts_410": 0,
+      "conflicts_363": 0,
+      "conflicts_405": 0,
+      "valid_410": 48551,
+      "valid_363": 48592,
+      "valid_405": 48482,
+      "repaid_missing": 0,
+      "remit_sum": "212918909.000000000000000000",
+      "repaid_sum": "96063613.630000000000000000"
+    },
+    {
+      "loan_day": 21,
+      "loan_status_code": 8,
+      "n": 42335,
+      "distinct_orders": 42335,
+      "users": 38768,
+      "missing_model_record": 0,
+      "model_user_conflicts": 0,
+      "missing_passed_credit": 128,
+      "credit_after_apply": 0,
+      "conflicts_410": 0,
+      "conflicts_363": 0,
+      "conflicts_405": 0,
+      "valid_410": 42182,
+      "valid_363": 42207,
+      "valid_405": 42049,
+      "repaid_missing": 0,
+      "remit_sum": "103994093.000000000000000000",
+      "repaid_sum": "39388205.720000000000000000"
+    },
+    {
+      "loan_day": 28,
+      "loan_status_code": 7,
+      "n": 89665,
+      "distinct_orders": 89665,
+      "users": 35572,
+      "missing_model_record": 0,
+      "model_user_conflicts": 0,
+      "missing_passed_credit": 73,
+      "credit_after_apply": 0,
+      "conflicts_410": 0,
+      "conflicts_363": 0,
+      "conflicts_405": 0,
+      "valid_410": 89543,
+      "valid_363": 89586,
+      "valid_405": 89326,
+      "repaid_missing": 0,
+      "remit_sum": "390161063.000000000000000000",
+      "repaid_sum": "611797142.200000000000000000"
+    }
+  ],
+  "same_loan_type": "reloan only; firstloan excluded",
+  "score_join": "same user_id+serial_id; confirmed passed credit record no later than apply_time; not latest-user score",
+  "score_time_limit": "model_result_copy has no score timestamp or immutable version, so historical overwrites cannot be independently ruled out",
+  "band_definition": "Within each loan_day and model, use all valid 7/8 orders; HIGH score>q80, MID q50<score<=q80, LOW score<=q50. Same score never split.",
+  "common_auc_target": "Current order state 8 versus settled state 7 in the same complete-three-score sample; retrospective descriptive discrimination, not original-model target validation"
+}

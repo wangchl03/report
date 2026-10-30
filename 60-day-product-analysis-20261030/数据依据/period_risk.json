@@ -1,0 +1,163 @@
+{
+  "complete": true,
+  "cohort_cutoff": "2026-10-28 23:06:09.336055",
+  "maturity_date_exclusive": "2026-10-28",
+  "excluded_user_ids": [
+    5101518
+  ],
+  "snapshot": {
+    "business_time": "2026-10-28 23:26:14.768832",
+    "beijing_time": "2026-10-29 13:26:14.768832",
+    "read_only": "on"
+  },
+  "quality": [
+    {
+      "orders": 2393,
+      "distinct_orders": 2393,
+      "period_rows": "9572",
+      "min_term": 1,
+      "max_term": 4,
+      "duplicate_period_orders": 0,
+      "incomplete_plan_orders": 0,
+      "final_due_mismatch_orders": 0,
+      "historical_overdue_orders": 1270,
+      "current_overdue_orders": 1000,
+      "current_status8_orders": 1000,
+      "order_period_status_mismatch": 0,
+      "current_without_historical_overdue_orders": 0,
+      "missing_overdue_days": "0",
+      "missing_period_status": "0"
+    }
+  ],
+  "first_overdue_term": [
+    {
+      "definition": "current",
+      "term": 1,
+      "orders": 382,
+      "share_within_overdue_orders": 0.382,
+      "share_all_mature_orders": 0.15963226076055162
+    },
+    {
+      "definition": "current",
+      "term": 2,
+      "orders": 301,
+      "share_within_overdue_orders": 0.301,
+      "share_all_mature_orders": 0.1257835353113247
+    },
+    {
+      "definition": "current",
+      "term": 3,
+      "orders": 201,
+      "share_within_overdue_orders": 0.201,
+      "share_all_mature_orders": 0.08399498537400753
+    },
+    {
+      "definition": "current",
+      "term": 4,
+      "orders": 116,
+      "share_within_overdue_orders": 0.116,
+      "share_all_mature_orders": 0.04847471792728792
+    },
+    {
+      "definition": "historical",
+      "term": 1,
+      "orders": 548,
+      "share_within_overdue_orders": 0.431496062992126,
+      "share_all_mature_orders": 0.22900125365649812
+    },
+    {
+      "definition": "historical",
+      "term": 2,
+      "orders": 376,
+      "share_within_overdue_orders": 0.29606299212598425,
+      "share_all_mature_orders": 0.15712494776431257
+    },
+    {
+      "definition": "historical",
+      "term": 3,
+      "orders": 224,
+      "share_within_overdue_orders": 0.1763779527559055,
+      "share_all_mature_orders": 0.09360635185959047
+    },
+    {
+      "definition": "historical",
+      "term": 4,
+      "orders": 122,
+      "share_within_overdue_orders": 0.09606299212598425,
+      "share_all_mature_orders": 0.050982030923526954
+    }
+  ],
+  "per_period": [
+    {
+      "term": 1,
+      "period_count": 2393,
+      "distinct_orders": 2393,
+      "historical_overdue": 548,
+      "current_overdue": 382,
+      "historically_overdue_now_settled": 166,
+      "current_without_positive_overdue_days": 0,
+      "historical_overdue_rate": 0.22900125365649812,
+      "current_overdue_rate": 0.15963226076055162
+    },
+    {
+      "term": 2,
+      "period_count": 2393,
+      "distinct_orders": 2393,
+      "historical_overdue": 840,
+      "current_overdue": 683,
+      "historically_overdue_now_settled": 157,
+      "current_without_positive_overdue_days": 0,
+      "historical_overdue_rate": 0.3510238194734643,
+      "current_overdue_rate": 0.2854157960718763
+    },
+    {
+      "term": 3,
+      "period_count": 2393,
+      "distinct_orders": 2393,
+      "historical_overdue": 1016,
+      "current_overdue": 884,
+      "historically_overdue_now_settled": 132,
+      "current_without_positive_overdue_days": 0,
+      "historical_overdue_rate": 0.4245716673631425,
+      "current_overdue_rate": 0.36941078144588385
+    },
+    {
+      "term": 4,
+      "period_count": 2393,
+      "distinct_orders": 2393,
+      "historical_overdue": 1084,
+      "current_overdue": 1000,
+      "historically_overdue_now_settled": 84,
+      "current_without_positive_overdue_days": 0,
+      "historical_overdue_rate": 0.4529878813205182,
+      "current_overdue_rate": 0.41788549937317176
+    }
+  ],
+  "historical_first_by_current_status": [
+    {
+      "first_term": 1,
+      "ever_overdue_orders": 548,
+      "currently_overdue_orders": 448,
+      "currently_settled_orders": 100
+    },
+    {
+      "first_term": 2,
+      "ever_overdue_orders": 376,
+      "currently_overdue_orders": 306,
+      "currently_settled_orders": 70
+    },
+    {
+      "first_term": 3,
+      "ever_overdue_orders": 224,
+      "currently_overdue_orders": 169,
+      "currently_settled_orders": 55
+    },
+    {
+      "first_term": 4,
+      "ever_overdue_orders": 122,
+      "currently_overdue_orders": 77,
+      "currently_settled_orders": 45
+    }
+  ],
+  "elapsed_seconds": 3.39
+}

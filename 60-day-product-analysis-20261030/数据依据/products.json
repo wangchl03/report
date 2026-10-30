@@ -1,0 +1,47 @@
+{
+  "complete": true,
+  "snapshot": {
+    "business_time": "2026-10-28 23:06:09.336055",
+    "beijing_time": "2026-10-29 13:06:09.336055",
+    "business_date": "2026-10-28",
+    "read_only": "on"
+  },
+  "rows": [
+    {
+      "is_total": 0,
+      "product_no": "40602",
+      "order_count": 3590,
+      "distinct_orders": 3590,
+      "first_application": "2026-01-03 14:45:45",
+      "last_application": "2026-10-28 01:27:23",
+      "share": 0.9944598337950139
+    },
+    {
+      "is_total": 0,
+      "product_no": "40601",
+      "order_count": 20,
+      "distinct_orders": 20,
+      "first_application": "2026-09-26 09:46:55",
+      "last_application": "2026-10-25 22:33:54",
+      "share": 0.00554016620498615
+    }
+  ],
+  "total": {
+    "is_total": 1,
+    "product_no": "合计",
+    "order_count": 3610,
+    "distinct_orders": 3610,
+    "first_application": "2026-01-03 14:45:45",
+    "last_application": "2026-10-28 01:27:23",
+    "share": 1.0
+  },
+  "source": "wangchuanliang.order_loan_f_v2_copy",
+  "date_start": "2026-01-01",
+  "loan_day": 60,
+  "loan_type": "reloan",
+  "excludes_blacklist": [
+    5101518
+  ],
+  "no_funding_requirement": true,
+  "elapsed_seconds": 0.78
+}

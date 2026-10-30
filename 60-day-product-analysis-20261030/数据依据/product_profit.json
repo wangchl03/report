@@ -1,0 +1,76 @@
+{
+  "complete": true,
+  "cohort_cutoff": "2026-10-28 23:06:09.336055",
+  "performance_snapshot": {
+    "business_time": "2026-10-28 23:09:25.028372",
+    "beijing_time": "2026-10-29 13:09:25.028372",
+    "business_date": "2026-10-28",
+    "read_only": "on"
+  },
+  "rows": [
+    {
+      "is_total": 0,
+      "product_no": "40602",
+      "application_orders": 3590,
+      "distinct_application_orders": 3590,
+      "funded_orders": 3410,
+      "mature_orders": 2393,
+      "overdue_orders": 1000,
+      "mature_remit_amt": "17950054.000000000000000000",
+      "mature_repaid_amt": "23325196.350000000000000000",
+      "missing_repaid_orders": 0,
+      "mature_other_status_orders": 0,
+      "funded_invalid_due_date_orders": 0,
+      "first_mature_due_date": "2026-03-04",
+      "last_mature_due_date": "2026-10-27",
+      "overdue_rate": 0.41788549937317176,
+      "profit_amt": "5375142.350000000000000000",
+      "profit_rate": 0.29944992644590374
+    },
+    {
+      "is_total": 0,
+      "product_no": "40601",
+      "application_orders": 20,
+      "distinct_application_orders": 20,
+      "funded_orders": 20,
+      "mature_orders": 0,
+      "overdue_orders": 0,
+      "mature_remit_amt": null,
+      "mature_repaid_amt": null,
+      "missing_repaid_orders": 0,
+      "mature_other_status_orders": 0,
+      "funded_invalid_due_date_orders": 0,
+      "first_mature_due_date": null,
+      "last_mature_due_date": null,
+      "overdue_rate": null,
+      "profit_amt": null,
+      "profit_rate": null
+    }
+  ],
+  "total": {
+    "is_total": 1,
+    "product_no": "合计",
+    "application_orders": 3610,
+    "distinct_application_orders": 3610,
+    "funded_orders": 3430,
+    "mature_orders": 2393,
+    "overdue_orders": 1000,
+    "mature_remit_amt": "17950054.000000000000000000",
+    "mature_repaid_amt": "23325196.350000000000000000",
+    "missing_repaid_orders": 0,
+    "mature_other_status_orders": 0,
+    "funded_invalid_due_date_orders": 0,
+    "first_mature_due_date": "2026-03-04",
+    "last_mature_due_date": "2026-10-27",
+    "overdue_rate": 0.41788549937317176,
+    "profit_amt": "5375142.350000000000000000",
+    "profit_rate": 0.29944992644590374
+  },
+  "excludes_blacklist": [
+    5101518
+  ],
+  "mature_definition": "is_remit=1 AND remit_amt>0 AND valid due_date<CURRENT_DATE in America/Belize",
+  "overdue_definition": "loan_status_code=8 within mature funded orders",
+  "profit_definition": "(SUM(repaid_amt)-SUM(remit_amt))/SUM(remit_amt) within mature funded orders",
+  "elapsed_seconds": 0.84
+}
