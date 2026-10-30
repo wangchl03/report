@@ -1,18 +1,18 @@
 {
   "kpi": {
     "n_user": 2939,
-    "n_apply": 1385,
-    "apply_rate": 47.12,
-    "n_apply_week": 127,
-    "n_first_week": 28,
-    "n_remit": 2879,
-    "n_remit_week": 125,
-    "n_due": 1717,
-    "n_due_od": 539,
-    "profit_pct": 17.74,
-    "overdue_pct": 31.39,
+    "n_apply": 1391,
+    "apply_rate": 47.33,
+    "n_apply_week": 158,
+    "n_first_week": 34,
+    "n_remit": 2905,
+    "n_remit_week": 151,
+    "n_due": 1753,
+    "n_due_od": 553,
+    "profit_pct": 17.45,
+    "overdue_pct": 31.55,
     "week_start": "2026-10-26",
-    "as_of": "2026-10-28",
+    "as_of": "2026-10-29",
     "recall_date": "2026-09-02",
     "remit_day": "o.remit_date::date"
   },
@@ -358,6 +358,12 @@
       "n": 7,
       "cum": 1385,
       "rate": 47.12
+    },
+    {
+      "d": "2026-10-29",
+      "n": 6,
+      "cum": 1391,
+      "rate": 47.33
     }
   ],
   "apply_daily": [
@@ -645,6 +651,11 @@
       "d": "2026-10-28",
       "n_order": 43,
       "n_user": 42
+    },
+    {
+      "d": "2026-10-29",
+      "n_order": 35,
+      "n_user": 35
     }
   ],
   "remit_daily": [
@@ -932,75 +943,14 @@
       "d": "2026-10-28",
       "n": 37,
       "cum": 2879
+    },
+    {
+      "d": "2026-10-29",
+      "n": 26,
+      "cum": 2905
     }
   ],
   "due_daily": [
-    {
-      "d": "2026-09-02",
-      "n_due": 0,
-      "n_od": 0,
-      "profit_pct": null,
-      "overdue_pct": null,
-      "remit": 0.0,
-      "repaid": 0.0,
-      "cum_profit_pct": null,
-      "cum_overdue_pct": null
-    },
-    {
-      "d": "2026-09-03",
-      "n_due": 0,
-      "n_od": 0,
-      "profit_pct": null,
-      "overdue_pct": null,
-      "remit": 0.0,
-      "repaid": 0.0,
-      "cum_profit_pct": null,
-      "cum_overdue_pct": null
-    },
-    {
-      "d": "2026-09-04",
-      "n_due": 0,
-      "n_od": 0,
-      "profit_pct": null,
-      "overdue_pct": null,
-      "remit": 0.0,
-      "repaid": 0.0,
-      "cum_profit_pct": null,
-      "cum_overdue_pct": null
-    },
-    {
-      "d": "2026-09-05",
-      "n_due": 0,
-      "n_od": 0,
-      "profit_pct": null,
-      "overdue_pct": null,
-      "remit": 0.0,
-      "repaid": 0.0,
-      "cum_profit_pct": null,
-      "cum_overdue_pct": null
-    },
-    {
-      "d": "2026-09-06",
-      "n_due": 0,
-      "n_od": 0,
-      "profit_pct": null,
-      "overdue_pct": null,
-      "remit": 0.0,
-      "repaid": 0.0,
-      "cum_profit_pct": null,
-      "cum_overdue_pct": null
-    },
-    {
-      "d": "2026-09-07",
-      "n_due": 0,
-      "n_od": 0,
-      "profit_pct": null,
-      "overdue_pct": null,
-      "remit": 0.0,
-      "repaid": 0.0,
-      "cum_profit_pct": null,
-      "cum_overdue_pct": null
-    },
     {
       "d": "2026-09-08",
       "n_due": 7,
@@ -1247,11 +1197,11 @@
       "d": "2026-09-30",
       "n_due": 50,
       "n_od": 13,
-      "repaid": 217062.0,
+      "repaid": 217092.0,
       "remit": 182862.0,
-      "profit_pct": 18.7,
+      "profit_pct": 18.72,
       "overdue_pct": 26.0,
-      "cum_profit_pct": 16.68,
+      "cum_profit_pct": 16.69,
       "cum_overdue_pct": 30.71
     },
     {
@@ -1273,7 +1223,7 @@
       "remit": 147606.0,
       "profit_pct": 23.61,
       "overdue_pct": 32.08,
-      "cum_profit_pct": 21.48,
+      "cum_profit_pct": 21.49,
       "cum_overdue_pct": 29.07
     },
     {
@@ -1350,7 +1300,7 @@
       "remit": 181986.0,
       "profit_pct": 17.2,
       "overdue_pct": 28.57,
-      "cum_profit_pct": 18.21,
+      "cum_profit_pct": 18.22,
       "cum_overdue_pct": 29.99
     },
     {
@@ -1361,7 +1311,7 @@
       "remit": 83896.0,
       "profit_pct": 2.68,
       "overdue_pct": 40.0,
-      "cum_profit_pct": 17.74,
+      "cum_profit_pct": 17.75,
       "cum_overdue_pct": 30.43
     },
     {
@@ -1488,13 +1438,13 @@
     {
       "d": "2026-10-22",
       "n_due": 39,
-      "n_od": 12,
-      "repaid": 157772.39,
+      "n_od": 11,
+      "repaid": 158080.39,
       "remit": 125435.0,
-      "profit_pct": 25.78,
-      "overdue_pct": 30.77,
+      "profit_pct": 26.03,
+      "overdue_pct": 28.21,
       "cum_profit_pct": 17.88,
-      "cum_overdue_pct": 30.87
+      "cum_overdue_pct": 30.8
     },
     {
       "d": "2026-10-23",
@@ -1505,7 +1455,7 @@
       "profit_pct": 45.69,
       "overdue_pct": 17.78,
       "cum_profit_pct": 18.86,
-      "cum_overdue_pct": 30.47
+      "cum_overdue_pct": 30.4
     },
     {
       "d": "2026-10-24",
@@ -1515,8 +1465,8 @@
       "remit": 187065.0,
       "profit_pct": 13.77,
       "overdue_pct": 35.29,
-      "cum_profit_pct": 18.68,
-      "cum_overdue_pct": 30.63
+      "cum_profit_pct": 18.69,
+      "cum_overdue_pct": 30.56
     },
     {
       "d": "2026-10-25",
@@ -1526,8 +1476,8 @@
       "remit": 131250.0,
       "profit_pct": 21.48,
       "overdue_pct": 37.04,
-      "cum_profit_pct": 18.75,
-      "cum_overdue_pct": 30.74
+      "cum_profit_pct": 18.76,
+      "cum_overdue_pct": 30.68
     },
     {
       "d": "2026-10-26",
@@ -1537,38 +1487,49 @@
       "remit": 228715.0,
       "profit_pct": 22.09,
       "overdue_pct": 33.33,
-      "cum_profit_pct": 18.88,
-      "cum_overdue_pct": 30.84
+      "cum_profit_pct": 18.89,
+      "cum_overdue_pct": 30.77
     },
     {
       "d": "2026-10-27",
       "n_due": 38,
-      "n_od": 12,
-      "repaid": 241860.0,
+      "n_od": 11,
+      "repaid": 244455.0,
       "remit": 187860.0,
-      "profit_pct": 28.74,
-      "overdue_pct": 31.58,
-      "cum_profit_pct": 19.19,
-      "cum_overdue_pct": 30.85
+      "profit_pct": 30.13,
+      "overdue_pct": 28.95,
+      "cum_profit_pct": 19.24,
+      "cum_overdue_pct": 30.73
     },
     {
       "d": "2026-10-28",
       "n_due": 51,
-      "n_od": 25,
-      "repaid": 249428.0,
+      "n_od": 24,
+      "repaid": 250528.0,
       "remit": 286070.0,
-      "profit_pct": -12.81,
-      "overdue_pct": 49.02,
-      "cum_profit_pct": 17.74,
-      "cum_overdue_pct": 31.39
+      "profit_pct": -12.42,
+      "overdue_pct": 47.06,
+      "cum_profit_pct": 17.8,
+      "cum_overdue_pct": 31.22
+    },
+    {
+      "d": "2026-10-29",
+      "n_due": 36,
+      "n_od": 17,
+      "repaid": 116047.0,
+      "remit": 117620.0,
+      "profit_pct": -1.34,
+      "overdue_pct": 47.22,
+      "cum_profit_pct": 17.45,
+      "cum_overdue_pct": 31.55
     }
   ],
   "strat": [
     {
       "strat": "20d+10r",
       "n_user": 1597,
-      "n_apply": 712,
-      "pct": 44.58
+      "n_apply": 716,
+      "pct": 44.83
     },
     {
       "strat": "30d",
@@ -1579,14 +1540,14 @@
     {
       "strat": "20d",
       "n_user": 472,
-      "n_apply": 239,
-      "pct": 50.64
+      "n_apply": 240,
+      "pct": 50.85
     },
     {
       "strat": "10d+10r",
       "n_user": 320,
-      "n_apply": 138,
-      "pct": 43.12
+      "n_apply": 139,
+      "pct": 43.44
     },
     {
       "strat": "10d",
@@ -1599,14 +1560,14 @@
     {
       "bin": "7-15d",
       "n_user": 1397,
-      "n_apply": 745,
-      "pct": 53.33
+      "n_apply": 747,
+      "pct": 53.47
     },
     {
       "bin": "16-30d",
       "n_user": 1542,
-      "n_apply": 640,
-      "pct": 41.5
+      "n_apply": 644,
+      "pct": 41.76
     }
   ]
 }
