@@ -1,6 +1,6 @@
 -- T7 召回看板 · 可复现 PGSQL
 -- 库：kaby_dw · schema：wangchuanliang
--- 名单：七批召回名单合并（跨批次按用户去重）
+-- 名单：八批召回名单合并（跨批次按用户去重）
 -- 日历起点：2026-08-18；订单按名单中的用户级 recall_dt 起算，累计名单取各用户首次入选日期
 -- 放款日：优先 o.remit_date::date（无该列时用 o.apply_date::date）
 -- 本文件当前放款日表达式：o.remit_date::date
@@ -31,6 +31,7 @@ SELECT DISTINCT churn_user_id::bigint AS user_id,
        DATE '2026-08-18' AS recall_dt
 FROM wangchuanliang.t7recalllist_0818_0819
 WHERE churn_user_id IS NOT NULL
+  AND churn_user_id <> 5101518
   AND recall_date = DATE '2026-08-18'
   AND recall_date <> DATE '2026-08-19'
 ) d
@@ -42,6 +43,7 @@ SELECT DISTINCT churn_user_id::bigint AS user_id,
        DATE '2026-09-02' AS recall_dt
 FROM wangchuanliang.t7recalllist_0902
 WHERE churn_user_id IS NOT NULL
+  AND churn_user_id <> 5101518
 ) d
 UNION ALL
 SELECT d.*, '0910'::text AS source_batch FROM (
@@ -51,6 +53,7 @@ SELECT DISTINCT churn_user_id::bigint AS user_id,
        DATE '2026-09-10' AS recall_dt
 FROM wangchuanliang.t7recalllist_0910
 WHERE churn_user_id IS NOT NULL
+  AND churn_user_id <> 5101518
 ) d
 UNION ALL
 SELECT d.*, '0917'::text AS source_batch FROM (
@@ -60,6 +63,7 @@ SELECT DISTINCT churn_user_id::bigint AS user_id,
        DATE '2026-09-17' AS recall_dt
 FROM wangchuanliang.t7recalllist_0917
 WHERE churn_user_id IS NOT NULL
+  AND churn_user_id <> 5101518
 ) d
 UNION ALL
 SELECT d.*, '0930'::text AS source_batch FROM (
@@ -69,6 +73,7 @@ SELECT DISTINCT churn_user_id::bigint AS user_id,
        DATE '2026-09-30' AS recall_dt
 FROM wangchuanliang.t7recalllist_0930
 WHERE churn_user_id IS NOT NULL
+  AND churn_user_id <> 5101518
 ) d
 UNION ALL
 SELECT d.*, '1010'::text AS source_batch FROM (
@@ -78,6 +83,7 @@ SELECT DISTINCT churn_user_id::bigint AS user_id,
        DATE '2026-10-10' AS recall_dt
 FROM wangchuanliang.t7recalllist_1010
 WHERE churn_user_id IS NOT NULL
+  AND churn_user_id <> 5101518
 ) d
 UNION ALL
 SELECT d.*, '1016'::text AS source_batch FROM (
@@ -87,6 +93,17 @@ SELECT DISTINCT churn_user_id::bigint AS user_id,
        DATE '2026-10-16' AS recall_dt
 FROM wangchuanliang.t7recalllist_1016
 WHERE churn_user_id IS NOT NULL
+  AND churn_user_id <> 5101518
+) d
+UNION ALL
+SELECT d.*, '1023'::text AS source_batch FROM (
+SELECT DISTINCT churn_user_id::bigint AS user_id,
+       COALESCE(strat, 'NA') AS strat,
+       churn_days,
+       DATE '2026-10-23' AS recall_dt
+FROM wangchuanliang.t7recalllist_1023
+WHERE churn_user_id IS NOT NULL
+  AND churn_user_id <> 5101518
 ) d), ranked_users AS (
             SELECT user_id,strat,churn_days,recall_dt,
                    ROW_NUMBER() OVER(PARTITION BY user_id ORDER BY recall_dt,source_batch,strat,churn_days) AS rn

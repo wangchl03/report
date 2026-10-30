@@ -29,7 +29,8 @@ SELECT DISTINCT churn_user_id::bigint AS user_id,
        churn_days,
        DATE '2026-09-02' AS recall_dt
 FROM wangchuanliang.t7recalllist_0902
-WHERE churn_user_id IS NOT NULL;
+WHERE churn_user_id IS NOT NULL
+  AND churn_user_id <> 5101518;
 
 -- ---------------------------------------------------------------------------
 -- 2) KPI（提单率、本周提单/新增提单、放款、到期盈利与逾期）

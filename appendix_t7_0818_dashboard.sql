@@ -30,6 +30,7 @@ SELECT DISTINCT churn_user_id::bigint AS user_id,
        DATE '2026-08-18' AS recall_dt
 FROM wangchuanliang.t7recalllist_0818_0819
 WHERE churn_user_id IS NOT NULL
+  AND churn_user_id <> 5101518
   AND recall_date = DATE '2026-08-18'
   AND recall_date <> DATE '2026-08-19';
 

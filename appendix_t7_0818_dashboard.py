@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 """
 T7+ 召回看板 · 后端
-默认跑 0818 / 0902 / 0910 / 0917 / 0930 五个批次。
+默认跑八个召回批次及累计召回。
 
   export PGPASSWORD='...'
   python3 appendix_t7_0818_dashboard.py
@@ -65,8 +65,14 @@ BATCHES = [
         "filter_recall_date": False,
     },
     {
+        "slug": "1023",
+        "table": "wangchuanliang.t7recalllist_1023",
+        "recall_date": "2026-10-23",
+        "filter_recall_date": False,
+    },
+    {
         "slug": "cumulative",
-        "table": "七批召回名单合并（跨批次按用户去重）",
+        "table": "八批召回名单合并（跨批次按用户去重）",
         "recall_date": "2026-08-18",
         "filter_recall_date": False,
         "cumulative": True,
@@ -101,7 +107,8 @@ SELECT DISTINCT churn_user_id::bigint AS user_id,
        churn_days,
        DATE '{batch['recall_date']}' AS recall_dt
 FROM {batch['table']}
-WHERE churn_user_id IS NOT NULL{extra}
+WHERE churn_user_id IS NOT NULL
+  AND churn_user_id <> 5101518{extra}
 """
 
 
@@ -740,7 +747,7 @@ def write_html(data, batch):
     due_note = (f"到期 {k['n_due']:,} 单" if k['n_due'] else "尚无到期订单") if batch['slug'] in ('1010','1016') else "到期订单"
     list_note = ""
     period_label = "首次召回后" if batch.get("cumulative") else md + "至今"
-    scope_note = ('<p class="meta">七批名单按用户去重；每人从首次入选日起统计，分层与流失天数取首次入选记录。累计曲线固定以合并名单为分母。</p>'
+    scope_note = ('<p class="meta">八批名单按用户去重；每人从首次入选日起统计，分层与流失天数取首次入选记录。累计曲线固定以合并名单为分母。</p>'
                   if batch.get("cumulative") else "")
     HTML_PATH = HERE / f"t7-{batch['slug']}.html"
     json_name = f"t7_{batch['slug']}_dashboard_data.json"
@@ -1044,6 +1051,7 @@ TAB_LABEL = {
     "0930": "9月30日批次",
     "1010": "10月10日批次",
     "1016": "10月16日批次",
+    "1023": "10月23日批次",
     "cumulative": "累计召回",
 }
 
@@ -1063,7 +1071,7 @@ def panel_body(data, batch, pfx):
     due_note = (f"到期 {k['n_due']:,} 单" if k['n_due'] else "尚无到期订单") if batch['slug'] in ('1010','1016') else "到期订单"
     list_note = ""
     period_label = "首次召回后" if batch.get("cumulative") else md + "至今"
-    scope_note = ('<p class="meta">七批名单按用户去重；每人从首次入选日起统计，分层与流失天数取首次入选记录。累计曲线固定以合并名单为分母。</p>'
+    scope_note = ('<p class="meta">八批名单按用户去重；每人从首次入选日起统计，分层与流失天数取首次入选记录。累计曲线固定以合并名单为分母。</p>'
                   if batch.get("cumulative") else "")
     return f"""
 <div class="top">
@@ -1220,8 +1228,8 @@ def write_hub(items):
 .page-top{{text-align:center}}
 .kicker{{color:var(--cy);font-size:12px;letter-spacing:2px;font-weight:700}}
 h1{{font-size:24px;margin:8px 0 6px}}
-.tabs{{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;max-width:880px;margin:18px auto 8px}}
-.tabs button{{appearance:none;border:1px solid var(--line);background:#0c2944;color:var(--text);border-radius:999px;padding:10px 18px;font-size:14px;font-weight:700;cursor:pointer}}
+.tabs{{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));grid-template-rows:repeat(2,auto);gap:10px;max-width:890px;margin:18px auto 8px}}
+.tabs button{{appearance:none;width:100%;min-width:0;border:1px solid var(--line);background:#0c2944;color:var(--text);border-radius:999px;padding:10px 12px;font-size:14px;font-weight:700;cursor:pointer}}
 .tabs button:hover{{border-color:var(--cy)}}
 .tabs button.on{{background:var(--cy);color:#062033;border-color:var(--cy)}}
 .panel{{display:none}}
