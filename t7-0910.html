@@ -260,7 +260,7 @@ ORDER BY 1;
 -- ---------------------------------------------------------------------------
 -- 7) 分层 strat 名单人数与提单率
 -- ---------------------------------------------------------------------------
-SELECT u.strat,
+SELECT CASE WHEN u.strat IS NULL OR LOWER(TRIM(u.strat)) IN (&#x27;na&#x27;, &#x27;null&#x27;) THEN &#x27;NA&#x27; ELSE u.strat END AS strat,
        COUNT(*) AS n_user,
        COUNT(a.user_id) AS n_apply
 FROM tmp_t7_u u
@@ -757,7 +757,7 @@ def fetch(batch):
         cur,
         f&quot;&quot;&quot;
         WITH u AS ({U})
-        SELECT u.strat, COUNT(*) AS n_user, COUNT(a.user_id) AS n_apply
+        SELECT CASE WHEN u.strat IS NULL OR LOWER(TRIM(u.strat)) IN (&#x27;na&#x27;, &#x27;null&#x27;) THEN &#x27;NA&#x27; ELSE u.strat END AS strat, COUNT(*) AS n_user, COUNT(a.user_id) AS n_apply
         FROM u
         LEFT JOIN (
           SELECT DISTINCT o.user_id
@@ -997,7 +997,7 @@ ORDER BY 1;
 -- ---------------------------------------------------------------------------
 -- 7) 分层 strat 名单人数与提单率
 -- ---------------------------------------------------------------------------
-SELECT u.strat,
+SELECT CASE WHEN u.strat IS NULL OR LOWER(TRIM(u.strat)) IN (&#x27;na&#x27;, &#x27;null&#x27;) THEN &#x27;NA&#x27; ELSE u.strat END AS strat,
        COUNT(*) AS n_user,
        COUNT(a.user_id) AS n_apply
 FROM tmp_t7_u u

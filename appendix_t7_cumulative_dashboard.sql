@@ -254,7 +254,7 @@ ORDER BY 1;
 -- ---------------------------------------------------------------------------
 -- 7) 分层 strat 名单人数与提单率
 -- ---------------------------------------------------------------------------
-SELECT u.strat,
+SELECT CASE WHEN u.strat IS NULL OR LOWER(TRIM(u.strat)) IN ('na', 'null') THEN 'NA' ELSE u.strat END AS strat,
        COUNT(*) AS n_user,
        COUNT(a.user_id) AS n_apply
 FROM tmp_t7_u u
