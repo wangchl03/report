@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 """
 T7+ 召回看板 · 后端
-默认跑八个召回批次及累计召回。
+默认跑九个召回批次及累计召回。
 
   export PGPASSWORD='...'
   python3 appendix_t7_0818_dashboard.py
@@ -71,8 +71,14 @@ BATCHES = [
         "filter_recall_date": False,
     },
     {
+        "slug": "1030",
+        "table": "wangchuanliang.t7recalllist_1030",
+        "recall_date": "2026-10-30",
+        "filter_recall_date": False,
+    },
+    {
         "slug": "cumulative",
-        "table": "八批召回名单合并（跨批次按用户去重）",
+        "table": "九批召回名单合并（跨批次按用户去重）",
         "recall_date": "2026-08-18",
         "filter_recall_date": False,
         "cumulative": True,
@@ -747,7 +753,7 @@ def write_html(data, batch):
     due_note = (f"到期 {k['n_due']:,} 单" if k['n_due'] else "尚无到期订单") if batch['slug'] in ('1010','1016') else "到期订单"
     list_note = ""
     period_label = "首次召回后" if batch.get("cumulative") else md + "至今"
-    scope_note = ('<p class="meta">八批名单按用户去重；每人从首次入选日起统计，分层与流失天数取首次入选记录。累计曲线固定以合并名单为分母。</p>'
+    scope_note = ('<p class="meta">九批名单按用户去重；每人从首次入选日起统计，分层与流失天数取首次入选记录。累计曲线固定以合并名单为分母。</p>'
                   if batch.get("cumulative") else "")
     HTML_PATH = HERE / f"t7-{batch['slug']}.html"
     json_name = f"t7_{batch['slug']}_dashboard_data.json"
@@ -1052,6 +1058,7 @@ TAB_LABEL = {
     "1010": "10月10日批次",
     "1016": "10月16日批次",
     "1023": "10月23日批次",
+    "1030": "10月30日批次",
     "cumulative": "累计召回",
 }
 
@@ -1071,7 +1078,7 @@ def panel_body(data, batch, pfx):
     due_note = (f"到期 {k['n_due']:,} 单" if k['n_due'] else "尚无到期订单") if batch['slug'] in ('1010','1016') else "到期订单"
     list_note = ""
     period_label = "首次召回后" if batch.get("cumulative") else md + "至今"
-    scope_note = ('<p class="meta">八批名单按用户去重；每人从首次入选日起统计，分层与流失天数取首次入选记录。累计曲线固定以合并名单为分母。</p>'
+    scope_note = ('<p class="meta">九批名单按用户去重；每人从首次入选日起统计，分层与流失天数取首次入选记录。累计曲线固定以合并名单为分母。</p>'
                   if batch.get("cumulative") else "")
     return f"""
 <div class="top">

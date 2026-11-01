@@ -1,6 +1,6 @@
 -- T7 召回看板 · 可复现 PGSQL
 -- 库：kaby_dw · schema：wangchuanliang
--- 名单：八批召回名单合并（跨批次按用户去重）
+-- 名单：九批召回名单合并（跨批次按用户去重）
 -- 日历起点：2026-08-18；订单按名单中的用户级 recall_dt 起算，累计名单取各用户首次入选日期
 -- 放款日：优先 o.remit_date::date（无该列时用 o.apply_date::date）
 -- 本文件当前放款日表达式：o.remit_date::date
@@ -102,6 +102,16 @@ SELECT DISTINCT churn_user_id::bigint AS user_id,
        churn_days,
        DATE '2026-10-23' AS recall_dt
 FROM wangchuanliang.t7recalllist_1023
+WHERE churn_user_id IS NOT NULL
+  AND churn_user_id <> 5101518
+) d
+UNION ALL
+SELECT d.*, '1030'::text AS source_batch FROM (
+SELECT DISTINCT churn_user_id::bigint AS user_id,
+       COALESCE(strat, 'NA') AS strat,
+       churn_days,
+       DATE '2026-10-30' AS recall_dt
+FROM wangchuanliang.t7recalllist_1030
 WHERE churn_user_id IS NOT NULL
   AND churn_user_id <> 5101518
 ) d), ranked_users AS (

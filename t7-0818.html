@@ -302,7 +302,7 @@ GROUP BY 1;
 # -*- coding: utf-8 -*-
 &quot;&quot;&quot;
 T7+ 召回看板 · 后端
-默认跑八个召回批次及累计召回。
+默认跑九个召回批次及累计召回。
 
   export PGPASSWORD=&#x27;...&#x27;
   python3 appendix_t7_0818_dashboard.py
@@ -371,8 +371,14 @@ BATCHES = [
         &quot;filter_recall_date&quot;: False,
     },
     {
+        &quot;slug&quot;: &quot;1030&quot;,
+        &quot;table&quot;: &quot;wangchuanliang.t7recalllist_1030&quot;,
+        &quot;recall_date&quot;: &quot;2026-10-30&quot;,
+        &quot;filter_recall_date&quot;: False,
+    },
+    {
         &quot;slug&quot;: &quot;cumulative&quot;,
-        &quot;table&quot;: &quot;八批召回名单合并（跨批次按用户去重）&quot;,
+        &quot;table&quot;: &quot;九批召回名单合并（跨批次按用户去重）&quot;,
         &quot;recall_date&quot;: &quot;2026-08-18&quot;,
         &quot;filter_recall_date&quot;: False,
         &quot;cumulative&quot;: True,
@@ -1047,7 +1053,7 @@ def write_html(data, batch):
     due_note = (f&quot;到期 {k[&#x27;n_due&#x27;]:,} 单&quot; if k[&#x27;n_due&#x27;] else &quot;尚无到期订单&quot;) if batch[&#x27;slug&#x27;] in (&#x27;1010&#x27;,&#x27;1016&#x27;) else &quot;到期订单&quot;
     list_note = &quot;&quot;
     period_label = &quot;首次召回后&quot; if batch.get(&quot;cumulative&quot;) else md + &quot;至今&quot;
-    scope_note = (&#x27;&lt;p class=&quot;meta&quot;&gt;八批名单按用户去重；每人从首次入选日起统计，分层与流失天数取首次入选记录。累计曲线固定以合并名单为分母。&lt;/p&gt;&#x27;
+    scope_note = (&#x27;&lt;p class=&quot;meta&quot;&gt;九批名单按用户去重；每人从首次入选日起统计，分层与流失天数取首次入选记录。累计曲线固定以合并名单为分母。&lt;/p&gt;&#x27;
                   if batch.get(&quot;cumulative&quot;) else &quot;&quot;)
     HTML_PATH = HERE / f&quot;t7-{batch[&#x27;slug&#x27;]}.html&quot;
     json_name = f&quot;t7_{batch[&#x27;slug&#x27;]}_dashboard_data.json&quot;
@@ -1352,6 +1358,7 @@ TAB_LABEL = {
     &quot;1010&quot;: &quot;10月10日批次&quot;,
     &quot;1016&quot;: &quot;10月16日批次&quot;,
     &quot;1023&quot;: &quot;10月23日批次&quot;,
+    &quot;1030&quot;: &quot;10月30日批次&quot;,
     &quot;cumulative&quot;: &quot;累计召回&quot;,
 }
 
@@ -1371,7 +1378,7 @@ def panel_body(data, batch, pfx):
     due_note = (f&quot;到期 {k[&#x27;n_due&#x27;]:,} 单&quot; if k[&#x27;n_due&#x27;] else &quot;尚无到期订单&quot;) if batch[&#x27;slug&#x27;] in (&#x27;1010&#x27;,&#x27;1016&#x27;) else &quot;到期订单&quot;
     list_note = &quot;&quot;
     period_label = &quot;首次召回后&quot; if batch.get(&quot;cumulative&quot;) else md + &quot;至今&quot;
-    scope_note = (&#x27;&lt;p class=&quot;meta&quot;&gt;八批名单按用户去重；每人从首次入选日起统计，分层与流失天数取首次入选记录。累计曲线固定以合并名单为分母。&lt;/p&gt;&#x27;
+    scope_note = (&#x27;&lt;p class=&quot;meta&quot;&gt;九批名单按用户去重；每人从首次入选日起统计，分层与流失天数取首次入选记录。累计曲线固定以合并名单为分母。&lt;/p&gt;&#x27;
                   if batch.get(&quot;cumulative&quot;) else &quot;&quot;)
     return f&quot;&quot;&quot;
 &lt;div class=&quot;top&quot;&gt;
