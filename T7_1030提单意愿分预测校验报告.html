@@ -1,0 +1,257 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>T7 1030 提单意愿模型预测校验</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+<style>
+:root{--bg:#06192b;--line:#2a5c7e;--text:#eff8ff;--muted:#aac5da;--cy:#43c7e7;--gr:#64dcae;--am:#ffc26b;--pk:#f68ab0}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font:16px/1.75 -apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei",sans-serif}
+.wrap{max-width:1180px;margin:auto;padding:28px 36px 80px}
+.hero{text-align:center;padding:28px 12px 22px;border-bottom:1px solid var(--line)}
+.kicker{color:var(--cy);font-size:13px;letter-spacing:.14em;font-weight:700}
+.hero h1{font-size:28px;line-height:1.35;margin:10px 0 8px}
+.nav{position:sticky;top:0;z-index:5;background:rgba(6,25,43,.94);backdrop-filter:blur(10px);border-bottom:1px solid var(--line);display:flex;gap:18px;overflow:auto;padding:12px 0;margin:0 -36px;padding-left:36px}
+.nav a{white-space:nowrap;color:#c6dae7;font-size:14px;text-decoration:none}
+.nav a:hover{color:var(--cy)}
+h2{font-size:22px;font-weight:800;color:#fff;margin:44px 0 4px;padding:0 0 8px;border-bottom:1px solid var(--line);scroll-margin-top:58px}
+h3{font-size:16px;font-weight:750;color:#f3fbff;margin:18px 0 8px}
+.desc{color:var(--muted);margin:0 0 12px;font-size:13px;line-height:1.6}
+.hero-facts{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin-top:16px;text-align:left}
+.hero-facts .f{background:rgba(10,41,68,.75);border:1px solid var(--line);border-radius:10px;padding:10px 12px}
+.hero-facts .k{display:block;font-size:11px;font-weight:800;letter-spacing:.1em;color:var(--cy);margin-bottom:4px}
+.hero-facts .v{display:block;font-size:13px;color:#c5d8e6;line-height:1.55}
+.grid{display:grid;gap:14px}.g4{grid-template-columns:repeat(4,minmax(0,1fr))}.g2{grid-template-columns:repeat(2,minmax(0,1fr))}
+.card,.chart{background:rgba(10,41,68,.95);border:1px solid var(--line);border-radius:14px;padding:16px}
+.label{color:var(--muted);font-size:12px}.num{font-size:26px;font-weight:800;margin:4px 0 2px;color:var(--cy)}
+.sub{color:var(--muted);font-size:12px}.mint{color:var(--gr)}.gold{color:var(--am)}.pink{color:var(--pk)}
+.box{height:320px;position:relative}.chart h3{margin:0 0 2px;font-size:16px;color:#fff}.chart p{font-size:12.5px;color:var(--muted);margin:0 0 10px}
+.callout{background:#0a2a45;border:1px solid #2a5c7e;border-left:4px solid #43c7e7;border-radius:10px;padding:14px 18px;margin:14px 0}
+.callout.gold{border-left-color:#ffc26b}.callout.green{border-left-color:#64dcae}
+.callout .ch{display:block;font-size:16px;font-weight:800;color:#fff;margin:0 0 8px}
+.callout .bd{color:var(--muted);font-size:14px;line-height:1.7}
+.table{overflow-x:auto;margin:12px 0}table{width:100%;border-collapse:collapse;font-size:13px}
+th,td{padding:8px 10px;border-bottom:1px solid rgba(42,92,126,.45);text-align:right;white-space:nowrap}
+th{color:var(--muted);background:rgba(12,48,78,.65)}th:first-child,td:first-child{text-align:left}
+tr.total td{background:rgba(100,220,174,.12);font-weight:700;color:#fff}
+.table.def td,.table.def th{text-align:left;white-space:normal}
+.pts{margin:18px 0 0;padding:0;list-style:none;display:grid;gap:10px}
+.pts li{padding:12px 14px;background:rgba(10,41,68,.95);border:1px solid var(--line);border-radius:10px}
+.pts .t{display:block;font-weight:800;color:#fff}
+.pts .d{display:block;color:var(--muted);font-size:14px;line-height:1.65}
+.foot{color:#7fa6c2;font-size:12.5px;margin-top:40px;border-top:1px solid var(--line);padding-top:16px;line-height:1.9}
+@media(max-width:900px){.g2,.g4,.hero-facts{grid-template-columns:1fr}.wrap{padding:18px 16px 56px}.nav{margin:0 -16px;padding-left:16px}.hero h1{font-size:22px}}
+</style>
+</head>
+<body>
+<main class="wrap">
+<header class="hero">
+  <div class="kicker">T7 召回 · 提单意愿模型 · 报告生成 2026-11-02</div>
+  <h1>1030 新增 / 活跃批次：提单意愿分预测校验</h1>
+  <div class="hero-facts">
+    <div class="f"><span class="k">业务场景</span><span class="v">新增组全量召回；活跃组用意愿分筛掉极低意愿用户，控触达成本、保召回效果。</span></div>
+    <div class="f"><span class="k">样本</span><span class="v">新增 t7recalllist_1030（1,333 人）；活跃 t7recalllist_active1030（13,010 人）。召回日 2026-10-30。</span></div>
+    <div class="f"><span class="k">观察窗</span><span class="v">召回日至 2026-11-02（约 3 日）。绝对提单率仍在爬坡，重点看分档单调与捕获结构。</span></div>
+  </div>
+</header>
+<nav class="nav">
+  <a href="#kpi">结论</a>
+  <a href="#why">为何校验活跃组</a>
+  <a href="#bands">五档提单率</a>
+  <a href="#capture">捕获与筛人</a>
+  <a href="#scope">口径</a>
+</nav>
+
+<section id="kpi">
+  <h2>结论</h2>
+  <div class="grid g4" style="margin-top:14px">
+    <article class="card"><div class="label">活跃 · S / D</div><div class="num">25.5 倍</div><div class="sub">9.15% / 0.36% · 五档严格单调</div></article>
+    <article class="card"><div class="label">活跃 · 前10%捕获</div><div class="num gold">41.9%</div><div class="sub">119 / 284 笔提单</div></article>
+    <article class="card"><div class="label">活跃 · 前1/3捕获</div><div class="num mint">72.2%</div><div class="sub">205 / 284 笔提单</div></article>
+    <article class="card"><div class="label">新增 · S / D</div><div class="num">6.7 倍</div><div class="sub">25.37% / 3.76% · 对照校准</div></article>
+  </div>
+  <ol class="pts">
+    <li><span class="t">1. 活跃组区分度满足筛选前提</span><span class="d">意愿分从高到低，五档提单率严格递减；后 30%（D 档）提单率仅 0.36%，相对 S 档约 1/25。过滤极低分用户，预期漏掉的提单很少。</span></li>
+    <li><span class="t">2. 头部能兜住大部分提单</span><span class="d">活跃组前 10% 覆盖 41.9% 提单用户，前 1/3 覆盖 72.2%。优先触达高分档即可保住主要召回效果。</span></li>
+    <li><span class="t">3. 新增组作对照：全量召回下模型仍单调</span><span class="d">新增组本批几乎全量触达，五档仍单调（S 25.37%→D 3.76%），说明分档方向可信；业务上筛选价值主要落在活跃组。</span></li>
+  </ol>
+</section>
+
+<section id="why">
+  <h2>为何重点校验活跃组</h2>
+  <div class="callout">
+    <span class="ch">业务逻辑</span>
+    <div class="bd">
+      新增（流失）名单体量相对可控，策略上可全量召回，模型分档更多用于排序与运营分层。<br>
+      活跃名单体量大（本批 1.3 万人），若全量触达成本高。提单意愿模型的核心用途是：在活跃池中筛出意愿较高的用户再召回；若预测校准，被滤掉的极低意愿用户本身几乎不提单，从而在不明显损伤召回效果的前提下降低触达成本。
+    </div>
+  </div>
+  <div class="callout gold">
+    <span class="ch">校验标准（本报告）</span>
+    <div class="bd">
+      ① 五档提单率是否随 score 严格单调；② 低分档（尤其 D 档）是否接近「几乎不提」；③ 高分档是否捕获大部分实际提单用户。本报告不使用 AUC。
+    </div>
+  </div>
+</section>
+
+<section id="bands">
+  <h2>五档提单率（score 高→低）</h2>
+  <p class="desc">按名单内 score 从高到低切分：S 前10% / A 10%–20% / B 20%–40% / C 40%–70% / D 后30%。提单 = 召回日（含）起至 2026-11-02 至少一笔 apply。</p>
+
+  <h3>新增1030</h3>
+  <div class="table">
+    <table>
+      <thead>
+        <tr><th>档位</th><th>含义</th><th>召回用户数</th><th>提单用户数</th><th>提单率</th><th>score 区间</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>S</td><td>前10%</td><td>134</td><td>34</td><td>25.37%</td><td>0.2517–0.6117</td></tr>
+        <tr><td>A</td><td>10%–20%</td><td>133</td><td>21</td><td>15.79%</td><td>0.1737–0.2516</td></tr>
+        <tr><td>B</td><td>20%–40%</td><td>267</td><td>26</td><td>9.74%</td><td>0.0991–0.1736</td></tr>
+        <tr><td>C</td><td>40%–70%</td><td>400</td><td>30</td><td>7.50%</td><td>0.0502–0.0990</td></tr>
+        <tr><td>D</td><td>后30%</td><td>399</td><td>15</td><td>3.76%</td><td>0.0158–0.0501</td></tr>
+        <tr class="total"><td>合计</td><td>—</td><td>1,333</td><td>126</td><td>9.45%</td><td>—</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h3>活跃1030</h3>
+  <div class="table">
+    <table>
+      <thead>
+        <tr><th>档位</th><th>含义</th><th>召回用户数</th><th>提单用户数</th><th>提单率</th><th>score 区间</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>S</td><td>前10%</td><td>1,301</td><td>119</td><td>9.15%</td><td>0.0652–0.4617</td></tr>
+        <tr><td>A</td><td>10%–20%</td><td>1,301</td><td>50</td><td>3.84%</td><td>0.0328–0.0652</td></tr>
+        <tr><td>B</td><td>20%–40%</td><td>2,602</td><td>54</td><td>2.08%</td><td>0.0165–0.0328</td></tr>
+        <tr><td>C</td><td>40%–70%</td><td>3,903</td><td>47</td><td>1.20%</td><td>0.0087–0.0165</td></tr>
+        <tr><td>D</td><td>后30%</td><td>3,903</td><td>14</td><td>0.36%</td><td>0.0054–0.0087</td></tr>
+        <tr class="total"><td>合计</td><td>—</td><td>13,010</td><td>284</td><td>2.18%</td><td>—</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="grid g2" style="margin-top:14px">
+    <div class="chart">
+      <h3>新增1030 · 五档提单率</h3>
+      <p>召回用户数标注在柱顶旁的结构见上表</p>
+      <div class="box"><canvas id="cNew"></canvas></div>
+    </div>
+    <div class="chart">
+      <h3>活跃1030 · 五档提单率</h3>
+      <p>D 档接近「几乎不提」，适合优先过滤</p>
+      <div class="box"><canvas id="cAct"></canvas></div>
+    </div>
+  </div>
+</section>
+
+<section id="capture">
+  <h2>捕获结构与筛人含义（活跃组）</h2>
+  <p class="desc">捕获率 = 该分位内提单用户数 / 本批全部提单用户数。筛人测算按「不触达某低分档」估算触达节省与提单损失。</p>
+
+  <div class="table">
+    <table>
+      <thead>
+        <tr><th>策略示意（活跃1030）</th><th>仍触达人数</th><th>触达占比</th><th>覆盖提单用户</th><th>提单捕获率</th><th>漏掉提单</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>只触达前 10%（S）</td><td>1,301</td><td>10.0%</td><td>119</td><td>41.9%</td><td>165</td></tr>
+        <tr><td>触达前 1/3（约 S+A+部分B）</td><td>约 4,337</td><td>约 33%</td><td>205</td><td>72.2%</td><td>79</td></tr>
+        <tr><td>滤掉后 30%（不触达 D）</td><td>9,107</td><td>70.0%</td><td>270</td><td>95.1%</td><td>14</td></tr>
+        <tr><td>滤掉后 60%（不触达 C+D）</td><td>5,204</td><td>40.0%</td><td>223</td><td>78.5%</td><td>61</td></tr>
+        <tr class="total"><td>全量触达</td><td>13,010</td><td>100%</td><td>284</td><td>100%</td><td>0</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="callout green">
+    <span class="ch">对活跃组运营的直接含义</span>
+    <div class="bd">
+      若只过滤 D 档（后 30%）：触达量降约 30%，仅损失 14 个提单用户（占全部提单 4.9%），D 档提单率 0.36%，符合「滤掉基本不提」的假设。<br>
+      若更激进滤掉 C+D（后 60%）：触达量降至 40%，仍可保留约 78.5% 的提单用户；成本下降更明显，但漏提增至 61 人，需结合触达成本与额度供给权衡。
+    </div>
+  </div>
+
+  <div class="grid g2" style="margin-top:8px">
+    <article class="card">
+      <div class="label">新增1030 · 头部捕获（对照）</div>
+      <div class="num">前10% 27.0% · 前1/3 61.1%</div>
+      <div class="sub">34/126 · 77/126；全量召回下仍见分层</div>
+    </article>
+    <article class="card">
+      <div class="label">活跃 priority_group</div>
+      <div class="num">A 4.52% · B 0.87%</div>
+      <div class="sub">高意愿 4,689 人提单 212；中高意愿 8,321 人提单 72（约 5.2 倍）</div>
+    </article>
+  </div>
+</section>
+
+<section id="scope">
+  <h2>口径</h2>
+  <div class="table def">
+    <table>
+      <thead><tr><th>项</th><th>说明</th></tr></thead>
+      <tbody>
+        <tr><td>新增样本</td><td>wangchuanliang.t7recalllist_1030；user 去重取最高 score</td></tr>
+        <tr><td>活跃样本</td><td>wangchuanliang.t7recalllist_active1030；同上</td></tr>
+        <tr><td>意愿分</td><td>名单字段 score</td></tr>
+        <tr><td>召回日</td><td>2026-10-30</td></tr>
+        <tr><td>提单</td><td>apply_date ≥ 召回日且 ≤ 2026-11-02，用户至少一笔</td></tr>
+        <tr><td>五档</td><td>批内按 score 降序：S 前10% / A 10–20% / B 20–40% / C 40–70% / D 后30%</td></tr>
+        <tr><td>捕获率</td><td>分位内提单用户 / 该批全部提单用户</td></tr>
+        <tr><td>报告生成</td><td>2026-11-02；本页不含 AUC</td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<footer class="foot">
+  数据库 kaby_dw · schema wangchuanliang · 报告生成日 2026-11-02<br>
+  本地副本：T7_1030提单意愿分预测校验报告.html · 同步发布至 wangchl03/report Pages
+</footer>
+</main>
+<script>
+const bandLabels=['S','A','B','C','D'];
+const newRates=[25.37,15.79,9.74,7.50,3.76];
+const actRates=[9.15,3.84,2.08,1.20,0.36];
+const newN=[134,133,267,400,399];
+const actN=[1301,1301,2602,3903,3903];
+const newA=[34,21,26,30,15];
+const actA=[119,50,54,47,14];
+function mk(id, rates, ns, as, title){
+  new Chart(document.getElementById(id),{
+    type:'bar',
+    data:{
+      labels:bandLabels,
+      datasets:[{
+        label:'提单率%',
+        data:rates,
+        backgroundColor:['#43c7e7','#64dcae','#ffc26b','#f0a0b8','#7fa6c2'],
+        borderRadius:6
+      }]
+    },
+    options:{
+      responsive:true,maintainAspectRatio:false,
+      plugins:{
+        legend:{display:false},
+        tooltip:{callbacks:{
+          afterBody:(items)=>{
+            const i=items[0].dataIndex;
+            return ['召回用户 '+ns[i],'提单用户 '+as[i]];
+          }
+        }}
+      },
+      scales:{
+        y:{ticks:{callback:v=>v+'%'},grid:{color:'rgba(42,92,126,.25)'},title:{display:true,text:title,color:'#aac5da'}},
+        x:{grid:{display:false},ticks:{color:'#c6dae7'}}
+      }
+    }
+  });
+}
+mk('cNew', newRates, newN, newA, '新增1030 提单率');
+mk('cAct', actRates, actN, actA, '活跃1030 提单率');
+</script>
+</body>
+</html>
