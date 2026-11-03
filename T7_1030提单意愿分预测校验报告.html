@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>T7 1030 提单意愿模型预测校验</title>
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.2.0/dist/chartjs-plugin-datalabels.min.js"></script>
 <style>
 :root{--bg:#06192b;--line:#2a5c7e;--text:#eff8ff;--muted:#aac5da;--cy:#43c7e7;--gr:#64dcae;--am:#ffc26b;--pk:#f68ab0}
 *{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font:16px/1.75 -apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei",sans-serif}
@@ -18,9 +19,9 @@
 h2{font-size:22px;font-weight:800;color:#fff;margin:44px 0 4px;padding:0 0 8px;border-bottom:1px solid var(--line);scroll-margin-top:58px}
 h3{font-size:16px;font-weight:750;color:#f3fbff;margin:18px 0 8px}
 .desc{color:var(--muted);margin:0 0 12px;font-size:13px;line-height:1.6}
-.hero-facts{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin-top:16px;text-align:left}
-.hero-facts .f{background:rgba(10,41,68,.75);border:1px solid var(--line);border-radius:10px;padding:10px 12px}
-.hero-facts .k{display:block;font-size:11px;font-weight:800;letter-spacing:.1em;color:var(--cy);margin-bottom:4px}
+.hero-facts{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin:18px 0 8px;text-align:left}
+.hero-facts .f{background:rgba(10,41,68,.75);border:1px solid var(--line);border-radius:10px;padding:14px 14px}
+.hero-facts .k{display:block;font-size:22px;font-weight:800;letter-spacing:.08em;color:var(--cy);margin-bottom:8px}
 .hero-facts .v{display:block;font-size:13px;color:#c5d8e6;line-height:1.55}
 .grid{display:grid;gap:14px}.g4{grid-template-columns:repeat(4,minmax(0,1fr))}.g2{grid-template-columns:repeat(2,minmax(0,1fr))}
 .card,.chart{background:rgba(10,41,68,.95);border:1px solid var(--line);border-radius:14px;padding:16px}
@@ -49,19 +50,23 @@ tr.total td{background:rgba(100,220,174,.12);font-weight:700;color:#fff}
 <header class="hero">
   <div class="kicker">T7 召回 · 提单意愿模型 · 报告生成 2026-11-02</div>
   <h1>1030 新增 / 活跃批次：提单意愿分预测校验</h1>
-  <div class="hero-facts">
-    <div class="f"><span class="k">业务场景</span><span class="v">新增组全量召回；活跃组用意愿分筛掉极低意愿用户，控触达成本、保召回效果。</span></div>
-    <div class="f"><span class="k">样本</span><span class="v">新增 t7recalllist_1030（1,333 人）；活跃 t7recalllist_active1030（13,010 人）。召回日 2026-10-30。</span></div>
-    <div class="f"><span class="k">观察窗</span><span class="v">召回日至 2026-11-02（约 3 日）。绝对提单率仍在爬坡，重点看分档单调与捕获结构。</span></div>
-  </div>
 </header>
 <nav class="nav">
+  <a href="#meta">背景</a>
   <a href="#kpi">结论</a>
   <a href="#why">为何校验活跃组</a>
   <a href="#bands">五档提单率</a>
   <a href="#capture">捕获与筛人</a>
   <a href="#scope">口径</a>
 </nav>
+
+<section id="meta">
+  <div class="hero-facts">
+    <div class="f"><span class="k">业务场景</span><span class="v">新增组全量召回；活跃组用意愿分筛掉极低意愿用户，控触达成本、保召回效果。</span></div>
+    <div class="f"><span class="k">样本</span><span class="v">新增 t7recalllist_1030（1,333 人）；活跃 t7recalllist_active1030（13,010 人）。召回日 2026-10-30。</span></div>
+    <div class="f"><span class="k">观察窗</span><span class="v">召回日至 2026-11-02（约 3 日）。绝对提单率仍在爬坡，重点看分档单调与捕获结构。</span></div>
+  </div>
+</section>
 
 <section id="kpi">
   <h2>结论</h2>
@@ -136,12 +141,12 @@ tr.total td{background:rgba(100,220,174,.12);font-weight:700;color:#fff}
   <div class="grid g2" style="margin-top:14px">
     <div class="chart">
       <h3>新增1030 · 五档提单率</h3>
-      <p>召回用户数标注在柱顶旁的结构见上表</p>
+      <p>横轴含人数占比；柱顶为提单率数据标签</p>
       <div class="box"><canvas id="cNew"></canvas></div>
     </div>
     <div class="chart">
       <h3>活跃1030 · 五档提单率</h3>
-      <p>D 档接近「几乎不提」，适合优先过滤</p>
+      <p>横轴含人数占比；柱顶为提单率数据标签</p>
       <div class="box"><canvas id="cAct"></canvas></div>
     </div>
   </div>
@@ -170,7 +175,7 @@ tr.total td{background:rgba(100,220,174,.12);font-weight:700;color:#fff}
     <span class="ch">对活跃组运营的直接含义</span>
     <div class="bd">
       若只过滤 D 档（后 30%）：触达量降约 30%，仅损失 14 个提单用户（占全部提单 4.9%），D 档提单率 0.36%，符合「滤掉基本不提」的假设。<br>
-      若更激进滤掉 C+D（后 60%）：触达量降至 40%，仍可保留约 78.5% 的提单用户；成本下降更明显，但漏提增至 61 人，需结合触达成本与额度供给权衡。
+      若更激进滤掉 C+D（后 60%）：触达量降至 40%，仍可保留约 78.5% 的提单用户；成本下降更明显，但漏提增至 61 人，可以继续跟踪实验结果。
     </div>
   </div>
 
@@ -213,18 +218,24 @@ tr.total td{background:rgba(100,220,174,.12);font-weight:700;color:#fff}
 </footer>
 </main>
 <script>
-const bandLabels=['S','A','B','C','D'];
+Chart.register(ChartDataLabels);
 const newRates=[25.37,15.79,9.74,7.50,3.76];
 const actRates=[9.15,3.84,2.08,1.20,0.36];
 const newN=[134,133,267,400,399];
 const actN=[1301,1301,2602,3903,3903];
 const newA=[34,21,26,30,15];
 const actA=[119,50,54,47,14];
-function mk(id, rates, ns, as, title){
+const newShare=['10.1%','10.0%','20.0%','30.0%','29.9%'];
+const actShare=['10.0%','10.0%','20.0%','30.0%','30.0%'];
+const bands=['S','A','B','C','D'];
+function labelsWithShare(shares){
+  return bands.map((b,i)=>b+' '+shares[i]);
+}
+function mk(id, rates, ns, as, shares, title){
   new Chart(document.getElementById(id),{
     type:'bar',
     data:{
-      labels:bandLabels,
+      labels:labelsWithShare(shares),
       datasets:[{
         label:'提单率%',
         data:rates,
@@ -234,24 +245,37 @@ function mk(id, rates, ns, as, title){
     },
     options:{
       responsive:true,maintainAspectRatio:false,
+      layout:{padding:{top:18}},
       plugins:{
         legend:{display:false},
+        datalabels:{
+          anchor:'end',
+          align:'end',
+          color:'#eff8ff',
+          font:{weight:'700',size:12},
+          formatter:(v)=>v.toFixed(2)+'%'
+        },
         tooltip:{callbacks:{
           afterBody:(items)=>{
             const i=items[0].dataIndex;
-            return ['召回用户 '+ns[i],'提单用户 '+as[i]];
+            return ['人数占比 '+shares[i],'召回用户 '+ns[i],'提单用户 '+as[i]];
           }
         }}
       },
       scales:{
-        y:{ticks:{callback:v=>v+'%'},grid:{color:'rgba(42,92,126,.25)'},title:{display:true,text:title,color:'#aac5da'}},
-        x:{grid:{display:false},ticks:{color:'#c6dae7'}}
+        y:{
+          suggestedMax:Math.max(...rates)*1.18,
+          ticks:{callback:v=>v+'%'},
+          grid:{color:'rgba(42,92,126,.25)'},
+          title:{display:true,text:title,color:'#aac5da'}
+        },
+        x:{grid:{display:false},ticks:{color:'#c6dae7',font:{size:12,weight:'600'}}}
       }
     }
   });
 }
-mk('cNew', newRates, newN, newA, '新增1030 提单率');
-mk('cAct', actRates, actN, actA, '活跃1030 提单率');
+mk('cNew', newRates, newN, newA, newShare, '新增1030 提单率');
+mk('cAct', actRates, actN, actA, actShare, '活跃1030 提单率');
 </script>
 </body>
 </html>
