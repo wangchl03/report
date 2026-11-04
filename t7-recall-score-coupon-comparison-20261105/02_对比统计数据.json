@@ -1,0 +1,1692 @@
+{
+  "title": "T7+召回：五批提单意愿指标效果对比",
+  "report_date": "2026-11-05",
+  "timezone": "America/Belize",
+  "complete_data_cutoff_exclusive": "2026-11-04 00:00:00",
+  "snapshots_business": "2026-11-04 10:41:17.238601",
+  "batches": [
+    {
+      "batch": "t7recalllist_0930",
+      "recall_date": "2026-09-30",
+      "timezone": "America/Belize",
+      "report_date": "2026-11-05",
+      "source_users": 2577,
+      "coupon_selected_users": 2342,
+      "score_valid_users": 2577,
+      "score_selected_users": 2342,
+      "invalid_coupon_users": 235,
+      "invalid_coupon_breakdown": [
+        {
+          "label": "__MISSING__",
+          "users": 235
+        }
+      ],
+      "excluded_blacklist_users_in_this_batch": 0,
+      "group_sizes": [
+        30,
+        211,
+        385,
+        910,
+        806
+      ],
+      "score_valid_range_inclusive": [
+        0,
+        3000
+      ],
+      "score_tie_rule": "score DESC, user_id ASC",
+      "groups": [
+        {
+          "group": 1,
+          "name": "第一组",
+          "users": 30,
+          "coupon_label": "637-1000",
+          "score_rank_min": 1,
+          "score_rank_max": 30,
+          "score_min": "98.87",
+          "score_max": "100",
+          "windows": {
+            "3": {
+              "coupon_applicants": 6,
+              "score_applicants": 12,
+              "coupon_rate": "0.2",
+              "score_rate": "0.4",
+              "difference_pp": "20"
+            },
+            "7": {
+              "coupon_applicants": 8,
+              "score_applicants": 16,
+              "coupon_rate": "0.2666666666666666666666666667",
+              "score_rate": "0.5333333333333333333333333333",
+              "difference_pp": "26.66666666666666666666666667"
+            },
+            "15": {
+              "coupon_applicants": 12,
+              "score_applicants": 21,
+              "coupon_rate": "0.4",
+              "score_rate": "0.7",
+              "difference_pp": "30"
+            },
+            "30": {
+              "coupon_applicants": 16,
+              "score_applicants": 24,
+              "coupon_rate": "0.5333333333333333333333333333",
+              "score_rate": "0.8",
+              "difference_pp": "26.66666666666666666666666667"
+            }
+          }
+        },
+        {
+          "group": 2,
+          "name": "第二组",
+          "users": 211,
+          "coupon_label": "561-636",
+          "score_rank_min": 31,
+          "score_rank_max": 241,
+          "score_min": "90.69",
+          "score_max": "98.84",
+          "windows": {
+            "3": {
+              "coupon_applicants": 19,
+              "score_applicants": 59,
+              "coupon_rate": "0.09004739336492890995260663507",
+              "score_rate": "0.2796208530805687203791469194",
+              "difference_pp": "18.95734597156398104265402844"
+            },
+            "7": {
+              "coupon_applicants": 36,
+              "score_applicants": 81,
+              "coupon_rate": "0.1706161137440758293838862559",
+              "score_rate": "0.3838862559241706161137440758",
+              "difference_pp": "21.32701421800947867298578199"
+            },
+            "15": {
+              "coupon_applicants": 54,
+              "score_applicants": 116,
+              "coupon_rate": "0.2559241706161137440758293839",
+              "score_rate": "0.5497630331753554502369668246",
+              "difference_pp": "29.38388625592417061611374408"
+            },
+            "30": {
+              "coupon_applicants": 80,
+              "score_applicants": 136,
+              "coupon_rate": "0.3791469194312796208530805687",
+              "score_rate": "0.6445497630331753554502369668",
+              "difference_pp": "26.54028436018957345971563981"
+            }
+          }
+        },
+        {
+          "group": 3,
+          "name": "第三组",
+          "users": 385,
+          "coupon_label": "518-560",
+          "score_rank_min": 242,
+          "score_rank_max": 626,
+          "score_min": "75.75",
+          "score_max": "90.65",
+          "windows": {
+            "3": {
+              "coupon_applicants": 37,
+              "score_applicants": 57,
+              "coupon_rate": "0.09610389610389610389610389610",
+              "score_rate": "0.1480519480519480519480519481",
+              "difference_pp": "5.194805194805194805194805195"
+            },
+            "7": {
+              "coupon_applicants": 74,
+              "score_applicants": 104,
+              "coupon_rate": "0.1922077922077922077922077922",
+              "score_rate": "0.2701298701298701298701298701",
+              "difference_pp": "7.792207792207792207792207792"
+            },
+            "15": {
+              "coupon_applicants": 118,
+              "score_applicants": 162,
+              "coupon_rate": "0.3064935064935064935064935065",
+              "score_rate": "0.4207792207792207792207792208",
+              "difference_pp": "11.42857142857142857142857143"
+            },
+            "30": {
+              "coupon_applicants": 159,
+              "score_applicants": 216,
+              "coupon_rate": "0.4129870129870129870129870130",
+              "score_rate": "0.5610389610389610389610389610",
+              "difference_pp": "14.80519480519480519480519481"
+            }
+          }
+        },
+        {
+          "group": 4,
+          "name": "第四组",
+          "users": 910,
+          "coupon_label": "460-517",
+          "score_rank_min": 627,
+          "score_rank_max": 1536,
+          "score_min": "40.43",
+          "score_max": "75.71",
+          "windows": {
+            "3": {
+              "coupon_applicants": 77,
+              "score_applicants": 59,
+              "coupon_rate": "0.08461538461538461538461538462",
+              "score_rate": "0.06483516483516483516483516484",
+              "difference_pp": "-1.978021978021978021978021978"
+            },
+            "7": {
+              "coupon_applicants": 143,
+              "score_applicants": 135,
+              "coupon_rate": "0.1571428571428571428571428571",
+              "score_rate": "0.1483516483516483516483516484",
+              "difference_pp": "-0.8791208791208791208791208791"
+            },
+            "15": {
+              "coupon_applicants": 230,
+              "score_applicants": 237,
+              "coupon_rate": "0.2527472527472527472527472527",
+              "score_rate": "0.2604395604395604395604395604",
+              "difference_pp": "0.7692307692307692307692307692"
+            },
+            "30": {
+              "coupon_applicants": 332,
+              "score_applicants": 364,
+              "coupon_rate": "0.3648351648351648351648351648",
+              "score_rate": "0.4",
+              "difference_pp": "3.516483516483516483516483516"
+            }
+          }
+        },
+        {
+          "group": 5,
+          "name": "第五组",
+          "users": 806,
+          "coupon_label": "459-",
+          "score_rank_min": 1537,
+          "score_rank_max": 2342,
+          "score_min": "9.16",
+          "score_max": "40.4",
+          "windows": {
+            "3": {
+              "coupon_applicants": 46,
+              "score_applicants": 25,
+              "coupon_rate": "0.05707196029776674937965260546",
+              "score_rate": "0.03101736972704714640198511166",
+              "difference_pp": "-2.605459057071960297766749380"
+            },
+            "7": {
+              "coupon_applicants": 89,
+              "score_applicants": 53,
+              "coupon_rate": "0.1104218362282878411910669975",
+              "score_rate": "0.06575682382133995037220843672",
+              "difference_pp": "-4.466501240694789081885856079"
+            },
+            "15": {
+              "coupon_applicants": 165,
+              "score_applicants": 99,
+              "coupon_rate": "0.2047146401985111662531017370",
+              "score_rate": "0.1228287841191066997518610422",
+              "difference_pp": "-8.188585607940446650124069479"
+            },
+            "30": {
+              "coupon_applicants": 265,
+              "score_applicants": 170,
+              "coupon_rate": "0.3287841191066997518610421836",
+              "score_rate": "0.2109181141439205955334987593",
+              "difference_pp": "-11.78660049627791563275434243"
+            }
+          }
+        }
+      ],
+      "cumulative": [
+        {
+          "top_groups": 1,
+          "users": 30,
+          "windows": {
+            "3": {
+              "coupon_applicants": 6,
+              "score_applicants": 12,
+              "coupon_rate": "0.2",
+              "score_rate": "0.4",
+              "difference_pp": "20",
+              "additional_observed_applicants": 6
+            },
+            "7": {
+              "coupon_applicants": 8,
+              "score_applicants": 16,
+              "coupon_rate": "0.2666666666666666666666666667",
+              "score_rate": "0.5333333333333333333333333333",
+              "difference_pp": "26.66666666666666666666666667",
+              "additional_observed_applicants": 8
+            },
+            "15": {
+              "coupon_applicants": 12,
+              "score_applicants": 21,
+              "coupon_rate": "0.4",
+              "score_rate": "0.7",
+              "difference_pp": "30",
+              "additional_observed_applicants": 9
+            },
+            "30": {
+              "coupon_applicants": 16,
+              "score_applicants": 24,
+              "coupon_rate": "0.5333333333333333333333333333",
+              "score_rate": "0.8",
+              "difference_pp": "26.66666666666666666666666667",
+              "additional_observed_applicants": 8
+            }
+          }
+        },
+        {
+          "top_groups": 2,
+          "users": 241,
+          "windows": {
+            "3": {
+              "coupon_applicants": 25,
+              "score_applicants": 71,
+              "coupon_rate": "0.1037344398340248962655601660",
+              "score_rate": "0.2946058091286307053941908714",
+              "difference_pp": "19.08713692946058091286307054",
+              "additional_observed_applicants": 46
+            },
+            "7": {
+              "coupon_applicants": 44,
+              "score_applicants": 97,
+              "coupon_rate": "0.1825726141078838174273858921",
+              "score_rate": "0.4024896265560165975103734440",
+              "difference_pp": "21.99170124481327800829875519",
+              "additional_observed_applicants": 53
+            },
+            "15": {
+              "coupon_applicants": 66,
+              "score_applicants": 137,
+              "coupon_rate": "0.2738589211618257261410788382",
+              "score_rate": "0.5684647302904564315352697095",
+              "difference_pp": "29.46058091286307053941908714",
+              "additional_observed_applicants": 71
+            },
+            "30": {
+              "coupon_applicants": 96,
+              "score_applicants": 160,
+              "coupon_rate": "0.3983402489626556016597510373",
+              "score_rate": "0.6639004149377593360995850622",
+              "difference_pp": "26.55601659751037344398340249",
+              "additional_observed_applicants": 64
+            }
+          }
+        },
+        {
+          "top_groups": 3,
+          "users": 626,
+          "windows": {
+            "3": {
+              "coupon_applicants": 62,
+              "score_applicants": 128,
+              "coupon_rate": "0.09904153354632587859424920128",
+              "score_rate": "0.2044728434504792332268370607",
+              "difference_pp": "10.54313099041533546325878594",
+              "additional_observed_applicants": 66
+            },
+            "7": {
+              "coupon_applicants": 118,
+              "score_applicants": 201,
+              "coupon_rate": "0.1884984025559105431309904153",
+              "score_rate": "0.3210862619808306709265175719",
+              "difference_pp": "13.25878594249201277955271565",
+              "additional_observed_applicants": 83
+            },
+            "15": {
+              "coupon_applicants": 184,
+              "score_applicants": 299,
+              "coupon_rate": "0.2939297124600638977635782748",
+              "score_rate": "0.4776357827476038338658146965",
+              "difference_pp": "18.37060702875399361022364217",
+              "additional_observed_applicants": 115
+            },
+            "30": {
+              "coupon_applicants": 255,
+              "score_applicants": 376,
+              "coupon_rate": "0.4073482428115015974440894569",
+              "score_rate": "0.6006389776357827476038338658",
+              "difference_pp": "19.32907348242811501597444089",
+              "additional_observed_applicants": 121
+            }
+          }
+        },
+        {
+          "top_groups": 4,
+          "users": 1536,
+          "windows": {
+            "3": {
+              "coupon_applicants": 139,
+              "score_applicants": 187,
+              "coupon_rate": "0.09049479166666666666666666667",
+              "score_rate": "0.1217447916666666666666666667",
+              "difference_pp": "3.125",
+              "additional_observed_applicants": 48
+            },
+            "7": {
+              "coupon_applicants": 261,
+              "score_applicants": 336,
+              "coupon_rate": "0.169921875",
+              "score_rate": "0.21875",
+              "difference_pp": "4.8828125",
+              "additional_observed_applicants": 75
+            },
+            "15": {
+              "coupon_applicants": 414,
+              "score_applicants": 536,
+              "coupon_rate": "0.26953125",
+              "score_rate": "0.3489583333333333333333333333",
+              "difference_pp": "7.942708333333333333333333333",
+              "additional_observed_applicants": 122
+            },
+            "30": {
+              "coupon_applicants": 587,
+              "score_applicants": 740,
+              "coupon_rate": "0.3821614583333333333333333333",
+              "score_rate": "0.4817708333333333333333333333",
+              "difference_pp": "9.9609375",
+              "additional_observed_applicants": 153
+            }
+          }
+        },
+        {
+          "top_groups": 5,
+          "users": 2342,
+          "windows": {
+            "3": {
+              "coupon_applicants": 185,
+              "score_applicants": 212,
+              "coupon_rate": "0.07899231426131511528608027327",
+              "score_rate": "0.09052092228864218616567036721",
+              "difference_pp": "1.152860802732707087959009394",
+              "additional_observed_applicants": 27
+            },
+            "7": {
+              "coupon_applicants": 350,
+              "score_applicants": 389,
+              "coupon_rate": "0.1494449188727583262169086251",
+              "score_rate": "0.1660973526900085397096498719",
+              "difference_pp": "1.665243381725021349274124680",
+              "additional_observed_applicants": 39
+            },
+            "15": {
+              "coupon_applicants": 579,
+              "score_applicants": 635,
+              "coupon_rate": "0.2472245943637916310845431255",
+              "score_rate": "0.2711357813834329632792485056",
+              "difference_pp": "2.391118701964133219470538002",
+              "additional_observed_applicants": 56
+            },
+            "30": {
+              "coupon_applicants": 852,
+              "score_applicants": 910,
+              "coupon_rate": "0.3637916310845431255337318531",
+              "score_rate": "0.3885567890691716481639624253",
+              "difference_pp": "2.476515798462852263023057216",
+              "additional_observed_applicants": 58
+            }
+          }
+        }
+      ],
+      "windows": {
+        "3": {
+          "start_inclusive": "2026-09-30 00:00:00",
+          "end_exclusive": "2026-10-03 00:00:00"
+        },
+        "7": {
+          "start_inclusive": "2026-09-30 00:00:00",
+          "end_exclusive": "2026-10-07 00:00:00"
+        },
+        "15": {
+          "start_inclusive": "2026-09-30 00:00:00",
+          "end_exclusive": "2026-10-15 00:00:00"
+        },
+        "30": {
+          "start_inclusive": "2026-09-30 00:00:00",
+          "end_exclusive": "2026-10-30 00:00:00"
+        }
+      },
+      "snapshots_business": {
+        "coupon": "2026-11-04 10:41:17.238601",
+        "score": "2026-11-04 10:41:17.238601"
+      },
+      "source_conflict_free": true,
+      "results_aggregate_only": true,
+      "grouping_rule": "Two independent selections; each pair of groups has equal size. Score candidates not filtered by coupon label.",
+      "key": "0930",
+      "display_date": "9月30日",
+      "gradients": {
+        "coupon": {
+          "3": false,
+          "7": false,
+          "15": false,
+          "30": false
+        },
+        "score": {
+          "3": true,
+          "7": true,
+          "15": true,
+          "30": true
+        }
+      }
+    },
+    {
+      "batch": "t7recalllist_1010",
+      "recall_date": "2026-10-10",
+      "timezone": "America/Belize",
+      "report_date": "2026-11-05",
+      "source_users": 2131,
+      "coupon_selected_users": 2129,
+      "score_valid_users": 2131,
+      "score_selected_users": 2129,
+      "invalid_coupon_users": 2,
+      "invalid_coupon_breakdown": [
+        {
+          "label": "-90",
+          "users": 2
+        }
+      ],
+      "excluded_blacklist_users_in_this_batch": 0,
+      "group_sizes": [
+        41,
+        206,
+        368,
+        806,
+        708
+      ],
+      "score_valid_range_inclusive": [
+        0,
+        3000
+      ],
+      "score_tie_rule": "score DESC, user_id ASC",
+      "groups": [
+        {
+          "group": 1,
+          "name": "第一组",
+          "users": 41,
+          "coupon_label": "637-1000",
+          "score_rank_min": 1,
+          "score_rank_max": 41,
+          "score_min": "99.6",
+          "score_max": "100",
+          "windows": {
+            "3": {
+              "coupon_applicants": 5,
+              "score_applicants": 13,
+              "coupon_rate": "0.1219512195121951219512195122",
+              "score_rate": "0.3170731707317073170731707317",
+              "difference_pp": "19.51219512195121951219512195"
+            },
+            "7": {
+              "coupon_applicants": 9,
+              "score_applicants": 21,
+              "coupon_rate": "0.2195121951219512195121951220",
+              "score_rate": "0.5121951219512195121951219512",
+              "difference_pp": "29.26829268292682926829268293"
+            },
+            "15": {
+              "coupon_applicants": 13,
+              "score_applicants": 26,
+              "coupon_rate": "0.3170731707317073170731707317",
+              "score_rate": "0.6341463414634146341463414634",
+              "difference_pp": "31.70731707317073170731707317"
+            }
+          }
+        },
+        {
+          "group": 2,
+          "name": "第二组",
+          "users": 206,
+          "coupon_label": "561-636",
+          "score_rank_min": 42,
+          "score_rank_max": 247,
+          "score_min": "98.3",
+          "score_max": "99.59",
+          "windows": {
+            "3": {
+              "coupon_applicants": 27,
+              "score_applicants": 44,
+              "coupon_rate": "0.1310679611650485436893203883",
+              "score_rate": "0.2135922330097087378640776699",
+              "difference_pp": "8.252427184466019417475728155"
+            },
+            "7": {
+              "coupon_applicants": 52,
+              "score_applicants": 79,
+              "coupon_rate": "0.2524271844660194174757281553",
+              "score_rate": "0.3834951456310679611650485437",
+              "difference_pp": "13.10679611650485436893203883"
+            },
+            "15": {
+              "coupon_applicants": 72,
+              "score_applicants": 114,
+              "coupon_rate": "0.3495145631067961165048543689",
+              "score_rate": "0.5533980582524271844660194175",
+              "difference_pp": "20.38834951456310679611650485"
+            }
+          }
+        },
+        {
+          "group": 3,
+          "name": "第三组",
+          "users": 368,
+          "coupon_label": "518-560",
+          "score_rank_min": 248,
+          "score_rank_max": 615,
+          "score_min": "96.39",
+          "score_max": "98.3",
+          "windows": {
+            "3": {
+              "coupon_applicants": 44,
+              "score_applicants": 56,
+              "coupon_rate": "0.1195652173913043478260869565",
+              "score_rate": "0.1521739130434782608695652174",
+              "difference_pp": "3.260869565217391304347826087"
+            },
+            "7": {
+              "coupon_applicants": 79,
+              "score_applicants": 98,
+              "coupon_rate": "0.2146739130434782608695652174",
+              "score_rate": "0.2663043478260869565217391304",
+              "difference_pp": "5.163043478260869565217391304"
+            },
+            "15": {
+              "coupon_applicants": 119,
+              "score_applicants": 144,
+              "coupon_rate": "0.3233695652173913043478260870",
+              "score_rate": "0.3913043478260869565217391304",
+              "difference_pp": "6.793478260869565217391304348"
+            }
+          }
+        },
+        {
+          "group": 4,
+          "name": "第四组",
+          "users": 806,
+          "coupon_label": "460-517",
+          "score_rank_min": 616,
+          "score_rank_max": 1421,
+          "score_min": "90.05",
+          "score_max": "96.39",
+          "windows": {
+            "3": {
+              "coupon_applicants": 85,
+              "score_applicants": 65,
+              "coupon_rate": "0.1054590570719602977667493797",
+              "score_rate": "0.08064516129032258064516129032",
+              "difference_pp": "-2.481389578163771712158808933"
+            },
+            "7": {
+              "coupon_applicants": 147,
+              "score_applicants": 138,
+              "coupon_rate": "0.1823821339950372208436724566",
+              "score_rate": "0.1712158808933002481389578164",
+              "difference_pp": "-1.116625310173697270471464020"
+            },
+            "15": {
+              "coupon_applicants": 243,
+              "score_applicants": 229,
+              "coupon_rate": "0.3014888337468982630272952854",
+              "score_rate": "0.2841191066997518610421836228",
+              "difference_pp": "-1.736972704714640198511166253"
+            }
+          }
+        },
+        {
+          "group": 5,
+          "name": "第五组",
+          "users": 708,
+          "coupon_label": "459-",
+          "score_rank_min": 1422,
+          "score_rank_max": 2129,
+          "score_min": "80.26",
+          "score_max": "90.05",
+          "windows": {
+            "3": {
+              "coupon_applicants": 48,
+              "score_applicants": 31,
+              "coupon_rate": "0.06779661016949152542372881356",
+              "score_rate": "0.04378531073446327683615819209",
+              "difference_pp": "-2.401129943502824858757062147"
+            },
+            "7": {
+              "coupon_applicants": 103,
+              "score_applicants": 55,
+              "coupon_rate": "0.1454802259887005649717514124",
+              "score_rate": "0.07768361581920903954802259887",
+              "difference_pp": "-6.779661016949152542372881356"
+            },
+            "15": {
+              "coupon_applicants": 177,
+              "score_applicants": 111,
+              "coupon_rate": "0.25",
+              "score_rate": "0.1567796610169491525423728814",
+              "difference_pp": "-9.322033898305084745762711864"
+            }
+          }
+        }
+      ],
+      "cumulative": [
+        {
+          "top_groups": 1,
+          "users": 41,
+          "windows": {
+            "3": {
+              "coupon_applicants": 5,
+              "score_applicants": 13,
+              "coupon_rate": "0.1219512195121951219512195122",
+              "score_rate": "0.3170731707317073170731707317",
+              "difference_pp": "19.51219512195121951219512195",
+              "additional_observed_applicants": 8
+            },
+            "7": {
+              "coupon_applicants": 9,
+              "score_applicants": 21,
+              "coupon_rate": "0.2195121951219512195121951220",
+              "score_rate": "0.5121951219512195121951219512",
+              "difference_pp": "29.26829268292682926829268293",
+              "additional_observed_applicants": 12
+            },
+            "15": {
+              "coupon_applicants": 13,
+              "score_applicants": 26,
+              "coupon_rate": "0.3170731707317073170731707317",
+              "score_rate": "0.6341463414634146341463414634",
+              "difference_pp": "31.70731707317073170731707317",
+              "additional_observed_applicants": 13
+            }
+          }
+        },
+        {
+          "top_groups": 2,
+          "users": 247,
+          "windows": {
+            "3": {
+              "coupon_applicants": 32,
+              "score_applicants": 57,
+              "coupon_rate": "0.1295546558704453441295546559",
+              "score_rate": "0.2307692307692307692307692308",
+              "difference_pp": "10.12145748987854251012145749",
+              "additional_observed_applicants": 25
+            },
+            "7": {
+              "coupon_applicants": 61,
+              "score_applicants": 100,
+              "coupon_rate": "0.2469635627530364372469635628",
+              "score_rate": "0.4048582995951417004048582996",
+              "difference_pp": "15.78947368421052631578947368",
+              "additional_observed_applicants": 39
+            },
+            "15": {
+              "coupon_applicants": 85,
+              "score_applicants": 140,
+              "coupon_rate": "0.3441295546558704453441295547",
+              "score_rate": "0.5668016194331983805668016194",
+              "difference_pp": "22.26720647773279352226720648",
+              "additional_observed_applicants": 55
+            }
+          }
+        },
+        {
+          "top_groups": 3,
+          "users": 615,
+          "windows": {
+            "3": {
+              "coupon_applicants": 76,
+              "score_applicants": 113,
+              "coupon_rate": "0.1235772357723577235772357724",
+              "score_rate": "0.1837398373983739837398373984",
+              "difference_pp": "6.016260162601626016260162602",
+              "additional_observed_applicants": 37
+            },
+            "7": {
+              "coupon_applicants": 140,
+              "score_applicants": 198,
+              "coupon_rate": "0.2276422764227642276422764228",
+              "score_rate": "0.3219512195121951219512195122",
+              "difference_pp": "9.430894308943089430894308943",
+              "additional_observed_applicants": 58
+            },
+            "15": {
+              "coupon_applicants": 204,
+              "score_applicants": 284,
+              "coupon_rate": "0.3317073170731707317073170732",
+              "score_rate": "0.4617886178861788617886178862",
+              "difference_pp": "13.00813008130081300813008130",
+              "additional_observed_applicants": 80
+            }
+          }
+        },
+        {
+          "top_groups": 4,
+          "users": 1421,
+          "windows": {
+            "3": {
+              "coupon_applicants": 161,
+              "score_applicants": 178,
+              "coupon_rate": "0.1133004926108374384236453202",
+              "score_rate": "0.1252638986629134412385643913",
+              "difference_pp": "1.196340605207600281491907108",
+              "additional_observed_applicants": 17
+            },
+            "7": {
+              "coupon_applicants": 287,
+              "score_applicants": 336,
+              "coupon_rate": "0.2019704433497536945812807882",
+              "score_rate": "0.2364532019704433497536945813",
+              "difference_pp": "3.448275862068965517241379310",
+              "additional_observed_applicants": 49
+            },
+            "15": {
+              "coupon_applicants": 447,
+              "score_applicants": 513,
+              "coupon_rate": "0.3145672061928219563687543983",
+              "score_rate": "0.3610133708655876143560872625",
+              "difference_pp": "4.644616467276565798733286418",
+              "additional_observed_applicants": 66
+            }
+          }
+        },
+        {
+          "top_groups": 5,
+          "users": 2129,
+          "windows": {
+            "3": {
+              "coupon_applicants": 209,
+              "score_applicants": 209,
+              "coupon_rate": "0.09816815406294034758102395491",
+              "score_rate": "0.09816815406294034758102395491",
+              "difference_pp": "0",
+              "additional_observed_applicants": 0
+            },
+            "7": {
+              "coupon_applicants": 390,
+              "score_applicants": 391,
+              "coupon_rate": "0.1831845937059652418976045092",
+              "score_rate": "0.1836542977923907937999060592",
+              "difference_pp": "0.04697040864255519023015500235",
+              "additional_observed_applicants": 1
+            },
+            "15": {
+              "coupon_applicants": 624,
+              "score_applicants": 624,
+              "coupon_rate": "0.2930953499295443870361672147",
+              "score_rate": "0.2930953499295443870361672147",
+              "difference_pp": "0",
+              "additional_observed_applicants": 0
+            }
+          }
+        }
+      ],
+      "windows": {
+        "3": {
+          "start_inclusive": "2026-10-10 00:00:00",
+          "end_exclusive": "2026-10-13 00:00:00"
+        },
+        "7": {
+          "start_inclusive": "2026-10-10 00:00:00",
+          "end_exclusive": "2026-10-17 00:00:00"
+        },
+        "15": {
+          "start_inclusive": "2026-10-10 00:00:00",
+          "end_exclusive": "2026-10-25 00:00:00"
+        }
+      },
+      "snapshots_business": {
+        "coupon": "2026-11-04 10:41:17.238601",
+        "score": "2026-11-04 10:41:17.238601"
+      },
+      "source_conflict_free": true,
+      "results_aggregate_only": true,
+      "grouping_rule": "Two independent selections; each pair of groups has equal size. Score candidates not filtered by coupon label.",
+      "key": "1010",
+      "display_date": "10月10日",
+      "gradients": {
+        "coupon": {
+          "3": false,
+          "7": false,
+          "15": false
+        },
+        "score": {
+          "3": true,
+          "7": true,
+          "15": true
+        }
+      }
+    },
+    {
+      "batch": "t7recalllist_1016",
+      "recall_date": "2026-10-16",
+      "timezone": "America/Belize",
+      "report_date": "2026-11-05",
+      "source_users": 1139,
+      "coupon_selected_users": 1136,
+      "score_valid_users": 1139,
+      "score_selected_users": 1136,
+      "invalid_coupon_users": 3,
+      "invalid_coupon_breakdown": [
+        {
+          "label": "-90",
+          "users": 3
+        }
+      ],
+      "excluded_blacklist_users_in_this_batch": 0,
+      "group_sizes": [
+        16,
+        118,
+        192,
+        401,
+        409
+      ],
+      "score_valid_range_inclusive": [
+        0,
+        3000
+      ],
+      "score_tie_rule": "score DESC, user_id ASC",
+      "groups": [
+        {
+          "group": 1,
+          "name": "第一组",
+          "users": 16,
+          "coupon_label": "637-1000",
+          "score_rank_min": 1,
+          "score_rank_max": 16,
+          "score_min": "29.77",
+          "score_max": "38.31",
+          "windows": {
+            "3": {
+              "coupon_applicants": 1,
+              "score_applicants": 5,
+              "coupon_rate": "0.0625",
+              "score_rate": "0.3125",
+              "difference_pp": "25"
+            },
+            "7": {
+              "coupon_applicants": 4,
+              "score_applicants": 8,
+              "coupon_rate": "0.25",
+              "score_rate": "0.5",
+              "difference_pp": "25"
+            },
+            "15": {
+              "coupon_applicants": 6,
+              "score_applicants": 9,
+              "coupon_rate": "0.375",
+              "score_rate": "0.5625",
+              "difference_pp": "18.75"
+            }
+          }
+        },
+        {
+          "group": 2,
+          "name": "第二组",
+          "users": 118,
+          "coupon_label": "561-636",
+          "score_rank_min": 17,
+          "score_rank_max": 134,
+          "score_min": "20.29",
+          "score_max": "29.65",
+          "windows": {
+            "3": {
+              "coupon_applicants": 18,
+              "score_applicants": 19,
+              "coupon_rate": "0.1525423728813559322033898305",
+              "score_rate": "0.1610169491525423728813559322",
+              "difference_pp": "0.8474576271186440677966101695"
+            },
+            "7": {
+              "coupon_applicants": 26,
+              "score_applicants": 39,
+              "coupon_rate": "0.2203389830508474576271186441",
+              "score_rate": "0.3305084745762711864406779661",
+              "difference_pp": "11.01694915254237288135593220"
+            },
+            "15": {
+              "coupon_applicants": 41,
+              "score_applicants": 57,
+              "coupon_rate": "0.3474576271186440677966101695",
+              "score_rate": "0.4830508474576271186440677966",
+              "difference_pp": "13.55932203389830508474576271"
+            }
+          }
+        },
+        {
+          "group": 3,
+          "name": "第三组",
+          "users": 192,
+          "coupon_label": "518-560",
+          "score_rank_min": 135,
+          "score_rank_max": 326,
+          "score_min": "14.92",
+          "score_max": "20.25",
+          "windows": {
+            "3": {
+              "coupon_applicants": 22,
+              "score_applicants": 32,
+              "coupon_rate": "0.1145833333333333333333333333",
+              "score_rate": "0.1666666666666666666666666667",
+              "difference_pp": "5.208333333333333333333333333"
+            },
+            "7": {
+              "coupon_applicants": 39,
+              "score_applicants": 48,
+              "coupon_rate": "0.203125",
+              "score_rate": "0.25",
+              "difference_pp": "4.6875"
+            },
+            "15": {
+              "coupon_applicants": 64,
+              "score_applicants": 77,
+              "coupon_rate": "0.3333333333333333333333333333",
+              "score_rate": "0.4010416666666666666666666667",
+              "difference_pp": "6.770833333333333333333333333"
+            }
+          }
+        },
+        {
+          "group": 4,
+          "name": "第四组",
+          "users": 401,
+          "coupon_label": "460-517",
+          "score_rank_min": 327,
+          "score_rank_max": 727,
+          "score_min": "7.82",
+          "score_max": "14.88",
+          "windows": {
+            "3": {
+              "coupon_applicants": 35,
+              "score_applicants": 30,
+              "coupon_rate": "0.08728179551122194513715710723",
+              "score_rate": "0.07481296758104738154613466334",
+              "difference_pp": "-1.246882793017456359102244389"
+            },
+            "7": {
+              "coupon_applicants": 67,
+              "score_applicants": 60,
+              "coupon_rate": "0.1670822942643391521197007481",
+              "score_rate": "0.1496259351620947630922693267",
+              "difference_pp": "-1.745635910224438902743142145"
+            },
+            "15": {
+              "coupon_applicants": 117,
+              "score_applicants": 125,
+              "coupon_rate": "0.2917705735660847880299251870",
+              "score_rate": "0.3117206982543640897755610973",
+              "difference_pp": "1.995012468827930174563591022"
+            }
+          }
+        },
+        {
+          "group": 5,
+          "name": "第五组",
+          "users": 409,
+          "coupon_label": "459-",
+          "score_rank_min": 728,
+          "score_rank_max": 1136,
+          "score_min": "2.74",
+          "score_max": "7.81",
+          "windows": {
+            "3": {
+              "coupon_applicants": 26,
+              "score_applicants": 17,
+              "coupon_rate": "0.06356968215158924205378973105",
+              "score_rate": "0.04156479217603911980440097800",
+              "difference_pp": "-2.200488997555012224938875306"
+            },
+            "7": {
+              "coupon_applicants": 54,
+              "score_applicants": 37,
+              "coupon_rate": "0.1320293398533007334963325183",
+              "score_rate": "0.09046454767726161369193154034",
+              "difference_pp": "-4.156479217603911980440097800"
+            },
+            "15": {
+              "coupon_applicants": 103,
+              "score_applicants": 65,
+              "coupon_rate": "0.2518337408312958435207823961",
+              "score_rate": "0.1589242053789731051344743276",
+              "difference_pp": "-9.290953545232273838630806846"
+            }
+          }
+        }
+      ],
+      "cumulative": [
+        {
+          "top_groups": 1,
+          "users": 16,
+          "windows": {
+            "3": {
+              "coupon_applicants": 1,
+              "score_applicants": 5,
+              "coupon_rate": "0.0625",
+              "score_rate": "0.3125",
+              "difference_pp": "25",
+              "additional_observed_applicants": 4
+            },
+            "7": {
+              "coupon_applicants": 4,
+              "score_applicants": 8,
+              "coupon_rate": "0.25",
+              "score_rate": "0.5",
+              "difference_pp": "25",
+              "additional_observed_applicants": 4
+            },
+            "15": {
+              "coupon_applicants": 6,
+              "score_applicants": 9,
+              "coupon_rate": "0.375",
+              "score_rate": "0.5625",
+              "difference_pp": "18.75",
+              "additional_observed_applicants": 3
+            }
+          }
+        },
+        {
+          "top_groups": 2,
+          "users": 134,
+          "windows": {
+            "3": {
+              "coupon_applicants": 19,
+              "score_applicants": 24,
+              "coupon_rate": "0.1417910447761194029850746269",
+              "score_rate": "0.1791044776119402985074626866",
+              "difference_pp": "3.731343283582089552238805970",
+              "additional_observed_applicants": 5
+            },
+            "7": {
+              "coupon_applicants": 30,
+              "score_applicants": 47,
+              "coupon_rate": "0.2238805970149253731343283582",
+              "score_rate": "0.3507462686567164179104477612",
+              "difference_pp": "12.68656716417910447761194030",
+              "additional_observed_applicants": 17
+            },
+            "15": {
+              "coupon_applicants": 47,
+              "score_applicants": 66,
+              "coupon_rate": "0.3507462686567164179104477612",
+              "score_rate": "0.4925373134328358208955223881",
+              "difference_pp": "14.17910447761194029850746269",
+              "additional_observed_applicants": 19
+            }
+          }
+        },
+        {
+          "top_groups": 3,
+          "users": 326,
+          "windows": {
+            "3": {
+              "coupon_applicants": 41,
+              "score_applicants": 56,
+              "coupon_rate": "0.1257668711656441717791411043",
+              "score_rate": "0.1717791411042944785276073620",
+              "difference_pp": "4.601226993865030674846625767",
+              "additional_observed_applicants": 15
+            },
+            "7": {
+              "coupon_applicants": 69,
+              "score_applicants": 95,
+              "coupon_rate": "0.2116564417177914110429447853",
+              "score_rate": "0.2914110429447852760736196319",
+              "difference_pp": "7.975460122699386503067484663",
+              "additional_observed_applicants": 26
+            },
+            "15": {
+              "coupon_applicants": 111,
+              "score_applicants": 143,
+              "coupon_rate": "0.3404907975460122699386503067",
+              "score_rate": "0.4386503067484662576687116564",
+              "difference_pp": "9.815950920245398773006134969",
+              "additional_observed_applicants": 32
+            }
+          }
+        },
+        {
+          "top_groups": 4,
+          "users": 727,
+          "windows": {
+            "3": {
+              "coupon_applicants": 76,
+              "score_applicants": 86,
+              "coupon_rate": "0.1045392022008253094910591472",
+              "score_rate": "0.1182943603851444291609353508",
+              "difference_pp": "1.375515818431911966987620358",
+              "additional_observed_applicants": 10
+            },
+            "7": {
+              "coupon_applicants": 136,
+              "score_applicants": 155,
+              "coupon_rate": "0.1870701513067400275103163686",
+              "score_rate": "0.2132049518569463548830811554",
+              "difference_pp": "2.613480055020632737276478680",
+              "additional_observed_applicants": 19
+            },
+            "15": {
+              "coupon_applicants": 228,
+              "score_applicants": 268,
+              "coupon_rate": "0.3136176066024759284731774415",
+              "score_rate": "0.3686382393397524071526822558",
+              "difference_pp": "5.502063273727647867950481431",
+              "additional_observed_applicants": 40
+            }
+          }
+        },
+        {
+          "top_groups": 5,
+          "users": 1136,
+          "windows": {
+            "3": {
+              "coupon_applicants": 102,
+              "score_applicants": 103,
+              "coupon_rate": "0.08978873239436619718309859155",
+              "score_rate": "0.09066901408450704225352112676",
+              "difference_pp": "0.08802816901408450704225352113",
+              "additional_observed_applicants": 1
+            },
+            "7": {
+              "coupon_applicants": 190,
+              "score_applicants": 192,
+              "coupon_rate": "0.1672535211267605633802816901",
+              "score_rate": "0.1690140845070422535211267606",
+              "difference_pp": "0.1760563380281690140845070423",
+              "additional_observed_applicants": 2
+            },
+            "15": {
+              "coupon_applicants": 331,
+              "score_applicants": 333,
+              "coupon_rate": "0.2913732394366197183098591549",
+              "score_rate": "0.2931338028169014084507042254",
+              "difference_pp": "0.1760563380281690140845070423",
+              "additional_observed_applicants": 2
+            }
+          }
+        }
+      ],
+      "windows": {
+        "3": {
+          "start_inclusive": "2026-10-16 00:00:00",
+          "end_exclusive": "2026-10-19 00:00:00"
+        },
+        "7": {
+          "start_inclusive": "2026-10-16 00:00:00",
+          "end_exclusive": "2026-10-23 00:00:00"
+        },
+        "15": {
+          "start_inclusive": "2026-10-16 00:00:00",
+          "end_exclusive": "2026-10-31 00:00:00"
+        }
+      },
+      "snapshots_business": {
+        "coupon": "2026-11-04 10:41:17.238601",
+        "score": "2026-11-04 10:41:17.238601"
+      },
+      "source_conflict_free": true,
+      "results_aggregate_only": true,
+      "grouping_rule": "Two independent selections; each pair of groups has equal size. Score candidates not filtered by coupon label.",
+      "key": "1016",
+      "display_date": "10月16日",
+      "gradients": {
+        "coupon": {
+          "3": false,
+          "7": true,
+          "15": true
+        },
+        "score": {
+          "3": false,
+          "7": true,
+          "15": true
+        }
+      }
+    },
+    {
+      "batch": "t7recalllist_1023",
+      "recall_date": "2026-10-23",
+      "timezone": "America/Belize",
+      "report_date": "2026-11-05",
+      "source_users": 1509,
+      "coupon_selected_users": 1509,
+      "score_valid_users": 1509,
+      "score_selected_users": 1509,
+      "invalid_coupon_users": 0,
+      "invalid_coupon_breakdown": [],
+      "excluded_blacklist_users_in_this_batch": 0,
+      "group_sizes": [
+        22,
+        154,
+        235,
+        560,
+        538
+      ],
+      "score_valid_range_inclusive": [
+        0,
+        3000
+      ],
+      "score_tie_rule": "score DESC, user_id ASC",
+      "groups": [
+        {
+          "group": 1,
+          "name": "第一组",
+          "users": 22,
+          "coupon_label": "637-1000",
+          "score_rank_min": 1,
+          "score_rank_max": 22,
+          "score_min": "43.95",
+          "score_max": "56.89",
+          "windows": {
+            "3": {
+              "coupon_applicants": 3,
+              "score_applicants": 7,
+              "coupon_rate": "0.1363636363636363636363636364",
+              "score_rate": "0.3181818181818181818181818182",
+              "difference_pp": "18.18181818181818181818181818"
+            },
+            "7": {
+              "coupon_applicants": 8,
+              "score_applicants": 11,
+              "coupon_rate": "0.3636363636363636363636363636",
+              "score_rate": "0.5",
+              "difference_pp": "13.63636363636363636363636364"
+            }
+          }
+        },
+        {
+          "group": 2,
+          "name": "第二组",
+          "users": 154,
+          "coupon_label": "561-636",
+          "score_rank_min": 23,
+          "score_rank_max": 176,
+          "score_min": "25.59",
+          "score_max": "43.75",
+          "windows": {
+            "3": {
+              "coupon_applicants": 26,
+              "score_applicants": 39,
+              "coupon_rate": "0.1688311688311688311688311688",
+              "score_rate": "0.2532467532467532467532467532",
+              "difference_pp": "8.441558441558441558441558442"
+            },
+            "7": {
+              "coupon_applicants": 50,
+              "score_applicants": 62,
+              "coupon_rate": "0.3246753246753246753246753247",
+              "score_rate": "0.4025974025974025974025974026",
+              "difference_pp": "7.792207792207792207792207792"
+            }
+          }
+        },
+        {
+          "group": 3,
+          "name": "第三组",
+          "users": 235,
+          "coupon_label": "518-560",
+          "score_rank_min": 177,
+          "score_rank_max": 411,
+          "score_min": "15.76",
+          "score_max": "25.59",
+          "windows": {
+            "3": {
+              "coupon_applicants": 36,
+              "score_applicants": 50,
+              "coupon_rate": "0.1531914893617021276595744681",
+              "score_rate": "0.2127659574468085106382978723",
+              "difference_pp": "5.957446808510638297872340426"
+            },
+            "7": {
+              "coupon_applicants": 59,
+              "score_applicants": 75,
+              "coupon_rate": "0.2510638297872340425531914894",
+              "score_rate": "0.3191489361702127659574468085",
+              "difference_pp": "6.808510638297872340425531915"
+            }
+          }
+        },
+        {
+          "group": 4,
+          "name": "第四组",
+          "users": 560,
+          "coupon_label": "460-517",
+          "score_rank_min": 412,
+          "score_rank_max": 971,
+          "score_min": "7.19",
+          "score_max": "15.74",
+          "windows": {
+            "3": {
+              "coupon_applicants": 79,
+              "score_applicants": 55,
+              "coupon_rate": "0.1410714285714285714285714286",
+              "score_rate": "0.09821428571428571428571428571",
+              "difference_pp": "-4.285714285714285714285714286"
+            },
+            "7": {
+              "coupon_applicants": 128,
+              "score_applicants": 97,
+              "coupon_rate": "0.2285714285714285714285714286",
+              "score_rate": "0.1732142857142857142857142857",
+              "difference_pp": "-5.535714285714285714285714286"
+            }
+          }
+        },
+        {
+          "group": 5,
+          "name": "第五组",
+          "users": 538,
+          "coupon_label": "459-",
+          "score_rank_min": 972,
+          "score_rank_max": 1509,
+          "score_min": "2.12",
+          "score_max": "7.17",
+          "windows": {
+            "3": {
+              "coupon_applicants": 40,
+              "score_applicants": 33,
+              "coupon_rate": "0.07434944237918215613382899628",
+              "score_rate": "0.06133828996282527881040892193",
+              "difference_pp": "-1.301115241635687732342007435"
+            },
+            "7": {
+              "coupon_applicants": 65,
+              "score_applicants": 65,
+              "coupon_rate": "0.1208178438661710037174721190",
+              "score_rate": "0.1208178438661710037174721190",
+              "difference_pp": "0"
+            }
+          }
+        }
+      ],
+      "cumulative": [
+        {
+          "top_groups": 1,
+          "users": 22,
+          "windows": {
+            "3": {
+              "coupon_applicants": 3,
+              "score_applicants": 7,
+              "coupon_rate": "0.1363636363636363636363636364",
+              "score_rate": "0.3181818181818181818181818182",
+              "difference_pp": "18.18181818181818181818181818",
+              "additional_observed_applicants": 4
+            },
+            "7": {
+              "coupon_applicants": 8,
+              "score_applicants": 11,
+              "coupon_rate": "0.3636363636363636363636363636",
+              "score_rate": "0.5",
+              "difference_pp": "13.63636363636363636363636364",
+              "additional_observed_applicants": 3
+            }
+          }
+        },
+        {
+          "top_groups": 2,
+          "users": 176,
+          "windows": {
+            "3": {
+              "coupon_applicants": 29,
+              "score_applicants": 46,
+              "coupon_rate": "0.1647727272727272727272727273",
+              "score_rate": "0.2613636363636363636363636364",
+              "difference_pp": "9.659090909090909090909090909",
+              "additional_observed_applicants": 17
+            },
+            "7": {
+              "coupon_applicants": 58,
+              "score_applicants": 73,
+              "coupon_rate": "0.3295454545454545454545454545",
+              "score_rate": "0.4147727272727272727272727273",
+              "difference_pp": "8.522727272727272727272727273",
+              "additional_observed_applicants": 15
+            }
+          }
+        },
+        {
+          "top_groups": 3,
+          "users": 411,
+          "windows": {
+            "3": {
+              "coupon_applicants": 65,
+              "score_applicants": 96,
+              "coupon_rate": "0.1581508515815085158150851582",
+              "score_rate": "0.2335766423357664233576642336",
+              "difference_pp": "7.542579075425790754257907543",
+              "additional_observed_applicants": 31
+            },
+            "7": {
+              "coupon_applicants": 117,
+              "score_applicants": 148,
+              "coupon_rate": "0.2846715328467153284671532847",
+              "score_rate": "0.3600973236009732360097323601",
+              "difference_pp": "7.542579075425790754257907543",
+              "additional_observed_applicants": 31
+            }
+          }
+        },
+        {
+          "top_groups": 4,
+          "users": 971,
+          "windows": {
+            "3": {
+              "coupon_applicants": 144,
+              "score_applicants": 151,
+              "coupon_rate": "0.1483007209062821833161688980",
+              "score_rate": "0.1555097837281153450051493306",
+              "difference_pp": "0.7209062821833161688980432544",
+              "additional_observed_applicants": 7
+            },
+            "7": {
+              "coupon_applicants": 245,
+              "score_applicants": 245,
+              "coupon_rate": "0.2523171987641606591143151390",
+              "score_rate": "0.2523171987641606591143151390",
+              "difference_pp": "0",
+              "additional_observed_applicants": 0
+            }
+          }
+        },
+        {
+          "top_groups": 5,
+          "users": 1509,
+          "windows": {
+            "3": {
+              "coupon_applicants": 184,
+              "score_applicants": 184,
+              "coupon_rate": "0.1219350563286944996686547382",
+              "score_rate": "0.1219350563286944996686547382",
+              "difference_pp": "0",
+              "additional_observed_applicants": 0
+            },
+            "7": {
+              "coupon_applicants": 310,
+              "score_applicants": 310,
+              "coupon_rate": "0.2054340622929092113982770046",
+              "score_rate": "0.2054340622929092113982770046",
+              "difference_pp": "0",
+              "additional_observed_applicants": 0
+            }
+          }
+        }
+      ],
+      "windows": {
+        "3": {
+          "start_inclusive": "2026-10-23 00:00:00",
+          "end_exclusive": "2026-10-26 00:00:00"
+        },
+        "7": {
+          "start_inclusive": "2026-10-23 00:00:00",
+          "end_exclusive": "2026-10-30 00:00:00"
+        }
+      },
+      "snapshots_business": {
+        "coupon": "2026-11-04 10:41:17.238601",
+        "score": "2026-11-04 10:41:17.238601"
+      },
+      "source_conflict_free": true,
+      "results_aggregate_only": true,
+      "grouping_rule": "Two independent selections; each pair of groups has equal size. Score candidates not filtered by coupon label.",
+      "key": "1023",
+      "display_date": "10月23日",
+      "gradients": {
+        "coupon": {
+          "3": false,
+          "7": true
+        },
+        "score": {
+          "3": true,
+          "7": true
+        }
+      }
+    },
+    {
+      "batch": "t7recalllist_1030",
+      "recall_date": "2026-10-30",
+      "timezone": "America/Belize",
+      "report_date": "2026-11-05",
+      "source_users": 1333,
+      "coupon_selected_users": 1333,
+      "score_valid_users": 1333,
+      "score_selected_users": 1333,
+      "invalid_coupon_users": 0,
+      "invalid_coupon_breakdown": [],
+      "excluded_blacklist_users_in_this_batch": 0,
+      "group_sizes": [
+        48,
+        227,
+        1058
+      ],
+      "score_valid_range_inclusive": [
+        0,
+        3000
+      ],
+      "score_tie_rule": "score DESC, user_id ASC",
+      "groups": [
+        {
+          "group": 1,
+          "name": "第一组",
+          "users": 48,
+          "coupon_label": "600-1000",
+          "score_rank_min": 1,
+          "score_rank_max": 48,
+          "score_min": ".377608122174445",
+          "score_max": ".611665577629772",
+          "windows": {
+            "3": {
+              "coupon_applicants": 4,
+              "score_applicants": 19,
+              "coupon_rate": "0.08333333333333333333333333333",
+              "score_rate": "0.3958333333333333333333333333",
+              "difference_pp": "31.25"
+            }
+          }
+        },
+        {
+          "group": 2,
+          "name": "第二组",
+          "users": 227,
+          "coupon_label": "528-600",
+          "score_rank_min": 49,
+          "score_rank_max": 275,
+          "score_min": ".171184115242871",
+          "score_max": ".375735414661019",
+          "windows": {
+            "3": {
+              "coupon_applicants": 31,
+              "score_applicants": 36,
+              "coupon_rate": "0.1365638766519823788546255507",
+              "score_rate": "0.1585903083700440528634361233",
+              "difference_pp": "2.202643171806167400881057269"
+            }
+          }
+        },
+        {
+          "group": 3,
+          "name": "第三组",
+          "users": 1058,
+          "coupon_label": "528-",
+          "score_rank_min": 276,
+          "score_rank_max": 1333,
+          "score_min": ".0158241452371294",
+          "score_max": ".171088365066097",
+          "windows": {
+            "3": {
+              "coupon_applicants": 91,
+              "score_applicants": 71,
+              "coupon_rate": "0.08601134215500945179584120983",
+              "score_rate": "0.06710775047258979206049149338",
+              "difference_pp": "-1.890359168241965973534971645"
+            }
+          }
+        }
+      ],
+      "cumulative": [
+        {
+          "top_groups": 1,
+          "users": 48,
+          "windows": {
+            "3": {
+              "coupon_applicants": 4,
+              "score_applicants": 19,
+              "coupon_rate": "0.08333333333333333333333333333",
+              "score_rate": "0.3958333333333333333333333333",
+              "difference_pp": "31.25",
+              "additional_observed_applicants": 15
+            }
+          }
+        },
+        {
+          "top_groups": 2,
+          "users": 275,
+          "windows": {
+            "3": {
+              "coupon_applicants": 35,
+              "score_applicants": 55,
+              "coupon_rate": "0.1272727272727272727272727273",
+              "score_rate": "0.2",
+              "difference_pp": "7.272727272727272727272727273",
+              "additional_observed_applicants": 20
+            }
+          }
+        },
+        {
+          "top_groups": 3,
+          "users": 1333,
+          "windows": {
+            "3": {
+              "coupon_applicants": 126,
+              "score_applicants": 126,
+              "coupon_rate": "0.09452363090772693173293323331",
+              "score_rate": "0.09452363090772693173293323331",
+              "difference_pp": "0",
+              "additional_observed_applicants": 0
+            }
+          }
+        }
+      ],
+      "windows": {
+        "3": {
+          "start_inclusive": "2026-10-30 00:00:00",
+          "end_exclusive": "2026-11-02 00:00:00"
+        }
+      },
+      "snapshots_business": {
+        "coupon": "2026-11-04 10:41:17.238601",
+        "score": "2026-11-04 10:41:17.238601"
+      },
+      "source_conflict_free": true,
+      "results_aggregate_only": true,
+      "grouping_rule": "Two independent selections; each pair of groups has equal size. Score candidates not filtered by coupon label.",
+      "key": "1030",
+      "display_date": "10月30日",
+      "gradients": {
+        "coupon": {
+          "3": false
+        },
+        "score": {
+          "3": true
+        }
+      }
+    }
+  ],
+  "scope": "Only t7recalllist_0930,1010,1016,1023,1030; separate from the active-series report.",
+  "grouping_rule": "Within each batch, independent selections with identical group sizes; no common-population restriction.",
+  "interpretation": "Observed historical screening rates, not causal recall uplift or online accuracy."
+}
