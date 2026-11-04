@@ -1,0 +1,59 @@
+{
+  "passed": true,
+  "frame_checks": [
+    {
+      "file": "episode_features.parquet",
+      "rows": 172886,
+      "fields": 117,
+      "stored_field_counts_original_rebuild": [
+        117,
+        117
+      ],
+      "contract_flags_persisted_earlier_in_rebuild": [],
+      "column_order_identical": false,
+      "differing_fields": [],
+      "maximum_absolute_numeric_difference": 0.0
+    },
+    {
+      "file": "episode_analysis.parquet",
+      "rows": 172886,
+      "fields": 262,
+      "stored_field_counts_original_rebuild": [
+        257,
+        262
+      ],
+      "contract_flags_persisted_earlier_in_rebuild": [
+        "hist_offer_d7_complete180",
+        "hist_offer_d7_complete30",
+        "hist_offer_d7_complete90",
+        "next_coupon_same_application_day",
+        "next_preapplication_coupon_day"
+      ],
+      "column_order_identical": false,
+      "differing_fields": [],
+      "maximum_absolute_numeric_difference": 0.0
+    },
+    {
+      "file": "diagnostic_response_predictions.parquet",
+      "rows": 41241,
+      "fields": 8,
+      "stored_field_counts_original_rebuild": [
+        8,
+        8
+      ],
+      "contract_flags_persisted_earlier_in_rebuild": [],
+      "column_order_identical": true,
+      "differing_fields": [],
+      "maximum_absolute_numeric_difference": 0.0,
+      "maximum_prediction_difference": 0.0
+    }
+  ],
+  "aggregate_result_files": 22,
+  "aggregate_differences": 0,
+  "independent_sql_state_orders": 481,
+  "independent_sql_state_mismatches": 0,
+  "independent_sql_financial_groups": 7,
+  "independent_sql_financial_mismatches": 0,
+  "portable_readonly_transport_passed": true,
+  "environment": "Python 3.12.14 with the locked package versions; same-host independent directory; source snapshots unchanged."
+}
