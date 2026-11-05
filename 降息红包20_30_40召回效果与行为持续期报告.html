@@ -3,94 +3,99 @@
 <head>
 <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>20/30/40%降息红包召回：提单与行为持续期</title>
+<title>20/30/40%降息红包召回效果（完善券ID）</title>
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
 <style>
 :root{--bg:#0b1220;--card:#121a2b;--line:#243044;--text:#e8eef7;--muted:#9db0c7;--accent:#5ec8f0;--good:#7ee8c7;--warn:#f5b942;--bad:#f68ab0}
 *{box-sizing:border-box}
 body{margin:0;font-family:ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial;background:linear-gradient(180deg,#0b1220,#101826 40%,#0b1220);color:var(--text);line-height:1.55}
-.wrap{max-width:1100px;margin:0 auto;padding:28px 18px 80px}
-h1{font-size:28px;margin:0 0 8px;letter-spacing:.2px}
-h2{font-size:20px;margin:36px 0 12px;border-left:3px solid var(--accent);padding-left:10px}
-h3{font-size:16px;margin:20px 0 8px;color:#cfe3f7}
-.sub{color:var(--muted);font-size:14px;margin-bottom:18px}
-.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px;margin:16px 0}
-.card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:14px 14px 12px}
-.card .k{color:var(--muted);font-size:12px}
-.card .v{font-size:22px;font-weight:700;margin-top:4px}
-.card .s{color:var(--muted);font-size:12px;margin-top:4px}
-table{width:100%;border-collapse:collapse;background:var(--card);border:1px solid var(--line);border-radius:12px;overflow:hidden;font-size:13px}
-th,td{padding:9px 10px;border-bottom:1px solid var(--line);text-align:right}
-th:first-child,td:first-child{text-align:left}
-th{background:#182235;color:#c5d6ea;font-weight:600}
-tr:last-child td{border-bottom:0}
-.note{background:#152033;border:1px solid var(--line);border-radius:10px;padding:12px 14px;color:var(--muted);font-size:13px;margin:12px 0}
-.verdict{background:#13283a;border:1px solid #2a5a74;border-radius:12px;padding:14px 16px;margin:14px 0}
-.chart{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:12px;margin:12px 0}
+.wrap{max-width:1120px;margin:0 auto;padding:28px 18px 80px}
+h1{font-size:26px;margin:0 0 8px}
+h2{font-size:19px;margin:34px 0 12px;border-left:3px solid var(--accent);padding-left:10px}
+h3{font-size:15px;margin:18px 0 8px;color:#cfe3f7}
+.sub{color:var(--muted);font-size:13px;margin-bottom:16px}
+.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:10px;margin:14px 0}
+.card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:12px}
+.card .k{color:var(--muted);font-size:12px}.card .v{font-size:20px;font-weight:700;margin-top:4px}.card .s{color:var(--muted);font-size:11px;margin-top:3px}
+table{width:100%;border-collapse:collapse;background:var(--card);border:1px solid var(--line);border-radius:12px;overflow:hidden;font-size:12.5px;margin:8px 0}
+th,td{padding:8px 9px;border-bottom:1px solid var(--line);text-align:right}
+th:first-child,td:first-child,th:nth-child(2),td:nth-child(2){text-align:left}
+th{background:#182235;color:#c5d6ea}
+.note{background:#152033;border:1px solid var(--line);border-radius:10px;padding:11px 13px;color:var(--muted);font-size:13px;margin:10px 0}
+.verdict{background:#13283a;border:1px solid #2a5a74;border-radius:12px;padding:13px 15px;margin:12px 0}
+.chart{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:12px;margin:10px 0}
 .tag{display:inline-block;padding:2px 8px;border-radius:999px;font-size:11px;margin-right:6px}
-.tag.ok{background:#1d3d36;color:var(--good)}
-.tag.warn{background:#3a3018;color:var(--warn)}
-.tag.bad{background:#3a1d2a;color:var(--bad)}
+.tag.ok{background:#1d3d36;color:var(--good)}.tag.warn{background:#3a3018;color:var(--warn)}
 code{background:#1a2436;padding:1px 5px;border-radius:4px;font-size:12px}
 </style>
 </head>
 <body>
 <div class="wrap">
-<h1>20% / 30% / 40% 降息红包召回效果</h1>
-<div class="sub">发券配置分组（非用券反推）· 业务日 America/Belize · 观察截止 2026-11-04 · 未满窗不计入</div>
+<h1>20% / 30% / 40% 降息红包召回效果（完善券 ID）</h1>
+<div class="sub">发券配置分组 · America/Belize · 截止 2026-11-04 · 相对上一版补齐用券侧出现的全部 20/30/40% 减息券编号</div>
 
 <div class="verdict">
 <span class="tag ok">结论摘要</span>
 <ol style="margin:8px 0 0 18px;padding:0;color:#d7e6f5">
-<li><b>随机对照（更可归因）</b>：no_apply 发 30% 相对不发券，3 日提单率抬约 4–6pp；7 天券抬升更稳，到 30 日仍约 +6.5pp；3 天券到 30 日只剩约 +1.2pp。</li>
-<li><b>观察性三档对比不能直接当因果</b>：按发出的 119/157/124 券，40% 累计提单最高，但发券前活跃/进页基线也最高，存在圈人差异。</li>
-<li><b>行为持续期</b>：在发券人群里，首提前活跃与进提单页相对发券前 7 日基线整体呈衰减，未见“到期后继续高于基线并维持一周”的稳定抬升。</li>
-<li><b>分阶段新增提单</b>：有效期后（D3–6、D7–14）仍有新增提单，说明不只是把提单全部提前到有效期内；但是否由红包造成，需靠对照实验判断。</li>
+<li><b>券 ID 已完善</b>：141→20%/2天、166→20%/2天、119→20%/3天、153→20%/3天、163→20%/7天、157→30%/3天、160→30%/7天、124→40%/3天、164→40%/7天。同日多幅度叠加 1,138 人日已剔除。</li>
+<li><b>不能只按降幅混比</b>：同是 20%，2 天券（141/166）30 日提单约 49%，3 天券约 26%，7 天券约 14%。混成一个“20%”会被短有效期高转化人群拉高。</li>
+<li><b>同有效期 3 天可比切片</b>：20% 5.5%/11.0%/18.3%/26.1%；30% 4.0%/7.3%/12.2%/18.4%；40% 6.8%/13.6%/21.4%/29.7%（3/7/15/30日）。40% 仍最高，但发券前行为基线也更高。</li>
+<li><b>对照（可归因）</b>：no_apply 30% vs 不发——7天券 30 日仍约 +6.5pp；3天券 30 日增量收窄到约 +1.2pp。行为上相对发券前基线整体衰减，观察性数据不支持“到期后行为仍高于基线并维持一周”。</li>
 </ol>
 </div>
 
-<h2>1. 发券分组与有效期核对</h2>
+<h2>1. 发券分组与有效期</h2>
 <div class="note">
-分组用 <code>coupon_user_copy.coupon_id</code> × <code>coupon_cat</code> 配置幅度，不用 <code>coupon_use_record.discount_pct</code>。<br>
-主分析券：<code>119=20%</code>、<code>157=30%</code>、<code>124=40%</code>（均为手动减息）。观测 <code>expire_date - create_date = 2</code>，与配置 <code>valid_period=3</code> 一致（含发券日共 3 个自然日：D0–D2）。<br>
-另有 <code>160=30%·7天</code>（gap=6），单独列出，不与 3 天券混比。<br>
-同用户同日多幅度发券已剔除（约 499 人日）；同日同券去重。
+分组依据：发券表 <code>coupon_user_copy.coupon_id</code> → 用券表众数 <code>discount_pct</code> + <code>valid_days</code>（cat 缺失的 153/160/163/164/166 也按此补齐）。<br>
+有效天数 = <code>expire_date - create_date + 1</code>（与 valid_days 字段一致）。不假设全是 3 天。<br>
+分母含未用券、未提单用户；同用户同日同券去重。
 </div>
 <table>
-<tr><th>配置</th><th>coupon_id</th><th>发券人日</th><th>观测有效天数</th><th>用券率(发券表)</th></tr>
-<tr><td>20% · 3天</td><td>119</td><td>35,179</td><td>3（gap=2）</td><td>3.43%</td></tr>
-<tr><td>30% · 3天</td><td>157</td><td>17,025</td><td>3（gap=2）</td><td>3.89%</td></tr>
-<tr><td>40% · 3天</td><td>124</td><td>2,141</td><td>3（gap=2）</td><td>6.63%</td></tr>
-<tr><td>30% · 7天</td><td>160</td><td>8,061</td><td>7（gap=6）</td><td>9.35%</td></tr>
+<tr><th>降幅</th><th>有效期</th><th>coupon_id</th><th>发券人日(成熟30日)</th><th>3日</th><th>7日</th><th>15日</th><th>30日</th><th>用券率</th></tr>
+<tr><td>20%</td><td>2天</td><td>141</td><td>14,669</td><td>21.98%</td><td>31.56%</td><td>40.00%</td><td>46.21%</td><td>17.14%</td></tr>
+<tr><td>20%</td><td>2天</td><td>166</td><td>975</td><td>58.46%</td><td>73.13%</td><td>80.62%</td><td>86.46%</td><td>49.13%</td></tr>
+<tr><td>20%</td><td>3天</td><td>119</td><td>35,690</td><td>3.60%</td><td>7.16%</td><td>12.86%</td><td>19.67%</td><td>3.39%</td></tr>
+<tr><td>20%</td><td>3天</td><td>153</td><td>7,315</td><td>14.94%</td><td>29.67%</td><td>44.77%</td><td>57.63%</td><td>14.01%</td></tr>
+<tr><td>20%</td><td>7天</td><td>163</td><td>13,867</td><td>2.43%</td><td>5.31%</td><td>9.37%</td><td>14.31%</td><td>4.96%</td></tr>
+<tr><td>30%</td><td>3天</td><td>157</td><td>17,008</td><td>4.03%</td><td>7.30%</td><td>12.15%</td><td>18.44%</td><td>3.89%</td></tr>
+<tr><td>30%</td><td>7天</td><td>160</td><td>8,028</td><td>4.83%</td><td>9.47%</td><td>14.30%</td><td>20.17%</td><td>9.26%</td></tr>
+<tr><td>40%</td><td>3天</td><td>124</td><td>2,134</td><td>6.84%</td><td>13.64%</td><td>21.42%</td><td>29.66%</td><td>6.56%</td></tr>
+<tr><td>40%</td><td>7天</td><td>164</td><td>1,083</td><td>4.71%</td><td>8.86%</td><td>14.50%</td><td>22.16%</td><td>8.68%</td></tr>
+
 </table>
 
-<h2>2. 累计提单率（发券日起）</h2>
+<h2>2. 累计提单率</h2>
+<h3>按降幅 × 有效期（主表）</h3>
+<table>
+<tr><th>降幅</th><th>有效期</th><th>N</th><th>3日</th><th>7日</th><th>15日</th><th>30日</th><th>用券率</th></tr>
+<tr><td>20%</td><td>2天</td><td>15,644</td><td>24.25%</td><td>34.15%</td><td>42.53%</td><td>48.72%</td><td>19.14%</td></tr>
+<tr><td>20%</td><td>3天</td><td>43,005</td><td>5.53%</td><td>10.99%</td><td>18.29%</td><td>26.12%</td><td>5.19%</td></tr>
+<tr><td>20%</td><td>7天</td><td>13,867</td><td>2.43%</td><td>5.31%</td><td>9.37%</td><td>14.31%</td><td>4.96%</td></tr>
+<tr><td>30%</td><td>3天</td><td>17,008</td><td>4.03%</td><td>7.30%</td><td>12.15%</td><td>18.44%</td><td>3.89%</td></tr>
+<tr><td>30%</td><td>7天</td><td>8,028</td><td>4.83%</td><td>9.47%</td><td>14.30%</td><td>20.17%</td><td>9.26%</td></tr>
+<tr><td>40%</td><td>3天</td><td>2,134</td><td>6.84%</td><td>13.64%</td><td>21.42%</td><td>29.66%</td><td>6.56%</td></tr>
+<tr><td>40%</td><td>7天</td><td>1,083</td><td>4.71%</td><td>8.86%</td><td>14.50%</td><td>22.16%</td><td>8.68%</td></tr>
+
+</table>
+
 <div class="cards">
-  <div class="card"><div class="k">20% · 3日</div><div class="v">3.64%</div><div class="s">30日 19.81%</div></div>
-  <div class="card"><div class="k">30% · 3日</div><div class="v">4.04%</div><div class="s">30日 18.48%</div></div>
-  <div class="card"><div class="k">40% · 3日</div><div class="v">6.91%</div><div class="s">30日 29.71%</div></div>
-  <div class="card"><div class="k">30% · 7日券</div><div class="v">4.86%</div><div class="s">30日 20.30%</div></div>
+  <div class="card"><div class="k">可比：20%·3天</div><div class="v">5.53%</div><div class="s">30日 26.12% · N=43,005</div></div>
+  <div class="card"><div class="k">可比：30%·3天</div><div class="v">4.03%</div><div class="s">30日 18.44% · N=17,008</div></div>
+  <div class="card"><div class="k">可比：40%·3天</div><div class="v">6.84%</div><div class="s">30日 29.66% · N=2,134</div></div>
+  <div class="card"><div class="k">注意：20%·2天</div><div class="v">48.72%</div><div class="s">30日提单 · 人群明显更热</div></div>
 </div>
-<table>
-<tr><th>组</th><th>N</th><th>3日</th><th>7日</th><th>15日</th><th>30日</th></tr>
-<tr><td>20%·3天</td><td>35,179</td><td>3.64%</td><td>7.23%</td><td>12.95%</td><td>19.81%</td></tr>
-<tr><td>30%·3天</td><td>17,025</td><td>4.04%</td><td>7.32%</td><td>12.19%</td><td>18.48%</td></tr>
-<tr><td>40%·3天</td><td>2,141</td><td>6.91%</td><td>13.69%</td><td>21.49%</td><td>29.71%</td></tr>
-<tr><td>30%·7天</td><td>8,061</td><td>4.86%</td><td>9.56%</td><td>14.42%</td><td>20.30%</td></tr>
-</table>
-<div class="note">分母=发出对应红包的全部用户（含未用券未提单）。观察性对比里 40% 更高，但发券前行为基线也更高（见第4节），不能直接解释成“幅度越大效果越大”。</div>
 
-<h3>分阶段新增首次提单（30日成熟样本）</h3>
+<h3>分阶段新增首次提单（按降幅汇总）</h3>
 <table>
-<tr><th>组</th><th>D0–2 有效期内</th><th>D3–6 到期后</th><th>D7–14</th><th>D15–29</th></tr>
-<tr><td>20%</td><td>1,282（3.64%）</td><td>1,260（3.58%）</td><td>2,014（5.73%）</td><td>2,413（6.86%）</td></tr>
-<tr><td>30%</td><td>687（4.04%）</td><td>559（3.28%）</td><td>829（4.87%）</td><td>1,071（6.29%）</td></tr>
-<tr><td>40%</td><td>148（6.91%）</td><td>145（6.77%）</td><td>167（7.80%）</td><td>176（8.22%）</td></tr>
-</table>
-<div class="note">三档在到期后仍有接近有效期内的新增首提，说明不完全是“只把本会提的人提前到券期内”。但这是描述性结果。</div>
+<tr><th>降幅</th><th>N</th><th>D0–2</th><th>D3–6</th><th>D7–14</th><th>D15–29</th></tr>
+<tr><td>20%</td><td>72,516</td><td>6,509（8.98%）</td><td>4,296（5.92%）</td><td>5,013（6.91%）</td><td>5,023（6.93%）</td></tr>
+<tr><td>30%</td><td>25,036</td><td>1,074（4.29%）</td><td>927（3.70%）</td><td>1,214（4.85%）</td><td>1,541（6.16%）</td></tr>
+<tr><td>40%</td><td>3,217</td><td>197（6.12%）</td><td>190（5.91%）</td><td>227（7.06%）</td><td>259（8.05%）</td></tr>
 
-<h2>3. 随机/对照：可归因到什么程度</h2>
-<h3>no_apply：30% vs 不发券</h3>
+</table>
+<div class="note">到期后仍有新增首提，不完全是券期内提前。但不同有效期/券种混在同一降幅里，解释要谨慎。</div>
+
+<h2>3. 对照：可归因程度</h2>
 <table>
 <tr><th>实验</th><th>组</th><th>N</th><th>3日</th><th>7日</th><th>15日</th><th>30日</th></tr>
 <tr><td>G1 7天30%</td><td>对照不发</td><td>657</td><td>12.63%</td><td>25.27%</td><td>36.99%</td><td>48.55%</td></tr>
@@ -100,96 +105,75 @@ code{background:#1a2436;padding:1px 5px;border-radius:4px;font-size:12px}
 <tr><td>G3 3天30%</td><td>实验</td><td>778</td><td>17.87%</td><td>30.98%</td><td>43.19%</td><td>55.53%</td></tr>
 <tr><td>G3 增量</td><td>T−C</td><td>—</td><td>4.19%</td><td>4.01%</td><td>2.54%</td><td>1.21%</td></tr>
 </table>
-<div class="note">
-<span class="tag ok">证据较强</span>
-7天30%：增量在 D3 已出现，到 D7/D30 仍大致保持 → <b>效果能维持一周及以上</b>。<br>
-3天30%：D3/D7 有增量，到 D30 增量明显收窄 → <b>短窗拉动更强，长尾持续性弱于7天券</b>。
-</div>
-
-<h3>high_discount_0708（20%/30% 相关）与 40% 名单</h3>
+<div class="note"><span class="tag ok">较强证据</span> 7天30% 增量可维持到 30 日；3天30% 增量主要在第一周，之后收窄。</div>
 <table>
-<tr><th>分层</th><th>组</th><th>N</th><th>3日</th><th>7日</th><th>15日</th><th>30日</th></tr>
-<tr><td>高息档</td><td>对照</td><td>421</td><td>0.48%</td><td>2.14%</td><td>4.75%</td><td>9.03%</td></tr>
-<tr><td>高息档</td><td>实验</td><td>1689</td><td>1.01%</td><td>2.07%</td><td>4.09%</td><td>7.16%</td></tr>
-<tr><td>低息档</td><td>对照</td><td>387</td><td>1.03%</td><td>2.07%</td><td>4.39%</td><td>7.49%</td></tr>
-<tr><td>低息档</td><td>实验</td><td>1159</td><td>1.21%</td><td>2.33%</td><td>5.69%</td><td>9.66%</td></tr>
+<tr><th>high_discount_0708</th><th>组</th><th>N</th><th>3日</th><th>7日</th><th>15日</th><th>30日</th></tr>
+<tr><td>高息</td><td>对照</td><td>421</td><td>0.48%</td><td>2.14%</td><td>4.75%</td><td>9.03%</td></tr>
+<tr><td>高息</td><td>实验</td><td>1689</td><td>1.01%</td><td>2.07%</td><td>4.09%</td><td>7.16%</td></tr>
+<tr><td>低息</td><td>对照</td><td>387</td><td>1.03%</td><td>2.07%</td><td>4.39%</td><td>7.49%</td></tr>
+<tr><td>低息</td><td>实验</td><td>1159</td><td>1.21%</td><td>2.33%</td><td>5.69%</td><td>9.66%</td></tr>
 
 </table>
-<div class="note">
-发券核对：高息实验多对应 20%券(119)，低息实验多对应 30%券(157)；高息对照基本未发券。高息档 20% vs 不发：短窗略高、30日甚至更低，<span class="tag warn">证据弱/不稳定</span>。<br>
-40% 名单 <code>user_40pct_discount_0716</code>（N=1000）无并行对照：3/7/15/30日=8.00%/15.90%/25.90%/34.50%，只能描述，不能归因。
-</div>
+<div class="note"><span class="tag warn">较弱</span> 高息档 20% vs 不发不稳定；低息档更像 30% vs 20%。40% 仍缺干净并行对照。</div>
 
 <h2>4. 发券前后行为（首提前）</h2>
 <div class="note">
-行为来自 <code>user_behavior_track</code>（活跃/借款页/提交点击等）与 <code>event_track</code>（newpage/newconfirm/金额期次等），按日关联，<b>不把两表事件条数相加</b>；人数类指标取“当日是否发生”。<br>
-下面比例的分母是「当日尚未首次提单」的发券用户，避免把提单后查账/还款活跃算进提单意愿。
+<code>user_behavior_track</code>（活跃/借款页/提交）+ <code>event_track</code>（newpage/newconfirm/金额期次等），按日关联、不叠加计数。<br>
+分母=当日尚未首次提单的发券用户。下表先给发券前 7 日基线，再给 D0–2 / D3–6 / D7–14 / D15–30。
 </div>
-
-<div class="cards">
-  <div class="card"><div class="k">20% 发券前7日·日均活跃</div><div class="v">5.31%</div><div class="s">进借款页 3.57%</div></div>
-  <div class="card"><div class="k">30% 发券前7日·日均活跃</div><div class="v">7.36%</div><div class="s">进借款页 5.13%</div></div>
-  <div class="card"><div class="k">40% 发券前7日·日均活跃</div><div class="v">8.71%</div><div class="s">进借款页 6.51%</div></div>
-</div>
-
 <table>
-<tr><th>组</th><th>有效期 D0–2</th><th>到期后 D3–6</th><th>D7–14</th><th>D15–30</th></tr>
-<tr><td>20% 活跃</td><td>4.65%</td><td>3.81%</td><td>3.20%</td><td>2.30%</td></tr>
-<tr><td>20% 进借款页</td><td>2.80%</td><td>2.16%</td><td>1.72%</td><td>1.25%</td></tr>
-<tr><td>20% newpage</td><td>2.70%</td><td>2.08%</td><td>1.66%</td><td>1.20%</td></tr>
-<tr><td>30% 活跃</td><td>4.58%</td><td>3.62%</td><td>2.88%</td><td>2.07%</td></tr>
-<tr><td>30% 进借款页</td><td>3.46%</td><td>2.63%</td><td>1.88%</td><td>1.33%</td></tr>
-<tr><td>30% newpage</td><td>3.38%</td><td>2.56%</td><td>1.81%</td><td>1.28%</td></tr>
-<tr><td>40% 活跃</td><td>7.62%</td><td>6.53%</td><td>5.24%</td><td>3.93%</td></tr>
-<tr><td>40% 进借款页</td><td>5.40%</td><td>4.39%</td><td>3.22%</td><td>2.52%</td></tr>
-<tr><td>40% newpage</td><td>5.24%</td><td>4.26%</td><td>3.16%</td><td>2.46%</td></tr>
+<tr><th>组</th><th>发券前7日</th><th>D0–2</th><th>D3–6</th><th>D7–14</th><th>D15–30</th></tr>
+<tr><td>20%·3天</td><td>11.52%</td><td>8.27%</td><td>7.13%</td><td>5.13%</td><td>3.19%</td></tr>
+<tr><td>20%·3天·进借款页</td><td>8.14%</td><td>6.32%</td><td>5.36%</td><td>3.46%</td><td>1.92%</td></tr>
+<tr><td>30%·3天</td><td>7.33%</td><td>4.55%</td><td>3.59%</td><td>2.87%</td><td>2.06%</td></tr>
+<tr><td>30%·3天·进借款页</td><td>5.09%</td><td>3.43%</td><td>2.60%</td><td>1.87%</td><td>1.31%</td></tr>
+<tr><td>40%·3天</td><td>8.58%</td><td>7.53%</td><td>6.43%</td><td>5.21%</td><td>3.89%</td></tr>
+<tr><td>40%·3天·进借款页</td><td>6.37%</td><td>5.34%</td><td>4.30%</td><td>3.19%</td><td>2.48%</td></tr>
+<tr><td>20%·2天</td><td>18.29%</td><td>46.19%</td><td>18.54%</td><td>11.74%</td><td>6.17%</td></tr>
+<tr><td>20%·2天·进借款页</td><td>12.94%</td><td>43.89%</td><td>14.62%</td><td>7.85%</td><td>4.26%</td></tr>
+<tr><td>20%·7天</td><td>3.06%</td><td>2.70%</td><td>2.25%</td><td>1.88%</td><td>1.33%</td></tr>
+<tr><td>20%·7天·进借款页</td><td>1.88%</td><td>1.56%</td><td>1.23%</td><td>1.01%</td><td>0.71%</td></tr>
+<tr><td>30%·7天</td><td>9.03%</td><td>4.63%</td><td>3.52%</td><td>2.59%</td><td>1.71%</td></tr>
+<tr><td>30%·7天·进借款页</td><td>6.00%</td><td>3.58%</td><td>2.56%</td><td>1.71%</td><td>1.04%</td></tr>
+<tr><td>40%·7天</td><td>5.14%</td><td>5.14%</td><td>4.54%</td><td>3.83%</td><td>2.95%</td></tr>
+<tr><td>40%·7天·进借款页</td><td>3.40%</td><td>3.11%</td><td>2.65%</td><td>2.35%</td><td>1.96%</td></tr>
 
 </table>
-
 <div class="chart"><canvas id="c_active" height="120"></canvas></div>
 <div class="chart"><canvas id="c_loan" height="120"></canvas></div>
-
 <div class="verdict">
-<span class="tag warn">行为能否持续一周？</span>
-在观察性发券队列中：相对发券前 7 日基线，有效期内活跃/进页并未系统性抬升，到期后到 D7、D15 继续回落。<br>
-因此：<b>不能支持“红包到期后行为影响仍明显高于基线并维持一周”</b> 这一观察性命题。<br>
-能支持的是对照实验里的<b>提单率</b>：30% 相对不发券的增量主要落在第一周；7 天券的累计增量更耐看，3 天券更像短刺激。
+<span class="tag warn">能否持续一周？</span>
+观察性队列：相对自身发券前基线，有效期内活跃/进页多数未抬升，到期后继续回落。<br>
+可归因结论仍主要来自对照实验的<b>提单率增量</b>：影响集中在第一周；7天券累计增量更耐看，3天券更像短刺激。<br>
+完善券 ID 后更清楚：差异很大一部分来自<b>不同券种/有效期对应不同人群</b>，不是单一“降幅”效应。
 </div>
 
-<h2>5. 方法与证据边界</h2>
+<h2>5. 方法边界</h2>
 <ul>
-<li>发券时刻：<code>coupon_user_copy.create_date</code>；到期：<code>expire_date</code>；幅度：配置券 ID，不用实付反推。</li>
-<li>提单：<code>order_loan_f_v2_copy.apply_date ≥ send_date</code>，不计发券前。</li>
-<li>两套埋点交叉使用字段含义，不叠加计数；接近提交用借款按钮/submit 与 <code>newconfirm</code> 分开报告。</li>
-<li>20/30/40 观察性差异 ≠ 因果；40% 名单与大批量 20/30 发送人群基线不同。</li>
-<li>high_discount 高息档样本对照弱、效果不稳定，不作为主证据。</li>
+<li>发券时刻 create_date；到期 expire_date；幅度按券 ID 映射，不用实付反推。</li>
+<li>cat 缺失券已用 use_record 众数补齐；119 偶有 15% 用券、124 偶有 35%，分组仍按配置主档。</li>
+<li>同日多幅度 1,138 人日已剔除；未满窗不计入。</li>
+<li>观察性 20/30/40 差异 ≠ 因果；优先采信 no_apply 对照。</li>
 </ul>
-
-<p class="sub">数据日：2026-11-04 · 报告自动生成</p>
+<p class="sub">数据日 2026-11-04 · 完善券 ID 版</p>
 </div>
 <script>
-const labels = [-7, -6, -5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30];
-const mk = (id, title, datasets) => new Chart(document.getElementById(id), {
-  type:'line',
-  data:{labels, datasets},
-  options:{
-    plugins:{title:{display:true,text:title,color:'#cfe3f7'},legend:{labels:{color:'#9db0c7'}}},
-    scales:{
-      x:{ticks:{color:'#9db0c7', maxTicksLimit:20}, grid:{color:'#1c2a3d'}, title:{display:true,text:'相对发券日 offset',color:'#9db0c7'}},
-      y:{ticks:{color:'#9db0c7'}, grid:{color:'#1c2a3d'}, title:{display:true,text:'%',color:'#9db0c7'}}
-    }
-  }
+const labels=[-7, -6, -5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30];
+const mk=(id,title,ds)=>new Chart(document.getElementById(id),{
+  type:'line', data:{labels,datasets:ds},
+  options:{plugins:{title:{display:true,text:title,color:'#cfe3f7'},legend:{labels:{color:'#9db0c7'}}},
+    scales:{x:{ticks:{color:'#9db0c7',maxTicksLimit:20},grid:{color:'#1c2a3d'}},
+            y:{ticks:{color:'#9db0c7'},grid:{color:'#1c2a3d'},title:{display:true,text:'%',color:'#9db0c7'}}}
 });
-const colors={20:'#5ec8f0',30:'#f5b942',40:'#7ee8c7'};
-mk('c_active','首提前每日活跃率（发券前7天→后30天）',[
-  {label:'20%', data:[5.7, 5.57, 5.3, 5.13, 5.17, 5.06, 5.22, 4.78, 4.43, 4.75, 3.74, 4.12, 3.78, 3.58, 3.61, 3.47, 3.26, 3.38, 2.97, 3.18, 2.86, 2.89, 2.65, 2.81, 2.56, 2.78, 2.43, 2.43, 2.4, 2.26, 2.23, 2.11, 2.1, 2.14, 2.08, 2.08, 1.92, 1.79], borderColor:colors[20], tension:.2, pointRadius:0},
-  {label:'30%', data:[7.22, 7.84, 13.61, 6.31, 5.79, 5.63, 5.15, 5.1, 4.29, 4.35, 3.93, 3.71, 3.49, 3.36, 3.2, 3.1, 2.82, 2.85, 2.9, 2.77, 2.58, 2.82, 2.46, 2.41, 2.21, 2.41, 2.27, 2.08, 2.14, 2.2, 2.09, 2.01, 1.88, 2.03, 1.75, 1.72, 1.66, 1.78], borderColor:colors[30], tension:.2, pointRadius:0},
-  {label:'40%', data:[8.69, 9.81, 9.06, 8.55, 7.89, 8.64, 8.36, 7.99, 7.24, 7.63, 6.47, 6.61, 6.2, 6.82, 6.03, 4.74, 6.11, 5.79, 5.39, 4.05, 4.78, 5.0, 4.68, 3.64, 4.5, 4.54, 4.07, 3.48, 4.63, 4.16, 3.62, 3.89, 4.12, 3.57, 2.75, 3.62, 4.19, 3.41], borderColor:colors[40], tension:.2, pointRadius:0},
+mk('c_active','首提前活跃率（可比3天券：20/30/40）',[
+  {label:'20%·3天',data:[10.36, 9.85, 9.77, 10.53, 20.94, 9.7, 9.47, 8.72, 7.82, 8.26, 7.28, 8.55, 6.67, 6.01, 5.95, 5.5, 5.25, 5.32, 5.24, 5.04, 4.38, 4.4, 3.89, 3.92, 3.64, 3.92, 3.43, 3.34, 3.36, 3.15, 3.07, 2.89, 2.96, 2.89, 2.79, 2.83, 2.57, 2.42],borderColor:'#5ec8f0',tension:.2,pointRadius:0},
+  {label:'30%·3天',data:[7.19, 7.8, 13.59, 6.29, 5.7, 5.61, 5.11, 5.07, 4.26, 4.33, 3.89, 3.66, 3.47, 3.32, 3.18, 3.09, 2.8, 2.84, 2.89, 2.75, 2.57, 2.81, 2.46, 2.41, 2.2, 2.39, 2.26, 2.06, 2.13, 2.19, 2.07, 2.01, 1.87, 2.01, 1.73, 1.7, 1.64, 1.77],borderColor:'#f5b942',tension:.2,pointRadius:0},
+  {label:'40%·3天',data:[8.62, 9.7, 9.0, 8.53, 7.59, 8.39, 8.2, 7.82, 7.22, 7.55, 6.38, 6.57, 6.06, 6.73, 6.04, 4.75, 6.12, 5.8, 5.28, 4.0, 4.73, 4.95, 4.64, 3.59, 4.51, 4.49, 4.02, 3.37, 4.57, 4.11, 3.63, 3.84, 4.07, 3.52, 2.76, 3.57, 4.2, 3.29],borderColor:'#7ee8c7',tension:.2,pointRadius:0},
 ]);
-mk('c_loan','首提前每日进借款页率',[
-  {label:'20%', data:[3.99, 3.83, 3.64, 3.45, 3.36, 3.33, 3.38, 2.94, 2.74, 2.73, 2.22, 2.35, 2.08, 1.98, 1.85, 1.92, 1.74, 1.73, 1.64, 1.72, 1.57, 1.61, 1.37, 1.52, 1.41, 1.46, 1.38, 1.35, 1.29, 1.2, 1.19, 1.18, 1.1, 1.15, 1.1, 1.22, 1.07, 0.99], borderColor:colors[20], tension:.2, pointRadius:0},
-  {label:'30%', data:[3.64, 3.86, 10.28, 5.08, 4.65, 4.46, 3.96, 3.97, 3.32, 3.08, 3.03, 2.7, 2.54, 2.26, 2.32, 1.99, 1.99, 1.87, 1.73, 1.77, 1.63, 1.77, 1.6, 1.49, 1.41, 1.56, 1.42, 1.37, 1.36, 1.38, 1.39, 1.28, 1.21, 1.25, 1.18, 1.08, 1.03, 1.22], borderColor:colors[30], tension:.2, pointRadius:0},
-  {label:'40%', data:[6.31, 7.19, 7.05, 6.31, 5.28, 6.49, 6.96, 5.74, 4.99, 5.47, 4.63, 4.63, 4.19, 4.11, 3.56, 2.84, 3.85, 3.78, 3.19, 2.35, 2.89, 3.33, 2.88, 2.18, 2.5, 2.94, 3.02, 2.11, 2.81, 2.65, 2.6, 2.36, 2.77, 2.34, 1.44, 2.31, 2.79, 2.61], borderColor:colors[40], tension:.2, pointRadius:0},
+mk('c_loan','首提前进借款页率（可比3天券）',[
+  {label:'20%·3天',data:[6.46, 6.04, 5.83, 5.86, 17.03, 8.02, 7.74, 6.82, 5.95, 6.19, 5.66, 6.58, 4.92, 4.28, 4.05, 3.85, 3.61, 3.54, 3.75, 3.35, 2.71, 2.81, 2.36, 2.43, 2.29, 2.38, 2.09, 2.04, 1.96, 1.87, 1.8, 1.73, 1.71, 1.71, 1.63, 1.72, 1.48, 1.47],borderColor:'#5ec8f0',tension:.2,pointRadius:0},
+  {label:'30%·3天',data:[3.6, 3.82, 10.27, 5.06, 4.56, 4.43, 3.92, 3.94, 3.3, 3.06, 2.99, 2.67, 2.52, 2.24, 2.29, 1.98, 1.98, 1.85, 1.73, 1.75, 1.62, 1.76, 1.59, 1.49, 1.4, 1.54, 1.4, 1.35, 1.35, 1.37, 1.38, 1.27, 1.2, 1.23, 1.16, 1.07, 1.01, 1.21],borderColor:'#f5b942',tension:.2,pointRadius:0},
+  {label:'40%·3天',data:[6.23, 7.08, 6.98, 6.28, 5.01, 6.23, 6.79, 5.57, 5.01, 5.43, 4.54, 4.59, 4.04, 4.02, 3.57, 2.85, 3.85, 3.79, 3.08, 2.29, 2.84, 3.28, 2.83, 2.13, 2.5, 2.89, 2.97, 2.0, 2.76, 2.59, 2.61, 2.3, 2.78, 2.28, 1.45, 2.25, 2.8, 2.48],borderColor:'#7ee8c7',tension:.2,pointRadius:0},
 ]);
 </script>
 </body></html>
