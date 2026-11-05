@@ -12,11 +12,13 @@ load=lambda key:json.loads((DATA/(key+'.json')).read_text())
 offers=load('offers');split=load('offer_split');choice=load('offer_choice')
 assert offers['all_passed'] and split['all_passed'] and choice['all_passed']
 total=offers['rows'][-1]
-assert (total['offer_events'],total['d0_apply_events'])==(10621,3352)
+assert (total['offer_events'],total['d0_apply_events'])==(8274,2232)
 for row in offers['rows']:
     mo=row['event_month'];items=[r for r in split['rows'] if r['event_month']==mo]
     for key in ('offer_events','d0_apply_events'):
         assert sum(r[key] for r in items)==row[key]
+assert {r['event_month'] for r in offers['rows']}=={'2026-'+str(m).zfill(2) for m in range(3,11)}|{'合计'}
+assert load('conversion_audit')['all_passed']
 risk=load('risk');bands=load('bands');ranks=load('percentiles')
 assert not bands['count_or_overdue_drift'] and not ranks['count_drift']
 for c in risk['cohorts']:
@@ -32,5 +34,5 @@ assert sum(x['funded_orders'] for x in life)==3453
 assert sum(x['mature_orders'] for x in life)==2406
 profiles=[x for x in load('profiles')['by_loan_type'] if x['loan_type']=='reloan']
 assert {x['loan_day'] for x in profiles}=={21,28,60}
-print(json.dumps({'passed':True,'frozen_sources':12,'grant_events':10621,'d0_applications':3352,
+print(json.dumps({'passed':True,'frozen_sources':len(json.loads((DATA/'来源清单.json').read_text())),'grant_events':8274,'d0_applications':2232,
                   'main_mature_60_orders':2393,'lifetime_reloan_funded_orders':3453},ensure_ascii=False))

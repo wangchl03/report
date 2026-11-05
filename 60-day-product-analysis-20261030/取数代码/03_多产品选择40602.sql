@@ -1,238 +1,168 @@
--- 多产品获额后当天首次提单，选择40602的占比；分母沿用多产品组当天提单事件数。
+SET TIME ZONE 'America/Belize';
+SET query_dop=1;
+
 /*
-获额产品包含40602：2026年1月1日至10月28日当天提单率。
-业务日：America/Belize；按有效获额事件统计，不按月去重用户。
-获额：is_pass1=1，排除side_recycle_type_copy中recycle_type=1。
-不额外限定loan_type_code，不要求T0干净结清，不要求循环贷在途。
-获额去重：同用户同流水取最后记录；相邻间隔<=20秒链式分组，每组取最后记录。
-先构建所有产品的有效获额序列，再筛选40602，避免重复归属提单。
-提单：获额时刻起至业务当天结束，且早于下一有效获额时刻，取第一笔。
-提单产品不限，不要求放款成功。排除业务黑名单5101518。
+2026年3—10月：含60天产品的续贷获额，按单/双产品及完整产品组合统计。
+获额端：loan_type_code=2、is_pass1=1、已知recycle_type<>1。
+先按相邻获额<=20秒链式分批，每批保留时间最晚、同时间serial_id最大的记录。
+不按用户人日再次去重。保留记录中至少一个产品由product_info_copy.days确认是60天。
+提单端：serial_id和user_id同时匹配，loan_type='reloan'，不要求放款。
+仅统计获额当天提单；获额范围2026-03-01至2026-10-31，1—2月不展示。
+2025-12-31及2026-11-01仅用于边界去重，不进入统计月份。
 只读查询，不创建或修改数据库表。
 */
-SET TIME ZONE 'America/Belize';
-SET query_dop = 1;
-
-WITH scope_users AS (
-    -- 先缩小到统计期内曾获40602的用户，再还原这些用户的全部产品获额序列。
+WITH product_catalog AS (
+    SELECT TRIM(product_no) AS product_no,
+           MIN(TRIM(days)) AS product_days,
+           COUNT(*) AS catalog_rows,
+           COUNT(DISTINCT TRIM(days)) AS day_versions
+    FROM wangchuanliang.product_info_copy
+    GROUP BY TRIM(product_no)
+), product60_pattern AS (
+    SELECT '(^|[^0-9])(' || STRING_AGG(product_no, '|') || ')([^0-9]|$)' AS pattern
+    FROM product_catalog
+    WHERE product_days='60' AND day_versions=1
+), scope_users AS (
     SELECT DISTINCT v.user_id
     FROM wangchuanliang.order_vir_f_copy v
-    WHERE v.is_pass1 = 1
-      AND v.vir_unix > 0
+    CROSS JOIN product60_pattern p
+    WHERE v.loan_type_code=2 AND v.is_pass1=1 AND v.vir_unix>0
+      AND v.vir_date>=DATE '2025-12-31' AND v.vir_date<DATE '2026-11-02'
       AND v.user_id NOT IN (5101518)
-      AND v.vir_date >= DATE '2025-12-31'
-      AND v.vir_date < DATE '2026-10-30'
-      AND v.risk_product ~ '(^|[^0-9])40602([^0-9]|$)'
-      AND NOT EXISTS (
-          SELECT 1 FROM wangchuanliang.side_recycle_type_copy r
-          WHERE r.serial_id = v.serial_id AND r.recycle_type = 1
-      )
-),
-raw_pass AS (
-    SELECT
-        v.user_id,
-        v.serial_id,
-        v.vir_unix,
-        v.vir_date::date AS source_vir_date,
-        TO_TIMESTAMP(v.vir_unix) AT TIME ZONE 'America/Belize' AS credit_time,
-        (TO_TIMESTAMP(v.vir_unix) AT TIME ZONE 'America/Belize')::date AS credit_date,
-        v.risk_product,
-        v.loan_type_code
+      AND v.risk_product ~ p.pattern
+), raw_pass AS (
+    SELECT v.user_id, v.serial_id, v.vir_unix,
+           v.vir_date::date AS source_credit_date,
+           TO_TIMESTAMP(v.vir_unix) AT TIME ZONE 'America/Belize' AS credit_time,
+           (TO_TIMESTAMP(v.vir_unix) AT TIME ZONE 'America/Belize')::date AS credit_date,
+           v.risk_product
     FROM wangchuanliang.order_vir_f_copy v
-    JOIN scope_users u ON u.user_id = v.user_id
-    WHERE v.is_pass1 = 1
-      AND v.vir_unix > 0
-      AND v.user_id NOT IN (5101518)
-      -- 两侧各读取一天，处理20秒去重在统计边界附近的事件。
-      AND v.vir_date >= DATE '2025-12-31'
-      AND v.vir_date < DATE '2026-10-30'
-),
-eligible_pass AS (
+    JOIN scope_users s ON s.user_id=v.user_id
+    WHERE v.loan_type_code=2 AND v.is_pass1=1 AND v.vir_unix>0
+      AND v.vir_date>=DATE '2025-12-31' AND v.vir_date<DATE '2026-11-02'
+      AND v.vir_unix<=EXTRACT(EPOCH FROM CURRENT_TIMESTAMP)
+), recycle_profile AS (
+    SELECT r.serial_id, COUNT(*) AS recycle_rows,
+           MAX(CASE WHEN r.recycle_type=1 THEN 1 ELSE 0 END) AS has_type1,
+           MAX(CASE WHEN r.recycle_type<>1 THEN 1 ELSE 0 END) AS has_non1,
+           COUNT(DISTINCT r.recycle_type) AS recycle_versions
+    FROM wangchuanliang.side_recycle_type_copy r
+    GROUP BY r.serial_id
+), eligible AS (
     SELECT v.*
     FROM raw_pass v
-    WHERE NOT EXISTS (
-        SELECT 1
-        FROM wangchuanliang.side_recycle_type_copy r
-        WHERE r.serial_id = v.serial_id
-          AND r.recycle_type = 1
-    )
-),
-serial_latest AS (
-    SELECT DISTINCT ON (user_id, serial_id) *
-    FROM eligible_pass
-    ORDER BY user_id, serial_id, vir_unix DESC
-),
-lagged AS (
-    SELECT
-        v.*,
-        LAG(credit_time) OVER (
-            PARTITION BY user_id ORDER BY credit_time, serial_id
-        ) AS previous_time
-    FROM serial_latest v
-),
-batched AS (
-    SELECT
-        v.*,
-        SUM(CASE
-                WHEN previous_time IS NULL
-                  OR credit_time - previous_time > INTERVAL '20 seconds'
-                    THEN 1
-                ELSE 0
-            END) OVER (
-                PARTITION BY user_id
-                ORDER BY credit_time, serial_id
-                ROWS UNBOUNDED PRECEDING
-            ) AS batch_id
+    JOIN recycle_profile r ON r.serial_id=v.serial_id
+    WHERE r.has_type1=0 AND r.has_non1=1
+), lagged AS (
+    SELECT v.*, LAG(credit_time) OVER (
+        PARTITION BY user_id ORDER BY credit_time, serial_id
+    ) AS previous_time
+    FROM eligible v
+), batched AS (
+    SELECT v.*, SUM(CASE WHEN previous_time IS NULL
+               OR credit_time-previous_time>INTERVAL '20 seconds' THEN 1 ELSE 0 END)
+           OVER (PARTITION BY user_id ORDER BY credit_time, serial_id
+                 ROWS UNBOUNDED PRECEDING) AS batch_id
     FROM lagged v
-),
-batch_ranked AS (
-    SELECT
-        v.*,
-        ROW_NUMBER() OVER (
-            PARTITION BY user_id, batch_id
-            ORDER BY credit_time DESC, serial_id DESC
-        ) AS batch_rn
+), ranked AS (
+    SELECT v.*, ROW_NUMBER() OVER (
+        PARTITION BY user_id,batch_id ORDER BY credit_time DESC,serial_id DESC
+    ) AS batch_rn
     FROM batched v
-),
-valid_offers AS (
-    SELECT * FROM batch_ranked WHERE batch_rn = 1
-),
-offer_sequence AS (
-    SELECT
-        v.*,
-        LEAD(credit_time) OVER (
-            PARTITION BY user_id ORDER BY credit_time, serial_id
-        ) AS next_credit_time
-    FROM valid_offers v
-),
-cohort AS (
-    SELECT
-        v.*,
-        TO_CHAR(credit_date, 'YYYY-MM') AS event_month,
-        CASE WHEN risk_product ~ '^[[:space:]]*40602[[:space:]]*$'
-             THEN 1 ELSE 0 END AS single_product_flag
-    FROM offer_sequence v
-    WHERE credit_date >= DATE '2026-01-01'
-      AND credit_date < DATE '2026-10-29'
-      -- 按完整产品编号匹配，支持单产品和双产品。
-      AND risk_product ~ '(^|[^0-9])40602([^0-9]|$)'
-),
-candidate_users AS (
-    SELECT DISTINCT user_id FROM cohort
-),
-raw_applications AS (
-    SELECT
-        o.user_id,
-        o.serial_id,
-        o.apply_time,
-        o.product_no,
-        COUNT(*) OVER (PARTITION BY o.user_id, o.serial_id) AS source_order_rows
+), winners AS (
+    SELECT * FROM ranked WHERE batch_rn=1
+      AND credit_date>=DATE '2026-03-01' AND credit_date<DATE '2026-11-01'
+), risk_strings AS (
+    SELECT DISTINCT risk_product FROM winners
+), product_parts_raw AS (
+    SELECT risk_product,
+           TRIM(UNNEST(STRING_TO_ARRAY(risk_product,','))) AS product_no
+    FROM risk_strings
+), product_parts AS (
+    SELECT DISTINCT risk_product,product_no
+    FROM product_parts_raw
+    WHERE NULLIF(product_no,'') IS NOT NULL
+), combinations AS (
+    SELECT p.risk_product,
+           COUNT(*) AS product_count,
+           STRING_AGG(p.product_no,' + ' ORDER BY p.product_no) AS product_combination,
+           STRING_AGG(COALESCE(c.product_days,'未匹配'),' + ' ORDER BY p.product_no) AS product_days_combination,
+           MAX(CASE WHEN c.product_days='60' AND c.day_versions=1 THEN 1 ELSE 0 END) AS contains60,
+           SUM(CASE WHEN c.product_no IS NULL THEN 1 ELSE 0 END) AS unmatched_products,
+           MAX(COALESCE(c.catalog_rows,0)) AS max_catalog_rows,
+           MAX(COALESCE(c.day_versions,0)) AS max_day_versions
+    FROM product_parts p
+    LEFT JOIN product_catalog c ON c.product_no=p.product_no
+    GROUP BY p.risk_product
+), cohort AS (
+    SELECT v.user_id,v.serial_id,v.vir_unix,v.credit_time,v.credit_date,
+           v.source_credit_date,v.risk_product,v.batch_id,
+           TO_CHAR(v.credit_date,'YYYY-MM') AS event_month,
+           p.product_count,p.product_combination,p.product_days_combination,
+           p.unmatched_products,p.max_catalog_rows,p.max_day_versions
+    FROM winners v JOIN combinations p ON p.risk_product=v.risk_product
+    WHERE p.contains60=1
+), candidate_ids AS (
+    SELECT DISTINCT serial_id FROM cohort
+), order_profile AS (
+    SELECT o.serial_id,COUNT(*) AS source_order_rows,
+           COUNT(DISTINCT o.user_id) AS order_user_versions,
+           MIN(o.user_id) AS order_user_id,
+           COUNT(DISTINCT o.loan_type) AS loan_type_versions,
+           MIN(o.loan_type) AS order_loan_type,
+           MIN(CASE WHEN o.loan_type='reloan'
+                     AND o.apply_time>=TIMESTAMP '2026-01-01'
+                     AND o.apply_time<TIMESTAMP '2026-11-01'
+                    THEN o.apply_time END) AS apply_time,
+           MIN(o.product_no) AS applied_product_no
     FROM wangchuanliang.order_loan_f_v2_copy o
-    JOIN candidate_users u ON u.user_id = o.user_id
-    WHERE o.apply_date >= DATE '2026-01-01'
-      AND o.apply_date < DATE '2026-10-29'
-      AND o.apply_time >= TIMESTAMP '2026-01-01 00:00:00'
-      AND o.apply_time < TIMESTAMP '2026-10-29 00:00:00'
-),
-applications AS (
-    SELECT DISTINCT ON (user_id, serial_id) *
-    FROM raw_applications
-    ORDER BY user_id, serial_id, apply_time
-),
-ranked_labels AS (
+    JOIN candidate_ids s ON s.serial_id=o.serial_id
+    GROUP BY o.serial_id
+), labels AS (
+    SELECT e.*,a.order_user_id,a.order_loan_type,a.apply_time,a.applied_product_no,
+           COALESCE(a.source_order_rows,0) AS source_order_rows,
+           COALESCE(a.order_user_versions,0) AS order_user_versions,
+           COALESCE(a.loan_type_versions,0) AS loan_type_versions,
+           CASE WHEN a.apply_time IS NOT NULL AND a.order_user_id=e.user_id
+                     AND a.order_user_versions=1 AND a.order_loan_type='reloan'
+                     AND a.loan_type_versions=1 AND a.apply_time>=e.credit_time
+                     AND a.apply_time::date=e.credit_date
+                THEN 1 ELSE 0 END AS applied
+    FROM cohort e LEFT JOIN order_profile a ON a.serial_id=e.serial_id
+), audit AS (
     SELECT
-        e.*,
-        a.serial_id AS apply_serial_id,
-        a.apply_time,
-        a.product_no AS apply_product_no,
-        a.source_order_rows,
-        ROW_NUMBER() OVER (
-            PARTITION BY e.user_id, e.serial_id
-            ORDER BY a.apply_time ASC NULLS LAST, a.serial_id ASC NULLS LAST
-        ) AS application_rn
-    FROM cohort e
-    LEFT JOIN applications a
-      ON a.user_id = e.user_id
-     AND a.apply_time >= e.credit_time
-     AND a.apply_time < (e.credit_date + 1)::timestamp
-     AND (e.next_credit_time IS NULL OR a.apply_time < e.next_credit_time)
-),
-labels AS (
-    SELECT * FROM ranked_labels WHERE application_rn = 1
-),
-monthly AS (
-    SELECT event_month,
-           COUNT(apply_serial_id) AS multi_product_d0_apply_events,
-           SUM(CASE WHEN apply_serial_id IS NOT NULL
-                     AND BTRIM(apply_product_no) = '40602'
-                    THEN 1 ELSE 0 END) AS chose40602_events,
-           SUM(CASE WHEN apply_serial_id IS NOT NULL
-                     AND NULLIF(BTRIM(apply_product_no), '') IS NOT NULL
-                     AND BTRIM(apply_product_no) <> '40602'
-                    THEN 1 ELSE 0 END) AS chose_other_product_events,
-           SUM(CASE WHEN apply_serial_id IS NOT NULL
-                     AND NULLIF(BTRIM(apply_product_no), '') IS NULL
-                    THEN 1 ELSE 0 END) AS missing_apply_product_events
-    FROM labels
-    WHERE single_product_flag = 0
-    GROUP BY event_month
-),
-months AS (
-    SELECT '2026-01'::text AS event_month UNION ALL
-    SELECT '2026-02' UNION ALL SELECT '2026-03' UNION ALL
-    SELECT '2026-04' UNION ALL SELECT '2026-05' UNION ALL
-    SELECT '2026-06' UNION ALL SELECT '2026-07' UNION ALL
-    SELECT '2026-08' UNION ALL SELECT '2026-09' UNION ALL SELECT '2026-10'
-),
-summary_rows AS (
-    SELECT m.event_month,
-           COALESCE(s.multi_product_d0_apply_events, 0) AS multi_product_d0_apply_events,
-           COALESCE(s.chose40602_events, 0) AS chose40602_events,
-           COALESCE(s.chose_other_product_events, 0) AS chose_other_product_events,
-           COALESCE(s.missing_apply_product_events, 0) AS missing_apply_product_events
-    FROM months m LEFT JOIN monthly s ON s.event_month = m.event_month
-    UNION ALL
-    SELECT '合计', COUNT(apply_serial_id),
-           SUM(CASE WHEN apply_serial_id IS NOT NULL AND BTRIM(apply_product_no) = '40602'
-                    THEN 1 ELSE 0 END),
-           SUM(CASE WHEN apply_serial_id IS NOT NULL
-                     AND NULLIF(BTRIM(apply_product_no), '') IS NOT NULL
-                     AND BTRIM(apply_product_no) <> '40602'
-                    THEN 1 ELSE 0 END),
-           SUM(CASE WHEN apply_serial_id IS NOT NULL
-                     AND NULLIF(BTRIM(apply_product_no), '') IS NULL
-                    THEN 1 ELSE 0 END)
-    FROM labels WHERE single_product_flag = 0
-),
-recycle_profile AS (
-    SELECT
-        r.serial_id,
-        COUNT(*) AS mapping_rows,
-        MAX(CASE WHEN r.recycle_type = 1 THEN 1 ELSE 0 END) AS has_type1
-    FROM wangchuanliang.side_recycle_type_copy r
-    WHERE EXISTS (SELECT 1 FROM cohort e WHERE e.serial_id = r.serial_id)
-    GROUP BY r.serial_id
-),
-audit AS (
-    SELECT
-        COUNT(*) - COUNT(DISTINCT user_id::text || ':' || l.serial_id::text) AS repeated_credit_events,
-        COUNT(apply_serial_id) - COUNT(DISTINCT CASE WHEN apply_serial_id IS NOT NULL
-            THEN user_id::text || ':' || apply_serial_id::text END) AS repeated_application_assignments,
-        SUM(CASE WHEN apply_serial_id IS NOT NULL AND (
-            apply_time < credit_time OR apply_time >= (credit_date + 1)::timestamp
-            OR (next_credit_time IS NOT NULL AND apply_time >= next_credit_time)
-        ) THEN 1 ELSE 0 END) AS invalid_label_times,
-        SUM(CASE WHEN source_order_rows > 1 THEN 1 ELSE 0 END) AS repeated_source_application_events,
-        SUM(CASE WHEN source_vir_date <> credit_date THEN 1 ELSE 0 END) AS date_mismatch_events,
-        SUM(CASE WHEN user_id = 5101518 THEN 1 ELSE 0 END) AS blacklist_events,
-        SUM(CASE WHEN r.mapping_rows IS NULL THEN 1 ELSE 0 END) AS missing_recycle_type_events,
-        SUM(CASE WHEN r.has_type1 = 1 THEN 1 ELSE 0 END) AS excluded_type1_events
+        (SELECT COUNT(*) FROM raw_pass) AS scope_raw_pass_rows,
+        (SELECT COUNT(*) FROM eligible) AS scope_eligible_rows,
+        (SELECT COUNT(*)-COUNT(DISTINCT user_id::text||':'||serial_id::text) FROM eligible) AS repeated_eligible_serial_rows,
+        (SELECT COUNT(*) FROM winners) AS scope_batch_winners,
+        (SELECT COUNT(*) FROM cohort) AS cohort_offers,
+        (SELECT COUNT(DISTINCT user_id) FROM cohort) AS cohort_users,
+        (SELECT COUNT(*)-COUNT(DISTINCT serial_id) FROM cohort) AS repeated_cohort_serial_rows,
+        (SELECT COUNT(*) FROM labels WHERE source_order_rows>1) AS repeated_application_source_rows,
+        (SELECT COUNT(*) FROM labels WHERE order_user_versions>1 OR loan_type_versions>1) AS ambiguous_application_rows,
+        (SELECT COUNT(*) FROM labels WHERE order_user_id<>user_id) AS user_mismatch_rows,
+        (SELECT COUNT(*) FROM labels WHERE source_order_rows>0 AND order_loan_type<>'reloan') AS matched_first_loan_rows,
+        (SELECT COUNT(*) FROM labels WHERE apply_time<credit_time) AS before_credit_application_rows,
+        (SELECT COUNT(*) FROM cohort WHERE unmatched_products>0) AS unmatched_product_offer_rows,
+        (SELECT COUNT(*) FROM cohort WHERE max_catalog_rows>1 OR max_day_versions>1) AS duplicated_product_catalog_offer_rows,
+        (SELECT COUNT(*) FROM cohort WHERE source_credit_date<>credit_date) AS credit_date_mismatch_rows,
+        (SELECT COUNT(*) FROM cohort WHERE product_count>2) AS more_than_two_product_offers,
+        (SELECT COUNT(*) FROM raw_pass v LEFT JOIN recycle_profile r ON r.serial_id=v.serial_id
+         WHERE r.serial_id IS NULL OR (r.has_type1=0 AND r.has_non1=0)) AS scope_unknown_recycle_rows,
+        (SELECT COUNT(*) FROM raw_pass v JOIN recycle_profile r ON r.serial_id=v.serial_id
+         WHERE r.recycle_versions>1) AS scope_conflicting_recycle_rows,
+        (SELECT COUNT(*) FROM cohort WHERE user_id IN (5101518)) AS blacklist_rows
+), marked AS (
+    SELECT l.*,CASE WHEN applied=1 AND applied_product_no IN (
+        SELECT product_no FROM product_catalog WHERE product_days='60' AND day_versions=1
+    ) THEN 1 ELSE 0 END AS chose60
     FROM labels l
-    LEFT JOIN recycle_profile r ON r.serial_id = l.serial_id
 )
-SELECT s.*,
-       ROUND(100.0 * s.chose40602_events / NULLIF(s.multi_product_d0_apply_events, 0), 2)
-           AS chose40602_share_pct,
-       a.*
-FROM summary_rows s CROSS JOIN audit a
-ORDER BY s.event_month;
+SELECT COALESCE(event_month,'合计') AS event_month,
+       SUM(applied) AS multi_product_d0_apply_events,
+       SUM(chose60) AS chose60_events,
+       SUM(CASE WHEN applied=1 AND applied_product_no='40602' THEN 1 ELSE 0 END) AS chose40602_events,
+       SUM(applied)-SUM(chose60) AS chose_other_product_events,
+       ROUND(100.0*SUM(chose60)/NULLIF(SUM(applied),0),2) AS chose60_share_pct
+FROM marked WHERE product_count=2
+GROUP BY GROUPING SETS ((event_month),()) ORDER BY event_month;
