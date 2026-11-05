@@ -1,18 +1,18 @@
 {
   "kpi": {
     "n_user": 1493,
-    "n_apply": 722,
-    "apply_rate": 48.36,
-    "n_apply_week": 58,
-    "n_first_week": 9,
-    "n_remit": 1326,
-    "n_remit_week": 58,
-    "n_due": 696,
-    "n_due_od": 225,
-    "profit_pct": 23.39,
-    "overdue_pct": 32.33,
+    "n_apply": 723,
+    "apply_rate": 48.43,
+    "n_apply_week": 68,
+    "n_first_week": 10,
+    "n_remit": 1337,
+    "n_remit_week": 69,
+    "n_due": 718,
+    "n_due_od": 234,
+    "profit_pct": 22.73,
+    "overdue_pct": 32.59,
     "week_start": "2026-11-02",
-    "as_of": "2026-11-03",
+    "as_of": "2026-11-04",
     "recall_date": "2026-09-17",
     "remit_day": "o.remit_date::date"
   },
@@ -304,6 +304,12 @@
       "n": 5,
       "cum": 722,
       "rate": 48.36
+    },
+    {
+      "d": "2026-11-04",
+      "n": 1,
+      "cum": 723,
+      "rate": 48.43
     }
   ],
   "apply_daily": [
@@ -546,6 +552,11 @@
       "d": "2026-11-03",
       "n_order": 24,
       "n_user": 24
+    },
+    {
+      "d": "2026-11-04",
+      "n_order": 11,
+      "n_user": 11
     }
   ],
   "remit_daily": [
@@ -788,6 +799,11 @@
       "d": "2026-11-03",
       "n": 23,
       "cum": 1326
+    },
+    {
+      "d": "2026-11-04",
+      "n": 11,
+      "cum": 1337
     }
   ],
   "due_daily": [
@@ -1241,6 +1257,17 @@
       "overdue_pct": 33.33,
       "cum_profit_pct": 23.39,
       "cum_overdue_pct": 32.33
+    },
+    {
+      "d": "2026-11-04",
+      "n_due": 22,
+      "n_od": 9,
+      "repaid": 96158.0,
+      "remit": 90296.0,
+      "profit_pct": 6.49,
+      "overdue_pct": 40.91,
+      "cum_profit_pct": 22.73,
+      "cum_overdue_pct": 32.59
     }
   ],
   "strat": [
@@ -1271,8 +1298,8 @@
     {
       "strat": "10d",
       "n_user": 142,
-      "n_apply": 80,
-      "pct": 56.34
+      "n_apply": 81,
+      "pct": 57.04
     },
     {
       "strat": "10d+10r",
@@ -1285,8 +1312,8 @@
     {
       "bin": "7-15d",
       "n_user": 1493,
-      "n_apply": 722,
-      "pct": 48.36
+      "n_apply": 723,
+      "pct": 48.43
     }
   ]
 }
