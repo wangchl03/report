@@ -1,59 +1,45 @@
 {
   "passed": true,
+  "scope_start": "2026-06-15",
+  "scope_end_inclusive": "2026-10-30",
+  "outcome_upper_exclusive": "2026-11-04",
   "frame_checks": [
     {
       "file": "episode_features.parquet",
       "rows": 172886,
       "fields": 117,
-      "stored_field_counts_original_rebuild": [
-        117,
-        117
-      ],
-      "contract_flags_persisted_earlier_in_rebuild": [],
-      "column_order_identical": false,
       "differing_fields": [],
-      "maximum_absolute_numeric_difference": 0.0
+      "maximum_absolute_numeric_difference": 0.0,
+      "maximum_prediction_difference": null,
+      "contract_flags_recomputed_before_feature_comparison": true
     },
     {
       "file": "episode_analysis.parquet",
       "rows": 172886,
       "fields": 262,
-      "stored_field_counts_original_rebuild": [
-        257,
-        262
-      ],
-      "contract_flags_persisted_earlier_in_rebuild": [
-        "hist_offer_d7_complete180",
-        "hist_offer_d7_complete30",
-        "hist_offer_d7_complete90",
-        "next_coupon_same_application_day",
-        "next_preapplication_coupon_day"
-      ],
-      "column_order_identical": false,
       "differing_fields": [],
-      "maximum_absolute_numeric_difference": 0.0
+      "maximum_absolute_numeric_difference": 0.0,
+      "maximum_prediction_difference": null,
+      "contract_flags_recomputed_before_feature_comparison": true
     },
     {
       "file": "diagnostic_response_predictions.parquet",
-      "rows": 41241,
+      "rows": 38487,
       "fields": 8,
-      "stored_field_counts_original_rebuild": [
-        8,
-        8
-      ],
-      "contract_flags_persisted_earlier_in_rebuild": [],
-      "column_order_identical": true,
       "differing_fields": [],
       "maximum_absolute_numeric_difference": 0.0,
-      "maximum_prediction_difference": 0.0
+      "maximum_prediction_difference": 0.0,
+      "contract_flags_recomputed_before_feature_comparison": false
     }
   ],
-  "aggregate_result_files": 22,
+  "aggregate_result_files": 21,
   "aggregate_differences": 0,
-  "independent_sql_state_orders": 481,
-  "independent_sql_state_mismatches": 0,
-  "independent_sql_financial_groups": 7,
-  "independent_sql_financial_mismatches": 0,
-  "portable_readonly_transport_passed": true,
-  "environment": "Python 3.12.14 with the locked package versions; same-host independent directory; source snapshots unchanged."
+  "independent_frozen_source_sql_AB_groups": 8,
+  "independent_frozen_source_sql_financial_groups": 7,
+  "independent_frozen_source_sql_mismatches": 0,
+  "prior_native_SQL_state_orders_rechecked_against_same_frozen_keys": 481,
+  "native_SQL_state_mismatches": 0,
+  "no_user_rows_published": true,
+  "environment": "Python 3.12.14; locked numpy/pandas/scipy/sklearn/LightGBM versions; independent directory, immutable private inputs.",
+  "scope_note": "Original expanded-run report and independent package are recomputed from the same frozen sources. No new live financial query is substituted for the original snapshot."
 }
