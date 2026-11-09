@@ -123,10 +123,10 @@ pre.code{background:#08141e;color:#d5e8f4;border:1px solid var(--line);border-ra
 </nav>
 
 <section id="findings">
-  <p class="dim">色块宽度按人数。先看最完整的 0818。上面一整条是再次全部还清的人，中间拆开他们，下面只拆「满 7 天没再借」的那一块。</p>
-  <div class="cas" role="img" aria-label="0818 结清后停满7天再回来的人数">
+  <p class="dim">色块宽度按人数。先看最完整的 0818。上面一整条是再次全部还清的人，中间拆开他们，下面只拆「流失」的那一块。</p>
+  <div class="cas" role="img" aria-label="0818 结清后流失再回来的人数">
     <div class="node all"><b>1,720 人</b><span>再次全部还清</span></div>
-    <div class="node churn"><b>1,032 人 · 60%</b><span>还清后满 7 天，没有再借</span></div>
+    <div class="node churn"><b>1,032 人 · 60%</b><span>还清后流失</span></div>
     <div class="node early"><b>614 人 · 36%</b><span>7 天内就再借了</span></div>
     <div class="node rest" title="还没到第 8 天 71 人，结清后又有在途 3 人"><b>74</b></div>
     <div class="node stay"><b>566 人 · 55%</b><span>到现在还没回来</span></div>
@@ -135,13 +135,13 @@ pre.code{background:#08141e;color:#d5e8f4;border:1px solid var(--line);border-ra
   <p class="dim">最窄的 74 人里，71 人还没到第 8 天，3 人结清后又有在途。下面两块只属于 1,032 人：566 人到 11 月 9 日还没再借，466 人后来又提单，回来的不到一半。</p>
   <div class="insights">
     <article class="insight">
-      <div class="ring" style="--p:60;--c:#e07a93"><i><b>60%</b><em>停满 7 天</em></i></div>
+      <div class="ring" style="--p:60;--c:#e07a93"><i><b>60%</b><em>流失</em></i></div>
       <div>
-        <h3>还清的人，六成会停满 7 天</h3>
+        <h3>还清的人，六成会流失</h3>
         <ul class="lines">
           <li>0818 跟访 83 天，这批看得最全。</li>
           <li>1,720 人再次全部还清。</li>
-          <li>1,032 人满 7 天没有再借。</li>
+          <li>1,032 人流失。</li>
           <li>614 人在 7 天内就再借，不算这次流失。</li>
         </ul>
       </div>
@@ -149,12 +149,12 @@ pre.code{background:#08141e;color:#d5e8f4;border:1px solid var(--line);border-ra
     <article class="insight">
       <div class="ring" style="background:conic-gradient(#3dcedb 0 45.16%, #e2b15a 45.16% 100%)"><i><b>45%</b><em>回来了</em></i></div>
       <div>
-        <h3>停满 7 天的人，回来的不到一半</h3>
+        <h3>流失的人，回来的不到一半</h3>
         <ul class="lines">
           <li>1,032 人里，466 人后来又提单，占 45.16%。</li>
           <li>566 人到 11 月 9 日还没再借，占 54.84%。</li>
           <li>566 人里，511 人一次都没再借。</li>
-          <li>另外 55 人回来过，后来又还清，并再次停满 7 天。</li>
+          <li>另外 55 人回来过，后来又还清，并再次流失。</li>
         </ul>
       </div>
     </article>
@@ -173,9 +173,9 @@ pre.code{background:#08141e;color:#d5e8f4;border:1px solid var(--line);border-ra
     <article class="insight">
       <div class="ring" style="--p:51.56;--c:#3cbe8b"><i><b>51.6%</b><em>没用到 75%</em></i></div>
       <div>
-        <h3>停下来的人，一半没把额度用到 75%</h3>
+        <h3>流失的人，一半没把额度用到 75%</h3>
         <ul class="lines">
-          <li>9 批里满 7 天没再借、或后来又回来的，合计 2,021 人。</li>
+          <li>9 批里流失、或流失后又回来的，合计 2,021 人。</li>
           <li>借的时候没用到额度 75%：1,042 人，占 51.56%。</li>
           <li>接近用满、标成 100%：361 人，占 17.86%。</li>
           <li>借得比额度还多：426 人，占 21.08%。</li>
@@ -184,8 +184,8 @@ pre.code{background:#08141e;color:#d5e8f4;border:1px solid var(--line);border-ra
     </article>
   </div>
   <div class="chart">
-    <h3>9 批放在一起：窗口走完的，都是停满 7 天的多、回来的少</h3>
-    <p class="dim">每批两根柱。玫瑰色是还清的人里有多少停满了 7 天，青色是这些人里有多少后来又提单。虚线是一半。0930 之后跟访还短，停满 7 天的人少，先看成窗口没走完。1030 还没有人走到这一步。</p>
+    <h3>9 批放在一起：窗口走完的，都是流失的多、回来的少</h3>
+    <p class="dim">每批两根柱。玫瑰色是还清的人里有多少流失了，青色是这些人里有多少后来又提单。虚线是一半。0930 之后跟访还短，流失的人少，先看成窗口没走完。1030 还没有人走到这一步。</p>
     <div id="churnBars" class="box"></div>
   </div>
   <div class="table"><table id="churnTable"></table></div>
