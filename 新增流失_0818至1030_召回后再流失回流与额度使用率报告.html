@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>新增流失召回后再流失、回流与额度使用率</title>
+<title>流失用户召回后转化分析</title>
 <script src="https://cdn.jsdelivr.net/npm/echarts@5.5.1/dist/echarts.min.js"></script>
 <style>
 :root{
@@ -14,9 +14,26 @@
 *{box-sizing:border-box}
 body{margin:0;background:var(--bg);color:var(--text);font:16px/1.7 "PingFang SC","Hiragino Sans GB","Microsoft YaHei",sans-serif}
 .wrap{max-width:1180px;margin:0 auto;padding:28px 28px 72px}
+header.hero{text-align:center;padding:10px 12px 4px}
 .kicker{color:var(--cyan);font-size:12px;letter-spacing:.18em;font-weight:700}
-h1{font-size:30px;line-height:1.35;margin:10px 0 8px;font-weight:760;letter-spacing:.01em}
-.lede{color:#c5d8e6;margin:0 0 18px;font-size:16px}
+h1{font-size:32px;line-height:1.35;margin:10px 0 8px;font-weight:760;letter-spacing:.04em;text-align:center}
+.conclusion{margin:4px 0 12px;text-align:center;font-size:18px;font-weight:750;color:#fff}
+.note4{display:flex;flex-direction:column;align-items:center;gap:1px;margin:0 0 6px;color:var(--dim);font-size:12px;line-height:1.55}
+ol.steps{margin:10px 0 14px;padding:0;list-style:none;display:grid;gap:8px;counter-reset:step}
+ol.steps>li{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:10px 14px 10px 42px;position:relative}
+ol.steps>li:before{counter-increment:step;content:counter(step);position:absolute;left:14px;top:11px;color:var(--cyan);font-weight:760}
+ol.steps strong{display:block;margin-bottom:4px}
+ul.lines{margin:0;padding-left:18px;color:#d7e8f4}
+ul.lines li{margin:3px 0}
+details.fold{margin:12px 0 16px;border:1px solid var(--line);border-radius:12px;background:var(--panel)}
+details.fold:not([open]) > :not(summary){display:none}
+details.fold>summary{cursor:pointer;padding:12px 14px;font-weight:750;color:#fff;list-style:none}
+details.fold>summary::-webkit-details-marker{display:none}
+details.fold>summary:before{content:"▸  ";color:var(--cyan)}
+details.fold[open]>summary:before{content:"▾  "}
+details.fold .table{margin:0 12px 12px;border:0}
+details.fold .muted{margin:0 14px 12px}
+details.fold pre.code{margin:0 14px 14px}
 nav{position:sticky;top:0;z-index:4;background:rgba(7,19,29,.94);border-bottom:1px solid var(--line);display:flex;gap:16px;overflow:auto;padding:12px 0;margin:8px 0 8px}
 nav a{color:#c5dbe8;text-decoration:none;font-size:14px;font-weight:650;white-space:nowrap}
 h2{font-size:22px;margin:42px 0 10px;padding-left:12px;border-left:3px solid var(--cyan);scroll-margin-top:54px}
@@ -62,10 +79,16 @@ pre.code{background:#08141e;color:#d5e8f4;border:1px solid var(--line);border-ra
 </head>
 <body>
 <main class="wrap">
-<header>
+<header class="hero">
   <div class="kicker">T7 新增流失 · BELIZE 2026-11-09</div>
-  <h1>召回后再流失：多数结清用户会停满 7 天，回来的不到一半</h1>
-  <p class="lede">9 批新增名单放在一起看。0818 跟访 83 天，是这套路径里观察最完整的一批；0902 跟访 68 天，用来对照。后面几批结清和 7 天窗口都还没走完。</p>
+  <h1>流失用户召回后转化分析</h1>
+  <p class="conclusion">召回后再流失：多数结清用户会停满 7 天，回来的不到一半</p>
+  <div class="note4">
+    <span>9 批新增名单放在一起看。</span>
+    <span>0818 跟访 83 天，是这套路径里观察最完整的一批。</span>
+    <span>0902 跟访 68 天，用来对照。</span>
+    <span>后面几批结清和 7 天窗口都还没走完。</span>
+  </div>
 </header>
 <nav>
   <a href="#findings">结论</a>
@@ -85,32 +108,101 @@ pre.code{background:#08141e;color:#d5e8f4;border:1px solid var(--line);border-ra
     <article class="stat cyan"><b>70.17%</b><span>已经回流的人，出现在后续新增名单</span><em>327 / 466；另外 139 人没有进入任何后续批次</em></article>
     <article class="stat green"><b>51.56%</b><span>流失前那笔，额度使用率不超过 75%</span><em>1,042 / 2,021 人 · 9 批流失或回流合计</em></article>
   </div>
-  <ol class="findings">
-    <li><strong>结清之后，流失是主路径。</strong>0818 召回后放过款、并且后来再次全部结清的 1,720 人里，1,032 人出现过「全部结清、没有在途、满 7 天没有再提单」。占结清人数的 60%。另有 614 人在 7 天内就提单，没有形成这次流失。</li>
-    <li><strong>再度流失之后，留下来的人仍是多数。</strong>这 1,032 人里，566 人到 11 月 9 日还没有处于回流状态，占 54.84%。其中 511 人从未在第 8 天及以后提单，55 人回来过，后来又全部结清并再次停满 7 天。466 人回流之后目前还在，占 45.16%。</li>
-    <li><strong>后续批次又圈进了一部分已经回来的人，同时有一块人没有被圈到。</strong>466 名流失后回流用户里，327 人出现在 0902 至 1106 的新增名单，占 70.17%；139 人这些批次都没有出现，占 29.83%。0902 与 0818 整批没有交集，这一批命中是 0。一人可以进多批，309 人只进 1 批，18 人进了 2 批，各批人数相加是 345。</li>
-    <li><strong>流失前的资金需求偏松。</strong>额度使用率按人数看，9 批流失或回流合计有 51.56% 不超过 75%，98%–102% 被标成 100% 的占 17.86%，高于 100% 的占 21.08%。算术平均约 77%，金额加权约 70%，都低于打满。人数最多的一档是 50% 到 75%。</li>
+  <ol class="steps">
+    <li><strong>结清之后，流失是主路径</strong>
+      <ul class="lines">
+        <li>0818 召回后放款，并再次全部结清：1,720 人。</li>
+        <li>其中 1,032 人满 7 天没有再提单，占结清人数 60.00%。</li>
+        <li>614 人在 7 天内就提单，没有形成这次流失。</li>
+      </ul>
+    </li>
+    <li><strong>再度流失之后，留下来的人仍是多数</strong>
+      <ul class="lines">
+        <li>1,032 人里，566 人到 11 月 9 日仍未再提单，占 54.84%。</li>
+        <li>511 人从未在第 8 天及以后提单。</li>
+        <li>55 人回来过，后来又全部结清并再次停满 7 天。</li>
+        <li>466 人回流之后目前还在，占 45.16%。</li>
+      </ul>
+    </li>
+    <li><strong>后续批次圈进了一部分已经回来的人，也有一块没有圈到</strong>
+      <ul class="lines">
+        <li>466 名流失后回流用户里，327 人出现在 0902 至 1106，占 70.17%。</li>
+        <li>139 人这些批次都没有出现，占 29.83%。</li>
+        <li>0902 与 0818 整批没有交集，这一批命中是 0。</li>
+        <li>309 人只进 1 批，18 人进了 2 批。各批人数相加是 345，不能直接相加当人数。</li>
+      </ul>
+    </li>
+    <li><strong>流失前的资金需求偏松</strong>
+      <ul class="lines">
+        <li>9 批流失或回流合计 2,021 人。</li>
+        <li>不超过 75%：1,042 人，占 51.56%。</li>
+        <li>标为 100%（原始 98%–102%）：361 人，占 17.86%。</li>
+        <li>高于 100%：426 人，占 21.08%。</li>
+        <li>人数最多的一档是 50% 到 75%。算术平均约 77%，金额加权约 70%。</li>
+      </ul>
+    </li>
   </ol>
 </section>
 
 <section id="path">
   <h2>0818：从结清到再度流失、再回流</h2>
-  <p class="muted">分母从这一层开始是曾全部结清 1,720 人。结清日是第 1 天，第 8 天起才算流失。色块宽度按人数。最右边两块只挂在「仍处回流」下面。</p>
+  <ul class="lines">
+    <li>这一层的分母是曾全部结清 1,720 人。</li>
+    <li>结清日是第 1 天，第 8 天起才算流失。</li>
+    <li>色块宽度按人数。最右边两块只挂在「仍处回流」下面。</li>
+  </ul>
   <div class="chart">
     <h3>0818 结清之后的人数路径</h3>
     <p class="dim">每一层加总等于上一层对应色块。回流后再次流失的 55 人记在当前流失里，和仍处回流的 466 人互斥。</p>
     <div class="legend" id="leg0818"></div>
     <svg id="ice0818" viewBox="0 0 1100 250" width="100%" role="img" aria-label="0818 结清后路径冰柱图"></svg>
   </div>
-  <p>名单 11,585 人，召回后放款 3,675 人，占名单 31.72%。其中 1,720 人后来再次把已放款订单全部结清，占放款人数 46.80%。图从这 1,720 人展开。</p>
-  <p>往下走有两条大路。614 人在结清后的前 7 天就提单，占结清 35.70%，这段直接结束，不算流失。1,032 人走进流失或回流，占 60.00%。剩下 71 人结清还没满 7 天，3 人结清之后又放出在途、中间没有新提单。</p>
-  <p>1,032 人再拆开：511 人到统计日为止没有一次第 8 天及以后的提单；55 人有过这种提单，后来又回到当前流失；466 人提单之后目前还算回流。55 加 511 等于当前流失 566，占这 1,032 人的 54.84%，占全部结清用户的 32.91%。</p>
+  <ol class="steps">
+    <li><strong>先看到结清</strong>
+      <ul class="lines">
+        <li>名单 11,585 人。</li>
+        <li>召回后放款 3,675 人，占名单 31.72%。</li>
+        <li>后来再次全部结清 1,720 人，占放款人数 46.80%。图从这里展开。</li>
+      </ul>
+    </li>
+    <li><strong>结清之后分成几条路</strong>
+      <ul class="lines">
+        <li>7 天内提单 614 人，占结清 35.70%，这段不算流失。</li>
+        <li>流失或回流 1,032 人，占 60.00%。</li>
+        <li>结清未满 7 天 71 人。</li>
+        <li>结清后又放出在途、中间没有新提单 3 人。</li>
+      </ul>
+    </li>
+    <li><strong>1,032 人再拆开</strong>
+      <ul class="lines">
+        <li>从未在第 8 天及以后提单：511 人。</li>
+        <li>回来过、后来又回到当前流失：55 人。</li>
+        <li>提单之后目前还算回流：466 人。</li>
+        <li>55 加 511 等于当前流失 566，占这 1,032 人的 54.84%，占全部结清用户的 32.91%。</li>
+      </ul>
+    </li>
+  </ol>
 </section>
 
 <section id="recall">
   <h2>再度流失之后，谁又出现在后面的批次</h2>
-  <p>这里只看 0818 里目前仍算流失后回流的 466 人。他们的路径是：0818 被召回，召回后放款并再次全部结清，中间没有在途，第 8 天及以后才再提单，而且统计日当天已经不是流失。另外 55 名先回流、后又再次流失的人留在当前流失，不在这 466 人里。</p>
-  <p>「出现在后续批次」指 user_id 在 0902 到 1106 的新增名单里。这次没有把名单日和提单日逐人对齐，所以图上表达的是人进过后面的名单，同时他们已经自己完成了回流提单。</p>
+  <ol class="steps">
+    <li><strong>这一节只看 466 人</strong>
+      <ul class="lines">
+        <li>0818 被召回，召回后放款并再次全部结清。</li>
+        <li>中间没有在途，第 8 天及以后才再提单。</li>
+        <li>统计日当天已经不是流失。</li>
+        <li>另外 55 名先回流、后又再次流失的人留在当前流失，不在这 466 人里。</li>
+      </ul>
+    </li>
+    <li><strong>「出现在后续批次」看的是名单</strong>
+      <ul class="lines">
+        <li>指 user_id 出现在 0902 到 1106 的新增名单里。</li>
+        <li>这次没有把名单日和提单日逐人对齐。</li>
+        <li>图上同时成立的是：人进过后面的名单，并且已经自己完成了回流提单。</li>
+      </ul>
+    </li>
+  </ol>
   <div class="split">
     <div class="chart">
       <h3>466 人在后续新增名单上的命中</h3>
@@ -118,7 +210,7 @@ pre.code{background:#08141e;color:#d5e8f4;border:1px solid var(--line);border-ra
       <svg id="hits" viewBox="0 0 640 340" width="100%" role="img" aria-label="后续批次命中点图"></svg>
     </div>
     <div class="chart">
-      <h3>139 名未进后续名单的人，11 月 6 日日终</h3>
+      <h3>139 名未进后续名单的人，11 月 6 日状态</h3>
       <p class="dim">面积按人数。未到期在途和逾期在途加起来 113 人，当天已有未结清订单。</p>
       <div id="tree" class="box s"></div>
     </div>
@@ -128,38 +220,117 @@ pre.code{background:#08141e;color:#d5e8f4;border:1px solid var(--line);border-ra
     <p class="dim">结清日为第 1 天。第 8 天是流失后的第一天。111 人落在第 8 到第 14 天，占 79.9%。竖线标出第 8 天和第 14 天。</p>
     <div id="days" class="box s"></div>
   </div>
-  <p>单批最高的是 0930，108 人，占 466 人的 23.18%。1010 为 71 人。1106 只有 6 人。任一后续批次覆盖 327 人；139 人一次都没有出现。</p>
-  <p>这 139 人里，127 人的回流提单发生在 11 月 5 日之前。到 11 月 6 日日终，76 人有未到期在途，37 人有逾期在途，15 人相对最近一次结清已经在第 8 天及以后再提单，6 人结清未满 7 天，3 人已满 7 天仍未提单，2 人在最近一次结清后的 7 天内就提单。有在途的 113 人，当天已经不满足「全部结清且没有再提单」。</p>
-  <div class="table"><table id="hitTable"></table></div>
+  <ol class="steps">
+    <li><strong>后续名单命中</strong>
+      <ul class="lines">
+        <li>任一后续批次覆盖 327 人。</li>
+        <li>139 人一次都没有出现。</li>
+        <li>单批最高是 0930，108 人，占 466 人的 23.18%。</li>
+        <li>1010 为 71 人。1106 只有 6 人。</li>
+      </ul>
+    </li>
+    <li><strong>139 人在 11 月 6 日的状态</strong>
+      <ul class="lines">
+        <li>127 人的回流提单发生在 11 月 5 日之前。</li>
+        <li>未到期在途 76 人，逾期在途 37 人，合计 113 人当天已有未结清订单。</li>
+        <li>相对最近一次结清，第 8 天及以后已经再提单 15 人。</li>
+        <li>结清未满 7 天 6 人，已满 7 天仍未提单 3 人。</li>
+        <li>最近一次结清后 7 天内就再提单 2 人。</li>
+      </ul>
+    </li>
+  </ol>
+  <details class="fold">
+    <summary>后续批次命中明细</summary>
+    <div class="table"><table id="hitTable"></table></div>
+  </details>
 </section>
 
 <section id="b0902">
   <h2>0902：同一套路径，跟访少 15 天</h2>
-  <p class="muted">0902 的后续名单覆盖这次没有单拆。冰柱停在回流、从未再提单、回流后再次流失这三块。</p>
+  <ul class="lines">
+    <li>0902 的后续名单覆盖这次没有单拆。</li>
+    <li>冰柱停在回流、从未再提单、回流后再次流失这三块。</li>
+  </ul>
   <div class="chart">
     <h3>0902 结清之后的人数路径</h3>
     <div class="legend" id="leg0902"></div>
     <svg id="ice0902" viewBox="0 0 1100 190" width="100%" role="img" aria-label="0902 结清后路径冰柱图"></svg>
   </div>
-  <p>名单 2,939 人，召回后放款 1,398 人，占名单 47.57%，高于 0818 的 31.72%。曾全部结清 648 人，占放款 46.35%，和 0818 的 46.80% 接近。</p>
-  <p>648 人里，广义流失 355 人，占结清 54.78%，比 0818 低约 5 个百分点。7 天内提单 255 人，占结清 39.35%，高于 0818 的 35.70%。走到流失的 355 人里，190 人仍未回来，占 53.52%，和 0818 的 54.84% 几乎一样。190 人里有 16 人是先回流、后又再次流失。仍处回流 165 人，占广义流失 46.48%。</p>
+  <ol class="steps">
+    <li><strong>从名单到结清</strong>
+      <ul class="lines">
+        <li>名单 2,939 人。</li>
+        <li>召回后放款 1,398 人，占名单 47.57%，高于 0818 的 31.72%。</li>
+        <li>曾全部结清 648 人，占放款 46.35%，和 0818 的 46.80% 接近。</li>
+      </ul>
+    </li>
+    <li><strong>结清之后</strong>
+      <ul class="lines">
+        <li>广义流失 355 人，占结清 54.78%，比 0818 低约 5 个百分点。</li>
+        <li>7 天内提单 255 人，占结清 39.35%，高于 0818 的 35.70%。</li>
+        <li>走到流失的 355 人里，190 人仍未回来，占 53.52%。</li>
+        <li>190 人里有 16 人是先回流、后又再次流失。</li>
+        <li>仍处回流 165 人，占广义流失 46.48%。</li>
+      </ul>
+    </li>
+  </ol>
 </section>
 
 <section id="nine">
   <h2>九批放在一张图里</h2>
-  <p>每格是该状态占本批曾全部结清的比例。0818 到 0917 的跟访有 53 到 83 天，广义流失占结清在 52.6% 到 60.0%。0930 之后跟访只剩 10 到 40 天，结清人数先变少，未满 7 天的格子变深，广义流失变浅。1030 召回后只过了 10 天，放款 256 人里全部结清 11 人，其中 6 人还没到第 8 天，流失或回流是 0。</p>
-  <p>后面几批的低流失率，先看成窗口还没走完。7 天内提单会立刻进入分母，还差几天才到第 8 天的人先被放在「未满 7 天」。观察期短的时候，这个结构会把流失比例压低。</p>
+  <ol class="steps">
+    <li><strong>格子怎么读</strong>
+      <ul class="lines">
+        <li>每格是该状态占本批曾全部结清的比例。</li>
+        <li>颜色越亮，占比越高。</li>
+        <li>合计是 9 批人数相加，同一人若在两批名单里会各计一次。</li>
+      </ul>
+    </li>
+    <li><strong>窗口长的四批</strong>
+      <ul class="lines">
+        <li>0818 到 0917，跟访 53 到 83 天。</li>
+        <li>广义流失占结清在 52.6% 到 60.0%。</li>
+      </ul>
+    </li>
+    <li><strong>窗口短的五批</strong>
+      <ul class="lines">
+        <li>0930 之后跟访只剩 10 到 40 天。</li>
+        <li>结清人数先变少，未满 7 天的格子变深，广义流失变浅。</li>
+        <li>1030 召回后只过了 10 天。放款 256 人里全部结清 11 人，其中 6 人还没到第 8 天，流失或回流是 0。</li>
+        <li>后面几批的低流失率，先看成窗口还没走完。</li>
+      </ul>
+    </li>
+  </ol>
   <div class="chart">
     <h3>各批结清用户的去向占比</h3>
     <p class="dim">颜色越亮，占本批曾全部结清越高。合计是 9 批人数相加，同一人若在两批名单里会各计一次。来源：kaby_dw，Belize 2026-11-09。</p>
     <div id="heatOut" class="box m"></div>
   </div>
-  <div class="table"><table id="batchTable"></table></div>
+  <details class="fold">
+    <summary>九批明细表</summary>
+    <div class="table"><table id="batchTable"></table></div>
+  </details>
 </section>
 
 <section id="util">
   <h2>额度使用率：一半的人没用到 75%</h2>
-  <p>使用率是流失前那笔订单的放款金额，除以该笔获额通过额度。当前流失取最近一次有效结清；流失后回流取最早一次第 8 天及以后的回流结清。先回流后又再次流失的人只出现在当前流失，用的是最近这一笔。98% 到 102% 在分档前改写成 100%，因此落在 (85%, 100%] 里。「标为 100%」是这一档的子集，占比的分母仍是该组人数。</p>
+  <ol class="steps">
+    <li><strong>怎么算</strong>
+      <ul class="lines">
+        <li>流失前那笔订单的放款金额，除以该笔获额通过额度。</li>
+        <li>当前流失取最近一次有效结清。</li>
+        <li>流失后回流取最早一次第 8 天及以后的回流结清。</li>
+        <li>先回流后又再次流失的人只出现在当前流失，用的是最近这一笔。</li>
+      </ul>
+    </li>
+    <li><strong>100% 怎么标</strong>
+      <ul class="lines">
+        <li>98% 到 102% 在分档前改写成 100%，落在 (85%, 100%] 里。</li>
+        <li>「标为 100%」是这一档的子集。</li>
+        <li>占比的分母仍是该组人数。</li>
+      </ul>
+    </li>
+  </ol>
   <div class="stats">
     <article class="stat rose"><b id="uLow">51.56%</b><span>不超过 75%</span><em id="uLowN">流失或回流 · 9 批合计</em></article>
     <article class="stat cyan"><b id="uFull">17.86%</b><span>标为 100%（原始 98%–102%）</span><em id="uFullN">含在 (85%, 100%] 内</em></article>
@@ -181,12 +352,15 @@ pre.code{background:#08141e;color:#d5e8f4;border:1px solid var(--line);border-ra
     <p class="dim">左点是金额加权，右点是算术平均。横轴是使用率。算术平均更高，因为小额度订单的使用率更高，按人平均时和第大额订单一样重。</p>
     <svg id="dumb" viewBox="0 0 1100 280" width="100%" role="img" aria-label="算术平均与金额加权对照"></svg>
   </div>
-  <p id="utilCopy"></p>
-  <div class="table"><table id="utilTable"></table></div>
+  <div id="utilCopy"></div>
+  <details class="fold">
+    <summary>额度使用率分布明细</summary>
+    <div class="table"><table id="utilTable"></table></div>
+  </details>
 </section>
 
-<section id="scope">
-  <h2>口径</h2>
+<details class="fold" id="scope">
+  <summary>口径</summary>
   <div class="table"><table>
     <tr><th>项目</th><th style="text-align:left">定义</th></tr>
     <tr><td>统计日</td><td style="text-align:left">America/Belize 2026-11-09。合计是各批相加。</td></tr>
@@ -200,13 +374,13 @@ pre.code{background:#08141e;color:#d5e8f4;border:1px solid var(--line);border-ra
     <tr><td>分档</td><td style="text-align:left">先把 98%–102% 改写成 100%，再分成 [0, 50%]、(50%, 75%]、(75%, 85%]、(85%, 100%]、(100%, 500%]。端点归入左闭的这一档。没有人低于 0 或高于 500%。</td></tr>
   </table></div>
   <p class="muted">曾全部结清 = 当前流失 + 流失后回流 + 结清未满 7 天 + 7 天内提单 + 结清后有在途。9 批每一批都对得上。</p>
-</section>
+</details>
 
-<section id="code">
-  <h2>附录 · 统计代码</h2>
-  <p class="muted">下面是复现本报告人数、额度使用率分档和 0818 后续名单命中的完整脚本。运行前先载入数据库环境变量。仓库按日滚动，同一脚本换一天再跑，人数会跟着订单状态变化；本报告锁定的是 2026-11-09 那一版结果。</p>
+<details class="fold" id="code">
+  <summary>附录 · 统计代码</summary>
+  <p class="muted">下面是复现本报告人数、额度使用率分档和 0818 后续名单命中的完整脚本。运行前先载入数据库环境变量。仓库按日滚动，同一脚本换一天再跑，人数会跟着订单状态变化。本报告锁定的是 2026-11-09 那一版结果。</p>
   <pre class="code" id="src"></pre>
-</section>
+</details>
 <p class="foot">人数与本地表《新增流失_0818至1030_召回后再次流失7天》《新增流失_0818至1030_流失前额度使用率分布》一致。后续名单只统计了 0818 的流失后回流用户。0902 及更晚批次的名单命中没有按同样方式单拆。</p>
 </main>
 <script>
@@ -216,7 +390,7 @@ const pct = (a,b) => b ? (100*a/b) : 0;
 const pctTxt = (a,b) => b ? (100*a/b).toFixed(2)+"%" : "—";
 
 function drawIce(svg, tree, width){
-  const W = 1100, rowH = 46, gapY = 12, pad = 0;
+  const W = 1100, rowH = 54, gapY = 10, pad = 0;
   const depths = [];
   (function walk(node, depth){
     depths[depth] = Math.max(depths[depth]||0, depth);
@@ -235,16 +409,16 @@ function drawIce(svg, tree, width){
     const share = (100*node.value/tree.value).toFixed(1)+"%";
     r.appendChild(Object.assign(document.createElementNS(ns, "title"), {textContent: node.name+"  "+fmt(node.value)+"  占结清 "+share}));
     svg.appendChild(r);
-    if (w > 78){
+    if (w > 88){
       const t = document.createElementNS(ns, "text");
-      t.setAttribute("x", x+10); t.setAttribute("y", y+20);
-      t.setAttribute("fill", "#f4fbff"); t.setAttribute("font-size", "13");
+      t.setAttribute("x", x+10); t.setAttribute("y", y+22);
+      t.setAttribute("fill", "#ffffff"); t.setAttribute("font-size", "15"); t.setAttribute("font-weight", "700");
       t.setAttribute("font-family", "PingFang SC, Microsoft YaHei, sans-serif");
       t.textContent = node.name;
       svg.appendChild(t);
       const t2 = document.createElementNS(ns, "text");
-      t2.setAttribute("x", x+10); t2.setAttribute("y", y+36);
-      t2.setAttribute("fill", "rgba(244,251,255,.82)"); t2.setAttribute("font-size", "12");
+      t2.setAttribute("x", x+10); t2.setAttribute("y", y+42);
+      t2.setAttribute("fill", "#ffffff"); t2.setAttribute("font-size", "16"); t2.setAttribute("font-weight", "760");
       t2.setAttribute("font-family", "PingFang SC, Microsoft YaHei, sans-serif");
       t2.textContent = fmt(node.value)+" · "+share;
       svg.appendChild(t2);
@@ -321,12 +495,12 @@ function drawHits(){
     svg.appendChild(dot);
     const lab = document.createElementNS(ns,"text");
     lab.setAttribute("x", 0); lab.setAttribute("y", y+4);
-    lab.setAttribute("fill", "#8eafc4"); lab.setAttribute("font-size", "12");
+    lab.setAttribute("fill", "#d7e8f4"); lab.setAttribute("font-size", "14"); lab.setAttribute("font-weight", "700");
     lab.textContent = h[0];
     svg.appendChild(lab);
     const val = document.createElementNS(ns,"text");
-    val.setAttribute("x", W); val.setAttribute("y", y+4);
-    val.setAttribute("fill", "#e8f3fb"); val.setAttribute("font-size", "12");
+    val.setAttribute("x", W); val.setAttribute("y", y+5);
+    val.setAttribute("fill", "#ffffff"); val.setAttribute("font-size", "15"); val.setAttribute("font-weight", "760");
     val.setAttribute("text-anchor", "end");
     val.textContent = fmt(h[2])+"  "+pctTxt(h[2], den);
     svg.appendChild(val);
@@ -381,7 +555,7 @@ heatChart.setOption({
     text:["占结清 60%","0%"], textStyle:{color:"#8eafc4"},
     inRange:{color:["#10283a","#1c6e86","#3dcedb","#f2d48a"]}},
   series:[{type:"heatmap", data:heat.map(d=>[d[0],d[1],d[2]]),
-    label:{show:true, formatter:p=>{const v=p.value[2]; if(v<8) return ""; return (v>=32?"{dk|":"{lt|")+v.toFixed(0)+"%}"}, rich:{dk:{color:"#10283a",fontSize:11,fontWeight:650}, lt:{color:"#f4fbff",fontSize:11}}},
+    label:{show:true, formatter:p=>{const v=p.value[2]; if(v<1) return ""; return (v>=32?"{dk|":"{lt|")+v.toFixed(0)+"%}"}, rich:{dk:{color:"#10283a",fontSize:14,fontWeight:760}, lt:{color:"#ffffff",fontSize:14,fontWeight:760}}},
     itemStyle:{borderColor:"#07131d", borderWidth:2}}]
 });
 
@@ -420,7 +594,7 @@ function paintUtil(){
       text:["50%","0%"], textStyle:{color:"#8eafc4"},
       inRange:{color:["#10283a","#1c6e86","#3dcedb","#f2d48a"]}},
     series:[{type:"heatmap", data:cells.map(d=>[d[0],d[1],d[2]]),
-      label:{show:true, formatter:p=>{const v=p.value[2]; if(v<8) return ""; return (v>=32?"{dk|":"{lt|")+v.toFixed(0)+"%}"}, rich:{dk:{color:"#10283a",fontSize:11,fontWeight:650}, lt:{color:"#f4fbff",fontSize:11}}},
+      label:{show:true, formatter:p=>{const v=p.value[2]; if(v<1) return ""; return (v>=32?"{dk|":"{lt|")+v.toFixed(0)+"%}"}, rich:{dk:{color:"#10283a",fontSize:14,fontWeight:760}, lt:{color:"#ffffff",fontSize:14,fontWeight:760}}},
       itemStyle:{borderColor:"#07131d", borderWidth:2}}]
   });
   const title = {either:"流失或回流", current:"当前流失", return:"流失后回流"}[utilGroup];
@@ -442,15 +616,17 @@ function paintUtil(){
   const g2 = utilGroup==="either"
     ? "0902 回流组的算术平均是 81.68%，当前流失是 75.27%，回来的人用得略多，主体仍然集中在 75% 及以下和 100% 附近。"
     : "";
-  document.getElementById("utilCopy").innerHTML =
-    title+"合计 "+fmt(n)+" 人里，不超过 75% 的是 "+fmt(low)+" 人，占 "+pctTxt(low, n)+
-    "。单档人数最多的是 (50%, 75%]，"+fmt(tot[1])+" 人，占 "+pctTxt(tot[1], n)+
-    "。(75%, 85%] 只有 "+fmt(tot[2])+" 人，分布在这里变薄，然后在 100% 附近和 100% 以上又厚起来。"+
-    "(85%, 100%] 有 "+fmt(tot[3])+" 人，其中 "+fmt(tot[5])+" 人是原始使用率 98%–102%、被标成 100% 的，其余 "+fmt(tot[3]-tot[5])+" 人落在 85% 到 98% 之间。"+
-    "0818 的"+title+" "+fmt(na)+" 人里，不超过 75% 的占 "+pctTxt(a[0]+a[1], na)+"，标为 100% 的占 "+pctTxt(a[5], na)+"，高于 100% 的占 "+pctTxt(a[4], na)+"。"+
-    same+
-    "0902 的"+title+" "+fmt(ng)+" 人里，不超过 75% 的占 "+pctTxt(g[0]+g[1], ng)+"，标为 100% 的占 "+pctTxt(g[5], ng)+"，高于 100% 的占 "+pctTxt(g[4], ng)+"。"+
-    g2;
+  const lines = [
+    title+"合计 "+fmt(n)+" 人。不超过 75% 的是 "+fmt(low)+" 人，占 "+pctTxt(low, n)+"。",
+    "人数最多的一档是 (50%, 75%]："+fmt(tot[1])+" 人，占 "+pctTxt(tot[1], n)+"。",
+    "(75%, 85%] 只有 "+fmt(tot[2])+" 人。往上到 100% 附近和 100% 以上又变厚。",
+    "(85%, 100%] 有 "+fmt(tot[3])+" 人。其中标为 100% 的 "+fmt(tot[5])+" 人，其余 "+fmt(tot[3]-tot[5])+" 人在 85% 到 98% 之间。",
+    "0818 的"+title+" "+fmt(na)+" 人：不超过 75% 占 "+pctTxt(a[0]+a[1], na)+"，标为 100% 占 "+pctTxt(a[5], na)+"，高于 100% 占 "+pctTxt(a[4], na)+"。",
+    "0902 的"+title+" "+fmt(ng)+" 人：不超过 75% 占 "+pctTxt(g[0]+g[1], ng)+"，标为 100% 占 "+pctTxt(g[5], ng)+"，高于 100% 占 "+pctTxt(g[4], ng)+"。",
+  ];
+  if (same) lines.push(same);
+  if (g2) lines.push(g2);
+  document.getElementById("utilCopy").innerHTML = "<ul class=\"lines\">"+lines.map(x=>"<li>"+x+"</li>").join("")+"</ul>";
 }
 document.getElementById("utilBtns").addEventListener("click", ev=>{
   const btn = ev.target.closest("button");
@@ -482,13 +658,14 @@ function drawDumb(){
   const ns = "http://www.w3.org/2000/svg";
   const groups = ["流失或回流","当前流失","流失后回流"];
   const panels = [["合计", DATA.means["合计"]],["0818", DATA.means["0818"]],["0902", DATA.means["0902"]]];
+  svg.setAttribute("viewBox", "0 0 1100 360");
   const x0 = 150, x1 = 1040, min = 65, max = 85;
   const X = v => x0 + (v-min)/(max-min)*(x1-x0);
   [70,75,80,85].forEach(v=>{
     const x = X(v);
     const line = document.createElementNS(ns,"line");
     line.setAttribute("x1", x); line.setAttribute("x2", x);
-    line.setAttribute("y1", 28); line.setAttribute("y2", 250);
+    line.setAttribute("y1", 28); line.setAttribute("y2", 330);
     line.setAttribute("stroke", "#1e3c52");
     svg.appendChild(line);
     const t = document.createElementNS(ns,"text");
@@ -499,7 +676,7 @@ function drawDumb(){
   });
   panels.forEach((p,pi)=>{
     groups.forEach((g,gi)=>{
-      const y = 48 + pi*78 + gi*20;
+      const y = 52 + pi*100 + gi*28;
       const w = p[1][gi][0], a = p[1][gi][1];
       if(gi===0){
         const lab = document.createElementNS(ns,"text");
@@ -518,19 +695,25 @@ function drawDumb(){
       ln.setAttribute("y1", y); ln.setAttribute("y2", y);
       ln.setAttribute("stroke", "#8eafc4");
       svg.appendChild(ln);
-      [[w,"#e2b15a","加权"],[a,"#3dcedb","算术"]].forEach(([v,color,name])=>{
+      [[w,"#e2b15a","加权",-10],[a,"#3dcedb","算术",14]].forEach(([v,color,name,dy])=>{
         const c = document.createElementNS(ns,"circle");
-        c.setAttribute("cx", X(v)); c.setAttribute("cy", y); c.setAttribute("r", 5);
+        c.setAttribute("cx", X(v)); c.setAttribute("cy", y); c.setAttribute("r", 6);
         c.setAttribute("fill", color);
         const title = document.createElementNS(ns,"title");
         title.textContent = p[0]+" "+g+" "+name+" "+v.toFixed(2)+"%";
         c.appendChild(title);
         svg.appendChild(c);
+        const tv = document.createElementNS(ns,"text");
+        tv.setAttribute("x", X(v)); tv.setAttribute("y", y+dy);
+        tv.setAttribute("text-anchor", "middle");
+        tv.setAttribute("fill", color); tv.setAttribute("font-size", "13"); tv.setAttribute("font-weight", "760");
+        tv.textContent = v.toFixed(1)+"%";
+        svg.appendChild(tv);
       });
     });
   });
   const note = document.createElementNS(ns,"text");
-  note.setAttribute("x", 150); note.setAttribute("y", 270);
+  note.setAttribute("x", 150); note.setAttribute("y", 348);
   note.setAttribute("fill", "#8eafc4"); note.setAttribute("font-size", "12");
   note.textContent = "琥珀色是金额加权    青色是算术平均";
   svg.appendChild(note);
@@ -544,7 +727,7 @@ tree.setOption({
   series:[{
     type:"treemap", roam:false, nodeClick:false, breadcrumb:{show:false},
     width:"100%", height:"92%", top:0,
-    label:{color:"#f4fbff", fontSize:12, formatter:p=>p.name+"\n"+p.value},
+    label:{color:"#ffffff", fontSize:15, fontWeight:760, formatter:p=>p.name+"\n"+p.value+"人"},
     itemStyle:{borderColor:"#07131d", borderWidth:2, gapWidth:2},
     data:[
       {name:"未到期在途", value:76, itemStyle:{color:"#1a9bb0"}},
@@ -566,14 +749,19 @@ days.setOption({
     data:DATA.days, axisLabel:{color:"#8eafc4"}, axisLine:{lineStyle:{color:"#1e3c52"}}},
   yAxis:{type:"value", name:"人数", nameTextStyle:{color:"#8eafc4"}, axisLabel:{color:"#8eafc4"}, splitLine:{lineStyle:{color:"#1e3c52"}}},
   series:[{
-    type:"line", data:DATA.dayN, smooth:false, symbol:"circle", symbolSize:7,
+    type:"line", data:DATA.dayN, smooth:false, symbol:"circle", symbolSize:9,
     lineStyle:{color:"#3dcedb", width:2}, itemStyle:{color:"#3dcedb"},
+    label:{show:true, color:"#ffffff", fontSize:13, fontWeight:760, formatter:p=>p.value>=8?p.value:""},
     areaStyle:{color:"rgba(61,206,219,0.18)"},
     markLine:{symbol:"none", label:{color:"#e2b15a"}, lineStyle:{color:"#e2b15a", type:"dashed"},
       data:[{xAxis:"8"},{xAxis:"14"}]}
   }]
 });
 window.addEventListener("resize", ()=>{ heatChart.resize(); utilChart.resize(); tree.resize(); days.resize(); });
+document.querySelectorAll("nav a").forEach(a=>a.addEventListener("click", ()=>{
+  const el = document.querySelector(a.getAttribute("href"));
+  if (el && el.tagName === "DETAILS") el.open = true;
+}));
 document.getElementById("src").textContent = "# 新增流失 9 批：召回后再流失、回流、后续名单与额度使用率\n# 统计日按库内 CURRENT_DATE，本次报告对应 America/Belize 2026-11-09。\n# 运行前：set -a && source ~/.t7_dashboard.env && set +a\n# 连接信息只从环境变量读取。\n\nimport os\nfrom datetime import date, datetime\n\nimport psycopg2\n\nconn = psycopg2.connect(\n    host=os.environ[\"PGHOST\"],\n    port=int(os.environ.get(\"PGPORT\", \"8000\")),\n    dbname=os.environ.get(\"PGDATABASE\", \"kaby_dw\"),\n    user=os.environ[\"PGUSER\"],\n    password=os.environ[\"PGPASSWORD\"],\n    connect_timeout=30,\n    options=\"-c statement_timeout=0\",\n)\nconn.autocommit = True\ncur = conn.cursor()\ncur.execute(\"SET TIME ZONE 'America/Belize'\")\ncur.execute(\"SET search_path TO wangchuanliang, public\")\ncur.execute(\"SELECT CURRENT_DATE\")\nprint(\"asof\", cur.fetchone()[0])\n\nbatches = [\n    (\"0818\", \"t7recalllist_0818_0819\", date(2026, 8, 18), \"recall_date = DATE '2026-08-18'\"),\n    (\"0902\", \"t7recalllist_0902\", date(2026, 9, 2), \"TRUE\"),\n    (\"0910\", \"t7recalllist_0910\", date(2026, 9, 10), \"TRUE\"),\n    (\"0917\", \"t7recalllist_0917\", date(2026, 9, 17), \"TRUE\"),\n    (\"0930\", \"t7recalllist_0930\", date(2026, 9, 30), \"TRUE\"),\n    (\"1010\", \"t7recalllist_1010\", date(2026, 10, 10), \"TRUE\"),\n    (\"1016\", \"t7recalllist_1016\", date(2026, 10, 16), \"TRUE\"),\n    (\"1023\", \"t7recalllist_1023\", date(2026, 10, 23), \"TRUE\"),\n    (\"1030\", \"t7recalllist_1030\", date(2026, 10, 30), \"TRUE\"),\n]\nparts = []\nfor bid, tbl, rd, wh in batches:\n    ts = datetime(rd.year, rd.month, rd.day)\n    parts.append(\n        f\"\"\"\n        SELECT '{bid}' AS batch, TIMESTAMP '{ts}' AS recall_ts,\n               churn_user_id::bigint AS user_id\n        FROM wangchuanliang.{tbl}\n        WHERE churn_user_id IS NOT NULL AND {wh}\n        \"\"\"\n    )\ncur.execute(\"DROP TABLE IF EXISTS tmp_u; CREATE TEMP TABLE tmp_u AS \" + \" UNION ALL \".join(parts))\n\ncur.execute(\n    \"\"\"\nDROP TABLE IF EXISTS tmp_loan;\nCREATE TEMP TABLE tmp_loan AS\nSELECT u.batch, u.user_id, u.recall_ts, o.serial_id, o.remit_time, o.remit_amt,\n       o.apply_time, o.repaid_time, o.repaid_date::date AS repaid_date, v.credit_amt,\n       CASE WHEN (o.is_repaid = 1 OR o.loan_status_code = 7)\n             AND o.repaid_time > TIMESTAMP '2000-01-01'\n             AND o.repaid_date > DATE '2000-01-01'\n            THEN 1 ELSE 0 END AS is_settled\nFROM tmp_u u\nJOIN order_loan_f_v2_copy o ON o.user_id = u.user_id\nLEFT JOIN (\n    SELECT serial_id, MAX(max_credit_apply_amt) AS credit_amt\n    FROM order_vir_f_copy\n    WHERE is_pass1 = 1 AND max_credit_apply_amt > 0\n    GROUP BY serial_id\n) v ON v.serial_id = o.serial_id\nWHERE o.is_remit = 1 AND COALESCE(o.remit_amt, 0) > 0\n  AND o.remit_time > TIMESTAMP '2000-01-01'\n\"\"\"\n)\ncur.execute(\n    \"\"\"\nDROP TABLE IF EXISTS tmp_clear;\nCREATE TEMP TABLE tmp_clear AS\nSELECT s.batch, s.user_id, s.repaid_time, MIN(s.repaid_date) AS repaid_date\nFROM tmp_loan s\nJOIN (\n    SELECT batch, user_id, MIN(remit_time) AS fp\n    FROM tmp_loan\n    WHERE apply_time >= recall_ts\n    GROUP BY 1, 2\n) r ON r.batch = s.batch AND r.user_id = s.user_id\nWHERE s.is_settled = 1 AND s.repaid_time >= r.fp\n  AND NOT EXISTS (\n      SELECT 1 FROM tmp_loan o\n      WHERE o.batch = s.batch AND o.user_id = s.user_id\n        AND o.remit_time <= s.repaid_time\n        AND (o.is_settled = 0 OR o.repaid_time > s.repaid_time)\n  )\nGROUP BY s.batch, s.user_id, s.repaid_time\n\"\"\"\n)\ncur.execute(\n    \"\"\"\nDROP TABLE IF EXISTS tmp_apply;\nCREATE TEMP TABLE tmp_apply AS\nSELECT u.batch, u.user_id, o.apply_time, o.apply_date::date AS apply_date\nFROM tmp_u u\nJOIN order_loan_f_v2_copy o ON o.user_id = u.user_id\nWHERE o.apply_time >= u.recall_ts\n\"\"\"\n)\ncur.execute(\n    \"\"\"\nDROP TABLE IF EXISTS tmp_ep;\nCREATE TEMP TABLE tmp_ep AS\nSELECT c.batch, c.user_id, c.repaid_time, c.repaid_date,\n       n.nt AS next_apply_time, a.apply_date AS next_apply_date, m.nr AS next_remit_time\nFROM tmp_clear c\nLEFT JOIN (\n    SELECT c2.batch, c2.user_id, c2.repaid_time, MIN(p.apply_time) AS nt\n    FROM tmp_clear c2\n    JOIN tmp_apply p\n      ON p.batch = c2.batch AND p.user_id = c2.user_id AND p.apply_time > c2.repaid_time\n    GROUP BY 1, 2, 3\n) n ON n.batch = c.batch AND n.user_id = c.user_id AND n.repaid_time = c.repaid_time\nLEFT JOIN tmp_apply a\n  ON a.batch = c.batch AND a.user_id = c.user_id AND a.apply_time = n.nt\nLEFT JOIN (\n    SELECT c2.batch, c2.user_id, c2.repaid_time, MIN(l.remit_time) AS nr\n    FROM tmp_clear c2\n    JOIN tmp_loan l\n      ON l.batch = c2.batch AND l.user_id = c2.user_id AND l.remit_time > c2.repaid_time\n    GROUP BY 1, 2, 3\n) m ON m.batch = c.batch AND m.user_id = c.user_id AND m.repaid_time = c.repaid_time\n\"\"\"\n)\n\ncur.execute(\"SELECT batch, COUNT(DISTINCT user_id) FROM tmp_u GROUP BY 1\")\nlist_n = {r[0]: int(r[1]) for r in cur.fetchall()}\ncur.execute(\n    \"\"\"\nSELECT batch, COUNT(DISTINCT user_id)\nFROM tmp_loan\nWHERE apply_time >= recall_ts\nGROUP BY 1\n\"\"\"\n)\nremit_n = {r[0]: int(r[1]) for r in cur.fetchall()}\n\ncur.execute(\n    \"\"\"\nWITH ranked AS (\n    SELECT *,\n           CASE WHEN next_remit_time IS NOT NULL\n                 AND (next_apply_time IS NULL OR next_remit_time < next_apply_time)\n                THEN 1 ELSE 0 END AS broken,\n           ROW_NUMBER() OVER (PARTITION BY batch, user_id ORDER BY repaid_time DESC) AS rn\n    FROM tmp_ep\n), u AS (\n    SELECT batch, user_id,\n           MAX(CASE WHEN rn = 1 AND broken = 0 AND next_apply_date IS NULL\n                     AND CURRENT_DATE >= repaid_date + 7 THEN 1 ELSE 0 END) AS current_churn,\n           MAX(CASE WHEN broken = 0 AND next_apply_date IS NOT NULL\n                     AND next_apply_date >= repaid_date + 7 THEN 1 ELSE 0 END) AS ever_return,\n           MAX(CASE WHEN rn = 1 AND broken = 0 AND next_apply_date IS NULL\n                     AND CURRENT_DATE < repaid_date + 7 THEN 1 ELSE 0 END) AS immature,\n           MAX(CASE WHEN broken = 0 AND next_apply_date IS NOT NULL\n                     AND next_apply_date < repaid_date + 7 THEN 1 ELSE 0 END) AS apply_within7,\n           MAX(CASE WHEN rn = 1 AND broken = 1 THEN 1 ELSE 0 END) AS latest_broken\n    FROM ranked\n    GROUP BY 1, 2\n)\nSELECT batch,\n       COUNT(*) AS cleared,\n       SUM(CASE WHEN current_churn = 1 OR ever_return = 1 THEN 1 ELSE 0 END) AS touch,\n       SUM(current_churn) AS cur_s,\n       SUM(CASE WHEN current_churn = 0 AND ever_return = 1 THEN 1 ELSE 0 END) AS ret,\n       SUM(CASE WHEN current_churn = 0 AND ever_return = 0 AND immature = 1 THEN 1 ELSE 0 END) AS immature_only,\n       SUM(CASE WHEN current_churn = 0 AND ever_return = 0 AND immature = 0 AND apply_within7 = 1 THEN 1 ELSE 0 END) AS only_within7,\n       SUM(CASE WHEN current_churn = 0 AND ever_return = 0 AND immature = 0 AND apply_within7 = 0 AND latest_broken = 1 THEN 1 ELSE 0 END) AS only_broken,\n       SUM(CASE WHEN current_churn = 1 AND ever_return = 1 THEN 1 ELSE 0 END) AS back_then_out\nFROM u\nGROUP BY 1\nORDER BY 1\n\"\"\"\n)\nprint(\"batch list remit cleared touch current return immature within7 broken back_then_out\")\nfor r in cur.fetchall():\n    b = r[0]\n    print(b, list_n[b], remit_n.get(b, 0), *[int(x) for x in r[1:]])\n\n# 额度使用率：当前流失用最近一次有效结清；流失后回流用最早一次第 8 天及以后的回流。\ncur.execute(\n    \"\"\"\nDROP TABLE IF EXISTS tmp_clear_ord;\nCREATE TEMP TABLE tmp_clear_ord AS\nSELECT batch, user_id, repaid_time, remit_amt, credit_amt\nFROM (\n    SELECT c.batch, c.user_id, c.repaid_time, l.remit_amt, l.credit_amt,\n           ROW_NUMBER() OVER (\n               PARTITION BY c.batch, c.user_id, c.repaid_time\n               ORDER BY l.remit_time DESC, l.serial_id DESC\n           ) AS rn\n    FROM tmp_clear c\n    JOIN tmp_loan l\n      ON l.batch = c.batch AND l.user_id = c.user_id\n     AND l.repaid_time = c.repaid_time AND l.is_settled = 1\n) z\nWHERE rn = 1\n\"\"\"\n)\ncur.execute(\n    \"\"\"\nDROP TABLE IF EXISTS tmp_pick;\nCREATE TEMP TABLE tmp_pick AS\nWITH ranked AS (\n    SELECT e.*,\n           CASE WHEN e.next_remit_time IS NOT NULL\n                 AND (e.next_apply_time IS NULL OR e.next_remit_time < e.next_apply_time)\n                THEN 1 ELSE 0 END AS broken\n    FROM tmp_ep e\n), flags AS (\n    SELECT batch, user_id,\n           MAX(CASE WHEN broken = 0 AND next_apply_date IS NULL\n                     AND CURRENT_DATE >= repaid_date + 7\n                     AND repaid_time = (\n                         SELECT MAX(r2.repaid_time) FROM ranked r2\n                         WHERE r2.batch = ranked.batch AND r2.user_id = ranked.user_id\n                     )\n                    THEN 1 ELSE 0 END) AS current_churn,\n           MAX(CASE WHEN broken = 0 AND next_apply_date IS NOT NULL\n                     AND next_apply_date >= repaid_date + 7 THEN 1 ELSE 0 END) AS ever_return,\n           MAX(repaid_time) AS last_clear\n    FROM ranked\n    GROUP BY 1, 2\n), cur_pick AS (\n    SELECT f.batch, f.user_id, f.last_clear AS repaid_time, 'current' AS grp\n    FROM flags f\n    JOIN ranked r ON r.batch = f.batch AND r.user_id = f.user_id AND r.repaid_time = f.last_clear\n    WHERE r.broken = 0 AND r.next_apply_date IS NULL AND CURRENT_DATE >= r.repaid_date + 7\n), ret_pick AS (\n    SELECT batch, user_id, repaid_time, 'return' AS grp\n    FROM (\n        SELECT r.batch, r.user_id, r.repaid_time,\n               ROW_NUMBER() OVER (PARTITION BY r.batch, r.user_id ORDER BY r.repaid_time) AS rn\n        FROM ranked r\n        JOIN flags f ON f.batch = r.batch AND f.user_id = r.user_id\n        WHERE f.current_churn = 0 AND f.ever_return = 1\n          AND r.broken = 0 AND r.next_apply_date IS NOT NULL\n          AND r.next_apply_date >= r.repaid_date + 7\n    ) z\n    WHERE rn = 1\n)\nSELECT p.batch, p.user_id, p.grp, o.remit_amt, o.credit_amt,\n       o.remit_amt / o.credit_amt AS util\nFROM (\n    SELECT * FROM cur_pick\n    UNION ALL\n    SELECT * FROM ret_pick\n) p\nJOIN tmp_clear_ord o\n  ON o.batch = p.batch AND o.user_id = p.user_id AND o.repaid_time = p.repaid_time\nWHERE o.credit_amt > 0\n\"\"\"\n)\ncur.execute(\n    \"\"\"\nSELECT batch, grp,\n       COUNT(*) AS n,\n       AVG(util) AS avg_util,\n       SUM(remit_amt) / SUM(credit_amt) AS w_util,\n       SUM(CASE WHEN util_adj <= 0.50 THEN 1 ELSE 0 END) AS b50,\n       SUM(CASE WHEN util_adj > 0.50 AND util_adj <= 0.75 THEN 1 ELSE 0 END) AS b75,\n       SUM(CASE WHEN util_adj > 0.75 AND util_adj <= 0.85 THEN 1 ELSE 0 END) AS b85,\n       SUM(CASE WHEN util_adj > 0.85 AND util_adj <= 1.00 THEN 1 ELSE 0 END) AS b100,\n       SUM(CASE WHEN util_adj > 1.00 AND util_adj <= 5.00 THEN 1 ELSE 0 END) AS b500,\n       SUM(CASE WHEN util >= 0.98 AND util <= 1.02 THEN 1 ELSE 0 END) AS marked100\nFROM (\n    SELECT batch, grp, remit_amt, credit_amt, util,\n           CASE WHEN util >= 0.98 AND util <= 1.02 THEN 1.0 ELSE util END AS util_adj\n    FROM tmp_pick\n    UNION ALL\n    SELECT batch, 'either', remit_amt, credit_amt, util,\n           CASE WHEN util >= 0.98 AND util <= 1.02 THEN 1.0 ELSE util END\n    FROM tmp_pick\n) z\nGROUP BY 1, 2\nORDER BY 1, 2\n\"\"\"\n)\nprint(\"util batch grp n avg weighted b50 b75 b85 b100 b500 marked100\")\nfor r in cur.fetchall():\n    print(r[0], r[1], int(r[2]), round(100 * float(r[3]), 2), round(100 * float(r[4]), 2), *[int(x) for x in r[5:]])\n\n# 0818 流失后回流用户，落在后续新增名单的分布。各批可以重叠。\nlater = [\"0902\", \"0910\", \"0917\", \"0930\", \"1010\", \"1016\", \"1023\", \"1030\", \"1106\"]\ncur.execute(\n    \"DROP TABLE IF EXISTS tmp_later; CREATE TEMP TABLE tmp_later AS \"\n    + \" UNION ALL \".join(\n        f\"SELECT '{b}' AS batch, churn_user_id::bigint AS user_id \"\n        f\"FROM wangchuanliang.t7recalllist_{b} WHERE churn_user_id IS NOT NULL\"\n        for b in later\n    )\n)\ncur.execute(\n    \"\"\"\nDROP TABLE IF EXISTS tmp_ret;\nCREATE TEMP TABLE tmp_ret AS\nWITH ranked AS (\n    SELECT *,\n           CASE WHEN next_remit_time IS NOT NULL\n                 AND (next_apply_time IS NULL OR next_remit_time < next_apply_time)\n                THEN 1 ELSE 0 END AS broken,\n           ROW_NUMBER() OVER (PARTITION BY user_id ORDER BY repaid_time DESC) AS rn\n    FROM tmp_ep\n    WHERE batch = '0818'\n), u AS (\n    SELECT user_id,\n           MAX(CASE WHEN rn = 1 AND broken = 0 AND next_apply_date IS NULL\n                     AND CURRENT_DATE >= repaid_date + 7 THEN 1 ELSE 0 END) AS current_churn,\n           MAX(CASE WHEN broken = 0 AND next_apply_date IS NOT NULL\n                     AND next_apply_date >= repaid_date + 7 THEN 1 ELSE 0 END) AS ever_return\n    FROM ranked\n    GROUP BY 1\n)\nSELECT user_id FROM u WHERE current_churn = 0 AND ever_return = 1\n\"\"\"\n)\ncur.execute(\"SELECT COUNT(*) FROM tmp_ret\")\nden = int(cur.fetchone()[0])\ncur.execute(\n    \"\"\"\nSELECT l.batch, COUNT(DISTINCT r.user_id)\nFROM tmp_ret r\nJOIN tmp_later l ON l.user_id = r.user_id\nGROUP BY 1\n\"\"\"\n)\nhit = {r[0]: int(r[1]) for r in cur.fetchall()}\ncur.execute(\n    \"\"\"\nSELECT COUNT(*) FROM (\n    SELECT r.user_id\n    FROM tmp_ret r\n    JOIN tmp_later l ON l.user_id = r.user_id\n    GROUP BY r.user_id\n) z\n\"\"\"\n)\nany_hit = int(cur.fetchone()[0])\ncur.execute(\n    \"\"\"\nSELECT hits, COUNT(*) FROM (\n    SELECT r.user_id, COUNT(DISTINCT l.batch) AS hits\n    FROM tmp_ret r\n    LEFT JOIN tmp_later l ON l.user_id = r.user_id\n    GROUP BY r.user_id\n) z\nGROUP BY 1\nORDER BY 1\n\"\"\"\n)\nprint(\"0818 returners\", den, \"any later list\", any_hit, \"none\", den - any_hit)\nprint(\"hit multiplicity\", cur.fetchall())\nfor b in later:\n    h = hit.get(b, 0)\n    print(b, h, round(100 * h / den, 2) if den else None)\n";
 </script>
 </body>
