@@ -18,7 +18,7 @@ header.hero{text-align:center;padding:10px 12px 4px}
 .kicker{color:var(--cyan);font-size:12px;letter-spacing:.18em;font-weight:700}
 h1{font-size:32px;line-height:1.35;margin:10px 0 8px;font-weight:760;letter-spacing:.04em;text-align:center}
 .conclusion{margin:4px 0 12px;text-align:center;font-size:18px;font-weight:750;color:#fff}
-.note4{display:flex;flex-direction:column;align-items:center;gap:1px;margin:0 0 6px;color:var(--dim);font-size:12px;line-height:1.55}
+.note4{display:flex;flex-direction:column;align-items:flex-start;text-align:left;gap:1px;margin:0 0 6px;color:var(--dim);font-size:12px;line-height:1.55}
 ol.steps{margin:10px 0 14px;padding:0;list-style:none;display:grid;gap:8px;counter-reset:step}
 ol.steps>li{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:10px 14px 10px 42px;position:relative}
 ol.steps>li:before{counter-increment:step;content:counter(step);position:absolute;left:14px;top:11px;color:var(--cyan);font-weight:760}
@@ -82,7 +82,7 @@ pre.code{background:#08141e;color:#d5e8f4;border:1px solid var(--line);border-ra
 <header class="hero">
   <div class="kicker">T7 新增流失 · BELIZE 2026-11-09</div>
   <h1>流失用户召回后转化分析</h1>
-  <p class="conclusion">召回后再流失：多数结清用户会停满 7 天，回来的不到一半</p>
+  <p class="conclusion">召回后再流失：多数结清用户会流失7天以上，回来的不到一半。</p>
   <div class="note4">
     <span>9 批新增名单放在一起看。</span>
     <span>0818 跟访 83 天，是这套路径里观察最完整的一批。</span>
@@ -102,12 +102,19 @@ pre.code{background:#08141e;color:#d5e8f4;border:1px solid var(--line);border-ra
 </nav>
 
 <section id="findings">
+  <p class="dim">下面四张卡片是 0818，跟访 83 天，观察最完整。流失 7 天以上 = 当前流失 + 流失后回流。</p>
   <div class="stats">
-    <article class="stat rose"><b>60.00%</b><span>0818 结清后再流失或回流</span><em>1,032 / 1,720 曾全部结清</em></article>
-    <article class="stat amber"><b>54.84%</b><span>走到流失的人里，至今仍未再提单</span><em>566 / 1,032，里面 55 人曾经回来又走了</em></article>
-    <article class="stat cyan"><b>70.17%</b><span>已经回流的人，出现在后续新增名单</span><em>327 / 466；另外 139 人没有进入任何后续批次</em></article>
-    <article class="stat green"><b>51.56%</b><span>流失前那笔，额度使用率不超过 75%</span><em>1,042 / 2,021 人 · 9 批流失或回流合计</em></article>
+    <article class="stat rose"><b>60.00%</b><span>结清后流失 7 天以上</span><em>1,032 / 1,720 曾全部结清</em></article>
+    <article class="stat cyan"><b>45.16%</b><span>流失的人里，回来了</span><em>466 / 1,032 · 不到一半</em></article>
+    <article class="stat amber"><b>54.84%</b><span>流失的人里，仍未再提单</span><em>566 / 1,032 · 其中 55 人回来过又走了</em></article>
+    <article class="stat green"><b>35.70%</b><span>7 天内就提单，没有形成这次流失</span><em>614 / 1,720 曾全部结清</em></article>
   </div>
+  <div class="chart">
+    <h3>9 批召回后再流失</h3>
+    <p class="dim">每批两根柱。玫瑰色是流失 7 天以上占曾全部结清，青色是回来的人占这批流失人数。虚线是 50%。跟访短的批次，7 天窗口还没走完，流失占比会偏低。1030 还没有人走到流失。</p>
+    <div id="churnBars" class="box"></div>
+  </div>
+  <div class="table"><table id="churnTable"></table></div>
   <ol class="steps">
     <li><strong>结清之后，流失是主路径</strong>
       <ul class="lines">
@@ -388,6 +395,49 @@ const DATA = {"batches": [["0818", 83, 11585, 3675, 1720, 566, 466, 71, 614, 3, 
 const fmt = n => Math.round(n).toLocaleString("en-US");
 const pct = (a,b) => b ? (100*a/b) : 0;
 const pctTxt = (a,b) => b ? (100*a/b).toFixed(2)+"%" : "—";
+
+(function drawNineChurn(){
+  const rows = DATA.batches.map(b => ({
+    name:b[0], days:b[1], clear:b[4], stay:b[5], back:b[6], broad:b[5]+b[6]
+  }));
+  const sum = rows.reduce((s,r)=>({
+    clear:s.clear+r.clear, broad:s.broad+r.broad, back:s.back+r.back, stay:s.stay+r.stay
+  }), {clear:0, broad:0, back:0, stay:0});
+  const line = (r, total) => `<tr${total?' class="total"':''}><td>${r.name}</td><td>${r.days??""}</td><td>${fmt(r.clear)}</td><td>${fmt(r.broad)}</td><td>${pctTxt(r.broad,r.clear)}</td><td>${fmt(r.back)}</td><td>${pctTxt(r.back,r.broad)}</td><td>${fmt(r.stay)}</td><td>${pctTxt(r.stay,r.broad)}</td></tr>`;
+  document.getElementById("churnTable").innerHTML =
+    th(["批次","跟访天数","曾全部结清","流失7天以上","占结清","回来","占流失","仍未回来","占流失"]) +
+    rows.map(r => line(r, false)).join("") +
+    line({name:"合计", days:"", clear:sum.clear, broad:sum.broad, back:sum.back, stay:sum.stay}, true);
+  const chart = echarts.init(document.getElementById("churnBars"), null, {renderer:"canvas"});
+  const label = {
+    show:true, position:"right", distance:6, color:"#ffffff", fontSize:14, fontWeight:760,
+    backgroundColor:"rgba(7,19,29,.88)", padding:[1,4], borderRadius:3,
+    formatter:p => p.value==null ? "" : Number(p.value).toFixed(1)+"%"
+  };
+  chart.setOption({
+    backgroundColor:"transparent",
+    legend:{top:0, textStyle:{color:"#c5dbe8", fontSize:13}, itemWidth:12, itemHeight:12},
+    tooltip:{
+      trigger:"axis", axisPointer:{type:"shadow"},
+      formatter:ps => ps.map(p => p.marker+p.seriesName+"　"+(p.value==null?"—":Number(p.value).toFixed(2)+"%")).join("<br>")
+    },
+    grid:{left:58, right:72, top:36, bottom:28},
+    xAxis:{type:"value", max:78, axisLabel:{color:"#8eafc4", formatter:"{value}%"}, splitLine:{lineStyle:{color:"#1e3c52"}}, axisLine:{lineStyle:{color:"#1e3c52"}}},
+    yAxis:{type:"category", data:rows.map(r=>r.name), inverse:true, axisLabel:{color:"#e8f3fb", fontWeight:700, fontSize:13}, axisLine:{lineStyle:{color:"#1e3c52"}}},
+    series:[
+      {name:"流失7天以上占结清", type:"bar", barGap:"18%", barMaxWidth:16,
+        data:rows.map(r => r.clear ? +(100*r.broad/r.clear).toFixed(2) : 0),
+        itemStyle:{color:"#e07a93", borderRadius:[0,4,4,0]}, label},
+      {name:"回来占流失", type:"bar", barMaxWidth:16,
+        data:rows.map(r => r.broad ? +(100*r.back/r.broad).toFixed(2) : null),
+        itemStyle:{color:"#3dcedb", borderRadius:[0,4,4,0]}, label,
+        markLine:{symbol:"none", data:[{xAxis:50}],
+          label:{formatter:"50%", color:"#e2b15a", fontSize:12, fontWeight:700},
+          lineStyle:{color:"#e2b15a", type:"dashed"}}}
+    ]
+  });
+  window.addEventListener("resize", () => chart.resize());
+})();
 
 function drawIce(svg, tree, width){
   const W = 1100, rowH = 54, gapY = 10, pad = 0;
