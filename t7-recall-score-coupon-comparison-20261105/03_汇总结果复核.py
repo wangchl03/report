@@ -32,5 +32,5 @@ for b in x['batches']:
             assert Decimal(w['difference_pp'])==Decimal(w['score_applicants']-w['coupon_applicants'])*100/r['users']
     print(b['batch'],'groups=',len(groups),'windows=',','.join(days),'verified')
 assert [len(b['groups']) for b in x['batches']]==[5,5,5,5,3]
-assert [list(b['windows']) for b in x['batches']]==[['3','7','15','30'],['3','7','15'],['3','7','15'],['3','7'],['3']]
+assert [list(b['windows']) for b in x['batches']]==[['3','7','15','30'],['3','7','15'],['3','7','15'],['3','7','15'],['3','7']]
 print(json.dumps({'all_passed':True,'batches':len(x['batches']),'rates_verified':checked,'database_required':False},ensure_ascii=False))

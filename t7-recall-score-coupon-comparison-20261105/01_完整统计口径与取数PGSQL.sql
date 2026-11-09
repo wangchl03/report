@@ -1,7 +1,8 @@
 /* T7+召回：五批coupon原分组与score排序的独立对比。
    表：t7recalllist_0930、1010、1016、1023、1030；均位于wangchuanliang。
    日期口径：America/Belize；W日包含召回日，自召回日00:00至+W日00:00之前。
-   完整业务日截止2026-11-04 00:00。9/30支持3/7/15/30日；10/10、16支持3/7/15日；10/23支持3/7日；10/30支持3日。
+   提单数据截至2026-11-07（含），统一业务时间上界2026-11-08 00:00，不包含上界。
+   9/30支持3/7/15/30日；10/10、16、23支持3/7/15日；10/30支持3/7日。固定W日窗口截止早于统一上界时，按固定窗口计算。
    每批原分组人数决定score的切分人数；score在全批有效[0,3000]中排序，不按coupon标签限制。
    黑名单在本地blacklist数组填入；五批实际命中均为0人，公开附件不包含个人ID。
    每批已核对用户键无重复、score和标签无冲突；勿在有冲突时擅自取MIN/MAX覆盖。
@@ -269,9 +270,9 @@ WITH blacklist AS (
     FROM wangchuanliang.order_loan_f_v2_copy o
     JOIN candidate_users u ON u.user_id=o.user_id
     WHERE o.apply_time >= TIMESTAMP '2026-10-23 00:00:00'
-      AND o.apply_time < TIMESTAMP '2026-10-30 00:00:00'
+      AND o.apply_time < TIMESTAMP '2026-11-07 00:00:00'
       AND o.apply_date >= DATE '2026-10-23'
-      AND o.apply_date < DATE '2026-10-30'
+      AND o.apply_date < DATE '2026-11-07'
     GROUP BY o.user_id
 )
 SELECT m.scheme, COALESCE(m.group_id,0) AS group_id,
@@ -281,7 +282,8 @@ SELECT m.scheme, COALESCE(m.group_id,0) AS group_id,
        MIN(m.score)::text AS min_score, MAX(m.score)::text AS max_score,
        SUM(CASE WHEN m.coupon_label='-90' THEN 1 ELSE 0 END) AS coupon_minus90_users,
        SUM(CASE WHEN a.first_apply_time < TIMESTAMP '2026-10-26 00:00:00' THEN 1 ELSE 0 END) AS applied_users_3d,
-       SUM(CASE WHEN a.first_apply_time < TIMESTAMP '2026-10-30 00:00:00' THEN 1 ELSE 0 END) AS applied_users_7d
+       SUM(CASE WHEN a.first_apply_time < TIMESTAMP '2026-10-30 00:00:00' THEN 1 ELSE 0 END) AS applied_users_7d,
+       SUM(CASE WHEN a.first_apply_time < TIMESTAMP '2026-11-07 00:00:00' THEN 1 ELSE 0 END) AS applied_users_15d
 FROM sample_members m
 LEFT JOIN first_application a ON a.user_id=m.user_id
 GROUP BY GROUPING SETS ((m.scheme,m.group_id),(m.scheme))
@@ -335,9 +337,9 @@ WITH blacklist AS (
     FROM wangchuanliang.order_loan_f_v2_copy o
     JOIN candidate_users u ON u.user_id=o.user_id
     WHERE o.apply_time >= TIMESTAMP '2026-10-30 00:00:00'
-      AND o.apply_time < TIMESTAMP '2026-11-02 00:00:00'
+      AND o.apply_time < TIMESTAMP '2026-11-06 00:00:00'
       AND o.apply_date >= DATE '2026-10-30'
-      AND o.apply_date < DATE '2026-11-02'
+      AND o.apply_date < DATE '2026-11-06'
     GROUP BY o.user_id
 )
 SELECT m.scheme, COALESCE(m.group_id,0) AS group_id,
@@ -346,7 +348,8 @@ SELECT m.scheme, COALESCE(m.group_id,0) AS group_id,
        MIN(m.score_rank) AS min_rank, MAX(m.score_rank) AS max_rank,
        MIN(m.score)::text AS min_score, MAX(m.score)::text AS max_score,
        SUM(CASE WHEN m.coupon_label='-90' THEN 1 ELSE 0 END) AS coupon_minus90_users,
-       SUM(CASE WHEN a.first_apply_time < TIMESTAMP '2026-11-02 00:00:00' THEN 1 ELSE 0 END) AS applied_users_3d
+       SUM(CASE WHEN a.first_apply_time < TIMESTAMP '2026-11-02 00:00:00' THEN 1 ELSE 0 END) AS applied_users_3d,
+       SUM(CASE WHEN a.first_apply_time < TIMESTAMP '2026-11-06 00:00:00' THEN 1 ELSE 0 END) AS applied_users_7d
 FROM sample_members m
 LEFT JOIN first_application a ON a.user_id=m.user_id
 GROUP BY GROUPING SETS ((m.scheme,m.group_id),(m.scheme))
