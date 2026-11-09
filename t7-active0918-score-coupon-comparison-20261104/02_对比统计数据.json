@@ -1,23 +1,26 @@
 {
   "title": "T7+活跃召回：五批提单意愿指标效果对比",
-  "report_date": "2026-11-04",
+  "report_date": "2026-11-09",
   "timezone": "America/Belize",
-  "complete_data_cutoff_exclusive": "2026-11-04 00:00:00",
+  "complete_data_cutoff_exclusive": "2026-11-08 00:00:00",
   "batches": [
     {
-      "title": "T7+活跃召回：两项提单意愿指标效果对比",
       "batch": "t7recalllist_active0918",
       "recall_date": "2026-09-18",
       "timezone": "America/Belize",
-      "report_date": "2026-11-04",
+      "report_date": "2026-11-09",
       "source_users": 8669,
       "coupon_selected_users": 8034,
       "score_valid_users": 8669,
       "score_selected_users": 8034,
-      "score_valid_range_inclusive": [
-        0,
-        3000
+      "invalid_coupon_users": 635,
+      "invalid_coupon_breakdown": [
+        {
+          "label": "-90",
+          "users": 635
+        }
       ],
+      "excluded_blacklist_users_in_this_batch": 0,
       "group_sizes": [
         91,
         631,
@@ -25,30 +28,11 @@
         3369,
         2641
       ],
-      "excluded_blacklist_users_in_this_batch": 0,
-      "grouping_rule": "Two independently selected populations with equal group sizes; members need not coincide.",
+      "score_valid_range_inclusive": [
+        0,
+        3000
+      ],
       "score_tie_rule": "score DESC, user_id ASC",
-      "windows": {
-        "3": {
-          "start_inclusive": "2026-09-18 00:00:00",
-          "end_exclusive": "2026-09-21 00:00:00",
-          "inclusive_dates": "9月18日—9月20日"
-        },
-        "7": {
-          "start_inclusive": "2026-09-18 00:00:00",
-          "end_exclusive": "2026-09-25 00:00:00",
-          "inclusive_dates": "9月18日—9月24日"
-        },
-        "15": {
-          "start_inclusive": "2026-09-18 00:00:00",
-          "end_exclusive": "2026-10-03 00:00:00",
-          "inclusive_dates": "9月18日—10月2日"
-        }
-      },
-      "snapshots_business": {
-        "coupon": "2026-11-04 06:52:46.621325",
-        "score": "2026-11-04 07:02:47.398213"
-      },
       "groups": [
         {
           "group": 1,
@@ -80,6 +64,13 @@
               "coupon_rate": "0.08791208791208791208791208791",
               "score_rate": "0.4505494505494505494505494505",
               "difference_pp": "36.26373626373626373626373626"
+            },
+            "30": {
+              "coupon_applicants": 11,
+              "score_applicants": 57,
+              "coupon_rate": "0.1208791208791208791208791209",
+              "score_rate": "0.6263736263736263736263736264",
+              "difference_pp": "50.54945054945054945054945055"
             }
           }
         },
@@ -113,6 +104,13 @@
               "coupon_rate": "0.07923930269413629160063391442",
               "score_rate": "0.2852614896988906497622820919",
               "difference_pp": "20.60221870047543581616481775"
+            },
+            "30": {
+              "coupon_applicants": 88,
+              "score_applicants": 271,
+              "coupon_rate": "0.1394611727416798732171156894",
+              "score_rate": "0.4294770206022187004754358162",
+              "difference_pp": "29.00158478605388272583201268"
             }
           }
         },
@@ -131,21 +129,28 @@
               "score_applicants": 67,
               "coupon_rate": "0.02304147465437788018433179724",
               "score_rate": "0.05145929339477726574500768049",
-              "difference_pp": "2.841781874039938556067588325"
+              "difference_pp": "2.841781874039938556067588326"
             },
             "7": {
               "coupon_applicants": 64,
               "score_applicants": 137,
               "coupon_rate": "0.04915514592933947772657450077",
               "score_rate": "0.1052227342549923195084485407",
-              "difference_pp": "5.606758832565284178187403993"
+              "difference_pp": "5.606758832565284178187403994"
             },
             "15": {
               "coupon_applicants": 122,
               "score_applicants": 246,
               "coupon_rate": "0.09370199692780337941628264209",
               "score_rate": "0.1889400921658986175115207373",
-              "difference_pp": "9.523809523809523809523809521"
+              "difference_pp": "9.523809523809523809523809524"
+            },
+            "30": {
+              "coupon_applicants": 198,
+              "score_applicants": 388,
+              "coupon_rate": "0.1520737327188940092165898618",
+              "score_rate": "0.2980030721966205837173579109",
+              "difference_pp": "14.59293394777265745007680492"
             }
           }
         },
@@ -164,7 +169,7 @@
               "score_applicants": 52,
               "coupon_rate": "0.02315227070347284060552092609",
               "score_rate": "0.01543484713564856040368061739",
-              "difference_pp": "-0.7717423567824280201840308700"
+              "difference_pp": "-0.7717423567824280201840308697"
             },
             "7": {
               "coupon_applicants": 181,
@@ -178,7 +183,14 @@
               "score_applicants": 255,
               "coupon_rate": "0.09379637874740279014544375186",
               "score_rate": "0.07569011576135351736420302760",
-              "difference_pp": "-1.810626298604927278124072426"
+              "difference_pp": "-1.810626298604927278124072425"
+            },
+            "30": {
+              "coupon_applicants": 508,
+              "score_applicants": 463,
+              "coupon_rate": "0.1507865835559513208667260315",
+              "score_rate": "0.1374295043039477589789254972",
+              "difference_pp": "-1.335707925200356188780053428"
             }
           }
         },
@@ -212,6 +224,13 @@
               "coupon_rate": "0.1052631578947368421052631579",
               "score_rate": "0.03218477849299507762211283605",
               "difference_pp": "-7.307837940174176448315032185"
+            },
+            "30": {
+              "coupon_applicants": 465,
+              "score_applicants": 136,
+              "coupon_rate": "0.1760696705793260128739113972",
+              "score_rate": "0.05149564558879212419538053768",
+              "difference_pp": "-12.45740249905338886785308595"
             }
           }
         }
@@ -244,6 +263,14 @@
               "score_rate": "0.4505494505494505494505494505",
               "difference_pp": "36.26373626373626373626373626",
               "additional_observed_applicants": 33
+            },
+            "30": {
+              "coupon_applicants": 11,
+              "score_applicants": 57,
+              "coupon_rate": "0.1208791208791208791208791209",
+              "score_rate": "0.6263736263736263736263736264",
+              "difference_pp": "50.54945054945054945054945055",
+              "additional_observed_applicants": 46
             }
           }
         },
@@ -274,6 +301,14 @@
               "score_rate": "0.3060941828254847645429362881",
               "difference_pp": "22.57617728531855955678670360",
               "additional_observed_applicants": 163
+            },
+            "30": {
+              "coupon_applicants": 99,
+              "score_applicants": 328,
+              "coupon_rate": "0.1371191135734072022160664820",
+              "score_rate": "0.4542936288088642659279778393",
+              "difference_pp": "31.71745152354570637119113573",
+              "additional_observed_applicants": 229
             }
           }
         },
@@ -304,6 +339,14 @@
               "score_rate": "0.2307312252964426877470355731",
               "difference_pp": "14.17984189723320158102766798",
               "additional_observed_applicants": 287
+            },
+            "30": {
+              "coupon_applicants": 297,
+              "score_applicants": 716,
+              "coupon_rate": "0.1467391304347826086956521739",
+              "score_rate": "0.3537549407114624505928853755",
+              "difference_pp": "20.70158102766798418972332016",
+              "additional_observed_applicants": 419
             }
           }
         },
@@ -334,6 +377,14 @@
               "score_rate": "0.1338772482848136473206007788",
               "difference_pp": "4.190617467086964583719636566",
               "additional_observed_applicants": 226
+            },
+            "30": {
+              "coupon_applicants": 805,
+              "score_applicants": 1179,
+              "coupon_rate": "0.1492675690710179862785091786",
+              "score_rate": "0.2186167253847580196551084739",
+              "difference_pp": "6.934915631374003337659929538",
+              "additional_observed_applicants": 374
             }
           }
         },
@@ -364,31 +415,68 @@
               "score_rate": "0.1004480955937266616878267364",
               "difference_pp": "0.4107542942494398805078416729",
               "additional_observed_applicants": 33
+            },
+            "30": {
+              "coupon_applicants": 1270,
+              "score_applicants": 1315,
+              "coupon_rate": "0.1580781677869056509833208862",
+              "score_rate": "0.1636793627084889220811550909",
+              "difference_pp": "0.5601194921583271097834204630",
+              "additional_observed_applicants": 45
             }
           }
         }
       ],
-      "interpretation": "Historical screening hit rates and ordering discrimination, not a causal estimate of recall incentives.",
-      "frozen_prior_result": true,
-      "invalid_coupon_users": 635,
+      "windows": {
+        "3": {
+          "start_inclusive": "2026-09-18 00:00:00",
+          "end_exclusive": "2026-09-21 00:00:00"
+        },
+        "7": {
+          "start_inclusive": "2026-09-18 00:00:00",
+          "end_exclusive": "2026-09-25 00:00:00"
+        },
+        "15": {
+          "start_inclusive": "2026-09-18 00:00:00",
+          "end_exclusive": "2026-10-03 00:00:00"
+        },
+        "30": {
+          "start_inclusive": "2026-09-18 00:00:00",
+          "end_exclusive": "2026-10-18 00:00:00"
+        }
+      },
+      "snapshots_business": {
+        "coupon": "2026-11-08 20:51:17.308297",
+        "score": "2026-11-08 20:51:17.308297"
+      },
+      "source_conflict_free": true,
+      "results_aggregate_only": true,
+      "grouping_rule": "Two independent selections; each pair of groups has equal size. Score candidates not filtered by coupon label.",
       "display_date": "9月18日",
       "key": "0918",
       "score_gradient": {
         "3": true,
         "7": true,
-        "15": true
+        "15": true,
+        "30": true
       }
     },
     {
       "batch": "t7recalllist_active1010",
       "recall_date": "2026-10-10",
       "timezone": "America/Belize",
-      "report_date": "2026-11-04",
+      "report_date": "2026-11-09",
       "source_users": 15818,
       "coupon_selected_users": 15446,
       "score_valid_users": 15818,
       "score_selected_users": 15446,
       "invalid_coupon_users": 372,
+      "invalid_coupon_breakdown": [
+        {
+          "label": "-90",
+          "users": 372
+        }
+      ],
       "excluded_blacklist_users_in_this_batch": 0,
       "group_sizes": [
         258,
@@ -736,8 +824,8 @@
         }
       },
       "snapshots_business": {
-        "coupon": "2026-11-04 09:03:00.651518",
-        "score": "2026-11-04 09:03:00.651518"
+        "coupon": "2026-11-08 20:51:17.308297",
+        "score": "2026-11-08 20:51:17.308297"
       },
       "source_conflict_free": true,
       "results_aggregate_only": true,
@@ -754,12 +842,18 @@
       "batch": "t7recalllist_active1016",
       "recall_date": "2026-10-16",
       "timezone": "America/Belize",
-      "report_date": "2026-11-04",
+      "report_date": "2026-11-09",
       "source_users": 5438,
       "coupon_selected_users": 5409,
       "score_valid_users": 5438,
       "score_selected_users": 5409,
       "invalid_coupon_users": 29,
+      "invalid_coupon_breakdown": [
+        {
+          "label": "-90",
+          "users": 29
+        }
+      ],
       "excluded_blacklist_users_in_this_batch": 0,
       "group_sizes": [
         33,
@@ -1107,8 +1201,8 @@
         }
       },
       "snapshots_business": {
-        "coupon": "2026-11-04 09:03:00.651518",
-        "score": "2026-11-04 09:03:00.651518"
+        "coupon": "2026-11-08 20:51:17.308297",
+        "score": "2026-11-08 20:51:17.308297"
       },
       "source_conflict_free": true,
       "results_aggregate_only": true,
@@ -1125,12 +1219,18 @@
       "batch": "t7recalllist_active1023",
       "recall_date": "2026-10-23",
       "timezone": "America/Belize",
-      "report_date": "2026-11-04",
+      "report_date": "2026-11-09",
       "source_users": 12742,
       "coupon_selected_users": 12738,
       "score_valid_users": 12742,
       "score_selected_users": 12738,
       "invalid_coupon_users": 4,
+      "invalid_coupon_breakdown": [
+        {
+          "label": "-90",
+          "users": 4
+        }
+      ],
       "excluded_blacklist_users_in_this_batch": 0,
       "group_sizes": [
         216,
@@ -1168,6 +1268,13 @@
               "coupon_rate": "0.05092592592592592592592592593",
               "score_rate": "0.4351851851851851851851851852",
               "difference_pp": "38.42592592592592592592592593"
+            },
+            "15": {
+              "coupon_applicants": 16,
+              "score_applicants": 116,
+              "coupon_rate": "0.07407407407407407407407407407",
+              "score_rate": "0.5370370370370370370370370370",
+              "difference_pp": "46.29629629629629629629629630"
             }
           }
         },
@@ -1194,6 +1301,13 @@
               "coupon_rate": "0.05815831987075928917609046850",
               "score_rate": "0.1688206785137318255250403877",
               "difference_pp": "11.06623586429725363489499192"
+            },
+            "15": {
+              "coupon_applicants": 119,
+              "score_applicants": 355,
+              "coupon_rate": "0.09612277867528271405492730210",
+              "score_rate": "0.2867528271405492730210016155",
+              "difference_pp": "19.06300484652665589660743134"
             }
           }
         },
@@ -1220,6 +1334,13 @@
               "coupon_rate": "0.05956848030018761726078799250",
               "score_rate": "0.08442776735459662288930581614",
               "difference_pp": "2.485928705440900562851782364"
+            },
+            "15": {
+              "coupon_applicants": 215,
+              "score_applicants": 354,
+              "coupon_rate": "0.1008442776735459662288930582",
+              "score_rate": "0.1660412757973733583489681051",
+              "difference_pp": "6.519699812382739212007504690"
             }
           }
         },
@@ -1246,6 +1367,13 @@
               "coupon_rate": "0.05745407945322511747116616830",
               "score_rate": "0.03823152498932080307560871422",
               "difference_pp": "-1.922255446390431439555745408"
+            },
+            "15": {
+              "coupon_applicants": 462,
+              "score_applicants": 330,
+              "coupon_rate": "0.09867577958137548056386159761",
+              "score_rate": "0.07048269970098248611704399829",
+              "difference_pp": "-2.819307988039299444681759932"
             }
           }
         },
@@ -1272,6 +1400,13 @@
               "coupon_rate": "0.05906040268456375838926174497",
               "score_rate": "0.01812080536912751677852348993",
               "difference_pp": "-4.093959731543624161073825503"
+            },
+            "15": {
+              "coupon_applicants": 484,
+              "score_applicants": 142,
+              "coupon_rate": "0.1082774049217002237136465324",
+              "score_rate": "0.03176733780760626398210290828",
+              "difference_pp": "-7.651006711409395973154362416"
             }
           }
         }
@@ -1296,6 +1431,14 @@
               "score_rate": "0.4351851851851851851851851852",
               "difference_pp": "38.42592592592592592592592593",
               "additional_observed_applicants": 83
+            },
+            "15": {
+              "coupon_applicants": 16,
+              "score_applicants": 116,
+              "coupon_rate": "0.07407407407407407407407407407",
+              "score_rate": "0.5370370370370370370370370370",
+              "difference_pp": "46.29629629629629629629629630",
+              "additional_observed_applicants": 100
             }
           }
         },
@@ -1318,6 +1461,14 @@
               "score_rate": "0.2083906464924346629986244842",
               "difference_pp": "15.13067400275103163686382393",
               "additional_observed_applicants": 220
+            },
+            "15": {
+              "coupon_applicants": 135,
+              "score_applicants": 471,
+              "coupon_rate": "0.09284731774415405777166437414",
+              "score_rate": "0.3239339752407152682255845942",
+              "difference_pp": "23.10866574965612104539202201",
+              "additional_observed_applicants": 336
             }
           }
         },
@@ -1340,6 +1491,14 @@
               "score_rate": "0.1346904629113218070273284997",
               "difference_pp": "7.612939208031232571109871723",
               "additional_observed_applicants": 273
+            },
+            "15": {
+              "coupon_applicants": 350,
+              "score_applicants": 825,
+              "coupon_rate": "0.09760178471834913552704963748",
+              "score_rate": "0.2300613496932515337423312883",
+              "difference_pp": "13.24595649749023982152816509",
+              "additional_observed_applicants": 475
             }
           }
         },
@@ -1362,6 +1521,14 @@
               "score_rate": "0.08006773101112723754233188195",
               "difference_pp": "2.213352685050798258345428157",
               "additional_observed_applicants": 183
+            },
+            "15": {
+              "coupon_applicants": 812,
+              "score_applicants": 1155,
+              "coupon_rate": "0.09820996613449443638122883406",
+              "score_rate": "0.1396952104499274310595065312",
+              "difference_pp": "4.148524431543299467827769715",
+              "additional_observed_applicants": 343
             }
           }
         },
@@ -1384,6 +1551,14 @@
               "score_rate": "0.05832940807034071282775945988",
               "difference_pp": "0",
               "additional_observed_applicants": 0
+            },
+            "15": {
+              "coupon_applicants": 1296,
+              "score_applicants": 1297,
+              "coupon_rate": "0.1017428167687235044747998116",
+              "score_rate": "0.1018213220285759145862772806",
+              "difference_pp": "0.007850525985241011147746899042",
+              "additional_observed_applicants": 1
             }
           }
         }
@@ -1396,11 +1571,15 @@
         "7": {
           "start_inclusive": "2026-10-23 00:00:00",
           "end_exclusive": "2026-10-30 00:00:00"
+        },
+        "15": {
+          "start_inclusive": "2026-10-23 00:00:00",
+          "end_exclusive": "2026-11-07 00:00:00"
         }
       },
       "snapshots_business": {
-        "coupon": "2026-11-04 09:03:00.651518",
-        "score": "2026-11-04 09:03:00.651518"
+        "coupon": "2026-11-08 20:51:17.308297",
+        "score": "2026-11-08 20:51:17.308297"
       },
       "source_conflict_free": true,
       "results_aggregate_only": true,
@@ -1409,19 +1588,26 @@
       "key": "1023",
       "score_gradient": {
         "3": true,
-        "7": true
+        "7": true,
+        "15": true
       }
     },
     {
       "batch": "t7recalllist_active1030",
       "recall_date": "2026-10-30",
       "timezone": "America/Belize",
-      "report_date": "2026-11-04",
+      "report_date": "2026-11-09",
       "source_users": 13010,
       "coupon_selected_users": 13008,
       "score_valid_users": 13010,
       "score_selected_users": 13008,
       "invalid_coupon_users": 2,
+      "invalid_coupon_breakdown": [
+        {
+          "label": "-90",
+          "users": 2
+        }
+      ],
       "excluded_blacklist_users_in_this_batch": 0,
       "group_sizes": [
         555,
@@ -1450,6 +1636,13 @@
               "coupon_rate": "0.01801801801801801801801801802",
               "score_rate": "0.1225225225225225225225225225",
               "difference_pp": "10.45045045045045045045045045"
+            },
+            "7": {
+              "coupon_applicants": 11,
+              "score_applicants": 130,
+              "coupon_rate": "0.01981981981981981981981981982",
+              "score_rate": "0.2342342342342342342342342342",
+              "difference_pp": "21.44144144144144144144144144"
             }
           }
         },
@@ -1469,6 +1662,13 @@
               "coupon_rate": "0.02010265183917878528656971771",
               "score_rate": "0.04619332763045337895637296835",
               "difference_pp": "2.609067579127459366980325064"
+            },
+            "7": {
+              "coupon_applicants": 118,
+              "score_applicants": 237,
+              "coupon_rate": "0.05047048759623609923011120616",
+              "score_rate": "0.1013686911890504704875962361",
+              "difference_pp": "5.089820359281437125748502994"
             }
           }
         },
@@ -1488,6 +1688,13 @@
               "coupon_rate": "0.02244191794364804745427582798",
               "score_rate": "0.01067721206129510627780523974",
               "difference_pp": "-1.176470588235294117647058824"
+            },
+            "7": {
+              "coupon_applicants": 458,
+              "score_applicants": 220,
+              "coupon_rate": "0.04527928818586258032624814632",
+              "score_rate": "0.02174987642115669797330696985",
+              "difference_pp": "-2.352941176470588235294117647"
             }
           }
         }
@@ -1504,6 +1711,14 @@
               "score_rate": "0.1225225225225225225225225225",
               "difference_pp": "10.45045045045045045045045045",
               "additional_observed_applicants": 58
+            },
+            "7": {
+              "coupon_applicants": 11,
+              "score_applicants": 130,
+              "coupon_rate": "0.01981981981981981981981981982",
+              "score_rate": "0.2342342342342342342342342342",
+              "difference_pp": "21.44144144144144144144144144",
+              "additional_observed_applicants": 119
             }
           }
         },
@@ -1518,6 +1733,14 @@
               "score_rate": "0.06083650190114068441064638783",
               "difference_pp": "4.113377117179398548219840996",
               "additional_observed_applicants": 119
+            },
+            "7": {
+              "coupon_applicants": 129,
+              "score_applicants": 367,
+              "coupon_rate": "0.04459039059799516073280331835",
+              "score_rate": "0.1268579329415831316972001383",
+              "difference_pp": "8.226754234358797096439681991",
+              "additional_observed_applicants": 238
             }
           }
         },
@@ -1532,6 +1755,14 @@
               "score_rate": "0.02183271832718327183271832718",
               "difference_pp": "0",
               "additional_observed_applicants": 0
+            },
+            "7": {
+              "coupon_applicants": 587,
+              "score_applicants": 587,
+              "coupon_rate": "0.04512607626076260762607626076",
+              "score_rate": "0.04512607626076260762607626076",
+              "difference_pp": "0",
+              "additional_observed_applicants": 0
             }
           }
         }
@@ -1540,11 +1771,15 @@
         "3": {
           "start_inclusive": "2026-10-30 00:00:00",
           "end_exclusive": "2026-11-02 00:00:00"
+        },
+        "7": {
+          "start_inclusive": "2026-10-30 00:00:00",
+          "end_exclusive": "2026-11-06 00:00:00"
         }
       },
       "snapshots_business": {
-        "coupon": "2026-11-04 09:03:00.651518",
-        "score": "2026-11-04 09:03:00.651518"
+        "coupon": "2026-11-08 20:51:17.308297",
+        "score": "2026-11-08 20:51:17.308297"
       },
       "source_conflict_free": true,
       "results_aggregate_only": true,
@@ -1552,10 +1787,12 @@
       "display_date": "10月30日",
       "key": "1030",
       "score_gradient": {
-        "3": true
+        "3": true,
+        "7": true
       }
     }
   ],
-  "prior_0918_preserved": true,
+  "all_five_batches_refreshed": true,
+  "snapshot_business": "2026-11-08 20:51:17.308297",
   "interpretation": "Historical independent selection comparison with equal within-batch group sizes. No common-population restriction. No causal uplift estimate."
 }
