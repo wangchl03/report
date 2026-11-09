@@ -37,6 +37,7 @@ details.fold pre.code{margin:0 14px 14px}
 nav{position:sticky;top:0;z-index:4;background:rgba(7,19,29,.94);border-bottom:1px solid var(--line);display:flex;gap:16px;overflow:auto;padding:12px 0;margin:8px 0 8px}
 nav a{color:#c5dbe8;text-decoration:none;font-size:14px;font-weight:650;white-space:nowrap}
 h2{font-size:22px;margin:42px 0 10px;padding-left:12px;border-left:3px solid var(--cyan);scroll-margin-top:54px}
+#findings{scroll-margin-top:58px}
 h3{font-size:16px;margin:18px 0 6px}
 p{margin:0 0 12px}
 .muted{color:var(--muted)}
@@ -47,6 +48,24 @@ p{margin:0 0 12px}
 .stat span{display:block;color:var(--muted);font-size:12.5px;line-height:1.45;margin-top:4px}
 .stat em{font-style:normal;color:var(--dim);font-size:12px}
 .rose b{color:var(--rose)}.cyan b{color:var(--cyan)}.amber b{color:var(--amber)}.green b{color:var(--green)}
+.cas{display:grid;grid-template-columns:32.904fr 27.096fr 35.70fr 4.30fr;gap:6px;margin:8px 0 4px}
+.cas .node{border-radius:12px;padding:12px 14px;min-height:72px;display:flex;flex-direction:column;justify-content:center}
+.cas .node b{display:block;font-size:22px;line-height:1.15;font-weight:760;letter-spacing:-.02em;color:#fff}
+.cas .node span{display:block;margin-top:3px;color:#f3fbff;font-size:13px;line-height:1.35}
+.cas .all{grid-column:1 / -1;background:#16465c}
+.cas .churn{grid-column:1 / 3;background:#6d3144}
+.cas .early{grid-column:3;background:#1a4d40}
+.cas .rest{grid-column:4;background:#1c3344;padding:8px 4px;text-align:center}
+.cas .rest b{font-size:16px}
+.cas .stay{grid-column:1;background:#6a4a22}
+.cas .back{grid-column:2;background:#14606c}
+.insights{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:12px 0}
+.insight{display:flex;gap:14px;align-items:flex-start;background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:14px}
+.insight h3{margin:0 0 6px;font-size:16px;line-height:1.4}
+.ring{width:96px;height:96px;border-radius:50%;display:grid;place-items:center;flex:none;background:conic-gradient(var(--c) calc(var(--p) * 1%), #163246 0)}
+.ring i{width:68px;height:68px;border-radius:50%;background:#0d1e2c;display:flex;flex-direction:column;align-items:center;justify-content:center;font-style:normal}
+.ring b{font-size:15px;line-height:1.1;font-weight:760;color:#fff}
+.ring em{font-style:normal;font-size:10px;color:var(--dim);margin-top:2px}
 .findings{margin:14px 0 0;padding:0;list-style:none;display:grid;gap:10px}
 .findings li{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:12px 14px}
 .findings strong{display:block;margin-bottom:2px}
@@ -70,11 +89,13 @@ button.on{background:#144554;border-color:var(--cyan);color:#fff}
 pre.code{background:#08141e;color:#d5e8f4;border:1px solid var(--line);border-radius:12px;padding:16px;overflow:auto;max-height:720px;font:12px/1.55 ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;white-space:pre}
 .foot{color:var(--dim);font-size:12.5px;margin-top:28px;border-top:1px solid var(--line);padding-top:14px}
 @media(max-width:900px){
-  .stats,.split{grid-template-columns:1fr 1fr}
+  .stats,.split,.insights{grid-template-columns:1fr 1fr}
   .wrap{padding:18px 14px 48px}
   h1{font-size:24px}
+  .cas .node b{font-size:16px}
+  .cas .node span{font-size:11px}
 }
-@media(max-width:640px){.stats{grid-template-columns:1fr}}
+@media(max-width:640px){.stats,.insights{grid-template-columns:1fr}.insight{flex-direction:column}}
 </style>
 </head>
 <body>
@@ -102,53 +123,72 @@ pre.code{background:#08141e;color:#d5e8f4;border:1px solid var(--line);border-ra
 </nav>
 
 <section id="findings">
-  <p class="dim">下面四张卡片是 0818，跟访 83 天，观察最完整。流失 7 天以上 = 当前流失 + 流失后回流。</p>
-  <div class="stats">
-    <article class="stat rose"><b>60.00%</b><span>结清后流失 7 天以上</span><em>1,032 / 1,720 曾全部结清</em></article>
-    <article class="stat cyan"><b>45.16%</b><span>流失的人里，回来了</span><em>466 / 1,032 · 不到一半</em></article>
-    <article class="stat amber"><b>54.84%</b><span>流失的人里，仍未再提单</span><em>566 / 1,032 · 其中 55 人回来过又走了</em></article>
-    <article class="stat green"><b>35.70%</b><span>7 天内就提单，没有形成这次流失</span><em>614 / 1,720 曾全部结清</em></article>
+  <p class="dim">色块宽度按人数。先看最完整的 0818。上面一整条是再次全部还清的人，中间拆开他们，下面只拆「满 7 天没再借」的那一块。</p>
+  <div class="cas" role="img" aria-label="0818 结清后停满7天再回来的人数">
+    <div class="node all"><b>1,720 人</b><span>再次全部还清</span></div>
+    <div class="node churn"><b>1,032 人 · 60%</b><span>还清后满 7 天，没有再借</span></div>
+    <div class="node early"><b>614 人 · 36%</b><span>7 天内就再借了</span></div>
+    <div class="node rest" title="还没到第 8 天 71 人，结清后又有在途 3 人"><b>74</b></div>
+    <div class="node stay"><b>566 人 · 55%</b><span>到现在还没回来</span></div>
+    <div class="node back"><b>466 人 · 45%</b><span>后来又提单了</span></div>
+  </div>
+  <p class="dim">最窄的 74 人里，71 人还没到第 8 天，3 人结清后又有在途。下面两块只属于 1,032 人：566 人到 11 月 9 日还没再借，466 人后来又提单，回来的不到一半。</p>
+  <div class="insights">
+    <article class="insight">
+      <div class="ring" style="--p:60;--c:#e07a93"><i><b>60%</b><em>停满 7 天</em></i></div>
+      <div>
+        <h3>还清的人，六成会停满 7 天</h3>
+        <ul class="lines">
+          <li>0818 跟访 83 天，这批看得最全。</li>
+          <li>1,720 人再次全部还清。</li>
+          <li>1,032 人满 7 天没有再借。</li>
+          <li>614 人在 7 天内就再借，不算这次流失。</li>
+        </ul>
+      </div>
+    </article>
+    <article class="insight">
+      <div class="ring" style="background:conic-gradient(#3dcedb 0 45.16%, #e2b15a 45.16% 100%)"><i><b>45%</b><em>回来了</em></i></div>
+      <div>
+        <h3>停满 7 天的人，回来的不到一半</h3>
+        <ul class="lines">
+          <li>1,032 人里，466 人后来又提单，占 45.16%。</li>
+          <li>566 人到 11 月 9 日还没再借，占 54.84%。</li>
+          <li>566 人里，511 人一次都没再借。</li>
+          <li>另外 55 人回来过，后来又还清，并再次停满 7 天。</li>
+        </ul>
+      </div>
+    </article>
+    <article class="insight">
+      <div class="ring" style="--p:70.17;--c:#3dcedb"><i><b>70%</b><em>进了后续名单</em></i></div>
+      <div>
+        <h3>回来的人，七成出现在后面的名单</h3>
+        <ul class="lines">
+          <li>只看上面这 466 人。</li>
+          <li>327 人出现在 0902 至 1106，占 70.17%。</li>
+          <li>139 人这些名单都没有，占 29.83%。</li>
+          <li>进名单和提单日没有逐人对齐。人在名单里，不等于是名单把他拉回来的。</li>
+        </ul>
+      </div>
+    </article>
+    <article class="insight">
+      <div class="ring" style="--p:51.56;--c:#3cbe8b"><i><b>51.6%</b><em>没用到 75%</em></i></div>
+      <div>
+        <h3>停下来的人，一半没把额度用到 75%</h3>
+        <ul class="lines">
+          <li>9 批里满 7 天没再借、或后来又回来的，合计 2,021 人。</li>
+          <li>借的时候没用到额度 75%：1,042 人，占 51.56%。</li>
+          <li>接近用满、标成 100%：361 人，占 17.86%。</li>
+          <li>借得比额度还多：426 人，占 21.08%。</li>
+        </ul>
+      </div>
+    </article>
   </div>
   <div class="chart">
-    <h3>9 批召回后再流失</h3>
-    <p class="dim">每批两根柱。玫瑰色是流失 7 天以上占曾全部结清，青色是回来的人占这批流失人数。虚线是 50%。跟访短的批次，7 天窗口还没走完，流失占比会偏低。1030 还没有人走到流失。</p>
+    <h3>9 批放在一起：窗口走完的，都是停满 7 天的多、回来的少</h3>
+    <p class="dim">每批两根柱。玫瑰色是还清的人里有多少停满了 7 天，青色是这些人里有多少后来又提单。虚线是一半。0930 之后跟访还短，停满 7 天的人少，先看成窗口没走完。1030 还没有人走到这一步。</p>
     <div id="churnBars" class="box"></div>
   </div>
   <div class="table"><table id="churnTable"></table></div>
-  <ol class="steps">
-    <li><strong>结清之后，流失是主路径</strong>
-      <ul class="lines">
-        <li>0818 召回后放款，并再次全部结清：1,720 人。</li>
-        <li>其中 1,032 人满 7 天没有再提单，占结清人数 60.00%。</li>
-        <li>614 人在 7 天内就提单，没有形成这次流失。</li>
-      </ul>
-    </li>
-    <li><strong>再度流失之后，留下来的人仍是多数</strong>
-      <ul class="lines">
-        <li>1,032 人里，566 人到 11 月 9 日仍未再提单，占 54.84%。</li>
-        <li>511 人从未在第 8 天及以后提单。</li>
-        <li>55 人回来过，后来又全部结清并再次停满 7 天。</li>
-        <li>466 人回流之后目前还在，占 45.16%。</li>
-      </ul>
-    </li>
-    <li><strong>后续批次圈进了一部分已经回来的人，也有一块没有圈到</strong>
-      <ul class="lines">
-        <li>466 名流失后回流用户里，327 人出现在 0902 至 1106，占 70.17%。</li>
-        <li>139 人这些批次都没有出现，占 29.83%。</li>
-        <li>0902 与 0818 整批没有交集，这一批命中是 0。</li>
-        <li>309 人只进 1 批，18 人进了 2 批。各批人数相加是 345，不能直接相加当人数。</li>
-      </ul>
-    </li>
-    <li><strong>流失前的资金需求偏松</strong>
-      <ul class="lines">
-        <li>9 批流失或回流合计 2,021 人。</li>
-        <li>不超过 75%：1,042 人，占 51.56%。</li>
-        <li>标为 100%（原始 98%–102%）：361 人，占 17.86%。</li>
-        <li>高于 100%：426 人，占 21.08%。</li>
-        <li>人数最多的一档是 50% 到 75%。算术平均约 77%，金额加权约 70%。</li>
-      </ul>
-    </li>
-  </ol>
 </section>
 
 <section id="path">
