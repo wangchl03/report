@@ -69,7 +69,7 @@ for name,b in SOURCE.items():
  allfund=sum(r['全部首单放款单量'] for r in allp);allmat=sum(r['到期放款单量'] for r in allp)
  group=dict(first=total['单产品首单数'],mature=total['单产品到期订单数'],profit=total['单产品到期盈利率'],overdue=total['单产品到期逾期率'],overdue_n=round(total['单产品到期订单数']*total['单产品到期逾期率']))
  assert math.isclose(group['overdue_n']/group['mature'],group['overdue'],abs_tol=1e-10)
- sensitivity={label:{'all':aggregate(rs),**split(rs)} for label,rs in [('all',rows),('early',old),('without_first',[r for r in rows if r['召回批次']!=summary[0]['召回批次']])]}
+ sensitivity={label:{'all':aggregate(rs),**split(rs)} for label,rs in [('all',rows),('early',old)]}
  result[name]=dict(sensitivity=sensitivity,source=b['path'],sha256=b['sha256'],snapshot=b['sheets']['批次汇总']['rows'][1][0],recall=total['召回用户数'],first=total['全部首单数'],anomalies=total['异常首单数'],single=group,dual=a,**sp,batches=batches,pairs=pairs,terms=terms,term_combos=matrix,early=mature_early,standardized={str(t):standardize(t) for t in [1,5,10,20]},all_first_funded=allfund,all_first_mature=allmat,unclassified_mature=allmat-total['单产品到期订单数']-a['mature'],source_totals=total)
  # Reconcile product-detail and combination-detail sheets without counting the duplicate Sheet1.
  for col1,col2 in [('提单单量','提单单量'),('放款单量','放款单量'),('长账期单量','长账期单量'),('到期放款单量','到期放款单量'),('到期逾期单量','到期逾期单量'),('到期放款金额','到期放款金额'),('到期已还金额','到期已还金额')]:assert math.isclose(sum(r[col1] for r in rows),sum(r[col2] for r in product),abs_tol=.001)
