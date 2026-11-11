@@ -1,0 +1,185 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="description" content="1笔循环贷用户特征的一类、二类、三类字段说明。">
+<title>1笔循环贷用户特征字段说明</title>
+<style>
+:root{--bg:#f3f6fb;--ink:#172b4d;--body:#43536d;--muted:#77859a;--line:#e5ebf3;--blue:#3268e8;--radius:16px}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--body);font:15px/1.75 -apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei",sans-serif}
+h1,h2,h3,p{margin:0}
+h1,h2,h3,strong{color:var(--ink)}
+a{color:var(--blue)}
+.shell{width:min(980px,calc(100% - 40px));margin:auto}
+.topbar{height:60px;background:#fff;border-bottom:1px solid var(--line)}
+.topbar .shell{height:100%;display:flex;align-items:center;justify-content:space-between}
+.brand{font-weight:700;color:var(--ink)}
+.top-meta{color:var(--muted);font-size:12px}
+.hero{padding:42px 0 18px}
+.eyebrow{font-size:11px;font-weight:700;letter-spacing:.14em;color:var(--blue);margin-bottom:10px}
+h1{font-size:32px;line-height:1.35}
+.lead{margin-top:14px;font-size:16px;color:#52627c}
+.chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:16px}
+.chip{font-size:12px;background:#fff;border:1px solid var(--line);border-radius:6px;padding:4px 10px;color:#697a94}
+nav{position:sticky;top:0;z-index:5;background:#f3f6fbf2;backdrop-filter:blur(12px);border-bottom:1px solid var(--line)}
+nav .shell{display:flex;gap:22px;overflow:auto}
+nav a{text-decoration:none;color:#65758d;font-size:13px;font-weight:650;padding:14px 0;border-bottom:2px solid transparent;white-space:nowrap}
+section{padding:28px 0}
+h2{font-size:22px;margin-bottom:8px}
+.sub{color:var(--muted);font-size:13px;margin-bottom:16px}
+.card{background:#fff;border:1px solid var(--line);border-radius:var(--radius);padding:18px 20px;margin-top:14px}
+.card h3{font-size:16px;margin-bottom:8px}
+.card p{font-size:14px}
+table{width:100%;border-collapse:collapse;font-size:13px;margin-top:8px}
+th,td{text-align:left;vertical-align:top;padding:10px 12px;border-bottom:1px solid #edf1f6}
+th{color:#64768f;font-weight:650;background:#f8fafd}
+tr:last-child td{border-bottom:0}
+code{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:.92em;background:#f4f7fb;padding:1px 5px;border-radius:4px}
+.note{background:#f5f8ff;border:1px solid #e7eefc;border-radius:12px;padding:14px 16px;font-size:13px;color:#556681;margin-top:14px}
+.footer{padding:8px 0 36px;color:#8c99ac;font-size:12px;border-top:1px solid #dfe7f2}
+@media(max-width:720px){h1{font-size:26px}.shell{width:calc(100% - 28px)}th,td{padding:8px}}
+</style>
+</head>
+<body>
+<div class="topbar"><div class="shell"><div class="brand">循环贷 · 用户特征</div><div class="top-meta">字段说明 · 2026-11-11</div></div></div>
+<header class="hero"><div class="shell">
+  <div class="eyebrow">FEATURE DICTIONARY</div>
+  <h1>1笔循环贷用户特征字段说明</h1>
+  <p class="lead">一行一个用户，时间以该用户第一次循环贷提单切开。提单及之前是当时已经发生的行为，提单之后是直到今天又拿到的获额。字段以 Excel 的 Sheet2 为准。</p>
+  <div class="chips"><span class="chip">只有 1 笔循环贷放款</span><span class="chip">20 秒获额去重</span><span class="chip">recycle_type = 2 且获额通过</span></div>
+</div></header>
+<nav><div class="shell">
+  <a href="#counts">提单放款次数</a>
+  <a href="#before">第一次提单及之前</a>
+  <a href="#after">第一次提单之后</a>
+  <a href="#open">取数前要定死的口径</a>
+</div></nav>
+<main class="shell">
+<section id="counts">
+  <h2>用户提单放款次数</h2>
+  <p class="sub">这一类不切开时间，是用户到今天为止的累计次数。</p>
+  <div class="card">
+    <table>
+      <thead><tr><th>字段</th><th>理解</th></tr></thead>
+      <tbody>
+        <tr><td>用户总提单次数</td><td>订单表里这个用户的全部提单笔数。</td></tr>
+        <tr><td>用户总放款次数</td><td>其中成功打款的笔数。</td></tr>
+        <tr><td>用户循环贷提单次数</td><td>提单时仍有在途、被标成循环贷的提单笔数。</td></tr>
+        <tr><td>用户循环贷放款次数</td><td>这些循环贷里成功打款的笔数。按文件名，这列应恒为 1，用来圈人，不拿来区分用户。</td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+<section id="before">
+  <h2>第一次循环贷提单及之前</h2>
+  <p class="sub">只使用第一次循环贷提单当时及更早的信息。</p>
+  <div class="card">
+    <h3>获额订单</h3>
+    <p>分母是可提单的循环贷获额：<code>recycle_type = 2</code> 且获额通过。同一用户 20 秒内多笔合成一批，只留最晚一笔。</p>
+    <table>
+      <thead><tr><th>字段</th><th>理解</th></tr></thead>
+      <tbody>
+        <tr><td>用户有效循环贷获额笔数（20秒去重）</td><td>到第一次循环贷提单为止，这样的获额有几笔。</td></tr>
+        <tr><td>有效单产品获额笔数</td><td>这些获额里，<code>risk_product</code> 拆开后只有 1 个产品的笔数。</td></tr>
+        <tr><td>有效双产品获额笔数</td><td>拆开后有 2 个产品的笔数。循环贷获额目前只见到 1 个或 2 个产品。</td></tr>
+        <tr><td>用户循环贷提单率</td><td>这些获额里，同一 <code>serial_id</code> 实际提单的比例。第一次循环贷提单本身算进分子。</td></tr>
+        <tr><td>用户是否双产品提单</td><td>这一笔循环贷提单对应的获额是不是双产品。</td></tr>
+        <tr><td>用户提单是否长账期</td><td>这一笔选的是不是长账期产品。现有产品里 14、21、28 天是短账期，40 天和 60 天是长账期。用天数还是产品号来卡，取数前要定死。</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="card">
+    <h3>额度</h3>
+    <p>比较「循环贷前一笔已放款订单」和「这一笔循环贷订单」。使用率是提单金额除以获额额度。2025 年 4 月起获额额度用 <code>max_credit_apply_amt</code>；4 月之前，循环贷仍用这个字段，非循环贷用 <code>max_risk_credit_amount</code>。</p>
+    <table>
+      <thead><tr><th>字段</th><th>理解</th></tr></thead>
+      <tbody>
+        <tr><td>循环贷前一笔放款订单获额额度</td><td>这一笔循环贷之前，最近一笔已放款订单对应的获额额度。</td></tr>
+        <tr><td>循环贷订单获额额度</td><td>这一笔循环贷获额给出的额度。</td></tr>
+        <tr><td>额度变化</td><td>这一笔循环贷额度减去前一笔额度。</td></tr>
+        <tr><td>额度变化幅度</td><td>额度变化占前一笔额度的比例。</td></tr>
+        <tr><td>循环贷前一笔放款订单额度使用率</td><td>前一笔已放款订单的提单金额 / 获额额度。</td></tr>
+        <tr><td>循环贷订单额度使用率</td><td>这一笔循环贷的提单金额 / 获额额度。</td></tr>
+        <tr><td>循环贷前一笔放款订单天数</td><td>前一笔已放款订单所选产品的账期天数。</td></tr>
+        <tr><td>循环贷订单天数</td><td>这一笔循环贷所选产品的账期天数。</td></tr>
+        <tr><td>循环贷前一笔放款订单息费</td><td>前一笔已放款订单所选产品的费率。</td></tr>
+        <tr><td>循环贷订单息费</td><td>这一笔循环贷所选产品的费率。</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="card">
+    <h3>天数间隔</h3>
+    <table>
+      <thead><tr><th>字段</th><th>理解</th></tr></thead>
+      <tbody>
+        <tr><td>用户生命周期提单间隔</td><td>从用户第一次提单到这次循环贷提单，相邻提单间隔的整体水平。取平均、中位数还是首尾总间隔，取数前要定死。</td></tr>
+        <tr><td>最后两笔订单提单间隔</td><td>这次循环贷提单距离上一笔提单的天数。</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="card">
+    <h3>提单前一天活跃数据</h3>
+    <p>窗口是第一次循环贷提单的前一个自然日，用旧埋点 <code>event_track_record</code>。这里没有进提单页、点确认、看合同、选用途和优惠券挽留。</p>
+    <table>
+      <thead><tr><th>字段</th><th>理解</th></tr></thead>
+      <tbody>
+        <tr><td>用户总事件次数</td><td>当天全部埋点条数。</td></tr>
+        <tr><td>改金额、切换金额次数</td><td><code>amount_modification</code> 和 <code>loan_form_loan_amount_selectionn_new</code>。</td></tr>
+        <tr><td>切换期次次数</td><td><code>loan_form_term_selection_new</code>。</td></tr>
+        <tr><td>看还款计划次数</td><td><code>Loan_plan_newdetails</code>。</td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+<section id="after">
+  <h2>第一次循环贷提单之后</h2>
+  <p class="sub">第一次循环贷提单之后新发生的获额。用户仍然只有 1 笔循环贷放款，所以后面这些获额大多没有再形成第二笔放款。</p>
+  <div class="card">
+    <h3>获额订单</h3>
+    <p>仍是 20 秒去重后的有效循环贷获额，只统计提单时点之后的笔数，再拆成单产品和双产品。这一侧没有提单率、是否双产品提单、是否长账期。</p>
+    <table>
+      <thead><tr><th>字段</th><th>理解</th></tr></thead>
+      <tbody>
+        <tr><td>用户有效循环贷获额笔数（20秒去重）</td><td>第一次循环贷提单之后新出现的有效循环贷获额笔数。</td></tr>
+        <tr><td>有效单产品获额笔数</td><td>其中只有 1 个产品的笔数。</td></tr>
+        <tr><td>有效双产品获额笔数</td><td>其中有 2 个产品的笔数。</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="card">
+    <h3>额度</h3>
+    <p>用户后面可能有多笔获额。这一组描述后来展示给他的获额。多笔时取最早、最晚，还是把最低息费和最高息费覆盖到全部产品，取数前要定死。</p>
+    <table>
+      <thead><tr><th>字段</th><th>理解</th></tr></thead>
+      <tbody>
+        <tr><td>循环贷订单获额额度</td><td>后来这笔获额给出的额度。</td></tr>
+        <tr><td>额度变化</td><td>后来的获额额度减去第一次循环贷那一笔额度。</td></tr>
+        <tr><td>额度变化幅度</td><td>额度变化占第一次循环贷额度的比例。</td></tr>
+        <tr><td>获额订单天数</td><td>这笔获额给出的账期。双产品时有两个天数，需要约定取哪一个。</td></tr>
+        <tr><td>获额订单最低息费</td><td>这笔获额里各产品费率的下限。双产品时对应费率更低的那个产品。</td></tr>
+        <tr><td>获额订单最高息费</td><td>这笔获额里各产品费率的上限。</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="card">
+    <h3>天数间隔</h3>
+    <p>这里的锚点是获额通过，不是提单。</p>
+    <table>
+      <thead><tr><th>字段</th><th>理解</th></tr></thead>
+      <tbody>
+        <tr><td>第一笔循环贷获额通过距离今天天数</td><td>用户最早一笔循环贷获额通过到今天有多久。它可能早于第一次循环贷提单。</td></tr>
+        <tr><td>最后一笔循环贷获额通过距离今天天数</td><td>最近一笔循环贷获额有多新。天数短，说明最近又获额通过，但还没有变成第二笔循环贷放款。</td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+<section id="open">
+  <h2>取数前要定死的口径</h2>
+  <div class="note">长账期用 40 天、60 天，还是用具体产品号。生命周期提单间隔取平均、中位数，还是首尾相减。提单前一天按伯利兹自然日，还是提单前 24 小时。提单之后有多笔获额时，额度、天数和息费取哪一笔。循环贷提单率是否只算获额后 0–14 天内的提单。</div>
+</section>
+</main>
+<div class="footer"><div class="shell">来源：1笔循环贷用户特征_1111.xlsx · Sheet2。一类字段是大类，二类字段是小类，三类字段是具体字段。</div></div>
+</body>
+</html>
