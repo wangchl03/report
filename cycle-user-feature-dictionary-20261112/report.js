@@ -17,13 +17,13 @@
   let observer;
   const escape = value => String(value ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
   const meta = key => data.schemes[String(key)];
-  const searchable = data.fields.map(field => ({...field, text: Object.values(field).filter(v => typeof v === 'string').join(' ').toLowerCase()}));
+  const searchable = [...data.fields, ...(data.auxiliary_fields ?? [])].map(field => ({...field, text: Object.values(field).filter(v => typeof v === 'string').join(' ').toLowerCase()}));
 
   function search() {
     const query = input.value.trim().toLowerCase();
     clear.hidden = !query;
     results.hidden = !query;
-    document.getElementById('search-scope-note').textContent = scope.value === 'all' ? `全部7组共 ${total} 项` : `当前方案共 ${data.counts[selected]} 项`;
+    document.getElementById('search-scope-note').textContent = scope.value === 'all' ? `全部7组：${total}项业务特征 + ${data.total_auxiliary_fields}个辅助字段` : `当前方案：${data.counts[selected]}项业务特征 + ${data.total_columns[selected] - data.counts[selected]}个辅助字段`;
     if (!query) { grid.replaceChildren(); document.getElementById('unified-result-count').textContent = ''; return; }
     const pool = searchable.filter(f => scope.value === 'all' || String(f.scheme) === selected);
     const tokens = query.split(/\s+/);

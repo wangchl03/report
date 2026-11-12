@@ -62,3 +62,8 @@ html{scroll-padding-top:116px;scroll-behavior:auto}body{margin:0;background:var(
 @media(max-width:980px){.u-directory-label{flex-basis:72px}.u-mainnav .u-loan-number{font-size:23px}.u-mainnav .u-loan-link{padding-inline:2px}.u-mainnav .u-loan-label{font-size:9px}}
 @media(max-width:640px){html{scroll-padding-top:164px}.u-mainnav{grid-template-columns:repeat(4,minmax(0,1fr));gap:6px;padding:9px 0}.u-mainnav .u-loan-link{display:flex;min-height:58px;padding:7px 2px;gap:4px}.u-mainnav .u-loan-number{display:flex;font-size:22px;gap:4px}.u-mainnav .u-loan-label{font-size:9px}.u-loan-number>small{font-size:10px}.u-workspace,.u-report,.u-report .section,.u-report .field-card,.u-report .subgroup{scroll-margin-top:164px}.u-report .db-field{gap:8px;flex-wrap:wrap}.u-report .db-field code{font-size:11px}.u-report .field-formula{gap:8px;flex-wrap:wrap}.u-report .field-formula code{font-size:12px}}
 @media print{.u-report .db-field code,.u-report .field-formula code{color:#173d58;background:#f3f6f9}}
+/* 2026-11-13 new-schema dictionary */
+.u-db-field { display:block; margin:8px 0 12px; color:#a4d8dc; font-size:12px; overflow-wrap:anywhere; }
+.u-build { border-top:3px solid #58b9b4; }
+.u-build p > code, [id*="-auxiliary"] td code { overflow-wrap:anywhere; white-space:normal; }
+[id*="-aux-"] { scroll-margin-top:180px; }
