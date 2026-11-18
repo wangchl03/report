@@ -74,7 +74,7 @@ python3 summarize.py
 `clicks`为加权点击数，`users`为本次SQL范围的去重用户数，`distinct_orders`为去重关联订单数；三者不可混用。`complete5`为可找到5条的点击数，`ordered_complete5`为其中无同刻不同类别并列的点击数；`ambiguous_clicks`和`boundary_clicks`用于质量核验。`span_seconds`汇总为最早选中行为至点击的秒差，`nearest_seconds`用于最近行为距离分档。
 
 `02`按全期直接去重；不要将月度、路径或位置分组中的去重用户/订单数相加。高频路径和行为出现率属于已关联续贷提单队列的描述，不直接代表召回增量或因果效果。
-</code></pre></details><details class="code-file" id="code-file-1" open><summary>01_完整只读统计.sql <small>· 653行 · 全文</small></summary><div class="code-toolbar"><a href="code/01_完整只读统计.sql" download>下载源文件</a><button type="button" class="copy" data-copy="code-1">复制完整代码</button></div><pre tabindex="0"><code id="code-1">/* 续贷确认提单前1小时最近5条行为：完整只读统计SQL
+</code></pre></details><details class="code-file" id="code-file-1"><summary>01_完整只读统计.sql <small>· 653行 · 全文</small></summary><div class="code-toolbar"><a href="code/01_完整只读统计.sql" download>下载源文件</a><button type="button" class="copy" data-copy="code-1">复制完整代码</button></div><pre tabindex="0"><code id="code-1">/* 续贷确认提单前1小时最近5条行为：完整只读统计SQL
    直接复制执行。默认统计2026年1月，修改params两处时间可切换月份；
    完整报告区间为[2026-01-01 00:00:00,2026-11-16 00:00:00)。
    建议逐月执行，避免一次扫描全期；不创建、更新或删除任何源表。
