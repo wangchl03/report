@@ -1,18 +1,18 @@
 {
   "kpi": {
     "n_user": 2577,
-    "n_apply": 1165,
-    "apply_rate": 45.21,
-    "n_apply_week": 119,
-    "n_first_week": 31,
-    "n_remit": 2081,
-    "n_remit_week": 114,
-    "n_due": 1089,
-    "n_due_od": 381,
-    "profit_pct": 21.63,
-    "overdue_pct": 34.99,
+    "n_apply": 1170,
+    "apply_rate": 45.4,
+    "n_apply_week": 149,
+    "n_first_week": 36,
+    "n_remit": 2113,
+    "n_remit_week": 146,
+    "n_due": 1127,
+    "n_due_od": 395,
+    "profit_pct": 21.77,
+    "overdue_pct": 35.05,
     "week_start": "2026-11-16",
-    "as_of": "2026-11-18",
+    "as_of": "2026-11-19",
     "recall_date": "2026-09-30",
     "remit_day": "o.remit_date::date"
   },
@@ -316,6 +316,12 @@
       "n": 4,
       "cum": 1165,
       "rate": 45.21
+    },
+    {
+      "d": "2026-11-19",
+      "n": 5,
+      "cum": 1170,
+      "rate": 45.4
     }
   ],
   "apply_daily": [
@@ -568,6 +574,11 @@
       "d": "2026-11-18",
       "n_order": 28,
       "n_user": 28
+    },
+    {
+      "d": "2026-11-19",
+      "n_order": 35,
+      "n_user": 35
     }
   ],
   "remit_daily": [
@@ -820,6 +831,11 @@
       "d": "2026-11-18",
       "n": 24,
       "cum": 2081
+    },
+    {
+      "d": "2026-11-19",
+      "n": 32,
+      "cum": 2113
     }
   ],
   "due_daily": [
@@ -1288,33 +1304,44 @@
     {
       "d": "2026-11-18",
       "n_due": 28,
-      "n_od": 12,
-      "repaid": 120812.9,
+      "n_od": 11,
+      "repaid": 121063.9,
       "remit": 92260.0,
-      "profit_pct": 30.95,
-      "overdue_pct": 42.86,
-      "cum_profit_pct": 21.63,
-      "cum_overdue_pct": 34.99
+      "profit_pct": 31.22,
+      "overdue_pct": 39.29,
+      "cum_profit_pct": 21.64,
+      "cum_overdue_pct": 34.89
+    },
+    {
+      "d": "2026-11-19",
+      "n_due": 38,
+      "n_od": 15,
+      "repaid": 199114.0,
+      "remit": 159370.0,
+      "profit_pct": 24.94,
+      "overdue_pct": 39.47,
+      "cum_profit_pct": 21.77,
+      "cum_overdue_pct": 35.05
     }
   ],
   "strat": [
     {
       "strat": "NA",
       "n_user": 816,
-      "n_apply": 308,
-      "pct": 37.75
+      "n_apply": 310,
+      "pct": 37.99
     },
     {
       "strat": "20d+10r",
       "n_user": 670,
-      "n_apply": 306,
-      "pct": 45.67
+      "n_apply": 307,
+      "pct": 45.82
     },
     {
       "strat": "30d",
       "n_user": 482,
-      "n_apply": 235,
-      "pct": 48.76
+      "n_apply": 237,
+      "pct": 49.17
     },
     {
       "strat": "20d",
@@ -1333,14 +1360,14 @@
     {
       "bin": "7-15d",
       "n_user": 1591,
-      "n_apply": 802,
-      "pct": 50.41
+      "n_apply": 805,
+      "pct": 50.6
     },
     {
       "bin": "16-30d",
       "n_user": 986,
-      "n_apply": 363,
-      "pct": 36.82
+      "n_apply": 365,
+      "pct": 37.02
     }
   ]
 }
