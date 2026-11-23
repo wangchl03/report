@@ -300,7 +300,7 @@ GROUP BY 1;
 # -*- coding: utf-8 -*-
 &quot;&quot;&quot;
 T7+ 召回看板 · 后端
-默认跑九个召回批次及累计召回。
+默认跑十一个召回批次及累计召回。
 
   export PGPASSWORD=&#x27;...&#x27;
   python3 appendix_t7_0818_dashboard.py
@@ -375,8 +375,20 @@ BATCHES = [
         &quot;filter_recall_date&quot;: False,
     },
     {
+        &quot;slug&quot;: &quot;1106&quot;,
+        &quot;table&quot;: &quot;wangchuanliang.t7recalllist_1106&quot;,
+        &quot;recall_date&quot;: &quot;2026-11-06&quot;,
+        &quot;filter_recall_date&quot;: False,
+    },
+    {
+        &quot;slug&quot;: &quot;1116&quot;,
+        &quot;table&quot;: &quot;wangchuanliang.t7recalllist_1116&quot;,
+        &quot;recall_date&quot;: &quot;2026-11-16&quot;,
+        &quot;filter_recall_date&quot;: False,
+    },
+    {
         &quot;slug&quot;: &quot;cumulative&quot;,
-        &quot;table&quot;: &quot;九批召回名单合并（跨批次按用户去重）&quot;,
+        &quot;table&quot;: &quot;十一批召回名单合并（跨批次按用户去重）&quot;,
         &quot;recall_date&quot;: &quot;2026-08-18&quot;,
         &quot;filter_recall_date&quot;: False,
         &quot;cumulative&quot;: True,
@@ -1051,8 +1063,7 @@ def write_html(data, batch):
     due_note = (f&quot;到期 {k[&#x27;n_due&#x27;]:,} 单&quot; if k[&#x27;n_due&#x27;] else &quot;尚无到期订单&quot;) if batch[&#x27;slug&#x27;] in (&#x27;1010&#x27;,&#x27;1016&#x27;) else &quot;到期订单&quot;
     list_note = &quot;&quot;
     period_label = &quot;首次召回后&quot; if batch.get(&quot;cumulative&quot;) else md + &quot;至今&quot;
-    scope_note = (&#x27;&lt;p class=&quot;meta&quot;&gt;九批名单按用户去重；每人从首次入选日起统计，分层与流失天数取首次入选记录。累计曲线固定以合并名单为分母。&lt;/p&gt;&#x27;
-                  if batch.get(&quot;cumulative&quot;) else &quot;&quot;)
+    scope_note = &quot;&quot;
     HTML_PATH = HERE / f&quot;t7-{batch[&#x27;slug&#x27;]}.html&quot;
     json_name = f&quot;t7_{batch[&#x27;slug&#x27;]}_dashboard_data.json&quot;
 
@@ -1357,6 +1368,8 @@ TAB_LABEL = {
     &quot;1016&quot;: &quot;10月16日批次&quot;,
     &quot;1023&quot;: &quot;10月23日批次&quot;,
     &quot;1030&quot;: &quot;10月30日批次&quot;,
+    &quot;1106&quot;: &quot;11月6日批次&quot;,
+    &quot;1116&quot;: &quot;11月16日批次&quot;,
     &quot;cumulative&quot;: &quot;累计召回&quot;,
 }
 
@@ -1376,8 +1389,7 @@ def panel_body(data, batch, pfx):
     due_note = (f&quot;到期 {k[&#x27;n_due&#x27;]:,} 单&quot; if k[&#x27;n_due&#x27;] else &quot;尚无到期订单&quot;) if batch[&#x27;slug&#x27;] in (&#x27;1010&#x27;,&#x27;1016&#x27;) else &quot;到期订单&quot;
     list_note = &quot;&quot;
     period_label = &quot;首次召回后&quot; if batch.get(&quot;cumulative&quot;) else md + &quot;至今&quot;
-    scope_note = (&#x27;&lt;p class=&quot;meta&quot;&gt;九批名单按用户去重；每人从首次入选日起统计，分层与流失天数取首次入选记录。累计曲线固定以合并名单为分母。&lt;/p&gt;&#x27;
-                  if batch.get(&quot;cumulative&quot;) else &quot;&quot;)
+    scope_note = &quot;&quot;
     return f&quot;&quot;&quot;
 &lt;div class=&quot;top&quot;&gt;
   &lt;div class=&quot;kicker&quot;&gt;DASHBOARD · T7+ RECALL · {&#x27;累计召回&#x27; if batch.get(&#x27;cumulative&#x27;) else rd}&lt;/div&gt;
@@ -1533,8 +1545,8 @@ def write_hub(items):
 .page-top{{text-align:center}}
 .kicker{{color:var(--cy);font-size:12px;letter-spacing:2px;font-weight:700}}
 h1{{font-size:24px;margin:8px 0 6px}}
-.tabs{{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));grid-template-rows:repeat(2,auto);gap:10px;max-width:890px;margin:18px auto 8px}}
-.tabs button{{appearance:none;width:100%;min-width:0;border:1px solid var(--line);background:#0c2944;color:var(--text);border-radius:999px;padding:10px 12px;font-size:14px;font-weight:700;cursor:pointer}}
+.tabs{{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));grid-template-rows:repeat(6,31.5px);gap:7.5px;width:100%;max-width:262.5px;margin:18px auto 8px}}
+.tabs button{{appearance:none;width:100%;height:31.5px;min-width:0;border:1px solid var(--line);background:#0c2944;color:var(--text);border-radius:999px;padding:0 9px;font-size:12px;line-height:18px;font-weight:700;cursor:pointer}}
 .tabs button:hover{{border-color:var(--cy)}}
 .tabs button.on{{background:var(--cy);color:#062033;border-color:var(--cy)}}
 .panel{{display:none}}

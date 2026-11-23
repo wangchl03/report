@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 """
 T7+ 召回看板 · 后端
-默认跑九个召回批次及累计召回。
+默认跑十一个召回批次及累计召回。
 
   export PGPASSWORD='...'
   python3 appendix_t7_0818_dashboard.py
@@ -77,8 +77,20 @@ BATCHES = [
         "filter_recall_date": False,
     },
     {
+        "slug": "1106",
+        "table": "wangchuanliang.t7recalllist_1106",
+        "recall_date": "2026-11-06",
+        "filter_recall_date": False,
+    },
+    {
+        "slug": "1116",
+        "table": "wangchuanliang.t7recalllist_1116",
+        "recall_date": "2026-11-16",
+        "filter_recall_date": False,
+    },
+    {
         "slug": "cumulative",
-        "table": "九批召回名单合并（跨批次按用户去重）",
+        "table": "十一批召回名单合并（跨批次按用户去重）",
         "recall_date": "2026-08-18",
         "filter_recall_date": False,
         "cumulative": True,
@@ -753,8 +765,7 @@ def write_html(data, batch):
     due_note = (f"到期 {k['n_due']:,} 单" if k['n_due'] else "尚无到期订单") if batch['slug'] in ('1010','1016') else "到期订单"
     list_note = ""
     period_label = "首次召回后" if batch.get("cumulative") else md + "至今"
-    scope_note = ('<p class="meta">九批名单按用户去重；每人从首次入选日起统计，分层与流失天数取首次入选记录。累计曲线固定以合并名单为分母。</p>'
-                  if batch.get("cumulative") else "")
+    scope_note = ""
     HTML_PATH = HERE / f"t7-{batch['slug']}.html"
     json_name = f"t7_{batch['slug']}_dashboard_data.json"
 
@@ -1059,6 +1070,8 @@ TAB_LABEL = {
     "1016": "10月16日批次",
     "1023": "10月23日批次",
     "1030": "10月30日批次",
+    "1106": "11月6日批次",
+    "1116": "11月16日批次",
     "cumulative": "累计召回",
 }
 
@@ -1078,8 +1091,7 @@ def panel_body(data, batch, pfx):
     due_note = (f"到期 {k['n_due']:,} 单" if k['n_due'] else "尚无到期订单") if batch['slug'] in ('1010','1016') else "到期订单"
     list_note = ""
     period_label = "首次召回后" if batch.get("cumulative") else md + "至今"
-    scope_note = ('<p class="meta">九批名单按用户去重；每人从首次入选日起统计，分层与流失天数取首次入选记录。累计曲线固定以合并名单为分母。</p>'
-                  if batch.get("cumulative") else "")
+    scope_note = ""
     return f"""
 <div class="top">
   <div class="kicker">DASHBOARD · T7+ RECALL · {'累计召回' if batch.get('cumulative') else rd}</div>
@@ -1235,8 +1247,8 @@ def write_hub(items):
 .page-top{{text-align:center}}
 .kicker{{color:var(--cy);font-size:12px;letter-spacing:2px;font-weight:700}}
 h1{{font-size:24px;margin:8px 0 6px}}
-.tabs{{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));grid-template-rows:repeat(2,auto);gap:10px;max-width:890px;margin:18px auto 8px}}
-.tabs button{{appearance:none;width:100%;min-width:0;border:1px solid var(--line);background:#0c2944;color:var(--text);border-radius:999px;padding:10px 12px;font-size:14px;font-weight:700;cursor:pointer}}
+.tabs{{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));grid-template-rows:repeat(6,31.5px);gap:7.5px;width:100%;max-width:262.5px;margin:18px auto 8px}}
+.tabs button{{appearance:none;width:100%;height:31.5px;min-width:0;border:1px solid var(--line);background:#0c2944;color:var(--text);border-radius:999px;padding:0 9px;font-size:12px;line-height:18px;font-weight:700;cursor:pointer}}
 .tabs button:hover{{border-color:var(--cy)}}
 .tabs button.on{{background:var(--cy);color:#062033;border-color:var(--cy)}}
 .panel{{display:none}}
