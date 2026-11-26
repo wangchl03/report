@@ -144,16 +144,16 @@ h1{font-size:40px;letter-spacing:1px;line-height:1.3;margin:0 0 11px;font-weight
 .priority-order span{border:1px solid var(--blue-border);border-radius:7px;padding:7px 10px;background:var(--paper)}
 .priority-order i{font-style:normal;color:var(--soft)}
 .cohort-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:24px;width:100%;margin-top:52px}
-.cohort-lane{min-width:0;display:flex;flex-direction:column;align-items:center;padding:0 8px 15px;border:1px solid #38537366;border-radius:17px}
-.cohort-head{max-width:none;width:calc(100% + 16px);min-height:168px;padding:20px 18px;background:var(--blue-bg)}
+.cohort-lane{min-width:0;display:flex;flex-direction:column;align-items:center}
+.cohort-head{max-width:none;width:100%;min-height:168px;padding:20px 18px;background:var(--blue-bg)}
 .cohort-head h3{font-size:20px}.cohort-head p{font-size:12px;line-height:1.85}
 .cohort-head .priority{font-size:11px;font-weight:600;color:var(--blue);margin-top:11px;border-top:1px solid var(--blue-border);padding-top:9px}
-.cohort-lane .decision{width:100%;max-width:100%;margin-top:33px;min-height:64px;padding:12px 8px;font-size:13px;gap:7px}
-.cohort-lane .branches{gap:12px;margin-top:49px}
-.cohort-lane .branch{padding:17px 12px;min-height:220px;border-left-width:3px}
-.cohort-lane .branch h3{font-size:16px;line-height:1.7}.cohort-lane .branch p{font-size:12px;line-height:1.9}
-.cohort-lane .node-label{font-size:11px;letter-spacing:.2px;gap:6px}
-#strategy{margin-top:63px;max-width:560px}
+.cohort-head .node-label{font-size:11px;letter-spacing:.2px;gap:6px}
+#behavior-decision{margin-top:58px;width:360px}
+.shared-branches{max-width:760px}
+.shared-branches .branch{min-height:168px}
+.shared-branches h3{font-size:20px}
+#strategy{margin-top:51px;max-width:560px}
 #regular-decision{margin-top:36px}
 .success{padding:21px 16px}.success h2{font-size:20px}.success p{line-height:1.9}
 .offline{margin-left:40px;margin-right:28px}
@@ -161,16 +161,13 @@ h1{font-size:40px;letter-spacing:1px;line-height:1.3;margin:0 0 11px;font-weight
 @media(min-width:791px) and (max-width:1190px){
  .flow-body{grid-template-columns:1fr;padding-right:40px}.result-lane{margin-top:45px}
  .success{position:relative!important;top:auto!important;max-width:448px;margin:auto}
- .cohort-head{min-height:156px}.cohort-lane .branch{min-height:206px}
+ .cohort-head{min-height:156px}
 }
 @media(max-width:960px){
- .cohort-grid{grid-template-columns:1fr;gap:58px;max-width:620px}
- .cohort-lane{padding-left:18px;padding-right:18px;width:100%}
- .cohort-head{width:calc(100% + 36px);min-height:0;text-align:center}
+ .cohort-grid{grid-template-columns:1fr;gap:24px;max-width:620px}
+ .cohort-lane{width:100%}
+ .cohort-head{min-height:0;text-align:center}
  .cohort-head .node-label{justify-content:center}
- .cohort-lane .decision{max-width:330px;min-height:54px}
- .cohort-lane .branch{min-height:167px;padding:18px}.cohort-lane .branch h3{font-size:18px}
- .cohort-lane .branch p{font-size:13px}.cohort-lane .branches{gap:18px}
 }
 @media(max-width:790px){
  .flow-body{grid-template-columns:1fr;padding-left:29px;padding-right:28px;gap:0}
@@ -178,17 +175,13 @@ h1{font-size:40px;letter-spacing:1px;line-height:1.3;margin:0 0 11px;font-weight
  .audience-gate h2{font-size:19px}.priority-order{font-size:11px;gap:7px}
  .priority-order span{padding:7px}.priority-order i{display:none}
  .cohort-grid{margin-top:48px}.cohort-head h3{font-size:20px}
- .cohort-lane .branch{padding:17px 12px;min-height:181px}.cohort-lane .branch h3{font-size:16px}
- .cohort-lane .branch p{font-size:12px}.cohort-lane .branches{gap:12px}
- .cohort-lane{padding-left:12px;padding-right:12px}.cohort-head{width:calc(100% + 24px)}
+ .shared-branches h3{font-size:17px}.shared-branches .branch{min-height:190px}
  .success{max-width:448px}.version-label{font-size:11px}
 }
 @media print{
  .page{max-width:none}.cohort-grid{grid-template-columns:repeat(3,minmax(0,1fr));gap:16px;max-width:none}
  .flow-body{grid-template-columns:minmax(0,1fr) 190px;gap:26px;padding-left:32px;padding-right:24px}
  .cohort-head{min-height:148px}.cohort-head h3{font-size:17px}
- .cohort-lane .branch{min-height:190px;padding:14px 9px}.cohort-lane .branch h3{font-size:14px}
- .cohort-lane .branch p{font-size:11px}.cohort-lane .decision{font-size:11px}
  .result-lane{margin-top:0}.success{position:absolute!important}
 }
   </style>
@@ -240,7 +233,7 @@ h1{font-size:40px;letter-spacing:1px;line-height:1.3;margin:0 0 11px;font-weight
             <p>二次流失优先级最高，即使总借款为 1–2 次，也归入二次流失客群。</p>
           </article>
 
-          <div class="cohort-grid" id="cohort-grid" aria-label="三类客群各自的策略流程">
+          <div class="cohort-grid" id="cohort-grid" aria-label="三类互斥客群入口">
             <section class="cohort-lane" aria-labelledby="secondary-title">
               <article class="node node-card cohort-head" id="secondary-head">
                 <div class="node-label">优先级 ① · 先判断</div>
@@ -248,19 +241,6 @@ h1{font-size:40px;letter-spacing:1px;line-height:1.3;margin:0 0 11px;font-weight
                 <p>命中二次及后续流失标签<br>不再进入借款次数或普通用户分流</p>
                 <div class="priority">本类使用二次流失策略配置</div>
               </article>
-              <div class="node decision" id="secondary-behavior">是否命中核心行为？</div>
-              <div class="branches">
-                <article class="node node-card branch high" id="secondary-core">
-                  <div class="node-label">命中 · 行为分支</div>
-                  <h3>核心行为<br>专属策略</h3>
-                  <p>调整金额、切换期次、比较息费<br>识别需求与再次回流阻碍</p>
-                </article>
-                <article class="node node-card branch ordinary" id="secondary-model">
-                  <div class="node-label">未命中 · 普通分支</div>
-                  <h3>模型组合<br>普通策略</h3>
-                  <p>提单意愿模型 × 风险模型<br>在二次流失客群内分组</p>
-                </article>
-              </div>
             </section>
 
             <section class="cohort-lane" aria-labelledby="loan12-title">
@@ -270,19 +250,6 @@ h1{font-size:40px;letter-spacing:1px;line-height:1.3;margin:0 0 11px;font-weight
                 <p>未命中二次流失标签<br>且累计成功借款为 1 或 2 次</p>
                 <div class="priority">本类使用借款 1–2 次策略配置</div>
               </article>
-              <div class="node decision" id="loan12-behavior">是否命中核心行为？</div>
-              <div class="branches">
-                <article class="node node-card branch high" id="loan12-core">
-                  <div class="node-label">命中 · 行为分支</div>
-                  <h3>核心行为<br>专属策略</h3>
-                  <p>调整金额、切换期次、比较息费<br>识别本类用户的需求与阻碍</p>
-                </article>
-                <article class="node node-card branch ordinary" id="loan12-model">
-                  <div class="node-label">未命中 · 普通分支</div>
-                  <h3>模型组合<br>普通策略</h3>
-                  <p>提单意愿模型 × 风险模型<br>在借款 1–2 次客群内分组</p>
-                </article>
-              </div>
             </section>
 
             <section class="cohort-lane" aria-labelledby="ordinary-title">
@@ -292,20 +259,21 @@ h1{font-size:40px;letter-spacing:1px;line-height:1.3;margin:0 0 11px;font-weight
                 <p>未命中二次流失标签<br>且未命中总借款 1–2 次</p>
                 <div class="priority">本类使用普通用户策略配置</div>
               </article>
-              <div class="node decision" id="ordinary-behavior">是否命中核心行为？</div>
-              <div class="branches">
-                <article class="node node-card branch high" id="ordinary-core">
-                  <div class="node-label">命中 · 行为分支</div>
-                  <h3>核心行为<br>专属策略</h3>
-                  <p>调整金额、切换期次、比较息费<br>识别本类用户的需求与阻碍</p>
-                </article>
-                <article class="node node-card branch ordinary" id="ordinary-model">
-                  <div class="node-label">未命中 · 普通分支</div>
-                  <h3>模型组合<br>普通策略</h3>
-                  <p>提单意愿模型 × 风险模型<br>在普通用户客群内分组</p>
-                </article>
-              </div>
             </section>
+          </div>
+
+          <div class="node decision" id="behavior-decision">是否命中核心行为？</div>
+          <div class="branches shared-branches" aria-label="三类客群共用的两个策略分支">
+            <article class="node node-card branch high" id="high-priority">
+              <div class="node-label">命中 · 行为分支</div>
+              <h3>核心行为专属策略</h3>
+              <p>调整金额、切换期次、比较息费<br>结合所属客群，匹配行为专属规则</p>
+            </article>
+            <article class="node node-card branch ordinary" id="ordinary-priority">
+              <div class="node-label">未命中 · 模型分支</div>
+              <h3>模型组合普通策略</h3>
+              <p>提单意愿模型 × 风险模型<br>结合所属客群，进入模型组合分组</p>
+            </article>
           </div>
 
           <article class="node node-card" id="strategy">
@@ -414,32 +382,24 @@ h1{font-size:40px;letter-spacing:1px;line-height:1.3;margin:0 0 11px;font-weight
           const mid=(gate[1]+firstHead.y)/2;
           for(const id of cohorts){const end=point(id+'-head','top');edge([gate,[gate[0],mid],[end[0],mid],end]);}
         }
-        for(const cohort of cohorts){
-          vertical(cohort+'-head',cohort+'-behavior');
-          const gate=point(cohort+'-behavior');
-          for(const [suffix,color,text] of [['core','teal','命中'],['model','blue','未命中']]){
-            const end=point(cohort+'-'+suffix,'top'),middle=(gate[1]+end[1])/2;
-            edge([gate,[gate[0],middle],[end[0],middle],end],color);label(text,end[0],middle-1,color);
-          }
-        }
-        const target=point('strategy','top');
-        const joins=cohorts.map(id=>{
-          const core=point(id+'-core'),model=point(id+'-model');
-          const join=[bounds(id+'-head').cx,Math.max(core[1],model[1])+24];
-          for(const [start,color] of [[core,'teal'],[model,'blue']]){
-            edge([start,[start[0],join[1]],join],color,false,false);
-          }
-          return join;
-        });
+        const behavior=point('behavior-decision','top');
         if(stacked){
           const grid=bounds('cohort-grid'),outputRail=grid.x+grid.w+12;
-          for(const start of joins.slice(0,2)){
-            edge([start,[outputRail,start[1]],[outputRail,target[1]-24],[target[0],target[1]-24],target]);
+          for(const id of cohorts.slice(0,2)){
+            const start=point(id+'-head','right');
+            edge([start,[outputRail,start[1]],[outputRail,behavior[1]-24],[behavior[0],behavior[1]-24],behavior]);
           }
-          edge([joins[2],target]);
+          vertical('ordinary-head','behavior-decision');
         }else{
-          const mid=target[1]-24;
-          for(const start of joins){edge([start,[start[0],mid],[target[0],mid],target]);}
+          const mid=(point('secondary-head')[1]+behavior[1])/2;
+          for(const id of cohorts){const start=point(id+'-head');edge([start,[start[0],mid],[behavior[0],mid],behavior]);}
+        }
+        const branchGate=point('behavior-decision');
+        for(const [id,color,text] of [['high-priority','teal','命中'],['ordinary-priority','blue','未命中']]){
+          const end=point(id,'top'),middle=(branchGate[1]+end[1])/2;
+          edge([branchGate,[branchGate[0],middle],[end[0],middle],end],color);label(text,end[0],middle-1,color);
+          const start=point(id),target=point('strategy','top'),merge=(start[1]+target[1])/2;
+          edge([start,[start[0],merge],[target[0],merge],target],color);
         }
         vertical('strategy','regular-decision');
         vertical('regular-decision','product','orange','无效，升级策略');
