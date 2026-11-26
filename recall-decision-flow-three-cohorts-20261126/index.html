@@ -253,8 +253,10 @@ h1{font-size:40px;letter-spacing:1px;line-height:1.3;margin:0 0 11px;font-weight
 .status-legend{display:flex;align-items:center;justify-content:center;flex-wrap:wrap;gap:14px 24px;font-size:12px;color:var(--muted)}
 .status-legend>span{display:inline-flex;align-items:center;gap:8px}
 .status-legend .status-legend-title{font-size:11px;letter-spacing:1px;color:var(--soft);margin-right:4px}
-.status-sample{display:inline-block;width:28px;height:18px;border:1.5px solid var(--soft);border-radius:4px;background:transparent}
-.status-sample.planned{border-style:dashed}
+.status-sample{display:inline-grid;place-items:center;width:23px;height:21px;border:1px solid var(--green-border);border-radius:5px;font-style:normal;color:var(--green);background:var(--green-bg);font-size:12px;font-weight:700}
+.status-sample.planned{color:var(--orange);border-color:var(--orange-border);border-style:dashed;background:var(--orange-bg)}
+.line-key{display:inline-block;width:25px;border-top:2px solid var(--green)}
+.line-key.planned{border-color:var(--orange);border-top-style:dashed}
 .node[data-state=complete]{border-style:solid}
 .node[data-state=planned]{border-style:dashed;box-shadow:none}
 
@@ -342,9 +344,9 @@ h1{font-size:40px;letter-spacing:1px;line-height:1.3;margin:0 0 11px;font-weight
 </section>
 <section aria-label="召回决策流程图" class="diagram" id="diagram">
 <div class="diagram-head"><div aria-label="节点实施状态图例" class="status-legend">
-<span class="status-legend-title">边框说明</span>
-<span><i aria-hidden="true" class="status-sample complete"></i>实线边框：已完成</span>
-<span><i aria-hidden="true" class="status-sample planned"></i>虚线边框：规划中</span>
+<span class="status-legend-title">节点状态</span>
+<span><i aria-hidden="true" class="status-sample complete">✓</i>已完成<span aria-hidden="true" class="line-key"></span></span>
+<span><i aria-hidden="true" class="status-sample planned">○</i>后续规划<span aria-hidden="true" class="line-key planned"></span></span>
 </div></div>
 <svg aria-hidden="true" class="connector-layer" id="connectors"></svg>
 <div class="flow-body" id="flow-body">
