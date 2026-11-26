@@ -24,14 +24,34 @@ h1{font-size:40px;letter-spacing:1px;line-height:1.3;margin:0 0 11px;font-weight
 .legend{display:flex;gap:23px;flex-wrap:wrap;margin:23px 0 0;font-size:13px;color:var(--muted)}
 .legend span{display:inline-flex;align-items:center;gap:8px}
 .dot{display:inline-block;width:9px;height:9px;border-radius:50%;background:var(--c)}
-.risk-band{display:flex;flex-direction:column;justify-content:center;align-items:center;gap:8px;text-align:center;background:var(--paper);border:1px solid var(--line);border-left:4px solid var(--blue);border-radius:13px;margin-bottom:18px;padding:16px 22px}
-.risk-title{font-size:15px;font-weight:700;color:var(--ink);display:flex;gap:10px;align-items:center;justify-content:center}
+.risk-band{display:flex;flex-direction:column;align-items:center;text-align:center;background:linear-gradient(145deg,#17325244,transparent 65%),var(--paper);border:1px solid var(--line);border-radius:17px;margin-bottom:20px;padding:24px 28px 18px}
+.risk-title{position:relative;margin:0;font-size:16px;font-weight:700;color:var(--ink);display:flex;gap:10px;align-items:center;justify-content:center}
+.risk-title:after{content:"";position:absolute;top:100%;left:50%;height:22px;border-left:1px solid var(--blue-border);opacity:.7}
 .shield{width:17px;height:19px;background:var(--blue);clip-path:polygon(50% 0,100% 17%,94% 64%,76% 87%,50% 100%,24% 87%,6% 64%,0 17%);display:inline-block}
-.risk-detail{font-size:13px;color:var(--muted);line-height:1.7;text-align:center}
+.risk-constraints{position:relative;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:18px;width:100%;max-width:900px;margin-top:22px;padding-top:18px}
+.risk-constraints:before{content:"";position:absolute;top:0;left:calc((100% - 36px)/6);right:calc((100% - 36px)/6);border-top:1px solid var(--blue-border);opacity:.7}
+.constraint-node{position:relative;min-width:0;border:1px solid var(--line);border-radius:11px;background:var(--node-bg);padding:14px 12px 12px}
+.constraint-node:before{content:"";position:absolute;bottom:100%;left:50%;height:18px;border-left:1px solid var(--blue-border);opacity:.7}
+.constraint-heading{display:flex;align-items:center;justify-content:center;gap:9px}
+.constraint-heading h3{margin:0;font-size:15px;font-weight:650;line-height:1.6}
+.constraint-icon{display:flex;align-items:center;justify-content:center;width:29px;height:29px;border:1px solid #628fc966;border-radius:8px;background:var(--blue-bg);color:var(--blue);flex-shrink:0}
+.constraint-icon svg{width:17px;height:17px;fill:none;stroke:currentColor;stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round}
+.constraint-node p{margin:7px 0 0;font-size:12px;line-height:1.7;color:var(--muted)}
+.decision-basis{width:100%;max-width:900px;margin-top:17px;padding-top:14px;border-top:1px solid var(--line);display:flex;align-items:center;justify-content:center;flex-wrap:wrap;gap:9px}
+.basis-label{font-size:11px;color:var(--soft);margin-right:4px;letter-spacing:1px}
+.basis-tag{display:inline-flex;align-items:center;gap:7px;font-size:12px;color:var(--muted);padding:5px 11px;background:#38537333;border-radius:6px}
+.basis-tag:before{content:"";height:4px;width:4px;border-radius:50%;background:var(--blue)}
 .diagram{position:relative;background:var(--paper);border:1px solid var(--line);border-radius:23px;box-shadow:0 20px 70px #0005;isolation:isolate;overflow:hidden}
-.diagram-head{padding:23px 30px 19px;border-bottom:1px solid var(--line);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;text-align:center}
+.diagram-head{position:relative;z-index:2;padding:24px 30px 25px;border-bottom:1px solid var(--line);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:18px;text-align:center;background:var(--paper)}
 .diagram-head strong{font-size:16px;font-weight:700;letter-spacing:.4px}
 .diagram-head span{font-size:13px;color:var(--muted)}
+.journey-stages{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:26px;width:100%;max-width:1000px;list-style:none;margin:0;padding:0}
+.journey-step{--stage:var(--blue);position:relative;min-width:0;display:flex;flex-direction:column;align-items:center;gap:7px;padding:13px 9px 12px;background:var(--node-bg);border:1px solid var(--line);border-top:2px solid var(--stage);border-radius:10px}
+.journey-step:nth-child(2){--stage:var(--teal)}.journey-step:nth-child(3){--stage:var(--orange)}.journey-step:nth-child(4){--stage:var(--purple)}
+.journey-step:not(:last-child):after{content:"→";position:absolute;left:calc(100% + 7px);top:50%;transform:translateY(-50%);font-size:19px;line-height:1;color:var(--soft)}
+.journey-step .stage-index{display:grid;place-items:center;border:1px solid currentColor;border-radius:50%;height:23px;width:23px;font-size:10px;line-height:1;color:var(--stage);font-weight:700;opacity:.9}
+.journey-step h3{margin:0;font-size:14px;line-height:1.5;font-weight:650;color:var(--ink)}
+.journey-step p{margin:0;font-size:11px;line-height:1.7;color:var(--muted)}
 .flow-body{display:grid;grid-template-columns:minmax(0,1fr) 248px;gap:42px;padding:32px 32px 0 45px;position:relative}
 .main-flow{min-width:0;display:flex;flex-direction:column;align-items:center}
 .node{position:relative;z-index:2;background:var(--node-bg);transition:box-shadow .18s,border-color .18s}
@@ -97,8 +117,11 @@ h1{font-size:40px;letter-spacing:1px;line-height:1.3;margin:0 0 11px;font-weight
   h1{font-size:31px}.subtitle{font-size:13px}
   .print{position:static;display:flex;width:max-content;padding:8px 11px;font-size:11px;margin:14px 0 0 auto}.print svg{display:none}
   .legend{font-size:12px;gap:14px;margin-top:16px}
-  .risk-band{padding:13px 16px;align-items:center}.risk-title{font-size:13px}.risk-detail{font-size:11px}
-  .diagram{border-radius:17px}.diagram-head{padding:18px 20px}.diagram-head span{font-size:11px}
+  .risk-band{padding:20px 16px 16px}.risk-title{font-size:15px}
+  .risk-constraints{gap:10px}.risk-constraints:before{left:calc((100% - 20px)/6);right:calc((100% - 20px)/6)}
+  .constraint-node{padding:12px 9px 10px}.constraint-heading{gap:6px}.constraint-heading h3{font-size:13px}.constraint-node p{font-size:11px}
+  .diagram{border-radius:17px}.diagram-head{padding:20px 18px}.diagram-head span{font-size:11px}
+  .journey-stages{gap:20px}.journey-step:not(:last-child):after{left:calc(100% + 4px);font-size:17px}
   .flow-body{grid-template-columns:1fr;padding:28px 28px 0 29px;gap:0}
   .main-flow{padding-right:17px}
   .node-card{padding:18px}.node h2,.node h3{font-size:18px}.node p{font-size:13px}
@@ -117,7 +140,7 @@ h1{font-size:40px;letter-spacing:1px;line-height:1.3;margin:0 0 11px;font-weight
 }
 @media(max-width:430px){
   .page{padding-left:10px;padding-right:10px}h1{font-size:27px}.hero{margin-bottom:19px}.eyebrow{font-size:11px;letter-spacing:1px}
-  .print{font-size:10px;padding:8px 9px}.subtitle{font-size:12px}.risk-detail{max-width:none}.risk-title{font-size:12px}
+  .print{font-size:10px;padding:8px 9px}.subtitle{font-size:12px}
   .diagram-head{padding:16px 17px}.diagram-head strong{font-size:13px}.diagram-head span{font-size:11px;max-width:none;text-align:center;line-height:1.6}
   .flow-body{padding-left:23px;padding-right:24px}.main-flow,.result-lane{padding-right:14px}
   .branches{gap:10px}.branch{padding:16px 11px;min-height:190px}.branch h3{font-size:16px}.branch p{font-size:12px}
@@ -127,6 +150,15 @@ h1{font-size:40px;letter-spacing:1px;line-height:1.3;margin:0 0 11px;font-weight
   .offline h2{font-size:16px}.offline-items{grid-template-columns:1fr;gap:13px}.offline-item strong{font-size:13px}.offline-item span{font-size:12px}
   .offline .owner{font-size:11px}.offline-caption{font-size:11px}.success .metrics{grid-template-columns:1fr;gap:8px}
   .footer{display:block}.footer-key{margin-bottom:7px}.legend{gap:12px;font-size:11px}
+}
+@media(max-width:600px){
+  .constraint-heading{flex-direction:column;gap:6px}.constraint-node{padding:11px 7px}.constraint-node p{font-size:10px}
+  .constraint-heading h3{font-size:12px}.constraint-icon{width:26px;height:26px}.basis-label{width:100%;margin:0}
+  .decision-basis{gap:7px}.basis-tag{font-size:11px;padding:5px 9px}
+  .journey-stages{grid-template-columns:repeat(2,minmax(0,1fr));gap:24px}
+  .journey-step:nth-child(3){grid-column:2;grid-row:2}.journey-step:nth-child(4){grid-column:1;grid-row:2}
+  .journey-step:nth-child(2):after{content:"↓";left:50%;top:calc(100% + 5px);transform:translateX(-50%)}
+  .journey-step:nth-child(3):after{content:"←";left:auto;right:calc(100% + 6px);top:50%;transform:translateY(-50%)}
 }
 @media print{
   @page{size:A3 portrait;margin:12mm}
@@ -209,12 +241,34 @@ h1{font-size:40px;letter-spacing:1px;line-height:1.3;margin:0 0 11px;font-weight
     </header>
 
     <section class="risk-band" aria-label="所有策略的风险约束">
-      <div class="risk-title"><i class="shield" aria-hidden="true"></i>风险边界贯穿全程</div>
-      <div class="risk-detail">额度上限 · 让利上限 · 产品准入<br>综合风险、产品偏好与流失倾向</div>
+      <h2 class="risk-title"><i class="shield" aria-hidden="true"></i>风险边界贯穿全程</h2>
+      <div class="risk-constraints" aria-label="三项并行约束">
+        <article class="constraint-node">
+          <div class="constraint-heading"><span class="constraint-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M4 19h16M6 15v-4m6 4V7m6 8V4M3 4h11"/></svg></span><h3>额度上限</h3></div>
+          <p>控制额度调整范围</p>
+        </article>
+        <article class="constraint-node">
+          <div class="constraint-heading"><span class="constraint-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M4 4h8l8 8-8 8-8-8z"/><circle cx="8" cy="8" r="1"/><path d="m10 15 5-5"/></svg></span><h3>让利上限</h3></div>
+          <p>控制优惠力度范围</p>
+        </article>
+        <article class="constraint-node">
+          <div class="constraint-heading"><span class="constraint-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="m12 3 8 3v6c0 5-8 9-8 9s-8-4-8-9V6z"/><path d="m8 12 3 3 5-6"/></svg></span><h3>产品准入</h3></div>
+          <p>匹配符合准入的产品</p>
+        </article>
+      </div>
+      <div class="decision-basis" aria-label="策略选择的决策依据"><span class="basis-label">决策依据</span><span class="basis-tag">综合风险</span><span class="basis-tag">产品偏好</span><span class="basis-tag">流失倾向</span></div>
     </section>
 
     <section class="diagram" id="diagram" aria-label="召回决策流程图">
-      <div class="diagram-head"><strong>从客群识别到长期留存</strong><span>客群优先归类 → 类内行为 / 模型策略 → 产品适配</span></div>
+      <div class="diagram-head">
+        <strong>从客群识别到长期留存</strong>
+        <ol class="journey-stages" aria-label="从客群识别到长期留存的四个阶段">
+          <li class="journey-step"><span class="stage-index">01</span><h3>客群归类</h3><p>三类客群 · 优先归类</p></li>
+          <li class="journey-step"><span class="stage-index">02</span><h3>策略分流</h3><p>核心行为 · 模型组合</p></li>
+          <li class="journey-step"><span class="stage-index">03</span><h3>产品适配</h3><p>让利与额度 · 产品选择</p></li>
+          <li class="journey-step"><span class="stage-index">04</span><h3>留存反馈</h3><p>回款表现 · 复借 · 流失</p></li>
+        </ol>
+      </div>
       <svg class="connector-layer" id="connectors" aria-hidden="true"></svg>
 
       <div class="flow-body" id="flow-body">
