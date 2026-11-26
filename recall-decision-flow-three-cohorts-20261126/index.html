@@ -153,10 +153,8 @@ h1{font-size:40px;letter-spacing:1px;line-height:1.3;margin:0 0 11px;font-weight
 .cohort-lane .branch{padding:17px 12px;min-height:220px;border-left-width:3px}
 .cohort-lane .branch h3{font-size:16px;line-height:1.7}.cohort-lane .branch p{font-size:12px;line-height:1.9}
 .cohort-lane .node-label{font-size:11px;letter-spacing:.2px;gap:6px}
-.cohort-strategy{margin-top:49px;max-width:none;min-height:185px;padding:18px 15px;background:var(--blue-bg)}
-.cohort-strategy h3{font-size:18px}.cohort-strategy .chips{gap:6px;margin-top:11px}
-.cohort-strategy .chip{font-size:12px;padding:8px}.cohort-strategy .strategy-footer{font-size:12px}
-#regular-decision{margin-top:58px}
+#strategy{margin-top:63px;max-width:560px}
+#regular-decision{margin-top:36px}
 .success{padding:21px 16px}.success h2{font-size:20px}.success p{line-height:1.9}
 .offline{margin-left:40px;margin-right:28px}
 .version-label{color:var(--soft);font-size:12px;margin-top:12px;line-height:1.8}
@@ -173,8 +171,6 @@ h1{font-size:40px;letter-spacing:1px;line-height:1.3;margin:0 0 11px;font-weight
  .cohort-lane .decision{max-width:330px;min-height:54px}
  .cohort-lane .branch{min-height:167px;padding:18px}.cohort-lane .branch h3{font-size:18px}
  .cohort-lane .branch p{font-size:13px}.cohort-lane .branches{gap:18px}
- .cohort-strategy{max-width:448px;min-height:0;padding:20px}
- .cohort-strategy h3{font-size:20px}
 }
 @media(max-width:790px){
  .flow-body{grid-template-columns:1fr;padding-left:29px;padding-right:28px;gap:0}
@@ -185,15 +181,14 @@ h1{font-size:40px;letter-spacing:1px;line-height:1.3;margin:0 0 11px;font-weight
  .cohort-lane .branch{padding:17px 12px;min-height:181px}.cohort-lane .branch h3{font-size:16px}
  .cohort-lane .branch p{font-size:12px}.cohort-lane .branches{gap:12px}
  .cohort-lane{padding-left:12px;padding-right:12px}.cohort-head{width:calc(100% + 24px)}
- .cohort-strategy h3{font-size:18px}.success{max-width:448px}.version-label{font-size:11px}
+ .success{max-width:448px}.version-label{font-size:11px}
 }
 @media print{
  .page{max-width:none}.cohort-grid{grid-template-columns:repeat(3,minmax(0,1fr));gap:16px;max-width:none}
  .flow-body{grid-template-columns:minmax(0,1fr) 190px;gap:26px;padding-left:32px;padding-right:24px}
  .cohort-head{min-height:148px}.cohort-head h3{font-size:17px}
  .cohort-lane .branch{min-height:190px;padding:14px 9px}.cohort-lane .branch h3{font-size:14px}
- .cohort-lane .branch p{font-size:11px}.cohort-strategy{min-height:176px;padding:15px 11px}
- .cohort-strategy h3{font-size:16px}.cohort-lane .decision{font-size:11px}
+ .cohort-lane .branch p{font-size:11px}.cohort-lane .decision{font-size:11px}
  .result-lane{margin-top:0}.success{position:absolute!important}
 }
   </style>
@@ -266,12 +261,6 @@ h1{font-size:40px;letter-spacing:1px;line-height:1.3;margin:0 0 11px;font-weight
                   <p>提单意愿模型 × 风险模型<br>在二次流失客群内分组</p>
                 </article>
               </div>
-              <article class="node node-card cohort-strategy" id="secondary-strategy">
-                <div class="node-label">二次流失 · 策略输出</div>
-                <h3>匹配让利与额度策略</h3>
-                <div class="chips"><span class="chip">让利</span><span class="chip">提额</span><span class="chip">让利＋提额</span></div>
-                <div class="strategy-footer">命中与未命中分别配置策略<br>结合本类行为、风险与历史响应选择</div>
-              </article>
             </section>
 
             <section class="cohort-lane" aria-labelledby="loan12-title">
@@ -294,12 +283,6 @@ h1{font-size:40px;letter-spacing:1px;line-height:1.3;margin:0 0 11px;font-weight
                   <p>提单意愿模型 × 风险模型<br>在借款 1–2 次客群内分组</p>
                 </article>
               </div>
-              <article class="node node-card cohort-strategy" id="loan12-strategy">
-                <div class="node-label">借款 1–2 次 · 策略输出</div>
-                <h3>匹配让利与额度策略</h3>
-                <div class="chips"><span class="chip">让利</span><span class="chip">提额</span><span class="chip">让利＋提额</span></div>
-                <div class="strategy-footer">命中与未命中分别配置策略<br>结合本类行为、风险与历史响应选择</div>
-              </article>
             </section>
 
             <section class="cohort-lane" aria-labelledby="ordinary-title">
@@ -322,14 +305,15 @@ h1{font-size:40px;letter-spacing:1px;line-height:1.3;margin:0 0 11px;font-weight
                   <p>提单意愿模型 × 风险模型<br>在普通用户客群内分组</p>
                 </article>
               </div>
-              <article class="node node-card cohort-strategy" id="ordinary-strategy">
-                <div class="node-label">普通用户 · 策略输出</div>
-                <h3>匹配让利与额度策略</h3>
-                <div class="chips"><span class="chip">让利</span><span class="chip">提额</span><span class="chip">让利＋提额</span></div>
-                <div class="strategy-footer">命中与未命中分别配置策略<br>结合本类行为、风险与历史响应选择</div>
-              </article>
             </section>
           </div>
+
+          <article class="node node-card" id="strategy">
+            <div class="node-label">三类客群汇总 · 策略输出</div>
+            <h2>匹配让利与额度策略</h2>
+            <div class="chips"><span class="chip">让利</span><span class="chip">提额</span><span class="chip">让利＋提额</span></div>
+            <div class="strategy-footer">按客群、行为命中情况、模型组合与风险，匹配对应方案。</div>
+          </article>
 
           <div class="node decision" id="regular-decision">本类召回策略是否促成提单？</div>
 
@@ -396,7 +380,7 @@ h1{font-size:40px;letter-spacing:1px;line-height:1.3;margin:0 0 11px;font-weight
         }
         return d+` L ${pts.at(-1)[0]} ${pts.at(-1)[1]}`;
       }
-      function edge(points,color='blue',dashed=false){svg.append(element('path',{class:'edge',d:rounded(points),stroke:colors[color],'marker-end':`url(#arrow-${color})`,...(dashed?{'stroke-dasharray':'5 5'}:{})}));}
+      function edge(points,color='blue',dashed=false,arrow=true){svg.append(element('path',{class:'edge',d:rounded(points),stroke:colors[color],...(arrow?{'marker-end':`url(#arrow-${color})`}:{}),...(dashed?{'stroke-dasharray':'5 5'}:{})}));}
       function label(text,x,y,color='blue'){
         const group=element('g',{class:'edge-label'}),t=element('text',{x,y,fill:colors[color]||colors.blue});t.textContent=text;group.append(t);svg.append(group);
         const b=t.getBBox();group.insertBefore(element('rect',{x:b.x-7,y:b.y-4,width:b.width+14,height:b.height+8}),t);
@@ -436,22 +420,28 @@ h1{font-size:40px;letter-spacing:1px;line-height:1.3;margin:0 0 11px;font-weight
           for(const [suffix,color,text] of [['core','teal','命中'],['model','blue','未命中']]){
             const end=point(cohort+'-'+suffix,'top'),middle=(gate[1]+end[1])/2;
             edge([gate,[gate[0],middle],[end[0],middle],end],color);label(text,end[0],middle-1,color);
-            const start=point(cohort+'-'+suffix),target=point(cohort+'-strategy','top'),merge=(start[1]+target[1])/2;
-            edge([start,[start[0],merge],[target[0],merge],target],color);
           }
         }
-        const regular=point('regular-decision','top');
+        const target=point('strategy','top');
+        const joins=cohorts.map(id=>{
+          const core=point(id+'-core'),model=point(id+'-model');
+          const join=[bounds(id+'-head').cx,Math.max(core[1],model[1])+24];
+          for(const [start,color] of [[core,'teal'],[model,'blue']]){
+            edge([start,[start[0],join[1]],join],color,false,false);
+          }
+          return join;
+        });
         if(stacked){
           const grid=bounds('cohort-grid'),outputRail=grid.x+grid.w+12;
-          for(const id of cohorts.slice(0,2)){
-            const start=point(id+'-strategy','right');
-            edge([start,[outputRail,start[1]],[outputRail,regular[1]-24],[regular[0],regular[1]-24],regular]);
+          for(const start of joins.slice(0,2)){
+            edge([start,[outputRail,start[1]],[outputRail,target[1]-24],[target[0],target[1]-24],target]);
           }
-          vertical('ordinary-strategy','regular-decision');
+          edge([joins[2],target]);
         }else{
-          const mid=(point('secondary-strategy')[1]+regular[1])/2;
-          for(const id of cohorts){const start=point(id+'-strategy');edge([start,[start[0],mid],[regular[0],mid],regular]);}
+          const mid=target[1]-24;
+          for(const start of joins){edge([start,[start[0],mid],[target[0],mid],target]);}
         }
+        vertical('strategy','regular-decision');
         vertical('regular-decision','product','orange','无效，升级策略');
         vertical('product','product-decision','orange');
         vertical('product-decision','pending','gray','未提单');
