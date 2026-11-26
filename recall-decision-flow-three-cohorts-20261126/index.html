@@ -253,15 +253,13 @@ h1{font-size:40px;letter-spacing:1px;line-height:1.3;margin:0 0 11px;font-weight
 .status-legend{display:flex;align-items:center;justify-content:center;flex-wrap:wrap;gap:14px 24px;font-size:12px;color:var(--muted)}
 .status-legend>span{display:inline-flex;align-items:center;gap:8px}
 .status-legend .status-legend-title{font-size:11px;letter-spacing:1px;color:var(--soft);margin-right:4px}
-.status-sample{display:inline-grid;place-items:center;width:23px;height:21px;border:1px solid var(--green-border);border-radius:5px;font-style:normal;color:var(--green);background:var(--green-bg);font-size:12px;font-weight:700}
-.status-sample.planned{color:var(--orange);border-color:var(--orange-border);border-style:dashed;background:var(--orange-bg)}
-.line-key{display:inline-block;width:25px;border-top:2px solid var(--green)}
-.line-key.planned{border-color:var(--orange);border-top-style:dashed}
+.status-sample{display:inline-block;width:28px;height:18px;border:1.5px solid var(--soft);border-radius:4px;background:transparent}
+.status-sample.planned{border-style:dashed}
 .node[data-state=complete]{border-style:solid}
 .node[data-state=planned]{border-style:dashed;box-shadow:none}
-.state-pin{position:absolute;top:-12px;right:12px;z-index:3;display:inline-flex;align-items:center;gap:5px;padding:4px 8px;border:1px solid var(--green-border);border-radius:999px;background:var(--paper);color:var(--green);font-size:10px;font-weight:650;line-height:1.4;white-space:nowrap;letter-spacing:.1px}
-.state-pin i{font-style:normal;font-size:11px;line-height:1}
-[data-state=planned]>.state-pin{color:var(--orange);border-color:var(--orange-border);border-style:dashed}
+
+
+
 #regular-decision{padding:14px 17px}
 .planned-flow{padding:0;border:0;border-radius:0;background:none;margin-top:70px;max-width:620px}
 #product{margin-top:0}
@@ -292,14 +290,14 @@ h1{font-size:40px;letter-spacing:1px;line-height:1.3;margin:0 0 11px;font-weight
 @media(max-width:790px){
  .diagram-head{padding:15px 12px}.status-legend{gap:10px 15px;font-size:11px}
  .status-legend .status-legend-title{width:100%;justify-content:center;margin:0}
- .state-pin{right:9px;font-size:9px;top:-11px;padding:4px 7px}
+ 
  .planned-flow{padding:0;margin-top:68px}.retention{padding:20px}
  .implementation-note{grid-template-columns:1fr;gap:15px;padding:15px;margin-left:2px;margin-right:2px}
  .implementation-note p{font-size:11px}.result-lane{gap:40px}
  #regular-decision{padding:14px 11px}
 }
 @media print{
- .diagram-head{padding:10px}.state-pin{font-size:9px;padding:3px 6px}
+ .diagram-head{padding:10px}
  .implementation-note{background:none;break-inside:avoid}
  .result-lane{display:block}.success,.retention{position:absolute!important}
 }
@@ -344,22 +342,22 @@ h1{font-size:40px;letter-spacing:1px;line-height:1.3;margin:0 0 11px;font-weight
 </section>
 <section aria-label="召回决策流程图" class="diagram" id="diagram">
 <div class="diagram-head"><div aria-label="节点实施状态图例" class="status-legend">
-<span class="status-legend-title">节点状态</span>
-<span><i aria-hidden="true" class="status-sample complete">✓</i>已完成<span aria-hidden="true" class="line-key"></span></span>
-<span><i aria-hidden="true" class="status-sample planned">○</i>后续规划<span aria-hidden="true" class="line-key planned"></span></span>
+<span class="status-legend-title">边框说明</span>
+<span><i aria-hidden="true" class="status-sample complete"></i>实线边框：已完成</span>
+<span><i aria-hidden="true" class="status-sample planned"></i>虚线边框：规划中</span>
 </div></div>
 <svg aria-hidden="true" class="connector-layer" id="connectors"></svg>
 <div class="flow-body" id="flow-body">
 <div class="main-flow" id="main-flow">
 
-<article class="node node-card offer" data-state="complete" id="offer"><span class="state-pin"><i aria-hidden="true">✓</i>已完成</span>
+<article class="node node-card offer" data-state="complete" id="offer">
 <div class="node-label">自动获额</div>
 <h2>结清全部订单，展示可借产品</h2>
 <p>结清全部在途订单后，触发自动获额<br/>展示当前可借额度与产品</p>
 <div class="tagline">从当前产品开始，进入提单判断与客群召回分流</div>
 </article>
-<div class="node decision" data-state="complete" id="initial-decision"><span class="state-pin"><i aria-hidden="true">✓</i>已完成</span>是否已经提单？</div>
-<article class="node node-card audience-gate" data-state="complete" id="audience-gate"><span class="state-pin"><i aria-hidden="true">✓</i>已完成</span>
+<div class="node decision" data-state="complete" id="initial-decision">是否已经提单？</div>
+<article class="node node-card audience-gate" data-state="complete" id="audience-gate">
 <div class="node-label">客群优先归类</div>
 <h2>按顺序判断，同一用户只进入一类</h2>
 <div class="priority-order"><span>① 二次及后续流失</span><i>→ 未命中再判断 →</i><span>② 总借款 1–2 次</span><i>→ 其余 →</i><span>③ 普通用户</span></div>
@@ -367,7 +365,7 @@ h1{font-size:40px;letter-spacing:1px;line-height:1.3;margin:0 0 11px;font-weight
 </article>
 <div aria-label="三类互斥客群入口" class="cohort-grid" id="cohort-grid">
 <section aria-labelledby="secondary-title" class="cohort-lane">
-<article class="node node-card cohort-head" data-state="complete" id="secondary-head"><span class="state-pin"><i aria-hidden="true">✓</i>已完成</span>
+<article class="node node-card cohort-head" data-state="complete" id="secondary-head">
 <div class="node-label">优先级 ① · 先判断</div>
 <h3 id="secondary-title">二次流失用户</h3>
 <p>命中二次及后续流失标签<br/>不再进入借款次数或普通用户分流</p>
@@ -375,7 +373,7 @@ h1{font-size:40px;letter-spacing:1px;line-height:1.3;margin:0 0 11px;font-weight
 </article>
 </section>
 <section aria-labelledby="loan12-title" class="cohort-lane">
-<article class="node node-card cohort-head" data-state="complete" id="loan12-head"><span class="state-pin"><i aria-hidden="true">✓</i>已完成</span>
+<article class="node node-card cohort-head" data-state="complete" id="loan12-head">
 <div class="node-label">优先级 ② · 前类未命中</div>
 <h3 id="loan12-title">总借款 1–2 次用户</h3>
 <p>未命中二次流失标签<br/>且累计成功借款为 1 或 2 次</p>
@@ -383,7 +381,7 @@ h1{font-size:40px;letter-spacing:1px;line-height:1.3;margin:0 0 11px;font-weight
 </article>
 </section>
 <section aria-labelledby="ordinary-title" class="cohort-lane">
-<article class="node node-card cohort-head" data-state="complete" id="ordinary-head"><span class="state-pin"><i aria-hidden="true">✓</i>已完成</span>
+<article class="node node-card cohort-head" data-state="complete" id="ordinary-head">
 <div class="node-label">优先级 ③ · 剩余用户</div>
 <h3 id="ordinary-title">普通用户</h3>
 <p>未命中二次流失标签<br/>且未命中总借款 1–2 次</p>
@@ -391,44 +389,44 @@ h1{font-size:40px;letter-spacing:1px;line-height:1.3;margin:0 0 11px;font-weight
 </article>
 </section>
 </div>
-<div class="node decision" data-state="complete" id="behavior-decision"><span class="state-pin"><i aria-hidden="true">✓</i>已完成</span>是否命中核心行为？</div>
+<div class="node decision" data-state="complete" id="behavior-decision">是否命中核心行为？</div>
 <div aria-label="三类客群共用的两个策略分支" class="branches shared-branches">
-<article class="node node-card branch high" data-state="complete" id="high-priority"><span class="state-pin"><i aria-hidden="true">✓</i>已完成</span>
+<article class="node node-card branch high" data-state="complete" id="high-priority">
 <div class="node-label">命中 · 行为分支</div>
 <h3>核心行为专属策略</h3>
 <p>调整金额、切换期次、比较息费<br/>结合所属客群，匹配行为专属规则</p>
 </article>
-<article class="node node-card branch ordinary" data-state="complete" id="ordinary-priority"><span class="state-pin"><i aria-hidden="true">✓</i>已完成</span>
+<article class="node node-card branch ordinary" data-state="complete" id="ordinary-priority">
 <div class="node-label">未命中 · 模型分支</div>
 <h3>模型组合普通策略</h3>
 <p>提单意愿模型 × 风险模型<br/>结合所属客群，进入模型组合分组</p>
 </article>
 </div>
-<article class="node node-card" data-state="complete" id="strategy"><span class="state-pin"><i aria-hidden="true">✓</i>已完成</span>
+<article class="node node-card" data-state="complete" id="strategy">
 <div class="node-label">三类客群汇总 · 策略输出</div>
 <h2>匹配让利与额度策略</h2>
 <div class="chips"><span class="chip">让利</span><span class="chip">提额</span><span class="chip">让利＋提额</span></div>
 <div class="strategy-footer">按客群、行为命中情况、模型组合与风险，匹配对应方案。</div>
 </article>
-<div class="node decision" data-state="complete" id="regular-decision"><span class="state-pin"><i aria-hidden="true">✓</i>已完成</span><span>本类召回策略是否促成提单？</span></div>
+<div class="node decision" data-state="complete" id="regular-decision"><span>本类召回策略是否促成提单？</span></div>
 <section aria-label="更改产品与产品提单判断" class="planned-flow" id="planned-flow">
 
-<article class="node node-card" data-state="planned" id="product"><span class="state-pin"><i aria-hidden="true">○</i>规划中</span>
+<article class="node node-card" data-state="planned" id="product">
 <div class="node-label">更改产品 · 常规策略无效后</div>
 <h2>按用户偏好，更改可借产品</h2>
 <p>读取离线推荐，重点识别反复流失用户的需求<br/>通过个性化风险准入后，展示新的产品配置</p>
 <div class="chips"><span class="chip">账期</span><span class="chip">还款安排</span><span class="chip">额度与息费</span></div>
 <div class="strategy-footer">长账期偏好纳入评估，产品配置仍受风险约束</div>
 </article>
-<div class="node decision" data-state="planned" id="product-decision"><span class="state-pin"><i aria-hidden="true">○</i>规划中</span>新产品是否促成提单？</div>
-<article class="node node-card" data-state="planned" id="pending"><span class="state-pin"><i aria-hidden="true">○</i>规划中</span>
+<div class="node decision" data-state="planned" id="product-decision">新产品是否促成提单？</div>
+<article class="node node-card" data-state="planned" id="pending">
 <h3>未转化 / 暂无适配产品</h3>
 <p>记录策略响应，纳入后续评估</p>
 </article>
 </section>
 </div>
 <aside aria-label="提单后的效果跟踪" class="result-lane" id="result-lane">
-<article class="node success" data-state="complete" id="success"><span class="state-pin"><i aria-hidden="true">✓</i>已完成</span><div class="node-label">召回结果</div><h2>用户已提单</h2></article><article class="node node-card retention" data-state="planned" id="retention"><span class="state-pin"><i aria-hidden="true">○</i>规划中</span>
+<article class="node success" data-state="complete" id="success"><div class="node-label">召回结果</div><h2>用户已提单</h2></article><article class="node node-card retention" data-state="planned" id="retention">
 <div class="node-label">提单后的表现跟踪</div>
 <h2>留存评估</h2>
 <p>放款 → 还款 → 再次借款</p>
@@ -437,7 +435,7 @@ h1{font-size:40px;letter-spacing:1px;line-height:1.3;margin:0 0 11px;font-weight
 </article>
 </aside>
 </div>
-<section aria-label="离线学习和下一轮策略更新" class="offline node" data-state="planned" id="offline"><span class="state-pin"><i aria-hidden="true">○</i>规划中</span>
+<section aria-label="离线学习和下一轮策略更新" class="offline node" data-state="planned" id="offline">
 <div class="offline-top"><div class="offline-title"><h2>离线学习与产品推荐</h2></div><span class="owner">离线跑批</span></div>
 <div class="offline-items">
 <div class="offline-item"><strong>分类验证行为与策略</strong><span>分别评估三类客群的行为分支、模型分支和优惠增量</span></div>
@@ -447,8 +445,8 @@ h1{font-size:40px;letter-spacing:1px;line-height:1.3;margin:0 0 11px;font-weight
 <p class="offline-caption">结果回到召回决策，并在下一次还款或结清触发自动获额时读取，减少再次流失。</p>
 </section>
 </section><aside aria-label="实施范围说明，不属于流程步骤" class="implementation-note">
-<div><strong><i aria-hidden="true">✓</i> 已完成</strong><p>自动获额、三类客群识别、类内行为与模型分流、让利与额度策略，以及本类召回提单判断。</p></div>
-<div><strong><i aria-hidden="true">○</i> 后续规划</strong><p>更改产品、留存评估、离线学习与个性化推荐，以及推荐结果回接自动获额；这些能力尚未实施。</p></div>
+<div><strong>当前覆盖范围</strong><p>自动获额、三类客群识别、类内行为与模型分流、让利与额度策略，以及本类召回提单判断。</p></div>
+<div><strong>后续建设范围</strong><p>更改产品、留存评估、离线学习与个性化推荐，以及推荐结果回接自动获额；这些能力尚未实施。</p></div>
 </aside>
 <footer class="footer">
 <div class="footer-key"><span><i class="line-sample"></i>已完成的召回决策</span><span><i class="line-sample dashed"></i>待建设的策略升级与反馈闭环</span></div>
