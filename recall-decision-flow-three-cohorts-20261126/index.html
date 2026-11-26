@@ -77,13 +77,13 @@ h1{font-size:40px;letter-spacing:1px;line-height:1.3;margin:0 0 11px;font-weight
 .chip{border:1px solid var(--blue-border);background:var(--paper);color:var(--blue);font-size:13px;font-weight:650;line-height:1;padding:9px 11px;border-radius:7px}
 .strategy-footer{font-size:12px;line-height:1.8;color:var(--muted);margin-top:12px}
 #regular-decision{margin-top:36px}
-#product{margin-top:68px;border-color:var(--orange-border);background:var(--orange-bg)}
+#product{margin-top:30px;border-color:var(--orange-border);background:var(--orange-bg)}
 #product .node-label{color:var(--orange)}
 #product .chip{color:var(--orange);border-color:var(--orange-border)}
 #product-decision{margin-top:36px;background:var(--orange-bg);border-color:var(--orange-border)}
 #product-decision:before{background:var(--orange)}
-#pending{max-width:355px;margin-top:58px;padding:16px 20px;background:var(--node-bg);border-color:var(--line);box-shadow:none}
-#pending h3{font-size:16px;color:var(--ink)}
+#pending{max-width:355px;margin-top:58px;padding:16px 20px;background:var(--orange-bg);border-color:var(--orange-border);box-shadow:none}
+#pending h3{font-size:16px;color:var(--orange)}
 #pending p{font-size:12px;margin-top:4px;color:var(--muted)}
 .result-lane{position:relative;min-width:0}
 .success{position:absolute;left:0;right:0;border:1.5px solid var(--green-border);border-top:4px solid var(--green);border-radius:17px;background:var(--green-bg);padding:23px 20px;box-shadow:0 8px 25px #0003}
@@ -112,6 +112,34 @@ h1{font-size:40px;letter-spacing:1px;line-height:1.3;margin:0 0 11px;font-weight
 .footer-key span{display:inline-flex;align-items:center;gap:7px}
 .line-sample{display:inline-block;width:23px;border-top:2px solid var(--blue)}
 .line-sample.dashed{border-top-style:dashed;border-color:var(--purple)}
+.implementation-key{display:flex;align-items:center;justify-content:center;flex-wrap:wrap;gap:18px;width:100%;padding-top:15px;border-top:1px solid var(--line)}
+.implementation-key span{display:inline-flex;align-items:center;gap:7px;font-size:11px}
+.implementation-key i{width:24px;border-top:2px solid var(--green)}
+.implementation-key .planned-key i{border-top-style:dashed;border-color:var(--orange)}
+.phase-heading{position:relative;z-index:2;display:flex;align-items:center;gap:13px;width:100%;max-width:760px;padding:15px 18px;border:1px solid var(--line);border-radius:12px;background:var(--paper);text-align:left}
+.phase-heading h3{margin:0;font-size:15px;line-height:1.7;font-weight:700}
+.phase-heading p{margin:3px 0 0;color:var(--muted);font-size:11px;line-height:1.7}
+.phase-complete{border-color:var(--green-border);margin-bottom:26px}
+.status-badge{--status-color:var(--green);display:inline-flex;align-items:center;justify-content:center;gap:6px;flex-shrink:0;white-space:nowrap;border:1px solid var(--status-color);border-radius:999px;padding:5px 9px;font-size:11px;font-weight:700;line-height:1.4;color:var(--status-color);background:var(--paper)}
+.status-badge:before{content:"✓";font-size:12px}
+.status-badge.planned{--status-color:var(--orange);border-style:dashed}
+.status-badge.planned:before{content:"○"}
+.completion-badge{position:absolute;right:14px;top:-13px;font-size:10px;padding:4px 8px}
+#regular-decision{padding-top:20px;padding-bottom:16px}
+.planned-flow{position:relative;width:100%;max-width:620px;margin-top:80px;padding:20px 24px 24px;border:1px dashed var(--orange-border);border-radius:20px;background:linear-gradient(160deg,#3c2b1d66,transparent 75%);display:flex;flex-direction:column;align-items:center}
+.phase-planned{border-color:var(--orange-border);background:var(--orange-bg)}
+.phase-planned h3{color:var(--orange)}
+.planned-flow .node{border-style:dashed}
+.planned-flow .phase-heading{border-style:solid}
+.success .status-badge{margin-bottom:13px;font-size:10px}
+.success,.offline{border-style:dashed}
+.offline-title{display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+@media(max-width:790px){
+ .phase-heading{padding:13px 14px;gap:10px}.phase-heading h3{font-size:14px}.phase-heading p{font-size:11px}
+ .planned-flow{padding:16px 14px 20px}.phase-planned{flex-wrap:wrap;gap:8px}
+ .phase-planned>div{flex:1;min-width:170px}.implementation-key{gap:11px}.implementation-key span{font-size:10px}
+ .offline-top{align-items:flex-start}.offline-title{gap:8px}.offline-title .status-badge{font-size:10px}
+}
 @media(max-width:790px){
   .page{padding:27px 14px 22px}
   h1{font-size:31px}.subtitle{font-size:13px}
@@ -268,11 +296,16 @@ h1{font-size:40px;letter-spacing:1px;line-height:1.3;margin:0 0 11px;font-weight
           <li class="journey-step"><span class="stage-index">03</span><h3>产品适配</h3><p>让利与额度 · 产品选择</p></li>
           <li class="journey-step"><span class="stage-index">04</span><h3>留存反馈</h3><p>回款表现 · 复借 · 流失</p></li>
         </ol>
+        <div class="implementation-key" aria-label="实施状态图例"><span><i aria-hidden="true"></i>已完成 · 实线流程</span><span class="planned-key"><i aria-hidden="true"></i>待建设 · 虚线流程</span></div>
       </div>
       <svg class="connector-layer" id="connectors" aria-hidden="true"></svg>
 
       <div class="flow-body" id="flow-body">
         <div class="main-flow" id="main-flow">
+          <div class="phase-heading phase-complete" id="completed-start">
+            <span class="status-badge">已完成</span>
+            <div><h3>客群识别与召回策略</h3><p>完成范围：自动获额 → 客群归类 → 策略分流 → 本类召回提单判断</p></div>
+          </div>
           <article class="node node-card offer" id="offer">
             <div class="node-label">自动获额</div>
             <h2>结清全部订单，展示可借产品</h2>
@@ -338,8 +371,13 @@ h1{font-size:40px;letter-spacing:1px;line-height:1.3;margin:0 0 11px;font-weight
             <div class="strategy-footer">按客群、行为命中情况、模型组合与风险，匹配对应方案。</div>
           </article>
 
-          <div class="node decision" id="regular-decision">本类召回策略是否促成提单？</div>
+          <div class="node decision" id="regular-decision"><span class="status-badge completion-badge">已完成至此</span><span>本类召回策略是否促成提单？</span></div>
 
+          <section class="planned-flow" id="planned-flow" aria-label="待建设：高级召回与产品适配">
+          <div class="phase-heading phase-planned" id="planned-start">
+            <span class="status-badge planned">待建设</span>
+            <div><h3>高级召回与产品适配</h3><p>以下为后续规划，尚未实施</p></div>
+          </div>
           <article class="node node-card" id="product">
             <div class="node-label">高级召回 · 常规策略无效后</div>
             <h2>按用户偏好，更换可借产品</h2>
@@ -353,10 +391,12 @@ h1{font-size:40px;letter-spacing:1px;line-height:1.3;margin:0 0 11px;font-weight
             <h3>未转化 / 暂无适配产品</h3>
             <p>记录策略响应，纳入后续评估</p>
           </article>
+          </section>
         </div>
 
         <aside class="result-lane" id="result-lane" aria-label="提单后的效果跟踪">
           <article class="node success" id="success">
+            <span class="status-badge planned">待建设 · 留存评估</span>
             <div class="node-label">已提单</div>
             <h2>继续跟踪留存</h2>
             <p>提单 → 放款 → 还款 → 再次借款</p>
@@ -367,7 +407,7 @@ h1{font-size:40px;letter-spacing:1px;line-height:1.3;margin:0 0 11px;font-weight
       </div>
 
       <section class="offline" id="offline" aria-label="离线学习和下一轮策略更新">
-        <div class="offline-top"><h2>离线学习与产品推荐</h2><span class="owner">黎明 · 离线跑批</span></div>
+        <div class="offline-top"><div class="offline-title"><h2>离线学习与产品推荐</h2><span class="status-badge planned">待建设</span></div><span class="owner">黎明 · 离线跑批</span></div>
         <div class="offline-items">
           <div class="offline-item"><strong>分类验证行为与策略</strong><span>分别评估三类客群的行为分支、模型分支和优惠增量</span></div>
           <div class="offline-item"><strong>持续更新用户标签</strong><span>二次及后续流失、借款次数、产品偏好与策略响应</span></div>
@@ -378,7 +418,7 @@ h1{font-size:40px;letter-spacing:1px;line-height:1.3;margin:0 0 11px;font-weight
     </section>
 
     <footer class="footer">
-      <div class="footer-key"><span><i class="line-sample"></i>本轮决策流程</span><span><i class="line-sample dashed"></i>离线反馈与下一轮获额</span></div>
+      <div class="footer-key"><span><i class="line-sample"></i>已完成的召回决策</span><span><i class="line-sample dashed"></i>待建设的策略升级与反馈闭环</span></div>
       <span>先客群归类 → 类内行为 / 模型分流 → 让利与额度 → 产品适配</span>
     </footer>
   </main>
@@ -408,7 +448,7 @@ h1{font-size:40px;letter-spacing:1px;line-height:1.3;margin:0 0 11px;font-weight
         const group=element('g',{class:'edge-label'}),t=element('text',{x,y,fill:colors[color]||colors.blue});t.textContent=text;group.append(t);svg.append(group);
         const b=t.getBBox();group.insertBefore(element('rect',{x:b.x-7,y:b.y-4,width:b.width+14,height:b.height+8}),t);
       }
-      function vertical(from,to,color='blue',text){const a=point(from),b=point(to,'top');edge([a,b],color);if(text)label(text,(a[0]+b[0])/2,(a[1]+b[1])/2,color);}
+      function vertical(from,to,color='blue',text,dashed=false){const a=point(from),b=point(to,'top');edge([a,b],color,dashed);if(text)label(text,(a[0]+b[0])/2,(a[1]+b[1])/2,color);}
       function render(){
         const mobile=getComputedStyle(document.getElementById('flow-body')).gridTemplateColumns.split(' ').length===1;
         const success=document.getElementById('success');
@@ -457,22 +497,23 @@ h1{font-size:40px;letter-spacing:1px;line-height:1.3;margin:0 0 11px;font-weight
           edge([start,[start[0],merge],[target[0],merge],target],color);
         }
         vertical('strategy','regular-decision');
-        vertical('regular-decision','product','orange','无效，升级策略');
-        vertical('product','product-decision','orange');
-        vertical('product-decision','pending','gray','未提单');
+        vertical('regular-decision','planned-start','orange','无效，升级策略',true);
+        vertical('planned-start','product','orange',undefined,true);
+        vertical('product','product-decision','orange',undefined,true);
+        vertical('product-decision','pending','orange','未提单',true);
         const successBox=bounds('success');
         const rail=mobile?width-11:successBox.x-22;
         const successEnd=mobile?point('success','right'):point('success','left');
         for(const id of ['initial-decision','regular-decision','product-decision']){
           const start=point(id,'right');
-          edge([start,[rail,start[1]],[rail,successEnd[1]],successEnd],'green');
+          edge([start,[rail,start[1]],[rail,successEnd[1]],successEnd],'green',id==='product-decision');
           label('已提单',mobile?rail-20:start[0]+(rail-start[0])/2,start[1]-(mobile?38:0),'green');
         }
         const pending=point('pending'),offline=bounds('offline');
-        if(mobile){const railLeft=15;edge([pending,[pending[0],pending[1]+16],[railLeft,pending[1]+16],[railLeft,offline.y+34],[offline.x,offline.y+34]],'gray');}
-        else{const target=[offline.x+offline.w*.38,offline.y];const middle=(pending[1]+offline.y)/2;edge([pending,[pending[0],middle],[target[0],middle],target],'gray');}
+        if(mobile){const railLeft=15;edge([pending,[pending[0],pending[1]+33],[railLeft,pending[1]+33],[railLeft,offline.y+34],[offline.x,offline.y+34]],'orange',true);}
+        else{const target=[offline.x+offline.w*.38,offline.y];const middle=(pending[1]+offline.y)/2;edge([pending,[pending[0],middle],[target[0],middle],target],'orange',true);}
         const tracked=point('success'),feedbackTarget=[mobile?offline.cx:successBox.cx,offline.y];
-        edge([tracked,[tracked[0],offline.y-21],[feedbackTarget[0],offline.y-21],feedbackTarget],'green');
+        edge([tracked,[tracked[0],offline.y-21],[feedbackTarget[0],offline.y-21],feedbackTarget],'green',true);
         if(!mobile)label('效果回传',tracked[0],offline.y-35,'green');
         const backStart=[offline.x,offline.y+offline.h*.72],backEnd=point('offer','left'),backRail=mobile?7:17;
         edge([backStart,[backRail,backStart[1]],[backRail,backEnd[1]],backEnd],'purple',true);
