@@ -11,12 +11,14 @@
 body{margin:0;background:radial-gradient(ellipse at 10% 0,#17325777 0,transparent 45%),radial-gradient(ellipse at 100% 18%,#37285644 0,transparent 38%),var(--bg);color:var(--ink);font-family:var(--font);-webkit-font-smoothing:antialiased}
 button{font:inherit}
 .page{max-width:1220px;margin:0 auto;padding:48px 28px 28px}
-.hero{display:flex;align-items:flex-start;justify-content:space-between;gap:24px;margin-bottom:25px}
+.hero{position:relative;margin-bottom:25px}
+.hero-copy{text-align:center;width:100%}
+.hero .eyebrow,.hero .legend{justify-content:center}
 .eyebrow{display:flex;align-items:center;gap:9px;color:var(--blue);font-size:12px;font-weight:700;letter-spacing:2px;margin:0 0 12px}
 .eyebrow:before{content:"";width:23px;height:4px;border-radius:3px;background:var(--blue)}
 h1{font-size:40px;letter-spacing:1px;line-height:1.3;margin:0 0 11px;font-weight:750}
 .subtitle{font-size:15px;line-height:1.8;color:var(--muted);margin:0}
-.print{display:inline-flex;align-items:center;justify-content:center;gap:7px;border:1px solid var(--line);border-radius:10px;padding:10px 15px;background:var(--node-bg);color:var(--muted);white-space:nowrap;font-size:13px;cursor:pointer;margin-top:20px}
+.print{position:absolute;right:0;top:20px;display:inline-flex;align-items:center;justify-content:center;gap:7px;border:1px solid var(--line);border-radius:10px;padding:10px 15px;background:var(--node-bg);color:var(--muted);white-space:nowrap;font-size:13px;cursor:pointer}
 .print:hover{border-color:var(--blue);color:var(--ink);background:var(--blue-bg)}
 .print:focus-visible{outline:3px solid var(--blue);outline-offset:3px}
 .legend{display:flex;gap:23px;flex-wrap:wrap;margin:23px 0 0;font-size:13px;color:var(--muted)}
@@ -93,7 +95,7 @@ h1{font-size:40px;letter-spacing:1px;line-height:1.3;margin:0 0 11px;font-weight
 @media(max-width:790px){
   .page{padding:27px 14px 22px}
   h1{font-size:31px}.subtitle{font-size:13px}
-  .hero{gap:10px}.print{padding:8px 11px;font-size:11px;margin-top:5px}.print svg{display:none}
+  .print{position:static;display:flex;width:max-content;padding:8px 11px;font-size:11px;margin:14px 0 0 auto}.print svg{display:none}
   .legend{font-size:12px;gap:14px;margin-top:16px}
   .risk-band{padding:13px 16px;align-items:flex-start}.risk-title{font-size:13px}.risk-detail{font-size:11px}
   .diagram{border-radius:17px}.diagram-head{padding:18px 20px}.diagram-head span{font-size:11px}
@@ -189,7 +191,7 @@ h1{font-size:40px;letter-spacing:1px;line-height:1.3;margin:0 0 11px;font-weight
 <body>
   <main class="page">
     <header class="hero">
-      <div>
+      <div class="hero-copy">
         <p class="eyebrow">RECALL DECISION ENGINE</p>
         <h1>召回决策引擎</h1>
         <p class="subtitle">先按优先级划分三类客群，再结合核心行为与模型组合，匹配各自的让利与额度策略。</p>
